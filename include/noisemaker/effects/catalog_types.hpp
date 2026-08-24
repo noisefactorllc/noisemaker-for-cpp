@@ -135,7 +135,9 @@ struct CatalogProvenance {
   std::string cpu_revision;
   std::string source_lock_sha256;
   std::string upstream_revision;
-  std::string generated_sha256;
+  // SHA-256 of generated C++ bytes with this field's string value replaced by
+  // an empty placeholder. This is intentionally non-self-referential.
+  std::string generated_payload_sha256;
   std::string normalized_record_stream_sha256;
   std::string first_effect_id;
   std::string last_effect_id;

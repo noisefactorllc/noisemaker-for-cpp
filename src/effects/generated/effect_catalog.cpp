@@ -25096,7 +25096,8 @@ const EffectCatalog& effect_catalog() {
     c.provenance.cpu_revision = "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7";
     c.provenance.source_lock_sha256 = "66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4";
     c.provenance.upstream_revision = "117a236679d1db3ab8f0e278230ece277b57564c";
-    c.provenance.normalized_record_stream_sha256 = "b93fc9bf467ecad2ec541e0997987b589421ced045412817387cbd87a35c07c7";
+    c.provenance.generated_payload_sha256 = "bcd1fdb126a231632865f1a3f2448c9fcb528a5457d58947f4c474af6622e93d";
+    c.provenance.normalized_record_stream_sha256 = "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996";
     c.provenance.first_effect_id = "classicNoisedeck/bitEffects";
     c.provenance.last_effect_id = "synth3d/shape3d";
     c.provenance.counts.definitions = 205;

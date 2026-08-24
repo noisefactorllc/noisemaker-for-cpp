@@ -49,3 +49,8 @@ TEST(effect_catalog_value_preserves_negative_zero) {
   REQUIRE(std::isinf(negative_inf.number) && negative_inf.number < 0.0);
   REQUIRE(std::signbit(negative_zero.number));
 }
+
+TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
+  const auto& provenance = noisemaker::effects::effect_catalog().provenance;
+  REQUIRE(provenance.generated_payload_sha256 == "bcd1fdb126a231632865f1a3f2448c9fcb528a5457d58947f4c474af6622e93d");
+}

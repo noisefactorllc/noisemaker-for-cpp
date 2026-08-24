@@ -10,7 +10,7 @@ import tempfile
 import unittest
 
 import tools.dsl.generate_effect_catalog as generator
-from tools.dsl.generate_effect_catalog import CatalogError, load_export
+from tools.dsl.generate_effect_catalog import CatalogError, _canonical_json_value, _decode, load_export
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CPU = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT", "/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu"))
@@ -76,8 +76,24 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
             self.assertEqual(93, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
-            self.assertEqual("b93fc9bf467ecad2ec541e0997987b589421ced045412817387cbd87a35c07c7", provenance["normalized_record_stream_sha256"])
-            self.assertEqual(hashlib.sha256(first_bytes).hexdigest(), provenance["generated_sha256"])
+            self.assertEqual("6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996", provenance["normalized_record_stream_sha256"])
+            self.assertIn("generated_payload_sha256", provenance)
+            payload_hash = provenance["generated_payload_sha256"]
+            marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()
+            self.assertEqual(1, first_bytes.count(marker))
+            placeholder = first_bytes.replace(marker, b'c.provenance.generated_payload_sha256 = "";', 1)
+            self.assertEqual(hashlib.sha256(placeholder).hexdigest(), payload_hash)
+
+    def test_canonical_numeric_envelope_is_injective_and_round_trips(self) -> None:
+        values = [math.nan, math.inf, -math.inf, -0.0,
+                  "number:NaN", "number:+Infinity", "number:-Infinity", "number:-0"]
+        encoded = [_canonical_json_value(value) for value in values]
+        self.assertEqual(len({json.dumps(value, sort_keys=True) for value in encoded}), len(values))
+        self.assertTrue(math.isnan(_decode(encoded[0])))
+        self.assertTrue(math.isinf(_decode(encoded[1])) and _decode(encoded[1]) > 0)
+        self.assertTrue(math.isinf(_decode(encoded[2])) and _decode(encoded[2]) < 0)
+        self.assertTrue(math.copysign(1.0, _decode(encoded[3])) < 0)
+        self.assertEqual(values[4:], [_decode(value) for value in encoded[4:]])
 
     def test_unknown_schema_is_rejected_without_authority_bypass(self) -> None:
         with tempfile.TemporaryDirectory(prefix="catalog-unknown-") as td:

@@ -20,8 +20,8 @@
     "scatter_passes": 1
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_sha256": "090b24efb9c7a2110f2e36280f4a8f350538c86b492d40c6a00b0edd9a617788",
+  "generated_payload_sha256": "bcd1fdb126a231632865f1a3f2448c9fcb528a5457d58947f4c474af6622e93d",
   "last_effect_id": "synth3d/shape3d",
-  "normalized_record_stream_sha256": "b93fc9bf467ecad2ec541e0997987b589421ced045412817387cbd87a35c07c7",
+  "normalized_record_stream_sha256": "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"
 }
