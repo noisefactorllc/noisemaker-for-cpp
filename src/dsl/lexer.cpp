@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <locale.h>
 #include <limits>
 #include <string>
 #include <string_view>
@@ -62,6 +63,24 @@ bool js_whitespace(std::uint32_t cp) noexcept {
   return cp == 0x0009 || cp == 0x000a || cp == 0x000b || cp == 0x000c || cp == 0x000d ||
          cp == 0x0020 || cp == 0x00a0 || cp == 0x1680 || (cp >= 0x2000 && cp <= 0x200a) ||
          cp == 0x2028 || cp == 0x2029 || cp == 0x202f || cp == 0x205f || cp == 0x3000 || cp == 0xfeff;
+}
+
+double parse_c_number(std::string_view lexeme) {
+  std::string text(lexeme);
+  char* end = nullptr;
+#if defined(_WIN32)
+  _locale_t c_locale = _create_locale(LC_NUMERIC, "C");
+  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
+  const double value = _strtod_l(text.c_str(), &end, c_locale);
+  _free_locale(c_locale);
+#else
+  locale_t c_locale = newlocale(LC_NUMERIC_MASK, "C", static_cast<locale_t>(0));
+  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
+  const double value = strtod_l(text.c_str(), &end, c_locale);
+  freelocale(c_locale);
+#endif
+  if (end != text.c_str() + text.size()) throw std::runtime_error("incomplete DSL number conversion");
+  return value;
 }
 
 std::string json_character(std::uint32_t cp) {
@@ -207,14 +226,15 @@ class Scanner {
         while (ascii_digit(peek().codepoint)) advance();
       }
       const auto lexeme = slice(from);
-      char* end = nullptr;
-      double value = std::strtod(lexeme.c_str(), &end);
       const auto exponent = lexeme.find_first_of("eE");
+      std::size_t digit = std::string::npos;
       if (exponent != std::string::npos) {
-        std::size_t digit = exponent + 1;
+        digit = exponent + 1;
         if (digit < lexeme.size() && (lexeme[digit] == '+' || lexeme[digit] == '-')) ++digit;
-        if (digit == lexeme.size()) value = std::numeric_limits<double>::quiet_NaN();
       }
+      const double value = exponent != std::string::npos && digit == lexeme.size()
+                               ? std::numeric_limits<double>::quiet_NaN()
+                               : parse_c_number(lexeme);
       push(TokenType::number, from, start, value);
       return;
     }

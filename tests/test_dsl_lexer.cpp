@@ -8,6 +8,8 @@
 #include <limits>
 #include <iostream>
 #include <iterator>
+#include <locale.h>
+#include <locale>
 #include <sstream>
 #include <string>
 
@@ -98,24 +100,26 @@ TEST(dsl_error_copy_and_move_own_all_diagnostic_fields) {
   REQUIRE(assigned.what() == std::string("owned:2:3: bad"));
 }
 
-#ifdef NOISEMAKER_DSL_ORACLE_MAIN
 namespace {
-std::string json_escape(const std::string& value) {
-  std::ostringstream out;
-  out << '"';
-  for (unsigned char ch : value) {
-    if (ch == '"') out << "\\\"";
-    else if (ch == '\\') out << "\\\\";
-    else if (ch == '\n') out << "\\n";
-    else if (ch == '\r') out << "\\r";
-    else if (ch == '\t') out << "\\t";
-    else if (ch < 0x20) { out << "\\u00" << std::hex << static_cast<int>(ch) << std::dec; }
-    else out << ch;
-  }
-  out << '"';
-  return out.str();
+double parse_c_number_for_test(std::string_view lexeme) {
+  std::string text(lexeme);
+  char* end = nullptr;
+#if defined(_WIN32)
+  _locale_t c_locale = _create_locale(LC_NUMERIC, "C");
+  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
+  const double value = _strtod_l(text.c_str(), &end, c_locale);
+  _free_locale(c_locale);
+#else
+  locale_t c_locale = newlocale(LC_NUMERIC_MASK, "C", static_cast<locale_t>(0));
+  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
+  const double value = strtod_l(text.c_str(), &end, c_locale);
+  freelocale(c_locale);
+#endif
+  REQUIRE(end == text.c_str() + text.size());
+  return value;
 }
-std::string js_number_string(double value) {
+
+std::string js_number_string_for_test(double value) {
   if (std::isnan(value)) return "number:NaN";
   if (std::isinf(value)) return value > 0 ? "number:+Infinity" : "number:-Infinity";
   if (std::signbit(value) && value == 0) return "number:-0";
@@ -126,22 +130,15 @@ std::string js_number_string(double value) {
                                          std::chars_format::general, precision);
     if (converted.ec != std::errc{}) continue;
     const std::string candidate(candidate_buffer, converted.ptr);
-    char* end = nullptr;
-    const double round_trip = std::strtod(candidate.c_str(), &end);
-    if (end != candidate.c_str() && *end == '\0' && round_trip == value) {
-      text = candidate;
-      break;
-    }
+    const double round_trip = parse_c_number_for_test(candidate);
+    if (round_trip == value) { text = candidate; break; }
   }
   if (text.empty()) throw std::runtime_error("failed to serialize finite number");
   bool negative = false;
   if (!text.empty() && text.front() == '-') { negative = true; text.erase(text.begin()); }
   int exponent = 0;
   const auto e = text.find_first_of("eE");
-  if (e != std::string::npos) {
-    exponent = std::stoi(text.substr(e + 1));
-    text.erase(e);
-  }
+  if (e != std::string::npos) { exponent = std::stoi(text.substr(e + 1)); text.erase(e); }
   const auto dot = text.find('.');
   const int before_dot = dot == std::string::npos ? static_cast<int>(text.size()) : static_cast<int>(dot);
   if (dot != std::string::npos) text.erase(dot, 1);
@@ -161,6 +158,40 @@ std::string js_number_string(double value) {
   }
   return std::string(negative ? "number:-" : "number:") + result;
 }
+}
+
+TEST(dsl_lexer_number_parsing_and_oracle_roundtrip_ignore_global_numeric_locale) {
+  struct comma_numpunct final : std::numpunct<char> {
+    char do_decimal_point() const override { return ','; }
+  };
+  const auto previous = std::locale::global(std::locale(std::locale::classic(), new comma_numpunct));
+  const auto tokens = tokenize("1.25 1e-6 1e999 1e-999");
+  REQUIRE(std::get<double>(tokens[0].value) == 1.25);
+  REQUIRE(std::get<double>(tokens[1].value) == 1e-6);
+  REQUIRE(std::isinf(std::get<double>(tokens[2].value)));
+  REQUIRE(std::get<double>(tokens[3].value) == 0.0);
+  REQUIRE(js_number_string_for_test(1.25) == "number:1.25");
+  REQUIRE(js_number_string_for_test(1e20) == "number:100000000000000000000");
+  std::locale::global(previous);
+}
+
+#ifdef NOISEMAKER_DSL_ORACLE_MAIN
+namespace {
+std::string json_escape(const std::string& value) {
+  std::ostringstream out;
+  out << '"';
+  for (unsigned char ch : value) {
+    if (ch == '"') out << "\\\"";
+    else if (ch == '\\') out << "\\\\";
+    else if (ch == '\n') out << "\\n";
+    else if (ch == '\r') out << "\\r";
+    else if (ch == '\t') out << "\\t";
+    else if (ch < 0x20) { out << "\\u00" << std::hex << static_cast<int>(ch) << std::dec; }
+    else out << ch;
+  }
+  out << '"';
+  return out.str();
+}
 std::string record(const std::string& name, const std::string& source, const std::string& source_name) {
   std::ostringstream out;
   out << "{\"name\":" << json_escape(name);
@@ -172,7 +203,7 @@ std::string record(const std::string& name, const std::string& source, const std
       const auto& token = tokens[i];
       out << "{\"type\":" << json_escape(noisemaker::dsl::token_type_name(token.type))
           << ",\"lexeme\":" << json_escape(token.lexeme);
-      if (std::holds_alternative<double>(token.value)) out << ",\"value\":" << json_escape(js_number_string(std::get<double>(token.value)));
+      if (std::holds_alternative<double>(token.value)) out << ",\"value\":" << json_escape(js_number_string_for_test(std::get<double>(token.value)));
       else if (std::holds_alternative<std::string>(token.value)) out << ",\"value\":" << json_escape(std::get<std::string>(token.value));
       out << ",\"sourceName\":" << json_escape(token.sourceName)
           << ",\"line\":" << token.line << ",\"column\":" << token.column << ",\"index\":" << token.index << '}';

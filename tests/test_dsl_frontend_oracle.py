@@ -115,6 +115,27 @@ class DslFrontendOracleTest(unittest.TestCase):
             self.assertNotEqual(module_result.returncode, 0)
             self.assertIn("symlink", module_result.stderr)
 
+            closure_root = pathlib.Path(os.path.realpath(temporary)) / "closure-root"
+            closure_tokenize = closure_root / "src/dsl/tokenize.js"
+            closure_error = closure_root / "src/dsl/error.js"
+            closure_tokenize.parent.mkdir(parents=True)
+            shutil.copy2(authority_root / "src/dsl/tokenize.js", closure_tokenize)
+            closure_marker = closure_root / "error-imported"
+            closure_error.write_text(
+                "import fs from 'node:fs'\n"
+                f"fs.writeFileSync({json.dumps(str(closure_marker))}, 'imported')\n"
+                "export class DslError extends SyntaxError {}\n",
+                encoding="utf-8",
+            )
+            closure_result = subprocess.run(
+                [node, str(ORACLE_JS), "--cpu-root", str(closure_root), "--fixtures", str(FIXTURES)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(closure_result.returncode, 0)
+            self.assertIn("src/dsl/error.js", closure_result.stderr)
+            self.assertFalse(closure_marker.exists(), "forged transitive authority was imported before authentication")
+
     def test_cpp_oracle_fallback_rejects_missing_env_clearly(self) -> None:
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-no-oracle-") as temporary:
             with mock.patch.dict(os.environ, {}, clear=False):
