@@ -45,6 +45,11 @@ target_compile_options(noisemaker-cpu PRIVATE
 set_source_files_properties(src/generated/synth_solid.cpp PROPERTIES
   COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wno-unused-parameter;-Wno-unused-function>"
 )
+# The generated catalog is metadata-heavy; keep strict diagnostics while
+# avoiding multi-minute optimizer memory use for its immutable initializer.
+set_source_files_properties(src/effects/generated/effect_catalog.cpp PROPERTIES
+  COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-O0>"
+)
 
 add_executable(noisemaker-cpu-tests
   tests/test_main.cpp

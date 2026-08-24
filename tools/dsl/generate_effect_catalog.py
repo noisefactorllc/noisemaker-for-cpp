@@ -23,6 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json"
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
+COMPATIBILITY_SHA256 = "1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -31,26 +32,46 @@ EFFECT_KEYS = frozenset({
 PARAM_KEYS = frozenset({"type", "default", "define", "uniform", "zero", "enum", "choices", "min", "max", "texture", "colorModeUniform", "cpuOnly"})
 PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers"})
 TEXTURE_KEYS = frozenset({"width", "height", "format"})
+DIMENSION_KEYS = frozenset({"default", "param", "paramDefault", "screenDivide", "inputOverride", "power"})
 
 
 class CatalogError(ValueError):
     pass
 
 
-def _decode(value: Any) -> Any:
-    if isinstance(value, list):
-        return [_decode(item) for item in value]
-    if isinstance(value, dict):
-        return {key: _decode(item) for key, item in value.items()}
-    if value == "number:NaN":
-        return math.nan
-    if value == "number:+Infinity":
-        return math.inf
-    if value == "number:-Infinity":
-        return -math.inf
-    if value == "number:-0":
-        return -0.0
-    return value
+def _decode(value: Any, context: str = "value") -> Any:
+    if not isinstance(value, dict) or "$type" not in value:
+        raise CatalogError(f"untyped value envelope in {context}")
+    kind = value["$type"]
+    if kind == "null":
+        if set(value) != {"$type"}: raise CatalogError(f"malformed null envelope in {context}")
+        return None
+    if kind in {"string", "boolean"}:
+        if set(value) != {"$type", "value"}: raise CatalogError(f"malformed {kind} envelope in {context}")
+        if kind == "string" and not isinstance(value["value"], str): raise CatalogError(f"malformed string envelope in {context}")
+        if kind == "boolean" and not isinstance(value["value"], bool): raise CatalogError(f"malformed boolean envelope in {context}")
+        return value["value"]
+    if kind == "number":
+        if set(value) != {"$type", "value"}: raise CatalogError(f"malformed number envelope in {context}")
+        number = value["value"]
+        if number == "NaN": return math.nan
+        if number == "+Infinity": return math.inf
+        if number == "-Infinity": return -math.inf
+        if number == "-0": return -0.0
+        if isinstance(number, (int, float)) and not isinstance(number, bool): return number
+        raise CatalogError(f"malformed number envelope in {context}")
+    if kind == "array":
+        if set(value) != {"$type", "items"} or not isinstance(value["items"], list): raise CatalogError(f"malformed array envelope in {context}")
+        return [_decode(item, f"{context}[{index}]") for index, item in enumerate(value["items"])]
+    if kind == "object":
+        if set(value) != {"$type", "entries"} or not isinstance(value["entries"], list): raise CatalogError(f"malformed object envelope in {context}")
+        result: dict[str, Any] = {}
+        for index, entry in enumerate(value["entries"]):
+            if not isinstance(entry, list) or len(entry) != 2 or not isinstance(entry[0], str): raise CatalogError(f"malformed object entry in {context}[{index}]")
+            if entry[0] in result: raise CatalogError(f"duplicate object key in {context}: {entry[0]}")
+            result[entry[0]] = _decode(entry[1], f"{context}.{entry[0]}")
+        return result
+    raise CatalogError(f"unknown value envelope type in {context}: {kind}")
 
 
 def _check_keys(value: Any, allowed: frozenset[str], context: str) -> None:
@@ -69,7 +90,10 @@ def load_export(path: pathlib.Path) -> list[dict[str, Any]]:
     _check_keys(document, frozenset({"schema", "records"}), "catalog export")
     if document.get("schema") != CATALOG_SCHEMA or not isinstance(document.get("records"), list):
         raise CatalogError("CPU catalog export schema mismatch")
-    records = [_decode(record) for record in document["records"]]
+    records = []
+    for index, record in enumerate(document["records"]):
+        if not isinstance(record, dict): raise CatalogError(f"effect[{index}] must be an object")
+        records.append({key: _decode(value, f"effect[{index}].{key}") for key, value in record.items()})
     if len(records) != 205:
         raise CatalogError(f"CPU definition count drift: {len(records)}")
     for index, effect in enumerate(records):
@@ -80,6 +104,10 @@ def load_export(path: pathlib.Path) -> list[dict[str, Any]]:
             _check_keys(current_pass, PASS_KEYS, f"effect[{index}].passes[{pass_index}]")
         for name, texture in (effect.get("textures") or {}).items():
             _check_keys(texture, TEXTURE_KEYS, f"effect[{index}].textures.{name}")
+            for dimension_name in ("width", "height"):
+                dimension = texture.get(dimension_name)
+                if isinstance(dimension, dict):
+                    _check_keys(dimension, DIMENSION_KEYS, f"effect[{index}].textures.{name}.{dimension_name}")
     return records
 
 
@@ -113,6 +141,61 @@ def _authority(cpu_root: pathlib.Path, shader_git: pathlib.Path, compatibility: 
         revision = authority["cpu_behavioral_lock"]
     authority["cpu_revision"] = revision
     return authority
+
+
+def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[str, Any]], compatibility_path: pathlib.Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Authenticate and join every backend status to every authority pass."""
+    try:
+        if hashlib.sha256(compatibility_path.read_bytes()).hexdigest() != COMPATIBILITY_SHA256:
+            raise CatalogError("compatibility manifest SHA-256 mismatch")
+    except OSError as error:
+        raise CatalogError(f"unable to read compatibility manifest: {error}") from error
+    try:
+        backend.validate_document(compatibility, repository=ROOT)
+    except Exception as error:
+        raise CatalogError(f"compatibility manifest structural validation failed: {error}") from error
+    canonical = compatibility.get("canonical_programs")
+    closure = compatibility.get("reference_key_closure")
+    passes = compatibility.get("reference_passes")
+    if not isinstance(canonical, list) or len({row.get("program_key") for row in canonical}) != len(canonical):
+        raise CatalogError("compatibility canonical keys are not unique")
+    if not isinstance(closure, list) or len(closure) != 295 or closure != sorted(set(closure)):
+        raise CatalogError("compatibility key closure is not the exact ordered 295-key set")
+    status_by_key = {row["program_key"]: row["status"] for row in canonical}
+    scatter = compatibility.get("scatter")
+    if not isinstance(scatter, dict) or scatter.get("program_key") != "filter/wormhole:deposit" or scatter.get("status") != "registered":
+        raise CatalogError("compatibility scatter row is not exact")
+    status_by_key[scatter["program_key"]] = "scatter"
+    joined = {key: status_by_key.get(key, "missing") for key in closure}
+    if any(status not in {"compatible", "incompatible", "missing", "scatter"} for status in joined.values()):
+        raise CatalogError("compatibility joined status is unknown")
+    expected_passes: list[tuple[str, int, str | None, str]] = []
+    for effect in records:
+        for index, current_pass in enumerate(effect.get("passes", [])):
+            key = f"{effect['namespace']}/{effect['directoryName']}:{current_pass.get('program')}"
+            expected_passes.append((effect["id"], index, current_pass.get("name"), key))
+    if len(expected_passes) != 305 or not isinstance(passes, list) or len(passes) != len(expected_passes):
+        raise CatalogError("compatibility reference pass cardinality drift")
+    for row, expected in zip(passes, expected_passes):
+        if (row.get("effect_id"), row.get("pass_index"), row.get("pass_name"), row.get("program_key")) != expected:
+            raise CatalogError("compatibility reference pass ordering/identity drift")
+        if row.get("status") != joined[expected[3]]:
+            raise CatalogError(f"compatibility status mismatch for {expected[3]}")
+    if {row["program_key"] for row in passes} != set(closure):
+        raise CatalogError("compatibility reference pass/key closure mismatch")
+    pass_statuses = Counter(row["status"] for row in passes)
+    backend_statuses = Counter(row["status"] for row in canonical)
+    backend_statuses["scatter"] = 1
+    effect_status: dict[str, list[str]] = defaultdict(list)
+    for row in passes:
+        effect_status[row["effect_id"]].append(row["status"])
+    executable = sum(all(status in {"compatible", "scatter"} for status in values) for values in effect_status.values())
+    derived = {"definitions": len(records), "passes": len(passes), "reference_program_keys": len(closure),
+               "backend_programs": sum(backend_statuses.values()), "compatible_programs": backend_statuses["compatible"],
+               "incompatible_programs": backend_statuses["incompatible"], "missing_passes": pass_statuses["missing"],
+               "scatter_passes": pass_statuses["scatter"], "executable_definitions": executable,
+               "incomplete_definitions": len(records) - executable}
+    return compatibility, derived
 
 
 def _number_text(value: float) -> str:
@@ -237,9 +320,11 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
         for key in ("min", "max"):
             if key in parameter: lines.append(f"    p.{key} = {cpp_value(parameter[key])};")
         if parameter.get("cpuOnly") is not None: lines.append(f"    p.cpu_only = {'true' if parameter['cpuOnly'] else 'false'};")
+        lines.append(f"    p.raw = {_raw_pairs(parameter)};")
         lines += ["    e.parameters.push_back(std::move(p));", "  }"]
     for name, texture in (effect.get("textures") or {}).items():
         lines += ["  {", "    TextureDefinition t;", f"    t.name = {_cpp_string(name)};", f"    t.width = {_dimension(texture.get('width'))};", f"    t.height = {_dimension(texture.get('height'))};", f"    t.format = {_cpp_string(str(texture.get('format', ''))) };"]
+        lines.append(f"    t.raw = {_raw_pairs(texture)};")
         lines += ["    e.textures.push_back(std::move(t));", "  }"]
     for current_pass in effect.get("passes", []):
         lines += ["  {", "    PassDefinition p;", f"    p.name = {_cpp_string(str(current_pass.get('name', '')))};", f"    p.program = {_cpp_string(str(current_pass.get('program', '')))};"]
@@ -251,10 +336,12 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
             if key in current_pass: lines.append(f"    p.{ {'drawBuffers':'draw_buffers'}.get(key,key) } = {cpp_value(current_pass[key])};")
         if "blend" in current_pass: lines.append(f"    p.blend = {'true' if current_pass['blend'] else 'false'};")
         if "drawMode" in current_pass: lines.append(f"    p.draw_mode = {_cpp_optional_string(current_pass['drawMode'])};")
+        lines.append(f"    p.raw = {_raw_pairs(current_pass)};")
         lines += ["    e.passes.push_back(std::move(p));", "  }"]
     for key, field in (("externalTexture", "external_texture"), ("outputTex3d", "output_tex3d"), ("outputGeo", "output_geo"), ("outputXyz", "output_xyz"), ("outputVel", "output_velocity"), ("outputRgba", "output_rgba"), ("loopRole", "loop_role")):
         if key in effect and effect[key] is not None: lines.append(f"  e.{field} = {_cpp_optional_string(effect[key])};")
     if "iterated" in effect: lines.append(f"  e.iterated = {'true' if effect['iterated'] else 'false'};")
+    lines.append(f"  e.raw = {_raw_pairs(effect)};")
     lines += ["  return e;", "}"]
     return lines
 
@@ -278,40 +365,27 @@ def _emit_cpp(records: list[dict[str, Any]], compatibility: dict[str, Any], auth
         if row.get("factory", {}).get("canonical"): lines.append(f"      p.canonical_factory = {_cpp_optional_string(row['factory']['canonical'])};")
         if row.get("new_raw_sha256"): lines.append(f"      p.source_sha256 = {_cpp_optional_string(row['new_raw_sha256'])};")
         if row.get("semantic", {}).get("old_typed_ir_sha256"): lines.append(f"      p.semantic_sha256 = {_cpp_optional_string(row['semantic']['old_typed_ir_sha256'])};")
+        lines.append(f"      p.raw = {_raw_pairs(row)};")
         lines += ["      c.compatibility.push_back(std::move(p));", "    }"]
     lines += ["    return c;", "  }();", "  return catalog;", "}", "", "}  // namespace noisemaker::effects", ""]
     return "\n".join(lines).encode("utf-8")
 
 
-def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, compatibility_path: pathlib.Path = DEFAULT_COMPATIBILITY,
-             input_path: pathlib.Path | None = None) -> tuple[bytes, bytes]:
+def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, compatibility_path: pathlib.Path = DEFAULT_COMPATIBILITY) -> tuple[bytes, bytes]:
     if cpu_root.is_symlink() or not cpu_root.is_dir(): raise CatalogError("--cpu-root must name a real directory")
     if shader_git.is_symlink() or not shader_git.is_dir(): raise CatalogError("--shader-git must name a real directory")
     try: compatibility = json.loads(compatibility_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error: raise CatalogError(f"unable to read compatibility manifest: {error}") from error
     if compatibility.get("schema") != "noisemaker-cpp.backend-compatibility.v1": raise CatalogError("compatibility schema mismatch")
-    records = load_export(input_path) if input_path is not None else export_records(cpu_root)
+    records = export_records(cpu_root)
     authority = _authority(cpu_root, shader_git, compatibility)
-    passes = compatibility.get("reference_passes", [])
-    canonical = compatibility.get("canonical_programs", [])
-    closure = compatibility.get("reference_key_closure", [])
-    canonical_by_key = {row["program_key"]: row for row in canonical}
-    canonical_by_key[compatibility["scatter"]["program_key"]] = compatibility["scatter"]
-    statuses = {key: canonical_by_key.get(key, {"status": "missing"})["status"] for key in closure}
-    if set(statuses) != set(closure): raise CatalogError("reference key compatibility closure mismatch")
-    if len(passes) != 305 or len(closure) != 295: raise CatalogError("ordered compatibility counts drift")
-    effect_status: dict[str, list[str]] = defaultdict(list)
-    for current_pass in passes: effect_status[current_pass["effect_id"]].append(current_pass["status"])
-    executable = sum(all(status in {"compatible", "scatter"} for status in values) for values in effect_status.values())
-    derived = {"definitions": len(records), "passes": len(passes), "reference_program_keys": len(closure), "backend_programs": len(canonical) + 1,
-               "compatible_programs": sum(status == "compatible" for status in statuses.values()), "incompatible_programs": sum(status == "incompatible" for status in statuses.values()),
-               "missing_passes": sum(row["status"] == "missing" for row in passes), "scatter_passes": sum(row["status"] == "scatter" for row in passes),
-               "executable_definitions": executable, "incomplete_definitions": len(records) - executable}
+    compatibility, derived = _validate_compatibility(compatibility, records, compatibility_path)
     compatibility = dict(compatibility); compatibility["_derived_counts"] = derived
     normalized = b"\n".join(json.dumps(_canonical_json_value(record), sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode() for record in records) + b"\n"
     normalized_hash = hashlib.sha256(normalized).hexdigest()
     cpp = _emit_cpp(records, compatibility, authority, normalized_hash)
-    provenance = {"schema": GENERATOR_SCHEMA, "authority": {key: authority[key] for key in ("cpu_behavioral_lock", "cpu_revision", "source_lock_sha256", "upstream_revision", "upstream_tree")},
+    provenance = {"schema": GENERATOR_SCHEMA, "compatibility_sha256": COMPATIBILITY_SHA256,
+                  "authority": {key: authority[key] for key in ("cpu_behavioral_lock", "cpu_revision", "source_lock_sha256", "upstream_revision", "upstream_tree")},
                   "counts": derived, "first_effect_id": records[0]["id"], "last_effect_id": records[-1]["id"],
                   "normalized_record_stream_sha256": normalized_hash, "generated_sha256": hashlib.sha256(cpp).hexdigest()}
     return cpp, (json.dumps(provenance, indent=2, sort_keys=True) + "\n").encode()
@@ -322,13 +396,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cpu-root", type=pathlib.Path, required=True)
     parser.add_argument("--shader-git", type=pathlib.Path, required=True)
     parser.add_argument("--compatibility", type=pathlib.Path, default=DEFAULT_COMPATIBILITY)
-    parser.add_argument("--input", type=pathlib.Path)
     parser.add_argument("--output-dir", type=pathlib.Path, default=ROOT / "src/effects/generated")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args(argv)
     try:
         cpp, provenance = generate(cpu_root=args.cpu_root, shader_git=args.shader_git,
-                                   compatibility_path=args.compatibility, input_path=args.input)
+                                   compatibility_path=args.compatibility)
         targets = [args.output_dir / "effect_catalog.cpp", args.output_dir / "effect_catalog.provenance.json"]
         if args.check:
             if not targets[0].is_file() or targets[0].read_bytes() != cpp: raise CatalogError(f"generated catalog drift: {targets[0]}")

@@ -32,26 +32,35 @@ function parseArgs(argv) {
   return args
 }
 
-// JSON itself cannot represent these JavaScript Number values.  Tagged values
-// are deliberately explicit so canonical oracle serialization never coerces a
-// NaN, infinity, or negative zero through JSON's null/zero behavior.
+// JSON itself cannot represent these JavaScript Number values. Every value is
+// typed, so a genuine authority string/object/array can never collide with a
+// numeric sentinel. Records retain their observable top-level field keys and
+// order; nested values use the envelope.
 function encode(value) {
   if (typeof value === 'number') {
-    if (Number.isNaN(value)) return 'number:NaN'
-    if (value === Infinity) return 'number:+Infinity'
-    if (value === -Infinity) return 'number:-Infinity'
-    if (Object.is(value, -0)) return 'number:-0'
-    return value
+    if (Number.isNaN(value)) return { $type: 'number', value: 'NaN' }
+    if (value === Infinity) return { $type: 'number', value: '+Infinity' }
+    if (value === -Infinity) return { $type: 'number', value: '-Infinity' }
+    if (Object.is(value, -0)) return { $type: 'number', value: '-0' }
+    return { $type: 'number', value }
   }
-  if (Array.isArray(value)) return value.map(encode)
-  if (value && typeof value === 'object') {
-    const result = {}
-    for (const [key, child] of Object.entries(value)) {
-      if (child !== undefined) result[key] = encode(child)
-    }
-    return result
+  if (typeof value === 'string') return { $type: 'string', value }
+  if (typeof value === 'boolean') return { $type: 'boolean', value }
+  if (value === null) return { $type: 'null' }
+  if (Array.isArray(value)) return { $type: 'array', items: value.map(encode) }
+  const entries = []
+  for (const [key, child] of Object.entries(value)) {
+    if (child !== undefined) entries.push([key, encode(child)])
   }
-  return value
+  return { $type: 'object', entries }
+}
+
+function encodeRecord(record) {
+  const result = {}
+  for (const [key, value] of Object.entries(record)) {
+    if (value !== undefined) result[key] = encode(value)
+  }
+  return result
 }
 
 async function main() {
@@ -77,7 +86,7 @@ async function main() {
   }
   const document = {
     schema: 'noisemaker-cpp.cpu-effect-catalog.v1',
-    records: encode(effectRecords),
+    records: effectRecords.map(encodeRecord),
   }
   const output = path.resolve(args.output)
   fs.mkdirSync(path.dirname(output), { recursive: true })

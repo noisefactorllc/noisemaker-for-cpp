@@ -8,6 +8,9 @@ TEST(effect_catalog_is_ordered_and_lookup_is_secondary) {
   REQUIRE(catalog.definitions.front().id == "classicNoisedeck/bitEffects");
   REQUIRE(catalog.definitions.back().id == "synth3d/shape3d");
   REQUIRE(catalog.find("filter/blur") != nullptr);
+  REQUIRE(!catalog.definitions.front().raw.empty());
+  REQUIRE(catalog.definitions.front().raw.front().first == "id");
+  REQUIRE(catalog.definitions.front().raw.front().second.kind == noisemaker::effects::ValueKind::string);
 }
 
 TEST(effect_catalog_retains_dynamic_dimensions_and_formats) {
@@ -36,7 +39,13 @@ TEST(effect_catalog_retains_blur_order_and_external_texture) {
 }
 
 TEST(effect_catalog_value_preserves_negative_zero) {
-  const auto value = noisemaker::effects::Value::number_value(-0.0);
-  REQUIRE(value.kind == noisemaker::effects::ValueKind::number);
-  REQUIRE(std::signbit(value.number));
+  const auto nan = noisemaker::effects::Value::number_value(std::numeric_limits<double>::quiet_NaN());
+  const auto positive_inf = noisemaker::effects::Value::number_value(std::numeric_limits<double>::infinity());
+  const auto negative_inf = noisemaker::effects::Value::number_value(-std::numeric_limits<double>::infinity());
+  const auto negative_zero = noisemaker::effects::Value::number_value(-0.0);
+  REQUIRE(nan.kind == noisemaker::effects::ValueKind::number);
+  REQUIRE(std::isnan(nan.number));
+  REQUIRE(std::isinf(positive_inf.number) && positive_inf.number > 0.0);
+  REQUIRE(std::isinf(negative_inf.number) && negative_inf.number < 0.0);
+  REQUIRE(std::signbit(negative_zero.number));
 }

@@ -6,6 +6,7 @@
     "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
     "upstream_tree": "a7a997dfdc807697adba008729dcdfdfcfbaf53c"
   },
+  "compatibility_sha256": "1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c",
   "counts": {
     "backend_programs": 212,
     "compatible_programs": 210,
@@ -19,7 +20,7 @@
     "scatter_passes": 1
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_sha256": "70773c7f4d26ccbf21d8b1d17ab28406066b486a0f090572a19f5b5469e3c6dc",
+  "generated_sha256": "090b24efb9c7a2110f2e36280f4a8f350538c86b492d40c6a00b0edd9a617788",
   "last_effect_id": "synth3d/shape3d",
   "normalized_record_stream_sha256": "b93fc9bf467ecad2ec541e0997987b589421ced045412817387cbd87a35c07c7",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"
