@@ -1,0 +1,26 @@
+{
+  "authority": {
+    "cpu_behavioral_lock": "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7",
+    "cpu_revision": "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7",
+    "source_lock_sha256": "66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4",
+    "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+    "upstream_tree": "a7a997dfdc807697adba008729dcdfdfcfbaf53c"
+  },
+  "counts": {
+    "backend_programs": 212,
+    "compatible_programs": 210,
+    "definitions": 205,
+    "executable_definitions": 166,
+    "incompatible_programs": 1,
+    "incomplete_definitions": 39,
+    "missing_passes": 93,
+    "passes": 305,
+    "reference_program_keys": 295,
+    "scatter_passes": 1
+  },
+  "first_effect_id": "classicNoisedeck/bitEffects",
+  "generated_sha256": "70773c7f4d26ccbf21d8b1d17ab28406066b486a0f090572a19f5b5469e3c6dc",
+  "last_effect_id": "synth3d/shape3d",
+  "normalized_record_stream_sha256": "b93fc9bf467ecad2ec541e0997987b589421ced045412817387cbd87a35c07c7",
+  "schema": "noisemaker-cpp.effect-catalog-generator.v1"
+}

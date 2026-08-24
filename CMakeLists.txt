@@ -28,6 +28,7 @@ add_library(noisemaker-cpu
   src/effects/scatter/registry.cpp
   src/effects/scatter/wormhole.cpp
   src/effects/scatter/catalog.cpp
+  src/effects/generated/effect_catalog.cpp
 )
 target_include_directories(noisemaker-cpu PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -59,6 +60,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
   tests/test_scatter_wormhole.cpp
+  tests/test_effect_catalog.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE
