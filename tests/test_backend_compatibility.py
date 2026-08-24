@@ -6,6 +6,7 @@ import json
 import os
 import pathlib
 import subprocess
+import tempfile
 import unittest
 
 from tools.dsl import generate_backend_compatibility as generator
@@ -132,6 +133,50 @@ class BackendCompatibilityTests(unittest.TestCase):
                                  if row.get("row_kind") == "legacy_duplicate")
                 duplicate["factory"]["legacy"][field] = "forged" if field in {"path", "source_program_sha256"} else "0" * 64
             self._assert_fails_closed(forge)
+
+    def test_duplicate_rows_must_equal_canonical_projection(self) -> None:
+        mutations = (
+            lambda row: row.update(source="sources/forged.glsl"),
+            lambda row: row.update(status="compatible" if row["status"] == "incompatible" else "incompatible"),
+            lambda row: row["outputs"][0].update(cpp_type="forged"),
+            lambda row: row["outputs"][0].update(logical_route="forged"),
+            lambda row: row["uniforms"][0].update(cpp_type="forged"),
+            lambda row: row["factory"]["route"].update(factory="forged::factory"),
+            lambda row: row["factory"].update(legacy_public="forged::legacy"),
+        )
+        for mutate in mutations:
+            def forge(document, mutate=mutate):
+                duplicate = next(row for row in document["fragments"]
+                                 if row.get("row_kind") == "legacy_duplicate")
+                mutate(duplicate)
+            self._assert_fails_closed(forge)
+
+    def test_legacy_output_abi_is_scoped_to_bound_callback(self) -> None:
+        body = (
+            'BoundKernel bind_fixture(const glsl::Bindings& bindings) {\n'
+            '  const auto state = bindings.get_or<std::int32_t>("mode", 0);\n'
+            '  return BoundKernel(state, &pixel);\n'
+            '}')
+        text = (
+            'void helper(const glsl::PixelContext&, glsl::Vec4& helper_output) {}\n'
+            'void pixel(const glsl::PixelContext&, float& wrong_output) {}\n')
+        with self.assertRaises(generator.CompatibilityError):
+            generator._legacy_factory_abi(text, body, "fixture:key")
+
+    def test_reordered_legacy_bindings_fail_generation(self) -> None:
+        source_path = ROOT / "src/generated/synth_solid.cpp"
+        source = source_path.read_text(encoding="utf-8")
+        source = source.replace(
+            'bindings.get_or<float>("alpha", 0.0f), bindings.get_or<glsl::Vec3>("color", glsl::Vec3(0.0f))',
+            'bindings.get_or<glsl::Vec3>("color", glsl::Vec3(0.0f)), bindings.get_or<float>("alpha", 0.0f)')
+        row = next(item for item in self.document["canonical_programs"]
+                   if item["program_key"] == "synth/solid:solid")
+        with tempfile.TemporaryDirectory(prefix="noisemaker-legacy-order-") as directory:
+            generated = pathlib.Path(directory) / "src/generated"
+            generated.mkdir(parents=True)
+            (generated / source_path.name).write_text(source, encoding="utf-8")
+            with self.assertRaises(generator.CompatibilityError):
+                generator._legacy_factories(pathlib.Path(directory), {row["program_key"]: row})
 
     def test_selected_custom_factory_evidence_is_independently_authenticated(self) -> None:
         for mutate in (

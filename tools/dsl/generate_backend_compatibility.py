@@ -9,6 +9,7 @@ the later catalog/compiler stages, not a hand-maintained allow-list.
 from __future__ import annotations
 
 import argparse
+import copy
 import dataclasses
 import hashlib
 import json
@@ -534,11 +535,8 @@ def _scatter_source_entry(entry: dict[str, Any], old: bytes, new: bytes) -> dict
 
 def _normalized_binding_abi(uniforms: list[dict[str, Any]], samplers: list[dict[str, Any]]) -> dict[str, Any]:
     def normalize(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        return sorted(
-            [{"name": item["name"], "cpp_type": item["cpp_type"], "source": item["source"]}
-             for item in items],
-            key=lambda item: (item["name"], item["cpp_type"], item["source"]),
-        )
+        return [{"name": item["name"], "cpp_type": item["cpp_type"], "source": item["source"]}
+                for item in items]
     return {"uniforms": normalize(uniforms), "samplers": normalize(samplers)}
 
 
@@ -553,17 +551,27 @@ def _legacy_factory_body(text: str, name: str) -> str:
 def _legacy_factory_abi(text: str, body: str, key: str) -> tuple[dict[str, Any], dict[str, Any]]:
     uniforms: list[dict[str, Any]] = []
     samplers: list[dict[str, Any]] = []
-    for match in re.finditer(r"(?:bindings|b)\.texture\(\"([^\"]+)\"\)", body):
-        samplers.append({"name": match.group(1), "cpp_type": "const Surface&", "source": "resource"})
-    for match in re.finditer(r"(?:bindings|b)\.get_or<([^>]+)>\(\"([^\"]+)\"", body):
-        uniforms.append({"name": match.group(2), "cpp_type": match.group(1), "source": "effect_parameter"})
-    for match in re.finditer(r"(?:bindings|b)\.get<([^>]+)>\(\"([^\"]+)\"\)", body):
-        uniforms.append({"name": match.group(2), "cpp_type": match.group(1), "source": "effect_parameter"})
-    for match in re.finditer(r"(?:bindings|b)\.get_number\(\"([^\"]+)\"\)", body):
-        uniforms.append({"name": match.group(1), "cpp_type": "double", "source": "effect_parameter"})
+    calls = re.compile(
+        r"(?:bindings|b)\.texture\(\"(?P<texture>[^\"]+)\"\)"
+        r"|(?:bindings|b)\.get_or<(?P<get_or_type>[^>]+)>\(\"(?P<get_or_name>[^\"]+)\""
+        r"|(?:bindings|b)\.get<(?P<get_type>[^>]+)>\(\"(?P<get_name>[^\"]+)\"\)"
+        r"|(?:bindings|b)\.get_number\(\"(?P<number_name>[^\"]+)\"\)")
+    for match in calls.finditer(body):
+        if match.group("texture") is not None:
+            samplers.append({"name": match.group("texture"), "cpp_type": "const Surface&", "source": "resource"})
+        elif match.group("get_or_name") is not None:
+            uniforms.append({"name": match.group("get_or_name"), "cpp_type": match.group("get_or_type"), "source": "effect_parameter"})
+        elif match.group("get_name") is not None:
+            uniforms.append({"name": match.group("get_name"), "cpp_type": match.group("get_type"), "source": "effect_parameter"})
+        else:
+            uniforms.append({"name": match.group("number_name"), "cpp_type": "double", "source": "effect_parameter"})
     if not uniforms and not samplers:
         raise CompatibilityError(f"{key}: legacy factory binding ABI is empty")
-    if not re.search(r"\b(?:glsl::)?Vec4&\s+\w+", text):
+    callback_matches = re.findall(r"BoundKernel\s*\([^;\n]*,\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)", body)
+    if not callback_matches:
+        raise CompatibilityError(f"{key}: legacy factory callback is missing")
+    callback = callback_matches[-1]
+    if not re.search(rf"\bvoid\s+{re.escape(callback)}\s*\([^)]*(?:glsl::)?Vec4&\s+\w+[^)]*\)", text):
         raise CompatibilityError(f"{key}: legacy factory output ABI is missing")
     binding_abi = _normalized_binding_abi(uniforms, samplers)
     output_abi = {"cardinality": 1, "cpp_type": "glsl::Vec4"}
@@ -571,12 +579,29 @@ def _legacy_factory_abi(text: str, body: str, key: str) -> tuple[dict[str, Any],
 
 
 def _canonical_factory_abi(row: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
-    binding_abi = _normalized_binding_abi(row["uniforms"], row["samplers"])
+    # The public canonical ABI uses a stable name order for the legacy
+    # equivalence contract. The implementation parser below preserves the
+    # source call order and must match this explicit order; it must not sort
+    # the implementation evidence after extraction.
+    binding_abi = _normalized_binding_abi(
+        sorted(row["uniforms"], key=lambda item: item["name"]),
+        sorted(row["samplers"], key=lambda item: item["name"]),
+    )
     output_abi = {
         "cardinality": row["output_abi"].get("cardinality"),
         "cpp_type": "glsl::Vec4" if row["output_abi"].get("cardinality") == 1 else None,
     }
     return binding_abi, output_abi
+
+
+def _canonical_row_projection(row: dict[str, Any]) -> dict[str, Any]:
+    projection = copy.deepcopy(row)
+    projection.pop("row_kind", None)
+    factory = projection.get("factory")
+    if isinstance(factory, dict):
+        factory.pop("legacy", None)
+        factory.pop("legacy_public", None)
+    return projection
 
 
 def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
@@ -860,6 +885,13 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
     if duplicate_fragment_keys != sorted(counts.get("duplicate_fragment_keys", [])) \
             or sorted(counts.get("duplicate_fragment_keys", [])) != ["filter/invert:inv", "synth/solid:solid"]:
         raise CompatibilityError("legacy duplicate row evidence drift")
+    canonical_by_key = {row["program_key"]: row for row in canonical}
+    for row in fragments:
+        if row.get("row_kind") != "legacy_duplicate":
+            continue
+        canonical_row = canonical_by_key.get(row.get("program_key"))
+        if canonical_row is None or _canonical_row_projection(row) != _canonical_row_projection(canonical_row):
+            raise CompatibilityError("legacy duplicate differs from canonical row")
     if factory_evidence is None:
         typed_manifest = _authenticated_typed_manifest(repository)
         typed_programs = typed_manifest.get("programs")
@@ -946,7 +978,8 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         expected_legacy = legacy_evidence.get(row.get("program_key"))
         if not isinstance(legacy, dict) or not isinstance(expected_legacy, dict) \
                 or legacy != expected_legacy \
-                or legacy.get("canonical_name") != factory.get("canonical"):
+                or legacy.get("canonical_name") != factory.get("canonical") \
+                or factory.get("legacy_public") != expected_legacy.get("name"):
             raise CompatibilityError("legacy factory equivalence evidence missing")
     if not isinstance(scatter.get("source"), str) or not scatter["source"].startswith("sources/") \
             or ".." in pathlib.PurePosixPath(scatter["source"]).parts \
