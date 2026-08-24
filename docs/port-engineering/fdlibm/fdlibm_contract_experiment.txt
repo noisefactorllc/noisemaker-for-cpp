@@ -1,0 +1,15 @@
+=== fdlibm WITH fp-contract (experiment) ===
+N = 403636
+
+tanh   compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+exp    compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+expm1  compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+sin    compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+cos    compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+log    compared=403636  exact=394528  divergent=9108  (2.2565%)  maxULP=1
+       worst: x=-7.760000000000001e-7 (bits beaa09ca0bdadd3a)  node=c02c2362d2166e98  cand=c02c2362d2166e97  ulp=1
+atan   compared=403636  exact=397941  divergent=5695  (1.4109%)  maxULP=1
+       worst: x=2.421875 (bits 4003600000000000)  node=3ff2de11cfc645f5  cand=3ff2de11cfc645f4  ulp=1
+sqrt   compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+pow    compared=403636  exact=403470  divergent=166  (0.0411%)  maxULP=1
+       worst: x=-9.305e-7 (bits beaf38ef23a8957a)  node=3d6e76b4a10e8c76  cand=3d6e76b4a10e8c75  ulp=1

@@ -1,0 +1,4825 @@
+{
+  "body_analysis": "not attempted",
+  "compile": "not attempted",
+  "corpus": {
+    "adapter": 4,
+    "draw_op_overrides": 1,
+    "effects": 167,
+    "generated": 208,
+    "keyed_runtime": 211,
+    "passes": 212,
+    "sources": 212
+  },
+  "declaration_success": 212,
+  "emission": "not attempted",
+  "features": {
+    "classicNoisedeck/bitEffects:bitEffects": {
+      "body_status": "not analyzed",
+      "functions": 30,
+      "globals": 17,
+      "local_declarations": 60,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "n",
+        "scale",
+        "rotation",
+        "speed",
+        "tiles",
+        "complexity",
+        "hueRange",
+        "hueRotation",
+        "baseHueRange"
+      ]
+    },
+    "classicNoisedeck/caustic:caustic": {
+      "body_status": "not analyzed",
+      "functions": 22,
+      "globals": 12,
+      "local_declarations": 66,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "wrap",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "noiseScale",
+        "speed",
+        "hueRotation",
+        "hueRange",
+        "intensity"
+      ]
+    },
+    "classicNoisedeck/cellNoise:cellNoise": {
+      "body_status": "not analyzed",
+      "functions": 17,
+      "globals": 29,
+      "local_declarations": 53,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "tex"
+      ],
+      "uniforms": [
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "shape",
+        "scale",
+        "cellScale",
+        "cellSmooth",
+        "variation",
+        "speed",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "colorMode",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette",
+        "texInfluence",
+        "texIntensity",
+        "tex"
+      ]
+    },
+    "classicNoisedeck/cellRefract:cellRefract": {
+      "body_status": "not analyzed",
+      "functions": 22,
+      "globals": 21,
+      "local_declarations": 80,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "scale",
+        "cellScale",
+        "cellSmooth",
+        "variation",
+        "speed",
+        "refractAmt",
+        "direction",
+        "wrap",
+        "effectWidth"
+      ]
+    },
+    "classicNoisedeck/coalesce:coalesce": {
+      "body_status": "not analyzed",
+      "functions": 8,
+      "globals": 13,
+      "local_declarations": 53,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "blendMode",
+        "mixAmt",
+        "refractAAmt",
+        "refractBAmt",
+        "refractADir",
+        "refractBDir"
+      ]
+    },
+    "classicNoisedeck/colorLab:colorLab": {
+      "body_status": "not analyzed",
+      "functions": 18,
+      "globals": 28,
+      "local_declarations": 43,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "time",
+        "levels",
+        "dither",
+        "hueRotation",
+        "hueRange",
+        "invert",
+        "brightness",
+        "contrast",
+        "saturation",
+        "colorMode",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette"
+      ]
+    },
+    "classicNoisedeck/composite:composite": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 11,
+      "local_declarations": 37,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "inputColor",
+        "blendMode",
+        "range",
+        "mixAmt"
+      ]
+    },
+    "classicNoisedeck/effects:effects": {
+      "body_status": "not analyzed",
+      "functions": 28,
+      "globals": 21,
+      "local_declarations": 134,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "time",
+        "effectAmt",
+        "scaleAmt",
+        "rotation",
+        "offsetX",
+        "offsetY",
+        "intensity",
+        "saturation"
+      ]
+    },
+    "classicNoisedeck/fractal:fractal": {
+      "body_status": "not analyzed",
+      "functions": 17,
+      "globals": 34,
+      "local_declarations": 60,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "type",
+        "symmetry",
+        "offsetX",
+        "offsetY",
+        "centerX",
+        "centerY",
+        "zoomAmt",
+        "speed",
+        "rotation",
+        "iterations",
+        "mode",
+        "colorMode",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette",
+        "hueRange",
+        "levels",
+        "bgColor",
+        "bgAlpha",
+        "cutoff"
+      ]
+    },
+    "classicNoisedeck/glitch:glitch": {
+      "body_status": "not analyzed",
+      "functions": 11,
+      "globals": 16,
+      "local_declarations": 65,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "seed",
+        "aspectLens",
+        "xChonk",
+        "yChonk",
+        "glitchiness",
+        "scanlinesAmt",
+        "snowAmt",
+        "vignetteAmt",
+        "aberration",
+        "distortion"
+      ]
+    },
+    "classicNoisedeck/kaleido:kaleido": {
+      "body_status": "not analyzed",
+      "functions": 43,
+      "globals": 17,
+      "local_declarations": 224,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "wrap",
+        "seed",
+        "speed",
+        "loopScale",
+        "kaleido",
+        "effectWidth"
+      ]
+    },
+    "classicNoisedeck/lensDistortion:lensDistortion": {
+      "body_status": "not analyzed",
+      "functions": 8,
+      "globals": 22,
+      "local_declarations": 45,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "aspectLens",
+        "shape",
+        "tint",
+        "alpha",
+        "vignetteAmt",
+        "distortion",
+        "speed",
+        "loopScale",
+        "aberration",
+        "hueRotation",
+        "hueRange",
+        "mode",
+        "modulate",
+        "blendMode",
+        "saturation",
+        "passthru"
+      ]
+    },
+    "classicNoisedeck/moodscape:moodscape": {
+      "body_status": "not analyzed",
+      "functions": 25,
+      "globals": 18,
+      "local_declarations": 80,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "wrap",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "noiseScale",
+        "refractAmt",
+        "speed",
+        "hueRotation",
+        "hueRange",
+        "intensity",
+        "ridges"
+      ]
+    },
+    "classicNoisedeck/noise:noise": {
+      "body_status": "not analyzed",
+      "functions": 40,
+      "globals": 29,
+      "local_declarations": 103,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "xScale",
+        "yScale",
+        "octaves",
+        "ridges",
+        "refractAmt",
+        "kaleido",
+        "loopScale",
+        "speed",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette",
+        "hueRange",
+        "hueRotation",
+        "wrap"
+      ]
+    },
+    "classicNoisedeck/refract:refract": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 12,
+      "local_declarations": 25,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "mode",
+        "amount",
+        "direction",
+        "blendMode",
+        "mixAmt",
+        "wrap"
+      ]
+    },
+    "classicNoisedeck/shapeMixer:shapeMixer": {
+      "body_status": "not analyzed",
+      "functions": 38,
+      "globals": 25,
+      "local_declarations": 122,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "seed",
+        "blendMode",
+        "loopScale",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "animate",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette",
+        "levels",
+        "wrap"
+      ]
+    },
+    "classicNoisedeck/shapes:shapes": {
+      "body_status": "not analyzed",
+      "functions": 36,
+      "globals": 23,
+      "local_declarations": 203,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "wrap",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "loopAScale",
+        "loopBScale",
+        "speedA",
+        "speedB",
+        "paletteMode",
+        "paletteOffset",
+        "paletteAmp",
+        "paletteFreq",
+        "palettePhase",
+        "cyclePalette",
+        "rotatePalette",
+        "repeatPalette"
+      ]
+    },
+    "classicNoisedeck/splat:splat": {
+      "body_status": "not analyzed",
+      "functions": 11,
+      "globals": 21,
+      "local_declarations": 22,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "enabled",
+        "useSpecks",
+        "splatSource",
+        "scale",
+        "cutoff",
+        "speed",
+        "seed",
+        "splatColor",
+        "mode",
+        "speckScale",
+        "speckCutoff",
+        "speckSpeed",
+        "speckSeed",
+        "speckColor",
+        "speckMode"
+      ]
+    },
+    "filter/adjust:adjust": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 13,
+      "local_declarations": 29,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "mode",
+        "rotation",
+        "hueRange",
+        "saturation",
+        "brightness",
+        "contrast"
+      ]
+    },
+    "filter/bc:bc": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "brightness",
+        "contrast"
+      ]
+    },
+    "filter/bloom:brightPass": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "threshold",
+        "softKnee"
+      ]
+    },
+    "filter/bloom:composite": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "bloomTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "bloomTex",
+        "intensity",
+        "tint"
+      ]
+    },
+    "filter/bloom:ntapGather": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 10,
+      "local_declarations": 17,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "radius",
+        "renderScale",
+        "taps"
+      ]
+    },
+    "filter/blur:blurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "radiusX",
+        "renderScale"
+      ]
+    },
+    "filter/blur:blurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "radiusY",
+        "renderScale"
+      ]
+    },
+    "filter/bulge:bulge": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 10,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ]
+    },
+    "filter/celShading:celShadingBlend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 8,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "colorTex",
+        "edgeTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "colorTex",
+        "edgeTex",
+        "edgeColor",
+        "mixAmount"
+      ]
+    },
+    "filter/celShading:celShadingColor": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 10,
+      "local_declarations": 20,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "levels",
+        "gamma",
+        "antialias",
+        "lightDirection",
+        "strength"
+      ]
+    },
+    "filter/celShading:celShadingEdges": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 7,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "colorTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "colorTex",
+        "edgeWidth",
+        "edgeThreshold",
+        "renderScale"
+      ]
+    },
+    "filter/channel:channel": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 4,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "channel",
+        "scale",
+        "offset"
+      ]
+    },
+    "filter/chroma:chroma": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 7,
+      "local_declarations": 17,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "targetHue",
+        "range",
+        "feather"
+      ]
+    },
+    "filter/chromaticAberration:chromaticAberration": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 7,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aberrationAmt",
+        "passthru"
+      ]
+    },
+    "filter/chrome:chBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/chrome:chBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/chrome:chMap": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 6,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "detail",
+        "distortion"
+      ]
+    },
+    "filter/clouds:clouds": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 9,
+      "local_declarations": 44,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "seed",
+        "scale",
+        "speed",
+        "time"
+      ]
+    },
+    "filter/colorReplace:colorReplace": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 11,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "targetColor",
+        "replaceColor",
+        "sensitivity",
+        "smoothing",
+        "colorMix",
+        "replaceAlpha",
+        "keepAlpha"
+      ]
+    },
+    "filter/colorspace:colorspace": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 8,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "mode"
+      ]
+    },
+    "filter/corrupt:corrupt": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 16,
+      "local_declarations": 64,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "seed",
+        "intensity",
+        "sort",
+        "shift",
+        "bits",
+        "channelShift",
+        "speed",
+        "melt",
+        "scatter",
+        "bandHeight",
+        "renderScale"
+      ]
+    },
+    "filter/craquelure:craquelure": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 8,
+      "local_declarations": 43,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "spacing",
+        "depth",
+        "brightness",
+        "seed"
+      ]
+    },
+    "filter/crt:crt": {
+      "body_status": "not analyzed",
+      "functions": 35,
+      "globals": 13,
+      "local_declarations": 204,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "speed",
+        "seed",
+        "alpha",
+        "renderScale"
+      ]
+    },
+    "filter/degauss:degauss": {
+      "body_status": "not analyzed",
+      "functions": 17,
+      "globals": 11,
+      "local_declarations": 119,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "displacement",
+        "speed",
+        "seed",
+        "direction"
+      ]
+    },
+    "filter/deriv:deriv": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 6,
+      "local_declarations": 12,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "amount",
+        "renderScale"
+      ]
+    },
+    "filter/directionalBlur:directionalBlur": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 6,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "angle",
+        "blurDistance"
+      ]
+    },
+    "filter/dither:dither": {
+      "body_status": "not analyzed",
+      "functions": 21,
+      "globals": 45,
+      "local_declarations": 61,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "ditherType",
+        "threshold",
+        "matrixScale",
+        "renderScale",
+        "palette",
+        "levels",
+        "time",
+        "mixAmount"
+      ]
+    },
+    "filter/edge:edge": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 14,
+      "local_declarations": 34,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "kernel",
+        "size",
+        "renderScale",
+        "blend",
+        "invert",
+        "channel",
+        "threshold",
+        "amount",
+        "mixAmt",
+        "level",
+        "contourSide"
+      ]
+    },
+    "filter/emboss:emboss": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 10,
+      "local_declarations": 36,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "amount",
+        "angle",
+        "height",
+        "colorAmount",
+        "renderScale"
+      ]
+    },
+    "filter/extrude:extrude": {
+      "body_status": "not analyzed",
+      "functions": 9,
+      "globals": 14,
+      "local_declarations": 58,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "size",
+        "depth",
+        "solidFront"
+      ]
+    },
+    "filter/fibers:fibersBlend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "overlayTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "overlayTex",
+        "alpha"
+      ]
+    },
+    "filter/flipMirror:flipMirror": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 5,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "flipMode"
+      ]
+    },
+    "filter/fxaa:fxaa": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 11,
+      "local_declarations": 37,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "sharpness",
+        "threshold"
+      ]
+    },
+    "filter/glowingEdge:glowingEdge": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 8,
+      "local_declarations": 22,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "alpha",
+        "sobelMetric",
+        "width"
+      ]
+    },
+    "filter/glyphMap:glyphMap": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 9,
+      "local_declarations": 21,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "cellSize",
+        "seed",
+        "colorMode"
+      ]
+    },
+    "filter/grade:creative": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 10,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "vibrance",
+        "fadedFilm",
+        "shadowTint",
+        "highlightTint",
+        "splitToneBalance"
+      ]
+    },
+    "filter/grade:hslSecondary": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 17,
+      "local_declarations": 31,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "hslEnable",
+        "hslHueCenter",
+        "hslHueRange",
+        "hslSatMin",
+        "hslSatMax",
+        "hslLumMin",
+        "hslLumMax",
+        "hslFeather",
+        "hslHueShift",
+        "hslSatAdjust",
+        "hslLumAdjust"
+      ]
+    },
+    "filter/grade:lut": {
+      "body_status": "not analyzed",
+      "functions": 28,
+      "globals": 6,
+      "local_declarations": 71,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "preset",
+        "alpha"
+      ]
+    },
+    "filter/grade:primary": {
+      "body_status": "not analyzed",
+      "functions": 13,
+      "globals": 17,
+      "local_declarations": 33,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "temperature",
+        "tint",
+        "exposure",
+        "contrast",
+        "highlights",
+        "shadows",
+        "whites",
+        "blacks",
+        "saturation",
+        "curveShadows",
+        "curveMidtones",
+        "curveHighlights"
+      ]
+    },
+    "filter/grade:vignette": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 10,
+      "local_declarations": 22,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "vignetteAmount",
+        "vignetteMidpoint",
+        "vignetteRoundness",
+        "vignetteFeather",
+        "vigHiProtect"
+      ]
+    },
+    "filter/grade:wheels": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 9,
+      "local_declarations": 25,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "wheelShadows",
+        "wheelMidtones",
+        "wheelHighlights",
+        "wheelBalance"
+      ]
+    },
+    "filter/grain:grain": {
+      "body_status": "not analyzed",
+      "functions": 12,
+      "globals": 18,
+      "local_declarations": 72,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "alpha",
+        "time",
+        "pause"
+      ]
+    },
+    "filter/grime:grime": {
+      "body_status": "not analyzed",
+      "functions": 14,
+      "globals": 7,
+      "local_declarations": 57,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "fullResolution",
+        "tileOffset",
+        "strength",
+        "seed"
+      ]
+    },
+    "filter/halftone:halftone": {
+      "body_status": "not analyzed",
+      "functions": 9,
+      "globals": 18,
+      "local_declarations": 39,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "frequency",
+        "cyanAngle",
+        "magentaAngle",
+        "yellowAngle",
+        "blackAngle",
+        "monoAngle",
+        "sharpness",
+        "inkColor",
+        "paperColor"
+      ]
+    },
+    "filter/hatch:hatch": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 10,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "strokeLength",
+        "direction",
+        "balance",
+        "pressure",
+        "inkColor",
+        "paperColor"
+      ]
+    },
+    "filter/highPass:hpBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "radius"
+      ]
+    },
+    "filter/highPass:hpBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "radius"
+      ]
+    },
+    "filter/highPass:hpCombine": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 5,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "mono"
+      ]
+    },
+    "filter/historicPalette:historicPalette": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 13,
+      "local_declarations": 24,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "paletteIndex",
+        "smoothness",
+        "rotation",
+        "offset",
+        "repeat",
+        "alpha",
+        "time"
+      ]
+    },
+    "filter/hs:hs": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 7,
+      "local_declarations": 20,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "rotation",
+        "hueRange",
+        "saturation"
+      ]
+    },
+    "filter/invert:inv": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 3,
+      "local_declarations": 3,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "mode"
+      ]
+    },
+    "filter/lens:lens": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 8,
+      "local_declarations": 24,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "lensDisplacement",
+        "aspectLens",
+        "antialias"
+      ]
+    },
+    "filter/lensFlare:lensFlare": {
+      "body_status": "not analyzed",
+      "functions": 12,
+      "globals": 9,
+      "local_declarations": 27,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "brightness",
+        "centerX",
+        "centerY",
+        "tint"
+      ]
+    },
+    "filter/lensWarp:lensWarp": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 9,
+      "local_declarations": 28,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "displacement",
+        "speed",
+        "antialias"
+      ]
+    },
+    "filter/lightLeak:lightLeak": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 12,
+      "local_declarations": 48,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "alpha",
+        "color",
+        "speed",
+        "seed",
+        "time"
+      ]
+    },
+    "filter/lighting:lighting": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 17,
+      "local_declarations": 44,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "heightMap"
+      ],
+      "uniforms": [
+        "inputTex",
+        "heightMap",
+        "tileOffset",
+        "fullResolution",
+        "diffuseColor",
+        "specularColor",
+        "specularIntensity",
+        "shininess",
+        "ambientColor",
+        "lightDirection",
+        "normalStrength",
+        "smoothing",
+        "renderScale",
+        "reflection",
+        "refraction",
+        "aberration"
+      ]
+    },
+    "filter/lowPoly:lowPoly": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 13,
+      "local_declarations": 38,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "scale",
+        "seed",
+        "mode",
+        "edgeStrength",
+        "edgeColor",
+        "speed",
+        "time",
+        "alpha"
+      ]
+    },
+    "filter/median:median": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 3,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "threshold"
+      ]
+    },
+    "filter/morphology:morphA": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 5,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "mode",
+        "radius"
+      ]
+    },
+    "filter/morphology:morphB": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 5,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "mode",
+        "radius"
+      ]
+    },
+    "filter/mosaicTiles:mosaicTiles": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 11,
+      "local_declarations": 42,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "tileSize",
+        "groutWidth",
+        "relief",
+        "maxOffset",
+        "gapFill",
+        "backgroundColor",
+        "seed"
+      ]
+    },
+    "filter/normalMap:normalMap": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 11,
+      "local_declarations": 32,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "size",
+        "motion"
+      ]
+    },
+    "filter/normalize:apply": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 5,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "statsTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "statsTex"
+      ]
+    },
+    "filter/normalize:reduce": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 12,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex"
+      ]
+    },
+    "filter/normalize:reduceMinmax": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex"
+      ]
+    },
+    "filter/normalize:statsFinal": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 2,
+      "local_declarations": 6,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex"
+      ]
+    },
+    "filter/octaveWarp:octaveWarp": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 14,
+      "local_declarations": 37,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "frequency",
+        "octaves",
+        "displacement",
+        "speed",
+        "wrap",
+        "seed",
+        "antialias"
+      ]
+    },
+    "filter/oilPaint:oilFlatten": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 3,
+      "local_declarations": 62,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "size"
+      ]
+    },
+    "filter/oilPaint:oilPost": {
+      "body_status": "not analyzed",
+      "functions": 9,
+      "globals": 9,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "flatTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "flatTex",
+        "resolution",
+        "tileOffset",
+        "size",
+        "detail",
+        "textureAmount",
+        "seed"
+      ]
+    },
+    "filter/osd:osd": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 16,
+      "local_declarations": 46,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "alpha",
+        "seed",
+        "speed",
+        "time",
+        "corner"
+      ]
+    },
+    "filter/outline:outlineBlend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "edgesTexture"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "edgesTexture",
+        "invert"
+      ]
+    },
+    "filter/outline:outlineSobel": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 7,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "valueTexture"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "valueTexture",
+        "sobelMetric",
+        "thickness",
+        "renderScale"
+      ]
+    },
+    "filter/outline:outlineValueMap": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 4,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex"
+      ]
+    },
+    "filter/palette:palette": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 16,
+      "local_declarations": 31,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "paletteIndex",
+        "rotation",
+        "offset",
+        "repeat",
+        "alpha",
+        "time"
+      ]
+    },
+    "filter/parallax:parallax": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 9,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "heightMap"
+      ],
+      "uniforms": [
+        "inputTex",
+        "heightMap",
+        "tileOffset",
+        "fullResolution",
+        "direction",
+        "pivot"
+      ]
+    },
+    "filter/patchwork:patchwork": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 8,
+      "local_declarations": 32,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "squareSize",
+        "relief",
+        "lightAngle"
+      ]
+    },
+    "filter/photocopy:pcBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "detail"
+      ]
+    },
+    "filter/photocopy:pcBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "detail"
+      ]
+    },
+    "filter/photocopy:pcCombine": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 7,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "darkness",
+        "inkColor",
+        "paperColor"
+      ]
+    },
+    "filter/pinch:pinch": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 10,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ]
+    },
+    "filter/pixelSort:computeRank": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 2,
+      "local_declarations": 12,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "lumTex"
+      ],
+      "uniforms": [
+        "lumTex"
+      ]
+    },
+    "filter/pixelSort:finalize": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 9,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "originalTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "originalTex",
+        "resolution",
+        "angled",
+        "darkest",
+        "wrap",
+        "alpha"
+      ]
+    },
+    "filter/pixelSort:findBrightest": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 2,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "lumTex"
+      ],
+      "uniforms": [
+        "lumTex"
+      ]
+    },
+    "filter/pixelSort:gatherSorted": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 18,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "preparedTex",
+        "rankTex",
+        "brightestTex"
+      ],
+      "uniforms": [
+        "preparedTex",
+        "rankTex",
+        "brightestTex"
+      ]
+    },
+    "filter/pixelSort:luminance": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 2,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex"
+      ]
+    },
+    "filter/pixelSort:prepare": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 8,
+      "local_declarations": 12,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "angled",
+        "time",
+        "darkest",
+        "wrap"
+      ]
+    },
+    "filter/pixels:pixels": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 5,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "size"
+      ]
+    },
+    "filter/plasticWrap:pwBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "detail"
+      ]
+    },
+    "filter/plasticWrap:pwBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "detail"
+      ]
+    },
+    "filter/plasticWrap:pwSpec": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 7,
+      "local_declarations": 29,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "highlight",
+        "smoothness",
+        "lightDirection"
+      ]
+    },
+    "filter/polar:polar": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 12,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "polarMode",
+        "speed",
+        "rotation",
+        "scale",
+        "aspectLens",
+        "antialias"
+      ]
+    },
+    "filter/pondRipples:pondRipples": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 10,
+      "local_declarations": 20,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "amount",
+        "ridges",
+        "speed",
+        "time",
+        "antialias"
+      ]
+    },
+    "filter/posterize:posterize": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 9,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "levels",
+        "gamma",
+        "antialias"
+      ]
+    },
+    "filter/prismaticAberration:prismaticAberration": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 12,
+      "local_declarations": 41,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "aberrationAmt",
+        "hueRotation",
+        "hueRange",
+        "modulate",
+        "saturation",
+        "passthru"
+      ]
+    },
+    "filter/reindex:nmReindexApply": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 7,
+      "local_declarations": 23,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "statsTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "resolution",
+        "inputTex",
+        "statsTex",
+        "uDisplacement"
+      ]
+    },
+    "filter/reindex:nmReindexReduce": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "statsTex"
+      ],
+      "uniforms": [
+        "statsTex"
+      ]
+    },
+    "filter/reindex:nmReindexStats": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 5,
+      "local_declarations": 24,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex"
+      ]
+    },
+    "filter/relief:rlBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/relief:rlBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/relief:rlShade": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 11,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "tileOffset",
+        "detail",
+        "lightAngle",
+        "balance",
+        "graininess",
+        "inkColor",
+        "paperColor"
+      ]
+    },
+    "filter/repeat:repeat": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 11,
+      "local_declarations": 4,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "resolution",
+        "aspect",
+        "x",
+        "y",
+        "offsetX",
+        "offsetY",
+        "wrap",
+        "inputTex",
+        "tileOffset",
+        "fullResolution"
+      ]
+    },
+    "filter/reverb:reverb": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 8,
+      "local_declarations": 18,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "iterations",
+        "ridges",
+        "alpha",
+        "wrap"
+      ]
+    },
+    "filter/ridge:ridge": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 5,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "level"
+      ]
+    },
+    "filter/rotate:rot": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 7,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "rotation",
+        "wrap",
+        "speed",
+        "time"
+      ]
+    },
+    "filter/scale:scale": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 11,
+      "local_declarations": 4,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "scaleX",
+        "scaleY",
+        "centerX",
+        "centerY",
+        "wrap",
+        "inputTex"
+      ]
+    },
+    "filter/scanlineError:scanlineError": {
+      "body_status": "not analyzed",
+      "functions": 19,
+      "globals": 18,
+      "local_declarations": 131,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "speed",
+        "timeOffset",
+        "distortion",
+        "noise",
+        "mode",
+        "time",
+        "renderScale"
+      ]
+    },
+    "filter/scatter:scatterJitter": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 6,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "radius",
+        "seed"
+      ]
+    },
+    "filter/scatter:scatterSmooth": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 9,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/scratches:scratchesBlend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "overlayTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "overlayTex",
+        "alpha"
+      ]
+    },
+    "filter/scroll:scroll": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 12,
+      "local_declarations": 4,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "x",
+        "y",
+        "speedX",
+        "speedY",
+        "time",
+        "wrap",
+        "inputTex"
+      ]
+    },
+    "filter/seamless:seamless": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 5,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blend",
+        "repeat",
+        "curve"
+      ]
+    },
+    "filter/sharpen:sharpen": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "amount",
+        "renderScale"
+      ]
+    },
+    "filter/simpleAberration:chromaticAberration": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 12,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "displacement"
+      ]
+    },
+    "filter/sine:sine": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 6,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "amount",
+        "colorMode"
+      ]
+    },
+    "filter/skew:skew": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 9,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "skewAmt",
+        "rotation",
+        "wrap",
+        "tileOffset",
+        "fullResolution",
+        "renderScale"
+      ]
+    },
+    "filter/smooth:smoothBlend": {
+      "body_status": "not analyzed",
+      "functions": 11,
+      "globals": 12,
+      "local_declarations": 60,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "edgeTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "edgeTex",
+        "smoothType",
+        "strength",
+        "threshold",
+        "radius",
+        "samples",
+        "searchSteps"
+      ]
+    },
+    "filter/smooth:smoothEdge": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 7,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "smoothType",
+        "threshold"
+      ]
+    },
+    "filter/smoothstep:smoothstep": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 4,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "edge0",
+        "edge1"
+      ]
+    },
+    "filter/snow:snow": {
+      "body_status": "not analyzed",
+      "functions": 8,
+      "globals": 14,
+      "local_declarations": 28,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "alpha",
+        "time",
+        "pause",
+        "density"
+      ]
+    },
+    "filter/sobel:sobel": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "amount",
+        "renderScale",
+        "alpha"
+      ]
+    },
+    "filter/spatter:spatter": {
+      "body_status": "not analyzed",
+      "functions": 12,
+      "globals": 10,
+      "local_declarations": 53,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "color",
+        "density",
+        "alpha",
+        "seed"
+      ]
+    },
+    "filter/spinBlur:spinBlur": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 9,
+      "local_declarations": 18,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "amount",
+        "centerX",
+        "centerY"
+      ]
+    },
+    "filter/spiral:spiral": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 12,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "strength",
+        "speed",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ]
+    },
+    "filter/spookyTicker:spookyTicker": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 13,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "renderScale",
+        "time",
+        "speed",
+        "alpha",
+        "rows",
+        "seed"
+      ]
+    },
+    "filter/stamp:stBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/stamp:stBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 10,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "smoothness"
+      ]
+    },
+    "filter/stamp:stThreshold": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 9,
+      "local_declarations": 18,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "tileOffset",
+        "balance",
+        "roughness",
+        "inkColor",
+        "paperColor"
+      ]
+    },
+    "filter/step:step": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "threshold",
+        "antialias"
+      ]
+    },
+    "filter/stipple:stipple": {
+      "body_status": "not analyzed",
+      "functions": 9,
+      "globals": 9,
+      "local_declarations": 33,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "cellSize",
+        "grainSize",
+        "density",
+        "paperColor",
+        "seed"
+      ]
+    },
+    "filter/strayHair:strayHairBlend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "overlayTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "overlayTex",
+        "alpha",
+        "tileOffset",
+        "fullResolution",
+        "renderScale"
+      ]
+    },
+    "filter/strokes:stkPost": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 5,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "smearTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "smearTex",
+        "resolution",
+        "sharpness"
+      ]
+    },
+    "filter/strokes:stkSmear": {
+      "body_status": "not analyzed",
+      "functions": 13,
+      "globals": 8,
+      "local_declarations": 74,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "strokeLength",
+        "balance",
+        "intensity"
+      ]
+    },
+    "filter/tetraColorArray:tetraColorArray": {
+      "body_status": "not analyzed",
+      "functions": 17,
+      "globals": 30,
+      "local_declarations": 63,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "colorMode",
+        "colorCount",
+        "positionMode",
+        "color0",
+        "color1",
+        "color2",
+        "color3",
+        "color4",
+        "color5",
+        "color6",
+        "color7",
+        "pos0",
+        "pos1",
+        "pos2",
+        "pos3",
+        "pos4",
+        "pos5",
+        "pos6",
+        "pos7",
+        "repeat",
+        "offset",
+        "smoothness",
+        "alpha",
+        "rotation",
+        "time"
+      ]
+    },
+    "filter/tetraCosine:tetraCosine": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 23,
+      "local_declarations": 42,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "colorMode",
+        "offsetR",
+        "offsetG",
+        "offsetB",
+        "ampR",
+        "ampG",
+        "ampB",
+        "freqR",
+        "freqG",
+        "freqB",
+        "phaseR",
+        "phaseG",
+        "phaseB",
+        "repeat",
+        "offset",
+        "alpha",
+        "rotation",
+        "time"
+      ]
+    },
+    "filter/text:text": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 8,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "textTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "textTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "matteColor",
+        "matteOpacity"
+      ]
+    },
+    "filter/texture:texture": {
+      "body_status": "not analyzed",
+      "functions": 25,
+      "globals": 14,
+      "local_declarations": 118,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "time",
+        "alpha",
+        "scale",
+        "intensity",
+        "contrast",
+        "mono",
+        "tileOffset",
+        "fullResolution"
+      ]
+    },
+    "filter/threshold:thresh": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "level",
+        "sharpness"
+      ]
+    },
+    "filter/tile:tile": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 13,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "symmetry",
+        "scale",
+        "offsetX",
+        "offsetY",
+        "angle",
+        "repeat",
+        "aspectLens"
+      ]
+    },
+    "filter/tint:colorize": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 7,
+      "local_declarations": 26,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "color",
+        "alpha",
+        "mode",
+        "inputTex"
+      ]
+    },
+    "filter/translate:translate": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 3,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "x",
+        "y",
+        "wrap"
+      ]
+    },
+    "filter/tunnel:tunnel": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 14,
+      "local_declarations": 17,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "shape",
+        "speed",
+        "rotation",
+        "scale",
+        "center",
+        "aspectLens",
+        "antialias"
+      ]
+    },
+    "filter/unsharpMask:usmBlurH": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 9,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "radius"
+      ]
+    },
+    "filter/unsharpMask:usmBlurV": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 4,
+      "local_declarations": 9,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "radius"
+      ]
+    },
+    "filter/unsharpMask:usmCombine": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 6,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "blurTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "amount",
+        "threshold"
+      ]
+    },
+    "filter/vaseline:upsample": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 11,
+      "local_declarations": 27,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "alpha"
+      ]
+    },
+    "filter/vignette:vignette": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 6,
+      "local_declarations": 16,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "vignetteBrightness",
+        "alpha"
+      ]
+    },
+    "filter/warp:warp": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 12,
+      "local_declarations": 21,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "strength",
+        "scale",
+        "seed",
+        "speed",
+        "wrap",
+        "antialias"
+      ]
+    },
+    "filter/watercolor:wcComposite": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 7,
+      "local_declarations": 21,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "simplifiedTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "simplifiedTex",
+        "resolution",
+        "tileOffset",
+        "shadowIntensity",
+        "paperTexture"
+      ]
+    },
+    "filter/watercolor:wcSeed": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 3,
+      "local_declarations": 1,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution"
+      ]
+    },
+    "filter/watercolor:wcSimplify": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 4,
+      "local_declarations": 23,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "detail"
+      ]
+    },
+    "filter/waves:waves": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 12,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "strength",
+        "scale",
+        "speed",
+        "wrap",
+        "rotation",
+        "antialias"
+      ]
+    },
+    "filter/wind:wind": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 10,
+      "local_declarations": 29,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "direction",
+        "strength",
+        "threshold"
+      ]
+    },
+    "filter/wobble:wobble": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 9,
+      "local_declarations": 30,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "time",
+        "speed",
+        "range",
+        "wrap"
+      ]
+    },
+    "filter/wormhole:blend": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 7,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "accumTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "accumTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "alpha"
+      ]
+    },
+    "filter/wormhole:clear": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 1,
+      "local_declarations": 0,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": []
+    },
+    "filter/wormhole:deposit": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 1,
+      "local_declarations": 0,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": []
+    },
+    "filter/zoomBlur:zoomBlur": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 5,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "strength"
+      ]
+    },
+    "mixer/alphaMask:alphaMask": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 8,
+      "local_declarations": 8,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mixAmt",
+        "maskMode"
+      ]
+    },
+    "mixer/applyMode:applyMode": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 8,
+      "local_declarations": 19,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mode",
+        "mixAmt"
+      ]
+    },
+    "mixer/blendMode:blendMode": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 8,
+      "local_declarations": 9,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mode",
+        "mixAmt"
+      ]
+    },
+    "mixer/cellSplit:cellSplit": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 14,
+      "local_declarations": 38,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mode",
+        "scale",
+        "edgeWidth",
+        "seed",
+        "invert",
+        "time",
+        "speed"
+      ]
+    },
+    "mixer/centerMask:centerMask": {
+      "body_status": "not analyzed",
+      "functions": 6,
+      "globals": 10,
+      "local_declarations": 24,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "shape",
+        "power",
+        "hardness",
+        "blendMode"
+      ]
+    },
+    "mixer/channelCombine:channelCombine": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 10,
+      "local_declarations": 5,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "rTex",
+        "gTex",
+        "bTex"
+      ],
+      "uniforms": [
+        "rTex",
+        "gTex",
+        "bTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "rLevel",
+        "gLevel",
+        "bLevel"
+      ]
+    },
+    "mixer/distortion:distortion": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 13,
+      "local_declarations": 54,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mode",
+        "mapSource",
+        "intensity",
+        "wrap",
+        "smoothing",
+        "aberration",
+        "antialias"
+      ]
+    },
+    "mixer/focusBlur:focusBlur": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 10,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "focalDistance",
+        "aperture",
+        "sampleBias",
+        "depthSource"
+      ]
+    },
+    "mixer/mashup:mashup": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 21,
+      "local_declarations": 9,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "source",
+        "layer0_tex",
+        "layer1_tex",
+        "layer2_tex",
+        "layer3_tex",
+        "layer4_tex",
+        "layer5_tex",
+        "layer6_tex",
+        "layer7_tex"
+      ],
+      "uniforms": [
+        "resolution",
+        "source",
+        "layer0_tex",
+        "layer1_tex",
+        "layer2_tex",
+        "layer3_tex",
+        "layer4_tex",
+        "layer5_tex",
+        "layer6_tex",
+        "layer7_tex",
+        "layers",
+        "smoothness",
+        "layer0_active",
+        "layer1_active",
+        "layer2_active",
+        "layer3_active",
+        "layer4_active",
+        "layer5_active",
+        "layer6_active",
+        "layer7_active"
+      ]
+    },
+    "mixer/patternMix:patternMix": {
+      "body_status": "not analyzed",
+      "functions": 12,
+      "globals": 12,
+      "local_declarations": 52,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "patternType",
+        "scale",
+        "thickness",
+        "smoothness",
+        "rotation",
+        "invert"
+      ]
+    },
+    "mixer/shadow:shadow": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 16,
+      "local_declarations": 24,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "maskSource",
+        "sourceChannel",
+        "threshold",
+        "color",
+        "offsetX",
+        "offsetY",
+        "blur",
+        "spread",
+        "wrap"
+      ]
+    },
+    "mixer/shapeMask:shapeMask": {
+      "body_status": "not analyzed",
+      "functions": 8,
+      "globals": 15,
+      "local_declarations": 32,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "shape",
+        "radius",
+        "edgeSmooth",
+        "rotation",
+        "posX",
+        "posY",
+        "invert",
+        "speed",
+        "time"
+      ]
+    },
+    "mixer/split:split": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 12,
+      "local_declarations": 21,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "position",
+        "rotation",
+        "softness",
+        "invert",
+        "speed",
+        "time"
+      ]
+    },
+    "mixer/thresholdMix:thresholdMix": {
+      "body_status": "not analyzed",
+      "functions": 4,
+      "globals": 17,
+      "local_declarations": 14,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mode",
+        "quantize",
+        "mapSource",
+        "threshold",
+        "range",
+        "thresholdR",
+        "rangeR",
+        "thresholdG",
+        "rangeG",
+        "thresholdB",
+        "rangeB"
+      ]
+    },
+    "mixer/uvRemap:uvRemap": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 11,
+      "local_declarations": 11,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "mapSource",
+        "channel",
+        "scale",
+        "offset",
+        "wrap"
+      ]
+    },
+    "synth/bitwise:bitwise": {
+      "body_status": "not analyzed",
+      "functions": 3,
+      "globals": 17,
+      "local_declarations": 18,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "time",
+        "operation",
+        "scale",
+        "offsetX",
+        "offsetY",
+        "mask",
+        "seed",
+        "colorMode",
+        "speed",
+        "rotation",
+        "colorOffset"
+      ]
+    },
+    "synth/cell:cell": {
+      "body_status": "not analyzed",
+      "functions": 8,
+      "globals": 13,
+      "local_declarations": 23,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "metric",
+        "scale",
+        "cellScale",
+        "cellSmooth",
+        "variation",
+        "speed"
+      ]
+    },
+    "synth/curl:curl": {
+      "body_status": "not analyzed",
+      "functions": 7,
+      "globals": 9,
+      "local_declarations": 70,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "scale",
+        "seed",
+        "speed",
+        "intensity"
+      ]
+    },
+    "synth/gabor:gabor": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 13,
+      "local_declarations": 37,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "seed",
+        "scale",
+        "orientation",
+        "bandwidth",
+        "isotropy",
+        "density",
+        "octaves",
+        "speed"
+      ]
+    },
+    "synth/gradient:gradient": {
+      "body_status": "not analyzed",
+      "functions": 9,
+      "globals": 15,
+      "local_declarations": 44,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "gradientType",
+        "rotation",
+        "repeat",
+        "colorCount",
+        "color1",
+        "color2",
+        "color3",
+        "color4",
+        "seed",
+        "time",
+        "speed"
+      ]
+    },
+    "synth/julia:julia": {
+      "body_status": "not analyzed",
+      "functions": 19,
+      "globals": 27,
+      "local_declarations": 80,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "cReal",
+        "cImag",
+        "poi",
+        "outputMode",
+        "centerX",
+        "centerY",
+        "rotation",
+        "iterations",
+        "stripeFreq",
+        "trapShape",
+        "lightAngle",
+        "cPath",
+        "cSpeed",
+        "cRadius",
+        "invert",
+        "zoomSpeed",
+        "zoomDepth"
+      ]
+    },
+    "synth/mandala:mandala": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 22,
+      "local_declarations": 32,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "scale",
+        "rotation",
+        "thickness",
+        "smoothness",
+        "symmetry",
+        "layers",
+        "shape",
+        "layerSpacing",
+        "twist",
+        "shapeGrowth",
+        "bindu",
+        "animation",
+        "speed",
+        "pulseDepth",
+        "time",
+        "fgColor",
+        "bgColor"
+      ]
+    },
+    "synth/mandelbrot:mandelbrot": {
+      "body_status": "not analyzed",
+      "functions": 24,
+      "globals": 24,
+      "local_declarations": 88,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "poi",
+        "outputMode",
+        "iterations",
+        "centerHiX",
+        "centerHiY",
+        "centerLoX",
+        "centerLoY",
+        "zoomSpeed",
+        "zoomDepth",
+        "invert",
+        "stripeFreq",
+        "trapShape",
+        "lightAngle",
+        "rotation"
+      ]
+    },
+    "synth/media:mediaInput": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 14,
+      "local_declarations": 7,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "imageTex"
+      ],
+      "uniforms": [
+        "imageTex",
+        "imageSize",
+        "resolution",
+        "time",
+        "position",
+        "rotation",
+        "scaleAmt",
+        "offsetX",
+        "offsetY",
+        "tiling",
+        "flip",
+        "bgColor",
+        "bgAlpha"
+      ]
+    },
+    "synth/modPattern:modPattern": {
+      "body_status": "not analyzed",
+      "functions": 5,
+      "globals": 18,
+      "local_declarations": 23,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "shape1",
+        "scale1",
+        "repeat1",
+        "shape2",
+        "scale2",
+        "repeat2",
+        "shape3",
+        "scale3",
+        "repeat3",
+        "blend",
+        "smoothing",
+        "speed",
+        "animMode"
+      ]
+    },
+    "synth/newton:newton": {
+      "body_status": "not analyzed",
+      "functions": 13,
+      "globals": 26,
+      "local_declarations": 79,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "degree",
+        "relaxation",
+        "iterations",
+        "tolerance",
+        "poi",
+        "centerHiX",
+        "centerHiY",
+        "centerLoX",
+        "centerLoY",
+        "zoomSpeed",
+        "zoomDepth",
+        "degreeSpeed",
+        "degreeRange",
+        "relaxSpeed",
+        "relaxRange",
+        "rotation",
+        "outputMode",
+        "invert"
+      ]
+    },
+    "synth/noise:noise": {
+      "body_status": "not analyzed",
+      "functions": 30,
+      "globals": 15,
+      "local_declarations": 63,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "time",
+        "seed",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "scaleX",
+        "scaleY",
+        "octaves",
+        "ridges",
+        "loopScale",
+        "speed",
+        "colorMode",
+        "wrap"
+      ]
+    },
+    "synth/osc2d:osc2d": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 13,
+      "local_declarations": 27,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "time",
+        "oscType",
+        "frequency",
+        "speed",
+        "rotation",
+        "seed"
+      ]
+    },
+    "synth/pattern:pattern": {
+      "body_status": "not analyzed",
+      "functions": 16,
+      "globals": 16,
+      "local_declarations": 62,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "patternType",
+        "scale",
+        "thickness",
+        "smoothness",
+        "rotation",
+        "skew",
+        "animation",
+        "speed",
+        "time",
+        "fgColor",
+        "bgColor"
+      ]
+    },
+    "synth/perlin:perlin": {
+      "body_status": "not analyzed",
+      "functions": 13,
+      "globals": 17,
+      "local_declarations": 41,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "time",
+        "scale",
+        "seed",
+        "octaves",
+        "colorMode",
+        "ridges",
+        "warpIterations",
+        "warpScale",
+        "warpIntensity",
+        "speed"
+      ]
+    },
+    "synth/polygon:shape": {
+      "body_status": "not analyzed",
+      "functions": 2,
+      "globals": 13,
+      "local_declarations": 13,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "sides",
+        "radius",
+        "smoothing",
+        "rotation",
+        "fgColor",
+        "fgAlpha",
+        "bgColor",
+        "bgAlpha"
+      ]
+    },
+    "synth/remap:remap": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 12,
+      "local_declarations": 34,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "zone0_tex",
+        "zone1_tex",
+        "zone2_tex",
+        "zone3_tex",
+        "zone4_tex",
+        "zone5_tex",
+        "zone6_tex",
+        "zone7_tex"
+      ],
+      "uniforms": [
+        "data",
+        "tileOffset",
+        "fullResolution",
+        "zone0_tex",
+        "zone1_tex",
+        "zone2_tex",
+        "zone3_tex",
+        "zone4_tex",
+        "zone5_tex",
+        "zone6_tex",
+        "zone7_tex"
+      ]
+    },
+    "synth/sacredGeometry:sacredGeometry": {
+      "body_status": "not analyzed",
+      "functions": 12,
+      "globals": 18,
+      "local_declarations": 89,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "scale",
+        "rotation",
+        "thickness",
+        "smoothness",
+        "geometry",
+        "rings",
+        "starPoints",
+        "animation",
+        "speed",
+        "pulseDepth",
+        "time",
+        "fgColor",
+        "bgColor"
+      ]
+    },
+    "synth/shape:shape": {
+      "body_status": "not analyzed",
+      "functions": 28,
+      "globals": 15,
+      "local_declarations": 176,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "seed",
+        "wrap",
+        "loopAScale",
+        "loopBScale",
+        "speedA",
+        "speedB"
+      ]
+    },
+    "synth/solid:solid": {
+      "body_status": "not analyzed",
+      "functions": 1,
+      "globals": 3,
+      "local_declarations": 0,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "color",
+        "alpha"
+      ]
+    },
+    "synth/subdivide:subdivide": {
+      "body_status": "not analyzed",
+      "functions": 10,
+      "globals": 17,
+      "local_declarations": 63,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "uniforms": [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "mode",
+        "depth",
+        "density",
+        "seed",
+        "fill",
+        "outline",
+        "inputMix",
+        "wrap",
+        "time",
+        "speed"
+      ]
+    },
+    "synth/testPattern:testPattern": {
+      "body_status": "not analyzed",
+      "functions": 11,
+      "globals": 7,
+      "local_declarations": 50,
+      "outputs": [
+        "fragColor"
+      ],
+      "samplers": [],
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "gridSize",
+        "pattern"
+      ]
+    }
+  },
+  "parameter_directions": {
+    "in": 2450,
+    "inout": 2,
+    "out": 20
+  },
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "type_incidence": {
+    "HistoricPalette": 2,
+    "HistoricPalette[21]": 1,
+    "JuliaResult": 7,
+    "POIData": 2,
+    "PaletteEntry": 1,
+    "PaletteEntry[55]": 1,
+    "bool": 96,
+    "bvec3": 2,
+    "float": 5932,
+    "float[9]": 60,
+    "int": 904,
+    "int[10]": 1,
+    "int[3]": 1,
+    "int[80]": 2,
+    "ivec2": 175,
+    "ivec2[9]": 1,
+    "ivec3": 4,
+    "mat2": 1,
+    "mat3": 32,
+    "mat4": 10,
+    "sampler2D": 254,
+    "uint": 141,
+    "uint[49]": 1,
+    "uvec2": 13,
+    "uvec2[49]": 1,
+    "uvec3": 122,
+    "vec2": 2420,
+    "vec2[13]": 1,
+    "vec2[8]": 1,
+    "vec2[9]": 10,
+    "vec3": 1566,
+    "vec3[15]": 2,
+    "vec3[16]": 5,
+    "vec3[18]": 1,
+    "vec3[4]": 4,
+    "vec3[8]": 1,
+    "vec4": 749,
+    "vec4[267]": 1,
+    "void": 224
+  }
+}

@@ -1,0 +1,27 @@
+[  4%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/surface.cpp.o
+[  8%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/png.cpp.o
+[ 12%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/numeric.cpp.o
+[ 16%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/glsl_runtime.cpp.o
+[ 20%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/sampler.cpp.o
+[ 24%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/kernel.cpp.o
+[ 28%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/pass_runner.cpp.o
+[ 32%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/texture_format.cpp.o
+[ 36%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/generated/synth_solid.cpp.o
+[ 40%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/generated/filter_invert.cpp.o
+[ 44%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/typed_generated/typed_slice.cpp.o
+[ 48%] Linking CXX static library libnoisemaker-cpu.a
+[ 48%] Built target noisemaker-cpu
+[ 56%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_surface.cpp.o
+[ 60%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_numeric.cpp.o
+[ 56%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_texture_format.cpp.o
+[ 64%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_glsl_types.cpp.o
+[ 68%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_png.cpp.o
+[ 72%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_main.cpp.o
+[ 76%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_sampler.cpp.o
+[ 80%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_glsl_runtime.cpp.o
+[ 84%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_kernel.cpp.o
+[ 88%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_pass_runner.cpp.o
+[ 92%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_generated_kernels.cpp.o
+[ 96%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_typed_slice.cpp.o
+[100%] Linking CXX executable noisemaker-cpu-tests
+[100%] Built target noisemaker-cpu-tests

@@ -1,0 +1,334 @@
+{
+ "emitter_outcome_distribution_after_hypothetical_admission": {
+  "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported source const global initializer": 1,
+  "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index": 1,
+  "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index": 1,
+  "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index": 1,
+  "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect": 1,
+  "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index": 1,
+  "filter/adjust:adjust:78:13: unsupported typed expression index": 1,
+  "filter/colorspace:colorspace:48:13: unsupported typed expression index": 1,
+  "filter/edge:edge:73:38: unsupported builtin greaterThanEqual": 1,
+  "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration": 1,
+  "filter/fxaa:fxaa:22:21: unsupported builtin round": 1,
+  "filter/glyphMap:glyphMap:287:16: unsupported binary operator &": 1,
+  "filter/grade:creative:34:13: unsupported typed expression index": 1,
+  "filter/grade:hslSecondary:96:13: unsupported typed expression index": 1,
+  "filter/grade:primary:41:13: unsupported typed expression index": 1,
+  "filter/grade:vignette:34:13: unsupported typed expression index": 1,
+  "filter/grade:wheels:33:13: unsupported typed expression index": 1,
+  "filter/grain:grain:31:21: unsupported builtin round": 1,
+  "filter/historicPalette:historicPalette:1:1: unsupported typed type HistoricPalette": 1,
+  "filter/normalMap:normalMap:34:21: unsupported builtin round": 1,
+  "filter/osd:osd:59:16: unsupported binary operator ^": 1,
+  "filter/palette:palette:1:1: unsupported typed type PaletteEntry[55]": 1,
+  "filter/scanlineError:scanlineError:199:5: unsupported source const global initializer": 1,
+  "filter/snow:snow:26:21: unsupported builtin round": 1,
+  "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^": 1,
+  "filter/texture:texture:68:14: unsupported binary operator ^": 1,
+  "filter/wobble:wobble:100:24: unmapped typed symbol v_texCoord": 1
+ },
+ "family": "unsupported global declaration (const-typed subfamily, 27/30)",
+ "note": "non_const_global 3 keys (cellRefract, kaleido, synth/shape) intentionally excluded -- separate capability",
+ "rows": [
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported source const global initializer",
+   "key": "classicNoisedeck/bitEffects:bitEffects",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported global initializer expression binary"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+   "key": "classicNoisedeck/cellNoise:cellNoise",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+   "key": "classicNoisedeck/colorLab:colorLab",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/colorLab:colorLab:191:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+   "key": "classicNoisedeck/moodscape:moodscape",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/moodscape:moodscape:149:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect",
+   "key": "classicNoisedeck/shapeMixer:shapeMixer",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+   "key": "classicNoisedeck/shapes:shapes",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "classicNoisedeck/shapes:shapes:588:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/adjust:adjust:78:13: unsupported typed expression index",
+   "key": "filter/adjust:adjust",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/adjust:adjust:62:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+   "key": "filter/colorspace:colorspace",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/colorspace:colorspace:32:1: unsupported typed type mat3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/edge:edge:73:38: unsupported builtin greaterThanEqual",
+   "key": "filter/edge:edge",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/edge:edge:73:11: unsupported typed type bvec3"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+   "key": "filter/emboss:emboss",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/emboss:emboss:27:11: unsupported typed type float[9]"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+   "key": "filter/fxaa:fxaa",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/fxaa:fxaa:22:21: unsupported builtin round"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+   "key": "filter/glyphMap:glyphMap",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grade:creative:34:13: unsupported typed expression index",
+   "key": "filter/grade:creative",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grade:creative:34:13: unsupported typed expression index"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grade:hslSecondary:96:13: unsupported typed expression index",
+   "key": "filter/grade:hslSecondary",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grade:hslSecondary:96:13: unsupported typed expression index"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grade:primary:41:13: unsupported typed expression index",
+   "key": "filter/grade:primary",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grade:primary:41:13: unsupported typed expression index"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grade:vignette:34:13: unsupported typed expression index",
+   "key": "filter/grade:vignette",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grade:vignette:34:13: unsupported typed expression index"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grade:wheels:33:13: unsupported typed expression index",
+   "key": "filter/grade:wheels",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grade:wheels:33:13: unsupported typed expression index"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/grain:grain:31:21: unsupported builtin round",
+   "key": "filter/grain:grain",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/grain:grain:31:21: unsupported builtin round"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/historicPalette:historicPalette:1:1: unsupported typed type HistoricPalette",
+   "key": "filter/historicPalette:historicPalette",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+   "key": "filter/normalMap:normalMap",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/osd:osd:59:16: unsupported binary operator ^",
+   "key": "filter/osd:osd",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/osd:osd:24:1: unsupported typed type int[80]"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/palette:palette:1:1: unsupported typed type PaletteEntry[55]",
+   "key": "filter/palette:palette",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/palette:palette:21:1: unsupported struct declaration"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/scanlineError:scanlineError:199:5: unsupported source const global initializer",
+   "key": "filter/scanlineError:scanlineError",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/scanlineError:scanlineError:199:5: unsupported global initializer expression swizzle"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/snow:snow:26:21: unsupported builtin round",
+   "key": "filter/snow:snow",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/snow:snow:26:21: unsupported builtin round"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+   "key": "filter/spookyTicker:spookyTicker",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/spookyTicker:spookyTicker:1:1: unsupported varying"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/texture:texture:68:14: unsupported binary operator ^",
+   "key": "filter/texture:texture",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/texture:texture:1:1: unsupported varying"
+  },
+  {
+   "emitter_exc_type": "TypedEmissionError",
+   "emitter_with_generalized_const_globals": "filter/wobble:wobble:100:24: unmapped typed symbol v_texCoord",
+   "key": "filter/wobble:wobble",
+   "validator_exc_type": "GeneratorError",
+   "validator_with_generalized_const_globals": "filter/wobble:wobble:1:1: unsupported varying"
+  }
+ ],
+ "sanity_original_validator_still_fails_every_key": [
+  [
+   "classicNoisedeck/bitEffects:bitEffects",
+   "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration"
+  ],
+  [
+   "classicNoisedeck/cellNoise:cellNoise",
+   "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration"
+  ],
+  [
+   "classicNoisedeck/colorLab:colorLab",
+   "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration"
+  ],
+  [
+   "classicNoisedeck/moodscape:moodscape",
+   "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration"
+  ],
+  [
+   "classicNoisedeck/shapeMixer:shapeMixer",
+   "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration"
+  ],
+  [
+   "classicNoisedeck/shapes:shapes",
+   "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration"
+  ],
+  [
+   "filter/adjust:adjust",
+   "filter/adjust:adjust:62:1: unsupported global declaration"
+  ],
+  [
+   "filter/colorspace:colorspace",
+   "filter/colorspace:colorspace:32:1: unsupported global declaration"
+  ],
+  [
+   "filter/edge:edge",
+   "filter/edge:edge:19:1: unsupported global declaration"
+  ],
+  [
+   "filter/emboss:emboss",
+   "filter/emboss:emboss:19:1: unsupported global declaration"
+  ],
+  [
+   "filter/fxaa:fxaa",
+   "filter/fxaa:fxaa:9:1: unsupported global declaration"
+  ],
+  [
+   "filter/glyphMap:glyphMap",
+   "filter/glyphMap:glyphMap:186:1: unsupported global declaration"
+  ],
+  [
+   "filter/grade:creative",
+   "filter/grade:creative:15:1: unsupported global declaration"
+  ],
+  [
+   "filter/grade:hslSecondary",
+   "filter/grade:hslSecondary:21:1: unsupported global declaration"
+  ],
+  [
+   "filter/grade:primary",
+   "filter/grade:primary:22:1: unsupported global declaration"
+  ],
+  [
+   "filter/grade:vignette",
+   "filter/grade:vignette:15:1: unsupported global declaration"
+  ],
+  [
+   "filter/grade:wheels",
+   "filter/grade:wheels:14:1: unsupported global declaration"
+  ],
+  [
+   "filter/grain:grain",
+   "filter/grain:grain:12:1: unsupported global declaration"
+  ],
+  [
+   "filter/historicPalette:historicPalette",
+   "filter/historicPalette:historicPalette:26:1: unsupported global declaration"
+  ],
+  [
+   "filter/normalMap:normalMap",
+   "filter/normalMap:normalMap:4:1: unsupported global declaration"
+  ],
+  [
+   "filter/osd:osd",
+   "filter/osd:osd:24:1: unsupported global declaration"
+  ],
+  [
+   "filter/palette:palette",
+   "filter/palette:palette:17:1: unsupported global declaration"
+  ],
+  [
+   "filter/scanlineError:scanlineError",
+   "filter/scanlineError:scanlineError:197:1: unsupported global declaration"
+  ],
+  [
+   "filter/snow:snow",
+   "filter/snow:snow:7:1: unsupported global declaration"
+  ],
+  [
+   "filter/spookyTicker:spookyTicker",
+   "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration"
+  ],
+  [
+   "filter/texture:texture",
+   "filter/texture:texture:30:1: unsupported global declaration"
+  ],
+  [
+   "filter/wobble:wobble",
+   "filter/wobble:wobble:16:1: unsupported global declaration"
+  ]
+ ]
+}

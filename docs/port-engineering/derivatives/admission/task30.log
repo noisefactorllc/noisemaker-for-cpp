@@ -1,0 +1,39 @@
+test_task30_capability_and_type_vocabulary_are_identity_scoped_not_widened (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_capability_and_type_vocabulary_are_identity_scoped_not_widened) ... [32mok[0m
+test_task30_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission) ... [32mok[0m
+test_task30_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task30_history_coexistence_and_live_schema_matches_130_program_state (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_history_coexistence_and_live_schema_matches_130_program_state) ... [31mFAIL[0m
+test_task30_native_executable_tables_are_exact_frozen_transcription_and_tamper_sensitive (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_native_executable_tables_are_exact_frozen_transcription_and_tamper_sensitive) ... [32mok[0m
+test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+The profile's node-walk/pairing/typing logic must itself reject. ... [32mok[0m
+test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte) ... [31mFAIL[0m
+test_task30_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task30_history_coexistence_and_live_schema_matches_130_program_state (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_history_coexistence_and_live_schema_matches_130_program_state)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m14753[0m, in [35mtest_task30_history_coexistence_and_live_schema_matches_130_program_state[0m
+    [31mself.assertEqual[0m[1;31m(25, typed.index(EXTRUDE_KEY))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m25 != 27[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m14845[0m, in [35mtest_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(task29_keys) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9' != 'b6ba222e44cd017745f31e5cea30d750f00db0e77ce8aa6c84ca92072fc60e76'
+- c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9
++ b6ba222e44cd017745f31e5cea30d750f00db0e77ce8aa6c84ca92072fc60e76
+[0m
+
+----------------------------------------------------------------------
+Ran 8 tests in 8.287s
+
+[1;31mFAILED[0m ([1;31mfailures=2[0m)

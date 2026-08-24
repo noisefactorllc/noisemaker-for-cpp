@@ -1,0 +1,5 @@
+[ 44%] Built target noisemaker-cpu
+[ 51%] Built target noisemaker-cpu-example-perlin
+[ 55%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_pass_runner.cpp.o
+[ 59%] Linking CXX executable noisemaker-cpu-tests
+[100%] Built target noisemaker-cpu-tests

@@ -1,0 +1,20 @@
+test_task32_authenticates_frozen_index_expression_sites_for_six_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_index_expression_sites_for_six_programs) ... [32mok[0m
+test_task32_authenticates_frozen_luma_weights_for_five_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_luma_weights_for_five_programs) ... [32mok[0m
+test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) ... [32mok[0m
+test_task32_emitted_primary_shows_narrow_global_and_index_lowering (tests.test_typed_generator.Task32GradeClusterTests.test_task32_emitted_primary_shows_narrow_global_and_index_lowering) ... [32mok[0m
+test_task32_hslsecondary_luma_weights_is_structurally_validated_only (tests.test_typed_generator.Task32GradeClusterTests.test_task32_hslsecondary_luma_weights_is_structurally_validated_only)
+Disclosure: `hslSecondary`'s LUMA_WEIGHTS type-checks (admission ... [32mok[0m
+test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate)
+The single-axis rejection above is absorbed by the coarse ... [32mok[0m
+test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate)
+Sibling of the index-track coarse-gate-bypass test above, for the ... [32mok[0m
+test_task32_no_history_collision_and_fresh_capability_and_type_tuples (tests.test_typed_generator.Task32GradeClusterTests.test_task32_no_history_collision_and_fresh_capability_and_type_tuples) ... [32mok[0m
+test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31 (tests.test_typed_generator.Task32GradeClusterTests.test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31)
+Removing all six grade keys from the live typed list must ... [32mok[0m
+test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks (tests.test_typed_generator.Task32GradeClusterTests.test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks) ... [32mok[0m
+test_task32_validator_and_emitter_require_both_profiles_where_expected (tests.test_typed_generator.Task32GradeClusterTests.test_task32_validator_and_emitter_require_both_profiles_where_expected) ... [32mok[0m
+
+----------------------------------------------------------------------
+Ran 11 tests in 81.821s
+
+[32mOK[0m

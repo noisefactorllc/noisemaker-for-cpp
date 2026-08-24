@@ -1,0 +1,94 @@
+total remaining 46
+1 classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration
+1 classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration
+1 classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index
+1 classicNoisedeck/effects:effects:31:1: unsupported global declaration
+1 classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof
+1 classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4
+1 classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration
+1 classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index
+1 classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof
+1 classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect
+1 classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index
+1 filter/blur:blurH:33:5: unsupported counted-for program proof
+1 filter/blur:blurV:33:5: unsupported counted-for program proof
+1 filter/dither:dither:521:5: unsupported counted-for program proof
+1 filter/edge:edge:19:1: unsupported global declaration
+1 filter/emboss:emboss:19:1: unsupported global declaration
+1 filter/fxaa:fxaa:9:1: unsupported global declaration
+1 filter/glyphMap:glyphMap:186:1: unsupported global declaration
+1 filter/grain:grain:12:1: unsupported global declaration
+1 filter/grime:grime:1:1: unsupported varying
+1 filter/historicPalette:historicPalette:26:1: unsupported global declaration
+1 filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof
+1 filter/median:median:47:5: unsupported counted-for program proof
+1 filter/normalMap:normalMap:4:1: unsupported global declaration
+1 filter/normalize:statsFinal:18:5: unsupported counted-for program proof
+1 filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil
+1 filter/osd:osd:24:1: unsupported global declaration
+1 filter/palette:palette:17:1: unsupported global declaration
+1 filter/parallax:parallax:59:9: unsupported counted-for program proof
+1 filter/scanlineError:scanlineError:197:1: unsupported global declaration
+1 filter/smooth:smoothBlend:17:1: unsupported global declaration
+1 filter/snow:snow:7:1: unsupported global declaration
+1 filter/spookyTicker:spookyTicker:19:1: unsupported global declaration
+1 filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof
+1 filter/texture:texture:30:1: unsupported global declaration
+1 filter/wobble:wobble:16:1: unsupported global declaration
+1 filter/wormhole:deposit:1:1: unsupported varying
+1 mixer/distortion:distortion:91:33: unsupported sampler parameter
+1 synth/gabor:gabor:54:13: unsupported counted-for safety charge
+1 synth/julia:julia:297:5: unsupported counted-for safety charge
+1 synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof
+1 synth/newton:newton:125:1: unsupported struct declaration
+1 synth/noise:noise:250:5: unsupported counted-for program proof
+1 synth/remap:remap:5:1: unsupported uniform block
+1 synth/shape:shape:31:1: unsupported global declaration
+1 synth/testPattern:testPattern:55:5: unsupported counted-for program proof
+---
+classicNoisedeck/bitEffects:bitEffects || classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration
+classicNoisedeck/cellRefract:cellRefract || classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration
+classicNoisedeck/colorLab:colorLab || classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index
+classicNoisedeck/effects:effects || classicNoisedeck/effects:effects:31:1: unsupported global declaration
+classicNoisedeck/fractal:fractal || classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof
+classicNoisedeck/glitch:glitch || classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4
+classicNoisedeck/kaleido:kaleido || classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration
+classicNoisedeck/moodscape:moodscape || classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index
+classicNoisedeck/noise:noise || classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof
+classicNoisedeck/shapeMixer:shapeMixer || classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect
+classicNoisedeck/shapes:shapes || classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index
+filter/blur:blurH || filter/blur:blurH:33:5: unsupported counted-for program proof
+filter/blur:blurV || filter/blur:blurV:33:5: unsupported counted-for program proof
+filter/dither:dither || filter/dither:dither:521:5: unsupported counted-for program proof
+filter/edge:edge || filter/edge:edge:19:1: unsupported global declaration
+filter/emboss:emboss || filter/emboss:emboss:19:1: unsupported global declaration
+filter/fxaa:fxaa || filter/fxaa:fxaa:9:1: unsupported global declaration
+filter/glyphMap:glyphMap || filter/glyphMap:glyphMap:186:1: unsupported global declaration
+filter/grain:grain || filter/grain:grain:12:1: unsupported global declaration
+filter/grime:grime || filter/grime:grime:1:1: unsupported varying
+filter/historicPalette:historicPalette || filter/historicPalette:historicPalette:26:1: unsupported global declaration
+filter/lightLeak:lightLeak || filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof
+filter/median:median || filter/median:median:47:5: unsupported counted-for program proof
+filter/normalMap:normalMap || filter/normalMap:normalMap:4:1: unsupported global declaration
+filter/normalize:statsFinal || filter/normalize:statsFinal:18:5: unsupported counted-for program proof
+filter/oilPaint:oilFlatten || filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil
+filter/osd:osd || filter/osd:osd:24:1: unsupported global declaration
+filter/palette:palette || filter/palette:palette:17:1: unsupported global declaration
+filter/parallax:parallax || filter/parallax:parallax:59:9: unsupported counted-for program proof
+filter/scanlineError:scanlineError || filter/scanlineError:scanlineError:197:1: unsupported global declaration
+filter/smooth:smoothBlend || filter/smooth:smoothBlend:17:1: unsupported global declaration
+filter/snow:snow || filter/snow:snow:7:1: unsupported global declaration
+filter/spookyTicker:spookyTicker || filter/spookyTicker:spookyTicker:19:1: unsupported global declaration
+filter/tetraColorArray:tetraColorArray || filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof
+filter/texture:texture || filter/texture:texture:30:1: unsupported global declaration
+filter/wobble:wobble || filter/wobble:wobble:16:1: unsupported global declaration
+filter/wormhole:deposit || filter/wormhole:deposit:1:1: unsupported varying
+mixer/distortion:distortion || mixer/distortion:distortion:91:33: unsupported sampler parameter
+synth/gabor:gabor || synth/gabor:gabor:54:13: unsupported counted-for safety charge
+synth/julia:julia || synth/julia:julia:297:5: unsupported counted-for safety charge
+synth/mandelbrot:mandelbrot || synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof
+synth/newton:newton || synth/newton:newton:125:1: unsupported struct declaration
+synth/noise:noise || synth/noise:noise:250:5: unsupported counted-for program proof
+synth/remap:remap || synth/remap:remap:5:1: unsupported uniform block
+synth/shape:shape || synth/shape:shape:31:1: unsupported global declaration
+synth/testPattern:testPattern || synth/testPattern:testPattern:55:5: unsupported counted-for program proof

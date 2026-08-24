@@ -1,0 +1,26 @@
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m13302[0m, in [35mtest_task28_schema_generation_and_task27_reconstruction[0m
+    [31mself.assertEqual[0m[1;31m(("filter/ridge:ridge", ROTATE_KEY, "filter/scale:scale"),[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31mtuple(keys[66:69]))[0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: ('filter/ridge:ridge', 'filter/rotate:rot', 'filter/scale:scale') != ('filter/polar:polar', 'filter/pondRipples:pondRip[51 chars]ion')
+
+First differing element 0:
+'filter/ridge:ridge'
+'filter/polar:polar'
+
+- ('filter/ridge:ridge', 'filter/rotate:rot', 'filter/scale:scale')
++ ('filter/polar:polar',
++  'filter/pondRipples:pondRipples',
++  'filter/prismaticAberration:prismaticAberration')[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 0.040s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

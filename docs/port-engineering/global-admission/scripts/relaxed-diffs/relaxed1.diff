@@ -1,0 +1,15 @@
+--- live_probe/tools/glslcpp/generate_typed_slice.py	2026-08-13 09:58:25
++++ live_probe/tools/glslcpp/generate_typed_slice_relaxed1.py	2026-08-13 10:15:44
+@@ -2096,7 +2096,11 @@
+             admitted_globals[declaration.symbol.id] = declaration
+             continue
+         if storage != "const" or declaration.type != FLOAT or declaration.initializer is None:
+-            raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
++            # RELAXED PROBE layer 1: treat as provisionally admitted so
++            # downstream blockers become visible. Never used outside this
++            # read-only probe; the real generator is untouched.
++            admitted_globals[declaration.symbol.id] = declaration
++            continue
+ 
+         def global_initializer(value) -> None:
+             if value.type != FLOAT:

@@ -1,0 +1,8 @@
+patching file 'include/noisemaker/effects/scatter/registry.hpp'
+patching file 'src/effects/scatter/registry.cpp'
+patching file 'include/noisemaker/effects/scatter/wormhole.hpp'
+patching file 'src/effects/scatter/wormhole.cpp'
+patching file 'include/noisemaker/effects/scatter/catalog.hpp'
+patching file 'src/effects/scatter/catalog.cpp'
+patching file 'tests/test_scatter_wormhole.cpp'
+patching file CMakeLists.txt

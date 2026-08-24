@@ -1,0 +1,358 @@
+{
+ "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+ "rows": [
+  {
+   "key": "classicNoisedeck/effects:effects",
+   "main_present": true,
+   "total_defined_functions": 28,
+   "total_reachable_functions": 8,
+   "unproved_loop_reachability": [
+    {
+     "function": "zoomBlur",
+     "function_reachable_from_main": false,
+     "signature_id": 92,
+     "span": "531:5"
+    }
+   ]
+  },
+  {
+   "key": "classicNoisedeck/fractal:fractal",
+   "main_present": true,
+   "total_defined_functions": 17,
+   "total_reachable_functions": 15,
+   "unproved_loop_reachability": [
+    {
+     "function": "julia",
+     "function_reachable_from_main": true,
+     "signature_id": 61,
+     "span": "261:5"
+    },
+    {
+     "function": "mandelbrot",
+     "function_reachable_from_main": true,
+     "signature_id": 65,
+     "span": "301:5"
+    },
+    {
+     "function": "newton",
+     "function_reachable_from_main": true,
+     "signature_id": 67,
+     "span": "220:5"
+    }
+   ]
+  },
+  {
+   "key": "classicNoisedeck/noise:noise",
+   "main_present": true,
+   "total_defined_functions": 40,
+   "total_reachable_functions": 15,
+   "unproved_loop_reachability": [
+    {
+     "function": "multires",
+     "function_reachable_from_main": true,
+     "signature_id": 155,
+     "span": "533:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/blur:blurH",
+   "main_present": true,
+   "total_defined_functions": 1,
+   "total_reachable_functions": 1,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 8,
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/blur:blurV",
+   "main_present": true,
+   "total_defined_functions": 1,
+   "total_reachable_functions": 1,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 8,
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/dither:dither",
+   "main_present": true,
+   "total_defined_functions": 20,
+   "total_reachable_functions": 20,
+   "unproved_loop_reachability": [
+    {
+     "function": "errorDiffusion",
+     "function_reachable_from_main": true,
+     "signature_id": 92,
+     "span": "521:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "function_reachable_from_main": true,
+     "signature_id": 92,
+     "span": "526:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "function_reachable_from_main": true,
+     "signature_id": 92,
+     "span": "533:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/lightLeak:lightLeak",
+   "main_present": true,
+   "total_defined_functions": 7,
+   "total_reachable_functions": 6,
+   "unproved_loop_reachability": [
+    {
+     "function": "voronoiCell",
+     "function_reachable_from_main": true,
+     "signature_id": 29,
+     "span": "65:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/median:median",
+   "main_present": true,
+   "total_defined_functions": 6,
+   "total_reachable_functions": 6,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 17,
+     "span": "63:5"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 17,
+     "span": "68:9"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 17,
+     "span": "69:13"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 17,
+     "span": "70:13"
+    }
+   ]
+  },
+  {
+   "key": "filter/normalize:statsFinal",
+   "main_present": true,
+   "total_defined_functions": 1,
+   "total_reachable_functions": 1,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 3,
+     "span": "18:5"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 3,
+     "span": "19:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/oilPaint:oilFlatten",
+   "main_present": true,
+   "total_defined_functions": 1,
+   "total_reachable_functions": 1,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 4,
+     "span": "33:5"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 4,
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/parallax:parallax",
+   "main_present": true,
+   "total_defined_functions": 4,
+   "total_reachable_functions": 4,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 16,
+     "span": "59:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/reindex:nmReindexReduce",
+   "main_present": true,
+   "total_defined_functions": 1,
+   "total_reachable_functions": 1,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 7,
+     "span": "32:5"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 7,
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/reindex:nmReindexStats",
+   "main_present": true,
+   "total_defined_functions": 6,
+   "total_reachable_functions": 6,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 13,
+     "span": "72:5"
+    },
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 13,
+     "span": "75:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/smooth:smoothBlend",
+   "main_present": true,
+   "total_defined_functions": 11,
+   "total_reachable_functions": 11,
+   "unproved_loop_reachability": [
+    {
+     "function": "searchEdge",
+     "function_reachable_from_main": true,
+     "signature_id": 39,
+     "span": "102:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/tetraColorArray:tetraColorArray",
+   "main_present": true,
+   "total_defined_functions": 17,
+   "total_reachable_functions": 17,
+   "unproved_loop_reachability": [
+    {
+     "function": "sampleColorArray",
+     "function_reachable_from_main": true,
+     "signature_id": 70,
+     "span": "243:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/zoomBlur:zoomBlur",
+   "main_present": true,
+   "total_defined_functions": 3,
+   "total_reachable_functions": 3,
+   "unproved_loop_reachability": [
+    {
+     "function": "main",
+     "function_reachable_from_main": true,
+     "signature_id": 8,
+     "span": "43:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/mandelbrot:mandelbrot",
+   "main_present": true,
+   "total_defined_functions": 24,
+   "total_reachable_functions": 24,
+   "unproved_loop_reachability": [
+    {
+     "function": "mandelbrot_df64",
+     "function_reachable_from_main": true,
+     "signature_id": 111,
+     "span": "226:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/noise:noise",
+   "main_present": true,
+   "total_defined_functions": 30,
+   "total_reachable_functions": 11,
+   "unproved_loop_reachability": [
+    {
+     "function": "multires",
+     "function_reachable_from_main": true,
+     "signature_id": 121,
+     "span": "250:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/testPattern:testPattern",
+   "main_present": true,
+   "total_defined_functions": 11,
+   "total_reachable_functions": 11,
+   "unproved_loop_reachability": [
+    {
+     "function": "renderNumber",
+     "function_reachable_from_main": true,
+     "signature_id": 29,
+     "span": "61:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/gabor:gabor",
+   "main_present": true,
+   "total_defined_functions": 5,
+   "total_reachable_functions": 5,
+   "unproved_loop_reachability": []
+  },
+  {
+   "key": "synth/newton:newton",
+   "main_present": true,
+   "total_defined_functions": 13,
+   "total_reachable_functions": 13,
+   "unproved_loop_reachability": []
+  },
+  {
+   "key": "synth/julia:julia",
+   "main_present": true,
+   "total_defined_functions": 19,
+   "total_reachable_functions": 19,
+   "unproved_loop_reachability": []
+  }
+ ]
+}

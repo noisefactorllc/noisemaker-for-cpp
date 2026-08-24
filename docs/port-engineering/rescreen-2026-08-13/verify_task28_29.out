@@ -1,0 +1,22 @@
+task29 counts: (166, 166, 46, 212)
+task29 typed sha: e01689106db98e84cd3f3ec267e3fd2b5419a5370e2c7f8038c96d69fa2e6955
+task29 focus index: 144
+task29 window: ('mixer/channelCombine:channelCombine', 'mixer/focusBlur:focusBlur', 'mixer/mashup:mashup')
+task28 counts: (143, 145, 67)
+task28 keys sha: 5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076
+task28 public sha: 6e778c9dd254880bff0bd4aba1f97d4c2e6c948f9b150bbd3a6d29ec62ad52a6
+task28 src/typed_generated/typed_slice.cpp 8b5795ec772543204a3c00e8cf7847118caf1a2a6cc31cc5e0c4ab0ac1fb52ea
+task28 src/typed_generated/typed_manifest.json b8e26db3016fcaf6c64ce9dd74896f7acb4dde7a205d0254eddc89479e5fdcd8
+task28 include/noisemaker/generated/catalog.hpp 68b9aa5a8e6bdc4f22b1537b3691026f20920a7c72cc4897ba22a910926c6354
+counts current/task28: (166, 143)
+diff == expected: True
+mismatches: []
+focus namespace: typed_144
+task29b len: 144
+task29b sha: b6ba222e44cd017745f31e5cea30d750f00db0e77ce8aa6c84ca92072fc60e76
+task29 src/typed_generated/typed_slice.cpp 574a54dc61281b7a2e30abff273563f8613a2d46d9b458c71e37fedf2a1ebb9b
+task29 src/typed_generated/typed_manifest.json e07df18d00ee5f102d272134472439b4f68c6b95c2cd252bbc9ec697dff97a48
+task29 include/noisemaker/generated/catalog.hpp 134e9df1c0c1f664abd21bdf82683d5218f745716d951b2356b32c9939ac23f9
+task29 block count: 144
+EXTRUDE_KEY in task29_blocks: False
+DONE2829

@@ -1,0 +1,577 @@
+{
+  "id": "nmReindexReduce",
+  "key": "filter/reindex:nmReindexReduce",
+  "defines": {},
+  "cases": [
+    {
+      "name": "min-in-last-row-y-axis",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": true,
+        "swap": true
+      },
+      "uniforms": {},
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "aba4a26bd07150e813092447c22842b805caf48b601fc14e2b7d78f3c0318818",
+        "rgba8_sha256": "7b2b1ebcff4ad47dbcddedf847400fa4f275ec464c04a83e0fb9aaf598d587c2",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.009999999776482582,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c23d70a",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.009999999776482582,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c23d70a",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.009999999776482582,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c23d70a",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.009999999776482582,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c23d70a",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.009999999776482582,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c23d70a",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "max-in-last-col-x-axis",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": true,
+        "swap": true
+      },
+      "uniforms": {},
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "76ff8389e43ed497886395a40197497466a1869b61ac5f6a3428eb4951f47552",
+        "rgba8_sha256": "b4126f0d1d1f1cec8044c18052d68f0d92e50e61b043743e07259b986631450b",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.949999988079071,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3f733333",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.949999988079071,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3f733333",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.949999988079071,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3f733333",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.949999988079071,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3f733333",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.949999988079071,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3f733333",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "small-3x3-grid-multi-tile-drop",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": false,
+        "swap": true
+      },
+      "uniforms": {},
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "2efa59f25fac42a86e77c79dc477dc8de911a4574f130b79a5744f85ccf099cf",
+        "rgba8_sha256": "5bcefff1e97b1e178efd3060e3884e27b5a4251b23a74f414ea1d564513cfbcf",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.019999999552965164,
+              0.9200000166893005,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca3d70a",
+              "0x3f6b851f",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.019999999552965164,
+              0.9200000166893005,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca3d70a",
+              "0x3f6b851f",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.019999999552965164,
+              0.9200000166893005,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca3d70a",
+              "0x3f6b851f",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.019999999552965164,
+              0.9200000166893005,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca3d70a",
+              "0x3f6b851f",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.019999999552965164,
+              0.9200000166893005,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca3d70a",
+              "0x3f6b851f",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "single-tile-diagnostic",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": true,
+      "reach": {
+        "offByOne": false,
+        "swap": false
+      },
+      "uniforms": {},
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "10e63f3b52a7d9a59f6dba89e9321eeb730bbe5a375659da9ef644cea68def24",
+        "rgba8_sha256": "49c73167083c210a75983a553f1d0780bd3e2623f1e05a6329828009f72f65a8",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.10000000149011612,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dcccccd",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.10000000149011612,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dcccccd",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.10000000149011612,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dcccccd",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.10000000149011612,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dcccccd",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.10000000149011612,
+              0.8999999761581421,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dcccccd",
+              "0x3f666666",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "nmReindexReduce-tile-cap-off-by-one",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "offByOne",
+      "anchor": "var MAX_TILE_DIM = 512;",
+      "mutated": "var MAX_TILE_DIM = 4;",
+      "description": "Shrink the shared tile-scan cap from 512 to 4: drops tile row/col index 4 from BOTH nested loops (they share one symbol). Reach-eligible exactly when a case's tileCount.x or tileCount.y exceeds 4.",
+      "case_results": [
+        {
+          "case": "min-in-last-row-y-axis",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "max-in-last-col-x-axis",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "small-3x3-grid-multi-tile-drop",
+          "diagnostic": false,
+          "reaches": false,
+          "diverges": false
+        },
+        {
+          "case": "single-tile-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 2,
+        "divergent_reaching": 2,
+        "non_reaching_cases": 2,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "nmReindexReduce-tile-cap-swap",
+      "kind": "trip_count_swap",
+      "reach_key": "swap",
+      "anchor": "var MAX_TILE_DIM = 512;",
+      "mutated": "var MAX_TILE_DIM = 1;",
+      "description": "Shrink the shared tile-scan cap to 1: a materially wrong trip count, visiting only tile (0,0) regardless of true tileCount. Reach-eligible whenever a case's tileCount.x or tileCount.y exceeds 1.",
+      "case_results": [
+        {
+          "case": "min-in-last-row-y-axis",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "max-in-last-col-x-axis",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "small-3x3-grid-multi-tile-drop",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "single-tile-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    }
+  ]
+}

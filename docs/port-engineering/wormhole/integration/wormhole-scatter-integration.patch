@@ -1,0 +1,625 @@
+diff --git a/include/noisemaker/effects/scatter/registry.hpp b/include/noisemaker/effects/scatter/registry.hpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/include/noisemaker/effects/scatter/registry.hpp
+@@ -0,0 +1,94 @@
++#pragma once
++
++// Registry of hand-written C++ "scatter" adapters for vertex-stage
++// (`drawMode: "points"` / `"billboards"`) passes -- the C++ analog of
++// noisemaker-for-cpu's `src/effects/cpu/scatter-registry.js`.
++//
++// WHY THIS EXISTS: `run_pass` (noisemaker/pass_runner.hpp) is a per-pixel
++// GATHER -- it calls a `BoundKernel`'s pixel function once per DESTINATION
++// pixel and fills every output pixel exactly once. A handful of upstream
++// programs (wormhole's `deposit`, and per the JS scatter-registry.js header
++// comment: DLA's `depositGrid`, Lenia's `deposit`, Physarum's `deposit`,
++// pointsRender's `deposit`, pointsBillboardRender's `deposit`, and flow3d's
++// `deposit` -- seven programs total, six beyond wormhole) are SCATTER passes
++// instead: they rasterize a variable number of points/quads per SOURCE
++// pixel, landing on a variable number of destination pixels (zero, one, or
++// several source pixels can address the same destination pixel, and
++// -- see wormhole's own report -- a source can even address no destination
++// pixel at all, matching a real JS TypedArray out-of-range write no-op).
++// That shape does not fit `run_pass`'s "exactly once per destination pixel"
++// contract, so it needs its own dispatch -- exactly the reason JS carved
++// `scatter-registry.js` out of the ordinary GLSL-kernel path.
++//
++// DESIGN, mirroring the JS contract 1:1 so the six remaining adapters need
++// no new machinery when they're ported:
++//   - Adapter signature: `(const glsl::Bindings&, Surface& destination) ->
++//     std::size_t`. `bindings` is the SAME `glsl::Bindings` an ordinary
++//     `bind_*` kernel factory already receives (see
++//     `noisemaker/generated/catalog.hpp`) -- ONE uniform/texture-resolution
++//     code path for both pass shapes, not a second parallel one. `bindings`
++//     supplies both the scatter's uniforms (`get_number`/`get<T>`) and its
++//     input texture(s) (`texture(name)`).
++//   - `destination` is the output Surface, pre-seeded by the (future)
++//     multi-pass driver with the previous contents of the named output
++//     texture (or cleared, if none) -- the adapter accumulates into it IN
++//     PLACE, exactly like the JS contract; the driver quantizes/stores the
++//     result afterward like any other pass.
++//   - Return value mirrors JS's `{ pixels }` -- the count of source pixels
++//     processed, for parity with existing pass-stats plumbing and tests.
++//   - Adapters are keyed by the SAME `"${effectId}:${program}"` string the
++//     manifest/pass data already carries (identical to how JS keys
++//     `scatter-registry.js`), so whatever future structure drives pass
++//     dispatch (reading the ported manifest's `drawMode` field) needs no
++//     per-effect special-casing -- one string lookup, same shape as a
++//     BoundKernel lookup.
++//   - Registration is EXPLICIT (`register_scatter_adapter`, called from each
++//     effect's own `register_*` function, aggregated in
++//     `noisemaker/effects/scatter/catalog.hpp`'s
++//     `register_builtin_scatter_adapters()`) -- never a global/static
++//     constructor. This matches the existing codebase's preference (flat
++//     `bind_*` declarations in `generated/catalog.hpp`, no self-registering
++//     statics anywhere in `src/generated` or `src/typed_generated`) and
++//     avoids static-initialization-order hazards across translation units.
++//
++// FUTURE DISPATCH SITE (not yet built -- see wormhole-report.md's
++// integration section): whatever eventually plays `renderer.js`'s role of
++// iterating an effect's `pass` list and calling `run_pass` per pass should
++// gain exactly one new branch, mirroring `renderer.js`'s own
++// `pass.drawMode === 'points' || pass.drawMode === 'billboards'` check:
++//
++//   if (pass.draw_mode == DrawMode::Points || pass.draw_mode == DrawMode::Billboards) {
++//     const ScatterAdapter adapter = resolve_scatter_adapter(scatter_key);
++//     if (adapter == nullptr) throw std::runtime_error("missing scatter adapter: " + scatter_key);
++//     adapter(bindings, destination);
++//   } else {
++//     destination = run_pass(bound_kernel, width, height, ...);
++//   }
++//
++// That branch is the ENTIRE integration surface -- everything else (Surface
++// lifetime, uniform binding, quantization, output storage) is already
++// shared with the gather path.
++
++#include <cstddef>
++#include <string_view>
++
++#include "noisemaker/glsl_runtime.hpp"
++#include "noisemaker/surface.hpp"
++
++namespace noisemaker::scatter {
++
++using ScatterAdapter = std::size_t (*)(const glsl::Bindings& bindings, Surface& destination);
++
++// Registers `adapter` under `key` (e.g. "filter/wormhole:deposit"). Throws
++// `std::invalid_argument` if `key` is empty or already registered -- a
++// silently-overwritten adapter is exactly the kind of bug this registry
++// exists to make impossible to introduce by accident.
++void register_scatter_adapter(std::string_view key, ScatterAdapter adapter);
++
++// Returns nullptr if `key` has no registered adapter (mirrors JS
++// `resolveScatterAdapter`'s `undefined` return -- callers decide whether a
++// missing adapter is a hard error, exactly like the JS renderer does at its
++// call sites).
++[[nodiscard]] ScatterAdapter resolve_scatter_adapter(std::string_view key) noexcept;
++
++}  // namespace noisemaker::scatter
+diff --git a/src/effects/scatter/registry.cpp b/src/effects/scatter/registry.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/src/effects/scatter/registry.cpp
+@@ -0,0 +1,29 @@
++#include "noisemaker/effects/scatter/registry.hpp"
++
++#include <stdexcept>
++#include <string>
++#include <unordered_map>
++
++namespace noisemaker::scatter {
++namespace {
++
++std::unordered_map<std::string, ScatterAdapter>& registry() {
++  static std::unordered_map<std::string, ScatterAdapter> instance;
++  return instance;
++}
++
++}  // namespace
++
++void register_scatter_adapter(std::string_view key, ScatterAdapter adapter) {
++  if (key.empty()) throw std::invalid_argument("register_scatter_adapter requires a non-empty key");
++  if (adapter == nullptr) throw std::invalid_argument("register_scatter_adapter requires a non-null adapter");
++  auto [it, inserted] = registry().emplace(std::string(key), adapter);
++  if (!inserted) throw std::invalid_argument("register_scatter_adapter: key already registered: " + std::string(key));
++}
++
++ScatterAdapter resolve_scatter_adapter(std::string_view key) noexcept {
++  const auto it = registry().find(std::string(key));
++  return it == registry().end() ? nullptr : it->second;
++}
++
++}  // namespace noisemaker::scatter
+diff --git a/include/noisemaker/effects/scatter/wormhole.hpp b/include/noisemaker/effects/scatter/wormhole.hpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/include/noisemaker/effects/scatter/wormhole.hpp
+@@ -0,0 +1,70 @@
++#pragma once
++
++// C++ port of `runWormholeDeposit` (noisemaker-for-cpu:
++// src/effects/cpu/wormhole.js:34-76) -- the scatter half of
++// `filter/wormhole:deposit`. Verified bit-exact against a machine-checked JS
++// oracle (62 cases spanning all three wrap modes, odd/non-square/power-of-two
++// canvas sizes, collisions, out-of-bounds wraps, and negative-modulo inputs;
++// 9 mutation-tested behaviors; see wormhole-report.md for the full
++// methodology and results). This header is the reviewed, ready-to-apply
++// version of the standalone proof-of-concept at
++// docs/port-engineering/wormhole/cpp/wormhole_deposit.hpp, retargeted
++// from a throwaway standalone Surface onto the real `noisemaker::Surface`.
++//
++// PRECISION CONTRACT -- see the standalone header for the full rationale;
++// summarized here:
++//   - Every intermediate value is a `double`. `f32r()` performs the
++//     "round-trip through float and back to double" that JS `Math.fround`
++//     does; `add`/`mul`/`divd` each apply it exactly once, exactly where the
++//     JS source does. Never flatten a chained add(add(mul(...),mul(...)))
++//     expression -- that skips intermediate roundings later terms depend on.
++//   - `-ffp-contract=off` (already the project-wide default per
++//     CMakeLists.txt) keeps the compiler from fusing any `a*b+c` shape into
++//     an FMA; this codebase's per-operation-rounding style also blocks
++//     contraction structurally (each rounding is a real, observable
++//     `static_cast<float>`), but the flag stays mandatory as defense in
++//     depth.
++//   - `div(1, 3)` (the OKLab cube-root exponent) is F32-rounded BEFORE
++//     `pow`, not `1.0 / 3.0`.
++//   - `pixelStride = 1024 * uniforms.stride` is double precision, never
++//     pre-narrowed (see wormhole-report.md's `pixel_stride_rounding_proof`
++//     for why this happens to be provably unobservable for this specific
++//     multiplier -- documented rather than relied upon).
++//   - Vertex IDs are bottom-up: `row = height - 1 - y` for BOTH the source
++//     read and the destination write.
++//   - `weight = mul(lightness, lightness)`; every accumulated RGB channel
++//     round-trips through `float16_truncate` (a real rgba16f store,
++//     truncating not rounding); alpha is never touched.
++//   - `wrapMirror` has a genuine off-by-one for `value ≡ -1 (mod 2*size)`
++//     (returns exactly -1, proven by exhaustive sweep in wormhole-report.md)
++//     which in JS silently no-ops the destination TypedArray write. This
++//     port reproduces that exactly via a flat-offset bounds check -- NOT by
++//     clamping X/Y independently, which would silently drop writes JS
++//     actually performs (an out-of-range X with an in-range row can alias
++//     into the previous row's last pixel, which JS really does write to).
++#include <cstddef>
++
++#include "noisemaker/surface.hpp"
++
++namespace noisemaker::scatter::wormhole {
++
++struct Uniforms {
++  double kink = 1.0;
++  double stride = 1.0;
++  double rotation = 0.0;
++  double wrap = 1.0;  // 0 = mirror, 2 = clamp, anything else = repeat (matches `uniforms.wrap | 0` dispatch)
++};
++
++// Accumulates `input` into `destination` IN PLACE (never clears it -- the
++// caller pre-seeds it with the previous accum-texture contents, exactly like
++// the JS adapter contract). Throws `std::invalid_argument` if the two
++// surfaces' dimensions don't match, matching the JS reference's own guard.
++void run_deposit(const Surface& input, Surface& destination, const Uniforms& uniforms);
++
++// Registers the "filter/wormhole:deposit" scatter adapter (see
++// noisemaker/effects/scatter/registry.hpp). Called from
++// `register_builtin_scatter_adapters()`
++// (noisemaker/effects/scatter/catalog.hpp) -- never as a static initializer.
++void register_adapter();
++
++}  // namespace noisemaker::scatter::wormhole
+diff --git a/src/effects/scatter/wormhole.cpp b/src/effects/scatter/wormhole.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/src/effects/scatter/wormhole.cpp
+@@ -0,0 +1,175 @@
++#include "noisemaker/effects/scatter/wormhole.hpp"
++
++#include <algorithm>
++#include <cmath>
++#include <cstdint>
++#include <cstring>
++#include <limits>
++#include <stdexcept>
++
++#include "noisemaker/effects/scatter/registry.hpp"
++
++namespace noisemaker::scatter::wormhole {
++namespace {
++
++constexpr double kTau = 6.28318530717959;
++constexpr double kPi = 3.141592653589793;  // identical double to JS Math.PI
++
++[[nodiscard]] double f32r(double value) noexcept { return static_cast<double>(static_cast<float>(value)); }
++[[nodiscard]] double add(double left, double right) noexcept { return f32r(left + right); }
++[[nodiscard]] double mul(double left, double right) noexcept { return f32r(left * right); }
++[[nodiscard]] double divd(double left, double right) noexcept { return f32r(left / right); }
++
++[[nodiscard]] double oklab_lightness(double red, double green, double blue) noexcept {
++  const double r = std::min(std::max(red, 0.0), 1.0);
++  const double g = std::min(std::max(green, 0.0), 1.0);
++  const double b = std::min(std::max(blue, 0.0), 1.0);
++  const double l = add(add(mul(f32r(0.4122214708), r), mul(f32r(0.5363325363), g)), mul(f32r(0.0514459929), b));
++  const double m = add(add(mul(f32r(0.2119034982), r), mul(f32r(0.6806995451), g)), mul(f32r(0.1073969566), b));
++  const double s = add(add(mul(f32r(0.0883024619), r), mul(f32r(0.2817188376), g)), mul(f32r(0.6299787005), b));
++  const double exponent = divd(1.0, 3.0);
++  const double lr = f32r(std::pow(std::max(l, 0.0), exponent));
++  const double mr = f32r(std::pow(std::max(m, 0.0), exponent));
++  const double sr = f32r(std::pow(std::max(s, 0.0), exponent));
++  return add(add(mul(f32r(0.2104542553), lr), mul(f32r(0.793617785), mr)), mul(f32r(-0.0040720468), sr));
++}
++
++[[nodiscard]] std::int64_t wrap_repeat(std::int64_t value, std::int64_t size) noexcept {
++  return ((value % size) + size) % size;
++}
++[[nodiscard]] std::int64_t wrap_mirror(std::int64_t value, std::int64_t size) noexcept {
++  const std::int64_t doubled = size * 2;
++  const std::int64_t mirrored = wrap_repeat(value, doubled);
++  const std::int64_t diff = mirrored - size + 1;
++  const std::int64_t abs_diff = diff < 0 ? -diff : diff;
++  return size - 1 - abs_diff;
++}
++
++[[nodiscard]] std::int32_t to_int32_bitwise_or_zero(double value) noexcept {
++  if (!std::isfinite(value)) return 0;
++  const double truncated = std::trunc(value);
++  double modded = std::fmod(truncated, 4294967296.0);  // 2^32
++  if (modded < 0) modded += 4294967296.0;
++  const auto u = static_cast<std::uint32_t>(modded);
++  std::int32_t signed_value;
++  std::memcpy(&signed_value, &u, sizeof(signed_value));
++  return signed_value;
++}
++
++[[nodiscard]] std::uint32_t float_to_bits(float value) noexcept {
++  std::uint32_t bits;
++  std::memcpy(&bits, &value, sizeof(bits));
++  return bits;
++}
++[[nodiscard]] float decode_float16(std::uint16_t bits) noexcept {
++  const double sign = ((bits & 0x8000u) == 0u) ? 1.0 : -1.0;
++  const int exponent = (bits >> 10) & 0x1f;
++  const int fraction = bits & 0x3ff;
++  if (exponent == 0) return static_cast<float>(sign * static_cast<double>(fraction) * std::pow(2.0, -24.0));
++  if (exponent == 0x1f) {
++    if (fraction == 0) return sign > 0.0 ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
++    return std::numeric_limits<float>::quiet_NaN();
++  }
++  return static_cast<float>(sign * (1.0 + static_cast<double>(fraction) / 1024.0) * std::pow(2.0, static_cast<double>(exponent - 15)));
++}
++// A real rgba16f store: truncating (round-toward-zero mantissa truncation,
++// not round-to-nearest), matching texture-format.js's
++// `float16Truncate`/`decodeFloat16` pair bit manipulation for bit
++// manipulation.
++[[nodiscard]] float float16_truncate(double value) noexcept {
++  const std::uint32_t bits = float_to_bits(static_cast<float>(value));
++  const std::uint32_t sign = (bits >> 16) & 0x8000u;
++  const std::uint32_t source_exponent = (bits >> 23) & 0xffu;
++  const std::uint32_t fraction = bits & 0x7fffffu;
++  if (source_exponent == 0xffu) {
++    if (fraction == 0u) return sign == 0u ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
++    return std::numeric_limits<float>::quiet_NaN();
++  }
++  const int exponent = static_cast<int>(source_exponent) - 127 + 15;
++  std::uint32_t half_bits;
++  if (exponent >= 0x1f) {
++    half_bits = sign | 0x7bffu;
++  } else if (exponent <= 0) {
++    half_bits = (exponent < -10) ? sign : (sign | (((fraction | 0x800000u) >> (1 - exponent)) >> 13));
++  } else {
++    half_bits = sign | (static_cast<std::uint32_t>(exponent) << 10) | (fraction >> 13);
++  }
++  return decode_float16(static_cast<std::uint16_t>(half_bits));
++}
++
++std::size_t adapter(const glsl::Bindings& bindings, Surface& destination) {
++  const Surface& input = bindings.texture("inputTex");
++  Uniforms uniforms;
++  uniforms.kink = bindings.get_number("kink");
++  uniforms.stride = bindings.get_number("stride");
++  uniforms.rotation = bindings.get_number("rotation");
++  uniforms.wrap = bindings.get_number("wrap");
++  run_deposit(input, destination, uniforms);
++  return input.width() * input.height();
++}
++
++}  // namespace
++
++void run_deposit(const Surface& input, Surface& destination, const Uniforms& uniforms) {
++  if (input.width() != destination.width() || input.height() != destination.height()) {
++    throw std::invalid_argument("wormhole deposit requires matching source and destination dimensions");
++  }
++  const auto width = static_cast<std::int64_t>(input.width());
++  const auto height = static_cast<std::int64_t>(input.height());
++  const auto input_data = input.data();
++  const auto output_data = destination.data();
++
++  const double kink = uniforms.kink;
++  const double pixel_stride = 1024.0 * uniforms.stride;  // double precision -- see header note
++  const double rotation = divd(mul(f32r(uniforms.rotation), f32r(kPi)), 180.0);
++  const std::int32_t wrap = to_int32_bitwise_or_zero(uniforms.wrap);
++
++  for (std::int64_t source_y = 0; source_y < height; source_y += 1) {
++    for (std::int64_t source_x = 0; source_x < width; source_x += 1) {
++      const std::int64_t source_row = height - 1 - source_y;
++      const auto source_offset = static_cast<std::size_t>((source_row * width + source_x) * 4);
++
++      const double lightness = oklab_lightness(input_data[source_offset], input_data[source_offset + 1], input_data[source_offset + 2]);
++      const double angle = add(mul(mul(lightness, f32r(kTau)), f32r(kink)), rotation);
++      const double offset_x = mul(add(f32r(std::cos(angle)), 1.0), f32r(pixel_stride));
++      const double offset_y = mul(add(f32r(std::sin(angle)), 1.0), f32r(pixel_stride));
++
++      std::int64_t destination_x = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_x), offset_x)));
++      std::int64_t destination_y = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_y), offset_y)));
++
++      if (wrap == 0) {
++        destination_x = wrap_mirror(destination_x, width);
++        destination_y = wrap_mirror(destination_y, height);
++      } else if (wrap == 2) {
++        destination_x = std::min(std::max(destination_x, std::int64_t{0}), width - 1);
++        destination_y = std::min(std::max(destination_y, std::int64_t{0}), height - 1);
++      } else {
++        destination_x = wrap_repeat(destination_x, width);
++        destination_y = wrap_repeat(destination_y, height);
++      }
++
++      // See header/wormhole-report.md: wrapMirror can legitimately return -1
++      // (value ≡ -1 mod 2*size); JS silently no-ops the resulting
++      // out-of-range TypedArray write. Bounds-check the FLAT offset (not X/Y
++      // independently -- an out-of-range X with an in-range row can alias
++      // into the previous row's last pixel, which JS really does write to).
++      const std::int64_t destination_row = height - 1 - destination_y;
++      const std::int64_t destination_offset_signed = (destination_row * width + destination_x) * 4;
++      const std::int64_t total_lanes = width * height * 4;
++      if (destination_offset_signed < 0 || destination_offset_signed + 2 >= total_lanes) {
++        continue;
++      }
++      const auto destination_offset = static_cast<std::size_t>(destination_offset_signed);
++
++      const double weight = mul(lightness, lightness);
++      output_data[destination_offset] = float16_truncate(add(output_data[destination_offset], mul(input_data[source_offset], weight)));
++      output_data[destination_offset + 1] = float16_truncate(add(output_data[destination_offset + 1], mul(input_data[source_offset + 1], weight)));
++      output_data[destination_offset + 2] = float16_truncate(add(output_data[destination_offset + 2], mul(input_data[source_offset + 2], weight)));
++      // Alpha (destination_offset + 3) is deliberately left untouched.
++    }
++  }
++}
++
++void register_adapter() { scatter::register_scatter_adapter("filter/wormhole:deposit", &adapter); }
++
++}  // namespace noisemaker::scatter::wormhole
+diff --git a/include/noisemaker/effects/scatter/catalog.hpp b/include/noisemaker/effects/scatter/catalog.hpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/include/noisemaker/effects/scatter/catalog.hpp
+@@ -0,0 +1,21 @@
++#pragma once
++
++// Flat list of per-effect scatter-adapter registration functions, mirroring
++// `noisemaker/generated/catalog.hpp`'s flat `bind_*` declaration style
++// (rather than self-registering static-init globals). Add one declaration
++// here plus one call in `register_builtin_scatter_adapters()`
++// (catalog.cpp) per new scatter adapter -- e.g. when porting DLA's
++// `depositGrid`, Lenia's `deposit`, Physarum's `deposit`, pointsRender's
++// `deposit`, pointsBillboardRender's `deposit`, or flow3d's `deposit` (the
++// six other JS scatter adapters registered in scatter-registry.js).
++
++namespace noisemaker::scatter {
++
++// Call exactly once during process/test startup, before any pass dispatch
++// may need a scatter adapter (analogous to how the JS side's
++// scatter-registry.js registrations run at module-load time via its own
++// imports -- but explicit here rather than implicit, per this file's
++// no-static-init-magic convention).
++void register_builtin_scatter_adapters();
++
++}  // namespace noisemaker::scatter
+diff --git a/src/effects/scatter/catalog.cpp b/src/effects/scatter/catalog.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/src/effects/scatter/catalog.cpp
+@@ -0,0 +1,24 @@
++#include "noisemaker/effects/scatter/catalog.hpp"
++
++#include "noisemaker/effects/scatter/wormhole.hpp"
++
++namespace noisemaker::scatter {
++
++// Idempotent by design: `register_scatter_adapter` itself still throws on a
++// genuine duplicate KEY (catching real registration bugs), but this
++// aggregate entry point is meant to be called defensively from multiple
++// independent call sites (test fixtures, future subsystem init paths) --
++// exactly once for real, silently a no-op after that.
++void register_builtin_scatter_adapters() {
++  static bool registered = [] {
++    wormhole::register_adapter();
++    // Six more calls land here as the remaining scatter adapters are ported:
++    // dla::register_adapter(); lenia::register_adapter();
++    // physarum::register_adapter(); points_render::register_adapter();
++    // points_billboard_render::register_adapter(); flow3d::register_adapter();
++    return true;
++  }();
++  static_cast<void>(registered);
++}
++
++}  // namespace noisemaker::scatter
+diff --git a/tests/test_scatter_wormhole.cpp b/tests/test_scatter_wormhole.cpp
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/tests/test_scatter_wormhole.cpp
+@@ -0,0 +1,148 @@
++#include "test_harness.hpp"
++
++#include <cstdint>
++#include <vector>
++
++#include "noisemaker/effects/scatter/catalog.hpp"
++#include "noisemaker/effects/scatter/registry.hpp"
++#include "noisemaker/effects/scatter/wormhole.hpp"
++#include "noisemaker/numeric.hpp"
++#include "noisemaker/surface.hpp"
++
++namespace {
++
++// Regression vectors below were captured directly from the real, unmodified
++// `runWormholeDeposit` (noisemaker-for-cpu: src/effects/cpu/wormhole.js),
++// independent of and smaller than the full 62-case/9-mutation oracle at
++// docs/port-engineering/wormhole/oracle/wormhole-oracles.json (see
++// wormhole-report.md for that full verification). These three exist so this
++// port carries its own durable, in-repo regression coverage without
++// depending on an out-of-tree fixture.
++std::vector<float> bits_to_floats(const std::vector<std::uint32_t>& bits) {
++  std::vector<float> out;
++  out.reserve(bits.size());
++  for (const auto b : bits) out.push_back(noisemaker::uint_bits_to_float(b));
++  return out;
++}
++
++}  // namespace
++
++TEST(scatter_wormhole_registers_under_the_canonical_key) {
++  noisemaker::scatter::register_builtin_scatter_adapters();
++  REQUIRE(noisemaker::scatter::resolve_scatter_adapter("filter/wormhole:deposit") != nullptr);
++  REQUIRE(noisemaker::scatter::resolve_scatter_adapter("filter/no-such-effect:deposit") == nullptr);
++}
++
++TEST(scatter_wormhole_direct_call_matches_js_oracle_mirror_4x3) {
++  const std::vector<std::uint32_t> input_bits{
++      0x3e7353a5, 0x3f30d322, 0x3f5b6db7, 0x3dc9ea5e, 0x3f1a9d26, 0x3f5db0d3, 0x3f070871, 0x3e81cd85,
++      0x3c2237c3, 0x3dfd5c5f, 0x3e4a8ca9, 0x3ed12073, 0x3ec0a238, 0x3e991279, 0x3f47bc7c, 0x3f1039b1,
++      0x3ed9faee, 0x3e4893cb, 0x3f6f1ef2, 0x3e9039b1, 0x3f4ac5b4, 0x3ebe0547, 0x3f1ab9ac, 0x3edf8c9f,
++      0x3e4ac5b4, 0x3f0be054, 0x3e8ca8cb, 0x3f176fc6, 0x3f1079aa, 0x3f38be05, 0x3f5b6db7, 0x3f3f193d,
++      0x3f1d2605, 0x3f1e59bb, 0x3dca8ca9, 0x3eedf8ca, 0x3ca237c3, 0x3f4b376c, 0x3f2e6ae7, 0x3f1ea5dc,
++      0x3ec5b3f6, 0x3d53224f, 0x3eb40b41, 0x3f464f53, 0x3f40a238, 0x3e683f57, 0x3f6f1ef2, 0x3d9039b1,
++  };
++  const std::vector<std::uint32_t> expected_output_bits{
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3e444000, 0x3e1c0000, 0x3ecb8000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3ed7c000, 0x3ed96000, 0x3d8b0000, 0x00000000, 0x3f1dc000, 0x3e8d4000, 0x3f076000, 0x00000000,
++      0x3e394000, 0x3f852000, 0x3f8a0000, 0x00000000, 0x3f34e000, 0x3f516000, 0x3f61e000, 0x00000000,
++      0x3f5e6000, 0x3f31a000, 0x3f99a000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++  };
++
++  noisemaker::Surface input(4, 3, bits_to_floats(input_bits));
++  noisemaker::Surface destination(4, 3);
++  noisemaker::scatter::wormhole::Uniforms uniforms;
++  uniforms.kink = 1.1;
++  uniforms.stride = 0.7;
++  uniforms.rotation = 25.0;
++  uniforms.wrap = 0.0;  // mirror
++
++  noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms);
++
++  const auto got = destination.data();
++  for (std::size_t i = 0; i < expected_output_bits.size(); ++i) {
++    REQUIRE(noisemaker::float_bits_to_uint(got[i]) == expected_output_bits[i]);
++  }
++}
++
++TEST(scatter_wormhole_via_registry_matches_js_oracle_repeat_3x4) {
++  const std::vector<std::uint32_t> input_bits{
++      0x3eee41e7, 0x3d93cb37, 0x3e924925, 0x3f1ea5dc, 0x3f54e930, 0x3e7d5c5f, 0x3f5e3de4, 0x3f464f53,
++      0x3e7353a5, 0x3ed86991, 0x3f09d89e, 0x3d9039b1, 0x3f274981, 0x3efd5c5f, 0x3eb9ab9b, 0x3f4d8569,
++      0x3d7353a5, 0x3f2b8be0, 0x3d070871, 0x3dc9ea5e, 0x3ed9faee, 0x3f586991, 0x3f1d89d9, 0x3e81cd85,
++      0x3f57720f, 0x3f6ae2f8, 0x3ee10e11, 0x3e01cd85, 0x3e7d7721, 0x3e3376c3, 0x3de10e11, 0x3e9039b1,
++      0x3f1d2605, 0x3eb376c3, 0x3f313b14, 0x3edf8c9f, 0x3d8df0cb, 0x3ed86991, 0x3f043844, 0x3e9ea5dc,
++      0x3edf0cac, 0x3f191279, 0x3e3f4bf5, 0x3eedf8ca, 0x3f4d4e93, 0x3f45f02a, 0x3f44ec4f, 0x3f1ea5dc,
++  };
++  const std::vector<std::uint32_t> expected_output_bits{
++      0x3e420000, 0x3ed70000, 0x3de9e000, 0x00000000, 0x3fcda000, 0x3f968000, 0x3fa82000, 0x00000000,
++      0x3ed90000, 0x3ea46000, 0x3e70e000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3da60000, 0x3d6b2000, 0x3d136000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3eae8000, 0x3f2d4000, 0x3efc4000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3f56e000, 0x3f8ae000, 0x3f982000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x3e8fe000, 0x3ec58000, 0x3df6c000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++  };
++
++  noisemaker::scatter::register_builtin_scatter_adapters();
++  const auto adapter = noisemaker::scatter::resolve_scatter_adapter("filter/wormhole:deposit");
++  REQUIRE(adapter != nullptr);
++
++  noisemaker::Surface input(3, 4, bits_to_floats(input_bits));
++  noisemaker::Surface destination(3, 4);
++
++  noisemaker::glsl::Bindings bindings;
++  bindings.set_texture("inputTex", input);
++  bindings.set_uniform("kink", 0.4);
++  bindings.set_uniform("stride", 1.6);
++  bindings.set_uniform("rotation", -95.0);
++  bindings.set_uniform("wrap", 1.0);  // repeat
++
++  const std::size_t pixels = adapter(bindings, destination);
++  REQUIRE(pixels == 3U * 4U);
++
++  const auto got = destination.data();
++  for (std::size_t i = 0; i < expected_output_bits.size(); ++i) {
++    REQUIRE(noisemaker::float_bits_to_uint(got[i]) == expected_output_bits[i]);
++  }
++}
++
++TEST(scatter_wormhole_clamp_wrap_matches_js_oracle_5x2) {
++  const std::vector<std::uint32_t> input_bits{
++      0x3f316cfd, 0x3ebe0547, 0x3f205a06, 0x3e9039b1, 0x3dcac5b4, 0x3f0be054, 0x3e97e97f, 0x3edf8c9f,
++      0x3eee41e7, 0x3f38be05, 0x3f610e11, 0x3f176fc6, 0x3f54e930, 0x3f659bb6, 0x3f0ca8cb, 0x3f3f193d,
++      0x3e7353a5, 0x3e1e59bb, 0x3e610e11, 0x3f66c2b4, 0x3f61958b, 0x3f4b376c, 0x3f340b41, 0x3eedf8ca,
++      0x3e930289, 0x3d53224f, 0x3ebf4bf5, 0x3f1ea5dc, 0x3f274981, 0x3e683f57, 0x3d340b41, 0x3f464f53,
++      0x3d7353a5, 0x3ecddb0d, 0x3f205a06, 0x3d9039b1, 0x3ed9faee, 0x3f13cb37, 0x3e97e97f, 0x3e66c2b4,
++  };
++  const std::vector<std::uint32_t> expected_output_bits{
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x3f3ea000, 0x3f4da000, 0x3efc0000, 0x00000000,
++      0x4016c000, 0x401fc000, 0x4020a000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++      0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
++  };
++
++  noisemaker::Surface input(5, 2, bits_to_floats(input_bits));
++  noisemaker::Surface destination(5, 2);
++  noisemaker::scatter::wormhole::Uniforms uniforms;
++  uniforms.kink = 2.2;
++  uniforms.stride = 0.3;
++  uniforms.rotation = 150.0;
++  uniforms.wrap = 2.0;  // clamp
++
++  noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms);
++
++  const auto got = destination.data();
++  for (std::size_t i = 0; i < expected_output_bits.size(); ++i) {
++    REQUIRE(noisemaker::float_bits_to_uint(got[i]) == expected_output_bits[i]);
++  }
++}
++
++TEST(scatter_wormhole_rejects_mismatched_dimensions) {
++  noisemaker::Surface input(2, 2);
++  noisemaker::Surface destination(3, 3);
++  noisemaker::scatter::wormhole::Uniforms uniforms;
++  REQUIRE_THROWS_AS(noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms), std::invalid_argument);
++}
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0000000..0000000 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,6 +20,9 @@
+   src/generated/synth_solid.cpp
+   src/generated/filter_invert.cpp
+   src/typed_generated/typed_slice.cpp
++  src/effects/scatter/registry.cpp
++  src/effects/scatter/wormhole.cpp
++  src/effects/scatter/catalog.cpp
+ )
+ target_include_directories(noisemaker-cpu PUBLIC include)
+ target_link_libraries(noisemaker-cpu PRIVATE ZLIB::ZLIB)
+@@ -46,6 +49,7 @@
+   tests/test_pass_runner.cpp
+   tests/test_generated_kernels.cpp
+   tests/test_typed_slice.cpp
++  tests/test_scatter_wormhole.cpp
+ )
+ target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
+ target_compile_options(noisemaker-cpu-tests PRIVATE

@@ -1,0 +1,30 @@
+[
+ {
+  "after_mat3_full_admission": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+  "key": "classicNoisedeck/cellNoise:cellNoise"
+ },
+ {
+  "after_mat3_full_admission": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+  "key": "classicNoisedeck/colorLab:colorLab"
+ },
+ {
+  "after_mat3_full_admission": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+  "key": "classicNoisedeck/moodscape:moodscape"
+ },
+ {
+  "after_mat3_full_admission": "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect",
+  "key": "classicNoisedeck/shapeMixer:shapeMixer"
+ },
+ {
+  "after_mat3_full_admission": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+  "key": "classicNoisedeck/shapes:shapes"
+ },
+ {
+  "after_mat3_full_admission": "filter/adjust:adjust:78:13: unsupported typed expression index",
+  "key": "filter/adjust:adjust"
+ },
+ {
+  "after_mat3_full_admission": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+  "key": "filter/colorspace:colorspace"
+ }
+]

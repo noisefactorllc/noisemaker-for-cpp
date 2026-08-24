@@ -1,0 +1,612 @@
+{
+  "programs": [
+    {
+      "key": "filter/bloom:ntapGather",
+      "raw_bytes": 2196,
+      "raw_sha256": "f11c983976cb8450d611e8d888bd151a4c2cfdda8d9d772f906608dedb99d237",
+      "normalized_sha256": "1d20c3bccadf30a1f6c3c6f8903ed805287933fcc1257d3ae6d4b98c5d0b9f81",
+      "pre_function_tuple_sha256": "a000425b8ae57882a6877bf2c390f3d1fb3ce226d0181f0fa76d8851d7a79163",
+      "post_function_tuple_sha256": "66138a890082a6185afea09a5f9a169114193bf0134b6153737a663b27a86270",
+      "pre_whole_program_sha256": "915a83f7673ec52fd79e8ed7a0a02094f720fbaa575db63318227f14c3aa2f51",
+      "post_whole_program_sha256": "ff1fa1ba17abb3bdcd8daf7059b517609db49cfc62c10836b86ea86a1d4c696c",
+      "interface_sha256_pre_and_post": "b1bbe45469447847e91fbb66b6ee1b0cfc5a5a07cdac53cb322a728e295b8fb8",
+      "pre_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 64,
+        "entrypoint_charge": 64,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 21,
+          "start_value": 0,
+          "bound_value": 64,
+          "comparison": "<",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 64,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 64,
+          "entrypoint_charge": 64
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "tileOffset",
+          "fullResolution",
+          "inputTex",
+          "radius",
+          "renderScale",
+          "taps"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "tileOffset:vec2@1",
+        "fullResolution:vec2@2",
+        "inputTex:sampler2D@3/S1",
+        "radius:float@4",
+        "renderScale:float@5",
+        "taps:int@6",
+        "MAX_TAPS:const int@8"
+      ],
+      "output_signature": "fragColor:vec4@7",
+      "global_read_count": 2,
+      "global_read_functions": [
+        "main"
+      ],
+      "non_interface_globals": [
+        [
+          "MAX_TAPS",
+          "int",
+          "const",
+          "64"
+        ],
+        [
+          "GOLDEN_ANGLE",
+          "float",
+          "const",
+          "2.39996323"
+        ],
+        [
+          "PI",
+          "float",
+          "const",
+          "3.14159265359"
+        ]
+      ],
+      "static_texture_sites": 1
+    },
+    {
+      "key": "filter/directionalBlur:directionalBlur",
+      "raw_bytes": 1153,
+      "raw_sha256": "1e4a9d6371683b75a1dbefa968e1536e0017e921fe02f80e600e8f1482e8691c",
+      "normalized_sha256": "587b19df3989bf8bb649a86265f4210561077ccadcec30f0a92077510bcbf668",
+      "pre_function_tuple_sha256": "8c0e81f16787bce2ab63a414b9774702ce3ceac9be71f7bad46c9bccde14ddfa",
+      "post_function_tuple_sha256": "6e57feabe450d500b7ac2ddf328e855d72e0eb2c764c89b94c6c6f9afa184f96",
+      "pre_whole_program_sha256": "30011a8fd6f15943857b5d978a5383cbf0408becbfcdd2a8e9fd08eddab11153",
+      "post_whole_program_sha256": "21e4cc0784b7bbffa453e549776e3ed332df1219bf77d1c42bf32d650f8c1f7b",
+      "interface_sha256_pre_and_post": "3934c143ad58175d44458d78b2641badf31363c0f8438b1b5f656cbf6e269858",
+      "pre_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 32,
+        "entrypoint_charge": 32,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 16,
+          "start_value": 0,
+          "bound_value": 32,
+          "comparison": "<",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 32,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 32,
+          "entrypoint_charge": 32
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "angle",
+          "blurDistance"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "angle:float@3",
+        "blurDistance:float@4",
+        "N:const int@6"
+      ],
+      "output_signature": "fragColor:vec4@5",
+      "global_read_count": 4,
+      "global_read_functions": [
+        "main"
+      ],
+      "non_interface_globals": [
+        [
+          "N",
+          "int",
+          "const",
+          "32"
+        ]
+      ],
+      "static_texture_sites": 1
+    },
+    {
+      "key": "filter/spinBlur:spinBlur",
+      "raw_bytes": 3077,
+      "raw_sha256": "a5ee242e189066b55d4d5c3140e957418bdff582b367d1f6d4cdfee4c333b405",
+      "normalized_sha256": "b829271f6c58fccde0e5723cd2bc7d7d3f47acfeb4cf1ce157bc996fb04ff1ee",
+      "pre_function_tuple_sha256": "f9563d0e1e160ac48d4f6b0becdcb4ced10342039f0ef8c0a09f822e0c8cc8e8",
+      "post_function_tuple_sha256": "974b46a9db569acad639c8fd500c839f48f15b9bd42baac27374e204ca1d9e51",
+      "pre_whole_program_sha256": "5d3e1a5f3907bc1678620013f2a5e6854c386d12af60a1e92bc196c06ee7e6bc",
+      "post_whole_program_sha256": "af920749f40d2f9eafcfa3bf9d1ffccf3164571475e1b9162053cba5b3e43bff",
+      "interface_sha256_pre_and_post": "4b4d07b3a0cd718e48c976ef202de9dff5e7c35d422c371f6243ff0fbf9fa723",
+      "pre_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 32,
+        "entrypoint_charge": 32,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 29,
+          "start_value": 0,
+          "bound_value": 32,
+          "comparison": "<",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 32,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 32,
+          "entrypoint_charge": 32
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "amount",
+          "centerX",
+          "centerY"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "fullResolution:vec2@4",
+        "amount:float@5",
+        "centerX:float@6",
+        "centerY:float@7",
+        "N:const int@9"
+      ],
+      "output_signature": "fragColor:vec4@8",
+      "global_read_count": 4,
+      "global_read_functions": [
+        "main"
+      ],
+      "non_interface_globals": [
+        [
+          "N",
+          "int",
+          "const",
+          "32"
+        ]
+      ],
+      "static_texture_sites": 1
+    },
+    {
+      "key": "filter/strokes:stkSmear",
+      "raw_bytes": 14787,
+      "raw_sha256": "dac057232a650f3c9eb56829aa12507b639d8632f6fc132cbd067a28996fa4db",
+      "normalized_sha256": "796bad6231e640aec7c6f471465f57112f77394d921bff9902833955e1e20f15",
+      "pre_function_tuple_sha256": "5e5e0bb5091f6d4221e5396f3ed5dc73854543281ef519fbaddb0fdcd5c3fbc9",
+      "post_function_tuple_sha256": "0ee608091d09aece9a1eba08224b1980be15e2c1eb288b206fe47f95c2cfb344",
+      "pre_whole_program_sha256": "b7b6c65e3275843bd141f9b0c1fcf40daad671dcbeebef2db6a4684ec750790c",
+      "post_whole_program_sha256": "5ac93407e6a52ef895a887b3817c781d58ac9b974afe30415f31c6b4a9e8cbbf",
+      "interface_sha256_pre_and_post": "8fe812a5bdfa275782969cb6146b0e8005e8dc521af9e5b10926bc49d2b89fef",
+      "pre_proof": {
+        "loop_count": 2,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 2,
+        "max_lexical_product": 9,
+        "entrypoint_charge": 24,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 3,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 2,
+        "max_lexical_product": 24,
+        "entrypoint_charge": 72,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 52,
+          "start_value": -1,
+          "bound_value": 1,
+          "comparison": "<=",
+          "update": "++",
+          "bound_kind": "literal",
+          "trip_count": 3,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 9,
+          "entrypoint_charge": 72
+        },
+        {
+          "induction_symbol_id": 53,
+          "start_value": -1,
+          "bound_value": 1,
+          "comparison": "<=",
+          "update": "++",
+          "bound_kind": "literal",
+          "trip_count": 3,
+          "lexical_depth": 2,
+          "effective_depth": 2,
+          "lexical_product": 9,
+          "entrypoint_charge": 72
+        },
+        {
+          "induction_symbol_id": 106,
+          "start_value": 1,
+          "bound_value": 24,
+          "comparison": "<=",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 24,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 24,
+          "entrypoint_charge": 72
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "tileOffset",
+          "strokeLength",
+          "balance",
+          "intensity"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "strokeLength:float@4",
+        "balance:float@5",
+        "intensity:float@6",
+        "MAX_TAPS:const int@8"
+      ],
+      "output_signature": "fragColor:vec4@7",
+      "global_read_count": 1,
+      "global_read_functions": [
+        "smear"
+      ],
+      "non_interface_globals": [
+        [
+          "MAX_TAPS",
+          "int",
+          "const",
+          "24"
+        ]
+      ],
+      "static_texture_sites": 2
+    },
+    {
+      "key": "filter/vaseline:upsample",
+      "raw_bytes": 2524,
+      "raw_sha256": "39055a214903d09a9b2dd8db9ec5b2023a920c22707ec424ae90d5fb90ebf461",
+      "normalized_sha256": "1785f58af7b191e5a4f1a55223476d12372c97f87c062d34ecefe07550b05c93",
+      "pre_function_tuple_sha256": "9f2f11099585a38441157f4e4bb847808c4fd81df1c69cc79d1b651b0fe90374",
+      "post_function_tuple_sha256": "2e86ae95c587a74560e8cdd1d72bdf3f1d5cc9a14183ed136dc1950a590b2389",
+      "pre_whole_program_sha256": "5771c7b74d9e30e47f0b84438bc40e16d4c0da36346325862bef6516c5f0d60d",
+      "post_whole_program_sha256": "831676d46152cd861a4f658fb6bfe75c06c3a8275d2b9acaae00ae8038cc39a6",
+      "interface_sha256_pre_and_post": "fc9fd33b3e14a9808c66c17f3b358d79be3b97c11c6fd6ea281ce51118e0de9e",
+      "pre_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 32,
+        "entrypoint_charge": 32,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 29,
+          "start_value": 0,
+          "bound_value": 32,
+          "comparison": "<",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 32,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 32,
+          "entrypoint_charge": 32
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "renderScale",
+          "alpha"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "fullResolution:vec2@4",
+        "renderScale:float@5",
+        "alpha:float@6",
+        "TAP_COUNT:const int@8"
+      ],
+      "output_signature": "fragColor:vec4@7",
+      "global_read_count": 2,
+      "global_read_functions": [
+        "main"
+      ],
+      "non_interface_globals": [
+        [
+          "TAP_COUNT",
+          "int",
+          "const",
+          "32"
+        ],
+        [
+          "RADIUS",
+          "float",
+          "const",
+          "48.0"
+        ],
+        [
+          "GOLDEN_ANGLE",
+          "float",
+          "const",
+          "2.39996323"
+        ],
+        [
+          "BRIGHTNESS_ADJUST",
+          "float",
+          "const",
+          "0.15"
+        ]
+      ],
+      "static_texture_sites": 2
+    },
+    {
+      "key": "filter/wind:wind",
+      "raw_bytes": 3520,
+      "raw_sha256": "68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22",
+      "normalized_sha256": "665e842850e766cbf988212669457fb9fd76dff59e52a2f7b2cedd242e490fa4",
+      "pre_function_tuple_sha256": "214d03b9c58da73392e8b05200035b6e81244dbec06705302a237da23081ef6d",
+      "post_function_tuple_sha256": "70e4d4612ed144e0beb110e8fbbaf5d02b60e27e23fbf6961a30ac8d43bbb8e4",
+      "pre_whole_program_sha256": "b08edc234c42aa039867a7c549eff408e7c3c51cfa28d0951a437a00043a2dc0",
+      "post_whole_program_sha256": "6a5cb2724a9dfa61aaf5f7879a65fe9ec3cd353b7e815f20eb0915e4a103f9e0",
+      "interface_sha256_pre_and_post": "455e2e5350b3a027556adc181e5ce3099ca395f801add229956b750d31acdf85",
+      "pre_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 1,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "post_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 128,
+        "entrypoint_charge": 128,
+        "call_graph_acyclic": true
+      },
+      "loop_rows": [
+        {
+          "induction_symbol_id": 26,
+          "start_value": 1,
+          "bound_value": 128,
+          "comparison": "<=",
+          "update": "++",
+          "bound_kind": "source-global-const-literal",
+          "trip_count": 128,
+          "lexical_depth": 1,
+          "effective_depth": 1,
+          "lexical_product": 128,
+          "entrypoint_charge": 128
+        }
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "tileOffset",
+          "direction",
+          "strength",
+          "threshold"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "direction:int@4",
+        "strength:float@5",
+        "threshold:float@6",
+        "MAX_STEPS:const int@8"
+      ],
+      "output_signature": "fragColor:vec4@7",
+      "global_read_count": 1,
+      "global_read_functions": [
+        "main"
+      ],
+      "non_interface_globals": [
+        [
+          "MAX_STEPS",
+          "int",
+          "const",
+          "128"
+        ],
+        [
+          "STEP_PX",
+          "float",
+          "const",
+          "1.0"
+        ],
+        [
+          "MAX_REACH",
+          "float",
+          "const",
+          "128.0"
+        ]
+      ],
+      "static_texture_sites": 2
+    }
+  ],
+  "publication": {
+    "counts": {
+      "baseline_typed": 116,
+      "typed": 122,
+      "public": 124,
+      "remaining": 88,
+      "corpus": 212
+    },
+    "typed_sha256": "9db3013a6b0f78d0b95fcb6713c54ace95e82d1545e796e7a380add23c009f0b",
+    "public_sha256": "2b84fff4d6f35aec1ac6bcc35188d9893e3194c90b9c428775a7308ce1f6281a",
+    "positions": {
+      "filter/bloom:ntapGather": {
+        "position": 7,
+        "previous": "filter/bloom:composite",
+        "next": "filter/celShading:celShadingBlend"
+      },
+      "filter/directionalBlur:directionalBlur": {
+        "position": 23,
+        "previous": "filter/deriv:deriv",
+        "next": "filter/fibers:fibersBlend"
+      },
+      "filter/spinBlur:spinBlur": {
+        "position": 77,
+        "previous": "filter/spatter:spatter",
+        "next": "filter/stamp:stBlurH"
+      },
+      "filter/strokes:stkSmear": {
+        "position": 82,
+        "previous": "filter/strokes:stkPost",
+        "next": "filter/tetraCosine:tetraCosine"
+      },
+      "filter/vaseline:upsample": {
+        "position": 92,
+        "previous": "filter/unsharpMask:usmCombine",
+        "next": "filter/vignette:vignette"
+      },
+      "filter/wind:wind": {
+        "position": 96,
+        "previous": "filter/watercolor:wcSeed",
+        "next": "filter/wormhole:blend"
+      }
+    },
+    "reindex_excluded": true
+  }
+}

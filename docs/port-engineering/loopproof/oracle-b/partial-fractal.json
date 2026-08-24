@@ -1,0 +1,579 @@
+{
+  "id": "fractal",
+  "key": "classicNoisedeck/fractal:fractal",
+  "defines": {},
+  "ground_truth": "adapter (fractalFactory) -- see module header / report for why",
+  "cases": [
+    {
+      "name": "julia-never-escapes-z0a",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "type": 0,
+        "symmetry": 0,
+        "zoomAmt": 0,
+        "rotation": 0,
+        "speed": 0,
+        "offsetX": -70,
+        "offsetY": 27.015,
+        "centerX": 0,
+        "centerY": 0,
+        "mode": 0,
+        "iterations": 50,
+        "colorMode": 0,
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 100,
+        "levels": 0,
+        "bgColor": [
+          0,
+          0,
+          0
+        ],
+        "bgAlpha": 100,
+        "cutoff": 0,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ]
+      },
+      "tile_offset": [
+        0.05,
+        0.05
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "b73ab93e458d122fcbef866d3aafabc19c63a4080254c905da0b4a85bfc81c31",
+        "rgba8_sha256": "61efa6ca5470d6378165ddc49c1eed995195761293bc903c0308c213bb20e248",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "julia-never-escapes-z0b",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "type": 0,
+        "symmetry": 0,
+        "zoomAmt": 0,
+        "rotation": 0,
+        "speed": 0,
+        "offsetX": -70,
+        "offsetY": 27.015,
+        "centerX": 0,
+        "centerY": 0,
+        "mode": 0,
+        "iterations": 50,
+        "colorMode": 0,
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 100,
+        "levels": 0,
+        "bgColor": [
+          0,
+          0,
+          0
+        ],
+        "bgAlpha": 100,
+        "cutoff": 0,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ]
+      },
+      "tile_offset": [
+        -0.1,
+        0.05
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "b73ab93e458d122fcbef866d3aafabc19c63a4080254c905da0b4a85bfc81c31",
+        "rgba8_sha256": "61efa6ca5470d6378165ddc49c1eed995195761293bc903c0308c213bb20e248",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9900000095367432,
+              0.9900000095367432,
+              0.9900000095367432,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f7d70a4",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "julia-fast-escape-diagnostic",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": true,
+      "reach": {
+        "default": false
+      },
+      "uniforms": {
+        "type": 0,
+        "symmetry": 0,
+        "zoomAmt": 0,
+        "rotation": 0,
+        "speed": 0,
+        "offsetX": -70,
+        "offsetY": 27.015,
+        "centerX": 0,
+        "centerY": 0,
+        "mode": 0,
+        "iterations": 50,
+        "colorMode": 0,
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 100,
+        "levels": 0,
+        "bgColor": [
+          0,
+          0,
+          0
+        ],
+        "bgAlpha": 100,
+        "cutoff": 0,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ]
+      },
+      "tile_offset": [
+        1,
+        1
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "fractal-julia-count-off-by-one",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "default",
+      "anchor": "for (let index = 0; index < count; index += 1) {",
+      "mutated": "for (let index = 0; index < count - 1; index += 1) {",
+      "description": "Drop the last julia() iteration (count-1 instead of count, count=iterations*2=100). Reach-eligible on both never-escapes cases (true escape >> 100, verified via a double-precision calibration probe restricted to this generator's case-design step -- the actual proof renders through the real fractalFactory).",
+      "case_results": [
+        {
+          "case": "julia-never-escapes-z0a",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "julia-never-escapes-z0b",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "julia-fast-escape-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 2,
+        "divergent_reaching": 2,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "fractal-julia-count-swap",
+      "kind": "trip_count_swap",
+      "reach_key": "default",
+      "anchor": "for (let index = 0; index < count; index += 1) {",
+      "mutated": "for (let index = 0; index < count - 40; index += 1) {",
+      "description": "Drop the last 40 julia() iterations (count-40=60): a materially wrong trip count. Same reach-eligibility as the off-by-one mutation.",
+      "case_results": [
+        {
+          "case": "julia-never-escapes-z0a",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "julia-never-escapes-z0b",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "julia-fast-escape-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 2,
+        "divergent_reaching": 2,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    }
+  ]
+}

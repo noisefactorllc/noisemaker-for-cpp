@@ -1,0 +1,1 @@
+NEGATIVE CONTROL (logical shift, expected to diverge): N compared=100206 N exact=12527 N divergent=87679 (87.50% divergent)

@@ -1,0 +1,45 @@
+{
+  "id": "effects",
+  "key": "classicNoisedeck/effects:effects",
+  "status": "UNCOVERABLE",
+  "reason": "UNRENDERABLE-AS-DISCRIMINATING, not merely non-discriminating -- verified live, not assumed. `EFFECT` genuinely IS bound as a runtime uniform (`var EFFECT = $bindings[\"EFFECT\"];`, matching the defines-bound-as-uniforms lesson -- it is NOT preprocessor-eliminated, unlike a first, wrong hypothesis this generator formed and then disproved by grepping the compiled JS text for `function convolve`/`function bloom`/`function zoomBlur`, all of which ARE present). Every loop in this program (convolve()'s 3x3 kernel-tap loop, bloom()'s -4..4 nested loop, zoomBlur()'s 0..40 loop) lives exclusively inside functions reachable ONLY through `main()`'s `if (EFFECT != 0) { if (effectAmt != 0) { ... } }` gate -- and `generate_typed_slice._defaults()` authorizes EFFECT=0 for this program (confirmed live, not assumed). At EFFECT=0 that whole block is skipped at RUNTIME on every invocation, so none of its loops ever execute. Verified live, not merely inferred from reading the source: a textual off-by-one mutation on convolve()'s tap loop (`for (var i = 0; i < 9; i++)` -> `for (var i = 0; i < 0; i++)`) produces ZERO divergence across four different `effectAmt` values (0, 5, 10, 20) at the authorized EFFECT=0 -- and the IDENTICAL mutation produces NONZERO divergence at an UNAUTHORIZED EFFECT=1, proving the loop and the mutation are both real and working, just genuinely unreachable at the one define value this task's reachability rule (only build cases reachable from main() at the authorized defines) permits. No case can be built for this program without violating that rule.",
+  "evidence": {
+    "factory_name": "canonicalFactory7",
+    "public_is_canonical": true,
+    "adapter_override_present": false,
+    "effect_bound_as_runtime_uniform": true,
+    "authorized_defines": {
+      "EFFECT": 0,
+      "FLIP": 0
+    },
+    "mutation_anchor": "for (var i = 0; i < 9; i++) {",
+    "mutation_description": "convolve() 3x3 tap loop: i<9 -> i<0 (never executes)",
+    "at_authorized_default": [
+      {
+        "effectAmt": 0,
+        "EFFECT": 0,
+        "diverges": false
+      },
+      {
+        "effectAmt": 5,
+        "EFFECT": 0,
+        "diverges": false
+      },
+      {
+        "effectAmt": 10,
+        "EFFECT": 0,
+        "diverges": false
+      },
+      {
+        "effectAmt": 20,
+        "EFFECT": 0,
+        "diverges": false
+      }
+    ],
+    "at_unauthorized_control": {
+      "effectAmt": 10,
+      "EFFECT": 1,
+      "diverges": true
+    }
+  }
+}

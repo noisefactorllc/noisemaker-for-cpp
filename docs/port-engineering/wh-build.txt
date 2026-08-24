@@ -1,0 +1,10 @@
+[  6%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/effects/scatter/catalog.cpp.o
+[  6%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/effects/scatter/wormhole.cpp.o
+[  9%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/effects/scatter/registry.cpp.o
+[ 12%] Linking CXX static library libnoisemaker-cpu.a
+[ 50%] Built target noisemaker-cpu
+[ 53%] Linking CXX executable noisemaker-cpu-example-perlin
+[ 56%] Built target noisemaker-cpu-example-perlin
+[ 59%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_scatter_wormhole.cpp.o
+[ 62%] Linking CXX executable noisemaker-cpu-tests
+[100%] Built target noisemaker-cpu-tests

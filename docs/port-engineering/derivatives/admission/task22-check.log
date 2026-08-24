@@ -1,0 +1,22 @@
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m8857[0m, in [35mtest_task22_crt_exclusions_remain_closed[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"c2cad7e88fb817c311abb0041fec98d14c28ae3c3bd731b67944c745b8c295ec",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(crt.encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'c2cad7e88fb817c311abb0041fec98d14c28ae3c3bd731b67944c745b8c295ec' != '00119716b4b8ee6ffafcc36492b3be4c3e6f06f6cf8120ef5a81cb02ec82bebb'
+- c2cad7e88fb817c311abb0041fec98d14c28ae3c3bd731b67944c745b8c295ec
++ 00119716b4b8ee6ffafcc36492b3be4c3e6f06f6cf8120ef5a81cb02ec82bebb
+[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 95.202s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

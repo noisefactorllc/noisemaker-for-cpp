@@ -1,0 +1,20 @@
+=== std:: vs V8 (baseline) ===
+N = 403636
+
+tanh   compared=403636  exact=386405  divergent=17231  (4.2689%)  maxULP=2
+       worst: x=0.3465735902799759 (bits 3fd62e42fefa3a2a)  node=3fd5555555555588  cand=3fd555555555558a  ulp=2
+exp    compared=403636  exact=380165  divergent=23471  (5.8149%)  maxULP=1
+       worst: x=-7.420000000000001e-7 (bits bea8e5bb417048fa)  node=3feffffe71a45599  cand=3feffffe71a45598  ulp=1
+expm1  compared=403636  exact=390016  divergent=13620  (3.3743%)  maxULP=1
+       worst: x=0.3465735902799691 (bits 3fd62e42fefa39af)  node=3fda827999fceed8  cand=3fda827999fceed7  ulp=1
+sin    compared=403636  exact=392707  divergent=10929  (2.7076%)  maxULP=1
+       worst: x=2.421875 (bits 4003600000000000)  node=3fe517f0aab0f204  cand=3fe517f0aab0f205  ulp=1
+cos    compared=403636  exact=392989  divergent=10647  (2.6378%)  maxULP=1
+       worst: x=0.34657359027997126 (bits 3fd62e42fefa39d6)  node=3fee18ebc1840472  cand=3fee18ebc1840473  ulp=1
+log    compared=403636  exact=394528  divergent=9108  (2.2565%)  maxULP=1
+       worst: x=-7.760000000000001e-7 (bits beaa09ca0bdadd3a)  node=c02c2362d2166e98  cand=c02c2362d2166e97  ulp=1
+atan   compared=403636  exact=397941  divergent=5695  (1.4109%)  maxULP=1
+       worst: x=2.421875 (bits 4003600000000000)  node=3ff2de11cfc645f5  cand=3ff2de11cfc645f4  ulp=1
+sqrt   compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+pow    compared=403636  exact=403470  divergent=166  (0.0411%)  maxULP=1
+       worst: x=-9.305e-7 (bits beaf38ef23a8957a)  node=3d6e76b4a10e8c76  cand=3d6e76b4a10e8c75  ulp=1

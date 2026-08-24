@@ -1,0 +1,313 @@
+{
+  "id": "testPattern",
+  "key": "synth/testPattern:testPattern",
+  "defines": {},
+  "cases": [
+    {
+      "name": "hundreds-digit-glyph-hit",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "gridSize": 12,
+        "pattern": 0
+      },
+      "tile_offset": [
+        18.25,
+        27
+      ],
+      "full_resolution": [
+        1000,
+        1000
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "f6bb1294da2f78cd935b01c7656280df5eaa0439e9d97bc03775825a41a508e4",
+        "rgba8_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "single-digit-diagnostic",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": true,
+      "reach": {
+        "default": false
+      },
+      "uniforms": {
+        "gridSize": 3,
+        "pattern": 0
+      },
+      "tile_offset": [
+        499.5,
+        499.5
+      ],
+      "full_resolution": [
+        1000,
+        1000
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "testPattern-digit-extraction-off-by-one",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "default",
+      "anchor": "for (var i = 0; i < 3; i++) {",
+      "mutated": "for (var i = 0; i < 2; i++) {",
+      "description": "Drop the hundreds-digit extraction (i<2 instead of i<3): digits[2] stays at its zero-initialized value. Verified live to flip the hundreds-digit-glyph-hit pixel from background to glyph-black.",
+      "case_results": [
+        {
+          "case": "hundreds-digit-glyph-hit",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "single-digit-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 1,
+        "divergent_reaching": 1,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "testPattern-digit-extraction-swap",
+      "kind": "trip_count_swap",
+      "reach_key": "default",
+      "anchor": "for (var i = 0; i < 3; i++) {",
+      "mutated": "for (var i = 0; i < 1; i++) {",
+      "description": "Drop both the tens- and hundreds-digit extraction (i<1): a materially wrong trip count. Verified live to diverge identically to the off-by-one mutation at this probe point (both leave digits[2]=0).",
+      "case_results": [
+        {
+          "case": "hundreds-digit-glyph-hit",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "single-digit-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 1,
+        "divergent_reaching": 1,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    }
+  ]
+}

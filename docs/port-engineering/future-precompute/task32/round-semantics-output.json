@@ -1,0 +1,176 @@
+{
+  "schema": "noisemaker-for-cpp.task32.round-semantics.v1",
+  "cpp_runtime_symbols_found": {
+    "noisemaker::glsl_round(double) -> double": "src/numeric.cpp:17, declared include/noisemaker/numeric.hpp:10",
+    "noisemaker::glsl::round(double) -> double": "src/glsl_runtime.cpp:20 (delegates to glsl_round), declared include/noisemaker/glsl_runtime.hpp:18"
+  },
+  "cpp_runtime_grep_full_tree": "grep -rniE 'round' include/ src/ found no other camelCase/snake_case spelling (roundToInt, round_half, etc. do not exist); one existing call site at src/typed_generated/typed_slice.cpp:5738 (the shipped GATHER_SORTED_KEY profile)",
+  "sweep": [
+    {
+      "x": -3.5,
+      "glsl_round": -3.0,
+      "std_round": -4.0,
+      "floor_x_plus_half": -3.0,
+      "diverges": true
+    },
+    {
+      "x": -2.5,
+      "glsl_round": -2.0,
+      "std_round": -3.0,
+      "floor_x_plus_half": -2.0,
+      "diverges": true
+    },
+    {
+      "x": -1.5,
+      "glsl_round": -1.0,
+      "std_round": -2.0,
+      "floor_x_plus_half": -1.0,
+      "diverges": true
+    },
+    {
+      "x": -0.5,
+      "glsl_round": 0.0,
+      "std_round": -1.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": true
+    },
+    {
+      "x": -0.0,
+      "glsl_round": 0.0,
+      "std_round": -0.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": false
+    },
+    {
+      "x": 0.0,
+      "glsl_round": 0.0,
+      "std_round": 0.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": false
+    },
+    {
+      "x": 0.5,
+      "glsl_round": 1.0,
+      "std_round": 1.0,
+      "floor_x_plus_half": 1.0,
+      "diverges": false
+    },
+    {
+      "x": 1.5,
+      "glsl_round": 2.0,
+      "std_round": 2.0,
+      "floor_x_plus_half": 2.0,
+      "diverges": false
+    },
+    {
+      "x": 2.5,
+      "glsl_round": 3.0,
+      "std_round": 3.0,
+      "floor_x_plus_half": 3.0,
+      "diverges": false
+    },
+    {
+      "x": 3.5,
+      "glsl_round": 4.0,
+      "std_round": 4.0,
+      "floor_x_plus_half": 4.0,
+      "diverges": false
+    },
+    {
+      "x": -0.4999999,
+      "glsl_round": 0.0,
+      "std_round": -0.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": false
+    },
+    {
+      "x": -0.5000001,
+      "glsl_round": -1.0,
+      "std_round": -1.0,
+      "floor_x_plus_half": -1.0,
+      "diverges": false
+    },
+    {
+      "x": 0.5000001,
+      "glsl_round": 1.0,
+      "std_round": 1.0,
+      "floor_x_plus_half": 1.0,
+      "diverges": false
+    },
+    {
+      "x": 0.4999999,
+      "glsl_round": 0.0,
+      "std_round": 0.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": false
+    },
+    {
+      "x": 100.5,
+      "glsl_round": 101.0,
+      "std_round": 101.0,
+      "floor_x_plus_half": 101.0,
+      "diverges": false
+    },
+    {
+      "x": 1920.0,
+      "glsl_round": 1920.0,
+      "std_round": 1920.0,
+      "floor_x_plus_half": 1920.0,
+      "diverges": false
+    },
+    {
+      "x": 1080.0,
+      "glsl_round": 1080.0,
+      "std_round": 1080.0,
+      "floor_x_plus_half": 1080.0,
+      "diverges": false
+    },
+    {
+      "x": 0.0,
+      "glsl_round": 0.0,
+      "std_round": 0.0,
+      "floor_x_plus_half": 0.0,
+      "diverges": false
+    },
+    {
+      "x": 4.0,
+      "glsl_round": 4.0,
+      "std_round": 4.0,
+      "floor_x_plus_half": 4.0,
+      "diverges": false
+    },
+    {
+      "x": 3.0,
+      "glsl_round": 3.0,
+      "std_round": 3.0,
+      "floor_x_plus_half": 3.0,
+      "diverges": false
+    },
+    {
+      "x": 1.0,
+      "glsl_round": 1.0,
+      "std_round": 1.0,
+      "floor_x_plus_half": 1.0,
+      "diverges": false
+    }
+  ],
+  "total_divergences": 4,
+  "divergences_on_nonnegative_operands": 0,
+  "conclusion": "noisemaker::glsl_round == floor(x+0.5) exactly (round-half-up), NOT std::round (round-half-away-from-zero); they diverge ONLY at negative half-integers (4/20 sweep values, all x<0); zero divergence for any x>=0.",
+  "round_call_site_operand_evidence_per_candidate": {
+    "filter/fxaa:fxaa": [
+      "return uint(max(round(value), 0.0));",
+      "int rounded = int(round(channel_value));"
+    ],
+    "filter/grain:grain": [
+      "return uint(max(round(value), 0.0));"
+    ],
+    "filter/normalMap:normalMap": [
+      "return uint(max(round(value), 0.0));"
+    ],
+    "filter/snow:snow": [
+      "return uint(max(round(value), 0.0));"
+    ]
+  },
+  "discriminability_verdict": "In all four candidates, every round() call operand is a resolution/size/channel-count dimension value (uniform-derived, always >=0 by domain -- confirmed independently via the noisemaker-for-cpu DSL/parity harness, which injects resolution/tileOffset/fullResolution from the actual render-target pixel dimensions, never user-settable to a negative value). Since glsl_round and std::round are numerically identical for all non-negative operands, a realistic wrong implementation using std::round instead of the already-correct glsl_round would NEVER diverge under full-render parity for these programs. Full-render parity cannot discriminate this specific hazard; if this hazard needed testing at all here, it would require direct unit rows feeding round() a negative operand directly, bypassing the resolution-derived call sites."
+}

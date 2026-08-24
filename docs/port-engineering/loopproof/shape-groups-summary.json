@@ -1,0 +1,115 @@
+{
+ "shape_groups": [
+  {
+   "keys": 6,
+   "programs": [
+    "filter/dither:dither",
+    "filter/lightLeak:lightLeak",
+    "filter/parallax:parallax",
+    "filter/reindex:nmReindexReduce",
+    "filter/reindex:nmReindexStats",
+    "synth/mandelbrot:mandelbrot"
+   ],
+   "shape": "const-global bound",
+   "sites": 8
+  },
+  {
+   "keys": 4,
+   "programs": [
+    "filter/blur:blurH",
+    "filter/blur:blurV",
+    "filter/dither:dither",
+    "filter/oilPaint:oilFlatten"
+   ],
+   "shape": "non-literal (unary) start",
+   "sites": 6
+  },
+  {
+   "keys": 1,
+   "programs": [
+    "filter/median:median"
+   ],
+   "shape": "while loop",
+   "sites": 4
+  },
+  {
+   "keys": 3,
+   "programs": [
+    "classicNoisedeck/noise:noise",
+    "filter/tetraColorArray:tetraColorArray",
+    "synth/noise:noise"
+   ],
+   "shape": "parameter-bound",
+   "sites": 3
+  },
+  {
+   "keys": 2,
+   "programs": [
+    "classicNoisedeck/fractal:fractal",
+    "synth/testPattern:testPattern"
+   ],
+   "shape": "local-bound",
+   "sites": 2
+  },
+  {
+   "keys": 2,
+   "programs": [
+    "classicNoisedeck/effects:effects",
+    "filter/zoomBlur:zoomBlur"
+   ],
+   "shape": "float induction",
+   "sites": 2
+  },
+  {
+   "keys": 1,
+   "programs": [
+    "filter/normalize:statsFinal"
+   ],
+   "shape": "swizzle-bound",
+   "sites": 2
+  },
+  {
+   "keys": 1,
+   "programs": [
+    "classicNoisedeck/fractal:fractal"
+   ],
+   "shape": "multi-variable initializer",
+   "sites": 1
+  },
+  {
+   "keys": 1,
+   "programs": [
+    "classicNoisedeck/fractal:fractal"
+   ],
+   "shape": "uniform-bound",
+   "sites": 1
+  },
+  {
+   "keys": 1,
+   "programs": [
+    "filter/smooth:smoothBlend"
+   ],
+   "shape": "return inside body",
+   "sites": 1
+  }
+ ],
+ "terminal_16": [
+  "classicNoisedeck/fractal:fractal",
+  "filter/blur:blurH",
+  "filter/blur:blurV",
+  "filter/dither:dither",
+  "filter/lightLeak:lightLeak",
+  "filter/normalize:statsFinal",
+  "filter/oilPaint:oilFlatten",
+  "filter/parallax:parallax",
+  "filter/reindex:nmReindexReduce",
+  "filter/reindex:nmReindexStats",
+  "filter/smooth:smoothBlend",
+  "filter/tetraColorArray:tetraColorArray",
+  "filter/zoomBlur:zoomBlur",
+  "synth/mandelbrot:mandelbrot",
+  "synth/noise:noise",
+  "synth/testPattern:testPattern"
+ ],
+ "total_sites": 30
+}

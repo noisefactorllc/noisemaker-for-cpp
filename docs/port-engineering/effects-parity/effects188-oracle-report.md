@@ -1,0 +1,9 @@
+Effects188 oracle; public canonical factory; frozen EFFECT=0 FLIP=0.
+rotation-scale 862274e98a2b319fba1cb18ecaba26f5a521ae8cc537557c4ed24fd0182cbd96
+offset-arms 94f49cbd8f40354e97f072e69e31bafaec69637ad14d66b41ad7f26851d7dd33
+intensity-negative 6a0366778c576976faf4fc0d1c5f3d6b80381e9c61ff7180c8aaa89abd199a27
+intensity-positive 65582f26cbde8bb94d6e31b9bbde73dda7052c7bd623b3e39d8c4abade85f830
+time-witness 870702f3af9f9c14e323efdacf518a254675c7605f00d36d7495c3f3b0cd9bd5
+tile-route 9bc1da6319c76186eef414f73419ef37926488bc774ce54798d63fd5281d22b4
+Reachable mutants and invariant table/mat4 controls are measured per case.
+TDD comparer RED/GREEN and strict provenance/materialization gates are recorded.

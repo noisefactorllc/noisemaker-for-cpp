@@ -1,0 +1,22 @@
+test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m12405[0m, in [35mtest_task27_generation_is_exact_single_program_delta_from_task26[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"ed2b5d24ac3fb80520b2036acfc13c18df294c1583f76fe2957d00a6282fdd72",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(current_typed_keys) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'ed2b5d24ac3fb80520b2036acfc13c18df294c1583f76fe2957d00a6282fdd72' != 'cacd572d7dd48dcb74507bceaf4e1de9adfc367fa6de4814ea8a50b1ea7d6d09'
+- ed2b5d24ac3fb80520b2036acfc13c18df294c1583f76fe2957d00a6282fdd72
++ cacd572d7dd48dcb74507bceaf4e1de9adfc367fa6de4814ea8a50b1ea7d6d09
+[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 62.218s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

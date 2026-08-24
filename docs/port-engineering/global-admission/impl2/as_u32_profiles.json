@@ -1,0 +1,665 @@
+{
+  "filter/grain:grain": {
+    "raw_bytes": 8796,
+    "raw_sha256": "6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0",
+    "normalized_bytes": 8592,
+    "normalized_sha256": "b667ff2a2ba0a9620220cd4821651fccfed930fd385dd1cadb3d1f91eb7ac09d",
+    "functions_sha256": "3197ffd53c0eb8500732d7e9da6d5eacf159d363e05fbde1d66693372a406886",
+    "whole_program_sha256": "5889e908ebe6309561c2c40d05258d033814c67ff18a5cef5ebcec5ce1e68c22",
+    "interface_sha256": "1462c07fce4755c6862e77d5ae5c3795490d4408ab4287e4e1235299aff71672",
+    "as_u32_id": 53,
+    "as_u32_span": "30:1-32:2",
+    "function_inventory": [
+      [
+        53,
+        "as_u32",
+        "uint",
+        1,
+        1,
+        "30:1-32:2"
+      ],
+      [
+        54,
+        "blend_cubic",
+        "float",
+        5,
+        10,
+        "74:1-85:2"
+      ],
+      [
+        55,
+        "clamp01",
+        "float",
+        1,
+        1,
+        "34:1-36:2"
+      ],
+      [
+        56,
+        "interpolation_weight",
+        "float",
+        2,
+        2,
+        "64:1-72:2"
+      ],
+      [
+        57,
+        "main",
+        "void",
+        0,
+        17,
+        "226:1-264:2"
+      ],
+      [
+        58,
+        "pcg3d",
+        "uvec3",
+        1,
+        9,
+        "38:1-48:2"
+      ],
+      [
+        59,
+        "periodic_value",
+        "float",
+        2,
+        1,
+        "60:1-62:2"
+      ],
+      [
+        60,
+        "random_from_cell_3d",
+        "float",
+        2,
+        3,
+        "50:1-58:2"
+      ],
+      [
+        61,
+        "sample_bicubic_layer",
+        "float",
+        4,
+        5,
+        "87:1-122:2"
+      ],
+      [
+        62,
+        "sample_grain_noise",
+        "float",
+        4,
+        5,
+        "213:1-224:2"
+      ],
+      [
+        63,
+        "sample_raw_value_noise",
+        "float",
+        6,
+        18,
+        "124:1-176:2"
+      ],
+      [
+        64,
+        "sample_value_noise",
+        "float",
+        6,
+        7,
+        "178:1-211:2"
+      ]
+    ],
+    "return_stmt_span": "31:5-31:41",
+    "return_stmt_sha256": "daa1030c3fab80716fed35f1bc3c561a208d4013f47dec0dbab56b4ff5cdd115",
+    "uint_construct_span": "31:12-31:40",
+    "uint_construct_sha256": "ccdc6015d56d4988e86cda78251579ad77785543215a6848e135b017d580c7f7",
+    "max_call_span": "31:17-31:39",
+    "max_call_sha256": "6309c90a9351cab80dbe0fa581c44ada76fafb00ce6d697e4cfd6e3a5aab9a6f",
+    "max_sibling_sha256": "253aaff7daca1dc4fa062c1d5ea973f09f5fc65dc1ecda6972bdc83749cf5b49",
+    "round_span": "31:21-31:33",
+    "round_sha256": "5cf7930ddd5b9a346ccf79ce51bae15e1cd9f80b8b3e37750714b6ddab4cb5f2",
+    "round_argument_sha256": "8cc70d7ac94bb86c0a5e69176a6279ec30acb8c534621df6f818f38e5f47d4af",
+    "round_signature_id": -38,
+    "bindings": [
+      [
+        1,
+        "PI",
+        "float",
+        "const",
+        false
+      ],
+      [
+        2,
+        "TAU",
+        "float",
+        "const",
+        false
+      ],
+      [
+        3,
+        "UINT32_TO_FLOAT",
+        "float",
+        "const",
+        false
+      ],
+      [
+        4,
+        "CHANNEL_COUNT",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        5,
+        "INTERPOLATION_CONSTANT",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        6,
+        "INTERPOLATION_LINEAR",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        7,
+        "INTERPOLATION_COSINE",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        8,
+        "INTERPOLATION_BICUBIC",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        9,
+        "BASE_SEED",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        10,
+        "inputTex",
+        "sampler2D",
+        "uniform",
+        false
+      ],
+      [
+        11,
+        "resolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        12,
+        "tileOffset",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        13,
+        "fullResolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        14,
+        "renderScale",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        15,
+        "alpha",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        16,
+        "time",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        17,
+        "pause",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        18,
+        "fragColor",
+        "vec4",
+        "output",
+        true
+      ]
+    ],
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "renderScale",
+        "alpha",
+        "time",
+        "pause"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      false
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "defines": []
+  },
+  "filter/snow:snow": {
+    "raw_bytes": 2982,
+    "raw_sha256": "ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a",
+    "normalized_bytes": 2895,
+    "normalized_sha256": "0f82254f75e282ccb6f0412d3b8c71bd6716627f0d5fc32366dc9bf5824ce8bf",
+    "functions_sha256": "d5d514208acbe1a5cc53374f97374fb4cdd4201b3be4e7246f4a03a4f80b6c6e",
+    "whole_program_sha256": "745f56096763615df28caecb8955f61a6366676101e54eaed704f45d4a1efec1",
+    "interface_sha256": "f947ad7d6c9eff3374434411d82cb4d7488b125bcc5e37d0aa747853c5fe855a",
+    "as_u32_id": 26,
+    "as_u32_span": "25:1-27:2",
+    "function_inventory": [
+      [
+        26,
+        "as_u32",
+        "uint",
+        1,
+        1,
+        "25:1-27:2"
+      ],
+      [
+        27,
+        "clamp_01",
+        "float",
+        1,
+        1,
+        "29:1-31:2"
+      ],
+      [
+        28,
+        "main",
+        "void",
+        0,
+        16,
+        "76:1-101:2"
+      ],
+      [
+        29,
+        "normalized_sine",
+        "float",
+        1,
+        1,
+        "33:1-35:2"
+      ],
+      [
+        30,
+        "periodic_value",
+        "float",
+        2,
+        1,
+        "37:1-39:2"
+      ],
+      [
+        31,
+        "snow_fract_vec3",
+        "vec3",
+        1,
+        1,
+        "41:1-43:2"
+      ],
+      [
+        32,
+        "snow_hash",
+        "float",
+        1,
+        6,
+        "45:1-52:2"
+      ],
+      [
+        33,
+        "snow_noise",
+        "float",
+        4,
+        11,
+        "54:1-74:2"
+      ]
+    ],
+    "return_stmt_span": "26:5-26:41",
+    "return_stmt_sha256": "b82b455fc44a0b1d91a2d8a1495d0ddafb8d7898ab7bee6e506e9547d8908d1b",
+    "uint_construct_span": "26:12-26:40",
+    "uint_construct_sha256": "20993f6cb69a34490367faa24d88dee38f36faf5c0a213a3c31e976e8b1b116e",
+    "max_call_span": "26:17-26:39",
+    "max_call_sha256": "b8795fea78170f471b6de42101385bebe70f0c2d5e8e508331f63b67be55fc03",
+    "max_sibling_sha256": "7f5d4d7e9e16ecde7e0a52a1a9fdf2e3d9c2ec1512827a4376461b6acf44c4b8",
+    "round_span": "26:21-26:33",
+    "round_sha256": "d668503252a585328b459bebdcea34507628f154714e6d360e2f1f5c727f6fa3",
+    "round_argument_sha256": "cdc8f4cffdefc9b290fb37f9071a9226a37d19a7f4bb48ec48fcf76501ded8c4",
+    "round_signature_id": -38,
+    "bindings": [
+      [
+        1,
+        "CHANNEL_COUNT",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        2,
+        "TAU",
+        "float",
+        "const",
+        false
+      ],
+      [
+        3,
+        "TIME_SEED_OFFSETS",
+        "vec3",
+        "const",
+        false
+      ],
+      [
+        4,
+        "STATIC_SEED",
+        "vec3",
+        "const",
+        false
+      ],
+      [
+        5,
+        "LIMITER_SEED",
+        "vec3",
+        "const",
+        false
+      ],
+      [
+        6,
+        "inputTex",
+        "sampler2D",
+        "uniform",
+        false
+      ],
+      [
+        7,
+        "resolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        8,
+        "tileOffset",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        9,
+        "fullResolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        10,
+        "alpha",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        11,
+        "time",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        12,
+        "pause",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        13,
+        "density",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        14,
+        "fragColor",
+        "vec4",
+        "output",
+        true
+      ]
+    ],
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "alpha",
+        "time",
+        "pause",
+        "density"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      false
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "defines": []
+  },
+  "filter/fxaa:fxaa": {
+    "raw_bytes": 4938,
+    "raw_sha256": "088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0",
+    "normalized_bytes": 4638,
+    "normalized_sha256": "8b677bf978565cfea36e421aa8f55abf05decfaa4c2d035ccfe79f46531c6237",
+    "functions_sha256": "c0d8e37e893205785e4f0f1c3e894a9f4571f6671bded8de2d6e4806642ff615",
+    "whole_program_sha256": "ef6488fe42615c7e1ed8c9b61931228908fccd6f65776d8b885fa529edf5bca7",
+    "interface_sha256": "b97eaa429e9283eb4811cd46843db89bc465f0d1834587c9273d26065c9293a3",
+    "as_u32_id": 21,
+    "as_u32_span": "21:1-23:2",
+    "function_inventory": [
+      [
+        21,
+        "as_u32",
+        "uint",
+        1,
+        1,
+        "21:1-23:2"
+      ],
+      [
+        22,
+        "load_texel",
+        "vec4",
+        2,
+        3,
+        "54:1-58:2"
+      ],
+      [
+        23,
+        "luminance_from_rgb",
+        "float",
+        1,
+        1,
+        "60:1-62:2"
+      ],
+      [
+        24,
+        "main",
+        "void",
+        0,
+        36,
+        "71:1-166:2"
+      ],
+      [
+        25,
+        "reflect_coord",
+        "int",
+        2,
+        6,
+        "36:1-52:2"
+      ],
+      [
+        26,
+        "sanitized_channelCount",
+        "uint",
+        1,
+        4,
+        "25:1-34:2"
+      ],
+      [
+        27,
+        "weight_from_luma",
+        "float",
+        2,
+        1,
+        "64:1-66:2"
+      ]
+    ],
+    "return_stmt_span": "22:5-22:41",
+    "return_stmt_sha256": "56acdad4dd4942b699ede8b3a28bd0db096e6646060b75efa2b3d91db402c1ac",
+    "uint_construct_span": "22:12-22:40",
+    "uint_construct_sha256": "822c3ea60fba535dd041614f3a72affe05ec4a03190bd10064e8e3fc9cde59ef",
+    "max_call_span": "22:17-22:39",
+    "max_call_sha256": "15c4a9dce90446128a472af35818156ccc49057ce86ba263a77345c9773d471d",
+    "max_sibling_sha256": "af30c942e0edca1555491b569ecc6ac02f45cdd05ba445d1374dc8f51e7cba2d",
+    "round_span": "22:21-22:33",
+    "round_sha256": "806edd5e5d80a4cb89af54bac7175e1407e641ada573634d5099bec3dc58adbe",
+    "round_argument_sha256": "492adb2c242efd8dcf4c1f1258f99cf69abc269070284d82f15893acb62fbb17",
+    "round_signature_id": -38,
+    "bindings": [
+      [
+        1,
+        "CHANNEL_COUNT",
+        "uint",
+        "const",
+        false
+      ],
+      [
+        2,
+        "EPSILON",
+        "float",
+        "const",
+        false
+      ],
+      [
+        3,
+        "LUMA_WEIGHTS",
+        "vec3",
+        "const",
+        false
+      ],
+      [
+        4,
+        "inputTex",
+        "sampler2D",
+        "uniform",
+        false
+      ],
+      [
+        5,
+        "resolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        6,
+        "tileOffset",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        7,
+        "fullResolution",
+        "vec2",
+        "uniform",
+        false
+      ],
+      [
+        8,
+        "strength",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        9,
+        "sharpness",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        10,
+        "threshold",
+        "float",
+        "uniform",
+        false
+      ],
+      [
+        20,
+        "fragColor",
+        "vec4",
+        "output",
+        true
+      ]
+    ],
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "sharpness",
+        "threshold"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      false
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "defines": []
+  }
+}

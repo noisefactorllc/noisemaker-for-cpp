@@ -1,0 +1,29 @@
+test_task27_cpp_tables_are_exact_executable_frozen_transcription (tests.test_typed_generator.Task27PerlinTests.test_task27_cpp_tables_are_exact_executable_frozen_transcription) ... [32mok[0m
+test_task27_emitter_uses_direct_left_nested_scalar_uint_xor_only (tests.test_typed_generator.Task27PerlinTests.test_task27_emitter_uses_direct_left_nested_scalar_uint_xor_only) ... [32mok[0m
+test_task27_exhaustive_profile_validator_and_emitter_negative_closure (tests.test_typed_generator.Task27PerlinTests.test_task27_exhaustive_profile_validator_and_emitter_negative_closure) ... [32mok[0m
+test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) ... [31mFAIL[0m
+test_task27_generation_wires_exact_profile_manifest_and_catalog (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_wires_exact_profile_manifest_and_catalog) ... [32mok[0m
+test_task27_profile_authenticates_only_exact_nested_scalar_uint_xor (tests.test_typed_generator.Task27PerlinTests.test_task27_profile_authenticates_only_exact_nested_scalar_uint_xor) ... [32mok[0m
+test_task27_slice_schema_has_exact_single_perlin_carrier_and_census (tests.test_typed_generator.Task27PerlinTests.test_task27_slice_schema_has_exact_single_perlin_carrier_and_census) ... [32mok[0m
+test_task27_validator_admits_only_authenticated_scalar_xor_objects (tests.test_typed_generator.Task27PerlinTests.test_task27_validator_admits_only_authenticated_scalar_xor_objects) ... [32mok[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m12408[0m, in [35mtest_task27_generation_is_exact_single_program_delta_from_task26[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"01b1dd9d0ec83e375275bc3928ee0f652d1495666616e5280e4b878a71b5db76",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(prior_typed_keys) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'01b1dd9d0ec83e375275bc3928ee0f652d1495666616e5280e4b878a71b5db76' != 'a47b8399e089fddf2827c00218513c6bf882d22134f28aa5e9bd5c24b176017a'
+- 01b1dd9d0ec83e375275bc3928ee0f652d1495666616e5280e4b878a71b5db76
++ a47b8399e089fddf2827c00218513c6bf882d22134f28aa5e9bd5c24b176017a
+[0m
+
+----------------------------------------------------------------------
+Ran 8 tests in 94.523s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

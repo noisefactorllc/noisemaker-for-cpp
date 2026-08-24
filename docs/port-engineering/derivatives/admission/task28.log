@@ -1,0 +1,33 @@
+test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary) ... [32mok[0m
+test_task28_cpp_tables_are_exact_executable_frozen_transcription (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_cpp_tables_are_exact_executable_frozen_transcription) ... [32mok[0m
+test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier)
+A foreign key must never inherit Rotate's matrix-emission capability. ... [32mok[0m
+test_task28_exhaustive_single_axis_negative_closure (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_exhaustive_single_axis_negative_closure) ... [32mok[0m
+test_task28_full_carrier_caller_numeric_define_and_identity_matrix (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_full_carrier_caller_numeric_define_and_identity_matrix) ... [32mok[0m
+test_task28_profile_validator_and_emitter_exact_identity (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_profile_validator_and_emitter_exact_identity) ... [32mok[0m
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m13299[0m, in [35mtest_task28_schema_generation_and_task27_reconstruction[0m
+    [31mself.assertEqual[0m[1;31m((128, 67, "30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55"),[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31m(len(keys), keys.index(ROTATE_KEY), hashlib.sha256([0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                         [1;31m("\n".join(keys) + "\n").encode()).hexdigest()))[0m
+                         [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: (128, 67, '30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55') != (143, 76, '5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076')
+
+First differing element 0:
+128
+143
+
+- (128, 67, '30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55')
++ (143, 76, '5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076')[0m
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.740s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

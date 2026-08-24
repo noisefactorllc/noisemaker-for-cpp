@@ -1,0 +1,254 @@
+{
+  "schema": "noisemaker-for-cpp.task16-canonical-oracles.v1",
+  "program": {
+    "key": "filter/pixelSort:computeRank",
+    "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+    "source": "sources/filter/pixelSort/computeRank.glsl",
+    "source_sha256": "6ce61bb5cb69bb22ac51f48603d5b40755b1e3f700acad1bc685a1e8a4dea6a4",
+    "defines": {},
+    "binding_signature": [
+      "lumTex:sampler2D@1/S1"
+    ],
+    "output": "fragColor:vec4"
+  },
+  "provenance": {
+    "node": "v24.7.0",
+    "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+    "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "factory_to_string_sha256": "77391180a834b322967664440caeba3dbf51f2b1ae024e5ab8a3cc781c151acf",
+    "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
+    "generator": "task-16-oracle-generator.mjs"
+  },
+  "execution": {
+    "fragment_origin": "bottom-left: runPass uses fragCoord=(x+0.5,height-y-0.5)",
+    "output_storage": "top-down Surface Float32Array",
+    "sampler_storage": "top-down Surface Float32Array; texelFetch uses GLSL bottom-left coordinates",
+    "float_bytes": "host little-endian Float32Array bytes, with probe bits read little-endian",
+    "context": {
+      "time": 0.375,
+      "frame": 7,
+      "deltaTime": 0.016666666666666666,
+      "seed": 19,
+      "tileOffset": [
+        2,
+        1
+      ],
+      "fullResolution": [
+        13,
+        11
+      ]
+    },
+    "verification": "each case is independently double-rendered; F32 and RGBA8 byte arrays must match before hashes are recorded"
+  },
+  "cases": [
+    {
+      "name": "formula",
+      "output": {
+        "width": 9,
+        "height": 7,
+        "storage": "top-down Float32Array; lane=(y*width+x)*4"
+      },
+      "sampler": {
+        "width": 11,
+        "height": 9,
+        "construction": "R=((17*x+31*y+13)%101)/100; G=((7*x+19*y+23)%97)/96; B=((29*x+11*y+5)%89)/88; A=0.35+((3*x+5*y+1)%13)/20; each assignment stores to Float32Array"
+      },
+      "coverage": [
+        "strict-otherLum-greater-than",
+        "continue-skip",
+        "zero-and-positive-rank",
+        "non-square-sampler-output",
+        "orientation"
+      ],
+      "f32_sha256": "b232b1b98b9d973eed9b21ffabfe2039974f4e431269fe05d1ed9741b0e06bf3",
+      "rgba8_sha256": "f9021ce571b2f8234509a7df8f9ec2379cb91db4aa56c42dab39f3a0657cfce6",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.28125,
+            0.75,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3e900000",
+            "0x3f400000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.53125,
+            0.3400000035762787,
+            0.4000000059604645,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f080000",
+            "0x3eae147b",
+            "0x3ecccccd",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0.9399999976158142,
+            0.800000011920929,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x3f70a3d7",
+            "0x3f4ccccd",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "flat-tie",
+      "output": {
+        "width": 9,
+        "height": 7,
+        "storage": "top-down Float32Array; lane=(y*width+x)*4"
+      },
+      "sampler": {
+        "width": 11,
+        "height": 9,
+        "construction": "every texel is Float32Array [0.5,0.25,0.75,1]"
+      },
+      "coverage": [
+        "equal-luminance-tie-break",
+        "sampleX-less-than-x",
+        "continue-skip",
+        "zero-and-positive-rank",
+        "non-square-sampler-output"
+      ],
+      "f32_sha256": "37826c52ed556af08540665ec5435fd99188af1aeb525900647b710f0ecf800f",
+      "rgba8_sha256": "472adcee73849262e3cc7ce4a7bcfdfbb2e4191f7c51e6d49ab4e02404e8d753",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0.5,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x3f000000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.375,
+            0.5,
+            0.4000000059604645,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3ec00000",
+            "0x3f000000",
+            "0x3ecccccd",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.75,
+            0.5,
+            0.800000011920929,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f400000",
+            "0x3f000000",
+            "0x3f4ccccd",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "width-one",
+      "output": {
+        "width": 1,
+        "height": 1,
+        "storage": "top-down Float32Array; lane=(y*width+x)*4"
+      },
+      "sampler": {
+        "width": 1,
+        "height": 1,
+        "construction": "the single texel is Float32Array [0.5,0.25,0.75,1]"
+      },
+      "coverage": [
+        "width-minus-one-zero-denominator",
+        "quiet-nan-blue-lane",
+        "all-samples-continue"
+      ],
+      "f32_sha256": "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c",
+      "rgba8_sha256": "1f71b62d981be40a6adc0ccd7ef62b6bc47317c7a1de96d4b934f761b67b135e",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0.5,
+            "NaN",
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x3f000000",
+            "0x7fc00000",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    }
+  ]
+}

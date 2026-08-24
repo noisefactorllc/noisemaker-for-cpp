@@ -1,0 +1,7 @@
+Test project build-task30-final-debug
+    Start 1: noisemaker-cpu-tests
+1/1 Test #1: noisemaker-cpu-tests .............   Passed    2.81 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   2.82 sec

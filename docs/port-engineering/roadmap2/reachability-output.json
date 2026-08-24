@@ -1,0 +1,6514 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.reachability.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "keys": [
+    "classicNoisedeck/bitEffects:bitEffects",
+    "filter/bulge:bulge",
+    "filter/celShading:celShadingColor",
+    "filter/edge:edge",
+    "filter/fxaa:fxaa",
+    "filter/glyphMap:glyphMap",
+    "filter/grade:creative",
+    "filter/grade:hslSecondary",
+    "filter/grade:lut",
+    "filter/grade:primary",
+    "filter/grade:vignette",
+    "filter/grade:wheels",
+    "filter/grain:grain",
+    "filter/halftone:halftone",
+    "filter/lens:lens",
+    "filter/lensWarp:lensWarp",
+    "filter/normalMap:normalMap",
+    "filter/octaveWarp:octaveWarp",
+    "filter/osd:osd",
+    "filter/pinch:pinch",
+    "filter/polar:polar",
+    "filter/pondRipples:pondRipples",
+    "filter/posterize:posterize",
+    "filter/scanlineError:scanlineError",
+    "filter/snow:snow",
+    "filter/spiral:spiral",
+    "filter/stamp:stThreshold",
+    "filter/step:step",
+    "filter/stipple:stipple",
+    "filter/tunnel:tunnel",
+    "filter/warp:warp",
+    "filter/waves:waves",
+    "synth/bitwise:bitwise",
+    "synth/gabor:gabor",
+    "synth/remap:remap"
+  ],
+  "rows": {
+    "classicNoisedeck/bitEffects:bitEffects": {
+      "key": "classicNoisedeck/bitEffects:bitEffects",
+      "main_present": true,
+      "reachable_function_count": 12,
+      "total_function_count": 30,
+      "dead_functions": [
+        "and",
+        "and",
+        "arecibo",
+        "areciboNum",
+        "bitField",
+        "bitValue",
+        "glyphs",
+        "modi",
+        "not2",
+        "not3",
+        "or",
+        "or",
+        "prng",
+        "rgb2hsv",
+        "rotate2D",
+        "value",
+        "xor",
+        "xor"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "mod",
+          "owner": "arecibo",
+          "owner_signature_id": 89,
+          "owner_reachable": false,
+          "span": "263:18-263:49"
+        },
+        {
+          "callee": "floor",
+          "owner": "arecibo",
+          "owner_signature_id": 89,
+          "owner_reachable": false,
+          "span": "263:22-263:41"
+        },
+        {
+          "callee": "mod",
+          "owner": "arecibo",
+          "owner_signature_id": 89,
+          "owner_reachable": false,
+          "span": "264:18-264:49"
+        },
+        {
+          "callee": "floor",
+          "owner": "arecibo",
+          "owner_signature_id": 89,
+          "owner_reachable": false,
+          "span": "264:22-264:41"
+        },
+        {
+          "callee": "floor",
+          "owner": "areciboNum",
+          "owner_signature_id": 90,
+          "owner_reachable": false,
+          "span": "280:24-280:41"
+        },
+        {
+          "callee": "floor",
+          "owner": "areciboNum",
+          "owner_signature_id": 90,
+          "owner_reachable": false,
+          "span": "280:49-280:60"
+        },
+        {
+          "callee": "floor",
+          "owner": "bitMask",
+          "owner_signature_id": 92,
+          "owner_reachable": true,
+          "span": "335:18-335:63"
+        },
+        {
+          "callee": "fract",
+          "owner": "bitMask",
+          "owner_signature_id": 92,
+          "owner_reachable": true,
+          "span": "342:19-342:113"
+        },
+        {
+          "callee": "mod",
+          "owner": "bitValue",
+          "owner_signature_id": 94,
+          "owner_reachable": false,
+          "span": "176:9-176:51"
+        },
+        {
+          "callee": "abs",
+          "owner": "constant",
+          "owner_signature_id": 95,
+          "owner_reachable": true,
+          "span": "116:66-116:76"
+        },
+        {
+          "callee": "floor",
+          "owner": "glyphs",
+          "owner_signature_id": 96,
+          "owner_reachable": false,
+          "span": "284:19-284:37"
+        },
+        {
+          "callee": "mod",
+          "owner": "glyphs",
+          "owner_signature_id": 96,
+          "owner_reachable": false,
+          "span": "286:18-286:49"
+        },
+        {
+          "callee": "floor",
+          "owner": "glyphs",
+          "owner_signature_id": 96,
+          "owner_reachable": false,
+          "span": "286:22-286:41"
+        },
+        {
+          "callee": "mod",
+          "owner": "glyphs",
+          "owner_signature_id": 96,
+          "owner_reachable": false,
+          "span": "287:18-287:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "glyphs",
+          "owner_signature_id": 96,
+          "owner_reachable": false,
+          "span": "287:22-287:40"
+        },
+        {
+          "callee": "fract",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 97,
+          "owner_reachable": true,
+          "span": "199:15-199:27"
+        },
+        {
+          "callee": "abs",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 97,
+          "owner_reachable": true,
+          "span": "204:26-204:54"
+        },
+        {
+          "callee": "mod",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 97,
+          "owner_reachable": true,
+          "span": "204:30-204:47"
+        },
+        {
+          "callee": "mod",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "301:18-301:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "301:22-301:40"
+        },
+        {
+          "callee": "mod",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "302:18-302:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "302:22-302:40"
+        },
+        {
+          "callee": "floor",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "309:28-309:39"
+        },
+        {
+          "callee": "fract",
+          "owner": "invaders",
+          "owner_signature_id": 98,
+          "owner_reachable": true,
+          "span": "309:49-309:60"
+        },
+        {
+          "callee": "sin",
+          "owner": "periodicFunction",
+          "owner_signature_id": 109,
+          "owner_reachable": true,
+          "span": "75:16-75:38"
+        },
+        {
+          "callee": "floor",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "82:22-82:36"
+        },
+        {
+          "callee": "floor",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "86:23-86:31"
+        },
+        {
+          "callee": "fract",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "87:22-87:30"
+        },
+        {
+          "callee": "floor",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "90:37-90:53"
+        },
+        {
+          "callee": "floatBitsToUint",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "95:21-95:39"
+        },
+        {
+          "callee": "floatBitsToUint",
+          "owner": "randomFromLatticeWithOffset",
+          "owner_signature_id": 111,
+          "owner_reachable": true,
+          "span": "96:21-96:46"
+        },
+        {
+          "callee": "max",
+          "owner": "rgb2hsv",
+          "owner_signature_id": 112,
+          "owner_reachable": false,
+          "span": "233:17-233:34"
+        },
+        {
+          "callee": "max",
+          "owner": "rgb2hsv",
+          "owner_signature_id": 112,
+          "owner_reachable": false,
+          "span": "233:24-233:33"
+        },
+        {
+          "callee": "min",
+          "owner": "rgb2hsv",
+          "owner_signature_id": 112,
+          "owner_reachable": false,
+          "span": "234:17-234:34"
+        },
+        {
+          "callee": "min",
+          "owner": "rgb2hsv",
+          "owner_signature_id": 112,
+          "owner_reachable": false,
+          "span": "234:24-234:33"
+        },
+        {
+          "callee": "mod",
+          "owner": "rgb2hsv",
+          "owner_signature_id": 112,
+          "owner_reachable": false,
+          "span": "240:17-240:42"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 113,
+          "owner_reachable": false,
+          "span": "68:15-68:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 113,
+          "owner_reachable": false,
+          "span": "68:28-68:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 113,
+          "owner_reachable": false,
+          "span": "68:40-68:50"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 113,
+          "owner_reachable": false,
+          "span": "68:52-68:62"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "BIT_COUNT",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 39,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "mask",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 40,
+          "reference_count": 8,
+          "any_reference_reachable": false
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/bulge:bulge": {
+      "key": "filter/bulge:bulge",
+      "main_present": true,
+      "reachable_function_count": 2,
+      "total_function_count": 2,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "43:15-43:25"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "44:20-44:43"
+        },
+        {
+          "callee": "normalize",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "45:10-45:23"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "56:14-56:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "56:18-56:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "59:14-59:26"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "62:14-62:33"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "70:21-70:75"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "74:19-74:33"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "75:19-75:33"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "77:16-77:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "78:16-78:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "79:16-79:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "80:16-80:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "83:21-83:48"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:15-21:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:28-21:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:40-21:50"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:52-21:62"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/celShading:celShadingColor": {
+      "key": "filter/celShading:celShadingColor",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 6,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "pow",
+          "owner": "linear_to_srgb_component",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "28:20-28:41"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "57:21-57:45"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "60:22-60:43"
+        },
+        {
+          "callee": "normalize",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "64:21-64:46"
+        },
+        {
+          "callee": "dot",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "65:27-65:72"
+        },
+        {
+          "callee": "normalize",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "65:31-65:61"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "67:25-67:64"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "71:25-71:46"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "77:28-77:68"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "83:18-83:31"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "84:19-84:33"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "85:22-85:67"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "86:26-86:39"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "88:25-88:38"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "90:30-90:72"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "93:22-93:52"
+        },
+        {
+          "callee": "pow",
+          "owner": "pow_vec3",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "49:9-49:31"
+        },
+        {
+          "callee": "pow",
+          "owner": "pow_vec3",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "50:9-50:31"
+        },
+        {
+          "callee": "pow",
+          "owner": "pow_vec3",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "51:9-51:31"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgb_to_linear_component",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "21:12-21:45"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "MIN_GAMMA",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 10,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/edge:edge": {
+      "key": "filter/edge:edge",
+      "main_present": true,
+      "reachable_function_count": 4,
+      "total_function_count": 4,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "min",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "35:27-35:54"
+        },
+        {
+          "callee": "min",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "36:27-36:42"
+        },
+        {
+          "callee": "abs",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "37:27-37:43"
+        },
+        {
+          "callee": "min",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "38:27-38:78"
+        },
+        {
+          "callee": "max",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "38:38-38:66"
+        },
+        {
+          "callee": "max",
+          "owner": "applyBlend",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "39:27-39:42"
+        },
+        {
+          "callee": "texture",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "57:21-57:81"
+        },
+        {
+          "callee": "texture",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "58:21-58:81"
+        },
+        {
+          "callee": "texture",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "59:21-59:81"
+        },
+        {
+          "callee": "texture",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "60:21-60:81"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "63:25-63:45"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "66:15-66:34"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "66:44-66:63"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "67:15-67:33"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "67:44-67:62"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "68:15-68:34"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "68:45-68:64"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "69:15-69:33"
+        },
+        {
+          "callee": "dot",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "69:45-69:63"
+        },
+        {
+          "callee": "greaterThanEqual",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "73:38-73:76"
+        },
+        {
+          "callee": "lessThan",
+          "owner": "contourConv",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "74:39-74:69"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "90:21-90:45"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "94:22-94:68"
+        },
+        {
+          "callee": "min",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "97:18-97:59"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "112:21-112:28"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "112:41-112:48"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "120:26-120:52"
+        },
+        {
+          "callee": "dot",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "123:34-123:46"
+        },
+        {
+          "callee": "dot",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "135:33-135:56"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "142:12-142:33"
+        },
+        {
+          "callee": "dot",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "151:20-151:35"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "153:22-153:68"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "168:22-168:56"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 14,
+          "reference_count": 12,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/fxaa:fxaa": {
+      "key": "filter/fxaa:fxaa",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 7,
+      "dead_functions": [
+        "sanitized_channelCount"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "as_u32",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "22:17-22:39"
+        },
+        {
+          "callee": "round",
+          "owner": "as_u32",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "22:21-22:33"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "load_texel",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "57:12-57:68"
+        },
+        {
+          "callee": "dot",
+          "owner": "luminance_from_rgb",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "61:12-61:34"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "75:20-75:49"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "76:21-76:50"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "119:21-122:6"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "120:9-120:74"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "120:13-120:42"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "120:44-120:73"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "121:9-121:72"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "121:13-121:41"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "121:43-121:71"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "165:17-165:58"
+        },
+        {
+          "callee": "round",
+          "owner": "sanitized_channelCount",
+          "owner_signature_id": 26,
+          "owner_reachable": false,
+          "span": "26:23-26:43"
+        },
+        {
+          "callee": "exp",
+          "owner": "weight_from_luma",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "65:12-65:62"
+        },
+        {
+          "callee": "abs",
+          "owner": "weight_from_luma",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "65:29-65:61"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "CHANNEL_COUNT",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 1,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "EPSILON",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 2,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 3,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/glyphMap:glyphMap": {
+      "key": "filter/glyphMap:glyphMap",
+      "main_present": true,
+      "reachable_function_count": 4,
+      "total_function_count": 4,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "292:21-292:45"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "296:14-296:56"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "300:28-300:46"
+        },
+        {
+          "callee": "min",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "301:33-301:45"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "304:22-304:45"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "306:21-306:44"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "307:18-307:41"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "308:18-308:41"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "309:10-309:25"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "310:10-310:25"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "314:39-314:64"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "315:21-315:48"
+        },
+        {
+          "callee": "dot",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "317:18-317:62"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "319:24-319:56"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "320:16-320:51"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "323:23-323:44"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "GLYPH_COUNT",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 11,
+          "reference_count": 3,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/grade:creative": {
+      "key": "filter/grade:creative",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 6,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "mix",
+          "owner": "applyFadedFilm",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "78:19-78:52"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyFadedFilm",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "81:18-81:43"
+        },
+        {
+          "callee": "length",
+          "owner": "applySplitTone",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "98:9-98:28"
+        },
+        {
+          "callee": "length",
+          "owner": "applySplitTone",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "98:39-98:61"
+        },
+        {
+          "callee": "dot",
+          "owner": "applySplitTone",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "102:18-102:40"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "applySplitTone",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "108:32-108:67"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "applySplitTone",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "109:29-109:64"
+        },
+        {
+          "callee": "abs",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "45:9-45:22"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "47:18-47:40"
+        },
+        {
+          "callee": "max",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "51:18-51:47"
+        },
+        {
+          "callee": "max",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "51:22-51:39"
+        },
+        {
+          "callee": "min",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "52:18-52:47"
+        },
+        {
+          "callee": "min",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "52:22-52:39"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "65:22-65:47"
+        },
+        {
+          "callee": "mix",
+          "owner": "applyVibrance",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "68:23-68:57"
+        },
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "37:31-37:56"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "122:18-122:48"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "137:24-137:43"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "24:25-24:60"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 10,
+          "reference_count": 3,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 10,
+      "index_sites_any_reachable": true
+    },
+    "filter/grade:hslSecondary": {
+      "key": "filter/grade:hslSecondary",
+      "main_present": true,
+      "reachable_function_count": 7,
+      "total_function_count": 7,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "fract",
+          "owner": "applyHslCorrection",
+          "owner_signature_id": 34,
+          "owner_reachable": true,
+          "span": "136:19-136:48"
+        },
+        {
+          "callee": "clamp",
+          "owner": "applyHslCorrection",
+          "owner_signature_id": 34,
+          "owner_reachable": true,
+          "span": "139:19-139:59"
+        },
+        {
+          "callee": "clamp",
+          "owner": "applyHslCorrection",
+          "owner_signature_id": 34,
+          "owner_reachable": true,
+          "span": "142:19-142:65"
+        },
+        {
+          "callee": "abs",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "114:21-114:43"
+        },
+        {
+          "callee": "min",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "115:15-115:42"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "117:26-117:85"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "120:20-120:73"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "121:27-121:80"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "124:20-124:73"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeHslKey",
+          "owner_signature_id": 35,
+          "owner_reachable": true,
+          "span": "125:27-125:80"
+        },
+        {
+          "callee": "fract",
+          "owner": "hslToRgb",
+          "owner_signature_id": 36,
+          "owner_reachable": true,
+          "span": "93:13-93:21"
+        },
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 37,
+          "owner_reachable": true,
+          "span": "44:31-44:56"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "150:18-150:48"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "172:11-172:40"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "175:24-175:43"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 39,
+          "owner_reachable": true,
+          "span": "52:18-52:47"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 39,
+          "owner_reachable": true,
+          "span": "52:22-52:39"
+        },
+        {
+          "callee": "min",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 39,
+          "owner_reachable": true,
+          "span": "53:18-53:47"
+        },
+        {
+          "callee": "min",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 39,
+          "owner_reachable": true,
+          "span": "53:22-53:39"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 40,
+          "owner_reachable": true,
+          "span": "31:25-31:60"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 16,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "PI",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 17,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        }
+      ],
+      "index_site_count": 14,
+      "index_sites_any_reachable": true
+    },
+    "filter/grade:lut": {
+      "key": "filter/grade:lut",
+      "main_present": true,
+      "reachable_function_count": 28,
+      "total_function_count": 28,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "32:31-32:56"
+        },
+        {
+          "callee": "dot",
+          "owner": "luma",
+          "owner_signature_id": 39,
+          "owner_reachable": true,
+          "span": "78:12-78:50"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutBleachBypass",
+          "owner_signature_id": 40,
+          "owner_reachable": true,
+          "span": "141:11-141:31"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutBleachBypass",
+          "owner_signature_id": 40,
+          "owner_reachable": true,
+          "span": "150:12-150:32"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutCinematic",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "184:12-184:45"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutCinematic",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "187:11-187:30"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutCinematic",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "189:12-189:32"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "lutCoolShadows",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "129:30-129:53"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutCoolShadows",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "130:11-130:57"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutCrossProcess",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "156:13-156:28"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutCrossProcess",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "157:13-157:28"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutCrossProcess",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "158:13-158:28"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutCrossProcess",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "171:12-171:32"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutDayForNight",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "205:11-205:41"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "lutHardLight",
+          "owner_signature_id": 45,
+          "owner_reachable": true,
+          "span": "403:27-403:50"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutHardLight",
+          "owner_signature_id": 45,
+          "owner_reachable": true,
+          "span": "406:12-406:35"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutInfrared",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "263:16-263:27"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "lutInfrared",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "268:21-268:48"
+        },
+        {
+          "callee": "abs",
+          "owner": "lutInfrared",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "268:58-268:76"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutInfrared",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "269:16-269:49"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutInfrared",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "271:12-271:35"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutMatrix",
+          "owner_signature_id": 47,
+          "owner_reachable": true,
+          "span": "315:21-315:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutMatrix",
+          "owner_signature_id": 47,
+          "owner_reachable": true,
+          "span": "323:12-323:35"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutMonochrome",
+          "owner_signature_id": 48,
+          "owner_reachable": true,
+          "span": "364:12-364:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "296:13-296:35"
+        },
+        {
+          "callee": "min",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "297:13-297:34"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "304:13-304:38"
+        },
+        {
+          "callee": "max",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "304:17-304:32"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "305:13-305:39"
+        },
+        {
+          "callee": "max",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "305:17-305:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutNeon",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "307:12-307:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutNoir",
+          "owner_signature_id": 50,
+          "owner_reachable": true,
+          "span": "234:9-234:27"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutNoir",
+          "owner_signature_id": 50,
+          "owner_reachable": true,
+          "span": "238:27-238:50"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutNoir",
+          "owner_signature_id": 50,
+          "owner_reachable": true,
+          "span": "240:12-240:33"
+        },
+        {
+          "callee": "floor",
+          "owner": "lutPosterize",
+          "owner_signature_id": 51,
+          "owner_reachable": true,
+          "span": "415:23-415:46"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutPosterize",
+          "owner_signature_id": 51,
+          "owner_reachable": true,
+          "span": "434:17-434:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "lutPsychedelic",
+          "owner_signature_id": 52,
+          "owner_reachable": true,
+          "span": "372:13-372:48"
+        },
+        {
+          "callee": "min",
+          "owner": "lutPsychedelic",
+          "owner_signature_id": 52,
+          "owner_reachable": true,
+          "span": "375:13-375:34"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutPsychedelic",
+          "owner_signature_id": 52,
+          "owner_reachable": true,
+          "span": "382:12-382:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutSepia",
+          "owner_signature_id": 53,
+          "owner_reachable": true,
+          "span": "254:12-254:35"
+        },
+        {
+          "callee": "min",
+          "owner": "lutSolarize",
+          "owner_signature_id": 54,
+          "owner_reachable": true,
+          "span": "456:13-456:34"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutSolarize",
+          "owner_signature_id": 54,
+          "owner_reachable": true,
+          "span": "462:12-462:35"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "lutSunset",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "347:20-347:43"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutSunset",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "348:19-348:72"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutSunset",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "349:11-349:38"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutSunset",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "352:13-352:28"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutSunset",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "354:12-354:32"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutTealOrange",
+          "owner_signature_id": 56,
+          "owner_reachable": true,
+          "span": "92:19-92:39"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutTealOrange",
+          "owner_signature_id": 56,
+          "owner_reachable": true,
+          "span": "97:19-97:47"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutTechnicolor",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "277:13-277:29"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutTechnicolor",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "278:13-278:28"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutTechnicolor",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "279:13-279:28"
+        },
+        {
+          "callee": "min",
+          "owner": "lutTechnicolor",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "283:13-283:34"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutTechnicolor",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "289:12-289:32"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutUnderwater",
+          "owner_signature_id": 58,
+          "owner_reachable": true,
+          "span": "332:13-332:28"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutUnderwater",
+          "owner_signature_id": 58,
+          "owner_reachable": true,
+          "span": "333:13-333:29"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutUnderwater",
+          "owner_signature_id": 58,
+          "owner_reachable": true,
+          "span": "337:11-337:59"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutUnderwater",
+          "owner_signature_id": 58,
+          "owner_reachable": true,
+          "span": "339:12-339:32"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutVintage",
+          "owner_signature_id": 59,
+          "owner_reachable": true,
+          "span": "216:13-216:29"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutVintage",
+          "owner_signature_id": 59,
+          "owner_reachable": true,
+          "span": "217:13-217:28"
+        },
+        {
+          "callee": "clamp",
+          "owner": "lutVintage",
+          "owner_signature_id": 59,
+          "owner_reachable": true,
+          "span": "225:12-225:32"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutWarmFilm",
+          "owner_signature_id": 60,
+          "owner_reachable": true,
+          "span": "108:13-108:29"
+        },
+        {
+          "callee": "pow",
+          "owner": "lutWarmFilm",
+          "owner_signature_id": 60,
+          "owner_reachable": true,
+          "span": "109:13-109:29"
+        },
+        {
+          "callee": "mix",
+          "owner": "lutWarmFilm",
+          "owner_signature_id": 60,
+          "owner_reachable": true,
+          "span": "113:13-113:40"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 61,
+          "owner_reachable": true,
+          "span": "468:18-468:48"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 61,
+          "owner_reachable": true,
+          "span": "525:11-525:34"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 61,
+          "owner_reachable": true,
+          "span": "528:24-528:43"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "40:18-40:47"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "40:22-40:39"
+        },
+        {
+          "callee": "min",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "41:18-41:47"
+        },
+        {
+          "callee": "min",
+          "owner": "rgbToHsl",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "41:22-41:39"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "19:25-19:60"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 20,
+      "index_sites_any_reachable": true
+    },
+    "filter/grade:primary": {
+      "key": "filter/grade:primary",
+      "main_present": true,
+      "reachable_function_count": 13,
+      "total_function_count": 13,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "abs",
+          "owner": "applyContrast",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "117:9-117:22"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyContrast",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "119:18-119:40"
+        },
+        {
+          "callee": "clamp",
+          "owner": "applyContrast",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "129:15-129:39"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyCurve",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "136:18-136:40"
+        },
+        {
+          "callee": "pow",
+          "owner": "applyCurve",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "150:15-150:46"
+        },
+        {
+          "callee": "max",
+          "owner": "applyCurve",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "150:19-150:38"
+        },
+        {
+          "callee": "max",
+          "owner": "applyCurve",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "153:12-153:44"
+        },
+        {
+          "callee": "dot",
+          "owner": "applySaturation",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "158:18-158:40"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyTonalRanges",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "92:18-92:40"
+        },
+        {
+          "callee": "max",
+          "owner": "applyTonalRanges",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "109:15-109:32"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "blacksWeight",
+          "owner_signature_id": 46,
+          "owner_reachable": true,
+          "span": "86:18-86:44"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "highlightWeight",
+          "owner_signature_id": 47,
+          "owner_reachable": true,
+          "span": "71:12-71:38"
+        },
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 48,
+          "owner_reachable": true,
+          "span": "44:31-44:56"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "166:18-166:48"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "175:17-175:35"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 49,
+          "owner_reachable": true,
+          "span": "190:24-190:43"
+        },
+        {
+          "callee": "abs",
+          "owner": "midtoneWeight",
+          "owner_signature_id": 50,
+          "owner_reachable": true,
+          "span": "76:18-76:33"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "shadowWeight",
+          "owner_signature_id": 51,
+          "owner_reachable": true,
+          "span": "66:18-66:44"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 52,
+          "owner_reachable": true,
+          "span": "31:25-31:60"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "whitesWeight",
+          "owner_signature_id": 53,
+          "owner_reachable": true,
+          "span": "81:12-81:38"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 17,
+          "reference_count": 4,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 10,
+      "index_sites_any_reachable": true
+    },
+    "filter/grade:vignette": {
+      "key": "filter/grade:vignette",
+      "main_present": true,
+      "reachable_function_count": 5,
+      "total_function_count": 5,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "abs",
+          "owner": "applyVignette",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "74:9-74:20"
+        },
+        {
+          "callee": "abs",
+          "owner": "applyVignette",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "77:49-77:60"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyVignette",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "81:22-81:44"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "applyVignette",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "82:28-82:54"
+        },
+        {
+          "callee": "mix",
+          "owner": "applyVignette",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "83:18-83:46"
+        },
+        {
+          "callee": "mix",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "54:17-54:55"
+        },
+        {
+          "callee": "mix",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "57:17-57:115"
+        },
+        {
+          "callee": "abs",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "57:59-57:73"
+        },
+        {
+          "callee": "abs",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "57:81-57:95"
+        },
+        {
+          "callee": "length",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "63:18-63:34"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "computeVignette",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "69:18-69:48"
+        },
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "37:31-37:56"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "97:25-97:49"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "103:18-103:48"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "106:9-106:28"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "130:24-130:43"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "24:25-24:60"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 10,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 10,
+      "index_sites_any_reachable": true
+    },
+    "filter/grade:wheels": {
+      "key": "filter/grade:wheels",
+      "main_present": true,
+      "reachable_function_count": 7,
+      "total_function_count": 7,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "length",
+          "owner": "applyWheels",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "69:9-69:29"
+        },
+        {
+          "callee": "length",
+          "owner": "applyWheels",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "69:40-69:57"
+        },
+        {
+          "callee": "length",
+          "owner": "applyWheels",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "69:68-69:86"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyWheels",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "73:18-73:40"
+        },
+        {
+          "callee": "dot",
+          "owner": "applyWheels",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "96:21-96:46"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "highlightWeight",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "57:12-57:50"
+        },
+        {
+          "callee": "pow",
+          "owner": "linearToSrgb",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "36:31-36:56"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "106:18-106:48"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "115:24-115:43"
+        },
+        {
+          "callee": "abs",
+          "owner": "midtoneWeight",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "50:26-50:38"
+        },
+        {
+          "callee": "abs",
+          "owner": "midtoneWeight",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "51:18-51:36"
+        },
+        {
+          "callee": "max",
+          "owner": "midtoneWeight",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "52:12-52:32"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "shadowWeight",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "45:18-45:55"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgbToLinear",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "23:25-23:60"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "LUMA_WEIGHTS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 9,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 10,
+      "index_sites_any_reachable": true
+    },
+    "filter/grain:grain": {
+      "key": "filter/grain:grain",
+      "main_present": true,
+      "reachable_function_count": 12,
+      "total_function_count": 12,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "as_u32",
+          "owner_signature_id": 53,
+          "owner_reachable": true,
+          "span": "31:17-31:39"
+        },
+        {
+          "callee": "round",
+          "owner": "as_u32",
+          "owner_signature_id": 53,
+          "owner_reachable": true,
+          "span": "31:21-31:33"
+        },
+        {
+          "callee": "clamp",
+          "owner": "blend_cubic",
+          "owner_signature_id": 54,
+          "owner_reachable": true,
+          "span": "75:15-75:33"
+        },
+        {
+          "callee": "clamp",
+          "owner": "clamp01",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "span": "35:12-35:34"
+        },
+        {
+          "callee": "clamp",
+          "owner": "interpolation_weight",
+          "owner_signature_id": 56,
+          "owner_reachable": true,
+          "span": "66:25-66:47"
+        },
+        {
+          "callee": "cos",
+          "owner": "interpolation_weight",
+          "owner_signature_id": 56,
+          "owner_reachable": true,
+          "span": "68:27-68:37"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "231:20-231:42"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "232:21-232:43"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "239:18-239:49"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "241:25-241:47"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "249:16-249:37"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 57,
+          "owner_reachable": true,
+          "span": "257:22-257:60"
+        },
+        {
+          "callee": "sin",
+          "owner": "periodic_value",
+          "owner_signature_id": 59,
+          "owner_reachable": true,
+          "span": "61:13-61:49"
+        },
+        {
+          "callee": "max",
+          "owner": "sample_grain_noise",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "219:19-219:35"
+        },
+        {
+          "callee": "max",
+          "owner": "sample_grain_noise",
+          "owner_signature_id": 62,
+          "owner_reachable": true,
+          "span": "220:20-220:36"
+        },
+        {
+          "callee": "max",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "132:24-132:49"
+        },
+        {
+          "callee": "floor",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "134:19-134:35"
+        },
+        {
+          "callee": "fract",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "136:17-136:33"
+        },
+        {
+          "callee": "cos",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "138:24-138:34"
+        },
+        {
+          "callee": "floor",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "139:24-139:41"
+        },
+        {
+          "callee": "fract",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "141:23-141:40"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "153:21-153:42"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "154:24-154:45"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "156:16-156:42"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "166:21-166:42"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "167:24-167:45"
+        },
+        {
+          "callee": "mix",
+          "owner": "sample_raw_value_noise",
+          "owner_signature_id": 63,
+          "owner_reachable": true,
+          "span": "168:16-168:42"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "PI",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 1,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 2,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "UINT32_TO_FLOAT",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 3,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "CHANNEL_COUNT",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 4,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "INTERPOLATION_CONSTANT",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 5,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "INTERPOLATION_LINEAR",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 6,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "INTERPOLATION_COSINE",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 7,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "INTERPOLATION_BICUBIC",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 8,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_SEED",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 9,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/halftone:halftone": {
+      "key": "filter/halftone:halftone",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 9,
+      "dead_functions": [
+        "halftoneCoverage",
+        "lum",
+        "tonemap2"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "texture",
+          "owner": "boxBlur3",
+          "owner_signature_id": 37,
+          "owner_reachable": true,
+          "span": "60:20-60:62"
+        },
+        {
+          "callee": "clamp",
+          "owner": "boxBlur3",
+          "owner_signature_id": 37,
+          "owner_reachable": true,
+          "span": "60:38-60:61"
+        },
+        {
+          "callee": "floor",
+          "owner": "cellSampleFromRuv",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "72:19-72:29"
+        },
+        {
+          "callee": "clamp",
+          "owner": "cellSampleFromRuv",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "74:19-74:76"
+        },
+        {
+          "callee": "sqrt",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "85:18-85:46"
+        },
+        {
+          "callee": "clamp",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "85:23-85:45"
+        },
+        {
+          "callee": "clamp",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "86:28-86:65"
+        },
+        {
+          "callee": "max",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "87:16-87:66"
+        },
+        {
+          "callee": "mix",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "87:20-87:56"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "87:24-87:33"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "halftoneCoverage",
+          "owner_signature_id": 39,
+          "owner_reachable": false,
+          "span": "88:18-88:53"
+        },
+        {
+          "callee": "dot",
+          "owner": "lum",
+          "owner_signature_id": 40,
+          "owner_reachable": false,
+          "span": "27:12-27:48"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "119:19-119:40"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "130:35-130:46"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "131:35-131:46"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "132:35-132:46"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 41,
+          "owner_reachable": true,
+          "span": "133:35-133:46"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToCmyk",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "37:21-37:50"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToCmyk",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "37:25-37:42"
+        },
+        {
+          "callee": "max",
+          "owner": "rgbToCmyk",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "38:19-38:40"
+        },
+        {
+          "callee": "clamp",
+          "owner": "rgbToCmyk",
+          "owner_signature_id": 42,
+          "owner_reachable": true,
+          "span": "39:16-39:62"
+        },
+        {
+          "callee": "radians",
+          "owner": "rotate2D",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "49:15-49:32"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "50:16-50:22"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 43,
+          "owner_reachable": true,
+          "span": "51:16-51:22"
+        },
+        {
+          "callee": "clamp",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "101:23-101:45"
+        },
+        {
+          "callee": "length",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "102:28-102:42"
+        },
+        {
+          "callee": "sqrt",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "103:23-103:62"
+        },
+        {
+          "callee": "min",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "103:28-103:56"
+        },
+        {
+          "callee": "mix",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "105:21-106:63"
+        },
+        {
+          "callee": "clamp",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "108:28-108:65"
+        },
+        {
+          "callee": "max",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "109:22-109:85"
+        },
+        {
+          "callee": "mix",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "109:26-109:75"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "109:30-109:52"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "110:25-110:60"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "roundDotCoverage",
+          "owner_signature_id": 44,
+          "owner_reachable": true,
+          "span": "111:19-112:36"
+        },
+        {
+          "callee": "mix",
+          "owner": "tonemap2",
+          "owner_signature_id": 45,
+          "owner_reachable": false,
+          "span": "31:12-31:47"
+        },
+        {
+          "callee": "clamp",
+          "owner": "tonemap2",
+          "owner_signature_id": 45,
+          "owner_reachable": false,
+          "span": "31:28-31:46"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "DOT_AREA_CAP",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 30,
+          "reference_count": 4,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "PI",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 31,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "MID_DOT_RADIUS",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 32,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "MAX_DOT_RADIUS",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 33,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/lens:lens": {
+      "key": "filter/lens:lens",
+      "main_present": true,
+      "reachable_function_count": 1,
+      "total_function_count": 1,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "17:21-17:45"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "31:21-31:71"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "32:28-32:41"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "33:28-33:69"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "45:28-45:46"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "50:28-50:55"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "60:67-60:91"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "66:19-66:34"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "67:19-67:34"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "70:16-70:72"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "71:16-71:72"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "72:16-72:72"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "73:16-73:72"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 9,
+          "owner_reachable": true,
+          "span": "77:21-77:49"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "HALF_FRAME",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 8,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/lensWarp:lensWarp": {
+      "key": "filter/lensWarp:lensWarp",
+      "main_present": true,
+      "reachable_function_count": 7,
+      "total_function_count": 7,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "cos",
+          "owner": "grid",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "47:26-47:36"
+        },
+        {
+          "callee": "sin",
+          "owner": "grid",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "47:38-47:48"
+        },
+        {
+          "callee": "dot",
+          "owner": "grid",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "49:12-49:31"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "72:33-72:91"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "76:18-76:37"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "78:23-78:59"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "79:18-79:71"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "79:22-79:65"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "79:28-79:42"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "91:10-91:39"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "91:14-91:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "95:15-95:39"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "98:19-98:27"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "99:19-99:27"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "103:16-103:55"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "103:34-103:54"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "106:16-106:55"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "106:34-106:54"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "109:16-109:55"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "109:34-109:54"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "112:16-112:55"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "112:34-112:54"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "116:21-116:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "perlinNoise",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "54:17-54:26"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/normalMap:normalMap": {
+      "key": "filter/normalMap:normalMap",
+      "main_present": true,
+      "reachable_function_count": 10,
+      "total_function_count": 10,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "as_u32",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "34:17-34:39"
+        },
+        {
+          "callee": "round",
+          "owner": "as_u32",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "34:21-34:33"
+        },
+        {
+          "callee": "pow",
+          "owner": "cbrt_safe",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "75:25-75:51"
+        },
+        {
+          "callee": "abs",
+          "owner": "cbrt_safe",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "75:29-75:39"
+        },
+        {
+          "callee": "clamp",
+          "owner": "clamp01",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "38:12-38:34"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "compute_reference_value",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "109:18-109:49"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "119:18-119:42"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "121:22-121:36"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "124:23-124:37"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "148:21-148:52"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "149:21-149:52"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "150:21-150:69"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "150:34-150:41"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "150:44-150:51"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "152:18-152:62"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgb_to_linear",
+          "owner_signature_id": 31,
+          "owner_reachable": true,
+          "span": "67:12-67:45"
+        },
+        {
+          "callee": "clamp",
+          "owner": "value_map_component",
+          "owner_signature_id": 32,
+          "owner_reachable": true,
+          "span": "104:24-104:62"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "CHANNEL_COUNT",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 1,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "CHANNEL_CAP",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 2,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "SOBEL_OFFSETS",
+          "storage": "const",
+          "type": "ivec2[9]",
+          "symbol_id": 9,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "SOBEL_X_KERNEL",
+          "storage": "const",
+          "type": "float[9]",
+          "symbol_id": 10,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "SOBEL_Y_KERNEL",
+          "storage": "const",
+          "type": "float[9]",
+          "symbol_id": 11,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 3,
+      "index_sites_any_reachable": true
+    },
+    "filter/octaveWarp:octaveWarp": {
+      "key": "filter/octaveWarp:octaveWarp",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 6,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "105:22-105:42"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "112:28-112:51"
+        },
+        {
+          "callee": "sqrt",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "119:30-119:46"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "146:19-146:32"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "147:19-147:32"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "149:16-149:70"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "150:16-150:70"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "151:16-151:70"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "152:16-152:70"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "155:21-155:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "noise",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "42:14-42:22"
+        },
+        {
+          "callee": "fract",
+          "owner": "noise",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "43:14-43:22"
+        },
+        {
+          "callee": "mix",
+          "owner": "noise",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "51:12-51:52"
+        },
+        {
+          "callee": "mix",
+          "owner": "noise",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "51:16-51:30"
+        },
+        {
+          "callee": "mix",
+          "owner": "noise",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "51:32-51:46"
+        },
+        {
+          "callee": "cos",
+          "owner": "simplexNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "61:16-61:26"
+        },
+        {
+          "callee": "sin",
+          "owner": "simplexNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "62:16-62:26"
+        },
+        {
+          "callee": "abs",
+          "owner": "wrapFloat",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "74:16-74:47"
+        },
+        {
+          "callee": "mod",
+          "owner": "wrapFloat",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "74:20-74:40"
+        },
+        {
+          "callee": "mod",
+          "owner": "wrapFloat",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "77:16-77:30"
+        },
+        {
+          "callee": "clamp",
+          "owner": "wrapFloat",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "81:16-81:37"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 17,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/osd:osd": {
+      "key": "filter/osd:osd",
+      "main_present": true,
+      "reachable_function_count": 5,
+      "total_function_count": 5,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "77:18-77:62"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "84:21-84:45"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "87:17-87:39"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "88:18-88:40"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "92:18-92:48"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "94:25-94:47"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "97:24-97:51"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "106:27-106:41"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "164:33-164:64"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "164:46-164:63"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "176:26-176:51"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "182:22-182:53"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "183:20-183:57"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "184:22-184:46"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "GLYPHS",
+          "storage": "const",
+          "type": "int[80]",
+          "symbol_id": 12,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "GLYPH_W",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 13,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "GLYPH_H",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 14,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_SCALE",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 15,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_PADDING",
+          "storage": "const",
+          "type": "int",
+          "symbol_id": 16,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 1,
+      "index_sites_any_reachable": true
+    },
+    "filter/pinch:pinch": {
+      "key": "filter/pinch:pinch",
+      "main_present": true,
+      "reachable_function_count": 2,
+      "total_function_count": 2,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "43:15-43:25"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "44:20-44:43"
+        },
+        {
+          "callee": "normalize",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "45:10-45:23"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "56:14-56:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "56:18-56:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "59:14-59:26"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "62:14-62:33"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "70:21-70:85"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "73:19-73:33"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "74:19-74:33"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "76:16-76:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "77:16-77:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "78:16-78:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "79:16-79:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "span": "82:21-82:48"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:15-21:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:28-21:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:40-21:50"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 15,
+          "owner_reachable": true,
+          "span": "21:52-21:62"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/polar:polar": {
+      "key": "filter/polar:polar",
+      "main_present": true,
+      "reachable_function_count": 4,
+      "total_function_count": 5,
+      "dead_functions": [
+        "smod2"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "47:21-47:45"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "61:19-61:30"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "62:19-62:30"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "64:16-64:68"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "65:16-65:68"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "66:16-66:68"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "67:16-67:68"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "70:21-70:45"
+        },
+        {
+          "callee": "atan",
+          "owner": "polarCoords",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "30:23-30:39"
+        },
+        {
+          "callee": "length",
+          "owner": "polarCoords",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "30:53-30:63"
+        },
+        {
+          "callee": "abs",
+          "owner": "smod",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "20:24-20:43"
+        },
+        {
+          "callee": "fract",
+          "owner": "smod",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "20:28-20:36"
+        },
+        {
+          "callee": "abs",
+          "owner": "smod2",
+          "owner_signature_id": 24,
+          "owner_reachable": false,
+          "span": "24:24-24:43"
+        },
+        {
+          "callee": "fract",
+          "owner": "smod2",
+          "owner_signature_id": 24,
+          "owner_reachable": false,
+          "span": "24:28-24:36"
+        },
+        {
+          "callee": "dot",
+          "owner": "vortexCoords",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "39:16-39:27"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 12,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/pondRipples:pondRipples": {
+      "key": "filter/pondRipples:pondRipples",
+      "main_present": true,
+      "reachable_function_count": 1,
+      "total_function_count": 1,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "30:15-30:25"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "35:21-35:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "40:13-40:23"
+        },
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "46:13-46:23"
+        },
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "66:15-66:23"
+        },
+        {
+          "callee": "cos",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "67:16-67:24"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "77:10-77:39"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "77:14-77:32"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "81:21-81:85"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "84:19-84:33"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "85:19-85:33"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "87:16-87:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "88:16-88:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "89:16-89:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "90:16-90:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 11,
+          "owner_reachable": true,
+          "span": "93:21-93:48"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/posterize:posterize": {
+      "key": "filter/posterize:posterize",
+      "main_present": true,
+      "reachable_function_count": 7,
+      "total_function_count": 7,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "clamp",
+          "owner": "clamp_01",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "17:12-17:34"
+        },
+        {
+          "callee": "pow",
+          "owner": "linear_to_srgb_component",
+          "owner_signature_id": 18,
+          "owner_reachable": true,
+          "span": "31:20-31:41"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "56:38-56:62"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "57:18-57:39"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "59:24-59:40"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "60:30-60:64"
+        },
+        {
+          "callee": "round",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "60:34-60:51"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "69:25-69:46"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "73:28-73:68"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "79:18-79:31"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "80:19-80:33"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "81:22-81:67"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "82:26-82:39"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "84:25-84:38"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "86:30-86:72"
+        },
+        {
+          "callee": "pow",
+          "owner": "pow_vec3",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "51:12-51:38"
+        },
+        {
+          "callee": "pow",
+          "owner": "srgb_to_linear_component",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "24:12-24:45"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "MIN_LEVELS",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 8,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "MIN_GAMMA",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 9,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/scanlineError:scanlineError": {
+      "key": "filter/scanlineError:scanlineError",
+      "main_present": true,
+      "reachable_function_count": 19,
+      "total_function_count": 19,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "clamp",
+          "owner": "clamp01",
+          "owner_signature_id": 65,
+          "owner_reachable": true,
+          "span": "25:12-25:34"
+        },
+        {
+          "callee": "pow",
+          "owner": "compute_exponential_noise",
+          "owner_signature_id": 66,
+          "owner_reachable": true,
+          "span": "183:12-183:26"
+        },
+        {
+          "callee": "max",
+          "owner": "compute_simplex_value",
+          "owner_signature_id": 67,
+          "owner_reachable": true,
+          "span": "142:20-142:36"
+        },
+        {
+          "callee": "max",
+          "owner": "compute_simplex_value",
+          "owner_signature_id": 67,
+          "owner_reachable": true,
+          "span": "143:20-143:36"
+        },
+        {
+          "callee": "cos",
+          "owner": "compute_simplex_value",
+          "owner_signature_id": 67,
+          "owner_reachable": true,
+          "span": "144:19-144:31"
+        },
+        {
+          "callee": "floatBitsToUint",
+          "owner": "hashNoise",
+          "owner_signature_id": 69,
+          "owner_reachable": true,
+          "span": "234:24-234:44"
+        },
+        {
+          "callee": "floatBitsToUint",
+          "owner": "hashNoise",
+          "owner_signature_id": 69,
+          "owner_reachable": true,
+          "span": "234:46-234:66"
+        },
+        {
+          "callee": "floatBitsToUint",
+          "owner": "hashNoise",
+          "owner_signature_id": 69,
+          "owner_reachable": true,
+          "span": "234:68-234:88"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "308:24-308:48"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "327:25-327:40"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "338:26-338:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "349:29-349:91"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "355:24-355:67"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "357:25-357:81"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "364:24-364:73"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "370:28-370:63"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "374:13-374:43"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "374:17-374:37"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "375:13-375:44"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "375:17-375:38"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "377:31-377:63"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "377:35-377:57"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "385:22-385:49"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "391:24-391:53"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "405:32-405:51"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "411:24-411:67"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "413:22-413:78"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "415:26-415:87"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 70,
+          "owner_reachable": true,
+          "span": "416:24-416:79"
+        },
+        {
+          "callee": "floor",
+          "owner": "mod289_vec3",
+          "owner_signature_id": 71,
+          "owner_reachable": true,
+          "span": "33:16-33:40"
+        },
+        {
+          "callee": "floor",
+          "owner": "mod289_vec4",
+          "owner_signature_id": 72,
+          "owner_reachable": true,
+          "span": "37:16-37:40"
+        },
+        {
+          "callee": "max",
+          "owner": "normalized_coord",
+          "owner_signature_id": 73,
+          "owner_reachable": true,
+          "span": "133:24-133:40"
+        },
+        {
+          "callee": "max",
+          "owner": "normalized_coord",
+          "owner_signature_id": 73,
+          "owner_reachable": true,
+          "span": "134:25-134:41"
+        },
+        {
+          "callee": "sin",
+          "owner": "periodic_value",
+          "owner_signature_id": 75,
+          "owner_reachable": true,
+          "span": "129:12-129:34"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "52:15-52:43"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "52:25-52:42"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "53:24-53:42"
+        },
+        {
+          "callee": "step",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "55:18-55:50"
+        },
+        {
+          "callee": "min",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "57:15-57:46"
+        },
+        {
+          "callee": "max",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "58:15-58:46"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "73:25-73:47"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "74:15-74:30"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "75:15-75:34"
+        },
+        {
+          "callee": "abs",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "79:20-79:26"
+        },
+        {
+          "callee": "abs",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "79:29-79:35"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "84:15-84:24"
+        },
+        {
+          "callee": "floor",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "85:15-85:24"
+        },
+        {
+          "callee": "step",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "86:16-86:34"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "99:9-99:20"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "100:9-100:20"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "101:9-101:20"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "102:9-102:20"
+        },
+        {
+          "callee": "max",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "110:16-110:43"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "110:26-110:37"
+        },
+        {
+          "callee": "max",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "111:16-111:43"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "111:26-111:37"
+        },
+        {
+          "callee": "max",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "112:16-112:43"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "112:26-112:37"
+        },
+        {
+          "callee": "max",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "113:16-113:43"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "113:26-113:37"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "121:23-121:35"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "122:25-122:37"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "123:25-123:37"
+        },
+        {
+          "callee": "dot",
+          "owner": "simplex_noise",
+          "owner_signature_id": 77,
+          "owner_reachable": true,
+          "span": "124:25-124:37"
+        },
+        {
+          "callee": "floor",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "239:14-239:22"
+        },
+        {
+          "callee": "fract",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "240:14-240:22"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "252:12-256:6"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "253:9-253:61"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "253:13-253:33"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "253:35-253:55"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "254:9-254:61"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "254:13-254:33"
+        },
+        {
+          "callee": "mix",
+          "owner": "valueNoise",
+          "owner_signature_id": 79,
+          "owner_reachable": true,
+          "span": "254:35-254:55"
+        },
+        {
+          "callee": "cos",
+          "owner": "vhs_computeNoise",
+          "owner_signature_id": 80,
+          "owner_reachable": true,
+          "span": "263:9-263:21"
+        },
+        {
+          "callee": "clamp",
+          "owner": "vhs_computeNoise",
+          "owner_signature_id": 80,
+          "owner_reachable": true,
+          "span": "279:12-279:32"
+        },
+        {
+          "callee": "max",
+          "owner": "vhs_gradValue",
+          "owner_signature_id": 81,
+          "owner_reachable": true,
+          "span": "290:15-290:35"
+        },
+        {
+          "callee": "min",
+          "owner": "vhs_gradValue",
+          "owner_signature_id": 81,
+          "owner_reachable": true,
+          "span": "291:12-291:29"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 1,
+          "reference_count": 3,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_SEED_LINE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 42,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TIME_SEED_LINE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 43,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_SEED_SWERVE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 44,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TIME_SEED_SWERVE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 45,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "BASE_SEED_WHITE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 46,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TIME_SEED_WHITE",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 47,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/snow:snow": {
+      "key": "filter/snow:snow",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 8,
+      "dead_functions": [
+        "as_u32",
+        "clamp_01"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "as_u32",
+          "owner_signature_id": 26,
+          "owner_reachable": false,
+          "span": "26:17-26:39"
+        },
+        {
+          "callee": "round",
+          "owner": "as_u32",
+          "owner_signature_id": 26,
+          "owner_reachable": false,
+          "span": "26:21-26:33"
+        },
+        {
+          "callee": "clamp",
+          "owner": "clamp_01",
+          "owner_signature_id": 27,
+          "owner_reachable": false,
+          "span": "30:12-30:34"
+        },
+        {
+          "callee": "texelFetch",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "79:18-79:49"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "81:22-81:44"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "93:15-93:42"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "95:26-95:65"
+        },
+        {
+          "callee": "min",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "95:30-95:54"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 28,
+          "owner_reachable": true,
+          "span": "98:22-98:70"
+        },
+        {
+          "callee": "sin",
+          "owner": "normalized_sine",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "34:13-34:23"
+        },
+        {
+          "callee": "floor",
+          "owner": "snow_fract_vec3",
+          "owner_signature_id": 31,
+          "owner_reachable": true,
+          "span": "42:20-42:32"
+        },
+        {
+          "callee": "dot",
+          "owner": "snow_hash",
+          "owner_signature_id": 32,
+          "owner_reachable": true,
+          "span": "47:21-47:58"
+        },
+        {
+          "callee": "floor",
+          "owner": "snow_hash",
+          "owner_signature_id": 32,
+          "owner_reachable": true,
+          "span": "50:35-50:50"
+        },
+        {
+          "callee": "clamp",
+          "owner": "snow_hash",
+          "owner_signature_id": 32,
+          "owner_reachable": true,
+          "span": "51:12-51:39"
+        },
+        {
+          "callee": "cos",
+          "owner": "snow_noise",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "span": "56:20-56:30"
+        },
+        {
+          "callee": "clamp",
+          "owner": "snow_noise",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "span": "73:12-73:37"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "CHANNEL_COUNT",
+          "storage": "const",
+          "type": "uint",
+          "symbol_id": 1,
+          "reference_count": 0,
+          "any_reference_reachable": false
+        },
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 2,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TIME_SEED_OFFSETS",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 3,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "STATIC_SEED",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 4,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "LIMITER_SEED",
+          "storage": "const",
+          "type": "vec3",
+          "symbol_id": 5,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/spiral:spiral": {
+      "key": "filter/spiral:spiral",
+      "main_present": true,
+      "reachable_function_count": 2,
+      "total_function_count": 2,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "46:15-46:25"
+        },
+        {
+          "callee": "atan",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "47:15-47:31"
+        },
+        {
+          "callee": "sign",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "51:61-51:75"
+        },
+        {
+          "callee": "cos",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "54:15-54:21"
+        },
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "54:23-54:29"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "65:14-65:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "65:18-65:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "68:14-68:26"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "71:14-71:33"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "82:21-82:85"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "85:19-85:33"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "86:19-86:33"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "88:16-88:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "89:16-89:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "90:16-90:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "91:16-91:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "94:21-94:48"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:15-23:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:28-23:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:40-23:50"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:52-23:62"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/stamp:stThreshold": {
+      "key": "filter/stamp:stThreshold",
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 6,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "fract",
+          "owner": "hash12",
+          "owner_signature_id": 18,
+          "owner_reachable": true,
+          "span": "18:15-18:42"
+        },
+        {
+          "callee": "dot",
+          "owner": "hash12",
+          "owner_signature_id": 18,
+          "owner_reachable": true,
+          "span": "19:11-19:34"
+        },
+        {
+          "callee": "fract",
+          "owner": "hash12",
+          "owner_signature_id": 18,
+          "owner_reachable": true,
+          "span": "20:12-20:39"
+        },
+        {
+          "callee": "dot",
+          "owner": "lum",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "15:28-15:64"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "48:16-48:37"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "49:17-49:37"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "53:24-53:46"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "60:16-60:36"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "60:20-60:29"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "61:15-61:44"
+        },
+        {
+          "callee": "mix",
+          "owner": "tonemap2",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "43:12-43:47"
+        },
+        {
+          "callee": "clamp",
+          "owner": "tonemap2",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "43:28-43:46"
+        },
+        {
+          "callee": "floor",
+          "owner": "vnoise",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "24:14-24:22"
+        },
+        {
+          "callee": "fract",
+          "owner": "vnoise",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "25:14-25:22"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "27:12-28:86"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "27:16-27:63"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 22,
+          "owner_reachable": true,
+          "span": "28:16-28:80"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/step:step": {
+      "key": "filter/step:step",
+      "main_present": true,
+      "reachable_function_count": 1,
+      "total_function_count": 1,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 7,
+          "owner_reachable": true,
+          "span": "14:21-14:45"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 7,
+          "owner_reachable": true,
+          "span": "16:18-16:39"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "main",
+          "owner_signature_id": 7,
+          "owner_reachable": true,
+          "span": "19:19-19:36"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 7,
+          "owner_reachable": true,
+          "span": "20:21-20:86"
+        },
+        {
+          "callee": "step",
+          "owner": "main",
+          "owner_signature_id": 7,
+          "owner_reachable": true,
+          "span": "22:21-22:47"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/stipple:stipple": {
+      "key": "filter/stipple:stipple",
+      "main_present": true,
+      "reachable_function_count": 4,
+      "total_function_count": 9,
+      "dead_functions": [
+        "fbm",
+        "hash12",
+        "rotate2D",
+        "tonemap2",
+        "vnoise"
+      ],
+      "builtin_sites": [
+        {
+          "callee": "fract",
+          "owner": "hash12",
+          "owner_signature_id": 24,
+          "owner_reachable": false,
+          "span": "22:15-22:42"
+        },
+        {
+          "callee": "dot",
+          "owner": "hash12",
+          "owner_signature_id": 24,
+          "owner_reachable": false,
+          "span": "23:11-23:34"
+        },
+        {
+          "callee": "fract",
+          "owner": "hash12",
+          "owner_signature_id": 24,
+          "owner_reachable": false,
+          "span": "24:12-24:39"
+        },
+        {
+          "callee": "fract",
+          "owner": "hash22",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "28:15-28:64"
+        },
+        {
+          "callee": "dot",
+          "owner": "hash22",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "29:11-29:34"
+        },
+        {
+          "callee": "fract",
+          "owner": "hash22",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "30:12-30:42"
+        },
+        {
+          "callee": "dot",
+          "owner": "lum",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "35:12-35:48"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "98:19-98:40"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "108:19-108:70"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "109:22-109:47"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "111:15-111:34"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "112:16-112:45"
+        },
+        {
+          "callee": "fwidth",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "112:20-112:29"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "113:26-113:65"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 27,
+          "owner_reachable": true,
+          "span": "114:14-114:48"
+        },
+        {
+          "callee": "radians",
+          "owner": "rotate2D",
+          "owner_signature_id": 28,
+          "owner_reachable": false,
+          "span": "89:15-89:32"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 28,
+          "owner_reachable": false,
+          "span": "90:16-90:22"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 28,
+          "owner_reachable": false,
+          "span": "91:16-91:22"
+        },
+        {
+          "callee": "mix",
+          "owner": "tonemap2",
+          "owner_signature_id": 29,
+          "owner_reachable": false,
+          "span": "83:12-83:47"
+        },
+        {
+          "callee": "clamp",
+          "owner": "tonemap2",
+          "owner_signature_id": 29,
+          "owner_reachable": false,
+          "span": "83:28-83:46"
+        },
+        {
+          "callee": "floor",
+          "owner": "vnoise",
+          "owner_signature_id": 30,
+          "owner_reachable": false,
+          "span": "40:14-40:22"
+        },
+        {
+          "callee": "fract",
+          "owner": "vnoise",
+          "owner_signature_id": 30,
+          "owner_reachable": false,
+          "span": "41:14-41:22"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 30,
+          "owner_reachable": false,
+          "span": "43:12-44:86"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 30,
+          "owner_reachable": false,
+          "span": "43:16-43:63"
+        },
+        {
+          "callee": "mix",
+          "owner": "vnoise",
+          "owner_signature_id": 30,
+          "owner_reachable": false,
+          "span": "44:16-44:80"
+        },
+        {
+          "callee": "floor",
+          "owner": "voronoiCell",
+          "owner_signature_id": 31,
+          "owner_reachable": true,
+          "span": "63:14-63:22"
+        },
+        {
+          "callee": "dot",
+          "owner": "voronoiCell",
+          "owner_signature_id": 31,
+          "owner_reachable": true,
+          "span": "71:23-71:42"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/tunnel:tunnel": {
+      "key": "filter/tunnel:tunnel",
+      "main_present": true,
+      "reachable_function_count": 3,
+      "total_function_count": 3,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "32:21-32:45"
+        },
+        {
+          "callee": "atan",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "44:15-44:43"
+        },
+        {
+          "callee": "length",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "49:13-49:29"
+        },
+        {
+          "callee": "pow",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "56:13-56:38"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "80:19-80:37"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "81:19-81:37"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "83:18-83:77"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "84:18-84:77"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "85:18-85:77"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "86:18-86:77"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "89:17-89:48"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "94:28-94:51"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "97:26-97:52"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 19,
+          "owner_reachable": true,
+          "span": "99:25-99:76"
+        },
+        {
+          "callee": "atan",
+          "owner": "polygonShape",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "22:15-22:31"
+        },
+        {
+          "callee": "cos",
+          "owner": "polygonShape",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "24:12-24:43"
+        },
+        {
+          "callee": "floor",
+          "owner": "polygonShape",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "24:16-24:34"
+        },
+        {
+          "callee": "length",
+          "owner": "polygonShape",
+          "owner_signature_id": 20,
+          "owner_reachable": true,
+          "span": "24:46-24:56"
+        },
+        {
+          "callee": "abs",
+          "owner": "smod",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "28:24-28:43"
+        },
+        {
+          "callee": "fract",
+          "owner": "smod",
+          "owner_signature_id": 21,
+          "owner_reachable": true,
+          "span": "28:28-28:36"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "PI",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 13,
+          "reference_count": 2,
+          "any_reference_reachable": true
+        },
+        {
+          "name": "TAU",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 14,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/warp:warp": {
+      "key": "filter/warp:warp",
+      "main_present": true,
+      "reachable_function_count": 7,
+      "total_function_count": 7,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "cos",
+          "owner": "grid",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "50:26-50:36"
+        },
+        {
+          "callee": "sin",
+          "owner": "grid",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "50:38-50:48"
+        },
+        {
+          "callee": "dot",
+          "owner": "grid",
+          "owner_signature_id": 23,
+          "owner_reachable": true,
+          "span": "52:12-52:31"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "75:28-75:44"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "84:14-84:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "84:18-84:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "87:14-87:26"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "90:14-90:33"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "94:19-94:27"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "95:19-95:27"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "97:16-97:65"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "98:16-98:65"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "99:16-99:65"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "100:16-100:65"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "103:21-103:42"
+        },
+        {
+          "callee": "floor",
+          "owner": "perlinNoise",
+          "owner_signature_id": 26,
+          "owner_reachable": true,
+          "span": "57:17-57:26"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "filter/waves:waves": {
+      "key": "filter/waves:waves",
+      "main_present": true,
+      "reachable_function_count": 2,
+      "total_function_count": 2,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "38:26-38:88"
+        },
+        {
+          "callee": "any",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "41:9-41:45"
+        },
+        {
+          "callee": "notEqual",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "41:13-41:44"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "43:24-43:82"
+        },
+        {
+          "callee": "abs",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "51:14-51:43"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "51:18-51:36"
+        },
+        {
+          "callee": "mod",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "54:14-54:26"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "57:14-57:33"
+        },
+        {
+          "callee": "textureSize",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "64:65-64:89"
+        },
+        {
+          "callee": "any",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "67:21-67:57"
+        },
+        {
+          "callee": "notEqual",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "67:25-67:56"
+        },
+        {
+          "callee": "fract",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "67:60-67:77"
+        },
+        {
+          "callee": "clamp",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "67:80-67:107"
+        },
+        {
+          "callee": "dFdx",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "70:19-70:33"
+        },
+        {
+          "callee": "dFdy",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "71:19-71:33"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "73:16-73:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "74:16-74:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "75:16-75:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "76:16-76:71"
+        },
+        {
+          "callee": "texture",
+          "owner": "main",
+          "owner_signature_id": 16,
+          "owner_reachable": true,
+          "span": "79:21-79:48"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:15-23:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:28-23:38"
+        },
+        {
+          "callee": "sin",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:40-23:50"
+        },
+        {
+          "callee": "cos",
+          "owner": "rotate2D",
+          "owner_signature_id": 17,
+          "owner_reachable": true,
+          "span": "23:52-23:62"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "synth/bitwise:bitwise": {
+      "key": "synth/bitwise:bitwise",
+      "main_present": true,
+      "reachable_function_count": 3,
+      "total_function_count": 3,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "abs",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "26:14-26:73"
+        },
+        {
+          "callee": "fract",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "26:18-26:60"
+        },
+        {
+          "callee": "mix",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "27:18-27:63"
+        },
+        {
+          "callee": "clamp",
+          "owner": "hsv2rgb",
+          "owner_signature_id": 24,
+          "owner_reachable": true,
+          "span": "27:33-27:57"
+        },
+        {
+          "callee": "cos",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "53:15-53:25"
+        },
+        {
+          "callee": "sin",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "54:15-54:25"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "61:26-61:66"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "64:17-64:44"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "span": "65:17-65:44"
+        }
+      ],
+      "declarations": [
+        {
+          "name": "PI",
+          "storage": "const",
+          "type": "float",
+          "symbol_id": 17,
+          "reference_count": 1,
+          "any_reference_reachable": true
+        }
+      ],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "synth/gabor:gabor": {
+      "key": "synth/gabor:gabor",
+      "main_present": true,
+      "reachable_function_count": 5,
+      "total_function_count": 5,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "floor",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "45:17-45:26"
+        },
+        {
+          "callee": "fract",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "46:17-46:26"
+        },
+        {
+          "callee": "sin",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "63:36-63:65"
+        },
+        {
+          "callee": "cos",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "63:67-63:96"
+        },
+        {
+          "callee": "mix",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "68:31-68:72"
+        },
+        {
+          "callee": "cos",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "69:33-69:43"
+        },
+        {
+          "callee": "sin",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "69:45-69:55"
+        },
+        {
+          "callee": "exp",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "74:34-74:81"
+        },
+        {
+          "callee": "dot",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "74:39-74:56"
+        },
+        {
+          "callee": "dot",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "75:54-75:69"
+        },
+        {
+          "callee": "cos",
+          "owner": "gaborNoise",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "76:44-76:54"
+        },
+        {
+          "callee": "floor",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "93:17-93:29"
+        },
+        {
+          "callee": "exp",
+          "owner": "main",
+          "owner_signature_id": 30,
+          "owner_reachable": true,
+          "span": "116:28-116:45"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 0,
+      "index_sites_any_reachable": false
+    },
+    "synth/remap:remap": {
+      "key": "synth/remap:remap",
+      "main_present": true,
+      "reachable_function_count": 10,
+      "total_function_count": 10,
+      "dead_functions": [],
+      "builtin_sites": [
+        {
+          "callee": "max",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "89:22-89:44"
+        },
+        {
+          "callee": "dot",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "89:26-89:37"
+        },
+        {
+          "callee": "clamp",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "90:19-90:60"
+        },
+        {
+          "callee": "dot",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "90:25-90:42"
+        },
+        {
+          "callee": "min",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "92:13-92:40"
+        },
+        {
+          "callee": "length",
+          "owner": "distToZoneEdge",
+          "owner_signature_id": 29,
+          "owner_reachable": true,
+          "span": "92:20-92:39"
+        },
+        {
+          "callee": "min",
+          "owner": "main",
+          "owner_signature_id": 36,
+          "owner_reachable": true,
+          "span": "116:23-116:46"
+        },
+        {
+          "callee": "smoothstep",
+          "owner": "main",
+          "owner_signature_id": 36,
+          "owner_reachable": true,
+          "span": "130:15-130:63"
+        },
+        {
+          "callee": "mix",
+          "owner": "main",
+          "owner_signature_id": 36,
+          "owner_reachable": true,
+          "span": "133:23-133:50"
+        },
+        {
+          "callee": "max",
+          "owner": "main",
+          "owner_signature_id": 36,
+          "owner_reachable": true,
+          "span": "133:52-133:76"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "52:24-52:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "53:24-53:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "54:24-54:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "55:24-55:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "56:24-56:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "57:24-57:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "58:24-58:46"
+        },
+        {
+          "callee": "texture",
+          "owner": "sampleZone",
+          "owner_signature_id": 38,
+          "owner_reachable": true,
+          "span": "59:12-59:34"
+        }
+      ],
+      "declarations": [],
+      "index_site_count": 4,
+      "index_sites_any_reachable": true
+    }
+  }
+}

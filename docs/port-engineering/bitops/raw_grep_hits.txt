@@ -1,0 +1,352 @@
+=== classicNoisedeck/bitEffects:bitEffects (sources/classicNoisedeck/bitEffects/bitEffects.glsl) ===
+16:// independent set of helpers, ~1.4s of compile each on Windows Chrome via
+76:	v ^= v >> uint(16);
+125:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+126:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+127:        (fracBits * 2246822519u) ^ 0x94D049B4u
+130:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+173:const int mask = (1 << BIT_COUNT) - 1;
+176:    return (x % y) & mask;
+180:    return (a & mask) | (b & mask);
+184:    return (a & mask) & (b & mask);
+188:    return (a ^ 0xFFFFFFFF) & mask;
+192:    return (a & mask) ^ (b & mask);
+316:    if (0.0 <= h && h < 1.0/6.0) {
+318:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+320:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+322:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+324:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+326:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/caustic:caustic (sources/classicNoisedeck/caustic/caustic.glsl) ===
+14:// entire 9-way decision tree at every call site, which produced ~31 second
+49:	v ^= v >> uint(16);
+89:    if (0.0 <= h && h < 1.0/6.0) {
+91:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+93:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+95:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+97:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+99:    } else if (5.0/6.0 <= h && h < 1.0) {
+224:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+225:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+226:        (fracBits * 2246822519u) ^ 0x94D049B4u
+229:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+=== classicNoisedeck/cellNoise:cellNoise (sources/classicNoisedeck/cellNoise/cellNoise.glsl) ===
+57:	v ^= v >> uint(16);
+85:    if (0.0 <= h && h < 1.0/6.0) {
+87:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+89:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+91:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+93:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+95:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/cellRefract:cellRefract (sources/classicNoisedeck/cellRefract/cellRefract.glsl) ===
+128:	v ^= v >> uint(16);
+153:    if (0.0 <= h && h < 1.0/6.0) {
+155:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+157:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+159:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+161:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+163:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/colorLab:colorLab (sources/classicNoisedeck/colorLab/colorLab.glsl) ===
+49:	v ^= v >> uint(16);
+127:    if (0.0 <= h && h < 1.0/6.0) {
+129:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+131:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+133:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+135:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+137:    } else if (5.0/6.0 <= h && h < 1.0) {
+291:            color.rgb *= ((coord.x == 1.0 || coord.x == 3.0) && (coord.y == 1.0 || coord.y == 3.0)) ? vec3(1.0) : vec3(0.0);
+293:            color.rgb *= ((coord.x == 1.0 || coord.x == 3.0) && (coord.y == 1.0 || coord.y == 3.0)) ? vec3(0.0) : vec3(1.0);
+=== classicNoisedeck/effects:effects (sources/classicNoisedeck/effects/effects.glsl) ===
+14:// rationale as classicNoisedeck/noise: a runtime ~20-way `effect` dispatch
+102:	v ^= v >> uint(16);
+168:    if (0.0 <= h && h < 1.0/6.0) {
+170:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+172:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+174:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+176:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+178:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/fractal:fractal (sources/classicNoisedeck/fractal/fractal.glsl) ===
+80:    if (0.0 <= h && h < 1.0/6.0) {
+82:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+84:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+86:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+88:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+90:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/glitch:glitch (sources/classicNoisedeck/glitch/glitch.glsl) ===
+43:	v ^= v >> uint(16);
+=== classicNoisedeck/kaleido:kaleido (sources/classicNoisedeck/kaleido/kaleido.glsl) ===
+15:// unreachable and get DCE'd, dropping the compile from 3.9s to ~200ms.
+112:	v ^= v >> uint(16);
+178:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+179:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+180:        (fracBits * 2246822519u) ^ 0x94D049B4u
+183:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+203:// Performance: ~1.8× faster
+291:// ---- End 3×3 quadratic B-spline & Catmull-Rom ----
+518:    if (0.0 <= h && h < 1.0/6.0) {
+520:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+522:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+524:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+526:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+528:    } else if (5.0/6.0 <= h && h < 1.0) {
+=== classicNoisedeck/moodscape:moodscape (sources/classicNoisedeck/moodscape/moodscape.glsl) ===
+14:// entire 9-way decision tree at every call site, which produced ~35 second
+61:	v ^= v >> uint(16);
+102:    if (0.0 <= h && h < 1.0/6.0) {
+104:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+106:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+108:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+110:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+112:    } else if (5.0/6.0 <= h && h < 1.0) {
+317:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+318:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+319:        (fracBits * 2246822519u) ^ 0x94D049B4u
+322:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+=== classicNoisedeck/noise:noise (sources/classicNoisedeck/noise/noise.glsl) ===
+13:// 9-way decision tree at every call site, which produced ~85 second compiles
+75:	v ^= v >> uint(16);
+145:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+146:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+147:        (fracBits * 2246822519u) ^ 0x94D049B4u
+150:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+168:// Performance: ~1.8× faster in fBm chains
+173:    // 3t^2 - 2t^3 (C¹ continuous, standard smoothstep curve)
+646:    if (0.0 <= h && h < 1.0/6.0) {
+648:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+650:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+652:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+654:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+656:    } else if (5.0/6.0 <= h && h < 1.0) {
+871:#if COLOR_MODE != 4 && COLOR_MODE != 6 && COLOR_MODE != 0
+921:    // Simplex noise shrinks to ~[6, 0.5]; base on its midpoint to keep loop axes in sync with main noise.
+935:#if NOISE_TYPE != 4 && NOISE_TYPE != 10
+=== classicNoisedeck/shapeMixer:shapeMixer (sources/classicNoisedeck/shapeMixer/shapeMixer.glsl) ===
+53:	v ^= v >> uint(16);
+79:    if (0.0 <= h && h < 1.0/6.0) {
+81:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+83:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+85:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+87:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+89:    } else if (5.0/6.0 <= h && h < 1.0) {
+204:    return (val != 0.0 && val * 2.0 == val) ? true : false;
+425:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+426:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+427:        (fracBits * 2246822519u) ^ 0x94D049B4u
+430:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+456:// Performance: ~1.8× faster
+582:    } else if (LOOP_OFFSET >= 40 && LOOP_OFFSET <= 80) {
+591:    } else if (LOOP_OFFSET >= 300 && LOOP_OFFSET <= 370) {
+712:    if (LOOP_OFFSET >= 300 && LOOP_OFFSET < 340 && wrap) {
+=== classicNoisedeck/shapes:shapes (sources/classicNoisedeck/shapes/shapes.glsl) ===
+18:// translator before ANGLE drives the D3D backend. This avoids the ~35s
+72:	v ^= v >> uint(16);
+136:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+137:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+138:        (fracBits * 2246822519u) ^ 0x94D049B4u
+141:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+161:// Performance: ~1.8× faster
+508:    } else if (loopOffset >= 40 && loopOffset <= 120) {
+515:    } else if (loopOffset >= 300 && loopOffset <= 380) {
+542:    if (0.0 <= h && h < 1.0/6.0) {
+544:    } else if (1.0/6.0 <= h && h < 2.0/6.0) {
+546:    } else if (2.0/6.0 <= h && h < 3.0/6.0) {
+548:    } else if (3.0/6.0 <= h && h < 4.0/6.0) {
+550:    } else if (4.0/6.0 <= h && h < 5.0/6.0) {
+552:    } else if (5.0/6.0 <= h && h < 1.0) {
+662:#if LOOP_A_OFFSET >= 200 && LOOP_A_OFFSET < 300
+676:#if LOOP_B_OFFSET >= 200 && LOOP_B_OFFSET < 300
+=== filter/blur:blurH (sources/filter/blur/blurH.glsl) ===
+31:    // Compute sigma for Gaussian (radius ~= 3*sigma)
+=== filter/blur:blurV (sources/filter/blur/blurV.glsl) ===
+31:    // Compute sigma for Gaussian (radius ~= 3*sigma)
+=== filter/dither:dither (sources/filter/dither/dither.glsl) ===
+63:    x = x & 7;
+64:    y = y & 7;
+161:    v ^= v >> 16u;
+210:        return bayer2x2[y & 1][x & 1];
+212:        return bayer4x4[y & 3][x & 3];
+540:            if (c >= -apronX && !(lastRow && c >= lx)) {
+=== filter/edge:edge (sources/filter/edge/edge.glsl) ===
+27:    if (dx == 0 && dy == 0) return 0.0;
+70:        bool crossing = centerOnSide && (upperSide
+81:        centerOnSide.r && (upperSide
+84:        centerOnSide.g && (upperSide
+87:        centerOnSide.b && (upperSide
+118:                if (dx == 0 && dy == 0) continue;
+=== filter/emboss:emboss (sources/filter/emboss/emboss.glsl) ===
+120:    bool fullFrame = all(equal(tileOffset, vec2(0.0))) && all(equal(fullResolution, resolution));
+128:    if (angle == 135.0 && height == 1.0) {
+=== filter/glyphMap:glyphMap (sources/filter/glyphMap/glyphMap.glsl) ===
+27:    v ^= v >> 16u;
+49:// Glyph 0: space (density ~0.00)
+58:// Glyph 1: period (density ~0.06)
+67:// Glyph 2: colon (density ~0.11)
+76:// Glyph 3: dash - (density ~0.14)
+85:// Glyph 4: + (density ~0.20)
+94:// Glyph 5: = (density ~0.17)
+103:// Glyph 6: * (density ~0.26)
+112:// Glyph 7: o (density ~0.34)
+121:// Glyph 8: X (density ~0.34)
+130:// Glyph 9: # (density ~0.46)
+139:// Glyph 10: % (density ~0.37)
+148:// Glyph 11: A (density ~0.40)
+157:// Glyph 12: W (density ~0.46)
+166:// Glyph 13: M (density ~0.46)
+175:// Glyph 14: @ (density ~0.63)
+294:    int bit = (row >> (4 - x)) & 1;
+332:    if (variant == 1 && glyphIdx > 0 && glyphIdx < GLYPH_COUNT - 1) {
+334:    } else if (variant == 2 && glyphIdx > 1) {
+=== filter/grade:creative (sources/filter/grade/creative.glsl) ===
+69:    if (rgb.r > rgb.g && rgb.g > rgb.b) {
+105:    if (length(shadowShift) < 0.01 && length(highlightShift) < 0.01) {
+=== filter/grade:lut (sources/filter/grade/lut.glsl) ===
+90:// Teal & Orange - Hollywood blockbuster look
+=== filter/grade:primary (sources/filter/grade/primary.glsl) ===
+181:    // 2. Exposure (in linear = multiply by 2^exposure)
+=== filter/grade:vignette (sources/filter/grade/vignette.glsl) ===
+70:    float dist = length(centered) * 2.0;  // Normalize so corners are ~1.4
+=== filter/grade:wheels (sources/filter/grade/wheels.glsl) ===
+76:    if (length(shadowOffset) < 0.01 && length(midOffset) < 0.01 && length(highOffset) < 0.01) {
+87:    // Normalize weights so they sum to ~1 for smooth blending
+=== filter/grain:grain (sources/filter/grain/grain.glsl) ===
+44:    v = v ^ (v >> uvec3(16u));
+53:        uint(cell.x) ^ seed,
+54:        uint(cell.y) ^ (seed * 0x9e3779b9u + 0x7f4a7c15u),
+55:        uint(cell.z) ^ (seed * 0x632be59bu + 0x5bf03635u)
+=== filter/grime:grime (sources/filter/grime/grime.glsl) ===
+39:    v ^= v >> 16u;
+=== filter/historicPalette:historicPalette (sources/filter/historicPalette/historicPalette.glsl) ===
+138:    // 13: Māori Tā Moko & Carving - Natural pigments and wood tones
+224:    // At low lum (all factors ~0): result = color1
+225:    // At high lum (all factors ~1): result = color5
+=== filter/lensWarp:lensWarp (sources/filter/lensWarp/lensWarp.glsl) ===
+31:    v ^= v >> uint(16);
+=== filter/lightLeak:lightLeak (sources/filter/lightLeak/lightLeak.glsl) ===
+31:    v ^= v >> 16u;
+=== filter/median:median (sources/filter/median/median.glsl) ===
+2: * Exact dense whole-color Median / Dust & Scratches.
+36:    uint orderedRg = ((packedRg & 0xffffu) << 16) | (packedRg >> 16);
+41:    return packHalf2x16(vec2(sampleColor.b, 0.0)) & 0xffffu;
+45:    uint packedRg = (major.y << 16) | (major.y >> 16);
+69:            if (x == 0 && y == 0) {
+=== filter/octaveWarp:octaveWarp (sources/filter/octaveWarp/octaveWarp.glsl) ===
+3: * For each octave i, generates noise at frequency×2^i, uses it to
+5: * Displacement decreases with each octave (displacement / 2^i).
+34:    v ^= v >> 16u;
+=== filter/oilPaint:oilFlatten (sources/filter/oilPaint/oilFlatten.glsl) ===
+42:    // memory and every one of the ~113 per-pixel accumulations pays a
+61:            // point on a Manhattan/checkerboard parity (|x|+|y| even
+66:            if (fr > 8.0 && dot(d, d) > 64.0 && (abs(x) + abs(y)) % 2 != 0) { continue; }
+100:            if (x == 0 && y == 0) {
+102:            } else if (d.x > 0.0 && d.y >= 0.0) {
+105:            } else if (d.x <= 0.0 && d.y > 0.0) {
+108:            } else if (d.x < 0.0 && d.y <= 0.0) {
+112:                // remaining case: d.x >= 0.0 && d.y < 0.0
+=== filter/osd:osd (sources/filter/osd/osd.glsl) ===
+24:// Index as GLYPHS[digit * 8 + row], test bit (val >> (6 - col)) & 1
+55:    uint word = ((state >> ((state >> 28u) + 4u)) ^ state) * 277803737u;
+56:    return (word >> 22u) ^ word;
+60:    return pcg(a ^ (b * 0x9e3779b9u + 0x632be59bu));
+64:    return pcg(hash2(a, b) ^ (c * 0x94d049bbu + 0x5bf03635u));
+73:    return float((row >> (6 - gx)) & 1);
+99:    float scanline = 1.0 - 0.03 * blend_alpha * float((globalCoord.y / scanlineStep) & 1);
+154:    if (lx >= 0 && lx < overlay_w && ly >= 0 && ly < overlay_h) {
+160:        if (within_glyph_x < CELL_W && glyph_idx < glyph_count) {
+=== filter/pondRipples:pondRipples (sources/filter/pondRipples/pondRipples.glsl) ===
+71:    // wider/taller than ~1.73:1) don't invert phase and amplify instead
+=== filter/scanlineError:scanlineError (sources/filter/scanlineError/scanlineError.glsl) ===
+165:    if (speed_value != 0.0 && t != 0.0) {
+227:    v ^= v >> 16u;
+269:    if (spd != 0.0 && t != 0.0) {
+=== filter/smooth:smoothBlend (sources/filter/smooth/smoothBlend.glsl) ===
+130:    if (edgeH < 0.5 && edgeV < 0.5) {
+172:    if (edges.r < 0.5 && edges.g < 0.5) {
+185:            if (dx == 0 && dy == 0) continue;
+=== filter/spookyTicker:spookyTicker (sources/filter/spookyTicker/spookyTicker.glsl) ===
+20:// Index as GLYPHS[digit * 8 + row], test bit (val >> (6 - col)) & 1
+50:    v = v ^ (v >> 16u);
+52:    v = v ^ (v >> 15u);
+54:    v = v ^ (v >> 16u);
+65:    return float((row >> (6 - gx)) & 1);
+71:    float scrollSpeed = 0.5 + float(hash_mix(uint(rowSeed) ^ 17u) & 0xFFFFu) / 65535.0 * 1.5;
+80:    uint h = hash_mix(uint(cellX) ^ uint(rowSeed) * 997u);
+=== filter/texture:texture (sources/filter/texture/texture.glsl) ===
+64:    x ^= x >> 16u;
+66:    x ^= x >> 15u;
+68:    x ^= x >> 16u;
+73:    uint h = salt ^ 0x9e3779b9u;
+74:    h ^= uint(p.x) * 0x27d4eb2du;
+76:    h ^= uint(p.y) * 0xc2b2ae35u;
+78:    h ^= uint(p.z) * 0x165667b1u;
+202:    uint h = salt ^ (layer * 0x9e3779b9u);
+203:    h ^= uint(p.x) * 0x27d4eb2du;
+205:    h ^= uint(p.y) * 0xc2b2ae35u;
+211:    vec2 gradient = vec2(float(h & 0xffffu), float(h >> 16u)) * (2.0 / 65535.0) - 1.0;
+248:        motion + 0.41, salt ^ 0x68bc21ebu);
+259:        motion + 0.41, salt ^ 0x68bc21ebu);
+272:            float jy = fast_hash(ivec3(cell, 1), salt ^ 0x68bc21ebu) - 0.5;
+296:    float b = material_noise(globalPixel, vec2(6.0 * size), motion + 0.31, salt ^ 0x9e3779b9u);
+297:    float c = material_noise(globalPixel, vec2(2.5 * size), motion + 0.67, salt ^ 0x85ebca6bu);
+=== filter/warp:warp (sources/filter/warp/warp.glsl) ===
+33:    v ^= v >> uint(16);
+=== filter/wobble:wobble (sources/filter/wobble/wobble.glsl) ===
+27:    v ^= v >> 16u;
+=== filter/zoomBlur:zoomBlur (sources/filter/zoomBlur/zoomBlur.glsl) ===
+23:    v ^= v >> uint(16);
+=== synth/bitwise:bitwise (sources/synth/bitwise/bitwise.glsl) ===
+35:    if (op == 0)      r = a ^ b;           // xor
+36:    else if (op == 1) r = a & b;           // and
+37:    else if (op == 2) r = a | b;           // or
+38:    else if (op == 3) r = ~(a & b);        // nand
+39:    else if (op == 4) r = ~(a ^ b);        // xnor
+43:    r = r & m;
+69:    x = x ^ seed;
+70:    y = y ^ (seed * 3);
+=== synth/gabor:gabor (sources/synth/gabor/gabor.glsl) ===
+35:    v ^= v >> 16u;
+=== synth/julia:julia (sources/synth/julia/julia.glsl) ===
+98:// Double-float emulation (df64) — two float32s = ~15 decimal digits
+117:const float df64_split_const = 4097.0; // 2^12 + 1
+=== synth/mandelbrot:mandelbrot (sources/synth/mandelbrot/mandelbrot.glsl) ===
+5: * - Double-float (df64) emulation for deep zoom (~10^14)
+48:// Two float32s (hi, lo) represent hi + lo with ~15 digits of precision.
+52:// Quick two-sum: a + b = s + e, assumes |a| >= |b|
+252:        // z = z^2 + c in df64
+256:        vec2 new_zr = df64_add(df64_sub(zr2, zi2), c_re);  // zr^2 - zi^2 + c_re
+285:    if (i < float(maxIter) && mag2 > 1.0) {
+=== synth/newton:newton (sources/synth/newton/newton.glsl) ===
+4: * Newton-Raphson root finding for z^n - 1 with:
+7: * - df64 emulated double-precision for deep zoom (~10^14)
+13: * z^n computed via repeated df64 complex multiplication.
+54:// Two float32s (hi, lo) represent hi + lo with ~15 digits of precision.
+152:    // Non-origin POIs: df64 split provides ~14 digits
+176:    if (degreeSpeed > 0.0 && degreeRange > 0.0) {
+182:    if (relaxSpeed > 0.0 && relaxRange > 0.0) {
+218:    // --- Compute roots of z^n - 1 ---
+242:        // Compute z^(intDeg-1) via repeated df64 complex multiplication
+253:        // z^intDeg = z^(intDeg-1) * z
+257:        // f(z) = z^n - 1
+261:        // f'(z) = n * z^(n-1)
+307:    if (convergedRoot >= 0 && convergeDist > 0.0 && convergeDist < tolerance) {
+=== synth/noise:noise (sources/synth/noise/noise.glsl) ===
+54:	v ^= v >> uint(16);
+111:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+112:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+113:        (fracBits * 2246822519u) ^ 0x94D049B4u
+116:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+507:#if NOISE_TYPE != 4 && NOISE_TYPE != 10
+=== synth/shape:shape (sources/synth/shape/shape.glsl) ===
+18:// compile to ~50ms on Windows Chrome.
+62:    v ^= v >> 16u;
+108:        (fracBits * 374761393u) ^ 0x9E3779B9u,
+109:        (fracBits * 668265263u) ^ 0x7F4A7C15u,
+110:        (fracBits * 2246822519u) ^ 0x94D049B4u
+113:    uvec3 state = uvec3(xBits, yBits, seedBits) ^ jitter;
+446:    } else if (loopOffset >= 40 && loopOffset <= 120) {
+455:    } else if (loopOffset >= 300 && loopOffset <= 380) {
+477:#if LOOP_A_OFFSET >= 200 && LOOP_A_OFFSET < 300
+492:#if LOOP_B_OFFSET >= 200 && LOOP_B_OFFSET < 300
+=== synth/testPattern:testPattern (sources/synth/testPattern/testPattern.glsl) ===
+31:    return ((GLYPH[digit] >> bitIndex) & 1) == 1;
+65:        if (cellUV.x >= digitX && cellUV.x < digitX + glyphWidth) {
+150:// HSV to RGB (hue only, full saturation & value)

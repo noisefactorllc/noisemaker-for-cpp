@@ -1,0 +1,919 @@
+[
+ {
+  "declarations": [
+   {
+    "initializer": "literal(8)",
+    "loc": "129:1",
+    "name": "BIT_COUNT",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "binary(-)",
+    "loc": "130:1",
+    "name": "mask",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "classicNoisedeck/bitEffects:bitEffects"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "137:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "141:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "145:1",
+    "name": "invB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "149:1",
+    "name": "invA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "classicNoisedeck/cellNoise:cellNoise"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "none",
+    "loc": "32:1",
+    "name": "emboss",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "33:1",
+    "name": "sharpen",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "34:1",
+    "name": "blur",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "35:1",
+    "name": "edge",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "36:1",
+    "name": "edge2",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   }
+  ],
+  "key": "classicNoisedeck/cellRefract:cellRefract"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "191:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "195:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "199:1",
+    "name": "invB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "203:1",
+    "name": "invA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "classicNoisedeck/colorLab:colorLab"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "none",
+    "loc": "33:1",
+    "name": "emboss",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "34:1",
+    "name": "sharpen",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "35:1",
+    "name": "blur",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "36:1",
+    "name": "edge",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "none",
+    "loc": "37:1",
+    "name": "edge2",
+    "storage": "global",
+    "type": "float[9]",
+    "type_kind": "array"
+   }
+  ],
+  "key": "classicNoisedeck/kaleido:kaleido"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "149:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "153:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "157:1",
+    "name": "invB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "161:1",
+    "name": "invA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "classicNoisedeck/moodscape:moodscape"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "128:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "132:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "136:1",
+    "name": "invB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "140:1",
+    "name": "invA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "classicNoisedeck/shapeMixer:shapeMixer"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "588:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "592:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "596:1",
+    "name": "invB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "600:1",
+    "name": "invA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "classicNoisedeck/shapes:shapes"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(6.28318530718)",
+    "loc": "16:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "62:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "66:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "filter/adjust:adjust"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(6.28318530718)",
+    "loc": "11:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "32:1",
+    "name": "fwdA",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   },
+   {
+    "initializer": "construct(mat3, nargs=9)",
+    "loc": "36:1",
+    "name": "fwdB",
+    "storage": "const",
+    "type": "mat3",
+    "type_kind": "matrix"
+   }
+  ],
+  "key": "filter/colorspace:colorspace"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "19:1",
+    "name": "LUMA",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/edge:edge"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "19:1",
+    "name": "LUMA",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/emboss:emboss"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(4u)",
+    "loc": "9:1",
+    "name": "CHANNEL_COUNT",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(1e-10)",
+    "loc": "10:1",
+    "name": "EPSILON",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "11:1",
+    "name": "LUMA_WEIGHTS",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/fxaa:fxaa"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(16)",
+    "loc": "186:1",
+    "name": "GLYPH_COUNT",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/glyphMap:glyphMap"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(3.14159265358979323846)",
+    "loc": "9:1",
+    "name": "PI",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(6.28318530717958647692)",
+    "loc": "10:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "binary(/)",
+    "loc": "11:1",
+    "name": "UINT32_TO_FLOAT",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(4u)",
+    "loc": "12:1",
+    "name": "CHANNEL_COUNT",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(0u)",
+    "loc": "13:1",
+    "name": "INTERPOLATION_CONSTANT",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(1u)",
+    "loc": "14:1",
+    "name": "INTERPOLATION_LINEAR",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(2u)",
+    "loc": "15:1",
+    "name": "INTERPOLATION_COSINE",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(3u)",
+    "loc": "16:1",
+    "name": "INTERPOLATION_BICUBIC",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(0x1234u)",
+    "loc": "17:1",
+    "name": "BASE_SEED",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/grain:grain"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(21)",
+    "loc": "26:1",
+    "name": "PALETTE_COUNT",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(HistoricPalette[21], nargs=21)",
+    "loc": "27:1",
+    "name": "PALETTES",
+    "storage": "const",
+    "type": "HistoricPalette[21]",
+    "type_kind": "array"
+   }
+  ],
+  "key": "filter/historicPalette:historicPalette"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(4u)",
+    "loc": "4:1",
+    "name": "CHANNEL_COUNT",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(4u)",
+    "loc": "5:1",
+    "name": "CHANNEL_CAP",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(ivec2[9], nargs=9)",
+    "loc": "15:1",
+    "name": "SOBEL_OFFSETS",
+    "storage": "const",
+    "type": "ivec2[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "construct(float[9], nargs=9)",
+    "loc": "21:1",
+    "name": "SOBEL_X_KERNEL",
+    "storage": "const",
+    "type": "float[9]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "construct(float[9], nargs=9)",
+    "loc": "27:1",
+    "name": "SOBEL_Y_KERNEL",
+    "storage": "const",
+    "type": "float[9]",
+    "type_kind": "array"
+   }
+  ],
+  "key": "filter/normalMap:normalMap"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(int[80], nargs=80)",
+    "loc": "24:1",
+    "name": "GLYPHS",
+    "storage": "const",
+    "type": "int[80]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "literal(7)",
+    "loc": "47:1",
+    "name": "GLYPH_W",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(8)",
+    "loc": "48:1",
+    "name": "GLYPH_H",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(3)",
+    "loc": "49:1",
+    "name": "BASE_SCALE",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(25)",
+    "loc": "50:1",
+    "name": "BASE_PADDING",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/osd:osd"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(0)",
+    "loc": "17:1",
+    "name": "MODE_RGB",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(1)",
+    "loc": "18:1",
+    "name": "MODE_HSV",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(2)",
+    "loc": "19:1",
+    "name": "MODE_OKLAB",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(55)",
+    "loc": "28:1",
+    "name": "PALETTE_COUNT",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(PaletteEntry[55], nargs=55)",
+    "loc": "29:1",
+    "name": "PALETTES",
+    "storage": "const",
+    "type": "PaletteEntry[55]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "literal(6.283185307179586)",
+    "loc": "417:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/palette:palette"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(6.283185307179586)",
+    "loc": "9:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "197:1",
+    "name": "BASE_SEED_LINE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "198:1",
+    "name": "TIME_SEED_LINE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "203:1",
+    "name": "BASE_SEED_SWERVE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "204:1",
+    "name": "TIME_SEED_SWERVE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "209:1",
+    "name": "BASE_SEED_WHITE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "210:1",
+    "name": "TIME_SEED_WHITE",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/scanlineError:scanlineError"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(4u)",
+    "loc": "7:1",
+    "name": "CHANNEL_COUNT",
+    "storage": "const",
+    "type": "uint",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(6.283185307179586)",
+    "loc": "8:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "9:1",
+    "name": "TIME_SEED_OFFSETS",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "10:1",
+    "name": "STATIC_SEED",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "11:1",
+    "name": "LIMITER_SEED",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/snow:snow"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "construct(int[80], nargs=80)",
+    "loc": "19:1",
+    "name": "GLYPHS",
+    "storage": "const",
+    "type": "int[80]",
+    "type_kind": "array"
+   },
+   {
+    "initializer": "literal(7)",
+    "loc": "42:1",
+    "name": "GLYPH_W",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(8)",
+    "loc": "43:1",
+    "name": "GLYPH_H",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(3)",
+    "loc": "44:1",
+    "name": "BASE_SCALE",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(4)",
+    "loc": "45:1",
+    "name": "BASE_ROW_GAP",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/spookyTicker:spookyTicker"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(3.14159265359)",
+    "loc": "28:1",
+    "name": "PI",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "binary(/)",
+    "loc": "29:1",
+    "name": "INV_UINT32_MAX",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(2)",
+    "loc": "30:1",
+    "name": "Z_LOOP",
+    "storage": "const",
+    "type": "int",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(4.4)",
+    "loc": "31:1",
+    "name": "SHADE_GAIN",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   }
+  ],
+  "key": "filter/texture:texture"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(6.28318530717959)",
+    "loc": "15:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "16:1",
+    "name": "X_NOISE_SEED",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   },
+   {
+    "initializer": "construct(vec3, nargs=3)",
+    "loc": "17:1",
+    "name": "Y_NOISE_SEED",
+    "storage": "const",
+    "type": "vec3",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "filter/wobble:wobble"
+ },
+ {
+  "declarations": [
+   {
+    "initializer": "literal(3.14159265359)",
+    "loc": "28:1",
+    "name": "PI",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "literal(6.28318530718)",
+    "loc": "29:1",
+    "name": "TAU",
+    "storage": "const",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "none",
+    "loc": "31:1",
+    "name": "aspectRatio",
+    "storage": "global",
+    "type": "float",
+    "type_kind": "scalar"
+   },
+   {
+    "initializer": "none",
+    "loc": "32:1",
+    "name": "globalCoord",
+    "storage": "global",
+    "type": "vec2",
+    "type_kind": "vector"
+   }
+  ],
+  "key": "synth/shape:shape"
+ }
+]

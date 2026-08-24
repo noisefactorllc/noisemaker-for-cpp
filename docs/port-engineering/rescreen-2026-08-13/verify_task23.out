@@ -1,0 +1,10 @@
+counts: (122, 124, 88, 212)
+keys sha: 9db3013a6b0f78d0b95fcb6713c54ace95e82d1545e796e7a380add23c009f0b
+public sha: 2b84fff4d6f35aec1ac6bcc35188d9893e3194c90b9c428775a7308ce1f6281a
+new_keys indices: (7, 23, 77, 82, 92, 96)
+nmReindexStats in keys: False
+prior_cpp len/sha: 932898 a3f8135d41e9f2abc864fada60532309b56c43f6e6eb138d548a23b57f944c4f
+len(before): 116
+set(before) == set(after)-set(new_keys): True
+normalized mismatches (should be empty): []
+DONE23

@@ -1,0 +1,793 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.matrix.gate-chain-independent-rerun.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "note": "Independent re-run of gate_chain_engine.walk_chain for the 9 matrix-blocked programs, using the SAME harness as roadmap2/gate-chain-all-output.json, to verify (not just trust) that document's matrix-related rows.",
+  "keys": [
+    "classicNoisedeck/cellNoise:cellNoise",
+    "classicNoisedeck/colorLab:colorLab",
+    "classicNoisedeck/effects:effects",
+    "classicNoisedeck/glitch:glitch",
+    "classicNoisedeck/moodscape:moodscape",
+    "classicNoisedeck/noise:noise",
+    "classicNoisedeck/shapes:shapes",
+    "filter/adjust:adjust",
+    "filter/colorspace:colorspace"
+  ],
+  "rows": [
+    {
+      "key": "classicNoisedeck/cellNoise:cellNoise",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported typed type mat3",
+            "emitter": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+            "emitter": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellNoise:cellNoise:160:16: unsupported matrix binary expression",
+            "emitter": "classicNoisedeck/cellNoise:cellNoise:160:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/cellNoise:cellNoise:160:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/cellNoise:cellNoise:160:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/colorLab:colorLab",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/colorLab:colorLab:191:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/colorLab:colorLab:191:1: unsupported typed type mat3",
+            "emitter": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/colorLab:colorLab:191:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+            "emitter": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/colorLab:colorLab:214:16: unsupported matrix binary expression",
+            "emitter": "classicNoisedeck/colorLab:colorLab:214:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/colorLab:colorLab:214:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/colorLab:colorLab:214:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/effects:effects",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+            "emitter": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/effects:effects:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/effects:effects:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/effects:effects:234:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:395:10: unsupported typed type mat4",
+            "emitter": "classicNoisedeck/effects:effects:1:1: unsupported typed type mat4",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:395:10: unsupported typed type mat4",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "array_global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+            "emitter": "classicNoisedeck/effects:effects:398:14: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "mutable_global_admission",
+        "array_global_admission",
+        "matrix_type_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/glitch:glitch",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4",
+            "emitter": "classicNoisedeck/glitch:glitch:1:1: unsupported typed type mat4",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+            "emitter": "classicNoisedeck/glitch:glitch:79:14: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "matrix_type_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/moodscape:moodscape",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/moodscape:moodscape:149:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/moodscape:moodscape:149:1: unsupported typed type mat3",
+            "emitter": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/moodscape:moodscape:149:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+            "emitter": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/moodscape:moodscape:172:16: unsupported matrix binary expression",
+            "emitter": "classicNoisedeck/moodscape:moodscape:172:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/moodscape:moodscape:172:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/moodscape:moodscape:172:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/noise:noise",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof",
+            "emitter": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:484:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/noise:noise:484:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:484:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:484:1: unsupported typed type mat3",
+            "emitter": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:484:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+            "emitter": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+          "classified_gate": "builtin:floatBitsToUint"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission",
+            "builtin:floatBitsToUint"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:124:10: unsupported binary operator ^",
+            "emitter": "classicNoisedeck/noise:noise:124:10: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:124:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission",
+            "builtin:floatBitsToUint",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:460:13: unsupported typed expression index",
+            "emitter": "classicNoisedeck/noise:noise:460:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/noise:noise:460:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission",
+            "builtin:floatBitsToUint",
+            "scalar_uint_xor_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/noise:noise:507:16: unsupported matrix binary expression",
+            "emitter": "classicNoisedeck/noise:noise:507:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/noise:noise:507:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "global_admission",
+        "matrix_type_admission",
+        "builtin:floatBitsToUint",
+        "scalar_uint_xor_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/noise:noise:507:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/shapes:shapes",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/shapes:shapes:588:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/shapes:shapes:588:1: unsupported typed type mat3",
+            "emitter": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/shapes:shapes:588:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+            "emitter": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/shapes:shapes:611:16: unsupported matrix binary expression",
+            "emitter": "classicNoisedeck/shapes:shapes:611:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/shapes:shapes:611:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/shapes:shapes:611:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/adjust:adjust",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/adjust:adjust:62:1: unsupported global declaration",
+            "emitter": "filter/adjust:adjust:62:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/adjust:adjust:62:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/adjust:adjust:62:1: unsupported typed type mat3",
+            "emitter": "filter/adjust:adjust:78:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/adjust:adjust:62:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "filter/adjust:adjust:78:13: unsupported typed expression index",
+            "emitter": "filter/adjust:adjust:78:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/adjust:adjust:78:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/adjust:adjust:71:16: unsupported matrix binary expression",
+            "emitter": "filter/adjust:adjust:71:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/adjust:adjust:71:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "filter/adjust:adjust:71:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/colorspace:colorspace",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/colorspace:colorspace:32:1: unsupported global declaration",
+            "emitter": "filter/colorspace:colorspace:32:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/colorspace:colorspace:32:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/colorspace:colorspace:32:1: unsupported typed type mat3",
+            "emitter": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/colorspace:colorspace:32:1: unsupported typed type mat3",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+            "emitter": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "matrix_type_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/colorspace:colorspace:41:16: unsupported matrix binary expression",
+            "emitter": "filter/colorspace:colorspace:41:16: unsupported matrix binary expression",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/colorspace:colorspace:41:16: unsupported matrix binary expression",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "matrix_type_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "filter/colorspace:colorspace:41:16: unsupported matrix binary expression",
+      "terminal_gate": null
+    }
+  ]
+}

@@ -1,0 +1,2898 @@
+{
+  "schema": "noisemaker-for-cpp.task26.smooth-edge-luma-weights.public-canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "public_api": "kernelFactories.get(key)",
+    "canonical_identity": true,
+    "adapter_entry_absent": true,
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+  },
+  "program": {
+    "key": "filter/smooth:smoothEdge",
+    "source": "sources/filter/smooth/smoothEdge.glsl",
+    "raw_source_bytes": 1554,
+    "raw_source_sha256": "b18be207f35a2bf3bcbdb19eb87018fac241856359d6094362f468fa048b5265",
+    "normalized_source_bytes": 1235,
+    "normalized_source_sha256": "42f61c507d633c07415bc816b6ba61f8a862642429943be1c0c1208c97b90f7c",
+    "defines": {},
+    "profile": "smooth-edge-luma-weights-v1",
+    "generic_const_vec3_capability": false,
+    "canonical_factory_name": "canonicalFactory140",
+    "canonical_factory_to_string_sha256": "732feb5a9bb518cb46c38b59efb7f2901467fa74ae341f640822d22c20f2380e",
+    "binding_signature": [
+      "tileOffset:vec2@1",
+      "fullResolution:vec2@2",
+      "inputTex:sampler2D@3/S1",
+      "smoothType:int@4",
+      "threshold:float@5"
+    ],
+    "output": "fragColor:vec4@6",
+    "resources": {
+      "samplers": 1,
+      "ordinary_uniforms": 4,
+      "outputs": 1,
+      "uses_texel_fetch": true,
+      "uses_derivatives": false,
+      "static_texel_fetch_sites": 6,
+      "dynamic_fetches_pass_through": 1,
+      "dynamic_fetches_edge_path": 5,
+      "texture_size_calls_per_pixel": 1
+    },
+    "source_constant": {
+      "symbol": "LUMA_WEIGHTS",
+      "symbol_id": 7,
+      "storage": "const",
+      "writable": false,
+      "type": "vec3",
+      "declaration_span": "12:1-12:53",
+      "raw_line": 19,
+      "values": [
+        0.299,
+        0.587,
+        0.114
+      ],
+      "f32_values": [
+        0.29899999499320984,
+        0.5870000123977661,
+        0.11400000005960464
+      ],
+      "f32_bits_le": [
+        "0x3e991687",
+        "0x3f1645a2",
+        "0x3de978d5"
+      ],
+      "static_reads": 1,
+      "read_owner": "luminance",
+      "read_span": "15:21-15:33",
+      "dynamic_reads_pass_through": 0,
+      "dynamic_reads_edge_path": 5
+    }
+  },
+  "fixture": {
+    "input": "top-down deterministic or exact-pattern F32 RGBA Surface",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "verification": "fresh double render, immutable input, finite full output, F32/RGBA8 hashes and five probes"
+  },
+  "cases": [
+    {
+      "name": "pass-through-modular-tile",
+      "dimensions": {
+        "width": 8,
+        "height": 5
+      },
+      "smooth_type": 0,
+      "threshold": {
+        "value": 0.23000000417232513,
+        "f32_bits_le": "0x3e6b851f"
+      },
+      "tile_offset": [
+        4,
+        3
+      ],
+      "full_resolution": [
+        17,
+        13
+      ],
+      "coverage": [
+        "smoothType==0 early return",
+        "one fetch",
+        "exact RGBA including input alpha",
+        "nonzero tile/full-resolution bindings"
+      ],
+      "input": {
+        "f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.19379845261573792,
+              0.2735042870044708,
+              0.321739137172699,
+              0.35483869910240173
+            ],
+            "f32_bits_le": [
+              "0x3e46731a",
+              "0x3e8c08c1",
+              "0x3ea4bafe",
+              "0x3eb5ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.23255814611911774,
+              0.4444444477558136,
+              0.24347825348377228,
+              0.4516128897666931
+            ],
+            "f32_bits_le": [
+              "0x3e6e23b9",
+              "0x3ee38e39",
+              "0x3e79525d",
+              "0x3ee739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7209302186965942,
+              0.7777777910232544,
+              0.38260868191719055,
+              0.25806450843811035
+            ],
+            "f32_bits_le": [
+              "0x3f388ee2",
+              "0x3f471c72",
+              "0x3ec3e549",
+              "0x3e842108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              4
+            ],
+            "values": [
+              0.7596899271011353,
+              0.9487179517745972,
+              0.30434781312942505,
+              0.35483869910240173
+            ],
+            "f32_bits_le": [
+              "0x3f427b0a",
+              "0x3f72df2e",
+              "0x3e9bd37a",
+              "0x3eb5ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.6201550364494324,
+              0.692307710647583,
+              0.104347825050354,
+              0.8387096524238586
+            ],
+            "f32_bits_le": [
+              "0x3f1ec27b",
+              "0x3f313b14",
+              "0x3dd5b450",
+              "0x3f56b5ad"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+        "rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.19379845261573792,
+              0.2735042870044708,
+              0.321739137172699,
+              0.35483869910240173
+            ],
+            "f32_bits_le": [
+              "0x3e46731a",
+              "0x3e8c08c1",
+              "0x3ea4bafe",
+              "0x3eb5ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.23255814611911774,
+              0.4444444477558136,
+              0.24347825348377228,
+              0.4516128897666931
+            ],
+            "f32_bits_le": [
+              "0x3e6e23b9",
+              "0x3ee38e39",
+              "0x3e79525d",
+              "0x3ee739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7209302186965942,
+              0.7777777910232544,
+              0.38260868191719055,
+              0.25806450843811035
+            ],
+            "f32_bits_le": [
+              "0x3f388ee2",
+              "0x3f471c72",
+              "0x3ec3e549",
+              "0x3e842108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              4
+            ],
+            "values": [
+              0.7596899271011353,
+              0.9487179517745972,
+              0.30434781312942505,
+              0.35483869910240173
+            ],
+            "f32_bits_le": [
+              "0x3f427b0a",
+              "0x3f72df2e",
+              "0x3e9bd37a",
+              "0x3eb5ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.6201550364494324,
+              0.692307710647583,
+              0.104347825050354,
+              0.8387096524238586
+            ],
+            "f32_bits_le": [
+              "0x3f1ec27b",
+              "0x3f313b14",
+              "0x3dd5b450",
+              "0x3f56b5ad"
+            ]
+          }
+        ],
+        "finite_lanes": 160,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "edge-modular-type1",
+      "dimensions": {
+        "width": 9,
+        "height": 6
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.18000000715255737,
+        "f32_bits_le": "0x3e3851ec"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        9,
+        6
+      ],
+      "coverage": [
+        "smoothType nonzero edge path",
+        "five fetches",
+        "all cardinal directions",
+        "non-square"
+      ],
+      "input": {
+        "f32_sha256": "0886f3e013425eec646aeaebd64387ee906d37c1ff876b588f7ebc6bd74e40c4",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.2945736348628998,
+              0.470085471868515,
+              0.591304361820221,
+              0.3870967626571655
+            ],
+            "f32_bits_le": [
+              "0x3e96d25b",
+              "0x3ef0af0b",
+              "0x3f175fb9",
+              "0x3ec6318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.6201550364494324,
+              0.8034188151359558,
+              0.09565217047929764,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3f1ec27b",
+              "0x3f4dacdb",
+              "0x3dc3e549",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.9534883499145508,
+              0.3760683834552765,
+              0.904347836971283,
+              0.4516128897666931
+            ],
+            "f32_bits_le": [
+              "0x3f7417d0",
+              "0x3ec08c09",
+              "0x3f678357",
+              "0x3ee739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.2945736348628998,
+              0.7094017267227173,
+              0.40869563817977905,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3e96d25b",
+              "0x3f359b5a",
+              "0x3ed1408e",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.8527131676673889,
+              0.2905983030796051,
+              0.626086950302124,
+              0.29032257199287415
+            ],
+            "f32_bits_le": [
+              "0x3f5a4b69",
+              "0x3e94c94d",
+              "0x3f20473c",
+              "0x3e94a529"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+        "rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 216,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "edge-modular-type2-same-branch",
+      "dimensions": {
+        "width": 9,
+        "height": 6
+      },
+      "smooth_type": 2,
+      "threshold": {
+        "value": 0.18000000715255737,
+        "f32_bits_le": "0x3e3851ec"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        9,
+        6
+      ],
+      "coverage": [
+        "all nonzero smoothType values share edge path",
+        "byte identity control against type1"
+      ],
+      "input": {
+        "f32_sha256": "0886f3e013425eec646aeaebd64387ee906d37c1ff876b588f7ebc6bd74e40c4",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.2945736348628998,
+              0.470085471868515,
+              0.591304361820221,
+              0.3870967626571655
+            ],
+            "f32_bits_le": [
+              "0x3e96d25b",
+              "0x3ef0af0b",
+              "0x3f175fb9",
+              "0x3ec6318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.6201550364494324,
+              0.8034188151359558,
+              0.09565217047929764,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3f1ec27b",
+              "0x3f4dacdb",
+              "0x3dc3e549",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.9534883499145508,
+              0.3760683834552765,
+              0.904347836971283,
+              0.4516128897666931
+            ],
+            "f32_bits_le": [
+              "0x3f7417d0",
+              "0x3ec08c09",
+              "0x3f678357",
+              "0x3ee739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.2945736348628998,
+              0.7094017267227173,
+              0.40869563817977905,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3e96d25b",
+              "0x3f359b5a",
+              "0x3ed1408e",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.8527131676673889,
+              0.2905983030796051,
+              0.626086950302124,
+              0.29032257199287415
+            ],
+            "f32_bits_le": [
+              "0x3f5a4b69",
+              "0x3e94c94d",
+              "0x3f20473c",
+              "0x3e94a529"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+        "rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 216,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "threshold-one-ulp-below",
+      "dimensions": {
+        "width": 5,
+        "height": 5
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.12307179719209671,
+        "f32_bits_le": "0x3dfc0d11"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        5
+      ],
+      "coverage": [
+        "threshold below exact canonical luma delta",
+        "step inclusive control"
+      ],
+      "input": {
+        "f32_sha256": "a162d716b383706ac493ae8dee5ecc87c80d18565519b3e088349fbc2b0a60b6",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+        "rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 100,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "threshold-exact",
+      "dimensions": {
+        "width": 5,
+        "height": 5
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.12307180464267731,
+        "f32_bits_le": "0x3dfc0d12"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        5
+      ],
+      "coverage": [
+        "threshold equals canonical F32 luma delta",
+        "materialization sensitivity",
+        "step inclusive"
+      ],
+      "input": {
+        "f32_sha256": "a162d716b383706ac493ae8dee5ecc87c80d18565519b3e088349fbc2b0a60b6",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+        "rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 100,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "threshold-one-ulp-above",
+      "dimensions": {
+        "width": 5,
+        "height": 5
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.1230718120932579,
+        "f32_bits_le": "0x3dfc0d13"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        5
+      ],
+      "coverage": [
+        "threshold above exact canonical luma delta",
+        "step false control"
+      ],
+      "input": {
+        "f32_sha256": "a162d716b383706ac493ae8dee5ecc87c80d18565519b3e088349fbc2b0a60b6",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.1850000023841858,
+              0.3672654628753662,
+              0.5742971897125244,
+              0.6100000143051147
+            ],
+            "f32_bits_le": [
+              "0x3e3d70a4",
+              "0x3ebc0a38",
+              "0x3f130524",
+              "0x3f1c28f6"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+        "rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 100,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "single-pixel-clamped-neighbors",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.00009999999747378752,
+        "f32_bits_le": "0x38d1b717"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "coverage": [
+        "all four neighbors clamp to center",
+        "zero edges",
+        "alpha forced to one"
+      ],
+      "input": {
+        "f32_sha256": "8043c7a4ce40bdf337619d504459492ff56fdca2312481b6d3eaf9916aa925e1",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.23000000417232513,
+              0.6700000166893005,
+              0.4099999964237213,
+              0.28999999165534973
+            ],
+            "f32_bits_le": [
+              "0x3e6b851f",
+              "0x3f2b851f",
+              "0x3ed1eb85",
+              "0x3e947ae1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.23000000417232513,
+              0.6700000166893005,
+              0.4099999964237213,
+              0.28999999165534973
+            ],
+            "f32_bits_le": [
+              "0x3e6b851f",
+              "0x3f2b851f",
+              "0x3ed1eb85",
+              "0x3e947ae1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.23000000417232513,
+              0.6700000166893005,
+              0.4099999964237213,
+              0.28999999165534973
+            ],
+            "f32_bits_le": [
+              "0x3e6b851f",
+              "0x3f2b851f",
+              "0x3ed1eb85",
+              "0x3e947ae1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.23000000417232513,
+              0.6700000166893005,
+              0.4099999964237213,
+              0.28999999165534973
+            ],
+            "f32_bits_le": [
+              "0x3e6b851f",
+              "0x3f2b851f",
+              "0x3ed1eb85",
+              "0x3e947ae1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.23000000417232513,
+              0.6700000166893005,
+              0.4099999964237213,
+              0.28999999165534973
+            ],
+            "f32_bits_le": [
+              "0x3e6b851f",
+              "0x3f2b851f",
+              "0x3ed1eb85",
+              "0x3e947ae1"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "asymmetric-cardinal-lanes",
+      "dimensions": {
+        "width": 5,
+        "height": 5
+      },
+      "smooth_type": 1,
+      "threshold": {
+        "value": 0.11999999731779099,
+        "f32_bits_le": "0x3df5c28f"
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        5
+      ],
+      "coverage": [
+        "red/green/blue lane order",
+        "horizontal/vertical edge channel ownership",
+        "four distinct cardinal neighbors"
+      ],
+      "input": {
+        "f32_sha256": "c5a5b93e7be04be1c731529e633b3928f3e80e17fff2d7a3dfc5db706d06b84e",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.3499999940395355,
+              0.41999998688697815,
+              0.27000001072883606,
+              0.800000011920929
+            ],
+            "f32_bits_le": [
+              "0x3eb33333",
+              "0x3ed70a3d",
+              "0x3e8a3d71",
+              "0x3f4ccccd"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.3499999940395355,
+              0.41999998688697815,
+              0.27000001072883606,
+              0.800000011920929
+            ],
+            "f32_bits_le": [
+              "0x3eb33333",
+              "0x3ed70a3d",
+              "0x3e8a3d71",
+              "0x3f4ccccd"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.3499999940395355,
+              0.41999998688697815,
+              0.27000001072883606,
+              0.800000011920929
+            ],
+            "f32_bits_le": [
+              "0x3eb33333",
+              "0x3ed70a3d",
+              "0x3e8a3d71",
+              "0x3f4ccccd"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.3499999940395355,
+              0.41999998688697815,
+              0.27000001072883606,
+              0.800000011920929
+            ],
+            "f32_bits_le": [
+              "0x3eb33333",
+              "0x3ed70a3d",
+              "0x3e8a3d71",
+              "0x3f4ccccd"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.3499999940395355,
+              0.41999998688697815,
+              0.27000001072883606,
+              0.800000011920929
+            ],
+            "f32_bits_le": [
+              "0x3eb33333",
+              "0x3ed70a3d",
+              "0x3e8a3d71",
+              "0x3f4ccccd"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+        "rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 100,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    }
+  ],
+  "cross_case_controls": [
+    {
+      "name": "pass-through-output-equals-input",
+      "same_f32_bytes": true
+    },
+    {
+      "name": "smoothType-1-vs-2-same-nonzero-branch",
+      "same_f32_bytes": true,
+      "same_rgba8_bytes": true
+    }
+  ],
+  "mutations": [
+    {
+      "id": "red-value-0.299-to-0.3",
+      "hazard": "value/lane-0",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    },
+    {
+      "id": "green-value-0.587-to-0.6",
+      "hazard": "value/lane-1",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 6,
+          "different_f32_lanes": 3,
+          "different_rgba8_bytes": 3,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "5bb595472fabd9a08379e9e7cdfa8b39319c08a7de8be5ecc749e4c092e6c500",
+          "candidate_rgba8_sha256": "f1914ac4ba74b886b343eb589d12a5397ef7d9d955681a32573bb1b420f89620"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 6,
+          "different_f32_lanes": 3,
+          "different_rgba8_bytes": 3,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "5bb595472fabd9a08379e9e7cdfa8b39319c08a7de8be5ecc749e4c092e6c500",
+          "candidate_rgba8_sha256": "f1914ac4ba74b886b343eb589d12a5397ef7d9d955681a32573bb1b420f89620"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    },
+    {
+      "id": "blue-value-0.114-to-0.2",
+      "hazard": "value/lane-2",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 6,
+          "different_f32_lanes": 3,
+          "different_rgba8_bytes": 3,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "65e700fbc9bf79804c93c1398b8c30a1a29d15e3b97574b4914c4651d96de623",
+          "candidate_rgba8_sha256": "b871c350b41e74f13e9a77bd9642374535dfb3da370f07c2e09e9f8889c9c735"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 6,
+          "different_f32_lanes": 3,
+          "different_rgba8_bytes": 3,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "65e700fbc9bf79804c93c1398b8c30a1a29d15e3b97574b4914c4651d96de623",
+          "candidate_rgba8_sha256": "b871c350b41e74f13e9a77bd9642374535dfb3da370f07c2e09e9f8889c9c735"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 10,
+          "different_f32_lanes": 5,
+          "different_rgba8_bytes": 5,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "a7f6a1554de325ca91680cb87fc1bd52c068ccbf33cc98e964aff7401f294de3",
+          "candidate_rgba8_sha256": "cadcb3a05a7cf8b42880bac4f3c9572ee7f0fa74674dc2bb231a3112584e2fe4"
+        }
+      ]
+    },
+    {
+      "id": "red-blue-lane-order-swap",
+      "hazard": "lane-order",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 2,
+          "different_f32_lanes": 1,
+          "different_rgba8_bytes": 1,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "259e315d98f9db41a854704e912d4762ba4fb40d1f40a5b6904096f50e3e4dcc",
+          "candidate_rgba8_sha256": "af21b1c20736432663ae7b3e84f0e8fac20358b1f45a904e077cef64052fead1"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 2,
+          "different_f32_lanes": 1,
+          "different_rgba8_bytes": 1,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "259e315d98f9db41a854704e912d4762ba4fb40d1f40a5b6904096f50e3e4dcc",
+          "candidate_rgba8_sha256": "af21b1c20736432663ae7b3e84f0e8fac20358b1f45a904e077cef64052fead1"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 32,
+          "different_f32_lanes": 16,
+          "different_rgba8_bytes": 16,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "4575b6de9187d2d98e81fa44c2e0cf4a87f8c34c6afc6c4d12d4c3f63e5e2d7e",
+          "candidate_rgba8_sha256": "daea0e37dd055c0486ba2cc4c3816d5f5497ecd11bf84edf91d1e1a403dfe4a6"
+        }
+      ]
+    },
+    {
+      "id": "vec3-type-to-scalar",
+      "hazard": "type/arity",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 42,
+          "different_f32_lanes": 21,
+          "different_rgba8_bytes": 21,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "315a486aedee95857ccde4590216b438d71f78132475662e071239d95feefb6e",
+          "candidate_rgba8_sha256": "dbeeefbc1cda80857da62ac64e5df8729c73842c722c46598e23910e53ccaf65"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 42,
+          "different_f32_lanes": 21,
+          "different_rgba8_bytes": 21,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "315a486aedee95857ccde4590216b438d71f78132475662e071239d95feefb6e",
+          "candidate_rgba8_sha256": "dbeeefbc1cda80857da62ac64e5df8729c73842c722c46598e23910e53ccaf65"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 88,
+          "different_f32_lanes": 44,
+          "different_rgba8_bytes": 44,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "cda4c27e4f89662609a28ed9b6ae98a0847e1ac05909e3a19db4b3fe85fde39d",
+          "candidate_rgba8_sha256": "a051f3b744e4e9f9cf009d43290a7a72d76336834f2cea3948f39cf2af1d50e4"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 88,
+          "different_f32_lanes": 44,
+          "different_rgba8_bytes": 44,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "cda4c27e4f89662609a28ed9b6ae98a0847e1ac05909e3a19db4b3fe85fde39d",
+          "candidate_rgba8_sha256": "a051f3b744e4e9f9cf009d43290a7a72d76336834f2cea3948f39cf2af1d50e4"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 100,
+          "different_f32_lanes": 50,
+          "different_rgba8_bytes": 50,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "cda4c27e4f89662609a28ed9b6ae98a0847e1ac05909e3a19db4b3fe85fde39d",
+          "candidate_rgba8_sha256": "a051f3b744e4e9f9cf009d43290a7a72d76336834f2cea3948f39cf2af1d50e4"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 4,
+          "different_f32_lanes": 2,
+          "different_rgba8_bytes": 2,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "02bd5a9e6eed0a25fee9c844f40c8215598fe2811a15a1aaccae99e197ea0841",
+          "candidate_rgba8_sha256": "5fc1f3b5dfc3af9f4a3c54c77f448216c82908ce3953813f1e12695bb71271c8"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 66,
+          "different_f32_lanes": 33,
+          "different_rgba8_bytes": 33,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "cda4c27e4f89662609a28ed9b6ae98a0847e1ac05909e3a19db4b3fe85fde39d",
+          "candidate_rgba8_sha256": "a051f3b744e4e9f9cf009d43290a7a72d76336834f2cea3948f39cf2af1d50e4"
+        }
+      ]
+    },
+    {
+      "id": "vec3-to-vec4-extra-lane-control",
+      "hazard": "type/arity-observably-inert",
+      "expectation": "identity-structural-reject",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    },
+    {
+      "id": "const-storage-to-cross-call-mutation",
+      "hazard": "storage/write/lifetime",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 46,
+          "different_f32_lanes": 23,
+          "different_rgba8_bytes": 23,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "98fbd4f36e25de724b75fbd28189479c41467fb3b3f51fd575504c8ef6a338b1",
+          "candidate_rgba8_sha256": "393363b74a3e4361689c2868dddd908cc98a957cb23a4355bd3ae5401f4298e4"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 46,
+          "different_f32_lanes": 23,
+          "different_rgba8_bytes": 23,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "98fbd4f36e25de724b75fbd28189479c41467fb3b3f51fd575504c8ef6a338b1",
+          "candidate_rgba8_sha256": "393363b74a3e4361689c2868dddd908cc98a957cb23a4355bd3ae5401f4298e4"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 4,
+          "different_f32_lanes": 2,
+          "different_rgba8_bytes": 2,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "02bd5a9e6eed0a25fee9c844f40c8215598fe2811a15a1aaccae99e197ea0841",
+          "candidate_rgba8_sha256": "5fc1f3b5dfc3af9f4a3c54c77f448216c82908ce3953813f1e12695bb71271c8"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 38,
+          "different_f32_lanes": 19,
+          "different_rgba8_bytes": 19,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "d15a8c16ad58c7bda19579ed0de778c06c57925350f711f8658b31052f4c6a14",
+          "candidate_rgba8_sha256": "93fd211c333951aca03b3dac40bcd05b494235fbe62200466b00b668b3aa6602"
+        }
+      ]
+    },
+    {
+      "id": "resolved-read-replaced-by-rgb-self-dot",
+      "hazard": "read/site/parent",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 44,
+          "different_f32_lanes": 22,
+          "different_rgba8_bytes": 22,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "dd7c4ad4b69de0097b7273ed4a15fd8689b4ad96279e909a20fa0c03a408512b",
+          "candidate_rgba8_sha256": "81dab6ded45213f7ae017c5f4374400b87ecbdf632df0c6eb5db300649034ee9"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 44,
+          "different_f32_lanes": 22,
+          "different_rgba8_bytes": 22,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "dd7c4ad4b69de0097b7273ed4a15fd8689b4ad96279e909a20fa0c03a408512b",
+          "candidate_rgba8_sha256": "81dab6ded45213f7ae017c5f4374400b87ecbdf632df0c6eb5db300649034ee9"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 10,
+          "different_f32_lanes": 5,
+          "different_rgba8_bytes": 5,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "3b8c81bf115314044ac1e5d7a71d4195192a59470397f3af540696f798ba387a",
+          "candidate_rgba8_sha256": "a36059eb9ba8f843edeb588456a39f5704fb9b8760b611731a90eeb6afbd89ec"
+        }
+      ]
+    },
+    {
+      "id": "helper-local-exact-f32-materialization",
+      "hazard": "authorized-ownership/materialization",
+      "expectation": "identity-authorized-lowering",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    },
+    {
+      "id": "helper-local-source-double-array",
+      "hazard": "materialization/F32-boundary",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 12,
+          "different_f32_lanes": 6,
+          "different_rgba8_bytes": 6,
+          "max_absolute_f32_difference": 1,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    },
+    {
+      "id": "main-owned-exact-f32-vector-control",
+      "hazard": "wrong-owner-observably-inert",
+      "expectation": "identity-structural-reject",
+      "case_results": [
+        {
+          "case": "pass-through-modular-tile",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffaf80acb8db7b255eaf329399e44b5a562a19e82125b19317d436bb07f8fa4b",
+          "candidate_rgba8_sha256": "b3fd913a3458127e8f606cdcdd40aa5204835b0219b6feb1e749993a7bd9a8ad"
+        },
+        {
+          "case": "edge-modular-type1",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "edge-modular-type2-same-branch",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "af1d4152b362120f0fa863602de3a5a01e4bf59f393f37058e879d8498909469",
+          "candidate_rgba8_sha256": "475820bc2a2eaeffb822f1506b7afffcd4aa8cd9eb4a9c442f27f9eab1c9d2b5"
+        },
+        {
+          "case": "threshold-one-ulp-below",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-exact",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "c70f0d59488dda2bde1da6463690f63f9d85f22a7ee827dd1bba3f93829adb04",
+          "candidate_rgba8_sha256": "66517cf5c7e0d30c1671d3f8d13eea7ab9a83748f82ef4780817cf4b0f30f098"
+        },
+        {
+          "case": "threshold-one-ulp-above",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+          "candidate_rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+        },
+        {
+          "case": "single-pixel-clamped-neighbors",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+          "candidate_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"
+        },
+        {
+          "case": "asymmetric-cardinal-lanes",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "ffc9c67a9151cfb6b03cb934d9ffb3704a29069cc65e9f3ab91f4535d18fd2ee",
+          "candidate_rgba8_sha256": "861c828b629ccf0413f0f4e23f345240720a961d7ca093563523178e30856fdb"
+        }
+      ]
+    }
+  ]
+}

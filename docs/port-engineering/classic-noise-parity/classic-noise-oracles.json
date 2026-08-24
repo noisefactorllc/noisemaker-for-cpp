@@ -1,0 +1,2047 @@
+{
+  "schema": "noisemaker-for-cpp.classic-noise.pixel-parity.v1",
+  "schema_version": 1,
+  "program_key": "classicNoisedeck/noise:noise",
+  "effect_key": "classicNoisedeck/noise",
+  "runtime_key": "classicNoisedeck/noise:noise",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "defines": {
+    "NOISE_TYPE": 10,
+    "REFRACT_MODE": 2,
+    "LOOP_OFFSET": 300,
+    "METRIC": 0,
+    "COLOR_MODE": 6
+  },
+  "exactness_contract": {
+    "float32": "raw little-endian uint32 words; signed zero and NaN payloads significant",
+    "rgba8": "complete independent RGBA8 bytes",
+    "tolerance": "none",
+    "comparison": "dimensions, counts, every uint32 word, every RGBA8 byte"
+  },
+  "comparer_self_tests": {
+    "good": true,
+    "dimensions_before_access": true,
+    "f32_short_count": true,
+    "f32_long_count": true,
+    "rgba8_mismatch": true,
+    "signed_zero": true,
+    "nan_payload": true,
+    "control_mutation_rejected": true
+  },
+  "authority": {
+    "node_version": "v24.7.0",
+    "oracle": "unmodified canonical Classic Noise factory from immutable CPU snapshot",
+    "cpu_root_argument": "<immutable-cpu-snapshot-root>",
+    "immutable_snapshot": true,
+    "realpath_containment_checked": true,
+    "live_checkout_rejected": true,
+    "closure_cardinality": 22,
+    "import_closure": [
+      {
+        "relative_path": "src/csl/glsl-kernel.js",
+        "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+      },
+      {
+        "relative_path": "src/csl/glsl-runtime.js",
+        "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+      },
+      {
+        "relative_path": "src/csl/runtime.js",
+        "sha256": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"
+      },
+      {
+        "relative_path": "src/effects/adapters/bit-effects.js",
+        "sha256": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7"
+      },
+      {
+        "relative_path": "src/effects/adapters/crt.js",
+        "sha256": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"
+      },
+      {
+        "relative_path": "src/effects/adapters/f32-color.js",
+        "sha256": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"
+      },
+      {
+        "relative_path": "src/effects/adapters/fractal.js",
+        "sha256": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"
+      },
+      {
+        "relative_path": "src/effects/adapters/index.js",
+        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+      },
+      {
+        "relative_path": "src/effects/adapters/julia.js",
+        "sha256": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"
+      },
+      {
+        "relative_path": "src/effects/adapters/median.js",
+        "sha256": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"
+      },
+      {
+        "relative_path": "src/effects/adapters/palette.js",
+        "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/snow.js",
+        "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+      },
+      {
+        "relative_path": "src/effects/catalog.js",
+        "sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"
+      },
+      {
+        "relative_path": "src/effects/definition.js",
+        "sha256": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"
+      },
+      {
+        "relative_path": "src/effects/generated/canonical-adapter-data.js",
+        "sha256": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"
+      },
+      {
+        "relative_path": "src/effects/generated/canonical-kernels.js",
+        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+      },
+      {
+        "relative_path": "src/effects/generated/kernels.js",
+        "sha256": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"
+      },
+      {
+        "relative_path": "src/effects/generated/upstream-snapshot.js",
+        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+      },
+      {
+        "relative_path": "src/effects/registry.js",
+        "sha256": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"
+      },
+      {
+        "relative_path": "src/runtime/pass-runner.js",
+        "sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"
+      },
+      {
+        "relative_path": "src/runtime/sampler.js",
+        "sha256": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"
+      },
+      {
+        "relative_path": "src/runtime/surface.js",
+        "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+      }
+    ]
+  },
+  "factory": {
+    "name": "canonicalFactory12",
+    "text_sha256": "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424",
+    "public_factory_is_canonical_identity": true,
+    "canonical_adapter_factories_own_key": false
+  },
+  "provenance": {
+    "source": {
+      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/noise/noise.glsl",
+      "bytes": 31255,
+      "sha256": "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663"
+    },
+    "generator": {
+      "relative_path": "docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs"
+    },
+    "materializer": {
+      "relative_path": "tools/glslcpp/generate_classic_noise_native_oracle_include.py"
+    }
+  },
+  "runtime_binding_names": [
+    "NOISE_TYPE",
+    "REFRACT_MODE",
+    "LOOP_OFFSET",
+    "METRIC",
+    "COLOR_MODE",
+    "time",
+    "seed",
+    "resolution",
+    "tileOffset",
+    "fullResolution",
+    "xScale",
+    "yScale",
+    "octaves",
+    "ridges",
+    "refractAmt",
+    "kaleido",
+    "loopScale",
+    "speed",
+    "paletteMode",
+    "paletteOffset",
+    "paletteAmp",
+    "paletteFreq",
+    "palettePhase",
+    "cyclePalette",
+    "rotatePalette",
+    "repeatPalette",
+    "hueRange",
+    "hueRotation",
+    "wrap"
+  ],
+  "runtime_binding_abi": {
+    "NOISE_TYPE": "int32",
+    "REFRACT_MODE": "int32",
+    "LOOP_OFFSET": "int32",
+    "METRIC": "int32",
+    "COLOR_MODE": "int32",
+    "time": "float",
+    "seed": "int32",
+    "resolution": "Vec2",
+    "tileOffset": "Vec2",
+    "fullResolution": "Vec2",
+    "xScale": "float",
+    "yScale": "float",
+    "octaves": "int32",
+    "ridges": "bool",
+    "refractAmt": "float",
+    "kaleido": "float",
+    "loopScale": "float",
+    "speed": "float",
+    "paletteMode": "int32",
+    "paletteOffset": "Vec3",
+    "paletteAmp": "Vec3",
+    "paletteFreq": "Vec3",
+    "palettePhase": "Vec3",
+    "cyclePalette": "int32",
+    "rotatePalette": "float",
+    "repeatPalette": "float",
+    "hueRange": "float",
+    "hueRotation": "float",
+    "wrap": "bool"
+  },
+  "source_uniform_abi": {
+    "time": "float",
+    "seed": "int",
+    "resolution": "vec2",
+    "tileOffset": "vec2",
+    "fullResolution": "vec2",
+    "xScale": "float",
+    "yScale": "float",
+    "octaves": "int",
+    "ridges": "bool",
+    "refractAmt": "float",
+    "kaleido": "float",
+    "loopScale": "float",
+    "speed": "float",
+    "paletteMode": "int",
+    "paletteOffset": "vec3",
+    "paletteAmp": "vec3",
+    "paletteFreq": "vec3",
+    "palettePhase": "vec3",
+    "cyclePalette": "int",
+    "rotatePalette": "float",
+    "repeatPalette": "float",
+    "hueRange": "float",
+    "hueRotation": "float",
+    "wrap": "bool"
+  },
+  "output_abi": {
+    "name": "fragColor",
+    "source_type": "vec4",
+    "runtime_type": "Vec4",
+    "role": "output"
+  },
+  "render_cases": [
+    {
+      "name": "origin-min",
+      "width": 1,
+      "height": 1,
+      "time": 0,
+      "seed": 1,
+      "resolution": [
+        1,
+        1
+      ],
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        1,
+        1
+      ],
+      "xScale": 1,
+      "yScale": 1,
+      "octaves": 1,
+      "ridges": false,
+      "refractAmt": 0,
+      "kaleido": 1,
+      "loopScale": 1,
+      "speed": 0,
+      "hueRange": 0,
+      "hueRotation": 0,
+      "wrap": false,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3f5761cc",
+          "0x3e769050",
+          "0x3e769050",
+          "0x3f800000"
+        ],
+        "f32_sha256": "97cd951e107cc97b7f262e831883992ae2bfa491a933be79c0c2e7f5a126bd48",
+        "rgba8_bytes": [
+          215,
+          61,
+          61,
+          255
+        ],
+        "rgba8_sha256": "f8f6e67d01a7404b190b09bac91dc9498f9d4a27b61c0e10bb583905cfe0c381"
+      },
+      "f32_byte_count": 16,
+      "rgba8_byte_count": 4,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "max-ridges",
+      "width": 5,
+      "height": 4,
+      "time": 3.25,
+      "seed": 100,
+      "resolution": [
+        5,
+        4
+      ],
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        5,
+        4
+      ],
+      "xScale": 100,
+      "yScale": 100,
+      "octaves": 8,
+      "ridges": true,
+      "refractAmt": 100,
+      "kaleido": 32,
+      "loopScale": 100,
+      "speed": 100,
+      "hueRange": 100,
+      "hueRotation": 360,
+      "wrap": true,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3e8b9d57",
+          "0x3f0a3e6e",
+          "0x3f0beb1d",
+          "0x3f800000",
+          "0x3dc7c3bd",
+          "0x3e844d6a",
+          "0x3e227a6a",
+          "0x3f800000",
+          "0x3e732d84",
+          "0x3e62d43a",
+          "0x3f1366dc",
+          "0x3f800000",
+          "0x3dc539ac",
+          "0x3e83dad2",
+          "0x3e1d987c",
+          "0x3f800000",
+          "0x3e8bdbb5",
+          "0x3f09172a",
+          "0x3f0bef8e",
+          "0x3f800000",
+          "0x3e14b7a0",
+          "0x3e9393b7",
+          "0x3e87c3a1",
+          "0x3f800000",
+          "0x3e80c680",
+          "0x3eb0c7ff",
+          "0x3f097ce4",
+          "0x3f800000",
+          "0x3e74ffb3",
+          "0x3ee55856",
+          "0x3f030ba8",
+          "0x3f800000",
+          "0x3e80d466",
+          "0x3eb0f73a",
+          "0x3f098bc1",
+          "0x3f800000",
+          "0x3e14f35b",
+          "0x3e93d31f",
+          "0x3e87f65e",
+          "0x3f800000",
+          "0x3e15135a",
+          "0x3e93f368",
+          "0x3e880f2d",
+          "0x3f800000",
+          "0x3e80fe72",
+          "0x3eb1601a",
+          "0x3f09996f",
+          "0x3f800000",
+          "0x3e752234",
+          "0x3ee58318",
+          "0x3f030be7",
+          "0x3f800000",
+          "0x3e80c680",
+          "0x3eb0c7ff",
+          "0x3f097ce4",
+          "0x3f800000",
+          "0x3e14f35b",
+          "0x3e93d31f",
+          "0x3e87f65e",
+          "0x3f800000",
+          "0x3e8c15bd",
+          "0x3f093b61",
+          "0x3f0c0e59",
+          "0x3f800000",
+          "0x3dc539ac",
+          "0x3e83dad2",
+          "0x3e1d987c",
+          "0x3f800000",
+          "0x3e732912",
+          "0x3e62d40d",
+          "0x3f136711",
+          "0x3f800000",
+          "0x3dc539ac",
+          "0x3e83dad2",
+          "0x3e1d987c",
+          "0x3f800000",
+          "0x3e8bd94e",
+          "0x3f091673",
+          "0x3f0bee27",
+          "0x3f800000"
+        ],
+        "f32_sha256": "0f744763cacccc39762b33f43331a3efefb571f3078ecef7ccec628dfa0bca12",
+        "rgba8_bytes": [
+          70,
+          138,
+          139,
+          255,
+          25,
+          66,
+          40,
+          255,
+          61,
+          56,
+          147,
+          255,
+          25,
+          66,
+          39,
+          255,
+          70,
+          137,
+          139,
+          255,
+          37,
+          74,
+          68,
+          255,
+          64,
+          88,
+          137,
+          255,
+          61,
+          114,
+          131,
+          255,
+          64,
+          88,
+          137,
+          255,
+          37,
+          74,
+          68,
+          255,
+          37,
+          74,
+          68,
+          255,
+          64,
+          88,
+          137,
+          255,
+          61,
+          114,
+          131,
+          255,
+          64,
+          88,
+          137,
+          255,
+          37,
+          74,
+          68,
+          255,
+          70,
+          137,
+          140,
+          255,
+          25,
+          66,
+          39,
+          255,
+          61,
+          56,
+          147,
+          255,
+          25,
+          66,
+          39,
+          255,
+          70,
+          137,
+          139,
+          255
+        ],
+        "rgba8_sha256": "7b164e82ee0adde9b0c8994c7b118a4e3e67e1d9a01f391b53f6083ecde90cbc"
+      },
+      "f32_byte_count": 320,
+      "rgba8_byte_count": 80,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "negative-speed-offset",
+      "width": 4,
+      "height": 5,
+      "time": -2.5,
+      "seed": 37,
+      "resolution": [
+        4,
+        5
+      ],
+      "tileOffset": [
+        2,
+        1
+      ],
+      "fullResolution": [
+        11,
+        9
+      ],
+      "xScale": 17,
+      "yScale": 83,
+      "octaves": 3,
+      "ridges": false,
+      "refractAmt": 33,
+      "kaleido": 7,
+      "loopScale": 42,
+      "speed": -100,
+      "hueRange": 25,
+      "hueRotation": 180,
+      "wrap": true,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3e553154",
+          "0x3e39e07f",
+          "0x3ee6d18a",
+          "0x3f800000",
+          "0x3eb9b026",
+          "0x3ef69e08",
+          "0x3f11f5f9",
+          "0x3f800000",
+          "0x3e4bc8b0",
+          "0x3e6e793b",
+          "0x3eaad53b",
+          "0x3f800000",
+          "0x3f370c93",
+          "0x3f4aeb04",
+          "0x3f52232e",
+          "0x3f800000",
+          "0x3e499006",
+          "0x3ea4d36e",
+          "0x3ed99102",
+          "0x3f800000",
+          "0x3eb5d25b",
+          "0x3eb53c61",
+          "0x3ef9d158",
+          "0x3f800000",
+          "0x3deac96c",
+          "0x3e17d4f6",
+          "0x3e4f73f5",
+          "0x3f800000",
+          "0x3e2c0340",
+          "0x3ebe5144",
+          "0x3edcae05",
+          "0x3f800000",
+          "0x3e42b596",
+          "0x3e5dac2c",
+          "0x3e7bf982",
+          "0x3f800000",
+          "0x3ed3fddb",
+          "0x3ed09988",
+          "0x3eee0539",
+          "0x3f800000",
+          "0x3e314355",
+          "0x3e66e15e",
+          "0x3e898b1a",
+          "0x3f800000",
+          "0x3e8c3140",
+          "0x3ec9e9bc",
+          "0x3edb6c02",
+          "0x3f800000",
+          "0x3e7cc4a4",
+          "0x3eadda64",
+          "0x3f255993",
+          "0x3f800000",
+          "0x3e8b08c2",
+          "0x3ea7fd6a",
+          "0x3f1a6f83",
+          "0x3f800000",
+          "0x3e37d75b",
+          "0x3e9f2b97",
+          "0x3ed72921",
+          "0x3f800000",
+          "0x3e9a9370",
+          "0x3e9a86a6",
+          "0x3f226742",
+          "0x3f800000",
+          "0x3da41716",
+          "0x3db2818e",
+          "0x3e50da46",
+          "0x3f800000",
+          "0x3e14a674",
+          "0x3e242451",
+          "0x3e83ceed",
+          "0x3f800000",
+          "0x3e72d9a9",
+          "0x3e897a84",
+          "0x3eae2e35",
+          "0x3f800000",
+          "0x3e3d1d80",
+          "0x3e88cfd5",
+          "0x3f293dda",
+          "0x3f800000"
+        ],
+        "f32_sha256": "30b856b46b245950463cba28f925fe7f380de02e4be03458547d466aafbe9cf2",
+        "rgba8_bytes": [
+          53,
+          46,
+          115,
+          255,
+          92,
+          123,
+          145,
+          255,
+          51,
+          59,
+          85,
+          255,
+          182,
+          202,
+          209,
+          255,
+          50,
+          82,
+          108,
+          255,
+          91,
+          90,
+          124,
+          255,
+          29,
+          38,
+          52,
+          255,
+          43,
+          95,
+          110,
+          255,
+          48,
+          55,
+          63,
+          255,
+          106,
+          104,
+          119,
+          255,
+          44,
+          57,
+          69,
+          255,
+          70,
+          101,
+          109,
+          255,
+          63,
+          87,
+          165,
+          255,
+          69,
+          84,
+          154,
+          255,
+          46,
+          79,
+          107,
+          255,
+          77,
+          77,
+          162,
+          255,
+          20,
+          22,
+          52,
+          255,
+          37,
+          41,
+          66,
+          255,
+          60,
+          68,
+          87,
+          255,
+          47,
+          68,
+          169,
+          255
+        ],
+        "rgba8_sha256": "6a8ed79c305c74fc04f45d4753efcfc929590f59ac9860d47c10b2e47fbcda09"
+      },
+      "f32_byte_count": 320,
+      "rgba8_byte_count": 80,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "asymmetric-axis",
+      "width": 6,
+      "height": 3,
+      "time": 1.25,
+      "seed": 64,
+      "resolution": [
+        6,
+        3
+      ],
+      "tileOffset": [
+        -1,
+        2
+      ],
+      "fullResolution": [
+        13,
+        8
+      ],
+      "xScale": 1,
+      "yScale": 100,
+      "octaves": 2,
+      "ridges": true,
+      "refractAmt": 50,
+      "kaleido": 2,
+      "loopScale": 1,
+      "speed": -1,
+      "hueRange": 1,
+      "hueRotation": 359,
+      "wrap": false,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3ecaaf5b",
+          "0x3e93e340",
+          "0x3e91c822",
+          "0x3f800000",
+          "0x3ec6f938",
+          "0x3e554c92",
+          "0x3e4c0b54",
+          "0x3f800000",
+          "0x3f1bc0e5",
+          "0x3dea8bfe",
+          "0x3dc20959",
+          "0x3f800000",
+          "0x3ee7fea3",
+          "0x3e8926ed",
+          "0x3e85d390",
+          "0x3f800000",
+          "0x3ee34b71",
+          "0x3e71d7d9",
+          "0x3e69cd4c",
+          "0x3f800000",
+          "0x3ec40fc8",
+          "0x3e3aa14a",
+          "0x3e32f50a",
+          "0x3f800000",
+          "0x3ecaac9f",
+          "0x3e93e0ce",
+          "0x3e91c5b7",
+          "0x3f800000",
+          "0x3ec6f940",
+          "0x3e554c61",
+          "0x3e4c0b1f",
+          "0x3f800000",
+          "0x3f1bc051",
+          "0x3dea8c1b",
+          "0x3dc2099e",
+          "0x3f800000",
+          "0x3ee7fea0",
+          "0x3e8926eb",
+          "0x3e85d38e",
+          "0x3f800000",
+          "0x3ee34b78",
+          "0x3e71d7e2",
+          "0x3e69cd5c",
+          "0x3f800000",
+          "0x3ec41547",
+          "0x3e3aa602",
+          "0x3e32f97e",
+          "0x3f800000",
+          "0x3f29dbfd",
+          "0x3eb3f53c",
+          "0x3eafcdb9",
+          "0x3f800000",
+          "0x3ec23b80",
+          "0x3e5750b8",
+          "0x3e4d5475",
+          "0x3f800000",
+          "0x3edc178b",
+          "0x3e5de693",
+          "0x3e5331b9",
+          "0x3f800000",
+          "0x3f3229f1",
+          "0x3ebb202f",
+          "0x3eb22066",
+          "0x3f800000",
+          "0x3f00db9b",
+          "0x3eddbe6a",
+          "0x3edb89ef",
+          "0x3f800000",
+          "0x3f2cbb64",
+          "0x3f0db6bd",
+          "0x3f0c8fa8",
+          "0x3f800000"
+        ],
+        "f32_sha256": "b2dfbcf6a15155740a871717a78c93e862fad04dd40a031129961f66921beb59",
+        "rgba8_bytes": [
+          101,
+          74,
+          73,
+          255,
+          99,
+          53,
+          51,
+          255,
+          155,
+          29,
+          24,
+          255,
+          116,
+          68,
+          67,
+          255,
+          113,
+          60,
+          58,
+          255,
+          98,
+          46,
+          45,
+          255,
+          101,
+          74,
+          73,
+          255,
+          99,
+          53,
+          51,
+          255,
+          155,
+          29,
+          24,
+          255,
+          116,
+          68,
+          67,
+          255,
+          113,
+          60,
+          58,
+          255,
+          98,
+          46,
+          45,
+          255,
+          169,
+          90,
+          88,
+          255,
+          97,
+          54,
+          51,
+          255,
+          110,
+          55,
+          53,
+          255,
+          177,
+          93,
+          89,
+          255,
+          128,
+          110,
+          109,
+          255,
+          172,
+          141,
+          140,
+          255
+        ],
+        "rgba8_sha256": "b6a072690afc00a7085371d1e0f864ed2244fd11933d8bbb221d0f74eae02f2b"
+      },
+      "f32_byte_count": 288,
+      "rgba8_byte_count": 72,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "refract-mid",
+      "width": 3,
+      "height": 2,
+      "time": 19.25,
+      "seed": 3,
+      "resolution": [
+        3,
+        2
+      ],
+      "tileOffset": [
+        1,
+        -1
+      ],
+      "fullResolution": [
+        10,
+        7
+      ],
+      "xScale": 75,
+      "yScale": 75,
+      "octaves": 4,
+      "ridges": false,
+      "refractAmt": 50,
+      "kaleido": 16,
+      "loopScale": 75,
+      "speed": 1,
+      "hueRange": 50,
+      "hueRotation": 90,
+      "wrap": true,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3eef641b",
+          "0x3e37159e",
+          "0x3e2d1999",
+          "0x3f800000",
+          "0x3ea43c90",
+          "0x3e312a46",
+          "0x3e508818",
+          "0x3f800000",
+          "0x3ea9930a",
+          "0x3dfaf128",
+          "0x3e9e9b5a",
+          "0x3f800000",
+          "0x3ee6fbb0",
+          "0x3e974316",
+          "0x3eeb3c6b",
+          "0x3f800000",
+          "0x3ea75c7c",
+          "0x3e48a7d8",
+          "0x3e8b1f56",
+          "0x3f800000",
+          "0x3ec7a969",
+          "0x3e857a83",
+          "0x3eb1b027",
+          "0x3f800000"
+        ],
+        "f32_sha256": "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272",
+        "rgba8_bytes": [
+          119,
+          46,
+          43,
+          255,
+          82,
+          44,
+          52,
+          255,
+          84,
+          31,
+          79,
+          255,
+          115,
+          75,
+          117,
+          255,
+          83,
+          50,
+          69,
+          255,
+          99,
+          66,
+          88,
+          255
+        ],
+        "rgba8_sha256": "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e"
+      },
+      "f32_byte_count": 96,
+      "rgba8_byte_count": 24,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "seam-and-hue",
+      "width": 7,
+      "height": 3,
+      "time": 0.125,
+      "seed": 91,
+      "resolution": [
+        7,
+        3
+      ],
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        7,
+        3
+      ],
+      "xScale": 100,
+      "yScale": 1,
+      "octaves": 8,
+      "ridges": true,
+      "refractAmt": 1,
+      "kaleido": 31,
+      "loopScale": 100,
+      "speed": -25,
+      "hueRange": 99,
+      "hueRotation": 1,
+      "wrap": false,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3dd5c1fb",
+          "0x3e0acf22",
+          "0x3e42db7a",
+          "0x3f800000",
+          "0x3e6aa879",
+          "0x3e767863",
+          "0x3e37d257",
+          "0x3f800000",
+          "0x3eaec6ea",
+          "0x3e985b08",
+          "0x3e670f8f",
+          "0x3f800000",
+          "0x3e72744b",
+          "0x3e87496f",
+          "0x3e799995",
+          "0x3f800000",
+          "0x3eaec6ea",
+          "0x3e985b08",
+          "0x3e670f8f",
+          "0x3f800000",
+          "0x3e6aa7d1",
+          "0x3e767935",
+          "0x3e37d280",
+          "0x3f800000",
+          "0x3dd5c558",
+          "0x3e0acd7e",
+          "0x3e42dcaa",
+          "0x3f800000",
+          "0x3d2cc7d9",
+          "0x3d4c5664",
+          "0x3d2a8aa6",
+          "0x3f800000",
+          "0x3e223517",
+          "0x3ea9ba12",
+          "0x3ecd4f01",
+          "0x3f800000",
+          "0x3ec8de54",
+          "0x3f02e31f",
+          "0x3ed494c5",
+          "0x3f800000",
+          "0x3e04728b",
+          "0x3eccf6b8",
+          "0x3e94f7d8",
+          "0x3f800000",
+          "0x3ec8dd60",
+          "0x3f02e249",
+          "0x3ed49385",
+          "0x3f800000",
+          "0x3e223b0a",
+          "0x3ea9c0be",
+          "0x3ecd548c",
+          "0x3f800000",
+          "0x3d2ce8e1",
+          "0x3d4c7c30",
+          "0x3d2aa9d8",
+          "0x3f800000",
+          "0x3e90ee7e",
+          "0x3ec1c08b",
+          "0x3ec96219",
+          "0x3f800000",
+          "0x3da4396d",
+          "0x3dba2132",
+          "0x3e2e1bae",
+          "0x3f800000",
+          "0x3ef1b370",
+          "0x3f097ebf",
+          "0x3efe2457",
+          "0x3f800000",
+          "0x3efaa7f8",
+          "0x3f06d257",
+          "0x3ee1e339",
+          "0x3f800000",
+          "0x3ef1b370",
+          "0x3f097ebf",
+          "0x3efe2457",
+          "0x3f800000",
+          "0x3da4396d",
+          "0x3dba2132",
+          "0x3e2e1bae",
+          "0x3f800000",
+          "0x3e90ee9b",
+          "0x3ec1c071",
+          "0x3ec961d7",
+          "0x3f800000"
+        ],
+        "f32_sha256": "8136893d33e740f26521d3a1847357b78dfbd2c281aff92248dce9f6841eb353",
+        "rgba8_bytes": [
+          27,
+          35,
+          49,
+          255,
+          58,
+          61,
+          46,
+          255,
+          87,
+          76,
+          58,
+          255,
+          60,
+          67,
+          62,
+          255,
+          87,
+          76,
+          58,
+          255,
+          58,
+          61,
+          46,
+          255,
+          27,
+          35,
+          49,
+          255,
+          11,
+          13,
+          11,
+          255,
+          40,
+          85,
+          102,
+          255,
+          100,
+          130,
+          106,
+          255,
+          33,
+          102,
+          74,
+          255,
+          100,
+          130,
+          106,
+          255,
+          40,
+          85,
+          102,
+          255,
+          11,
+          13,
+          11,
+          255,
+          72,
+          96,
+          100,
+          255,
+          20,
+          23,
+          43,
+          255,
+          120,
+          137,
+          127,
+          255,
+          125,
+          134,
+          113,
+          255,
+          120,
+          137,
+          127,
+          255,
+          20,
+          23,
+          43,
+          255,
+          72,
+          96,
+          100,
+          255
+        ],
+        "rgba8_sha256": "dc52c608d6424cdb1e4dac1f3fc60261faaa0de147fc4d8a6276722c4f28dcb8"
+      },
+      "f32_byte_count": 336,
+      "rgba8_byte_count": 84,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "dead-bindings-base",
+      "width": 3,
+      "height": 2,
+      "time": 19.25,
+      "seed": 3,
+      "resolution": [
+        3,
+        2
+      ],
+      "tileOffset": [
+        1,
+        -1
+      ],
+      "fullResolution": [
+        10,
+        7
+      ],
+      "xScale": 75,
+      "yScale": 75,
+      "octaves": 4,
+      "ridges": false,
+      "refractAmt": 50,
+      "kaleido": 16,
+      "loopScale": 75,
+      "speed": 1,
+      "hueRange": 50,
+      "hueRotation": 90,
+      "wrap": false,
+      "paletteMode": 3,
+      "paletteOffset": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteAmp": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "paletteFreq": [
+        1,
+        1,
+        1
+      ],
+      "palettePhase": [
+        0.3,
+        0.2,
+        0.2
+      ],
+      "cyclePalette": 1,
+      "rotatePalette": 0,
+      "repeatPalette": 1,
+      "expected": {
+        "f32_words_le": [
+          "0x3eef641b",
+          "0x3e37159e",
+          "0x3e2d1999",
+          "0x3f800000",
+          "0x3ea43c90",
+          "0x3e312a46",
+          "0x3e508818",
+          "0x3f800000",
+          "0x3ea9930a",
+          "0x3dfaf128",
+          "0x3e9e9b5a",
+          "0x3f800000",
+          "0x3ee6fbb0",
+          "0x3e974316",
+          "0x3eeb3c6b",
+          "0x3f800000",
+          "0x3ea75c7c",
+          "0x3e48a7d8",
+          "0x3e8b1f56",
+          "0x3f800000",
+          "0x3ec7a969",
+          "0x3e857a83",
+          "0x3eb1b027",
+          "0x3f800000"
+        ],
+        "f32_sha256": "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272",
+        "rgba8_bytes": [
+          119,
+          46,
+          43,
+          255,
+          82,
+          44,
+          52,
+          255,
+          84,
+          31,
+          79,
+          255,
+          115,
+          75,
+          117,
+          255,
+          83,
+          50,
+          69,
+          255,
+          99,
+          66,
+          88,
+          255
+        ],
+        "rgba8_sha256": "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e"
+      },
+      "f32_byte_count": 96,
+      "rgba8_byte_count": 24,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    },
+    {
+      "name": "dead-bindings-sentinel",
+      "width": 3,
+      "height": 2,
+      "time": 19.25,
+      "seed": 3,
+      "resolution": [
+        97,
+        53
+      ],
+      "tileOffset": [
+        1,
+        -1
+      ],
+      "fullResolution": [
+        10,
+        7
+      ],
+      "xScale": 75,
+      "yScale": 75,
+      "octaves": 4,
+      "ridges": false,
+      "refractAmt": 50,
+      "kaleido": 16,
+      "loopScale": 75,
+      "speed": 1,
+      "hueRange": 50,
+      "hueRotation": 90,
+      "wrap": true,
+      "paletteMode": 0,
+      "paletteOffset": [
+        0,
+        0,
+        0
+      ],
+      "paletteAmp": [
+        1,
+        1,
+        1
+      ],
+      "paletteFreq": [
+        7,
+        11,
+        13
+      ],
+      "palettePhase": [
+        -0.7,
+        0.4,
+        1.2
+      ],
+      "cyclePalette": -1,
+      "rotatePalette": 100,
+      "repeatPalette": 10,
+      "expected": {
+        "f32_words_le": [
+          "0x3eef641b",
+          "0x3e37159e",
+          "0x3e2d1999",
+          "0x3f800000",
+          "0x3ea43c90",
+          "0x3e312a46",
+          "0x3e508818",
+          "0x3f800000",
+          "0x3ea9930a",
+          "0x3dfaf128",
+          "0x3e9e9b5a",
+          "0x3f800000",
+          "0x3ee6fbb0",
+          "0x3e974316",
+          "0x3eeb3c6b",
+          "0x3f800000",
+          "0x3ea75c7c",
+          "0x3e48a7d8",
+          "0x3e8b1f56",
+          "0x3f800000",
+          "0x3ec7a969",
+          "0x3e857a83",
+          "0x3eb1b027",
+          "0x3f800000"
+        ],
+        "f32_sha256": "da980d911eea3df74bae26c9d98dab11ead680f76bc62e32c9e1657e39519272",
+        "rgba8_bytes": [
+          119,
+          46,
+          43,
+          255,
+          82,
+          44,
+          52,
+          255,
+          84,
+          31,
+          79,
+          255,
+          115,
+          75,
+          117,
+          255,
+          83,
+          50,
+          69,
+          255,
+          99,
+          66,
+          88,
+          255
+        ],
+        "rgba8_sha256": "3c6261100abb90d27416ab4c9dc0e161448a6bffed1179129371cf65b3294c8e"
+      },
+      "f32_byte_count": 96,
+      "rgba8_byte_count": 24,
+      "repeat": {
+        "exact": true,
+        "dimensions": true,
+        "f32_words": true,
+        "rgba8_bytes": true
+      },
+      "storage": {
+        "distinct_surface_objects": true,
+        "distinct_f32_backing_stores": true
+      },
+      "controls_snapshot": {
+        "unchanged": true,
+        "typed_array_bits_unchanged": true
+      }
+    }
+  ],
+  "mutation_anchor_cardinality": {
+    "total": 5,
+    "anchors": {
+      "mutable-global-frame": 1,
+      "runtime-loop-bound": 1,
+      "owner-speed-control": 1,
+      "hue-range-factor": 1,
+      "refract-amount": 1
+    }
+  },
+  "mutation_ledger": [
+    {
+      "name": "mutable-global-frame",
+      "anchor": "var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1]]);",
+      "replacement": "var globalCoord = new $runtime.PooledFloat32Array([gl_FragCoord[0] + tileOffset[0], gl_FragCoord[1] + tileOffset[1] + 1]);",
+      "anchor_sha256": "0d11617c98d25c93f05e739688294223f87b3c5ab27f575136f9cef9750e0852",
+      "replacement_sha256": "0857e8fc5c5e075ef856e8f99957026440543ad1f22d500c573f5d69797f0b4c",
+      "mutated_factory_sha256": "75ab4b63d0a4969e18794aa8985f7e9ae743fac7a0772c7c2ee6da52a9cbc8de",
+      "independent": true,
+      "anchor_cardinality": 1,
+      "witnesses": [
+        "origin-min",
+        "max-ridges",
+        "negative-speed-offset",
+        "asymmetric-axis",
+        "refract-mid",
+        "seam-and-hue",
+        "dead-bindings-base",
+        "dead-bindings-sentinel"
+      ],
+      "results": [
+        {
+          "case": "origin-min",
+          "exact": false,
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3
+        },
+        {
+          "case": "max-ridges",
+          "exact": false,
+          "changed_float32_lanes": 57,
+          "changed_rgba8_bytes": 43
+        },
+        {
+          "case": "negative-speed-offset",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60
+        },
+        {
+          "case": "asymmetric-axis",
+          "exact": false,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 34
+        },
+        {
+          "case": "refract-mid",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        },
+        {
+          "case": "seam-and-hue",
+          "exact": false,
+          "changed_float32_lanes": 63,
+          "changed_rgba8_bytes": 63
+        },
+        {
+          "case": "dead-bindings-base",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        },
+        {
+          "case": "dead-bindings-sentinel",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        }
+      ]
+    },
+    {
+      "name": "runtime-loop-bound",
+      "anchor": "for (var i = 1; i <= octaves; i++) {",
+      "replacement": "for (var i = 1; i < octaves; i++) {",
+      "anchor_sha256": "01d7187685b3214554fcae3d2318d8596b0537236f78b7cc48ef164bef683fbe",
+      "replacement_sha256": "d21fee3af24c6ee08b0eed3b29e3fa2eccb4811499f4be256696ecd9539353a9",
+      "mutated_factory_sha256": "dd873d362743aa7e3391e48c8ad52bdca22e39dc06a06eb3cd64081ac64a2bf3",
+      "independent": true,
+      "anchor_cardinality": 1,
+      "witnesses": [
+        "origin-min",
+        "max-ridges",
+        "negative-speed-offset",
+        "asymmetric-axis",
+        "refract-mid",
+        "seam-and-hue",
+        "dead-bindings-base",
+        "dead-bindings-sentinel"
+      ],
+      "results": [
+        {
+          "case": "origin-min",
+          "exact": false,
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3
+        },
+        {
+          "case": "max-ridges",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 13
+        },
+        {
+          "case": "negative-speed-offset",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 58
+        },
+        {
+          "case": "asymmetric-axis",
+          "exact": false,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54
+        },
+        {
+          "case": "refract-mid",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 14
+        },
+        {
+          "case": "seam-and-hue",
+          "exact": false,
+          "changed_float32_lanes": 63,
+          "changed_rgba8_bytes": 19
+        },
+        {
+          "case": "dead-bindings-base",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 14
+        },
+        {
+          "case": "dead-bindings-sentinel",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 14
+        }
+      ]
+    },
+    {
+      "name": "owner-speed-control",
+      "anchor": "var speed = $bindings[\"speed\"];",
+      "replacement": "var speed = $bindings[\"speed\"] * 2;",
+      "anchor_sha256": "d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949",
+      "replacement_sha256": "3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43",
+      "mutated_factory_sha256": "753c72087cc9e1370adc088eec8f91891240a5776a565d4e5cac7c4d877bb5c9",
+      "independent": true,
+      "anchor_cardinality": 1,
+      "witnesses": [
+        "max-ridges",
+        "negative-speed-offset",
+        "asymmetric-axis",
+        "refract-mid",
+        "seam-and-hue",
+        "dead-bindings-base",
+        "dead-bindings-sentinel"
+      ],
+      "results": [
+        {
+          "case": "origin-min",
+          "exact": true,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0
+        },
+        {
+          "case": "max-ridges",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60
+        },
+        {
+          "case": "negative-speed-offset",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 58
+        },
+        {
+          "case": "asymmetric-axis",
+          "exact": false,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 46
+        },
+        {
+          "case": "refract-mid",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 17
+        },
+        {
+          "case": "seam-and-hue",
+          "exact": false,
+          "changed_float32_lanes": 63,
+          "changed_rgba8_bytes": 52
+        },
+        {
+          "case": "dead-bindings-base",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 17
+        },
+        {
+          "case": "dead-bindings-sentinel",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 17
+        }
+      ]
+    },
+    {
+      "name": "hue-range-factor",
+      "anchor": "color[0] = (color[0] * hueRange) * 0.009999999776482582;",
+      "replacement": "color[0] = (color[0] * hueRange) * 0.019999999552965164;",
+      "anchor_sha256": "37b1cfefcd1db98d7389ef143dbe05a7542407fb7cdebb9e06ebee9ba8dbfbe7",
+      "replacement_sha256": "c824a77821a780c002f0d69846d5102485f65c977d1132ce888566eac5c4744b",
+      "mutated_factory_sha256": "69088be842abf5ffb5b964f2cc71a485a9f665644fac4b8fa9e212e77d594ead",
+      "independent": true,
+      "anchor_cardinality": 1,
+      "witnesses": [
+        "max-ridges",
+        "negative-speed-offset",
+        "asymmetric-axis",
+        "refract-mid",
+        "seam-and-hue",
+        "dead-bindings-base",
+        "dead-bindings-sentinel"
+      ],
+      "results": [
+        {
+          "case": "origin-min",
+          "exact": true,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0
+        },
+        {
+          "case": "max-ridges",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60
+        },
+        {
+          "case": "negative-speed-offset",
+          "exact": false,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 31
+        },
+        {
+          "case": "asymmetric-axis",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 15
+        },
+        {
+          "case": "refract-mid",
+          "exact": false,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12
+        },
+        {
+          "case": "seam-and-hue",
+          "exact": false,
+          "changed_float32_lanes": 58,
+          "changed_rgba8_bytes": 56
+        },
+        {
+          "case": "dead-bindings-base",
+          "exact": false,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12
+        },
+        {
+          "case": "dead-bindings-sentinel",
+          "exact": false,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12
+        }
+      ]
+    },
+    {
+      "name": "refract-amount",
+      "anchor": "var ref = (map(refractAmt, 0, 100, 0, 1)) / multiplier;",
+      "replacement": "var ref = (map(refractAmt, 0, 100, 0, 0.5)) / multiplier;",
+      "anchor_sha256": "7e23e8b009bd2dc6cca439979ef62b528d177369fca9935eae06d7eb87de31d1",
+      "replacement_sha256": "d92b010a2a28001378b41faf78f27b9bde10a2daf0a253853eed38fdc2e51afd",
+      "mutated_factory_sha256": "b03fe40ed6dc85802e8f72f733984044fbcf4b3fc3805eca868168f5590be0e8",
+      "independent": true,
+      "anchor_cardinality": 1,
+      "witnesses": [
+        "max-ridges",
+        "negative-speed-offset",
+        "asymmetric-axis",
+        "refract-mid",
+        "seam-and-hue",
+        "dead-bindings-base",
+        "dead-bindings-sentinel"
+      ],
+      "results": [
+        {
+          "case": "origin-min",
+          "exact": true,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0
+        },
+        {
+          "case": "max-ridges",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60
+        },
+        {
+          "case": "negative-speed-offset",
+          "exact": false,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60
+        },
+        {
+          "case": "asymmetric-axis",
+          "exact": false,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54
+        },
+        {
+          "case": "refract-mid",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        },
+        {
+          "case": "seam-and-hue",
+          "exact": false,
+          "changed_float32_lanes": 63,
+          "changed_rgba8_bytes": 54
+        },
+        {
+          "case": "dead-bindings-base",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        },
+        {
+          "case": "dead-bindings-sentinel",
+          "exact": false,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18
+        }
+      ]
+    }
+  ],
+  "prepared_mechanisms": [
+    {
+      "name": "mutable_global_frame_profile",
+      "profile": "mutable-global-frame-noise-v1",
+      "status": "prepared_not_admitted",
+      "reason": "typed slice is not admitted in this oracle-only task"
+    },
+    {
+      "name": "runtime_loop_bound_profile",
+      "profile": "runtime-loop-bound-v1",
+      "status": "prepared_not_admitted",
+      "reason": "runtime profile integration remains outside oracle scope"
+    },
+    {
+      "name": "scalar_uint_xor_profile",
+      "profile": "scalar-uint-xor-v1",
+      "status": "prepared_not_admitted",
+      "reason": "scalar XOR path is unreachable under NOISE_TYPE=10"
+    },
+    {
+      "name": "typed_expression_index",
+      "profile": "typed-expression-index-v1",
+      "status": "prepared_not_admitted",
+      "reason": "indexed color conversion paths are unreachable under COLOR_MODE=6"
+    }
+  ],
+  "claim_boundaries": {
+    "canonical_factory_only": true,
+    "typed_slice_landing": false,
+    "shared_emitter_modified": false,
+    "samplers": false,
+    "input_textures": false,
+    "dead_bindings_not_branch_claims": true
+  }
+}

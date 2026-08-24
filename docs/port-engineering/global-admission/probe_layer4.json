@@ -1,0 +1,213 @@
+[
+ {
+  "key": "classicNoisedeck/cellNoise:cellNoise",
+  "layer4_blocker": "VALIDATOR-PASS",
+  "layer4_emitter": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported source global declaration",
+  "main_reachable_functions": [
+   "cells",
+   "hsv2rgb",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "luminance",
+   "main",
+   "map",
+   "pal",
+   "pcg",
+   "polarShape",
+   "prng",
+   "shapeDistance",
+   "smin"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb",
+   "rotate2D"
+  ],
+  "matrix_touching_functions_NOT_reachable": [
+   "oklab_from_linear_srgb",
+   "rotate2D"
+  ]
+ },
+ {
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "layer4_blocker": "classicNoisedeck/colorLab:colorLab:258:20: unsupported typed expression index",
+  "main_reachable_functions": [
+   "brightnessContrast",
+   "hsv2rgb",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "main",
+   "map",
+   "offsets",
+   "pal",
+   "pcg",
+   "periodicFunction",
+   "posterize",
+   "prng",
+   "random",
+   "rgb2hsv",
+   "saturate",
+   "srgbToLinear"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb"
+  ],
+  "matrix_touching_functions_NOT_reachable": [
+   "oklab_from_linear_srgb"
+  ]
+ },
+ {
+  "key": "classicNoisedeck/moodscape:moodscape",
+  "layer4_blocker": "classicNoisedeck/moodscape:moodscape:282:21: unsupported builtin floatBitsToUint",
+  "main_reachable_functions": [
+   "brightnessContrast",
+   "hsv2rgb",
+   "main",
+   "map",
+   "mod289",
+   "periodicFunction",
+   "permute",
+   "simplexValue",
+   "value"
+  ],
+  "matrix_code_reachable_from_main": false,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb"
+  ],
+  "matrix_touching_functions_NOT_reachable": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb"
+  ]
+ },
+ {
+  "key": "classicNoisedeck/shapeMixer:shapeMixer",
+  "layer4_blocker": "classicNoisedeck/shapeMixer:shapeMixer:411:21: unsupported builtin floatBitsToUint",
+  "main_reachable_functions": [
+   "blend",
+   "blendLinearOrCosine",
+   "circles",
+   "constant",
+   "diamonds",
+   "hsv2rgb",
+   "isInf",
+   "isNan",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "luminance",
+   "main",
+   "map",
+   "mod289",
+   "offset",
+   "pal",
+   "pcg",
+   "periodicFunction",
+   "permute",
+   "positiveModulo",
+   "posterize",
+   "posterize2",
+   "prng",
+   "quadratic3",
+   "quadratic3x3Value",
+   "randomFromLatticeWithOffset",
+   "rgb2hsv",
+   "rings",
+   "shape",
+   "simplexValue",
+   "sineNoise",
+   "value"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb"
+  ],
+  "matrix_touching_functions_NOT_reachable": [
+   "oklab_from_linear_srgb"
+  ]
+ },
+ {
+  "key": "classicNoisedeck/shapes:shapes",
+  "layer4_blocker": "classicNoisedeck/shapes:shapes:119:21: unsupported builtin floatBitsToUint",
+  "main_reachable_functions": [
+   "bicubicValue",
+   "blendBicubic",
+   "blendLinearOrCosine",
+   "catmullRom3",
+   "catmullRom3x3Value",
+   "catmullRom4",
+   "catmullRom4x4Value",
+   "circles",
+   "constant",
+   "diamonds",
+   "hsv2rgb",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "main",
+   "map",
+   "mod289",
+   "offset",
+   "pal",
+   "pcg",
+   "periodicFunction",
+   "permute",
+   "positiveModulo",
+   "prng",
+   "quadratic3",
+   "quadratic3x3Value",
+   "randomFromLatticeWithOffset",
+   "rings",
+   "shape",
+   "simplexValue",
+   "sineNoise",
+   "value"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab",
+   "oklab_from_linear_srgb",
+   "rotate2D"
+  ],
+  "matrix_touching_functions_NOT_reachable": [
+   "oklab_from_linear_srgb",
+   "rotate2D"
+  ]
+ },
+ {
+  "key": "filter/adjust:adjust",
+  "layer4_blocker": "VALIDATOR-PASS",
+  "layer4_emitter": "filter/adjust:adjust:62:1: unsupported source global declaration",
+  "main_reachable_functions": [
+   "hsv2rgb",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "main",
+   "map",
+   "rgb2hsv"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab"
+  ],
+  "matrix_touching_functions_NOT_reachable": []
+ },
+ {
+  "key": "filter/colorspace:colorspace",
+  "layer4_blocker": "VALIDATOR-PASS",
+  "layer4_emitter": "filter/colorspace:colorspace:32:1: unsupported source global declaration",
+  "main_reachable_functions": [
+   "hsv2rgb",
+   "linearToSrgb",
+   "linear_srgb_from_oklab",
+   "main"
+  ],
+  "matrix_code_reachable_from_main": true,
+  "matrix_touching_functions": [
+   "linear_srgb_from_oklab"
+  ],
+  "matrix_touching_functions_NOT_reachable": []
+ }
+]

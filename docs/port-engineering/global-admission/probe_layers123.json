@@ -1,0 +1,164 @@
+{
+ "layer1_all25_next_blocker": [
+  {
+   "blocker": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+   "key": "classicNoisedeck/bitEffects:bitEffects"
+  },
+  {
+   "blocker": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported typed type mat3",
+   "key": "classicNoisedeck/cellNoise:cellNoise"
+  },
+  {
+   "blocker": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global",
+   "key": "classicNoisedeck/cellRefract:cellRefract"
+  },
+  {
+   "blocker": "classicNoisedeck/colorLab:colorLab:191:1: unsupported typed type mat3",
+   "key": "classicNoisedeck/colorLab:colorLab"
+  },
+  {
+   "blocker": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global",
+   "key": "classicNoisedeck/kaleido:kaleido"
+  },
+  {
+   "blocker": "classicNoisedeck/moodscape:moodscape:149:1: unsupported typed type mat3",
+   "key": "classicNoisedeck/moodscape:moodscape"
+  },
+  {
+   "blocker": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported typed type mat3",
+   "key": "classicNoisedeck/shapeMixer:shapeMixer"
+  },
+  {
+   "blocker": "classicNoisedeck/shapes:shapes:588:1: unsupported typed type mat3",
+   "key": "classicNoisedeck/shapes:shapes"
+  },
+  {
+   "blocker": "filter/adjust:adjust:62:1: unsupported typed type mat3",
+   "key": "filter/adjust:adjust"
+  },
+  {
+   "blocker": "filter/colorspace:colorspace:32:1: unsupported typed type mat3",
+   "key": "filter/colorspace:colorspace"
+  },
+  {
+   "blocker": "filter/edge:edge:73:11: unsupported typed type bvec3",
+   "key": "filter/edge:edge"
+  },
+  {
+   "blocker": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+   "key": "filter/emboss:emboss"
+  },
+  {
+   "blocker": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+   "key": "filter/fxaa:fxaa"
+  },
+  {
+   "blocker": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+   "key": "filter/glyphMap:glyphMap"
+  },
+  {
+   "blocker": "filter/grain:grain:31:21: unsupported builtin round",
+   "key": "filter/grain:grain"
+  },
+  {
+   "blocker": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration",
+   "key": "filter/historicPalette:historicPalette"
+  },
+  {
+   "blocker": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+   "key": "filter/normalMap:normalMap"
+  },
+  {
+   "blocker": "filter/osd:osd:24:1: unsupported typed type int[80]",
+   "key": "filter/osd:osd"
+  },
+  {
+   "blocker": "filter/palette:palette:21:1: unsupported struct declaration",
+   "key": "filter/palette:palette"
+  },
+  {
+   "blocker": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint",
+   "key": "filter/scanlineError:scanlineError"
+  },
+  {
+   "blocker": "filter/snow:snow:26:21: unsupported builtin round",
+   "key": "filter/snow:snow"
+  },
+  {
+   "blocker": "filter/spookyTicker:spookyTicker:1:1: unsupported varying",
+   "key": "filter/spookyTicker:spookyTicker"
+  },
+  {
+   "blocker": "filter/texture:texture:1:1: unsupported varying",
+   "key": "filter/texture:texture"
+  },
+  {
+   "blocker": "filter/wobble:wobble:1:1: unsupported varying",
+   "key": "filter/wobble:wobble"
+  },
+  {
+   "blocker": "synth/shape:shape:459:5: write to source const global",
+   "key": "synth/shape:shape"
+  }
+ ],
+ "layer2_mat3_after_type_admission": [
+  {
+   "blocker": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global matrix declaration",
+   "key": "classicNoisedeck/cellNoise:cellNoise"
+  },
+  {
+   "blocker": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global matrix declaration",
+   "key": "classicNoisedeck/colorLab:colorLab"
+  },
+  {
+   "blocker": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global matrix declaration",
+   "key": "classicNoisedeck/moodscape:moodscape"
+  },
+  {
+   "blocker": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global matrix declaration",
+   "key": "classicNoisedeck/shapeMixer:shapeMixer"
+  },
+  {
+   "blocker": "classicNoisedeck/shapes:shapes:588:1: unsupported global matrix declaration",
+   "key": "classicNoisedeck/shapes:shapes"
+  },
+  {
+   "blocker": "filter/adjust:adjust:62:1: unsupported global matrix declaration",
+   "key": "filter/adjust:adjust"
+  },
+  {
+   "blocker": "filter/colorspace:colorspace:32:1: unsupported global matrix declaration",
+   "key": "filter/colorspace:colorspace"
+  }
+ ],
+ "layer3_mat3_after_type_and_global_admission": [
+  {
+   "blocker": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+   "key": "classicNoisedeck/cellNoise:cellNoise"
+  },
+  {
+   "blocker": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+   "key": "classicNoisedeck/colorLab:colorLab"
+  },
+  {
+   "blocker": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+   "key": "classicNoisedeck/moodscape:moodscape"
+  },
+  {
+   "blocker": "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect",
+   "key": "classicNoisedeck/shapeMixer:shapeMixer"
+  },
+  {
+   "blocker": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+   "key": "classicNoisedeck/shapes:shapes"
+  },
+  {
+   "blocker": "filter/adjust:adjust:78:13: unsupported typed expression index",
+   "key": "filter/adjust:adjust"
+  },
+  {
+   "blocker": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+   "key": "filter/colorspace:colorspace"
+  }
+ ]
+}

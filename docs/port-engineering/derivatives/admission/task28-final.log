@@ -1,0 +1,13 @@
+test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary) ... [32mok[0m
+test_task28_cpp_tables_are_exact_executable_frozen_transcription (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_cpp_tables_are_exact_executable_frozen_transcription) ... [32mok[0m
+test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier)
+A foreign key must never inherit Rotate's matrix-emission capability. ... [32mok[0m
+test_task28_exhaustive_single_axis_negative_closure (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_exhaustive_single_axis_negative_closure) ... [32mok[0m
+test_task28_full_carrier_caller_numeric_define_and_identity_matrix (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_full_carrier_caller_numeric_define_and_identity_matrix) ... [32mok[0m
+test_task28_profile_validator_and_emitter_exact_identity (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_profile_validator_and_emitter_exact_identity) ... [32mok[0m
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... [32mok[0m
+
+----------------------------------------------------------------------
+Ran 7 tests in 65.007s
+
+[32mOK[0m

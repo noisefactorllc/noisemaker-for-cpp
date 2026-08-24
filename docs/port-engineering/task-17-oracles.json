@@ -1,0 +1,416 @@
+{
+  "schema": "noisemaker-for-cpp.task17-fixed-nine-local-tables.canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+    "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
+    "generator": "task-17-oracle-generator.mjs"
+  },
+  "programs": [
+    {
+      "key": "filter/sharpen:sharpen",
+      "source": "sources/filter/sharpen/sharpen.glsl",
+      "raw_source_sha256": "c9a9b196e61a2904b37ad89c7fc46bee1b40b6bba81293dde3d7cd37527773e7",
+      "normalized_source_sha256": "1a252d3d5efca1c657dcde87953b12c081c586da01d885e24d3b50395ec5abb0",
+      "defines": {},
+      "binding_signature": [
+        "tileOffset:vec2@1",
+        "fullResolution:vec2@2",
+        "inputTex:sampler2D@3/S1",
+        "amount:float@4",
+        "renderScale:float@5"
+      ],
+      "factory_to_string_sha256": "112012990b0f290941a1821f97b2e07c2c538b4dcdbd9d0edf663b7e9e9e7db6"
+    },
+    {
+      "key": "filter/sobel:sobel",
+      "source": "sources/filter/sobel/sobel.glsl",
+      "raw_source_sha256": "ef459738b931929a65422df36f852da4e7cbe4e90387690bea747a34a2e52f84",
+      "normalized_source_sha256": "d8aad0d49bd0b1badd5231b46bb7bd5a35f9eddadd466afd4ac9f1a0fc0cbf0c",
+      "defines": {},
+      "binding_signature": [
+        "tileOffset:vec2@1",
+        "fullResolution:vec2@2",
+        "inputTex:sampler2D@3/S1",
+        "amount:float@4",
+        "renderScale:float@5",
+        "alpha:float@6"
+      ],
+      "factory_to_string_sha256": "beb3e9937f0b0d908a541569b170adb3f7a526b10f647219f5924c7dda3e185f"
+    }
+  ],
+  "fixture": {
+    "input": {
+      "width": 11,
+      "height": 9,
+      "construction": "top-down 11x9 Float32Array: R=((17*x+31*y+13)%101)/100; G=((7*x+19*y+23)%97)/96; B=((29*x+11*y+5)%89)/88; A=0.35+((3*x+5*y+1)%13)/20; every lane assignment crosses the Float32Array boundary"
+    },
+    "output": {
+      "width": 9,
+      "height": 7,
+      "storage": "top-down Surface Float32Array; lane=(y*width+x)*4"
+    },
+    "fragment_origin": "bottom-left: runPass uses fragCoord=(x+0.5,height-y-0.5)",
+    "sampler_coordinates": "input storage is top-down; texture() follows canonical GLSL bottom-left sampling",
+    "float_bytes": "host little-endian Float32Array bytes; probe words use little-endian Uint32",
+    "context": {
+      "time": 0.375,
+      "frame": 7,
+      "deltaTime": 0.016666666666666666,
+      "seed": 19,
+      "tileOffset": [
+        2,
+        1
+      ],
+      "fullResolution": [
+        13,
+        11
+      ],
+      "renderScale": {
+        "value": 1,
+        "f32_bits_le": "0x3f800000"
+      }
+    },
+    "verification": "each case double-renders with fresh surfaces and requires identical F32 and RGBA8 bytes before hashing"
+  },
+  "cases": [
+    {
+      "name": "sharpen-default",
+      "key": "filter/sharpen:sharpen",
+      "uniforms": {
+        "amount": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "default-amount",
+        "nine-literal-kernel-reads",
+        "nine-offset-reads",
+        "non-square-coordinate-path"
+      ],
+      "f32_sha256": "54bffb81920b79c85198238c2fcd4f52b94ae25ca208747fb0048f24a71b05ec",
+      "rgba8_sha256": "d1bd7b35b2890258c385d294879556b4586d33f4af29feeeb7be5a4931ec2094",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            1,
+            0.4895835518836975,
+            0,
+            0.8999999761581421
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3efaaab2",
+            "0x00000000",
+            "0x3f666666"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0.5104167461395264,
+            1,
+            0.949999988079071
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x3f02aaac",
+            "0x3f800000",
+            "0x3f733333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            1,
+            0.7812498807907104,
+            0.9090908765792847,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f47fffe",
+            "0x3f68ba2e",
+            "0x3eb33333"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "sharpen-amount-2.3f",
+      "key": "filter/sharpen:sharpen",
+      "uniforms": {
+        "amount": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "non-default-f32-amount",
+        "all-nine-offsets",
+        "F32-vector-offset-storage"
+      ],
+      "f32_sha256": "53f12c6e6047f31edb9e157202674a405489df96dd995adcc3bf4aea5a20128f",
+      "rgba8_sha256": "560e7225289764f8d2c108b3f0746859ceb38ce4dee47753710d6d18473101e3",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            1,
+            1,
+            0.10227271914482117,
+            0.8999999761581421
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3dd1745c",
+            "0x3f666666"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0.5104167461395264,
+            1,
+            0.949999988079071
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x3f02aaac",
+            "0x3f800000",
+            "0x3f733333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            1,
+            0,
+            1,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x00000000",
+            "0x3f800000",
+            "0x3eb33333"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "sobel-default-alpha-one",
+      "key": "filter/sobel:sobel",
+      "uniforms": {
+        "amount": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "alpha": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "default-amount",
+        "alpha-one",
+        "two-nine-scalar-kernel-reads",
+        "nine-offset-reads"
+      ],
+      "f32_sha256": "df429cbfeb9dc04d3e5f9099ded0daae9ee7077a9121e325a11fb0cd9ac380dd",
+      "rgba8_sha256": "6841efab285a153de30bebaad4a6550107a1de719c37337a159ef07667d76777",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            2.33152174949646,
+            1.975317120552063,
+            0.9538043737411499,
+            0.8999999761581421
+          ],
+          "f32_bits_le": [
+            "0x401537a7",
+            "0x3ffcd731",
+            "0x3f742c86",
+            "0x3f666666"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            1.268550157546997,
+            1.904379963874817,
+            3.688632011413574,
+            0.949999988079071
+          ],
+          "f32_bits_le": [
+            "0x3fa25fda",
+            "0x3ff3c2b9",
+            "0x406c128c",
+            "0x3f733333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            3.4920716285705566,
+            1.4318112134933472,
+            2.448503017425537,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x405f7e1a",
+            "0x3fb74597",
+            "0x401cb446",
+            "0x3eb33333"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "sobel-amount-2.3f-alpha-zero",
+      "key": "filter/sobel:sobel",
+      "uniforms": {
+        "amount": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "alpha": {
+          "value": 0,
+          "f32_bits_le": "0x00000000"
+        }
+      },
+      "coverage": [
+        "non-default-f32-amount",
+        "alpha-zero",
+        "mix-original-path",
+        "all-nine-offsets"
+      ],
+      "f32_sha256": "f7e50759990c46d868b22bdf83241e3866b14a6406fee043b8cad46cbea6b1d8",
+      "rgba8_sha256": "05f02465cc5eacd61320b5d1b304f4b8face9993f604f540466d9582075bb3e0",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.75,
+            0.6354166865348816,
+            0.3068181872367859,
+            0.8999999761581421
+          ],
+          "f32_bits_le": [
+            "0x3f400000",
+            "0x3f22aaab",
+            "0x3e9d1746",
+            "0x3f666666"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.3400000035762787,
+            0.5104166865348816,
+            0.9886363744735718,
+            0.949999988079071
+          ],
+          "f32_bits_le": [
+            "0x3eae147b",
+            "0x3f02aaab",
+            "0x3f7d1746",
+            "0x3f733333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.9399999976158142,
+            0.3854166567325592,
+            0.6590909361839294,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3f70a3d7",
+            "0x3ec55555",
+            "0x3f28ba2f",
+            "0x3eb33333"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    }
+  ]
+}

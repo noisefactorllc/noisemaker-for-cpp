@@ -1,0 +1,38 @@
+test_task31_capability_and_type_vocabulary_are_identity_scoped_not_widened (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_capability_and_type_vocabulary_are_identity_scoped_not_widened) ... [32mok[0m
+test_task31_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission) ... [32mok[0m
+test_task31_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state) ... [31mFAIL[0m
+test_task31_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+The profile's node-walk/typing logic must itself reject. ... [32mok[0m
+test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte) ... [31mFAIL[0m
+test_task31_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15662[0m, in [35mtest_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state[0m
+    [31mself.assertEqual[0m[1;31m(126, typed.index(CURL_KEY))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m126 != 141[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15736[0m, in [35mtest_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(task30_keys) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'd31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904' != 'dd590cd43355ececfde365ba54e7a5d58f3d5622845b419b3b37baeeb9a512d9'
+- d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904
++ dd590cd43355ececfde365ba54e7a5d58f3d5622845b419b3b37baeeb9a512d9
+[0m
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.016s
+
+[1;31mFAILED[0m ([1;31mfailures=2[0m)

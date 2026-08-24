@@ -1,0 +1,140 @@
+{
+  "schema": "noisemaker-for-cpp.task32.gate-chain.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "keys": [
+    "filter/fxaa:fxaa",
+    "filter/grain:grain",
+    "filter/normalMap:normalMap",
+    "filter/snow:snow"
+  ],
+  "patch_a_description": "generalized const-global admission (validate_capabilities + _Emitter._validate_source_globals): drop float-only restriction, recurse construct-expr initializers",
+  "patch_b_description": "generalized round admission: delete the GATHER_SORTED_KEY-only identity gate in validate_capabilities and _Emitter.expression, add round to APPROVED_CAPABILITIES/_BUILTINS/_BUILTIN_NAMES by name (probe only -- not a real authenticated profile)",
+  "sanity_unpatched_baseline": [
+    [
+      "filter/fxaa:fxaa",
+      "filter/fxaa:fxaa:9:1: unsupported global declaration"
+    ],
+    [
+      "filter/grain:grain",
+      "filter/grain:grain:12:1: unsupported global declaration"
+    ],
+    [
+      "filter/normalMap:normalMap",
+      "filter/normalMap:normalMap:4:1: unsupported global declaration"
+    ],
+    [
+      "filter/snow:snow",
+      "filter/snow:snow:7:1: unsupported global declaration"
+    ]
+  ],
+  "rows": [
+    {
+      "key": "filter/fxaa:fxaa",
+      "defines": {},
+      "raw_sha256": "088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0",
+      "stage_0_unpatched": {
+        "validator": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+        "emitter": "filter/fxaa:fxaa:9:1: unsupported source global declaration",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_0_restored": true,
+      "stage_1_const_global_admission_only": {
+        "validator": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+        "emitter": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_1_restored": true,
+      "stage_2_const_global_plus_round": {
+        "validator": "pass",
+        "emitter": "pass",
+        "cpp_sha256": "22e95e4e13333fb4517ffcba28cfbb801ce8cc9b41111a3961e8d2afe6417c6d",
+        "cpp_bytes": 11746
+      },
+      "stage_2_restored": true,
+      "const_global_plus_round_sufficient": true
+    },
+    {
+      "key": "filter/grain:grain",
+      "defines": {},
+      "raw_sha256": "6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0",
+      "stage_0_unpatched": {
+        "validator": "filter/grain:grain:12:1: unsupported global declaration",
+        "emitter": "filter/grain:grain:12:1: unsupported source global declaration",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_0_restored": true,
+      "stage_1_const_global_admission_only": {
+        "validator": "filter/grain:grain:31:21: unsupported builtin round",
+        "emitter": "filter/grain:grain:31:21: unsupported builtin round",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_1_restored": true,
+      "stage_2_const_global_plus_round": {
+        "validator": "filter/grain:grain:43:14: unsupported binary operator >>",
+        "emitter": "filter/grain:grain:43:14: unsupported binary operator >>",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_2_restored": true,
+      "const_global_plus_round_sufficient": false
+    },
+    {
+      "key": "filter/normalMap:normalMap",
+      "defines": {},
+      "raw_sha256": "384312e50972f75dbebd4080cd76d1c2554a439eb36746f2e351d63a03a271cb",
+      "stage_0_unpatched": {
+        "validator": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+        "emitter": "filter/normalMap:normalMap:4:1: unsupported source global declaration",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_0_restored": true,
+      "stage_1_const_global_admission_only": {
+        "validator": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+        "emitter": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_1_restored": true,
+      "stage_2_const_global_plus_round": {
+        "validator": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+        "emitter": "filter/normalMap:normalMap:1:1: unsupported typed type ivec2[9]",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_2_restored": true,
+      "const_global_plus_round_sufficient": false
+    },
+    {
+      "key": "filter/snow:snow",
+      "defines": {},
+      "raw_sha256": "ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a",
+      "stage_0_unpatched": {
+        "validator": "filter/snow:snow:7:1: unsupported global declaration",
+        "emitter": "filter/snow:snow:7:1: unsupported source global declaration",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_0_restored": true,
+      "stage_1_const_global_admission_only": {
+        "validator": "filter/snow:snow:26:21: unsupported builtin round",
+        "emitter": "filter/snow:snow:26:21: unsupported builtin round",
+        "cpp_sha256": null,
+        "cpp_bytes": null
+      },
+      "stage_1_restored": true,
+      "stage_2_const_global_plus_round": {
+        "validator": "pass",
+        "emitter": "pass",
+        "cpp_sha256": "74f95f6e954b7e03f1e5a2fb60834296a928b8fa8a52a77c66095914ba0c4a53",
+        "cpp_bytes": 10174
+      },
+      "stage_2_restored": true,
+      "const_global_plus_round_sufficient": true
+    }
+  ]
+}

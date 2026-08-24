@@ -1,0 +1,31 @@
+test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) ... ok
+test_task27_slice_schema_has_exact_single_perlin_carrier_and_census (tests.test_typed_generator.Task27PerlinTests.test_task27_slice_schema_has_exact_single_perlin_carrier_and_census) ... ok
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... ok
+test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation) ... FAIL
+test_task30_history_coexistence_and_live_schema_matches_130_program_state (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_history_coexistence_and_live_schema_matches_130_program_state) ... ok
+test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte) ... ok
+
+======================================================================
+FAIL: test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 14057, in test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation
+    self.assertEqual((130, 128), (len(current_blocks), len(task28_blocks)))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (130, 128) != (131, 128)
+
+First differing element 0:
+130
+131
+
+- (130, 128)
+?    ^
+
++ (131, 128)
+?    ^
+
+
+----------------------------------------------------------------------
+Ran 6 tests in 381.830s
+
+FAILED (failures=1)

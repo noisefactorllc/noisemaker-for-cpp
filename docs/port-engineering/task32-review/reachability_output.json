@@ -1,0 +1,32 @@
+{
+  "primary": {
+    "total_functions": 13,
+    "reachable_count": 13,
+    "unreachable": []
+  },
+  "hslSecondary": {
+    "total_functions": 7,
+    "reachable_count": 7,
+    "unreachable": []
+  },
+  "wheels": {
+    "total_functions": 7,
+    "reachable_count": 7,
+    "unreachable": []
+  },
+  "vignette": {
+    "total_functions": 5,
+    "reachable_count": 5,
+    "unreachable": []
+  },
+  "creative": {
+    "total_functions": 6,
+    "reachable_count": 6,
+    "unreachable": []
+  },
+  "lut": {
+    "total_functions": 28,
+    "reachable_count": 28,
+    "unreachable": []
+  }
+}

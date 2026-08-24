@@ -1,0 +1,972 @@
+{
+ "classicNoisedeck/bitEffects:bitEffects": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "and",
+    "loc": "141:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "and",
+    "loc": "141:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "and",
+    "loc": "141:26",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "modi",
+    "loc": "133:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "not2",
+    "loc": "145:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "not2",
+    "loc": "145:13",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "or",
+    "loc": "137:13",
+    "operator": "|"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "or",
+    "loc": "137:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "or",
+    "loc": "137:26",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "50:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "99:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "100:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "101:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "104:19",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "xor",
+    "loc": "149:13",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "xor",
+    "loc": "149:13",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "xor",
+    "loc": "149:26",
+    "operator": "&"
+   }
+  ]
+ },
+ "classicNoisedeck/caustic:caustic": {
+  "any_reachable": false,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "pcg",
+    "loc": "39:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "195:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "196:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "197:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "200:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "classicNoisedeck/cellNoise:cellNoise": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "49:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/cellRefract:cellRefract": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "114:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/colorLab:colorLab": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "41:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/effects:effects": {
+  "any_reachable": false,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "pcg",
+    "loc": "88:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/glitch:glitch": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "35:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/kaleido:kaleido": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "92:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "158:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "159:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "160:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "163:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "classicNoisedeck/moodscape:moodscape": {
+  "any_reachable": false,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "pcg",
+    "loc": "48:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "285:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "286:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "287:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "290:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "classicNoisedeck/noise:noise": {
+  "any_reachable": false,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "124:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "125:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "126:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "129:19",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "pcg",
+    "loc": "54:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "classicNoisedeck/shapeMixer:shapeMixer": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "42:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "414:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "415:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "416:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "419:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "classicNoisedeck/shapes:shapes": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "58:7",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "122:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "123:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "124:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "127:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "filter/dither:dither": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getBayer8x8",
+    "loc": "57:9",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getBayer8x8",
+    "loc": "58:9",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getDitherThreshold",
+    "loc": "204:25",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getDitherThreshold",
+    "loc": "204:32",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getDitherThreshold",
+    "loc": "206:25",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "getDitherThreshold",
+    "loc": "206:32",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "155:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/glyphMap:glyphMap": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "glyphPixel",
+    "loc": "287:16",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "glyphPixel",
+    "loc": "287:16",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "20:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/grain:grain": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg3d",
+    "loc": "43:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg3d",
+    "loc": "43:14",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "random_from_cell_3d",
+    "loc": "52:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "random_from_cell_3d",
+    "loc": "53:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "random_from_cell_3d",
+    "loc": "54:9",
+    "operator": "^"
+   }
+  ]
+ },
+ "filter/grime:grime": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "30:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/lensWarp:lensWarp": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "22:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/lightLeak:lightLeak": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "25:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/median:median": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "packRecordBlue",
+    "loc": "24:12",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "packRecordMajor",
+    "loc": "19:24",
+    "operator": "|"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "packRecordMajor",
+    "loc": "19:24",
+    "operator": "<<"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "packRecordMajor",
+    "loc": "19:24",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "packRecordMajor",
+    "loc": "19:54",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "unpackRecordRgb",
+    "loc": "28:22",
+    "operator": "|"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "unpackRecordRgb",
+    "loc": "28:22",
+    "operator": "<<"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "unpackRecordRgb",
+    "loc": "28:40",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/octaveWarp:octaveWarp": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "25:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/osd:osd": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash2",
+    "loc": "59:16",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash3",
+    "loc": "63:16",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "main",
+    "loc": "98:56",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "54:19",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "54:19",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "54:30",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "55:13",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "55:13",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sample_glyph",
+    "loc": "72:19",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sample_glyph",
+    "loc": "72:19",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/scanlineError:scanlineError": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "226:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/spookyTicker:spookyTicker": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "48:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "48:14",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "50:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "50:14",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "52:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_mix",
+    "loc": "52:14",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sample_glyph",
+    "loc": "63:19",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sample_glyph",
+    "loc": "63:19",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "ticker_row_mask",
+    "loc": "69:37",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "ticker_row_mask",
+    "loc": "69:46",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "ticker_row_mask",
+    "loc": "78:23",
+    "operator": "^"
+   }
+  ]
+ },
+ "filter/texture:texture": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "fast_hash",
+    "loc": "68:14",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_uint",
+    "loc": "59:10",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_uint",
+    "loc": "61:10",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "hash_uint",
+    "loc": "63:10",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_directional",
+    "loc": "244:24",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_gradient",
+    "loc": "196:32",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_gradient",
+    "loc": "196:52",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_hash",
+    "loc": "187:14",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_soft",
+    "loc": "233:24",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "material_sprinkles",
+    "loc": "257:50",
+    "operator": "^"
+   }
+  ]
+ },
+ "filter/warp:warp": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "25:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/wobble:wobble": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "25:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "filter/zoomBlur:zoomBlur": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "17:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "synth/bitwise:bitwise": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "34:27",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "35:27",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "36:27",
+    "operator": "|"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "37:29",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "38:29",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "bitOp",
+    "loc": "42:9",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "main",
+    "loc": "68:9",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "main",
+    "loc": "69:9",
+    "operator": "^"
+   }
+  ]
+ },
+ "synth/gabor:gabor": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "25:10",
+    "operator": ">>"
+   }
+  ]
+ },
+ "synth/noise:noise": {
+  "any_reachable": false,
+  "sites": [
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "97:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "98:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "99:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "constantFromLatticeWithOffset",
+    "loc": "102:19",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": false,
+    "in_function": "pcg",
+    "loc": "40:7",
+    "operator": ">>"
+   }
+  ]
+ },
+ "synth/shape:shape": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "pcg",
+    "loc": "51:10",
+    "operator": ">>"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "97:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "98:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "99:10",
+    "operator": "^"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "randomFromLatticeWithOffset",
+    "loc": "102:19",
+    "operator": "^"
+   }
+  ]
+ },
+ "synth/testPattern:testPattern": {
+  "any_reachable": true,
+  "sites": [
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sampleGlyph",
+    "loc": "30:14",
+    "operator": "&"
+   },
+   {
+    "function_reachable_from_main": true,
+    "in_function": "sampleGlyph",
+    "loc": "30:14",
+    "operator": ">>"
+   }
+  ]
+ }
+}

@@ -1,0 +1,1811 @@
+{
+  "schema": "noisemaker-task14-canonical-oracles-v1",
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "node": "v24.7.0",
+  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+  "factory_hash_contract": "SHA-256 over exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key].",
+  "render_contract": "Every recorded variant was freshly bound and rendered twice; little-endian Float32 bytes and RGBA8 bytes were byte-identical between the two renders.",
+  "base": {
+    "output": {
+      "width": 9,
+      "height": 7,
+      "top_down": true
+    },
+    "time": 0.375,
+    "seed": 7,
+    "tileOffset": [
+      -7,
+      5
+    ],
+    "fullResolution": [
+      17,
+      13
+    ],
+    "canonical_binding_note": "resolution/aspect are overwritten by createCanonicalBindings; variant tileOffset/fullResolution and scalar uniforms are supplied directly."
+  },
+  "sources": {
+    "filter/pixelSort:finalize": {
+      "source": "sources/filter/pixelSort/finalize.glsl",
+      "raw_sha256": "99a84b4b2f5196788c227915b500a44542d74e5cc7cb41bbf637361ae327ad87",
+      "factory_source_sha256": "3c25fe6691615d05912cc16e68afe185132a54e57fabcc829fa94420e89e4c06",
+      "default_defines": {},
+      "const_declarations": [
+        "const float PI = literal"
+      ]
+    },
+    "filter/pixelSort:prepare": {
+      "source": "sources/filter/pixelSort/prepare.glsl",
+      "raw_sha256": "2418f2a2bb05e85a88c7b38d7a8fdf5b797d6181e829997123373d8b258ddeb2",
+      "factory_source_sha256": "167b1ca9ec538b68b29494966eb9d602077b52cfbefb24e0af60d643d8924d14",
+      "default_defines": {},
+      "const_declarations": [
+        "const float PI = literal"
+      ]
+    },
+    "filter/skew:skew": {
+      "source": "sources/filter/skew/skew.glsl",
+      "raw_sha256": "4eb375b32775efa3fc34a07a539350b41576932c344c3b082c2fabcd51f56480",
+      "factory_source_sha256": "08d5bc91fd1bfe32b949018feb5c3d64c3a1608310c13af10077173616a274fc",
+      "default_defines": {},
+      "const_declarations": [
+        "const float PI = literal"
+      ]
+    },
+    "filter/tetraCosine:tetraCosine": {
+      "source": "sources/filter/tetraCosine/tetraCosine.glsl",
+      "raw_sha256": "538f13b472519cc521b5d30dbd72a799c7fa46a820691ab88117aff4d93f0ffd",
+      "factory_source_sha256": "4491618b2f215c23260fa75d3f478cd3f2847239f6fb73920d37060718c467f3",
+      "default_defines": {},
+      "const_declarations": [
+        "const float TAU = literal"
+      ]
+    },
+    "filter/tile:tile": {
+      "source": "sources/filter/tile/tile.glsl",
+      "raw_sha256": "ff85419a24f0cdcc7f12334885cb87bca74a51cf6617ab549d3ebdc6d34e03a7",
+      "factory_source_sha256": "c86a2d3f9054cbe4671ccfa3cf7354beacb625e159509eeb712327f3c417b60c",
+      "default_defines": {},
+      "const_declarations": [
+        "const float PI = literal",
+        "const float TAU = literal"
+      ]
+    },
+    "synth/osc2d:osc2d": {
+      "source": "sources/synth/osc2d/osc2d.glsl",
+      "raw_sha256": "e25335112291f2b3f7e9e7f5803948b602a44058bb10c20f835c461f0b6a3512",
+      "factory_source_sha256": "23746f79e8cb7dfd3a738d417b0ba8754f3fe946294904b56c67edd0dab4e470",
+      "default_defines": {},
+      "const_declarations": [
+        "const float PI = literal",
+        "const float TAU = literal"
+      ]
+    }
+  },
+  "fixture_contract": {
+    "surface_api": "Surface.fromRgba8(width,height,bytes), top-down storage; canonical nearest texture sampling uses bottom-left shader coordinates.",
+    "byte_formula": "r=(31*x+17*y+13*tag)&255; g=(11*x+47*y+29*tag)&255; b=(67*x+19*y+7*tag)&255; a=(255-23*x-37*y-5*tag)&255.",
+    "textures": {
+      "formula_tag1_5x3": {
+        "width": 5,
+        "height": 3,
+        "tag": 1
+      },
+      "formula_tag23_4x6": {
+        "width": 4,
+        "height": 6,
+        "tag": 23
+      },
+      "formula_tag37_7x2": {
+        "width": 7,
+        "height": 2,
+        "tag": 37
+      },
+      "formula_tag53_3x5": {
+        "width": 3,
+        "height": 5,
+        "tag": 53
+      }
+    },
+    "probe_layout": {
+      "pixel_indices": [
+        0,
+        31,
+        62
+      ],
+      "lanes": "RGBA little-endian Float32 bit hex; 12 lane probes per variant"
+    }
+  },
+  "coverage": {
+    "pixelSort": "prepare and finalize: wrap 0/1/2 and non-enum fallback, darkest false/true, alpha 0/interior/1, angles, both sampler routes",
+    "skew": "wrap 0/1/2 and fallback, signed rotation, oversized skew clamp, negative tile offsets",
+    "tetraCosine": "colorMode 0/1/2/3 and fallback; rotation -1/0/1 and fallback; alpha 0/interior/1",
+    "tile": "symmetry 0/1/2/3 and fallback; aspectLens false/true; non-square tile/full resolution",
+    "osc2d": "oscType 0..6 and fallback; signed rotation, time/speed/seed, negative coordinates, fullResolution<1 fallback"
+  },
+  "variants": [
+    {
+      "key": "filter/pixelSort:prepare",
+      "variant": "mirror_light",
+      "coverage": "wrap=0 mirror, darkest=false, negative rotation, top-down non-square sampler",
+      "bindings": {
+        "angled": -135,
+        "darkest": false,
+        "wrap": 0
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "0a8ceedcfccedaf760c957e4afa9bf479176af4bd7b7c6515a3a71954ce8718f",
+      "rgba8_sha256": "c569eb38d5413cd4bc646aa5521ebf59665fe0de5353fb4aa0f2dcd17b768d13",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "62": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:prepare",
+      "variant": "repeat_dark",
+      "coverage": "wrap=1 repeat, darkest=true, right-angle rotation",
+      "bindings": {
+        "angled": 90,
+        "darkest": true,
+        "wrap": 1
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag23_4x6"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "131e7dfef2a898a9f85031fcfff189289b1e01ea378ce866e71ea66ffc344e01",
+      "rgba8_sha256": "7f209b7bfe08e1d0720fe5a61c6dffc4d6a5ff989dad1e8c11e92a6118c17150",
+      "probes": {
+        "0": [
+          "3f24a4a4",
+          "3e28a8a8",
+          "3d008080",
+          "3ea0a0a1"
+        ],
+        "31": [
+          "3e828282",
+          "3ec6c6c6",
+          "3ef2f2f2",
+          "3f25a5a6"
+        ],
+        "62": [
+          "3e888888",
+          "3f36b6b6",
+          "3eb8b8b8",
+          "3f58d8d9"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:prepare",
+      "variant": "clamp_light",
+      "coverage": "wrap=2 clamp, darkest=false, boundary angle",
+      "bindings": {
+        "angled": 180,
+        "darkest": false,
+        "wrap": 2
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag37_7x2"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "b76c475bfa0e291e62f6b421b5285943916ab351f86d36908e332736085c8a25",
+      "rgba8_sha256": "96fabba10b774bdc8a138284fa5d09dd26a4c7f327d1bf8d75d85cacd85563aa",
+      "probes": {
+        "0": [
+          "3f2cacad",
+          "3f22a2a3",
+          "3f28a8a9",
+          "3f179798"
+        ],
+        "31": [
+          "3e40c0c1",
+          "3eececed",
+          "3f1c9c9d",
+          "3f73f3f4"
+        ],
+        "62": [
+          "3f61e1e2",
+          "3e44c4c5",
+          "3c40c0c1",
+          "3e8c8c8d"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:prepare",
+      "variant": "fallback_dark",
+      "coverage": "wrap=9 explicit else fallback, darkest=true",
+      "bindings": {
+        "angled": 37,
+        "darkest": true,
+        "wrap": 9
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag53_3x5"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "4b69f901c518105ff2d6798ed48047c67d41d992da41f2e79657fe480b96eac2",
+      "rgba8_sha256": "b6c8779d542d7583f138d6e2ed0f9b90b68106ec2f3bab188f167fa69711ff27",
+      "probes": {
+        "0": [
+          "3d808080",
+          "3f68e8e9",
+          "3cc0c0c0",
+          "3f48c8c9"
+        ],
+        "31": [
+          "3f5dddde",
+          "3eb6b6b6",
+          "3f4dcdce",
+          "3eb2b2b3"
+        ],
+        "62": [
+          "3f4ccccd",
+          "3e30b0b0",
+          "3f3ababa",
+          "3e50d0d1"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:finalize",
+      "variant": "mirror_alpha0_light",
+      "coverage": "inputTex/originalTex routing, wrap=0, alpha=0, darkest=false",
+      "bindings": {
+        "angled": -135,
+        "darkest": false,
+        "wrap": 0,
+        "alpha": 0
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3",
+        "originalTex": "formula_tag23_4x6"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "1b0593e51b28ab476dbf6a18b9604ddcf4c66a9195494217e159c8a3328a6a12",
+      "rgba8_sha256": "3851d1e562a4c12e3488f64cfddda54a00e4d931fad15375531b3fd20d5f5f9f",
+      "probes": {
+        "0": [
+          "3edadadb",
+          "3f119192",
+          "3f33b3b4",
+          "3f0c8c8d"
+        ],
+        "31": [
+          "3eb8b8b9",
+          "3ec4c4c5",
+          "3f20a0a1",
+          "3da0a0a1"
+        ],
+        "62": [
+          "3e969697",
+          "3e4ccccd",
+          "3f0d8d8e",
+          "3f0e8e8f"
+        ]
+      },
+      "alpha_expectation": "output alpha is originalTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:finalize",
+      "variant": "repeat_alpha073_dark",
+      "coverage": "inputTex/originalTex routing, wrap=1, alpha=0.73, darkest=true",
+      "bindings": {
+        "angled": 90,
+        "darkest": true,
+        "wrap": 1,
+        "alpha": 0.7300000190734863
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag23_4x6",
+        "originalTex": "formula_tag37_7x2"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "dc1826ca488bc3026577512a182f65dbccf1602916c05b828ed14dcbfe963b34",
+      "rgba8_sha256": "a2f6d509c9aea159f0bc1a903d8ad0e8c9b3439438c4dca59da1487257e66799",
+      "probes": {
+        "0": [
+          "3f2dadae",
+          "3ed20f80",
+          "3e8ea31e",
+          "3e8c8c8d"
+        ],
+        "31": [
+          "3e949494",
+          "3f0136f9",
+          "3f5a9fbe",
+          "3b808081"
+        ],
+        "62": [
+          "3e9a9a9c",
+          "3f3bd801",
+          "3f403dae",
+          "3f179798"
+        ]
+      },
+      "alpha_expectation": "output alpha is originalTex alpha after darkest branch"
+    },
+    {
+      "key": "filter/pixelSort:finalize",
+      "variant": "clamp_alpha1_light",
+      "coverage": "wrap=2 clamp, alpha=1, darkest=false",
+      "bindings": {
+        "angled": 180,
+        "darkest": false,
+        "wrap": 2,
+        "alpha": 1
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag37_7x2",
+        "originalTex": "formula_tag53_3x5"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "24a09c07a4148595689bcf43c3902d74a2d2a9f014a8657cdf446837f2a4431b",
+      "rgba8_sha256": "d152a2ba82e1c22dc6579791c346a22eacb26074a02956f155e519071790b4ed",
+      "probes": {
+        "0": [
+          "3f31b1b2",
+          "3f22a2a3",
+          "3f28a8a9",
+          "3f76f6f7"
+        ],
+        "31": [
+          "3f72f2f3",
+          "3eececed",
+          "3f5cdcdd",
+          "3f159596"
+        ],
+        "62": [
+          "3f61e1e2",
+          "3f53d3d4",
+          "3e8a8a8b",
+          "3e50d0d1"
+        ]
+      },
+      "alpha_expectation": "output alpha is originalTex alpha"
+    },
+    {
+      "key": "filter/pixelSort:finalize",
+      "variant": "fallback_alpha027_dark",
+      "coverage": "wrap=9 else fallback, alpha=0.27, darkest=true",
+      "bindings": {
+        "angled": 37,
+        "darkest": true,
+        "wrap": 9,
+        "alpha": 0.27000001072883606
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag53_3x5",
+        "originalTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "ed8222b9f64a1583c92e0c53cdce173de882a96605c4c07c3f699027f2c5fb0d",
+      "rgba8_sha256": "ed32b1962235fc45c5e990228d0894fef4eb4eee6de16bc0f45f512d903cd139",
+      "probes": {
+        "0": [
+          "3f31b1b2",
+          "3b808080",
+          "3ee6e6e8",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f53d142",
+          "3db8b8b8",
+          "3f663fda",
+          "3f27a7a8"
+        ],
+        "62": [
+          "3f693b27",
+          "3db8b8b8",
+          "3f4a5492",
+          "3ea8a8a9"
+        ]
+      },
+      "alpha_expectation": "output alpha is originalTex alpha after inversion"
+    },
+    {
+      "key": "filter/skew:skew",
+      "variant": "clamp_negative_tile",
+      "coverage": "wrap=0 clamp with negative tile offset and large negative rotation",
+      "bindings": {
+        "skewAmt": -0.3700000047683716,
+        "rotation": -137,
+        "wrap": 0,
+        "renderScale": 0.7300000190734863
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "610b8ab6df51313714ba5612f5e8e2d040f4da2433e10bddc20f7eaa7ac7bda2",
+      "rgba8_sha256": "756cc64824bb72e78e353e99ad88384594eec4f0b9cd3c02177b73848a01a45e",
+      "probes": {
+        "0": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/skew:skew",
+      "variant": "mirror_clamped_skew",
+      "coverage": "wrap=1 mirror; skewAmt exceeds maxSkew and must clamp",
+      "bindings": {
+        "skewAmt": 100,
+        "rotation": 0,
+        "wrap": 1,
+        "renderScale": 1.909999966621399
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag23_4x6"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "9cdb125d385482514889fa80be62770d785260b5006860270ffc069c9c670609",
+      "rgba8_sha256": "c4297edeb35c615ed5270c22b4e4b3b0e504a55c4b29e788f5d1effc7982b0ff",
+      "probes": {
+        "0": [
+          "3ed2d2d3",
+          "3f31b1b2",
+          "3e1c9c9d",
+          "3ebcbcbd"
+        ],
+        "31": [
+          "3f2aaaab",
+          "3dd0d0d1",
+          "3f109091",
+          "3f7dfdfe"
+        ],
+        "62": [
+          "3f1f9fa0",
+          "3f119192",
+          "3e868687",
+          "3f3cbcbd"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/skew:skew",
+      "variant": "repeat_positive",
+      "coverage": "wrap=2 repeat with positive skew and rotation",
+      "bindings": {
+        "skewAmt": 0.7099999785423279,
+        "rotation": 123,
+        "wrap": 2,
+        "renderScale": 1
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag37_7x2"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "1505e465f13ddc9afeef8fe9e8011b0190b59ca281d5d281988b080cb77dfcf4",
+      "rgba8_sha256": "e97d9b0e849345ab1281c33308de4c81e4ed42609716f4c876bffc25a5126787",
+      "probes": {
+        "0": [
+          "3df8f8f9",
+          "3e8e8e8f",
+          "3f09898a",
+          "3dc0c0c1"
+        ],
+        "31": [
+          "3f1b9b9c",
+          "3ee6e6e7",
+          "3f159596",
+          "3f3cbcbd"
+        ],
+        "62": [
+          "3df8f8f9",
+          "3e8e8e8f",
+          "3f09898a",
+          "3dc0c0c1"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/skew:skew",
+      "variant": "fallback_repeat",
+      "coverage": "wrap=-4 explicit else/repeat fallback",
+      "bindings": {
+        "skewAmt": -100,
+        "rotation": 179,
+        "wrap": -4,
+        "renderScale": 0.5
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag53_3x5"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "c3f866c545e8a92f0facfb07f3f39546b06a486951f6d6fdfce7b11579ffdaab",
+      "rgba8_sha256": "e15c48c14eff1ddf40713be881260a1aa238cb9e6580498debd36c6bd1c586e5",
+      "probes": {
+        "0": [
+          "3f61e1e2",
+          "3e6ceced",
+          "3f49c9ca",
+          "3f3ababb"
+        ],
+        "31": [
+          "3c40c0c1",
+          "3f19999a",
+          "3f6feff0",
+          "3ee0e0e1"
+        ],
+        "62": [
+          "3f6feff0",
+          "3db8b8b9",
+          "3f79f9fa",
+          "3f48c8c9"
+        ]
+      },
+      "alpha_expectation": "preserves sampled inputTex alpha"
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "variant": "rgb_static_alpha0",
+      "coverage": "colorMode=0 RGB, rotation=0, alpha endpoint 0",
+      "bindings": {
+        "colorMode": 0,
+        "rotation": 0,
+        "alpha": 0,
+        "offsetR": 0.10999999940395355,
+        "offsetG": 0.4300000071525574,
+        "offsetB": 0.7900000214576721,
+        "ampR": 0.8700000047683716,
+        "ampG": 0.6100000143051147,
+        "ampB": 0.28999999165534973,
+        "freqR": 1,
+        "freqG": 3,
+        "freqB": 4,
+        "phaseR": 0.07000000029802322,
+        "phaseG": 0.33000001311302185,
+        "phaseB": 0.8100000023841858,
+        "repeat": 2.700000047683716,
+        "offset": 0.1899999976158142
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66",
+      "rgba8_sha256": "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "alpha_expectation": "inputTex alpha retained exactly"
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "variant": "hsv_backward",
+      "coverage": "colorMode=1 HSV hue sectors, rotation=-1 animation",
+      "bindings": {
+        "colorMode": 1,
+        "rotation": -1,
+        "alpha": 0.4099999964237213,
+        "offsetR": 0.10999999940395355,
+        "offsetG": 0.4300000071525574,
+        "offsetB": 0.7900000214576721,
+        "ampR": 0.8700000047683716,
+        "ampG": 0.6100000143051147,
+        "ampB": 0.28999999165534973,
+        "freqR": 1,
+        "freqG": 3,
+        "freqB": 4,
+        "phaseR": 0.07000000029802322,
+        "phaseG": 0.33000001311302185,
+        "phaseB": 0.8100000023841858,
+        "repeat": 2.700000047683716,
+        "offset": 0.1899999976158142
+      },
+      "overrides": {
+        "time": 0.875,
+        "seed": 7,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag23_4x6"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "ea22015f2ef3c53edaddf5fa6a41a1e69b824dcea8aef61efa851fcbc633622d",
+      "rgba8_sha256": "7cd16bb3a3519e49bdb849692905d104697ae4243da91fd0c2de6e622c389652",
+      "probes": {
+        "0": [
+          "3eda8cd7",
+          "3f2f9d3d",
+          "3f332b09",
+          "3f0c8c8d"
+        ],
+        "31": [
+          "3f1ba2bc",
+          "3dd287d8",
+          "3ecba875",
+          "3f7dfdfe"
+        ],
+        "62": [
+          "3f6bdc80",
+          "3f4be05b",
+          "3f6003db",
+          "3f0e8e8f"
+        ]
+      },
+      "alpha_expectation": "inputTex alpha retained exactly"
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "variant": "oklab_forward_alpha1",
+      "coverage": "colorMode=2 OkLab, rotation=1 animation, alpha endpoint 1",
+      "bindings": {
+        "colorMode": 2,
+        "rotation": 1,
+        "alpha": 1,
+        "offsetR": 0.10999999940395355,
+        "offsetG": 0.4300000071525574,
+        "offsetB": 0.7900000214576721,
+        "ampR": 0.8700000047683716,
+        "ampG": 0.6100000143051147,
+        "ampB": 0.28999999165534973,
+        "freqR": 1,
+        "freqG": 3,
+        "freqB": 4,
+        "phaseR": 0.07000000029802322,
+        "phaseG": 0.33000001311302185,
+        "phaseB": 0.8100000023841858,
+        "repeat": 2.700000047683716,
+        "offset": 0.1899999976158142
+      },
+      "overrides": {
+        "time": 0.625,
+        "seed": 7,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag37_7x2"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "2416059647cfb69c340dcb4c869f26a3f6dd92dc2164b4902691c572048b308a",
+      "rgba8_sha256": "997b17922a9430c278738815712c5397179782a4622c758689f60c8cd665ef4d",
+      "probes": {
+        "0": [
+          "3e07abcc",
+          "3e404bf0",
+          "00000000",
+          "3e8c8c8d"
+        ],
+        "31": [
+          "00000000",
+          "3bffdbd5",
+          "00000000",
+          "3f6aeaeb"
+        ],
+        "62": [
+          "00000000",
+          "3e6ae0de",
+          "00000000",
+          "3f179798"
+        ]
+      },
+      "alpha_expectation": "inputTex alpha retained exactly"
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "variant": "oklch_static",
+      "coverage": "colorMode=3 OKLCH, rotation=0",
+      "bindings": {
+        "colorMode": 3,
+        "rotation": 0,
+        "alpha": 0.7799999713897705,
+        "offsetR": 0.10999999940395355,
+        "offsetG": 0.4300000071525574,
+        "offsetB": 0.7900000214576721,
+        "ampR": 0.8700000047683716,
+        "ampG": 0.6100000143051147,
+        "ampB": 0.28999999165534973,
+        "freqR": 1,
+        "freqG": 3,
+        "freqB": 4,
+        "phaseR": 0.07000000029802322,
+        "phaseG": 0.33000001311302185,
+        "phaseB": 0.8100000023841858,
+        "repeat": 2.700000047683716,
+        "offset": 0.1899999976158142
+      },
+      "overrides": {
+        "time": 1.125,
+        "seed": 7,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag53_3x5"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "0754705dd4912ee71d140199748e39366c780cb1ee0d7f83ee4a811d7009d943",
+      "rgba8_sha256": "37d73498ed162e762ad727491cf4e4c71b71ebf1082e6a18c74c100f97f94642",
+      "probes": {
+        "0": [
+          "3e1c5ef0",
+          "3f47e69e",
+          "3f611447",
+          "3f76f6f7"
+        ],
+        "31": [
+          "00000000",
+          "3d775dc7",
+          "3d5caab4",
+          "3f23a3a4"
+        ],
+        "62": [
+          "3ea0c83d",
+          "3ee77551",
+          "3ea8bbb5",
+          "3e50d0d1"
+        ]
+      },
+      "alpha_expectation": "inputTex alpha retained exactly"
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "variant": "fallback_rgb",
+      "coverage": "colorMode=9 and rotation=9 each take authored else/static fallback",
+      "bindings": {
+        "colorMode": 9,
+        "rotation": 9,
+        "alpha": 0.23000000417232513,
+        "offsetR": 0.10999999940395355,
+        "offsetG": 0.4300000071525574,
+        "offsetB": 0.7900000214576721,
+        "ampR": 0.8700000047683716,
+        "ampG": 0.6100000143051147,
+        "ampB": 0.28999999165534973,
+        "freqR": 1,
+        "freqG": 3,
+        "freqB": 4,
+        "phaseR": 0.07000000029802322,
+        "phaseG": 0.33000001311302185,
+        "phaseB": 0.8100000023841858,
+        "repeat": 2.700000047683716,
+        "offset": 0.1899999976158142
+      },
+      "overrides": {
+        "time": 1.75,
+        "seed": 7,
+        "tileOffset": [
+          -17,
+          -3
+        ],
+        "fullResolution": [
+          37,
+          21
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "b8e795e4f93a59e0bc297f86b627f222196c82e3510249ae45815d4c1e518400",
+      "rgba8_sha256": "8d69403bfa852d5539953cee28bec937ba8e8ec7f76ab34eaae4ceebc4232550",
+      "probes": {
+        "0": [
+          "3d20c9c0",
+          "3db3572e",
+          "3e0b8e59",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f08f3cc",
+          "3e6564ed",
+          "3e8295a7",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f35966a",
+          "3f2e7b90",
+          "3ec70004",
+          "3ea8a8a9"
+        ]
+      },
+      "alpha_expectation": "inputTex alpha retained exactly"
+    },
+    {
+      "key": "filter/tile:tile",
+      "variant": "mirrorXY_aspect",
+      "coverage": "symmetry=0 mirrorXY with aspectLens=true",
+      "bindings": {
+        "symmetry": 0,
+        "aspectLens": true,
+        "scale": 0.3700000047683716,
+        "offsetX": -0.6100000143051147,
+        "offsetY": 0.4399999976158142,
+        "angle": 17,
+        "repeat": 2.299999952316284
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "9bb196ff6cc417b80b7ab5ee02dc5c60e7188c2f139896d916e952f7eea838f4",
+      "rgba8_sha256": "736b056673923560ba11232e57395da0d319ab941f3e03609ab11e32d92b27c8",
+      "probes": {
+        "0": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3f800000"
+        ],
+        "31": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f800000"
+        ],
+        "62": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces output alpha to 1"
+    },
+    {
+      "key": "filter/tile:tile",
+      "variant": "rotate2_noaspect",
+      "coverage": "symmetry=1 rotational fold n=2 with aspectLens=false",
+      "bindings": {
+        "symmetry": 1,
+        "aspectLens": false,
+        "scale": 1.7100000381469727,
+        "offsetX": 0.8299999833106995,
+        "offsetY": -0.28999999165534973,
+        "angle": 113,
+        "repeat": 4.699999809265137
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag23_4x6"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "bd86f4ab25bba960358076ef72d67f917536da4be08158fb0c947976c202b532",
+      "rgba8_sha256": "c6981da919b1299640540d23a14068684ce343914fd50f6f18ee27ee3bebc90f",
+      "probes": {
+        "0": [
+          "3f19999a",
+          "3f6bebec",
+          "3efafafb",
+          "3f800000"
+        ],
+        "31": [
+          "3ef4f4f5",
+          "3f60e0e1",
+          "3e68e8e9",
+          "3f800000"
+        ],
+        "62": [
+          "3f088889",
+          "3f3cbcbd",
+          "3ed4d4d5",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces output alpha to 1"
+    },
+    {
+      "key": "filter/tile:tile",
+      "variant": "rotate4_aspect",
+      "coverage": "symmetry=2 rotational fold n=4 with aspectLens=true",
+      "bindings": {
+        "symmetry": 2,
+        "aspectLens": true,
+        "scale": 0.9200000166893005,
+        "offsetX": -0.14000000059604645,
+        "offsetY": 0.6700000166893005,
+        "angle": 251,
+        "repeat": 6.099999904632568
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag37_7x2"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "bc56b006a97b321546ec6c0782df8456856b6fc737d486e5484d04c9eb52181c",
+      "rgba8_sha256": "53394df61061b45f08fb139fbaa58c83aad888dc3cd5ee1e40388f7d2bdb7daa",
+      "probes": {
+        "0": [
+          "3ef8f8f9",
+          "3ed0d0d1",
+          "3ea4a4a5",
+          "3f800000"
+        ],
+        "31": [
+          "3e78f8f9",
+          "3ea4a4a5",
+          "3f4ccccd",
+          "3f800000"
+        ],
+        "62": [
+          "3ef8f8f9",
+          "3ed0d0d1",
+          "3ea4a4a5",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces output alpha to 1"
+    },
+    {
+      "key": "filter/tile:tile",
+      "variant": "hex_rotate6_noaspect",
+      "coverage": "symmetry=3 hex/rotational fold n=6 with aspectLens=false",
+      "bindings": {
+        "symmetry": 3,
+        "aspectLens": false,
+        "scale": 2.2699999809265137,
+        "offsetX": 0.3799999952316284,
+        "offsetY": -0.7300000190734863,
+        "angle": 329,
+        "repeat": 3.4000000953674316
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag53_3x5"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "160e93744880b320c3765a9b1b22c1749a7e7bc66db5ff78ed772950a5488976",
+      "rgba8_sha256": "7a368244394c0fcc060b3802a4bad4b3caf228de7d545fb9feeb316ef9ff6459",
+      "probes": {
+        "0": [
+          "3f72f2f3",
+          "3ed4d4d5",
+          "3f5cdcdd",
+          "3f800000"
+        ],
+        "31": [
+          "3d888889",
+          "3eeaeaeb",
+          "3df8f8f9",
+          "3f800000"
+        ],
+        "62": [
+          "3f72f2f3",
+          "3ed4d4d5",
+          "3f5cdcdd",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces output alpha to 1"
+    },
+    {
+      "key": "filter/tile:tile",
+      "variant": "fallback_rotate4",
+      "coverage": "symmetry=9 takes square-tiling final else/rotate4 fallback",
+      "bindings": {
+        "symmetry": 9,
+        "aspectLens": true,
+        "scale": 0.5799999833106995,
+        "offsetX": 0.9100000262260437,
+        "offsetY": 0.11999999731779099,
+        "angle": 71,
+        "repeat": 8.600000381469727
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 7,
+        "tileOffset": [
+          -17,
+          -3
+        ],
+        "fullResolution": [
+          37,
+          21
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "formula_tag1_5x3"
+      },
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "2c86df0be7b67a91f291a4559fd8d79f727b69da38faad5d4b527f9321541af6",
+      "rgba8_sha256": "44a972f60fcb01e9691918fa792a1467b83391374c62f21d5e8867f1072806e0",
+      "probes": {
+        "0": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3f800000"
+        ],
+        "31": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3f800000"
+        ],
+        "62": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces output alpha to 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "sine",
+      "coverage": "oscType=0 sine",
+      "bindings": {
+        "oscType": 0,
+        "frequency": 3,
+        "speed": 0,
+        "rotation": -137
+      },
+      "overrides": {
+        "time": 0,
+        "seed": 7,
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "3d0bfb246f96bd368c74b278ac196caf115ba13ac604a256487992ada8b4fa03",
+      "rgba8_sha256": "4c9320618debef0e689ff75c2c94d006987b22e71073698db7c02fc6292b261d",
+      "probes": {
+        "0": [
+          "3f7f5834",
+          "3f7f5834",
+          "3f7f5834",
+          "3f800000"
+        ],
+        "31": [
+          "3f692e4b",
+          "3f692e4b",
+          "3f692e4b",
+          "3f800000"
+        ],
+        "62": [
+          "3f361fa6",
+          "3f361fa6",
+          "3f361fa6",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "linear",
+      "coverage": "oscType=1 triangle/linear",
+      "bindings": {
+        "oscType": 1,
+        "frequency": 5,
+        "speed": 2.5,
+        "rotation": -45
+      },
+      "overrides": {
+        "time": 0.375,
+        "seed": 19,
+        "tileOffset": [
+          11,
+          -4
+        ],
+        "fullResolution": [
+          29,
+          17
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "0a8f1f1176f3a08c13c391a4cb65a40ade56dfe8f37e23ab4a35374384fb9661",
+      "rgba8_sha256": "c2c4520a15b3a63c7df06fc34d90ef86635296fd8c4397b9344beb75b2124570",
+      "probes": {
+        "0": [
+          "3ea3beec",
+          "3ea3beec",
+          "3ea3beec",
+          "3f800000"
+        ],
+        "31": [
+          "3e3a5ed0",
+          "3e3a5ed0",
+          "3e3a5ed0",
+          "3f800000"
+        ],
+        "62": [
+          "3f2f0ed4",
+          "3f2f0ed4",
+          "3f2f0ed4",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "saw",
+      "coverage": "oscType=2 sawtooth",
+      "bindings": {
+        "oscType": 2,
+        "frequency": 7,
+        "speed": 4.25,
+        "rotation": 0
+      },
+      "overrides": {
+        "time": 0.875,
+        "seed": 37,
+        "tileOffset": [
+          -13,
+          9
+        ],
+        "fullResolution": [
+          23,
+          19
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "16bf15e0500ab4b685d92fe51a9f2301f44eaa56e8daabaa4f03fe1b875d6a6e",
+      "rgba8_sha256": "116f3bcee7193882d637f80e80b34d6d92a5f00a8378b485b2d56c44b8b0bb5a",
+      "probes": {
+        "0": [
+          "3f6de50c",
+          "3f6de50c",
+          "3f6de50c",
+          "3f800000"
+        ],
+        "31": [
+          "3f52f286",
+          "3f52f286",
+          "3f52f286",
+          "3f800000"
+        ],
+        "62": [
+          "3f380000",
+          "3f380000",
+          "3f380000",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "saw_inverse",
+      "coverage": "oscType=3 inverted sawtooth",
+      "bindings": {
+        "oscType": 3,
+        "frequency": 11,
+        "speed": 1.5,
+        "rotation": 67
+      },
+      "overrides": {
+        "time": 1.125,
+        "seed": 61,
+        "tileOffset": [
+          5,
+          -11
+        ],
+        "fullResolution": [
+          31,
+          13
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "c3bf2586c7294ef362a06a46d5bbe3f1c099ce085d64cb7ca1e6dc6420db3b49",
+      "rgba8_sha256": "589043f6e20d86f79963741190f30cc5fb7f6b5df661aba097a94f8a5f89f728",
+      "probes": {
+        "0": [
+          "3e186a58",
+          "3e186a58",
+          "3e186a58",
+          "3f800000"
+        ],
+        "31": [
+          "3eebf8ee",
+          "3eebf8ee",
+          "3eebf8ee",
+          "3f800000"
+        ],
+        "62": [
+          "3f45de58",
+          "3f45de58",
+          "3f45de58",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "square",
+      "coverage": "oscType=4 square threshold",
+      "bindings": {
+        "oscType": 4,
+        "frequency": 13,
+        "speed": 3.75,
+        "rotation": 179
+      },
+      "overrides": {
+        "time": 1.75,
+        "seed": 83,
+        "tileOffset": [
+          -17,
+          -3
+        ],
+        "fullResolution": [
+          37,
+          21
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "c415113794700179b9c794b7cba5572b16bc04b7ab7ad6fd4f9239d68b7687e7",
+      "rgba8_sha256": "8953dc58857c436bae5206d5ddaac64fb40f70ae82e94dcb57ca4157de7f3ca5",
+      "probes": {
+        "0": [
+          "3f800000",
+          "3f800000",
+          "3f800000",
+          "3f800000"
+        ],
+        "31": [
+          "3f800000",
+          "3f800000",
+          "3f800000",
+          "3f800000"
+        ],
+        "62": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "noise1d_resolution_fallback",
+      "coverage": "oscType=5 noise1d scrolling and fullResolution<1 fallback",
+      "bindings": {
+        "oscType": 5,
+        "frequency": 17,
+        "speed": 5.5,
+        "rotation": -91
+      },
+      "overrides": {
+        "time": 0.625,
+        "seed": 101,
+        "tileOffset": [
+          -19,
+          7
+        ],
+        "fullResolution": [
+          0,
+          0
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "4b54a28e78e2497e7992c9a04d31528bae33b1e55a050d56caa587bc0aaed6e7",
+      "rgba8_sha256": "28daee9425522af780767abebb66850acbde072a7432a7f329fcfa34bef5eaa2",
+      "probes": {
+        "0": [
+          "3e6ff3aa",
+          "3e6ff3aa",
+          "3e6ff3aa",
+          "3f800000"
+        ],
+        "31": [
+          "3f687a52",
+          "3f687a52",
+          "3f687a52",
+          "3f800000"
+        ],
+        "62": [
+          "3f678264",
+          "3f678264",
+          "3f678264",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "noise2d",
+      "coverage": "oscType=6 noise2d periodic branch",
+      "bindings": {
+        "oscType": 6,
+        "frequency": 23,
+        "speed": 7.25,
+        "rotation": 31
+      },
+      "overrides": {
+        "time": 0.9375,
+        "seed": 251,
+        "tileOffset": [
+          9,
+          -15
+        ],
+        "fullResolution": [
+          41,
+          27
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "ad76c4e9256f71d664e126e8ea4ee91dc3aee60f0b9ba2dd92d0c777bb64cb7b",
+      "rgba8_sha256": "8666cb93f507308b60424089005b684b5d84214f7e6bd6ef83ef4802d961847c",
+      "probes": {
+        "0": [
+          "3f2a8491",
+          "3f2a8491",
+          "3f2a8491",
+          "3f800000"
+        ],
+        "31": [
+          "3f359a15",
+          "3f359a15",
+          "3f359a15",
+          "3f800000"
+        ],
+        "62": [
+          "3f4229e0",
+          "3f4229e0",
+          "3f4229e0",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "variant": "fallback_noise2d",
+      "coverage": "oscType=9 authored final else/noise2d fallback",
+      "bindings": {
+        "oscType": 9,
+        "frequency": 29,
+        "speed": 9.75,
+        "rotation": 143
+      },
+      "overrides": {
+        "time": 1.375,
+        "seed": 503,
+        "tileOffset": [
+          -23,
+          -9
+        ],
+        "fullResolution": [
+          43,
+          31
+        ]
+      },
+      "texture_fixture_ids": {},
+      "dimensions": {
+        "width": 9,
+        "height": 7,
+        "top_down": true
+      },
+      "f32_sha256": "203bd767c621c1255aa9f0a3eec757c7f01b105cc52f21e28b4dd2b34ba8c802",
+      "rgba8_sha256": "874ae97afa8a6e16971eb36f6b12fd73555b8af8975b6eeff288b930761a6232",
+      "probes": {
+        "0": [
+          "3ec18727",
+          "3ec18727",
+          "3ec18727",
+          "3f800000"
+        ],
+        "31": [
+          "3f7ae1e1",
+          "3f7ae1e1",
+          "3f7ae1e1",
+          "3f800000"
+        ],
+        "62": [
+          "3b8269c0",
+          "3b8269c0",
+          "3b8269c0",
+          "3f800000"
+        ]
+      },
+      "alpha_expectation": "forces grayscale alpha 1"
+    }
+  ]
+}

@@ -1,0 +1,2175 @@
+[
+  {
+    "key": "classicNoisedeck/bitEffects:bitEffects",
+    "globals": [
+      {
+        "name": "BIT_COUNT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 129
+      },
+      {
+        "name": "mask",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "binary(binary(literal,const-ref:BIT_COUNT),literal)",
+        "line": 130
+      }
+    ],
+    "reads": [
+      "mask"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/adjust:adjust",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 16
+      },
+      {
+        "name": "fwdA",
+        "storage": "const",
+        "type": "mat3",
+        "kind": "matrix",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal,literal,unary(literal),unary(literal),literal,unary(literal),unary(literal))",
+        "line": 62
+      },
+      {
+        "name": "fwdB",
+        "storage": "const",
+        "type": "mat3",
+        "kind": "matrix",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,unary(literal),unary(literal),unary(literal),literal,unary(literal),literal,unary(literal),literal)",
+        "line": 66
+      }
+    ],
+    "reads": [
+      "TAU",
+      "fwdA",
+      "fwdB"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/bloom:ntapGather",
+    "globals": [
+      {
+        "name": "MAX_TAPS",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      },
+      {
+        "name": "GOLDEN_ANGLE",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      },
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 18
+      }
+    ],
+    "reads": [
+      "MAX_TAPS",
+      "GOLDEN_ANGLE"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/blur:blurH",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 12
+      }
+    ],
+    "reads": [],
+    "writes": []
+  },
+  {
+    "key": "filter/blur:blurV",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 12
+      }
+    ],
+    "reads": [],
+    "writes": []
+  },
+  {
+    "key": "filter/celShading:celShadingColor",
+    "globals": [
+      {
+        "name": "MIN_GAMMA",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 15
+      }
+    ],
+    "reads": [
+      "MIN_GAMMA"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/clouds:clouds",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/colorspace:colorspace",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 11
+      },
+      {
+        "name": "fwdA",
+        "storage": "const",
+        "type": "mat3",
+        "kind": "matrix",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal,literal,unary(literal),unary(literal),literal,unary(literal),unary(literal))",
+        "line": 32
+      },
+      {
+        "name": "fwdB",
+        "storage": "const",
+        "type": "mat3",
+        "kind": "matrix",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,unary(literal),unary(literal),unary(literal),literal,unary(literal),literal,unary(literal),literal)",
+        "line": 36
+      }
+    ],
+    "reads": [
+      "TAU",
+      "fwdA",
+      "fwdB"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/crt:crt",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 8
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      },
+      {
+        "name": "INV_THREE",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 10
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU",
+      "INV_THREE"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/degauss:degauss",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 10
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/directionalBlur:directionalBlur",
+    "globals": [
+      {
+        "name": "N",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 11
+      }
+    ],
+    "reads": [
+      "N"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/dither:dither",
+    "globals": [
+      {
+        "name": "DITHER_BAYER_2X2",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 19
+      },
+      {
+        "name": "DITHER_BAYER_4X4",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 20
+      },
+      {
+        "name": "DITHER_BAYER_8X8",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 21
+      },
+      {
+        "name": "DITHER_DOT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 22
+      },
+      {
+        "name": "DITHER_LINE",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 23
+      },
+      {
+        "name": "DITHER_CROSSHATCH",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 24
+      },
+      {
+        "name": "DITHER_NOISE",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 25
+      },
+      {
+        "name": "DITHER_ERROR_DIFFUSION",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 26
+      },
+      {
+        "name": "PALETTE_INPUT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 29
+      },
+      {
+        "name": "PALETTE_MONOCHROME",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 30
+      },
+      {
+        "name": "PALETTE_DOT_MATRIX_GREEN",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 31
+      },
+      {
+        "name": "PALETTE_AMBER",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 32
+      },
+      {
+        "name": "PALETTE_PICO8",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 33
+      },
+      {
+        "name": "PALETTE_C64",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 34
+      },
+      {
+        "name": "PALETTE_CGA",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 35
+      },
+      {
+        "name": "PALETTE_ZX_SPECTRUM",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 36
+      },
+      {
+        "name": "PALETTE_APPLE_II",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 37
+      },
+      {
+        "name": "PALETTE_EGA",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 38
+      },
+      {
+        "name": "bayer2x2",
+        "storage": "const",
+        "type": "mat4",
+        "kind": "matrix",
+        "base": "float",
+        "width": 4,
+        "initializer": "construct(binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal))",
+        "line": 41
+      },
+      {
+        "name": "bayer4x4",
+        "storage": "const",
+        "type": "mat4",
+        "kind": "matrix",
+        "base": "float",
+        "width": 4,
+        "initializer": "construct(binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal),binary(literal,literal))",
+        "line": 48
+      },
+      {
+        "name": "DOT_MATRIX",
+        "storage": "const",
+        "type": "vec3[4]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 239
+      },
+      {
+        "name": "AMBER",
+        "storage": "const",
+        "type": "vec3[4]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 247
+      },
+      {
+        "name": "PICO8",
+        "storage": "const",
+        "type": "vec3[16]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 255
+      },
+      {
+        "name": "C64",
+        "storage": "const",
+        "type": "vec3[16]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 275
+      },
+      {
+        "name": "CGA",
+        "storage": "const",
+        "type": "vec3[4]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 295
+      },
+      {
+        "name": "ZX_SPECTRUM",
+        "storage": "const",
+        "type": "vec3[15]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 303
+      },
+      {
+        "name": "APPLE_II",
+        "storage": "const",
+        "type": "vec3[16]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 322
+      },
+      {
+        "name": "EGA",
+        "storage": "const",
+        "type": "vec3[16]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal),construct(literal,literal,literal))",
+        "line": 342
+      },
+      {
+        "name": "FS_BLOCK",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 457
+      },
+      {
+        "name": "FS_APRON_MIN",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 458
+      },
+      {
+        "name": "FS_APRON_MAX",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 459
+      },
+      {
+        "name": "FS_RPAD",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 460
+      },
+      {
+        "name": "FS_ERR_W",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "binary(binary(binary(const-ref:FS_BLOCK,const-ref:FS_APRON_MAX),const-ref:FS_RPAD),literal)",
+        "line": 462
+      }
+    ],
+    "reads": [
+      "DITHER_BAYER_2X2",
+      "DITHER_BAYER_4X4",
+      "DITHER_BAYER_8X8",
+      "DITHER_DOT",
+      "DITHER_LINE",
+      "DITHER_CROSSHATCH",
+      "DITHER_NOISE",
+      "DITHER_ERROR_DIFFUSION",
+      "PALETTE_INPUT",
+      "PALETTE_MONOCHROME",
+      "PALETTE_DOT_MATRIX_GREEN",
+      "PALETTE_AMBER",
+      "PALETTE_PICO8",
+      "PALETTE_C64",
+      "PALETTE_CGA",
+      "PALETTE_ZX_SPECTRUM",
+      "PALETTE_APPLE_II",
+      "PALETTE_EGA",
+      "bayer2x2",
+      "bayer4x4",
+      "DOT_MATRIX",
+      "AMBER",
+      "PICO8",
+      "C64",
+      "CGA",
+      "ZX_SPECTRUM",
+      "APPLE_II",
+      "EGA",
+      "FS_BLOCK",
+      "FS_APRON_MIN",
+      "FS_APRON_MAX",
+      "FS_RPAD",
+      "FS_ERR_W"
+    ],
+    "writes": [
+      "FS_APRON_MAX"
+    ]
+  },
+  {
+    "key": "filter/edge:edge",
+    "globals": [
+      {
+        "name": "LUMA",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 19
+      }
+    ],
+    "reads": [
+      "LUMA"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/emboss:emboss",
+    "globals": [
+      {
+        "name": "LUMA",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 19
+      }
+    ],
+    "reads": [
+      "LUMA"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/extrude:extrude",
+    "globals": [
+      {
+        "name": "TOP_SIGN",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 27
+      },
+      {
+        "name": "SHADE_TOP",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 30
+      },
+      {
+        "name": "SHADE_BOTTOM",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 31
+      },
+      {
+        "name": "SHADE_LEFT",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 32
+      },
+      {
+        "name": "SHADE_RIGHT",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 33
+      },
+      {
+        "name": "EPS",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 35
+      }
+    ],
+    "reads": [
+      "TOP_SIGN",
+      "SHADE_TOP",
+      "SHADE_BOTTOM",
+      "SHADE_LEFT",
+      "SHADE_RIGHT",
+      "EPS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/fxaa:fxaa",
+    "globals": [
+      {
+        "name": "CHANNEL_COUNT",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      },
+      {
+        "name": "EPSILON",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 10
+      },
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 11
+      }
+    ],
+    "reads": [
+      "EPSILON",
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/glyphMap:glyphMap",
+    "globals": [
+      {
+        "name": "GLYPH_COUNT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 186
+      }
+    ],
+    "reads": [
+      "GLYPH_COUNT"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/grade:creative",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 15
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/grade:hslSecondary",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 21
+      },
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 22
+      }
+    ],
+    "reads": [],
+    "writes": []
+  },
+  {
+    "key": "filter/grade:primary",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 22
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/grade:vignette",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 15
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/grade:wheels",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/grain:grain",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 10
+      },
+      {
+        "name": "UINT32_TO_FLOAT",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "binary(literal,literal)",
+        "line": 11
+      },
+      {
+        "name": "CHANNEL_COUNT",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 12
+      },
+      {
+        "name": "INTERPOLATION_CONSTANT",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 13
+      },
+      {
+        "name": "INTERPOLATION_LINEAR",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      },
+      {
+        "name": "INTERPOLATION_COSINE",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 15
+      },
+      {
+        "name": "INTERPOLATION_BICUBIC",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 16
+      },
+      {
+        "name": "BASE_SEED",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU",
+      "UINT32_TO_FLOAT",
+      "INTERPOLATION_CONSTANT",
+      "INTERPOLATION_LINEAR",
+      "INTERPOLATION_COSINE",
+      "INTERPOLATION_BICUBIC",
+      "BASE_SEED"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/halftone:halftone",
+    "globals": [
+      {
+        "name": "DOT_AREA_CAP",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 95
+      },
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 96
+      },
+      {
+        "name": "MID_DOT_RADIUS",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 97
+      },
+      {
+        "name": "MAX_DOT_RADIUS",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 98
+      }
+    ],
+    "reads": [
+      "DOT_AREA_CAP",
+      "PI",
+      "MID_DOT_RADIUS",
+      "MAX_DOT_RADIUS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/lens:lens",
+    "globals": [
+      {
+        "name": "HALF_FRAME",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 13
+      }
+    ],
+    "reads": [
+      "HALF_FRAME"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/lightLeak:lightLeak",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 4
+      },
+      {
+        "name": "POINT_COUNT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 5
+      }
+    ],
+    "reads": [
+      "TAU",
+      "POINT_COUNT"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/lowPoly:lowPoly",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 23
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/normalMap:normalMap",
+    "globals": [
+      {
+        "name": "CHANNEL_COUNT",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 4
+      },
+      {
+        "name": "CHANNEL_CAP",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 5
+      },
+      {
+        "name": "SOBEL_OFFSETS",
+        "storage": "const",
+        "type": "ivec2[9]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(construct(unary(literal),unary(literal)),construct(literal,unary(literal)),construct(literal,unary(literal)),construct(unary(literal),literal),construct(literal,literal),construct(literal,literal),construct(unary(literal),literal),construct(literal,literal),construct(literal,literal))",
+        "line": 15
+      },
+      {
+        "name": "SOBEL_X_KERNEL",
+        "storage": "const",
+        "type": "float[9]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(literal,literal,unary(literal),literal,literal,unary(literal),literal,literal,unary(literal))",
+        "line": 21
+      },
+      {
+        "name": "SOBEL_Y_KERNEL",
+        "storage": "const",
+        "type": "float[9]",
+        "kind": "array",
+        "base": null,
+        "width": null,
+        "initializer": "construct(literal,literal,literal,literal,literal,literal,unary(literal),unary(literal),unary(literal))",
+        "line": 27
+      }
+    ],
+    "reads": [
+      "CHANNEL_CAP",
+      "SOBEL_OFFSETS",
+      "SOBEL_X_KERNEL",
+      "SOBEL_Y_KERNEL"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/octaveWarp:octaveWarp",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 54
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/parallax:parallax",
+    "globals": [
+      {
+        "name": "MARCH_STEPS",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 13
+      },
+      {
+        "name": "SHIFT_SCALE",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "MARCH_STEPS",
+      "SHIFT_SCALE"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/pixelSort:finalize",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 13
+      }
+    ],
+    "reads": [
+      "PI"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/pixelSort:prepare",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 12
+      }
+    ],
+    "reads": [
+      "PI"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/polar:polar",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/posterize:posterize",
+    "globals": [
+      {
+        "name": "MIN_LEVELS",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 13
+      },
+      {
+        "name": "MIN_GAMMA",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "MIN_LEVELS",
+      "MIN_GAMMA"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/reindex:nmReindexReduce",
+    "globals": [
+      {
+        "name": "F32_MAX",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 7
+      },
+      {
+        "name": "F32_MIN",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "unary(literal)",
+        "line": 8
+      },
+      {
+        "name": "TILE_SIZE",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      },
+      {
+        "name": "MAX_TILE_DIM",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 10
+      }
+    ],
+    "reads": [
+      "F32_MAX",
+      "F32_MIN",
+      "TILE_SIZE",
+      "MAX_TILE_DIM"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/reindex:nmReindexStats",
+    "globals": [
+      {
+        "name": "F32_MAX",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 7
+      },
+      {
+        "name": "F32_MIN",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "unary(literal)",
+        "line": 8
+      },
+      {
+        "name": "TILE_SIZE",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      }
+    ],
+    "reads": [
+      "F32_MAX",
+      "F32_MIN",
+      "TILE_SIZE"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/rotate:rot",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 12
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/scanlineError:scanlineError",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 9
+      },
+      {
+        "name": "BASE_SEED_LINE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 197
+      },
+      {
+        "name": "TIME_SEED_LINE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(binary(swizzle(const-ref:BASE_SEED_LINE),literal),binary(swizzle(const-ref:BASE_SEED_LINE),literal),binary(swizzle(const-ref:BASE_SEED_LINE),literal))",
+        "line": 198
+      },
+      {
+        "name": "BASE_SEED_SWERVE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 203
+      },
+      {
+        "name": "TIME_SEED_SWERVE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(binary(swizzle(const-ref:BASE_SEED_SWERVE),literal),binary(swizzle(const-ref:BASE_SEED_SWERVE),literal),binary(swizzle(const-ref:BASE_SEED_SWERVE),literal))",
+        "line": 204
+      },
+      {
+        "name": "BASE_SEED_WHITE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 209
+      },
+      {
+        "name": "TIME_SEED_WHITE",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(binary(swizzle(const-ref:BASE_SEED_WHITE),literal),binary(swizzle(const-ref:BASE_SEED_WHITE),literal),binary(swizzle(const-ref:BASE_SEED_WHITE),literal))",
+        "line": 210
+      }
+    ],
+    "reads": [
+      "TAU",
+      "BASE_SEED_LINE",
+      "TIME_SEED_LINE",
+      "BASE_SEED_SWERVE",
+      "TIME_SEED_SWERVE",
+      "BASE_SEED_WHITE",
+      "TIME_SEED_WHITE"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/skew:skew",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "PI"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/smooth:smoothBlend",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 17
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/smooth:smoothEdge",
+    "globals": [
+      {
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 12
+      }
+    ],
+    "reads": [
+      "LUMA_WEIGHTS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/snow:snow",
+    "globals": [
+      {
+        "name": "CHANNEL_COUNT",
+        "storage": "const",
+        "type": "uint",
+        "kind": "scalar",
+        "base": "uint",
+        "width": null,
+        "initializer": "literal",
+        "line": 7
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 8
+      },
+      {
+        "name": "TIME_SEED_OFFSETS",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 9
+      },
+      {
+        "name": "STATIC_SEED",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 10
+      },
+      {
+        "name": "LIMITER_SEED",
+        "storage": "const",
+        "type": "vec3",
+        "kind": "vector",
+        "base": "float",
+        "width": 3,
+        "initializer": "construct(literal,literal,literal)",
+        "line": 11
+      }
+    ],
+    "reads": [
+      "TAU",
+      "TIME_SEED_OFFSETS",
+      "STATIC_SEED",
+      "LIMITER_SEED"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/spinBlur:spinBlur",
+    "globals": [
+      {
+        "name": "N",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "N"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/strokes:stkSmear",
+    "globals": [
+      {
+        "name": "MAX_TAPS",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 14
+      }
+    ],
+    "reads": [
+      "MAX_TAPS"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/tetraColorArray:tetraColorArray",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 47
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/tetraCosine:tetraCosine",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 34
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/tile:tile",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 16
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/tunnel:tunnel",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 18
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 19
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/vaseline:upsample",
+    "globals": [
+      {
+        "name": "TAP_COUNT",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 15
+      },
+      {
+        "name": "RADIUS",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 16
+      },
+      {
+        "name": "GOLDEN_ANGLE",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      },
+      {
+        "name": "BRIGHTNESS_ADJUST",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 18
+      }
+    ],
+    "reads": [
+      "TAP_COUNT",
+      "RADIUS",
+      "GOLDEN_ANGLE",
+      "BRIGHTNESS_ADJUST"
+    ],
+    "writes": []
+  },
+  {
+    "key": "filter/wind:wind",
+    "globals": [
+      {
+        "name": "MAX_STEPS",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 18
+      },
+      {
+        "name": "STEP_PX",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 19
+      },
+      {
+        "name": "MAX_REACH",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 20
+      }
+    ],
+    "reads": [
+      "MAX_STEPS",
+      "STEP_PX",
+      "MAX_REACH"
+    ],
+    "writes": []
+  },
+  {
+    "key": "mixer/cellSplit:cellSplit",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 19
+      }
+    ],
+    "reads": [
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "synth/bitwise:bitwise",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 22
+      }
+    ],
+    "reads": [
+      "PI"
+    ],
+    "writes": []
+  },
+  {
+    "key": "synth/mandelbrot:mandelbrot",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 27
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 28
+      },
+      {
+        "name": "BAILOUT",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 29
+      },
+      {
+        "name": "LOG2",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 30
+      },
+      {
+        "name": "MAX_ITER",
+        "storage": "const",
+        "type": "int",
+        "kind": "scalar",
+        "base": "int",
+        "width": null,
+        "initializer": "literal",
+        "line": 31
+      }
+    ],
+    "reads": [
+      "TAU",
+      "BAILOUT",
+      "LOG2",
+      "MAX_ITER"
+    ],
+    "writes": []
+  },
+  {
+    "key": "synth/noise:noise",
+    "globals": [
+      {
+        "name": "globalCoord",
+        "storage": "global",
+        "type": "vec2",
+        "kind": "vector",
+        "base": "float",
+        "width": 2,
+        "initializer": "none",
+        "line": 31
+      }
+    ],
+    "reads": [
+      "globalCoord"
+    ],
+    "writes": [
+      "globalCoord"
+    ]
+  },
+  {
+    "key": "synth/osc2d:osc2d",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 16
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 17
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU"
+    ],
+    "writes": []
+  },
+  {
+    "key": "synth/perlin:perlin",
+    "globals": [
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 29
+      },
+      {
+        "name": "Z_PERIOD",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 30
+      }
+    ],
+    "reads": [
+      "TAU",
+      "Z_PERIOD"
+    ],
+    "writes": []
+  },
+  {
+    "key": "synth/shape:shape",
+    "globals": [
+      {
+        "name": "PI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 28
+      },
+      {
+        "name": "TAU",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 29
+      },
+      {
+        "name": "aspectRatio",
+        "storage": "global",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "none",
+        "line": 31
+      },
+      {
+        "name": "globalCoord",
+        "storage": "global",
+        "type": "vec2",
+        "kind": "vector",
+        "base": "float",
+        "width": 2,
+        "initializer": "none",
+        "line": 32
+      }
+    ],
+    "reads": [
+      "PI",
+      "TAU",
+      "aspectRatio",
+      "globalCoord"
+    ],
+    "writes": [
+      "aspectRatio",
+      "globalCoord"
+    ]
+  },
+  {
+    "key": "synth/subdivide:subdivide",
+    "globals": [
+      {
+        "name": "PHI",
+        "storage": "const",
+        "type": "float",
+        "kind": "scalar",
+        "base": "float",
+        "width": null,
+        "initializer": "literal",
+        "line": 40
+      }
+    ],
+    "reads": [
+      "PHI"
+    ],
+    "writes": []
+  }
+]

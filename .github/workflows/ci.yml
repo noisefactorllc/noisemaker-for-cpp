@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native:
+    name: native ${{ matrix.os }} / ${{ matrix.build_type }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        build_type: [Debug, Release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+
+      # The project compiles with -Wall -Wextra -Wpedantic -Werror
+      # -ffp-contract=off; any new warning fails the build here.
+      - name: Build
+        run: cmake --build build --target noisemaker-cpu-tests -j
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  sanitizers:
+    name: sanitizers (ASan + UBSan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib
+        run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
+
+      - name: Configure
+        run: |
+          cmake -S . -B build-sanitize -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer" \
+            -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+
+      - name: Build
+        run: cmake --build build-sanitize --target noisemaker-cpu-tests -j
+
+      # Linux supports LeakSanitizer, so leak detection stays on here.
+      # (On Apple platforms detect_leaks is unsupported and must be disabled.)
+      - name: Run
+        env:
+          ASAN_OPTIONS: detect_leaks=1
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ./build-sanitize/noisemaker-cpu-tests
+
+  generator:
+    name: generator determinism / py${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+
+      # These are --check (never --write): they regenerate the typed slice in
+      # memory and fail if the committed outputs differ by a single byte, so
+      # generation stays deterministic and the checked-in artifacts stay honest.
+      - name: Validate pinned corpus
+        run: python -m tools.glslcpp.check_corpus --check
+
+      - name: Validate corpus semantics
+        run: python -m tools.glslcpp.check_semantics --check
+
+      - name: Verify generated typed slice is byte-identical
+        run: python -m tools.glslcpp.generate_typed_slice --check
+
+      - name: Verify generated kernels are byte-identical
+        run: python -m tools.glslcpp.generate_kernels --check
+
+  python-tests:
+    name: python test suite
+    runs-on: ubuntu-latest
+    # The structural, mutation, and historical-reconstruction suite regenerates
+    # the typed slice many times over; it is slow by design. It measures ~47
+    # minutes on an M-series laptop and hosted runners are slower, so the budget
+    # is deliberately well above the observed time rather than just above it --
+    # this suite grows with every ported program, and a timeout here would look
+    # like a test failure rather than a scheduling problem.
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run full discovery
+        run: python -m unittest discover -s tests -p 'test_*.py' -q
+
+  package-consumer:
+    name: install + external find_package consumer
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zlib
+        run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
+
+      - name: Build, install, and consume package
+        shell: bash
+        run: |
+          set -euxo pipefail
+          src="$GITHUB_WORKSPACE"
+          build="$RUNNER_TEMP/noisemaker-for-cpp-build"
+          prefix="$RUNNER_TEMP/noisemaker-for-cpp-prefix"
+          consumer_build="$RUNNER_TEMP/noisemaker-for-cpp-consumer-build"
+          cmake -S "$src" -B "$build" -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$prefix"
+          cmake --build "$build" --target noisemaker-cpu --parallel
+          cmake --install "$build"
+          test -f "$prefix/lib/cmake/noisemaker-for-cpp/noisemaker-for-cppConfig.cmake"
+          test -f "$prefix/include/noisemaker/generated/catalog.hpp"
+          cmake -S "$src/tests/cmake_package_consumer" -B "$consumer_build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$prefix"
+          cmake --build "$consumer_build" --parallel
+          "$consumer_build/noisemaker-package-consumer"

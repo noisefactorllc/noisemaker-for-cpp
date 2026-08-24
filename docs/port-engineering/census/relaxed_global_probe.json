@@ -1,0 +1,102 @@
+[
+ {
+  "key": "classicNoisedeck/bitEffects:bitEffects",
+  "next_after_relaxed_global_admission": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &"
+ },
+ {
+  "key": "classicNoisedeck/cellNoise:cellNoise",
+  "next_after_relaxed_global_admission": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported typed type mat3"
+ },
+ {
+  "key": "classicNoisedeck/cellRefract:cellRefract",
+  "next_after_relaxed_global_admission": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global"
+ },
+ {
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "next_after_relaxed_global_admission": "classicNoisedeck/colorLab:colorLab:191:1: unsupported typed type mat3"
+ },
+ {
+  "key": "classicNoisedeck/kaleido:kaleido",
+  "next_after_relaxed_global_admission": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global"
+ },
+ {
+  "key": "classicNoisedeck/moodscape:moodscape",
+  "next_after_relaxed_global_admission": "classicNoisedeck/moodscape:moodscape:149:1: unsupported typed type mat3"
+ },
+ {
+  "key": "classicNoisedeck/shapeMixer:shapeMixer",
+  "next_after_relaxed_global_admission": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported typed type mat3"
+ },
+ {
+  "key": "classicNoisedeck/shapes:shapes",
+  "next_after_relaxed_global_admission": "classicNoisedeck/shapes:shapes:588:1: unsupported typed type mat3"
+ },
+ {
+  "key": "filter/adjust:adjust",
+  "next_after_relaxed_global_admission": "filter/adjust:adjust:62:1: unsupported typed type mat3"
+ },
+ {
+  "key": "filter/colorspace:colorspace",
+  "next_after_relaxed_global_admission": "filter/colorspace:colorspace:32:1: unsupported typed type mat3"
+ },
+ {
+  "key": "filter/edge:edge",
+  "next_after_relaxed_global_admission": "filter/edge:edge:73:11: unsupported typed type bvec3"
+ },
+ {
+  "key": "filter/emboss:emboss",
+  "next_after_relaxed_global_admission": "filter/emboss:emboss:27:11: unsupported typed type float[9]"
+ },
+ {
+  "key": "filter/fxaa:fxaa",
+  "next_after_relaxed_global_admission": "filter/fxaa:fxaa:22:21: unsupported builtin round"
+ },
+ {
+  "key": "filter/glyphMap:glyphMap",
+  "next_after_relaxed_global_admission": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &"
+ },
+ {
+  "key": "filter/grain:grain",
+  "next_after_relaxed_global_admission": "filter/grain:grain:31:21: unsupported builtin round"
+ },
+ {
+  "key": "filter/historicPalette:historicPalette",
+  "next_after_relaxed_global_admission": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration"
+ },
+ {
+  "key": "filter/normalMap:normalMap",
+  "next_after_relaxed_global_admission": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]"
+ },
+ {
+  "key": "filter/osd:osd",
+  "next_after_relaxed_global_admission": "filter/osd:osd:24:1: unsupported typed type int[80]"
+ },
+ {
+  "key": "filter/palette:palette",
+  "next_after_relaxed_global_admission": "filter/palette:palette:21:1: unsupported struct declaration"
+ },
+ {
+  "key": "filter/scanlineError:scanlineError",
+  "next_after_relaxed_global_admission": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint"
+ },
+ {
+  "key": "filter/snow:snow",
+  "next_after_relaxed_global_admission": "filter/snow:snow:26:21: unsupported builtin round"
+ },
+ {
+  "key": "filter/spookyTicker:spookyTicker",
+  "next_after_relaxed_global_admission": "filter/spookyTicker:spookyTicker:1:1: unsupported varying"
+ },
+ {
+  "key": "filter/texture:texture",
+  "next_after_relaxed_global_admission": "filter/texture:texture:1:1: unsupported varying"
+ },
+ {
+  "key": "filter/wobble:wobble",
+  "next_after_relaxed_global_admission": "filter/wobble:wobble:1:1: unsupported varying"
+ },
+ {
+  "key": "synth/shape:shape",
+  "next_after_relaxed_global_admission": "synth/shape:shape:459:5: write to source const global"
+ }
+]

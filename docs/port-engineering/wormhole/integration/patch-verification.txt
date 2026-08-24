@@ -1,0 +1,25 @@
+=== Verification: patch applies cleanly and full project builds+tests pass ===
+(performed in a throwaway copy under /tmp, real noisemaker-for-cpp tree untouched)
+
+$ patch -p1 --dry-run < wormhole-scatter-integration.patch
+patching file 'include/noisemaker/effects/scatter/registry.hpp'
+patching file 'src/effects/scatter/registry.cpp'
+patching file 'include/noisemaker/effects/scatter/wormhole.hpp'
+patching file 'src/effects/scatter/wormhole.cpp'
+patching file 'include/noisemaker/effects/scatter/catalog.hpp'
+patching file 'src/effects/scatter/catalog.cpp'
+patching file 'tests/test_scatter_wormhole.cpp'
+patching file CMakeLists.txt
+
+$ cmake --build build-verify   (mandated flags -Wall -Wextra -Wpedantic -Werror -ffp-contract=off, project-wide)
+-> builds clean, zero warnings, all targets (noisemaker-cpu, noisemaker-cpu-tests, noisemaker-cpu-example-perlin)
+
+$ ctest --output-on-failure
+100% tests passed, 0 tests failed out of 1
+
+$ ./noisemaker-cpu-tests | grep scatter
+PASS scatter_wormhole_registers_under_the_canonical_key
+PASS scatter_wormhole_direct_call_matches_js_oracle_mirror_4x3
+PASS scatter_wormhole_via_registry_matches_js_oracle_repeat_3x4
+PASS scatter_wormhole_clamp_wrap_matches_js_oracle_5x2
+PASS scatter_wormhole_rejects_mismatched_dimensions

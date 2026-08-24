@@ -1,0 +1,1514 @@
+{
+  "schema": "noisemaker-for-cpp.task-29.focus-blur-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "source_sha256": "dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1",
+    "canonical_factory_name": "canonicalFactory195",
+    "canonical_factory_to_string_sha256": "fb4c02c763ef42000b13bba3945cf4fd15e177a2ab2827372ce3b96aa3a778ff",
+    "node": "v24.7.0",
+    "public_identity": true,
+    "adapter_absent": true
+  },
+  "program": {
+    "key": "mixer/focusBlur:focusBlur",
+    "defines": {},
+    "profile": "focus-blur-borrowed-sampler-parameters-v1",
+    "helper": "vec4 applyFocusBlur(sampler2D sceneTex, sampler2D depthTex, vec2 uv)",
+    "borrowed_abi": "const Surface&; setup-owned Surface lifetime; no helper retention or mutation",
+    "call_order": {
+      "depthSource_0": [
+        "tex",
+        "inputTex",
+        "uv"
+      ],
+      "depthSource_else": [
+        "inputTex",
+        "tex",
+        "uv"
+      ]
+    },
+    "loop": {
+      "trips_per_call": 64,
+      "max_calls_per_pixel": 1
+    },
+    "texture_sites": 4,
+    "texture_size_sites": 4,
+    "max_texture_reads_per_pixel": 67
+  },
+  "fixture": {
+    "source_pattern": "deterministic top-down F32 RGBA phase pattern",
+    "output": "top-down F32 RGBA Surface",
+    "fragment_origin": "bottom-left runPass coordinates"
+  },
+  "cases": [
+    {
+      "name": "depth-a-default",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "source_phases": {
+        "inputTex": 0,
+        "tex": 1
+      },
+      "borrowed_alias": false,
+      "uniforms": {
+        "focalDistance": 50,
+        "aperture": 4,
+        "sampleBias": 12,
+        "depthSource": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        5
+      ],
+      "coverage": [
+        "scene=B depth=A",
+        "default numeric controls",
+        "asymmetric alpha"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "e83506a05ed7ebac7e3b0342aefdc3ae05723d71b884e3a5404ff275e7100fca",
+        "rgba8_sha256": "4ed432ab642655dbcf6670903ec8dd3ab521252512db8fe804eb18d95b3fd1a3",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5762683153152466,
+              0.3659791946411133,
+              0.5025753974914551,
+              0.302325576543808
+            ],
+            "f32_bits_le": [
+              "0x3f138652",
+              "0x3ebb61a0",
+              "0x3f00a8c8",
+              "0x3e9aca6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.5937497615814209,
+              0.400611937046051,
+              0.5315933227539062,
+              0.44186046719551086
+            ],
+            "f32_bits_le": [
+              "0x3f17fffc",
+              "0x3ecd1d02",
+              "0x3f081680",
+              "0x3ee23b89"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.6186568737030029,
+              0.35051530599594116,
+              0.5005150437355042,
+              0.6511628031730652
+            ],
+            "f32_bits_le": [
+              "0x3f1e604c",
+              "0x3eb376be",
+              "0x3f0021c1",
+              "0x3f26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.5544551610946655,
+              0.7319591045379639,
+              0.23076917231082916,
+              0.7906976938247681
+            ],
+            "f32_bits_le": [
+              "0x3f0df0c6",
+              "0x3f3b61ac",
+              "0x3e6c4ec1",
+              "0x3f4a6b2a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.5207300186157227,
+              0.5182023048400879,
+              0.44041892886161804,
+              0.6279069781303406
+            ],
+            "f32_bits_le": [
+              "0x3f054e90",
+              "0x3f04a8e8",
+              "0x3ee17e97",
+              "0x3f20be83"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "depth-b-default",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "source_phases": {
+        "inputTex": 0,
+        "tex": 1
+      },
+      "borrowed_alias": false,
+      "uniforms": {
+        "focalDistance": 50,
+        "aperture": 4,
+        "sampleBias": 12,
+        "depthSource": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        5
+      ],
+      "coverage": [
+        "scene=A depth=B",
+        "reversed borrowed arguments"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "d41720cfc044844a134a14b403ba0a6d8bafcdd2613be4bced86f95bbeca3543",
+        "rgba8_sha256": "6dee6e52095c7c113670f3ec92e6c551de84d135c690ca06f75367bcfa50f749",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.3737625181674957,
+              0.4608567953109741,
+              0.2817651629447937,
+              0.302325576543808
+            ],
+            "f32_bits_le": [
+              "0x3ebf5dcd",
+              "0x3eebf56c",
+              "0x3e904386",
+              "0x3e9aca6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.44430702924728394,
+              0.5418812036514282,
+              0.5058378577232361,
+              0.44186046719551086
+            ],
+            "f32_bits_le": [
+              "0x3ee37c36",
+              "0x3f0ab8ba",
+              "0x3f017e97",
+              "0x3ee23b89"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.4455447196960449,
+              0.500482976436615,
+              0.39560431241989136,
+              0.6511628031730652
+            ],
+            "f32_bits_le": [
+              "0x3ee41e70",
+              "0x3f001fa7",
+              "0x3eca8ca6",
+              "0x3f26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.42465975880622864,
+              0.5165913105010986,
+              0.5836195349693298,
+              0.7906976938247681
+            ],
+            "f32_bits_le": [
+              "0x3ed96d01",
+              "0x3f043f54",
+              "0x3f156817",
+              "0x3f4a6b2a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.44492587447166443,
+              0.4916236698627472,
+              0.48849594593048096,
+              0.6279069781303406
+            ],
+            "f32_bits_le": [
+              "0x3ee3cd53",
+              "0x3efbb619",
+              "0x3efa1c24",
+              "0x3f20be83"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "metadata-minima",
+      "dimensions": {
+        "width": 7,
+        "height": 4
+      },
+      "source_phases": {
+        "inputTex": 2,
+        "tex": 3
+      },
+      "borrowed_alias": false,
+      "uniforms": {
+        "focalDistance": 1,
+        "aperture": 1,
+        "sampleBias": 2,
+        "depthSource": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        7,
+        4
+      ],
+      "coverage": [
+        "metadata minima",
+        "landscape"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "c7fc801e64445254a878f026c1e519db5b334ecad6d841ca898d76b48675b195",
+        "rgba8_sha256": "36be5e2c77321c7971c8155ef328119b0193d69f80835e50745fb5f424d854f7",
+        "finite_lanes": 112,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7099323868751526,
+              0.579091489315033,
+              0.23351642489433289,
+              0.11627907305955887
+            ],
+            "f32_bits_le": [
+              "0x3f35be21",
+              "0x3f143f57",
+              "0x3e6f1eee",
+              "0x3dee23b9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5453279614448547,
+              0.6188790798187256,
+              0.28691622614860535,
+              0.41860464215278625
+            ],
+            "f32_bits_le": [
+              "0x3f0b9a9d",
+              "0x3f1e6edc",
+              "0x3e92e6af",
+              "0x3ed65359"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.26531562209129333,
+              0.3608246147632599,
+              0.39543262124061584,
+              0.20930232107639313
+            ],
+            "f32_bits_le": [
+              "0x3e87d773",
+              "0x3eb8be01",
+              "0x3eca7625",
+              "0x3e565359"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.44523516297340393,
+              0.3427833914756775,
+              0.4749314486980438,
+              0.5116279125213623
+            ],
+            "f32_bits_le": [
+              "0x3ee3f5dd",
+              "0x3eaf814e",
+              "0x3ef32a37",
+              "0x3f02fa0c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.5225868225097656,
+              0.45811858773231506,
+              0.4467720687389374,
+              0.44186046719551086
+            ],
+            "f32_bits_le": [
+              "0x3f05c840",
+              "0x3eea8e85",
+              "0x3ee4bf4f",
+              "0x3ee23b89"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "metadata-maxima",
+      "dimensions": {
+        "width": 5,
+        "height": 7
+      },
+      "source_phases": {
+        "inputTex": 4,
+        "tex": 5
+      },
+      "borrowed_alias": false,
+      "uniforms": {
+        "focalDistance": 100,
+        "aperture": 10,
+        "sampleBias": 64,
+        "depthSource": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        7
+      ],
+      "coverage": [
+        "metadata maxima",
+        "portrait",
+        "large clamped offsets"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "e6a63efc49e9b9077f0b991398ea831c62233d8b2049e189b4aa5311211f112b",
+        "rgba8_sha256": "f495caddd8363f950af960fa266bb4dc1fbb8e5077a476cd84e45b24733e54c0",
+        "finite_lanes": 140,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5252166390419006,
+              0.42606309056282043,
+              0.6066279411315918,
+              0.1627907007932663
+            ],
+            "f32_bits_le": [
+              "0x3f067499",
+              "0x3eda24f1",
+              "0x3f1b4bf8",
+              "0x3e26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.4921101927757263,
+              0.4288015067577362,
+              0.6176169514656067,
+              0.13953489065170288
+            ],
+            "f32_bits_le": [
+              "0x3efbf5de",
+              "0x3edb8bdf",
+              "0x3f1e1c25",
+              "0x3e0ee23c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.5230507254600525,
+              0.4424934983253479,
+              0.6255152821540833,
+              0.3488371968269348
+            ],
+            "f32_bits_le": [
+              "0x3f05e6a7",
+              "0x3ee28e82",
+              "0x3f2021c5",
+              "0x3eb29aca"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              6
+            ],
+            "values": [
+              0.4899442791938782,
+              0.4308955669403076,
+              0.6365042924880981,
+              0.3255814015865326
+            ],
+            "f32_bits_le": [
+              "0x3efad9fa",
+              "0x3edc9e58",
+              "0x3f22f1f2",
+              "0x3ea6b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              3
+            ],
+            "values": [
+              0.5024752616882324,
+              0.4510308802127838,
+              0.6181320548057556,
+              0.5813953280448914
+            ],
+            "f32_bits_le": [
+              "0x3f00a238",
+              "0x3ee6ed85",
+              "0x3f1e3de7",
+              "0x3f14d653"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "borrowed-alias-same-surface",
+      "dimensions": {
+        "width": 5,
+        "height": 4
+      },
+      "source_phases": {
+        "inputTex": 6,
+        "tex": 6
+      },
+      "borrowed_alias": true,
+      "uniforms": {
+        "focalDistance": 35,
+        "aperture": 3,
+        "sampleBias": 9,
+        "depthSource": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        4
+      ],
+      "coverage": [
+        "same Surface aliases both const references",
+        "no ownership transfer"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "25abe599ac98fb5c7b6f789803c949db2ef63c983167246f7e3fca866e0fc875",
+        "rgba8_sha256": "a2a4a6bfc7687f5369943bbac1ae61d4729c321cc1db74089a5c30787aead83a",
+        "finite_lanes": 80,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.45405319333076477,
+              0.5415592789649963,
+              0.34065937995910645,
+              0.1860465109348297
+            ],
+            "f32_bits_le": [
+              "0x3ee879a9",
+              "0x3f0aa3a1",
+              "0x3eae6ae8",
+              "0x3e3e82fa"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.48932528495788574,
+              0.3139498233795166,
+              0.3210850656032562,
+              0.1627907007932663
+            ],
+            "f32_bits_le": [
+              "0x3efa88d8",
+              "0x3ea0be08",
+              "0x3ea46543",
+              "0x3e26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.47137993574142456,
+              0.5668492317199707,
+              0.3612637519836426,
+              0.27906978130340576
+            ],
+            "f32_bits_le": [
+              "0x3ef158b6",
+              "0x3f111d08",
+              "0x3eb8f790",
+              "0x3e8ee23c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.3251856863498688,
+              0.40463897585868835,
+              0.4550134837627411,
+              0.25581395626068115
+            ],
+            "f32_bits_le": [
+              "0x3ea67ebd",
+              "0x3ecf2cd7",
+              "0x3ee8f787",
+              "0x3e82fa0c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.45219671726226807,
+              0.4867912530899048,
+              0.35336539149284363,
+              0.3488371968269348
+            ],
+            "f32_bits_le": [
+              "0x3ee78654",
+              "0x3ef93cb4",
+              "0x3eb4ec4f",
+              "0x3eb29aca"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "tiled-global-coordinate",
+      "dimensions": {
+        "width": 4,
+        "height": 6
+      },
+      "source_phases": {
+        "inputTex": 7,
+        "tex": 8
+      },
+      "borrowed_alias": false,
+      "uniforms": {
+        "focalDistance": 72,
+        "aperture": 6,
+        "sampleBias": 21,
+        "depthSource": 0
+      },
+      "tile_offset": [
+        5,
+        3
+      ],
+      "full_resolution": [
+        13,
+        11
+      ],
+      "coverage": [
+        "nonzero tile offset",
+        "larger full resolution",
+        "scene uv differs from depth uv"
+      ],
+      "repeat_identity": true,
+      "output": {
+        "f32_sha256": "5bf8263027461fac632ea3744a8ba0fedfc69ae373cc9cad90cb08f19d573d78",
+        "rgba8_sha256": "ff0886de19fec0ed928225b4466c6c17b029819067a17dc2cd05e889db116f47",
+        "finite_lanes": 96,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.562035858631134,
+              0.3845040202140808,
+              0.5461881756782532,
+              0.23255814611911774
+            ],
+            "f32_bits_le": [
+              "0x3f0fe195",
+              "0x3ec4ddb6",
+              "0x3f0bd2fd",
+              "0x3e6e23b9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.556930661201477,
+              0.4296071231365204,
+              0.5005149841308594,
+              0.6976743936538696
+            ],
+            "f32_bits_le": [
+              "0x3f0e9302",
+              "0x3edbf577",
+              "0x3f0021c0",
+              "0x3f329aca"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.547339141368866,
+              0.4346006512641907,
+              0.49175816774368286,
+              0.1627907007932663
+            ],
+            "f32_bits_le": [
+              "0x3f0c1e6b",
+              "0x3ede83fa",
+              "0x3efbc7ba",
+              "0x3e26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              5
+            ],
+            "values": [
+              0.5502786040306091,
+              0.4555414021015167,
+              0.4943336546421051,
+              0.6511628031730652
+            ],
+            "f32_bits_le": [
+              "0x3f0cdf0f",
+              "0x3ee93cb9",
+              "0x3efd194d",
+              "0x3f26b29b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              3
+            ],
+            "values": [
+              0.5519802570343018,
+              0.4267076253890991,
+              0.49124300479888916,
+              0.6511628031730652
+            ],
+            "f32_bits_le": [
+              "0x3f0d4e94",
+              "0x3eda796c",
+              "0x3efb8434",
+              "0x3f26b29b"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "direct_borrow_harness": {
+    "declared_mode_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "handled_mode_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "observed_mode_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "switch_case_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "declared_equals_handled_equals_observed": true,
+    "semantic_signature_fields_exclude": [
+      "id",
+      "name",
+      "accepted",
+      "mixed_f32",
+      "mixed_f32_bits_le"
+    ],
+    "semantic_signature_count": 8,
+    "semantic_signature_unique_count": 8,
+    "invalid_enum": {
+      "id": 8,
+      "rejected": true,
+      "error": "invalid direct ABI mode 8"
+    },
+    "source_sha256": {
+      "declarations": "cb0dc2f2830beecabe415f42fb0f8f936b0111daf47b2c239dc557b821887f14",
+      "dispatch_switch": "f9f3f6fa1c64f9bc0f19ec17beb74bfc96ed020eea6be29b4ff24669b576fd06",
+      "tracked_mix": "68fca1cc91d364618a3268a5e1291cb3cd54d6339921ac1e2f607a8a174c95da",
+      "record_and_witness": "6689393de8c999a2ea8d4d0b9a80b4fa50b458a9d9782d136c2d5ad1e26d1858",
+      "copy_implementation": "f0b819104a78123378e69c07f12bf72c52eee02200bc649168954a06a08c4daa"
+    }
+  },
+  "direct_borrow_modes": [
+    {
+      "id": 0,
+      "name": "exact-depth-a-const-refs",
+      "accepted": true,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "3307b04b56ea37b6c671b51da012d86b2598f6163e96c350e48164b72b9164e4",
+      "result": {
+        "mixed_f32": 6.332539081573486,
+        "mixed_f32_bits_le": "0x40caa429"
+      }
+    },
+    {
+      "id": 1,
+      "name": "exact-depth-b-const-refs",
+      "accepted": true,
+      "declared": {
+        "branch_slot": "depthSource!=0/else",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex"
+      },
+      "observed": {
+        "branch_slot": "depthSource!=0/else",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource!=0/else",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "8fb564203d880991a01c271afb273157ff629041de091b25214728b759b18a95",
+      "result": {
+        "mixed_f32": 5.688414573669434,
+        "mixed_f32_bits_le": "0x40b6077e"
+      }
+    },
+    {
+      "id": 2,
+      "name": "exact-alias-const-refs",
+      "accepted": true,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "inputTex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": true,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": true,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "9736f7eaa7b89ee4891f2f6d01e88d57242238d0361a3b256d7e3a16f7aa7f4e",
+      "result": {
+        "mixed_f32": 6.8579301834106445,
+        "mixed_f32_bits_le": "0x40db742a"
+      }
+    },
+    {
+      "id": 3,
+      "name": "owning-value-copies",
+      "accepted": false,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface",
+        "scene_source": "tex",
+        "depth_source": "inputTex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": true,
+        "depth_owned_copy": true,
+        "owned_copy_count": 2,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 2,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 2,
+          "copied_f32_lanes": 96,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": true,
+        "depth_owned_copy": true,
+        "owned_copy_count": 2,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 2,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 2,
+          "copied_f32_lanes": 96,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "c99c655c682d302bd3a7ab87bfd77531bcafdf268b9a4727db55a72ef17d58a0",
+      "result": {
+        "mixed_f32": 6.332539081573486,
+        "mixed_f32_bits_le": "0x40caa429"
+      }
+    },
+    {
+      "id": 4,
+      "name": "mutable-references",
+      "accepted": false,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 2,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 1,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "Surface&",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 2,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 1,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "19075c4d40aa6855d4970a15346c4cf1307d2d132774752d03a6657cc26d86f8",
+      "result": {
+        "mixed_f32": 6.332539081573486,
+        "mixed_f32_bits_le": "0x40caa429"
+      }
+    },
+    {
+      "id": 5,
+      "name": "nullable-pointers-nonnull",
+      "accepted": false,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": "inputTex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 2,
+          "pointer_null_checks": 2,
+          "pointer_dereferences": 2,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": "inputTex",
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": true,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 2,
+          "pointer_null_checks": 2,
+          "pointer_dereferences": 2,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "68f91af1affa2dd96dadf038f11f868cfb744c496b2fcce28636360b2553d738",
+      "result": {
+        "mixed_f32": 6.332539081573486,
+        "mixed_f32_bits_le": "0x40caa429"
+      }
+    },
+    {
+      "id": 6,
+      "name": "wrong-order-depth-a-const-refs",
+      "accepted": false,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex"
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface&",
+        "scene_source": "inputTex",
+        "depth_source": "tex",
+        "scene_aliases_input": true,
+        "scene_aliases_tex": false,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": true,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": false,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 2,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 0,
+          "pointer_null_checks": 0,
+          "pointer_dereferences": 0,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 2,
+          "depth_lane_reads": 2,
+          "mix_calls": 1
+        }
+      },
+      "structural_signature_sha256": "92c090e36b1af8d7b17ce12458162f787b7ad6a9d8a519047dbc29d1c1de4598",
+      "result": {
+        "mixed_f32": 5.688414573669434,
+        "mixed_f32_bits_le": "0x40b6077e"
+      }
+    },
+    {
+      "id": 7,
+      "name": "nullable-pointer-null-depth",
+      "accepted": false,
+      "declared": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": null
+      },
+      "observed": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": null,
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": true,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 2,
+          "pointer_null_checks": 2,
+          "pointer_dereferences": 1,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 0,
+          "depth_lane_reads": 0,
+          "mix_calls": 0
+        }
+      },
+      "structural_signature": {
+        "branch_slot": "depthSource==0/then",
+        "abi_spelling": "const Surface*",
+        "scene_source": "tex",
+        "depth_source": null,
+        "scene_aliases_input": false,
+        "scene_aliases_tex": true,
+        "depth_aliases_input": false,
+        "depth_aliases_tex": false,
+        "scene_depth_alias": false,
+        "scene_owned_copy": false,
+        "depth_owned_copy": false,
+        "owned_copy_count": 0,
+        "null_taken": true,
+        "counters": {
+          "mode_dispatches": 1,
+          "const_ref_bindings": 0,
+          "value_copy_bindings": 0,
+          "mutable_ref_bindings": 0,
+          "nullable_pointer_bindings": 2,
+          "pointer_null_checks": 2,
+          "pointer_dereferences": 1,
+          "surface_copy_allocations": 0,
+          "copied_f32_lanes": 0,
+          "writable_probes": 0,
+          "scene_lane_reads": 0,
+          "depth_lane_reads": 0,
+          "mix_calls": 0
+        }
+      },
+      "structural_signature_sha256": "80dc8469619b6ef975c40968fe3fde85ef9fad5846e10e2ca3879914959285e4",
+      "result": {
+        "mixed_f32": -1,
+        "mixed_f32_bits_le": "0xbf800000"
+      }
+    }
+  ],
+  "negative_closure": {
+    "writable_sampler_parameter": "reject",
+    "retained_surface_reference": "reject",
+    "nullable_surface": "reject",
+    "sampler_array": "reject",
+    "sampler_return": "reject",
+    "sampler_in_state_via_helper": "reject",
+    "arbitrary_sampler_parameter_program": "reject",
+    "changed_call_order_or_aliasing": "reject",
+    "derivative_or_lod_expansion": "reject",
+    "nonempty_defines": "reject",
+    "owning_surface_copy": "reject",
+    "second_sampler_helper": "reject",
+    "stored_borrow": "reject"
+  }
+}

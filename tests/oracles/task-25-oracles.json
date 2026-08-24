@@ -1,0 +1,2076 @@
+{
+  "schema": "noisemaker-for-cpp.task25.literal-vec3-lane-index.public-canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "public_api": "kernelFactories.get(key)",
+    "canonical_identity": true,
+    "adapter_entries_absent": true,
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+  },
+  "profile": {
+    "name": "literal-vec3-lane-index-v1",
+    "keys": [
+      "classicNoisedeck/lensDistortion:lensDistortion",
+      "filter/prismaticAberration:prismaticAberration"
+    ],
+    "selected_source_sites": 11,
+    "direct_plain_assignment_lvalues": 6,
+    "reads": 5,
+    "lane_incidence_0_1_2": [
+      7,
+      3,
+      1
+    ],
+    "dynamic_or_generic_vector_index_capability": false
+  },
+  "programs": {
+    "lens": {
+      "key": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source": "sources/classicNoisedeck/lensDistortion/lensDistortion.glsl",
+      "raw_source_bytes": 8269,
+      "raw_source_sha256": "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444",
+      "normalized_source_bytes": 7723,
+      "normalized_source_sha256": "6586c49b079a3b0f4aa3538c8e735e70db088ff2e5d2ea1037e9e9c5486fdf52",
+      "defines": {},
+      "canonical_factory_name": "canonicalFactory10",
+      "canonical_factory_to_string_sha256": "151b1e868c7d2f9a446a8778d170260e5003fec540afb2623088bbf34ca8adcf",
+      "public_factory_is_canonical_identity": true,
+      "adapter_entry_absent": true,
+      "bindings": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "fullResolution:vec2@4",
+        "time:float@5",
+        "aspectLens:bool@6",
+        "shape:int@7",
+        "tint:vec3@8",
+        "alpha:float@9",
+        "vignetteAmt:float@10",
+        "distortion:float@11",
+        "speed:float@12",
+        "loopScale:float@13",
+        "aberration:float@14",
+        "hueRotation:float@15",
+        "hueRange:float@16",
+        "mode:int@17",
+        "modulate:bool@18",
+        "blendMode:int@19",
+        "saturation:float@20",
+        "passthru:float@21",
+        "fragColor:vec4@22/out"
+      ],
+      "resources": {
+        "samplers": 1,
+        "ordinary_uniforms": 20,
+        "outputs": 1,
+        "uses_texture": true,
+        "uses_derivatives": false,
+        "static_texture_sites": 3,
+        "dynamic_texture_calls_per_pixel": 3,
+        "texture_size_calls_per_pixel": 0
+      }
+    },
+    "prism": {
+      "key": "filter/prismaticAberration:prismaticAberration",
+      "source": "sources/filter/prismaticAberration/prismaticAberration.glsl",
+      "raw_source_bytes": 4247,
+      "raw_source_sha256": "513eac95fdf7f67a6839ee5d96e5bbfd76b6cfa62d3254df6fed23d8effe380e",
+      "normalized_source_bytes": 3907,
+      "normalized_source_sha256": "1c157e7f3dc7c9c122cc185812cd2988a98a52024055a482265bded7561a0860",
+      "defines": {},
+      "canonical_factory_name": "canonicalFactory117",
+      "canonical_factory_to_string_sha256": "2eab8943387658c1c28f4e089edd9b248bf441b2b77145ea137c7f979c5def02",
+      "public_factory_is_canonical_identity": true,
+      "adapter_entry_absent": true,
+      "bindings": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "fullResolution:vec2@4",
+        "time:float@5",
+        "aberrationAmt:float@6",
+        "hueRotation:float@7",
+        "hueRange:float@8",
+        "modulate:bool@9",
+        "saturation:float@10",
+        "passthru:float@11",
+        "fragColor:vec4@12/out"
+      ],
+      "resources": {
+        "samplers": 1,
+        "ordinary_uniforms": 10,
+        "outputs": 1,
+        "uses_texture": true,
+        "uses_derivatives": false,
+        "static_texture_sites": 3,
+        "dynamic_texture_calls_per_pixel": 3,
+        "texture_size_calls_per_pixel": 1
+      }
+    }
+  },
+  "fixture": {
+    "input": "top-down asymmetric deterministic F32 RGBA modular field",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "tiled_prismatic_case": true,
+    "verification": "fresh double render, immutable input, finite full output, F32/RGBA8 hashes and five probes"
+  },
+  "cases": [
+    {
+      "name": "lens-chromatic-add-static",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "dimensions": {
+        "width": 11,
+        "height": 7
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        11,
+        7
+      ],
+      "time": 0.1875,
+      "uniforms": {
+        "aspectLens": false,
+        "shape": 3,
+        "tint": [
+          0.17000000178813934,
+          0.4099999964237213,
+          0.7300000190734863
+        ],
+        "alpha": 23,
+        "vignetteAmt": -34,
+        "distortion": -47,
+        "speed": 31,
+        "loopScale": 67,
+        "aberration": 72,
+        "hueRotation": 47,
+        "hueRange": 83,
+        "mode": 0,
+        "modulate": false,
+        "blendMode": 0,
+        "saturation": 19,
+        "passthru": 61
+      },
+      "coverage": [
+        "Lens mode=0 chromatic branch",
+        "blendMode=0 add branch",
+        "static t=0",
+        "source sites 236W/236R1/236R2/237W"
+      ],
+      "input": {
+        "f32_sha256": "210954ec361387bc3773ff94559c99bef7ff3fb355cfe5203971e15d19e27d27",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.19379845261573792,
+              0.2735042870044708,
+              0.321739137172699,
+              0.35483869910240173
+            ],
+            "f32_bits_le": [
+              "0x3e46731a",
+              "0x3e8c08c1",
+              "0x3ea4bafe",
+              "0x3eb5ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              0
+            ],
+            "values": [
+              0.10852713137865067,
+              0.9316239356994629,
+              0.886956512928009,
+              0.3870967626571655
+            ],
+            "f32_bits_le": [
+              "0x3dde4379",
+              "0x3f6e7ee8",
+              "0x3f630f95",
+              "0x3ec6318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.9844961166381836,
+              0.5470085740089417,
+              0.886956512928009,
+              0.5806451439857483
+            ],
+            "f32_bits_le": [
+              "0x3f7c07f0",
+              "0x3f0c08c1",
+              "0x3f630f95",
+              "0x3f14a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              6
+            ],
+            "values": [
+              0.8992248177528381,
+              0.23931623995304108,
+              0.5043478012084961,
+              0.6129032373428345
+            ],
+            "f32_bits_le": [
+              "0x3f663399",
+              "0x3e750f51",
+              "0x3f011cf0",
+              "0x3f1ce73a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.05426356568932533,
+              0.25641027092933655,
+              0.886956512928009,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0x3d5e4379",
+              "0x3e834835",
+              "0x3f630f95",
+              "0x3ef7bdef"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
+        "rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8320554494857788,
+              0.8320554494857788,
+              0.16248103976249695,
+              0.7419354915618896
+            ],
+            "f32_bits_le": [
+              "0x3f550196",
+              "0x3f550196",
+              "0x3e26616e",
+              "0x3f3def7c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              0
+            ],
+            "values": [
+              0.8320554494857788,
+              -0.05248836427927017,
+              0.5830449461936951,
+              0.32258063554763794
+            ],
+            "f32_bits_le": [
+              "0x3f550196",
+              "0xbd56fe0a",
+              "0x3f15426f",
+              "0x3ea5294a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.28877007961273193,
+              0.2732049822807312,
+              0.3171488344669342,
+              0.6451612710952759
+            ],
+            "f32_bits_le": [
+              "0x3e93d9ac",
+              "0x3e8be186",
+              "0x3ea26155",
+              "0x3f25294a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              6
+            ],
+            "values": [
+              0.38877734541893005,
+              0.671288251876831,
+              0.6630877256393433,
+              0.9677419066429138
+            ],
+            "f32_bits_le": [
+              "0x3ec70dd3",
+              "0x3f2bd98c",
+              "0x3f29c01e",
+              "0x3f77bdef"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              -0.013757060281932354,
+              0.2797195315361023,
+              1,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0xbc61654b",
+              "0x3e8f3766",
+              "0x3f800000",
+              "0x3ef7bdef"
+            ]
+          }
+        ],
+        "finite_lanes": 308,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "lens-chromatic-alpha-modulated",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "dimensions": {
+        "width": 10,
+        "height": 8
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        10,
+        8
+      ],
+      "time": 0.4375,
+      "uniforms": {
+        "aspectLens": true,
+        "shape": 7,
+        "tint": [
+          0.7900000214576721,
+          0.12999999523162842,
+          0.3700000047683716
+        ],
+        "alpha": 57,
+        "vignetteAmt": 41,
+        "distortion": 64,
+        "speed": -28,
+        "loopScale": 43,
+        "aberration": 91,
+        "hueRotation": 213,
+        "hueRange": 46,
+        "mode": 0,
+        "modulate": true,
+        "blendMode": 1,
+        "saturation": -27,
+        "passthru": 36
+      },
+      "coverage": [
+        "Lens mode=0 chromatic branch",
+        "blendMode=1 alpha branch",
+        "modulated t=time",
+        "source lane-2 splat site 260R"
+      ],
+      "input": {
+        "f32_sha256": "91e2a51cb2076cbfcafab4a722dbc82e35f0e218a8d8ee214c1f288f20fced5a",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.2945736348628998,
+              0.470085471868515,
+              0.591304361820221,
+              0.3870967626571655
+            ],
+            "f32_bits_le": [
+              "0x3e96d25b",
+              "0x3ef0af0b",
+              "0x3f175fb9",
+              "0x3ec6318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.9069767594337463,
+              0.9658119678497314,
+              0.626086950302124,
+              0.9354838728904724
+            ],
+            "f32_bits_le": [
+              "0x3f682fa1",
+              "0x3f773f74",
+              "0x3f20473c",
+              "0x3f6f7bdf"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.23255814611911774,
+              0.14529915153980255,
+              0.46086955070495605,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3e6e23b9",
+              "0x3e14c94d",
+              "0x3eebf718",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              7
+            ],
+            "values": [
+              0.8449612259864807,
+              0.6410256624221802,
+              0.4956521689891815,
+              0.5806451439857483
+            ],
+            "f32_bits_le": [
+              "0x3f584f61",
+              "0x3f241a42",
+              "0x3efdc61f",
+              "0x3f14a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.2868216931819916,
+              0.8205128312110901,
+              0.46086955070495605,
+              0.6774193644523621
+            ],
+            "f32_bits_le": [
+              "0x3e92da4b",
+              "0x3f520d21",
+              "0x3eebf718",
+              "0x3f2d6b5b"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
+        "rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.843034565448761,
+              0.8739583492279053,
+              0.6953988671302795,
+              0.9354838728904724
+            ],
+            "f32_bits_le": [
+              "0x3f57d11d",
+              "0x3f5fbbbc",
+              "0x3f3205a9",
+              "0x3f6f7bdf"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.44709473848342896,
+              0.5393437743186951,
+              0.6030564308166504,
+              0.5699999928474426
+            ],
+            "f32_bits_le": [
+              "0x3ee4e99a",
+              "0x3f0a126f",
+              "0x3f1a61e8",
+              "0x3f11eb85"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.7769222855567932,
+              0.6697337031364441,
+              0.5933254361152649,
+              0.5806451439857483
+            ],
+            "f32_bits_le": [
+              "0x3f46e461",
+              "0x3f2b73ab",
+              "0x3f17e42d",
+              "0x3f14a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              7
+            ],
+            "values": [
+              0.3809824585914612,
+              0.3351191580295563,
+              0.500982940196991,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3ec31022",
+              "0x3eab94bd",
+              "0x3f00406b",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.2556973397731781,
+              0.5362053513526917,
+              0.3471768796443939,
+              0.6774193644523621
+            ],
+            "f32_bits_le": [
+              "0x3e82eac3",
+              "0x3f0944c1",
+              "0x3eb1c12b",
+              "0x3f2d6b5b"
+            ]
+          }
+        ],
+        "finite_lanes": 320,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "lens-prismatic-add-static",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "dimensions": {
+        "width": 9,
+        "height": 9
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        9,
+        9
+      ],
+      "time": 0.28125,
+      "uniforms": {
+        "aspectLens": true,
+        "shape": 1,
+        "tint": [
+          0.3100000023841858,
+          0.6700000166893005,
+          0.10999999940395355
+        ],
+        "alpha": 38,
+        "vignetteAmt": -63,
+        "distortion": -81,
+        "speed": 54,
+        "loopScale": 79,
+        "aberration": 63,
+        "hueRotation": 129,
+        "hueRange": 71,
+        "mode": 1,
+        "modulate": false,
+        "blendMode": 0,
+        "saturation": 44,
+        "passthru": 74
+      },
+      "coverage": [
+        "Lens mode=1 prismatic branch",
+        "blendMode=0 add branch",
+        "static t=0",
+        "source sites 247W/247R/248W"
+      ],
+      "input": {
+        "f32_sha256": "017988560354955a89ae63fe2318a5506ea89daf34d68c6d28556fe038a1da49",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.39534884691238403,
+              0.6666666865348816,
+              0.8608695864677429,
+              0.4193548262119293
+            ],
+            "f32_bits_le": [
+              "0x3eca6b2a",
+              "0x3f2aaaab",
+              "0x3f5c61f3",
+              "0x3ed6b5ad"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.7209302186965942,
+              0.03418803587555885,
+              0.365217387676239,
+              0.7419354915618896
+            ],
+            "f32_bits_le": [
+              "0x3f388ee2",
+              "0x3d0c08c1",
+              "0x3ebafdc6",
+              "0x3f3def7c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              8
+            ],
+            "values": [
+              0.4651162922382355,
+              0.7094017267227173,
+              0.03478260710835457,
+              0.9677419066429138
+            ],
+            "f32_bits_le": [
+              "0x3eee23b9",
+              "0x3f359b5a",
+              "0x3d0e7835",
+              "0x3f77bdef"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              8
+            ],
+            "values": [
+              0.7906976938247681,
+              0.07692307978868484,
+              0.48695650696754456,
+              0.5483871102333069
+            ],
+            "f32_bits_le": [
+              "0x3f4a6b2a",
+              "0x3d9d89d9",
+              "0x3ef9525d",
+              "0x3f0c6319"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.10077519714832306,
+              0.8547008633613586,
+              0.20000000298023224,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0x3dce633a",
+              "0x3f5acdad",
+              "0x3e4ccccd",
+              "0x3ef7bdef"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+        "rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.6850000619888306,
+              -0.13702590763568878,
+              0.6850000619888306,
+              0.8064516186714172
+            ],
+            "f32_bits_le": [
+              "0x3f2f5c2a",
+              "0xbe0c5085",
+              "0x3f2f5c2a",
+              "0x3f4e739d"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.6850000619888306,
+              0.1299610435962677,
+              -0.14079171419143677,
+              0.6774193644523621
+            ],
+            "f32_bits_le": [
+              "0x3f2f5c2a",
+              "0x3e051482",
+              "0xbe102bb4",
+              "0x3f2d6b5b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              8
+            ],
+            "values": [
+              0.684999942779541,
+              0.44768044352531433,
+              0.4802410304546356,
+              0.3959798216819763
+            ],
+            "f32_bits_le": [
+              "0x3f2f5c28",
+              "0x3ee5365f",
+              "0x3ef5e227",
+              "0x3ecabdde"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              8
+            ],
+            "values": [
+              0.1443541944026947,
+              0.507386326789856,
+              0.6850000619888306,
+              0.9032257795333862
+            ],
+            "f32_bits_le": [
+              "0x3e13d196",
+              "0x3f01e412",
+              "0x3f2f5c2a",
+              "0x3f6739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.24608932435512543,
+              1,
+              0.17542466521263123,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0x3e7bfed7",
+              "0x3f800000",
+              "0x3e33a286",
+              "0x3ef7bdef"
+            ]
+          }
+        ],
+        "finite_lanes": 324,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "lens-prismatic-alpha-modulated",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "dimensions": {
+        "width": 12,
+        "height": 6
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        12,
+        6
+      ],
+      "time": 0.59375,
+      "uniforms": {
+        "aspectLens": false,
+        "shape": 9,
+        "tint": [
+          0.23000000417232513,
+          0.8899999856948853,
+          0.5299999713897705
+        ],
+        "alpha": 69,
+        "vignetteAmt": 58,
+        "distortion": 76,
+        "speed": -61,
+        "loopScale": 28,
+        "aberration": 84,
+        "hueRotation": 301,
+        "hueRange": 58,
+        "mode": 1,
+        "modulate": true,
+        "blendMode": 1,
+        "saturation": -52,
+        "passthru": 47
+      },
+      "coverage": [
+        "Lens mode=1 prismatic branch",
+        "blendMode=1 alpha branch",
+        "modulated t=time",
+        "source lane-2 splat site 260R"
+      ],
+      "input": {
+        "f32_sha256": "1d2ba8321e80ef094bc02fab7732adee51ef23d079aa2f6a086a8634b6aa9a3a",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.4961240291595459,
+              0.8632478713989258,
+              0.1826086938381195,
+              0.4516128897666931
+            ],
+            "f32_bits_le": [
+              "0x3efe03f8",
+              "0x3f5cfdd0",
+              "0x3e3afdc6",
+              "0x3ee739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              0
+            ],
+            "values": [
+              0.6976743936538696,
+              0.7179487347602844,
+              0.33043476939201355,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3f329aca",
+              "0x3f37cb7d",
+              "0x3ea92ebf",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.1705426424741745,
+              0.7692307829856873,
+              0.4956521689891815,
+              0.5161290168762207
+            ],
+            "f32_bits_le": [
+              "0x3e2ea2bb",
+              "0x3f44ec4f",
+              "0x3efdc61f",
+              "0x3f042108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              5
+            ],
+            "values": [
+              0.3720930218696594,
+              0.6239316463470459,
+              0.643478274345398,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3ebe82fa",
+              "0x3f1fb9fc",
+              "0x3f24bafe",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.643410861492157,
+              0.04273504391312599,
+              0.33043476939201355,
+              0.8064516186714172
+            ],
+            "f32_bits_le": [
+              "0x3f24b693",
+              "0x3d2f0af1",
+              "0x3ea92ebf",
+              "0x3f4e739d"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
+        "rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.49598056077957153,
+              0.9223830103874207,
+              0.2816455364227295,
+              0.6899999976158142
+            ],
+            "f32_bits_le": [
+              "0x3efdf12a",
+              "0x3f6c214b",
+              "0x3e9033d8",
+              "0x3f30a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              0
+            ],
+            "values": [
+              0.8809272050857544,
+              0.5250471830368042,
+              0.6377710103988647,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3f618472",
+              "0x3f06697e",
+              "0x3f2344f6",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.7143320441246033,
+              0.6534891128540039,
+              0.3064758777618408,
+              0.6899999976158142
+            ],
+            "f32_bits_le": [
+              "0x3f36de77",
+              "0x3f274b10",
+              "0x3e9cea68",
+              "0x3f30a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              5
+            ],
+            "values": [
+              0.3456997573375702,
+              0.7899476289749146,
+              0.8391125202178955,
+              0.774193525314331
+            ],
+            "f32_bits_le": [
+              "0x3eb0ff8f",
+              "0x3f4a3a02",
+              "0x3f56d014",
+              "0x3f46318c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.3377828001976013,
+              0.17772382497787476,
+              0.32109910249710083,
+              0.8064516186714172
+            ],
+            "f32_bits_le": [
+              "0x3eacf1de",
+              "0x3e35fd3c",
+              "0x3ea4671a",
+              "0x3f4e739d"
+            ]
+          }
+        ],
+        "finite_lanes": 288,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "prism-static-origin-tile",
+      "program": "filter/prismaticAberration:prismaticAberration",
+      "dimensions": {
+        "width": 10,
+        "height": 7
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        10,
+        7
+      ],
+      "time": 0.34375,
+      "uniforms": {
+        "aberrationAmt": 77,
+        "hueRotation": 73,
+        "hueRange": 86,
+        "modulate": false,
+        "saturation": 29,
+        "passthru": 68
+      },
+      "coverage": [
+        "Prismatic static t=0",
+        "origin tile",
+        "source sites 131W/131R/132W",
+        "textureSize path"
+      ],
+      "input": {
+        "f32_sha256": "941b82422e092c6c544f7c8bd946647f96671dd913903f4a9e0758db83046a02",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5968992114067078,
+              0.09401709586381912,
+              0.4521739184856415,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0x3f18ce63",
+              "0x3dc08c09",
+              "0x3ee78357",
+              "0x3ef7bdef"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.22480620443820953,
+              0.5897436141967773,
+              0.48695650696754456,
+              0.29032257199287415
+            ],
+            "f32_bits_le": [
+              "0x3e663399",
+              "0x3f16f970",
+              "0x3ef9525d",
+              "0x3e94a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.40310078859329224,
+              0.36752137541770935,
+              0.06956521421670914,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3ece633a",
+              "0x3ebc2bc3",
+              "0x3d8e7835",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              6
+            ],
+            "values": [
+              0.03100775182247162,
+              0.8632478713989258,
+              0.104347825050354,
+              0.5161290168762207
+            ],
+            "f32_bits_le": [
+              "0x3cfe03f8",
+              "0x3f5cfdd0",
+              "0x3dd5b450",
+              "0x3f042108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.45736435055732727,
+              0.07692307978868484,
+              0.06956521421670914,
+              0.6129032373428345
+            ],
+            "f32_bits_le": [
+              "0x3eea2ba9",
+              "0x3d9d89d9",
+              "0x3d8e7835",
+              "0x3f1ce73a"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "daad9591d01855520a052fd2d89ed2e9ed32da2d93421a041e40d58b5389daff",
+        "rgba8_sha256": "5f73c9a1151a312569107b68abd705555f7d2c5540c8e3ea44abd7891a9a3640",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.896921694278717,
+              0.3227423429489136,
+              0.696340024471283,
+              0.4838709533214569
+            ],
+            "f32_bits_le": [
+              "0x3f659ca9",
+              "0x3ea53e7c",
+              "0x3f324357",
+              "0x3ef7bdef"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.22329531610012054,
+              0.8695839047431946,
+              1,
+              0.29032257199287415
+            ],
+            "f32_bits_le": [
+              "0x3e64a787",
+              "0x3f5e9d0d",
+              "0x3f800000",
+              "0x3e94a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.6538486480712891,
+              0.5343228578567505,
+              0.12861785292625427,
+              0.7096773982048035
+            ],
+            "f32_bits_le": [
+              "0x3f2762a0",
+              "0x3f08c962",
+              "0x3e03b466",
+              "0x3f35ad6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              6
+            ],
+            "values": [
+              0.34081751108169556,
+              1,
+              0.051784757524728775,
+              0.5161290168762207
+            ],
+            "f32_bits_le": [
+              "0x3eae7fa2",
+              "0x3f800000",
+              "0x3d541c41",
+              "0x3f042108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.8964341878890991,
+              0.05556735768914223,
+              0.21970297396183014,
+              0.6129032373428345
+            ],
+            "f32_bits_le": [
+              "0x3f657cb6",
+              "0x3d639a99",
+              "0x3e60f9d1",
+              "0x3f1ce73a"
+            ]
+          }
+        ],
+        "finite_lanes": 280,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "prism-modulated-offset-tile",
+      "program": "filter/prismaticAberration:prismaticAberration",
+      "dimensions": {
+        "width": 9,
+        "height": 6
+      },
+      "tile_offset": [
+        4,
+        3
+      ],
+      "full_resolution": [
+        17,
+        13
+      ],
+      "time": 0.65625,
+      "uniforms": {
+        "aberrationAmt": 93,
+        "hueRotation": 247,
+        "hueRange": 63,
+        "modulate": true,
+        "saturation": -41,
+        "passthru": 39
+      },
+      "coverage": [
+        "Prismatic modulated t=time",
+        "nonzero asymmetric tile offset/full resolution",
+        "source sites 131W/131R/132W",
+        "textureSize path"
+      ],
+      "input": {
+        "f32_sha256": "e0c2061de6e21f55af23a57351cd316586893c6d105f6e23e0b3b5a15a791155",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.6976743936538696,
+              0.2905983030796051,
+              0.7217391133308411,
+              0.5161290168762207
+            ],
+            "f32_bits_le": [
+              "0x3f329aca",
+              "0x3e94c94d",
+              "0x3f38c3e5",
+              "0x3f042108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.03875968977808952,
+              0.6239316463470459,
+              0.22608695924282074,
+              0.8387096524238586
+            ],
+            "f32_bits_le": [
+              "0x3d1ec27b",
+              "0x3f1fb9fc",
+              "0x3e678357",
+              "0x3f56b5ad"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.3720930218696594,
+              0.19658119976520538,
+              0.08695652335882187,
+              0.5806451439857483
+            ],
+            "f32_bits_le": [
+              "0x3ebe82fa",
+              "0x3e494c95",
+              "0x3db21643",
+              "0x3f14a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.6976743936538696,
+              0.5299145579338074,
+              0.539130449295044,
+              0.9032257795333862
+            ],
+            "f32_bits_le": [
+              "0x3f329aca",
+              "0x3f07a87b",
+              "0x3f0a0474",
+              "0x3f6739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.27131783962249756,
+              0.1111111119389534,
+              0.7565217614173889,
+              0.4193548262119293
+            ],
+            "f32_bits_le": [
+              "0x3e8aea2c",
+              "0x3de38e39",
+              "0x3f41ab69",
+              "0x3ed6b5ad"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "dbc929af7ba49e768bd39a0188e0f9b9426581ba564c856e6289531304c8b216",
+        "rgba8_sha256": "5f141b94b43d85418de325137173a181d705f50574f4d1ca78e01972a1044447",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8525856733322144,
+              0.6518778800964355,
+              0.5144315958023071,
+              0.5161290168762207
+            ],
+            "f32_bits_le": [
+              "0x3f5a430e",
+              "0x3f26e178",
+              "0x3f03b1ca",
+              "0x3f042108"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.21321512758731842,
+              0.3818770945072174,
+              0.25435885787010193,
+              0.8387096524238586
+            ],
+            "f32_bits_le": [
+              "0x3e5a5511",
+              "0x3ec38565",
+              "0x3e823b53",
+              "0x3f56b5ad"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.3223994970321655,
+              0.31639593839645386,
+              0.10990762710571289,
+              0.5806451439857483
+            ],
+            "f32_bits_le": [
+              "0x3ea5118c",
+              "0x3ea1fea6",
+              "0x3de11740",
+              "0x3f14a529"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.5769189596176147,
+              0.4400479793548584,
+              0.436440110206604,
+              0.9032257795333862
+            ],
+            "f32_bits_le": [
+              "0x3f13b0f6",
+              "0x3ee14df8",
+              "0x3edf7514",
+              "0x3f6739ce"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.24627260863780975,
+              0.44598108530044556,
+              0.9088341593742371,
+              0.4193548262119293
+            ],
+            "f32_bits_le": [
+              "0x3e7c2ee3",
+              "0x3ee457a2",
+              "0x3f68a95b",
+              "0x3ed6b5ad"
+            ]
+          }
+        ],
+        "finite_lanes": 216,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    }
+  ],
+  "mutations": [
+    {
+      "id": "lens-236-write-lane0-to-lane1",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "236:9-236:15",
+      "role": "direct-= lvalue",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 53,
+          "different_f32_lanes": 15,
+          "different_rgba8_bytes": 15,
+          "max_absolute_f32_difference": 0.4173913300037384,
+          "candidate_f32_sha256": "05ac1e8acd714a111640479a9909aedb5a0cca468dcf11a6df87f933bd22507e",
+          "candidate_rgba8_sha256": "7cb34e95dc4c3d6ec86f6ceaf429409d1e150c9449e73e28d217c2e340c0f516"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 77,
+          "different_f32_lanes": 20,
+          "different_rgba8_bytes": 20,
+          "max_absolute_f32_difference": 0.38191302865743637,
+          "candidate_f32_sha256": "5afe6289685f904a7fef980e04be3ff70024df5ce79ac2bf8e5623db40f9c4f7",
+          "candidate_rgba8_sha256": "cbd23fe36e0212d0176728c7e6fbc69b323be8d1c057fc02e6156149db611917"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
+          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+        }
+      ]
+    },
+    {
+      "id": "lens-236-first-read-lane0-to-lane1",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "236:24-236:30",
+      "role": "RHS read",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 33,
+          "different_f32_lanes": 10,
+          "different_rgba8_bytes": 10,
+          "max_absolute_f32_difference": 0.4173913151025772,
+          "candidate_f32_sha256": "0927c46f4f02c20e210439a010aa841834c316ff66984d33c0906e7aa77961cc",
+          "candidate_rgba8_sha256": "199b3d1ce092760754c0b37230de8d74e07b024687a1cb78a73809ad9420735d"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 89,
+          "different_f32_lanes": 24,
+          "different_rgba8_bytes": 24,
+          "max_absolute_f32_difference": 0.4173913449048996,
+          "candidate_f32_sha256": "e0d1c61a4b68a83c1d0faadaa6e873b5a51076595594d14cb73c0c50e3392a3d",
+          "candidate_rgba8_sha256": "74c2bebd36bb32a911b0f5c14c869df77c4c19a30444a044c6c64ec0642e0fd4"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
+          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+        }
+      ]
+    },
+    {
+      "id": "lens-236-second-read-lane0-to-lane2",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "236:65-236:71",
+      "role": "RHS read",
+      "source_lane": 0,
+      "wrong_lane": 2,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 46,
+          "different_f32_lanes": 13,
+          "different_rgba8_bytes": 13,
+          "max_absolute_f32_difference": 0.29414596408605576,
+          "candidate_f32_sha256": "3a5d15af27599ce5f587de954b6505e8c32e91452a11c3d1e2cc3a30686c2ddb",
+          "candidate_rgba8_sha256": "e47d0da24b67b9f1ecba341a8f8a5311a6bd51bf15dd265e41e536a1e087fe74"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 69,
+          "different_f32_lanes": 20,
+          "different_rgba8_bytes": 20,
+          "max_absolute_f32_difference": 0.28716519474983215,
+          "candidate_f32_sha256": "366e240c8d3925273a0ccadfc2738d7eec34baa5545df499640817fb65bdb30f",
+          "candidate_rgba8_sha256": "57f832960d08d4ddd021b4264836aa758253e9eb98a4c67fd0177a0519657daf"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
+          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+        }
+      ]
+    },
+    {
+      "id": "lens-237-write-lane1-to-lane2",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "237:9-237:15",
+      "role": "direct-= lvalue",
+      "source_lane": 1,
+      "wrong_lane": 2,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 621,
+          "different_f32_lanes": 175,
+          "different_rgba8_bytes": 173,
+          "max_absolute_f32_difference": 1.0000000484287739,
+          "candidate_f32_sha256": "c593e78a3b77638976d5436ba849c04e66a98cf3859e66641364405f623af8bf",
+          "candidate_rgba8_sha256": "6f3aaa0875a67cb205b72afad4bfe6d1fa44782fc96ad988655eca55f57e6629"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 820,
+          "different_f32_lanes": 231,
+          "different_rgba8_bytes": 231,
+          "max_absolute_f32_difference": 0.9499182403087616,
+          "candidate_f32_sha256": "2bfb6e35d02401fa6b1a09a7db80c86103752b017fa3d10de090faf33910f88c",
+          "candidate_rgba8_sha256": "cfae734f797e0db432fd7f90d85f2ed96d99d29449caa690534b88148f33ad04"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "7fe6ac9ba3bf66f5f3f747f635b6ce5bd9d7e1d184678a74ba1d69cc14b18b76",
+          "candidate_rgba8_sha256": "4b8ffb755c45fa8b37e686ff71fd61f66c120eeaf2644b6d871e01b6a728521b"
+        }
+      ]
+    },
+    {
+      "id": "lens-247-write-lane0-to-lane1",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "247:9-247:15",
+      "role": "direct-= lvalue",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
+          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
+          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 372,
+          "different_f32_lanes": 110,
+          "different_rgba8_bytes": 100,
+          "max_absolute_f32_difference": 0.7240171954035759,
+          "candidate_f32_sha256": "314caaa13af6d0d59d792fcf06dcfabb244d421e1ea57df54986fa6324d39867",
+          "candidate_rgba8_sha256": "ed6995c6a32ba53dde57bacaf36f560778a34080bf05ef82013b1dffa69b224c"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 639,
+          "different_f32_lanes": 180,
+          "different_rgba8_bytes": 179,
+          "max_absolute_f32_difference": 0.8516627699136734,
+          "candidate_f32_sha256": "432b1c46e7a8ee78b32066e57c48b9a2ce0dd711d8ca2ebfbc809819609daaaa",
+          "candidate_rgba8_sha256": "58657d9cc96f358f04ca6527f5c29125c36aaba1023caacfeccf14935a07d564"
+        }
+      ]
+    },
+    {
+      "id": "lens-247-read-lane0-to-lane1",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "247:26-247:32",
+      "role": "RHS read",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
+          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
+          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 381,
+          "different_f32_lanes": 112,
+          "different_rgba8_bytes": 101,
+          "max_absolute_f32_difference": 0.709000937640667,
+          "candidate_f32_sha256": "674756b348423fde13105798a276b464ffc5a779b261b9840b267733460f27b1",
+          "candidate_rgba8_sha256": "c36e46dd8e92ac7f76e1fe3d0e211fc3e978bd4db363a6380c76c7692ff3826c"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 615,
+          "different_f32_lanes": 175,
+          "different_rgba8_bytes": 172,
+          "max_absolute_f32_difference": 0.7421361617743969,
+          "candidate_f32_sha256": "a99d44fcf6161275129c7750664b6fbf723359028f6767085971d734e276ad01",
+          "candidate_rgba8_sha256": "12fb6b68810315576b4d4b0573c5601f7a118673dd9c79de15fdfa968bf56ca5"
+        }
+      ]
+    },
+    {
+      "id": "lens-248-write-lane1-to-lane2",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "248:9-248:15",
+      "role": "direct-= lvalue",
+      "source_lane": 1,
+      "wrong_lane": 2,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
+          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "3c4ff034284a714a545a35106c98e7d93398fb800f7bee2dbccffb08592a5e61",
+          "candidate_rgba8_sha256": "18b8e022320da7b278ae2935b8602f50ebcf30cfc1e5eb058e932f8d05666ada"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 456,
+          "different_f32_lanes": 128,
+          "different_rgba8_bytes": 125,
+          "max_absolute_f32_difference": 0.9691444933414459,
+          "candidate_f32_sha256": "403d9d818a5636394e5be1b73b4f7e83661b8d6da3a0d713454c2a3396de1c33",
+          "candidate_rgba8_sha256": "2164e488a3f5633be6e65b3fd3805bb44ce896c744b281d2db02694dd05c0c17"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 743,
+          "different_f32_lanes": 216,
+          "different_rgba8_bytes": 215,
+          "max_absolute_f32_difference": 0.9863568246364594,
+          "candidate_f32_sha256": "f8b9fbc2baf3fcbedc160044887563820c2cc11aabf8bc924a6e3fe571b1cd6f",
+          "candidate_rgba8_sha256": "913f73d5d54729129ba5f024f3e3ee6e47706d070931b9ddb231a94ff999197f"
+        }
+      ]
+    },
+    {
+      "id": "lens-260-read-splat-lane2-to-lane1",
+      "program": "classicNoisedeck/lensDistortion:lensDistortion",
+      "source_span": "260:46-260:52",
+      "role": "sole vec3 splat-input read",
+      "source_lane": 2,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 3,
+      "case_results": [
+        {
+          "case": "lens-chromatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "40ec6e6bcca21c55b0abe81eca5760b2e623aad76678b49b070d350d0fe49948",
+          "candidate_rgba8_sha256": "de4b64895586ce7dc92352820b5c64d5660dc1d722bd8c5392e42568385ec4b8"
+        },
+        {
+          "case": "lens-chromatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 796,
+          "different_f32_lanes": 206,
+          "different_rgba8_bytes": 206,
+          "max_absolute_f32_difference": 0.6808039213065058,
+          "candidate_f32_sha256": "d4739b67bb0b628eb7b6d1aa6d32cac44e1c126ffa16ee3e4f51e5632dda5c03",
+          "candidate_rgba8_sha256": "b7c0998b4bb54ccbc3539ee19fbb438df4f90cb1b81de7e4198d55d8169bc3a1"
+        },
+        {
+          "case": "lens-prismatic-add-static",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "0ed06880cce85cebb134fbc0cb2b5710a4a3e08dc336512e31cbaf2a5ec77688",
+          "candidate_rgba8_sha256": "204fe8f73e191091c231f159d147cb10df17b9bc88abc44c6baa75da7684b05e"
+        },
+        {
+          "case": "lens-prismatic-alpha-modulated",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 474,
+          "different_f32_lanes": 139,
+          "different_rgba8_bytes": 137,
+          "max_absolute_f32_difference": 0.7073024213314056,
+          "candidate_f32_sha256": "fb7750f50b9c7581b64b401c3794ed7273e20db23602b4d5a15521694ca15609",
+          "candidate_rgba8_sha256": "b382133de5fa9f886067f982953f85ae82ca0c4b294b509c6ab4743be0b49799"
+        }
+      ]
+    },
+    {
+      "id": "prism-131-write-lane0-to-lane1",
+      "program": "filter/prismaticAberration:prismaticAberration",
+      "source_span": "131:5-131:11",
+      "role": "direct-= lvalue",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "prism-static-origin-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 382,
+          "different_f32_lanes": 117,
+          "different_rgba8_bytes": 111,
+          "max_absolute_f32_difference": 0.5657568648457527,
+          "candidate_f32_sha256": "843afbe3ca51cc640d2196e9776aadafb318d02590592f930364a1dc169080d2",
+          "candidate_rgba8_sha256": "0cf434b313a4c5e9535c0670f8c2c0487f442504b77a3a39a516f9b472f4c42e"
+        },
+        {
+          "case": "prism-modulated-offset-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 397,
+          "different_f32_lanes": 122,
+          "different_rgba8_bytes": 119,
+          "max_absolute_f32_difference": 0.6931733787059784,
+          "candidate_f32_sha256": "b68ffe1f3d536844a0291ff3755e53619bebe8aa99d2f253e30e4cbc50e3d51b",
+          "candidate_rgba8_sha256": "d8bf93014e51be212636c945c7ef5f43db81b76e623f4ece7e5b0f3362f0ff0d"
+        }
+      ]
+    },
+    {
+      "id": "prism-131-read-lane0-to-lane1",
+      "program": "filter/prismaticAberration:prismaticAberration",
+      "source_span": "131:22-131:28",
+      "role": "RHS read",
+      "source_lane": 0,
+      "wrong_lane": 1,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "prism-static-origin-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 399,
+          "different_f32_lanes": 121,
+          "different_rgba8_bytes": 118,
+          "max_absolute_f32_difference": 0.539564348757267,
+          "candidate_f32_sha256": "ae49f53d8c49b77e7b9debc7e805d784b9eead5c313a14ef14b8b68df80621d3",
+          "candidate_rgba8_sha256": "b41a9c76b9e1f532fd8afc5be54eefa6e5f5a0b8152c8fc62ba7aa9105f656aa"
+        },
+        {
+          "case": "prism-modulated-offset-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 436,
+          "different_f32_lanes": 133,
+          "different_rgba8_bytes": 131,
+          "max_absolute_f32_difference": 0.6931733787059784,
+          "candidate_f32_sha256": "93e63ef609c7505871f27c2a90e827763e79eccf1dc756e1a0aee17fbbef9ee3",
+          "candidate_rgba8_sha256": "4fbde1d3d8299b09350ba10293ffdff6a2f1c24f346b1c7b81b9629f33a0c222"
+        }
+      ]
+    },
+    {
+      "id": "prism-132-write-lane1-to-lane2",
+      "program": "filter/prismaticAberration:prismaticAberration",
+      "source_span": "132:5-132:11",
+      "role": "direct-= lvalue",
+      "source_lane": 1,
+      "wrong_lane": 2,
+      "generated_occurrences_for_one_source_site": 1,
+      "case_results": [
+        {
+          "case": "prism-static-origin-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 460,
+          "different_f32_lanes": 134,
+          "different_rgba8_bytes": 131,
+          "max_absolute_f32_difference": 0.9915848672389984,
+          "candidate_f32_sha256": "752e71db6ba4601171a510752d2b39ed93ebc5d6dbc792d693076fb9f543bb28",
+          "candidate_rgba8_sha256": "62a2532544b5c92a6392f1aadc16704ffb9934df7d8c4835d49bc0770fd65572"
+        },
+        {
+          "case": "prism-modulated-offset-tile",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 536,
+          "different_f32_lanes": 158,
+          "different_rgba8_bytes": 157,
+          "max_absolute_f32_difference": 0.831338956952095,
+          "candidate_f32_sha256": "01a603635404c408ec50e339251c16486ac26e30f2e34e35b82e7ac153b917de",
+          "candidate_rgba8_sha256": "4e99272cba8e4005b42004311b21993bb781bd1ec0e1b29641331200dfddc7d0"
+        }
+      ]
+    }
+  ]
+}

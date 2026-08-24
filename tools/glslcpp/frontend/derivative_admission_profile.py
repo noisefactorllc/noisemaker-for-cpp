@@ -1,0 +1,274 @@
+"""Exact node-identity admission profile for the 17-program screen-space
+derivative cluster (``dFdx``/``dFdy``/``fwidth``).
+
+This module does not add a general derivative capability to the frozen
+44-entry vocabulary. It authenticates, for each of the 17 corpus programs
+below, the exact whole-program identity (source, defines, function
+inventory, loop proof, resource signature) and the exact set of
+``dFdx``/``dFdy``/``fwidth`` call-expression objects that may be lowered,
+following the same node-identity pattern already used for ``round``,
+``tanh``, ``floatBitsToUint``, and ``all``/``lessThanEqual``
+(``generate_typed_slice.py:2057-2089``).
+
+Unlike those single-program profiles, one ``PROFILE`` token here covers all
+17 programs: each carries its own frozen record (raw/normalized source
+hashes, ``functions``/``whole``/``interface`` hashes, loop proof, resource
+tuple, function inventory, and the exact derivative call-site census) inside
+one tamper-evident payload, keyed by ``program_key``. This mirrors the task
+brief's guidance to prefer one shared profile module over fifteen
+near-identical ones. Grown from 15 to 17 when ``posterize``/``waves`` landed
+their second, independently-admitted builtin gaps.
+
+``posterize`` and ``waves`` are included: each also carries a second,
+unrelated capability gap (``round`` / ``any``+``notEqual``+``bvec2``)
+admitted independently by ``posterize_round_profile.py`` /
+``waves_any_notequal_profile.py``, deliberately NOT mutually exclusive with
+this profile -- the same coexistence pattern as Grade's LUMA-weights/index-
+expression pair.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import ast
+import hashlib
+
+from .typed_ir import TypedExpression, TypedFunction, TypedProgram, TypedStatement
+
+
+PROFILE = "derivative-admission-v1"
+
+DERIVATIVE_ADMISSION_KEYS = frozenset({
+    "filter/bulge:bulge",
+    "filter/celShading:celShadingColor",
+    "filter/halftone:halftone",
+    "filter/lens:lens",
+    "filter/lensWarp:lensWarp",
+    "filter/octaveWarp:octaveWarp",
+    "filter/pinch:pinch",
+    "filter/polar:polar",
+    "filter/pondRipples:pondRipples",
+    "filter/posterize:posterize",
+    "filter/spiral:spiral",
+    "filter/stamp:stThreshold",
+    "filter/step:step",
+    "filter/stipple:stipple",
+    "filter/tunnel:tunnel",
+    "filter/warp:warp",
+    "filter/waves:waves",
+})
+
+_DERIVATIVE_BUILTINS = frozenset({"dFdx", "dFdy", "fwidth"})
+
+_PROFILE_SHA256 = "b3418a5fb5d70d3167677892a82c85d12018c9812682cf6fb25997555a8bb551"
+_FROZEN_PROFILE_TUPLE_REPR = """(('filter/bulge:bulge', 2352, '87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170', 1953, '3526dd01153e7def1e3eb6f1dff1b39cfdb1ba275aa81b92732c07206d41d060', (), '9b1c1b27669b99f6ef51a1f7796a570acf7b4be401a67402e9b59da02d7c7154', '11cd75f0fc758ad6de796bc1a1448902214f946dba727120bce3603c7e4a3faf', 'b5e71e3377314023e8738e808a6634b7827f0408447bea21a405e4a9a0aae949', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-85:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '74:19-74:33', 'vec2', '20a71d7a29d19cf3678048b7dedfac7c2710f431af3433bdab05f469296f2477', 'declaration', ('vec2',), ('ec32dffcc8ca18b768b2a5c4ef7da06c62e2a5e0fb3f1c19031378605d732666',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '75:19-75:33', 'vec2', '4046755cbb6e29423861ccac3ca587a7d22675ff06a0f828b30b6367e69d9735', 'declaration', ('vec2',), ('f722ccaa9f9b3fa6db42275e9910f4b5ec336b5a5f876f75eb44e84ebb3fd5d9',))), ((('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '74:9-74:34')), (('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '75:9-75:34')))), ('filter/celShading:celShadingColor', 2780, '90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4', 2530, '52086cb69a9db0eccff5d37d369f94f672a8290a006999f00ca81742ca1e3d4f', (), 'ab51cb78b516454f8be97ab2bb226f31efb2f3daacba4521ab93bc325a0924cd', '9012723f042dcc2fc823ffb36ef7e4cdbff48529f8ec074bd89cd00c58b9e53a', '337682508a486618d2deb6bc1c0275078132c3e5c24fc16b8e54c4553cb2e684', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias', 'lightDirection', 'strength'), ('inputTex',), ('fragColor',), True, True), ((17, 'linear_to_srgb_component', 'float', 1, 2, '24:1-29:2'), (18, 'linear_to_srgb_rgb', 'vec3', 1, 1, '39:1-45:2'), (19, 'main', 'void', 0, 22, '55:1-94:2'), (20, 'pow_vec3', 'vec3', 2, 1, '47:1-53:2'), (21, 'srgb_to_linear_component', 'float', 1, 2, '17:1-22:2'), (22, 'srgb_to_linear_rgb', 'vec3', 1, 1, '31:1-37:2')), (('fwidth', 19, (18, 's0', 's1', 'e0', 0), '84:19-84:33', 'vec3', '9f8bb2f21d35491406e75523546eefe77eb61d9887980880bd7853fc869117c6', 'declaration', ('vec3',), ('c24b82eb573678af3e3fa7704350683d23b7965ad2474e416dd7e460f55bf4b2',)),), ((('if', 'block', 'decl'), ('82:5-89:6', '82:20-87:6', '84:9-84:34')),)), ('filter/halftone:halftone', 8440, '063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7', 3828, 'f62382b453796c16948943e002b2498021827314793ab80f0fd66473c4fcb307', (('MODE', 'int', '0'), ('PATTERN', 'int', '0')), '9d055dcad8dc24cfa85c7a1a4317b0fe849e7202c512affb4c682cab23d3cebd', '5ddb9ed688497772657c9d3eda11e90eb703b151b779a580ba234f49f236697e', '2f2bdb794aeb2fbb252bf6c80fda24f0d73bb20754b11eed0a051b982cb5722f', (2, 0, 2, 9, 48, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'frequency', 'cyanAngle', 'magentaAngle', 'yellowAngle', 'blackAngle', 'monoAngle', 'sharpness', 'inkColor', 'paperColor'), ('inputTex',), ('fragColor',), True, True), ((37, 'boxBlur3', 'vec3', 2, 3, '55:1-64:2'), (38, 'cellSampleFromRuv', 'vec3', 3, 4, '71:1-76:2'), (39, 'halftoneCoverage', 'float', 3, 4, '84:1-89:2'), (40, 'lum', 'float', 1, 1, '26:1-28:2'), (41, 'main', 'void', 0, 19, '115:1-137:2'), (42, 'rgbToCmyk', 'vec4', 1, 4, '36:1-41:2'), (43, 'rotate2D', 'vec2', 2, 4, '48:1-53:2'), (44, 'roundDotCoverage', 'float', 3, 8, '100:1-113:2'), (45, 'tonemap2', 'vec3', 3, 1, '30:1-32:2')), (('fwidth', 39, (2, 'e0', 0, 0, 0, 0), '87:24-87:33', 'float', '93f6be1083c4c3ddfd255ec24766618c50d933d5354a3e73df010b8b3ce7fa20', 'binary', ('float',), ('ba4d6eb504a6e888e500072b8e9446c58652a2814eaf52ec23816d76c5ecb81b',)), ('fwidth', 44, (5, 'e0', 0, 0, 0, 0), '109:30-109:52', 'float', 'c51209ca4742a638cb51182aad20b498dd365c8b4921b3dc195f8c69b20e0ed6', 'binary', ('float',), ('7a44ce7e86059a35c92decafd790c1b407b65fc9fe13479b7af6f410ca286313',))), ((('decl',), ('87:5-87:67',)), (('decl',), ('109:5-109:86',)))), ('filter/lens:lens', 2909, '6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5', 2194, '72c7169c1f606090fd80c1a9763b757af6aed98ac54543580c480d2a04a95d61', (), '4eaba58099b88677cb99c1a603433a77be8638868cf4e3fd6ddedbc57555e249', '7ea51ed2362674cb6fddae77b82a0c5b49280021c28d3504033f98e8a99e1fa0', '370d530b1fd84b9a3e0ddb8665f189bc10bf6d4da1f84349aac583dc6fd29e7a', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'lensDisplacement', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((9, 'main', 'void', 0, 23, '15:1-79:2'),), (('dFdx', 9, (22, 's0', 's0', 'e0', 0), '66:19-66:34', 'vec2', '70aa57fde35df66eb6a2211a91c66bb2c270444463a2383023076435acf50ebc', 'declaration', ('vec2',), ('d2011ab14b62182633bbb70ccabf923ed3bd8a773465c5c65b2c806c61f36ceb',)), ('dFdy', 9, (22, 's0', 's1', 'e0', 0), '67:19-67:34', 'vec2', '33e9b6c11a26ca9b478315003742b5ee491e0ab7dad9557269c3a2d5c30465bd', 'declaration', ('vec2',), ('ebf32dce1141226c2b4d2a36f7a6f2859d90eb3e0c2ab04d31d68c677e5ccf10',))), ((('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '66:9-66:35')), (('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '67:9-67:35')))), ('filter/lensWarp:lensWarp', 4033, '543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480', 3446, '4d2c5e5d33e31c902b0506daa6f8ec0a1c76dfc3355c6c5f5604e752a6ed862d', (), 'f8c4e268beaa15b2dc4c4bdaae870d0c14d180c75440c8db57aa831ab4b67286', '8dfa839595d6a87429845ed4015cb25ac9ee162631d1b5d491ee0bfeeca2c647', 'aad79dc32807a531c08566f437e17df28d5d5f54c552626488211aa5de6c11da', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'displacement', 'speed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((20, 'grid', 'float', 2, 5, '44:1-50:2'), (21, 'main', 'void', 0, 18, '65:1-118:2'), (22, 'pcg', 'uvec3', 1, 9, '17:1-27:2'), (23, 'perlinNoise', 'float', 2, 10, '52:1-63:2'), (24, 'prng', 'vec3', 1, 4, '29:1-34:2'), (25, 'smootherstep', 'float', 1, 1, '36:1-38:2'), (26, 'smoothlerp', 'float', 3, 1, '40:1-42:2')), (('dFdx', 21, (17, 's0', 's0', 'e0', 0), '98:19-98:27', 'vec2', 'd57ec902e546cfe31dc4ba727d82799d83cc0e4b87f58ca25316ac2697acc75c', 'declaration', ('vec2',), ('0a2776c07711c1be968a90cb80fcc51bea59310315d978435c186df0144540e5',)), ('dFdy', 21, (17, 's0', 's1', 'e0', 0), '99:19-99:27', 'vec2', '18a2210cba6baa219781eac3cdefdbc5d771ba488fc5f292b6d7a66a16574d47', 'declaration', ('vec2',), ('08474a87a0cb11063848af4a6c0928758c9ad555b181bd22ccb9364fed867afe',))), ((('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '98:9-98:28')), (('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '99:9-99:28')))), ('filter/octaveWarp:octaveWarp', 4902, 'ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea', 4110, 'f2b635bd9858cc2f9f33d5490844fc331ca3f8d52f10c76b30f52d3492918a4b', (), '44d5a0bd997f31c441f25ab198858bc7fc902949014c0c350172947e0ef21ea8', '8bb2272c78dba6aa780c7b934852617e478bec35dfe47af03fb2aaffc546e492', '4b6c99dad1fc3289edd53b8d830722ab7aaec2cb6c442939c80508064de20fb7', (1, 0, 1, 10, 10, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'frequency', 'octaves', 'displacement', 'speed', 'wrap', 'seed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((25, 'hash21', 'float', 1, 2, '32:1-39:2'), (26, 'main', 'void', 0, 15, '86:1-157:2'), (27, 'noise', 'float', 1, 8, '41:1-52:2'), (28, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (29, 'simplexNoise', 'float', 4, 7, '59:1-67:2'), (30, 'wrapFloat', 'float', 3, 4, '69:1-84:2')), (('dFdx', 26, (14, 's0', 's0', 'e0', 0), '146:19-146:32', 'vec2', '7a345f7b0084acf0484dd8a2c7fb04b28ca2373f1efb876faefe3323552cf9ac', 'declaration', ('vec2',), ('b46d9fd9654f0b5a289370d87e124e9bfe49deccad329cb32943b7a7ea1d404c',)), ('dFdy', 26, (14, 's0', 's1', 'e0', 0), '147:19-147:32', 'vec2', 'e5c56800891c24d1b0eaccac2b6eb4765fabcc6a3e190ba029359dc63322453c', 'declaration', ('vec2',), ('df3d1f50ed9076235d9fa22f89facd0fb26f99b5668cf147e9c14e18b1439bbf',))), ((('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '146:9-146:33')), (('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '147:9-147:33')))), ('filter/pinch:pinch', 2296, '031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c', 1954, '2f6e983bdc1a21b043ef40ccdf5f02902a38274fcbac7db5c5f9cd231749427d', (), '9d5adc1c2e6f6976072522df0066fdf1a3c2dc490246173675fff139e9ffc7cf', 'c5c15b401c3e8601a4a2ebe97be02840fc3327b3e9ea6a94628db76e1b19f5d1', 'c502a3f375d985c7c8a74c1bbbbf32f1cc44d78b3a98fb61ef26ee5fcf03d600', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-84:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '73:19-73:33', 'vec2', 'c0114126cb10c4ec21376e314bc26874cb2bd7ffde8e38fb36a7e9208f9ba969', 'declaration', ('vec2',), ('8dd2f772f646141247b6e980c9ca35220fccf4b290b086496bab79c98d471b3c',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '74:19-74:33', 'vec2', 'a1e7cd3eae483f8d05b85afdbf660006ed369f8359dba2d444a8ad1ba9225ef5', 'declaration', ('vec2',), ('0b96611b00b4e44055db6b25b6535b4860e2267372b9819eb58712016624af35',))), ((('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '73:9-73:34')), (('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '74:9-74:34')))), ('filter/polar:polar', 2027, '391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d', 1933, 'c928b6cbc717ec436c915e763a00f23ce67eb4dd338f0bdd365dbd8dfc217785', (), '8d507070121c5ad9020357677186846e9e133b82d6f27421efafdc367699a22d', '5486890330682b31c6df1ea2e5fdcb1b4cdb1ca461efcce72007d7e327abfe9a', 'a812e3ae963a9cf4bc898d90678f536d5e502aa78efec86eb52eb2116f94aa41', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'polarMode', 'speed', 'rotation', 'scale', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((21, 'main', 'void', 0, 8, '46:1-72:2'), (22, 'polarCoords', 'vec2', 2, 6, '27:1-34:2'), (23, 'smod', 'float', 2, 1, '19:1-21:2'), (24, 'smod2', 'vec2', 2, 1, '23:1-25:2'), (25, 'vortexCoords', 'vec2', 2, 7, '36:1-44:2')), (('dFdx', 21, (7, 's0', 's0', 'e0', 0), '61:19-61:30', 'vec2', '525d95a395790c5d91788b4fa72762abf89b54d2ef11a2d472549fd9ffade116', 'declaration', ('vec2',), ('414058d43f2566233f4dd03862f071e8ea8518d536c6800e3e92d50da851ffd0',)), ('dFdy', 21, (7, 's0', 's1', 'e0', 0), '62:19-62:30', 'vec2', 'f3ad5a9e25263699d2296f69c4ab70ca6086aeb645035176ddf95c3ac19d45ce', 'declaration', ('vec2',), ('8a1d3d95ef0ab16ad0e61ae5ab84350d6c8b8991dc14f1cbddaa00bf47446c7f',))), ((('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '61:9-61:31')), (('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '62:9-62:31')))), ('filter/pondRipples:pondRipples', 5187, '2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d', 2017, '4c67016be6c30065f90ac45df03be2c633a3809bfcf992a226d9aec956710f91', (('STYLE', 'int', '2'), ('WRAP', 'int', '0')), '0a92078091db5118a786f4236ae51102d437f4ff412ff31be4c383d7ee066721', '90f998dff32ff548fcf155301f942f78009a6832483ddb3de9207be6c752de1e', 'b077289afefd2696448b3217df31da05be3f37a746431183656ae4f68094ca7f', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'amount', 'ridges', 'speed', 'time', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((11, 'main', 'void', 0, 25, '22:1-95:2'),), (('dFdx', 11, (24, 's0', 's0', 'e0', 0), '84:19-84:33', 'vec2', '5067f94b6fa789e93e1af4c7c7db81c195c29277ee417e53946f8721da4813a4', 'declaration', ('vec2',), ('b1aeb7f6e113902453c337a9a4f2b926eace9954624b08c2dc0a4204b502b008',)), ('dFdy', 11, (24, 's0', 's1', 'e0', 0), '85:19-85:33', 'vec2', '37470c371104cc1e7fd11abfb151a535ce3d742c44524e0f38d6dfdb7e7542fb', 'declaration', ('vec2',), ('02059af9182619848414f863411afc56a0942e4896ef8beabf7e3216f63a980d',))), ((('if', 'block', 'decl'), ('83:5-94:6', '83:20-92:6', '84:9-84:34')), (('if', 'block', 'decl'), ('83:5-94:6', '83:20-92:6', '85:9-85:34')))), ('filter/posterize:posterize', 2630, '460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2', 2471, '4781d189690f57de2b57aebaaa946eba004b1c57272f32a18d1f0ce06ce44393', (), '7bdcf13444da35b93bcae7c4758f92d46c26f0316f1ec4308bd1bc6e1c93e977', '74adeb96fe8c6d4a916b0b54b29ce0f9ca2dbce7f7609f3582dcf51d82f4b6e8', 'e53cc14ee2e987c2682722edd2870f0b617f1c28cae66e56e47aebe82548b81d', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((17, 'clamp_01', 'float', 1, 1, '16:1-18:2'), (18, 'linear_to_srgb_component', 'float', 1, 2, '27:1-32:2'), (19, 'linear_to_srgb_rgb', 'vec3', 1, 1, '42:1-48:2'), (20, 'main', 'void', 0, 19, '54:1-96:2'), (21, 'pow_vec3', 'vec3', 2, 1, '50:1-52:2'), (22, 'srgb_to_linear_component', 'float', 1, 2, '20:1-25:2'), (23, 'srgb_to_linear_rgb', 'vec3', 1, 1, '34:1-40:2')), (('fwidth', 20, (15, 's0', 's1', 'e0', 0), '80:19-80:33', 'vec3', 'f1315d63b64d28eedd7f82ebae6bfac6f23c59290c6a605dfb8c09329f459288', 'declaration', ('vec3',), ('6967522f9a182704ee53070549a6b1aa8ddbb4f263a61b57c9c2fc6b1a8709bd',)),), ((('if', 'block', 'decl'), ('78:5-85:6', '78:20-83:6', '80:9-80:34')),)), ('filter/spiral:spiral', 2869, '3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a', 2107, '6e516a2d27e14fbbe0c6c1b200625efbdad09283e5ee09cc8d69e5c372b3ca34', (), '96d3129f74aa9f70b713b8b66d99219c4ea9c5359bac7512e007c683b5d30516', '694cd7517a81e3aebe8b24a18e529f06fd5b534c541f1475e34f97c6a561874d', '076dcb4d51978fa60df5a9186a5a7447df28a3078e1157eafe9e64912d2d97b8', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'speed', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 17, '29:1-96:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (16, 's0', 's0', 'e0', 0), '85:19-85:33', 'vec2', '2d69beddbd2285adbc92b181d6e8ffea9d79f67366ffa4f4c1e75e887f310e21', 'declaration', ('vec2',), ('f079d8dca3fead496edf9da0e6432166bf43b914e15740804d0958599293fad6',)), ('dFdy', 16, (16, 's0', 's1', 'e0', 0), '86:19-86:33', 'vec2', '536129cbb6d8a4ed549c5113a32d2910f82e3ac541125b5358dcddc7540cb381', 'declaration', ('vec2',), ('a027e66cdba6a3004a851b7adc6517a2cbe39db7ff104b761f4b5e7680e44172',))), ((('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '85:9-85:34')), (('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '86:9-86:34')))), ('filter/stamp:stThreshold', 3467, 'd93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94', 1565, 'f6593ec857c845845201652026bd375e8860d4e107e7528a82e4519c9b085bbe', (), 'fccb3a9d9cf9b02f1f30087c58827ce3f5de4c659168c843cc283748edbcc9d1', '7a5f47aeda690b1bc649e54662dd2b47aed69f68bded0a5fc1e658bd448c456d', 'ef70990afd3060826ca720c7419901188c453957b62df786272a3f41244905cd', (1, 0, 1, 5, 5, True), (('inputTex', 'blurTex', 'resolution', 'tileOffset', 'balance', 'roughness', 'inkColor', 'paperColor'), ('inputTex', 'blurTex'), ('fragColor',), True, True), ((17, 'fbm', 'float', 1, 4, '31:1-40:2'), (18, 'hash12', 'float', 1, 3, '17:1-21:2'), (19, 'lum', 'float', 1, 1, '15:1-15:67'), (20, 'main', 'void', 0, 12, '46:1-65:2'), (21, 'tonemap2', 'vec3', 3, 1, '42:1-44:2'), (22, 'vnoise', 'float', 1, 4, '23:1-29:2')), (('fwidth', 20, (8, 'e0', 0, 0, 0), '60:20-60:29', 'float', '90dbf96779f56fe2a99dff03f9e12829706830d7d423f03e4c8b848bccd4c8d1', 'builtin', ('float',), ('5ac5381033586f5f051e3e2b9b35e6538cfe3793b3c314ba0e4b7bdb016c4b71',)),), ((('decl',), ('60:5-60:66',)),)), ('filter/step:step', 709, '4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf', 592, 'd77e236beca61d709a7b0e5320aa76b3a1e068ee0014bd3e41c31bd3fd4b0f6f', (), '52e93d37d80c993d92ee8910fa4c6804fcd5ebe3933e722c0c385ec70ba3ace8', '0aa2574412206287d46dddc3504e9909788870874a2514202270c39b0415bef2', '405fbda2028d8696ca0b0e620efeebded0037a5bbd6705b3f59aef6f84b1e08f', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'threshold', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((7, 'main', 'void', 0, 6, '12:1-26:2'),), (('fwidth', 7, (4, 's0', 's0', 'e0', 0), '19:19-19:36', 'vec3', '4e60a910e83e13ad110a54fc08afad0b3a262eb309b087358bc0099e797635d2', 'declaration', ('vec3',), ('871f69c735c5bd378c876e123b6abe14400a4829b473c2715b18f9fc93c436a3',)),), ((('if', 'block', 'decl'), ('18:5-23:6', '18:20-21:6', '19:9-19:37')),)), ('filter/stipple:stipple', 8490, '69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609', 2598, '5bf1e7ef4187d31b9b6d7836537eb7a9ba3df04eaf782629a899a47ca6ccc64f', (('MODE', 'int', '0'),), '7b5f228b32b8a64996ceaa6a54629ea640816469dffb6cc9a3268c954c9c6162', 'ccb94ec0b07abeea1f047aafe38627c4309f84f80a623c302a5ed4b4f1e7a37b', '5a609da7b87f4e672c3bc02c80393f216b9efc7ba03781a927b67a1221e8c89d', (3, 0, 2, 9, 12, True), (('inputTex', 'resolution', 'tileOffset', 'cellSize', 'grainSize', 'density', 'paperColor', 'seed'), ('inputTex',), ('fragColor',), True, True), ((23, 'fbm', 'float', 1, 4, '47:1-56:2'), (24, 'hash12', 'float', 1, 3, '21:1-25:2'), (25, 'hash22', 'vec2', 1, 3, '27:1-31:2'), (26, 'lum', 'float', 1, 1, '34:1-36:2'), (27, 'main', 'void', 0, 15, '95:1-117:2'), (28, 'rotate2D', 'vec2', 2, 4, '88:1-93:2'), (29, 'tonemap2', 'vec3', 3, 1, '82:1-84:2'), (30, 'vnoise', 'float', 1, 4, '39:1-45:2'), (31, 'voronoiCell', 'vec4', 3, 6, '62:1-79:2')), (('fwidth', 27, (11, 'e0', 0, 0, 0), '112:20-112:29', 'float', '7fdc46282f7011e6058b576dc4488a2720a84b9f33db1ecd78078083cfb06515', 'binary', ('float',), ('78e670e9c2dc2fbe6a4c618af698d3f0d8093a659cc83402e3e94a52364a7b80',)),), ((('decl',), ('112:5-112:46',)),)), ('filter/tunnel:tunnel', 3062, 'c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193', 2637, '38d97378dc7d3b0e558f08717a40a03d0369ff9776260e42cbed3e7f5ec7033c', (), '14de75890dea3ba98f0df57ecadb98a6f06bf4b3d64a6706d1c4138e110bcb5a', 'a6b7ecb1d5ab1c08a5a476e58f0b34102ff7a7a4566dabc9dd28b8c2c9d5d18a', 'd8540a43bc855db657b2f93b6910a463eadf77ba85e7cd6c5fb6cd165188baca', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'shape', 'speed', 'rotation', 'scale', 'center', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((19, 'main', 'void', 0, 16, '31:1-104:2'), (20, 'polygonShape', 'float', 2, 3, '21:1-25:2'), (21, 'smod', 'vec2', 2, 1, '27:1-29:2')), (('dFdx', 19, (13, 's0', 's0', 'e0', 0), '80:19-80:37', 'vec2', 'ad03275c33c292482bb7d39cb68276dd182a403d7c65515af00b403d59ee9e6b', 'declaration', ('vec2',), ('e1a8b82acf43a65063759ed05cfee478a4f0f54638a5d42bdbdbbdc6a3c4e17c',)), ('dFdy', 19, (13, 's0', 's1', 'e0', 0), '81:19-81:37', 'vec2', '44afbee4b3ac996e52e5c03f349b74ce4b4b69dba640507a8d3c6994e77abd33', 'declaration', ('vec2',), ('e9994e5fc09c259f4aabb033a393d94d50af0b02c90cecd41ec65391b3f0b553',))), ((('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '80:9-80:38')), (('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '81:9-81:38')))), ('filter/warp:warp', 3095, 'f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee', 2840, 'f3b4c97572bf2868710033cb82244c52233434df8c91ebde50d181983ab89e60', (), '85a83512222d058b07514fbb35aeaa78d6762434fc945bd3c9bff8e152df08bf', '6e2aa3c9af8aadcc4de8bbae83259be59902873db002ed39aca31d54750e3a9b', '55bc224d9217f43f4fff711cb897cd48fe5cff0e446305ada90b61d42a35d611', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'seed', 'speed', 'wrap', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((23, 'grid', 'float', 2, 5, '47:1-53:2'), (24, 'main', 'void', 0, 11, '68:1-105:2'), (25, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (26, 'perlinNoise', 'float', 2, 10, '55:1-66:2'), (27, 'prng', 'vec3', 1, 4, '32:1-37:2'), (28, 'smootherstep', 'float', 1, 1, '39:1-41:2'), (29, 'smoothlerp', 'float', 3, 1, '43:1-45:2')), (('dFdx', 24, (10, 's0', 's0', 'e0', 0), '94:19-94:27', 'vec2', 'a9b4fa5fe4803cab408ce7c3817daa9e49f96f4ed0e1f167ecc55bdfe383b2cc', 'declaration', ('vec2',), ('4e736d8d126b6a9b8c0555a8a7265ec517934302b94af3f9630681470b7921f0',)), ('dFdy', 24, (10, 's0', 's1', 'e0', 0), '95:19-95:27', 'vec2', '33f8835fb114c665173aa44ab38b2ef25e29a2ea6d6594ae9bac49d6e5989c74', 'declaration', ('vec2',), ('b9fb0341fd643a9b547f941684abc487ab610319feb65e9fdc65aa8d2f3ed356',))), ((('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '94:9-94:28')), (('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '95:9-95:28')))), ('filter/waves:waves', 2622, 'f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa', 2167, 'f823bcdbac0ff15096e92fcded5c07611077fb7eece203d48f9f08256e968621', (), '0c9efa54e5863e2022d6e4bc8832bfc3f5a9e11c2ffa3114c623a7faf23ec15f', '5e6ed7428f47fdc2037d08c76d7b32a24009a76ce9644bc9386922bd9ab5279e', '7e683c0e5c6ae52a90cd2481a28f96e2a163a315bc58bba7b3b7ae564605e753', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'speed', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 12, '29:1-81:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (11, 's0', 's0', 'e0', 0), '70:19-70:33', 'vec2', '60666d3f0330b9835f195e9c85456c8117fc3052756eff06d04854a2f050a34b', 'declaration', ('vec2',), ('180a8ea02aa1997c2880f94d196bf5230cd2eaa4f6027daeea1fa6f5e5c3eb1b',)), ('dFdy', 16, (11, 's0', 's1', 'e0', 0), '71:19-71:33', 'vec2', '1554f75e9231732d9eb8c318ef577983fe47c6378a5a60a75b4c6ecaa439a3a9', 'declaration', ('vec2',), ('bb7735ece0c8413f55e402e08670634885ac1b503c8549e9bfc43fa28d2e064a',))), ((('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '70:9-70:34')), (('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '71:9-71:34')))))"""
+
+_OPTIONAL_PROOF_FIELDS = (
+    "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
+    "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class DerivativeAdmissionProof:
+    program_key: str
+    nodes: tuple[TypedExpression, ...]
+    owners: tuple[TypedFunction, ...]
+    statement_parent_chains: tuple[tuple[TypedStatement, ...], ...]
+
+    @property
+    def consumed_objects(self) -> tuple[object, ...]:
+        values: list[object] = [*self.nodes, *self.owners]
+        for chain in self.statement_parent_chains:
+            values.extend(chain)
+        unique: list[object] = []
+        for value in values:
+            if not any(value is item for item in unique):
+                unique.append(value)
+        return tuple(unique)
+
+
+__all__ = ("PROFILE", "DERIVATIVE_ADMISSION_KEYS", "DerivativeAdmissionProof",
+           "authenticate_derivative_admission", "apply_derivative_admission",
+           "is_authenticated_derivative_node")
+
+
+def _sha(value: object) -> str:
+    return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
+
+
+def _span(value: object) -> str:
+    item = getattr(value, "span")
+    return (f"{item.start_line}:{item.start_column}-"
+            f"{item.end_line}:{item.end_column}")
+
+
+def _whole(program: TypedProgram) -> str:
+    return _sha((program.key, program.source, program.raw_source,
+                 program.declarations, program.functions, program.resources,
+                 program.body_status, program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.counted_loop_proof,
+                 program.preprocessor_defines))
+
+
+def _interface(program: TypedProgram) -> str:
+    return _sha((program.declarations, program.resources,
+                 program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.preprocessor_defines))
+
+
+def _profile_tuple() -> tuple[object, ...]:
+    value = ast.literal_eval(_FROZEN_PROFILE_TUPLE_REPR)
+    if not isinstance(value, tuple):
+        raise _fail("internal frozen profile tuple is not a tuple")
+    return value
+
+
+def _fail(message: str) -> ValueError:
+    return ValueError(f"{PROFILE}: {message}")
+
+
+def _walk_expression(value: TypedExpression, parent: TypedExpression | None = None,
+                     path: tuple[object, ...] = ()):
+    yield value, parent, path
+    for index, child in enumerate(value.children):
+        yield from _walk_expression(child, value, (*path, index))
+
+
+def _walk_statement(value: TypedStatement, path: tuple[object, ...] = (),
+                    ancestors: tuple[TypedStatement, ...] = ()):
+    chain = (*ancestors, value)
+    for index, expression in enumerate(value.expressions):
+        for item, parent, epath in _walk_expression(
+                expression, None, (*path, f"e{index}")):
+            yield item, parent, epath, chain
+    for index, child in enumerate(value.children):
+        yield from _walk_statement(child, (*path, f"s{index}"), chain)
+
+
+def authenticate_derivative_admission(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> DerivativeAdmissionProof:
+    """Authenticate one of the 15 derivative programs by node identity."""
+    if profile != PROFILE:
+        raise _fail("exact profile carrier required")
+    payload = _profile_tuple()
+    if _sha(payload) != _PROFILE_SHA256:
+        raise _fail("internal frozen profile tuple mismatch")
+    table = {row[0]: row[1:] for row in payload}
+    if set(table) != DERIVATIVE_ADMISSION_KEYS or len(table) != len(payload):
+        raise _fail("internal frozen profile key set mismatch")
+    if program.key not in DERIVATIVE_ADMISSION_KEYS:
+        raise _fail("key is not part of the derivative admission cluster")
+
+    (raw_bytes, raw_sha256, normalized_bytes, normalized_sha256, defines,
+     functions_sha256, whole_sha256, interface_sha256, loop_proof,
+     resources, functions, nodes, ancestors) = table[program.key]
+
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    actual_defines = tuple((item.name, item.kind, item.canonical_value)
+                           for item in program.preprocessor_defines)
+    if (source_hash != raw_sha256
+            or len(raw) != raw_bytes or hashlib.sha256(raw).hexdigest() != raw_sha256
+            or len(normalized) != normalized_bytes
+            or hashlib.sha256(normalized).hexdigest() != normalized_sha256
+            or actual_defines != defines
+            or program.body_status != "analyzed"
+            or _sha(program.functions) != functions_sha256
+            or _whole(program) != whole_sha256
+            or _interface(program) != interface_sha256):
+        raise _fail("source, define, function, whole-program, or interface mismatch")
+
+    if any(getattr(program, field, None) is not None
+           for field in _OPTIONAL_PROOF_FIELDS):
+        raise _fail("unrelated proof carrier is not absent")
+    if program.structs != () or program.uniform_blocks != ():
+        raise _fail("struct or uniform block presence mismatch")
+
+    proof = program.counted_loop_proof
+    if (proof is None or
+            (proof.loop_count, proof.unproved_loop_count,
+             proof.max_effective_depth, proof.max_lexical_product,
+             proof.entrypoint_charge, proof.call_graph_acyclic) != loop_proof):
+        raise _fail("loop or call graph profile mismatch")
+
+    if ((program.resources.uniforms, program.resources.samplers,
+         program.resources.outputs, program.resources.uses_texture,
+         program.resources.uses_derivatives) != resources):
+        raise _fail("resource or binding signature mismatch")
+    if not program.resources.uses_derivatives:
+        raise _fail("derivative resource flag must be set")
+
+    functions_sorted = tuple(sorted(program.functions, key=lambda item: item.id))
+    if tuple((item.id, item.name, item.return_type.display(),
+              len(item.parameters), len(item.body), _span(item))
+             for item in functions_sorted) != functions:
+        raise _fail("function inventory mismatch")
+    by_id = {item.id: item for item in functions_sorted}
+
+    # Census the WHOLE program: an extra dFdx/dFdy/fwidth site anywhere is a
+    # hard failure, not an unnoticed extra.
+    located: list[tuple[str, int, tuple[object, ...], TypedExpression,
+                        TypedExpression | None, tuple[TypedStatement, ...]]] = []
+    for function in functions_sorted:
+        for index, statement in enumerate(function.body):
+            for item, parent, path, chain in _walk_statement(statement, (index,)):
+                if item.kind == "builtin" and item.callee in _DERIVATIVE_BUILTINS:
+                    located.append((item.callee, function.id, path, item,
+                                    parent, chain))
+
+    if len(located) != len(nodes):
+        raise _fail(f"closure site cardinality mismatch: {len(located)}")
+
+    actual_nodes = tuple(
+        (callee, owner, path, _span(item),
+         "" if item.type is None else item.type.display(), _sha(item),
+         "None" if parent is None else parent.kind,
+         tuple("" if child.type is None else child.type.display()
+               for child in item.children),
+         tuple(_sha(child) for child in item.children))
+        for callee, owner, path, item, parent, _chain in located)
+    if actual_nodes != nodes:
+        raise _fail("closure node identity mismatch")
+
+    for callee, owner, path, item, parent, chain in located:
+        if len(item.children) != 1:
+            raise _fail("derivative builtin arity mismatch")
+        display = None if item.type is None else item.type.display()
+        if display not in ("float", "vec2", "vec3"):
+            raise _fail("derivative result type outside admitted widths")
+        argument_display = (None if item.children[0].type is None
+                            else item.children[0].type.display())
+        if argument_display != display:
+            raise _fail("derivative argument/result type mismatch")
+
+    chains = tuple(chain for _, _, _, _, _, chain in located)
+    actual_ancestors = tuple(
+        (tuple(item.kind for item in chain), tuple(_span(item) for item in chain))
+        for chain in chains)
+    if actual_ancestors != ancestors:
+        raise _fail("closure ancestry mismatch")
+
+    owners = tuple(by_id[owner] for _, owner, _, _, _, _ in located)
+    node_objects = tuple(item for _, _, _, item, _, _ in located)
+    result = DerivativeAdmissionProof(program.key, node_objects, owners, chains)
+    if len(result.nodes) != len(nodes):
+        raise _fail(
+            f"consumed object cardinality mismatch: {len(result.nodes)}")
+    return result
+
+
+def apply_derivative_admission(program: TypedProgram, source_hash: str | None,
+                               profile: str | None) -> TypedProgram:
+    """Authenticate the frozen identity profile without changing the tree."""
+    authenticate_derivative_admission(program, source_hash, profile)
+    return program
+
+
+def is_authenticated_derivative_node(
+        proof: DerivativeAdmissionProof, node: TypedExpression) -> bool:
+    """True only for the exact authenticated dFdx/dFdy/fwidth objects."""
+    return any(node is item for item in proof.nodes)

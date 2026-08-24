@@ -1,0 +1,153 @@
+{
+  "closure": {
+    "floatBitsToUint_count": 1,
+    "floatBitsToUint_sites": [
+      {
+        "ancestry_statement_kinds": [
+          "decl"
+        ],
+        "ancestry_statement_spans": [
+          "192:5-192:47"
+        ],
+        "callee": "floatBitsToUint",
+        "child_sha256": [
+          "4c2cc94f5d6f93142124122d1f36a2aa7560bdc88512eb7f27370783eb78dbac"
+        ],
+        "child_types": [
+          "float"
+        ],
+        "kind": "builtin",
+        "node_sha256": "e6b86baf243b38741b4870acfe990ce3b353f18948d38773cc853ab11ce3b6a4",
+        "operator": null,
+        "owning_function": "randomFromLatticeWithOffset",
+        "owning_function_id": 94,
+        "parent_kind": "declaration",
+        "parent_sha256": "5c09252effec3e0575ec6160f581efc10660b078f8a22c0a109b736a8a1e6c91",
+        "result_type": "uint",
+        "span": "192:21-192:46"
+      }
+    ],
+    "scalar_uint_xor_count": 3,
+    "scalar_uint_xor_sites": [
+      {
+        "ancestry_statement_kinds": [
+          "decl"
+        ],
+        "ancestry_statement_spans": [
+          "194:5-198:7"
+        ],
+        "callee": null,
+        "child_sha256": [
+          "2562f15164ab5b9481bb798dc74b9994417976020d5e6e9183421ecead9479a1",
+          "4d5400d40220fb6418ef8c6d27997a72862ff40174c4487d8bcdfba8deefacb8"
+        ],
+        "child_types": [
+          "uint",
+          "uint"
+        ],
+        "kind": "binary",
+        "node_sha256": "0ec45e30c890d1177375332f93564f8d12d8bd47805393740503edd290617445",
+        "operator": "^",
+        "owning_function": "randomFromLatticeWithOffset",
+        "owning_function_id": 94,
+        "parent_kind": "construct",
+        "parent_sha256": "2e07250ad0c9ef97f481e67866cff60784dc7d1d25ffecdcecf3c03dc87a6b91",
+        "result_type": "uint",
+        "span": "195:10-195:46"
+      },
+      {
+        "ancestry_statement_kinds": [
+          "decl"
+        ],
+        "ancestry_statement_spans": [
+          "194:5-198:7"
+        ],
+        "callee": null,
+        "child_sha256": [
+          "b5d7903129b6eb87c8dc28a936ac1d7449031b684a895995a33f608f061bdfc8",
+          "b30427f6ce552c15b34104bca4aa23b865ad0939898eb45d4ec5cdcb1545dfff"
+        ],
+        "child_types": [
+          "uint",
+          "uint"
+        ],
+        "kind": "binary",
+        "node_sha256": "7f98e820b388d74eb98c8296f798d778d63d6bdb8d67e68f9bfae73f74e56e4e",
+        "operator": "^",
+        "owning_function": "randomFromLatticeWithOffset",
+        "owning_function_id": 94,
+        "parent_kind": "construct",
+        "parent_sha256": "2e07250ad0c9ef97f481e67866cff60784dc7d1d25ffecdcecf3c03dc87a6b91",
+        "result_type": "uint",
+        "span": "196:10-196:46"
+      },
+      {
+        "ancestry_statement_kinds": [
+          "decl"
+        ],
+        "ancestry_statement_spans": [
+          "194:5-198:7"
+        ],
+        "callee": null,
+        "child_sha256": [
+          "6d5b73a65a867110b99a54ab4fd21669eeffbbffe871830809a6cc374f9df688",
+          "53bcacbea819782a268357731c1eb75d12b5019586f84dc7d33e163aef6ebcd6"
+        ],
+        "child_types": [
+          "uint",
+          "uint"
+        ],
+        "kind": "binary",
+        "node_sha256": "791b232712de5fe1a3babde2e00799603fbb523421973f9b20888f12e978b8ee",
+        "operator": "^",
+        "owning_function": "randomFromLatticeWithOffset",
+        "owning_function_id": 94,
+        "parent_kind": "construct",
+        "parent_sha256": "2e07250ad0c9ef97f481e67866cff60784dc7d1d25ffecdcecf3c03dc87a6b91",
+        "result_type": "uint",
+        "span": "197:10-197:47"
+      }
+    ],
+    "vector_uint_xor_count_already_legal": 1,
+    "vector_uint_xor_sites_already_legal": [
+      {
+        "ancestry_statement_kinds": [
+          "decl"
+        ],
+        "ancestry_statement_spans": [
+          "200:5-200:58"
+        ],
+        "callee": null,
+        "child_sha256": [
+          "0adbf907ca0cc24cd3fae5a6f6912b2592057dbc82b5fc3e6d38c413ec191579",
+          "260bea27bb77af8708016c9357665cc363f9e420e47703291248fa92c3588a55"
+        ],
+        "child_types": [
+          "uvec3",
+          "uvec3"
+        ],
+        "kind": "binary",
+        "node_sha256": "19cb0f8682e5464615145fbdc6b6fbd43c277f10c36d14dcfbc38f6e5fb10da1",
+        "operator": "^",
+        "owning_function": "randomFromLatticeWithOffset",
+        "owning_function_id": 94,
+        "parent_kind": "declaration",
+        "parent_sha256": "0c6d429b25beda806773f069f51d39829b051eabf3ca4e23c9987bdee49eb4a9",
+        "result_type": "uvec3",
+        "span": "200:19-200:57"
+      }
+    ]
+  },
+  "key": "classicNoisedeck/caustic:caustic",
+  "monkeypatch_restoration_verified": true,
+  "raw_sha256": "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d",
+  "step0_emitter_first_error": "TypedEmissionError: classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+  "step0_validator_first_error": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+  "step0_validator_first_error_reproduced_after_restore": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+  "step1_emitter_error_after_admitting_floatBitsToUint": "TypedEmissionError: classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^",
+  "step1_validator_error_after_admitting_floatBitsToUint": "classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^",
+  "step2_emitter_error_after_admitting_both": "PASS (no error)",
+  "step2_render_bytes": 33165,
+  "step2_render_sha256": "76e0d8ab80c63660b2e602a083ff5d255eba482dddecc3b6bc91e7024c5880d9",
+  "step2_validator_error_after_admitting_both": "classicNoisedeck/caustic:caustic: missing capabilities floatBitsToUint"
+}

@@ -1,0 +1,66 @@
+{
+  "raw_bytes": 16945,
+  "raw_sha256": "3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29",
+  "normalized_bytes": 5020,
+  "normalized_sha256": "823698d954e1f2f890414a22e6792ca0ca87484ee21d9043cd3c1a347fd7a4ac",
+  "defines": {
+    "DEPTH_SOURCE": 0,
+    "EXTRUDE_TYPE": 0
+  },
+  "function_count": 9,
+  "function_tuple_sha256": "cb662c33d7dda0b59a63de9d9ff5e5672e18e137ad43f18f2aa1855cf29e4bb0",
+  "whole_program_sha256": "1e02d72c7b5c61d49462310fbbcd9f1816d0440f8716bdaaace7c2396ceb36e3",
+  "interface_sha256": "0e8079c94619fc0e8ad85b401a1bd51211f504c933fa963dbf9c7cdbfaec9fe7",
+  "closure_nodes": {
+    "(12, 's1', 's8', 'e0', 0, 0)": {
+      "label": "top all",
+      "span": "159:23-159:72",
+      "kind": "builtin",
+      "callee": "all",
+      "result_type": "bool",
+      "argument_types": [
+        "bvec2"
+      ],
+      "sha256": "38eea107e78da89e0f6dd529d77520ccbea907e980df5e0bbc1f01099e8c4efb",
+      "num_children": 1
+    },
+    "(12, 's1', 's8', 'e0', 0, 0, 0)": {
+      "label": "top lessThanEqual",
+      "span": "159:27-159:71",
+      "kind": "builtin",
+      "callee": "lessThanEqual",
+      "result_type": "bvec2",
+      "argument_types": [
+        "vec2",
+        "vec2"
+      ],
+      "sha256": "3048bc23943a393e84d677ebdf15bfc97a942a43635bb8dd95227a594a1ad9e1",
+      "num_children": 2
+    },
+    "(12, 's1', 's9', 'e0', 0, 0, 1)": {
+      "label": "side all",
+      "span": "160:37-160:81",
+      "kind": "builtin",
+      "callee": "all",
+      "result_type": "bool",
+      "argument_types": [
+        "bvec2"
+      ],
+      "sha256": "51877b40b69819a50d527eef19e642e612a9027fcdb58698e707c0818825b2bf",
+      "num_children": 1
+    },
+    "(12, 's1', 's9', 'e0', 0, 0, 1, 0)": {
+      "label": "side lessThanEqual",
+      "span": "160:41-160:80",
+      "kind": "builtin",
+      "callee": "lessThanEqual",
+      "result_type": "bvec2",
+      "argument_types": [
+        "vec2",
+        "vec2"
+      ],
+      "sha256": "546f5c52a1a44cc20b6dda2b3fd66a38e8b6bc2f68adc2287fcfc8843d771e04",
+      "num_children": 2
+    }
+  }
+}

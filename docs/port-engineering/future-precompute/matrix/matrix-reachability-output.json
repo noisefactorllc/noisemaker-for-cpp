@@ -1,0 +1,1124 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.matrix.reachability.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "read_only": true,
+  "monkeypatch_used": false,
+  "keys": [
+    "classicNoisedeck/cellNoise:cellNoise",
+    "classicNoisedeck/colorLab:colorLab",
+    "classicNoisedeck/effects:effects",
+    "classicNoisedeck/glitch:glitch",
+    "classicNoisedeck/moodscape:moodscape",
+    "classicNoisedeck/noise:noise",
+    "classicNoisedeck/shapes:shapes",
+    "filter/adjust:adjust",
+    "filter/colorspace:colorspace"
+  ],
+  "rows": {
+    "classicNoisedeck/cellNoise:cellNoise": {
+      "key": "classicNoisedeck/cellNoise:cellNoise",
+      "source_sha256": "9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8",
+      "defines": {},
+      "main_present": true,
+      "reachable_function_count": 13,
+      "total_function_count": 17,
+      "dead_functions": [
+        "oklab_from_linear_srgb",
+        "rgb2hsv",
+        "rotate2D",
+        "wrapEdges"
+      ],
+      "matrix_construct_sites": [
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 74,
+          "owner_reachable": false,
+          "matrix_type": "mat2",
+          "child_count": 4,
+          "span": "198:10-198:63"
+        }
+      ],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 64,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "160:16-160:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 64,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "162:12-162:36"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 68,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "154:16-154:24"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 68,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "156:12-156:67"
+        },
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 74,
+          "owner_reachable": false,
+          "left_type": "mat2",
+          "right_type": "vec2",
+          "result_type": "vec2",
+          "left_kind": "construct",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "198:10-198:68"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "160:16-160:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "162:12-162:16"
+            }
+          ]
+        },
+        {
+          "name": "invB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "154:16-154:20"
+            }
+          ]
+        },
+        {
+          "name": "invA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "156:12-156:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    },
+    "classicNoisedeck/colorLab:colorLab": {
+      "key": "classicNoisedeck/colorLab:colorLab",
+      "source_sha256": "8a2615887cde9ad2f6adead3a6f69a9f21ac015f762e6add80f23aa293bd530a",
+      "defines": {},
+      "main_present": true,
+      "reachable_function_count": 16,
+      "total_function_count": 18,
+      "dead_functions": [
+        "desaturate",
+        "oklab_from_linear_srgb"
+      ],
+      "matrix_construct_sites": [],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "214:16-214:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 55,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "216:12-216:36"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 59,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "208:16-208:24"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 59,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "210:12-210:67"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "214:16-214:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "216:12-216:16"
+            }
+          ]
+        },
+        {
+          "name": "invB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "208:16-208:20"
+            }
+          ]
+        },
+        {
+          "name": "invA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "210:12-210:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    },
+    "classicNoisedeck/effects:effects": {
+      "key": "classicNoisedeck/effects:effects",
+      "source_sha256": "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c",
+      "defines": {
+        "EFFECT": 0,
+        "FLIP": 0
+      },
+      "main_present": true,
+      "reachable_function_count": 8,
+      "total_function_count": 28,
+      "dead_functions": [
+        "bicubic",
+        "bloom",
+        "cga",
+        "convolutionEffect",
+        "convolve",
+        "derivatives",
+        "desaturate",
+        "f",
+        "hsv2rgb",
+        "outline",
+        "pcg",
+        "pixellate",
+        "posterize",
+        "prng",
+        "random",
+        "rgb2hsv",
+        "shadow",
+        "sobel",
+        "subpixel",
+        "zoomBlur"
+      ],
+      "matrix_construct_sites": [
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "395:14-395:114"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "396:14-396:86"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "397:14-397:86"
+        },
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 87,
+          "owner_reachable": true,
+          "matrix_type": "mat2",
+          "child_count": 4,
+          "span": "117:10-117:63"
+        }
+      ],
+      "matrix_binary_sites": [
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "left_type": "mat4",
+          "right_type": "mat4",
+          "result_type": "mat4",
+          "left_kind": "binary",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": true,
+          "span": "398:14-398:23"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "left_type": "mat4",
+          "right_type": "mat4",
+          "result_type": "mat4",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": true,
+          "span": "398:14-398:19"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 65,
+          "owner_reachable": false,
+          "left_type": "vec4",
+          "right_type": "mat4",
+          "result_type": "vec4",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": false,
+          "right_is_matrix": true,
+          "span": "403:16-403:22"
+        },
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 87,
+          "owner_reachable": true,
+          "left_type": "mat2",
+          "right_type": "vec2",
+          "result_type": "vec2",
+          "left_kind": "construct",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "117:10-117:68"
+        }
+      ],
+      "matrix_global_decls": [],
+      "any_matrix_construct_reachable": true,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": true
+    },
+    "classicNoisedeck/glitch:glitch": {
+      "key": "classicNoisedeck/glitch:glitch",
+      "source_sha256": "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134",
+      "defines": {},
+      "main_present": true,
+      "reachable_function_count": 11,
+      "total_function_count": 11,
+      "dead_functions": [],
+      "matrix_construct_sites": [
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "76:14-76:114"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "77:14-77:86"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "matrix_type": "mat4",
+          "child_count": 16,
+          "span": "78:14-78:86"
+        }
+      ],
+      "matrix_binary_sites": [
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "left_type": "mat4",
+          "right_type": "mat4",
+          "result_type": "mat4",
+          "left_kind": "binary",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": true,
+          "span": "79:14-79:23"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "left_type": "mat4",
+          "right_type": "mat4",
+          "result_type": "mat4",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": true,
+          "span": "79:14-79:19"
+        },
+        {
+          "owner": "bicubic",
+          "owner_signature_id": 33,
+          "owner_reachable": true,
+          "left_type": "vec4",
+          "right_type": "mat4",
+          "result_type": "vec4",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": false,
+          "right_is_matrix": true,
+          "span": "84:16-84:22"
+        }
+      ],
+      "matrix_global_decls": [],
+      "any_matrix_construct_reachable": true,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": true
+    },
+    "classicNoisedeck/moodscape:moodscape": {
+      "key": "classicNoisedeck/moodscape:moodscape",
+      "source_sha256": "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44",
+      "defines": {
+        "COLOR_MODE": 2,
+        "NOISE_TYPE": 10
+      },
+      "main_present": true,
+      "reachable_function_count": 10,
+      "total_function_count": 25,
+      "dead_functions": [
+        "blendBicubic",
+        "blendLinearOrCosine",
+        "catmullRom3",
+        "catmullRom4",
+        "constant",
+        "constantOffset",
+        "linearToSrgb",
+        "linear_srgb_from_oklab",
+        "oklab_from_linear_srgb",
+        "pcg",
+        "positiveModulo",
+        "prng",
+        "quadratic3",
+        "randomFromLatticeWithOffset",
+        "rgb2hsv"
+      ],
+      "matrix_construct_sites": [],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 92,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "172:16-172:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 92,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "174:12-174:36"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 97,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "166:16-166:24"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 97,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "168:12-168:67"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": false,
+              "span": "172:16-172:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": false,
+              "span": "174:12-174:16"
+            }
+          ]
+        },
+        {
+          "name": "invB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "166:16-166:20"
+            }
+          ]
+        },
+        {
+          "name": "invA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "168:12-168:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": false,
+      "matrix_matrix_multiply_present": false
+    },
+    "classicNoisedeck/noise:noise": {
+      "key": "classicNoisedeck/noise:noise",
+      "source_sha256": "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663",
+      "defines": {
+        "COLOR_MODE": 6,
+        "LOOP_OFFSET": 300,
+        "METRIC": 0,
+        "REFRACT_MODE": 2,
+        "NOISE_TYPE": 10
+      },
+      "main_present": true,
+      "reachable_function_count": 15,
+      "total_function_count": 40,
+      "dead_functions": [
+        "blendBicubic",
+        "blendLinearOrCosine",
+        "catmullRom3",
+        "catmullRom4",
+        "circles",
+        "concentric",
+        "constant",
+        "constantFromLattice",
+        "constantFromLatticeWithOffset",
+        "constantOffset",
+        "cubic",
+        "diamonds",
+        "latticeValue",
+        "linearToSrgb",
+        "linear_srgb_from_oklab",
+        "oklab_from_linear_srgb",
+        "pcg",
+        "positiveModulo",
+        "prng",
+        "quadratic3",
+        "random",
+        "rgb2hsv",
+        "rings",
+        "shape",
+        "srgbToLinear"
+      ],
+      "matrix_construct_sites": [
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 167,
+          "owner_reachable": true,
+          "matrix_type": "mat2",
+          "child_count": 4,
+          "span": "371:10-371:63"
+        }
+      ],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 150,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "507:16-507:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 150,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "509:12-509:36"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 157,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "501:16-501:24"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 157,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "503:12-503:67"
+        },
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 167,
+          "owner_reachable": true,
+          "left_type": "mat2",
+          "right_type": "vec2",
+          "result_type": "vec2",
+          "left_kind": "construct",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "371:10-371:68"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": false,
+              "span": "507:16-507:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": false,
+              "span": "509:12-509:16"
+            }
+          ]
+        },
+        {
+          "name": "invB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "501:16-501:20"
+            }
+          ]
+        },
+        {
+          "name": "invA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "503:12-503:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": true,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    },
+    "classicNoisedeck/shapes:shapes": {
+      "key": "classicNoisedeck/shapes:shapes",
+      "source_sha256": "60bc6e76ac9d9f5bc83638fa934b279499559f7733806e462cea16a4cbe85eb0",
+      "defines": {
+        "LOOP_A_OFFSET": 40,
+        "LOOP_B_OFFSET": 30
+      },
+      "main_present": true,
+      "reachable_function_count": 32,
+      "total_function_count": 36,
+      "dead_functions": [
+        "oklab_from_linear_srgb",
+        "random",
+        "rgb2hsv",
+        "rotate2D"
+      ],
+      "matrix_construct_sites": [
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 143,
+          "owner_reachable": false,
+          "matrix_type": "mat2",
+          "child_count": 4,
+          "span": "44:10-44:63"
+        }
+      ],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 124,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "611:16-611:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 124,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "613:12-613:36"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 130,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "605:16-605:24"
+        },
+        {
+          "owner": "oklab_from_linear_srgb",
+          "owner_signature_id": 130,
+          "owner_reachable": false,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "607:12-607:67"
+        },
+        {
+          "owner": "rotate2D",
+          "owner_signature_id": 143,
+          "owner_reachable": false,
+          "left_type": "mat2",
+          "right_type": "vec2",
+          "result_type": "vec2",
+          "left_kind": "construct",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "44:10-44:68"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "611:16-611:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "613:12-613:16"
+            }
+          ]
+        },
+        {
+          "name": "invB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "605:16-605:20"
+            }
+          ]
+        },
+        {
+          "name": "invA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": false,
+          "references": [
+            {
+              "owner": "oklab_from_linear_srgb",
+              "owner_reachable": false,
+              "span": "607:12-607:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    },
+    "filter/adjust:adjust": {
+      "key": "filter/adjust:adjust",
+      "source_sha256": "dc1d8456ff2bb6d00ecc62af33ef3a730a990b18b7037d29a29a6e3a3b963ce8",
+      "defines": {},
+      "main_present": true,
+      "reachable_function_count": 6,
+      "total_function_count": 6,
+      "dead_functions": [],
+      "matrix_construct_sites": [],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "71:16-71:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 25,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "72:12-72:36"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "71:16-71:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "72:12-72:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    },
+    "filter/colorspace:colorspace": {
+      "key": "filter/colorspace:colorspace",
+      "source_sha256": "602f1a2ce0abd59e8e17753c8ec9b49d01fbe0f169d60ad290d294904e02f705",
+      "defines": {},
+      "main_present": true,
+      "reachable_function_count": 4,
+      "total_function_count": 4,
+      "dead_functions": [],
+      "matrix_construct_sites": [],
+      "matrix_binary_sites": [
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "id",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "41:16-41:24"
+        },
+        {
+          "owner": "linear_srgb_from_oklab",
+          "owner_signature_id": 14,
+          "owner_reachable": true,
+          "left_type": "mat3",
+          "right_type": "vec3",
+          "result_type": "vec3",
+          "left_kind": "id",
+          "right_kind": "binary",
+          "left_is_matrix": true,
+          "right_is_matrix": false,
+          "span": "42:12-42:36"
+        }
+      ],
+      "matrix_global_decls": [
+        {
+          "name": "fwdA",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "41:16-41:20"
+            }
+          ]
+        },
+        {
+          "name": "fwdB",
+          "storage": "const",
+          "type": "mat3",
+          "reference_count": 1,
+          "any_reference_reachable": true,
+          "references": [
+            {
+              "owner": "linear_srgb_from_oklab",
+              "owner_reachable": true,
+              "span": "42:12-42:16"
+            }
+          ]
+        }
+      ],
+      "any_matrix_construct_reachable": false,
+      "any_matrix_binary_reachable": true,
+      "matrix_matrix_multiply_present": false
+    }
+  }
+}

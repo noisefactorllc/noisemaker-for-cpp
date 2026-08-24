@@ -1,0 +1,5188 @@
+{
+  "schema": "noisemaker-task12-canonical-oracles-v1",
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "node": "v24.7.0",
+  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+  "factory_hash_contract": "SHA-256 over exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key].",
+  "base": {
+    "output": {
+      "width": 9,
+      "height": 7,
+      "top_down": true
+    },
+    "time": 0.375,
+    "seed": 7,
+    "tileOffset": [
+      -5,
+      3
+    ],
+    "fullResolution": [
+      17,
+      13
+    ],
+    "canonical_binding_note": "resolution and aspect are overwritten by createCanonicalBindings to f32(9,7) and f32(9/7)."
+  },
+  "sources": {
+    "classicNoisedeck/coalesce:coalesce": {
+      "source": "sources/classicNoisedeck/coalesce/coalesce.glsl",
+      "raw_sha256": "a0f96df68ce058e5e2154c78880b5a611eaf5ab9adcd64242368978c813b6b58",
+      "factory_source_sha256": "bfdfd1ceb1aa2b75f751198b169a427f00b1af8e0b5594f0e7a6a7f032550a76",
+      "pass_index": 0
+    },
+    "classicNoisedeck/composite:composite": {
+      "source": "sources/classicNoisedeck/composite/composite.glsl",
+      "raw_sha256": "ae3f29a129016653a5705647cb61c5c6448504e44ad321539fb4ce2e120d9123",
+      "factory_source_sha256": "526ce6655cb361a420686cecdec82a9b1aef2f88ea15dff8543068dd1f297bdf",
+      "pass_index": 0
+    },
+    "filter/hs:hs": {
+      "source": "sources/filter/hs/hs.glsl",
+      "raw_sha256": "5449441668f1ed62da954294285b5fbeae48b7c9feeecbfbe3b56bcc9afae4d7",
+      "factory_source_sha256": "5c213702d23b807786c66be0d616435962571353201c2452c82225564870b585",
+      "pass_index": 0
+    },
+    "filter/repeat:repeat": {
+      "source": "sources/filter/repeat/repeat.glsl",
+      "raw_sha256": "6fe9a919129c3424f66c145aca77b4a4101c7edc46828c2d85bff40d4f67ebbc",
+      "factory_source_sha256": "0583968f42e073da6e6fc0785570c8c90b81b36f64ed69ca874317fbd5987248",
+      "pass_index": 0
+    },
+    "filter/scale:scale": {
+      "source": "sources/filter/scale/scale.glsl",
+      "raw_sha256": "a45f000ee12c498d7a11a04ecc56e911c9fc804ad9cde60cc7cea47533a19ce3",
+      "factory_source_sha256": "1b09cf8be5e9ad3fb0562f03d146487d3b37dd3aa2eb194c18ead47a93e61d9a",
+      "pass_index": 0
+    },
+    "filter/scroll:scroll": {
+      "source": "sources/filter/scroll/scroll.glsl",
+      "raw_sha256": "ce2117916b0d9513890942332835c6cfd1753a39d9d773626c66c6107050d457",
+      "factory_source_sha256": "789e28bf42b58d1f37bc792da97dbd95c605f417c2a3043aea354257cce5e1c4",
+      "pass_index": 0
+    },
+    "filter/translate:translate": {
+      "source": "sources/filter/translate/translate.glsl",
+      "raw_sha256": "70f5c44a2d8275f3dd51a9c11fa997dbb0ffc829c5b3565d651ebbfa246db987",
+      "factory_source_sha256": "1ddb6a5b87d17b2980429288907c48c8966215acf29904fd0230d7811c233dd1",
+      "pass_index": 0
+    },
+    "mixer/patternMix:patternMix": {
+      "source": "sources/mixer/patternMix/patternMix.glsl",
+      "raw_sha256": "b7fab7bc3646f4936fa2f730a07df9ffb9fd36b21250410fc5d0f4718a06d21d",
+      "factory_source_sha256": "705d7ea1b621e206faafbdbcdda9d80004e903a971dd32ff8fab553a601c2d33",
+      "pass_index": 0
+    },
+    "mixer/shapeMask:shapeMask": {
+      "source": "sources/mixer/shapeMask/shapeMask.glsl",
+      "raw_sha256": "2503c37ae4bb9f81b5d77931445b69743067b7e43370a50779d5a09d86bf0374",
+      "factory_source_sha256": "efca4bf4386ab77e1f9aeb74cdd29d8055f46841669b60e773a7b36a71f1f3b6",
+      "pass_index": 0
+    },
+    "mixer/split:split": {
+      "source": "sources/mixer/split/split.glsl",
+      "raw_sha256": "5e6aa68831e8e5749d76f8cc9721d2dadca6149f06f79991bdf671106f04c0b8",
+      "factory_source_sha256": "0eafdc490c031452eb335f6871c9e11dca9b976f01fca631ab8cbd14f985c713",
+      "pass_index": 0
+    },
+    "mixer/uvRemap:uvRemap": {
+      "source": "sources/mixer/uvRemap/uvRemap.glsl",
+      "raw_sha256": "ec2514ab283fa6cd67687c3cbf717d4d8596d3bdc075a7ea3d7c7dab800694e5",
+      "factory_source_sha256": "b22891498e48bf505b58529763b8441ae23c4ab51cd68b47b0b8a9c868e01711",
+      "pass_index": 0
+    },
+    "synth/modPattern:modPattern": {
+      "source": "sources/synth/modPattern/modPattern.glsl",
+      "raw_sha256": "5bf4fc9ed8fdf68fa58e9c66f79e1f42624234500f89fb1ee63da64839d3dc2e",
+      "factory_source_sha256": "f8d396510b4848adea02993065bf5707b57be91167dc77345d8044bd53013284",
+      "pass_index": 0
+    },
+    "synth/pattern:pattern": {
+      "source": "sources/synth/pattern/pattern.glsl",
+      "raw_sha256": "d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c",
+      "factory_source_sha256": "a308ea050c1a34d2777fe353bbb8a779b721363c4262757096de20146e18defd",
+      "pass_index": 0
+    }
+  },
+  "partial_pass_truth": {
+    "classicNoisedeck/coalesce:coalesce": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "classicNoisedeck/composite:composite": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "filter/hs:hs": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "filter/repeat:repeat": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "filter/scale:scale": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "filter/scroll:scroll": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "filter/translate:translate": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "mixer/patternMix:patternMix": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "mixer/shapeMask:shapeMask": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "mixer/split:split": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "mixer/uvRemap:uvRemap": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "synth/modPattern:modPattern": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph",
+    "synth/pattern:pattern": "single pass; caller supplies metadata-declared sampler inputs where present; no adapter/render graph"
+  },
+  "fixture_contract": {
+    "surface_api": "Surface.fromRgba8(width,height,bytes); bytes are top-down storage; canonical nearest sampler has bottom-left shader coordinates.",
+    "byte_formula": "formula fixtures: r=(31*x+17*y+13*tag)%256; g=(11*x+47*y+29*tag)%256; b=(67*x+19*y+7*tag)%256; a=(255-23*x-37*y-5*tag)&255.",
+    "texture_fixtures": {
+      "rgba_tag1_5x3": {
+        "kind": "formula",
+        "width": 5,
+        "height": 3,
+        "tag": 1
+      },
+      "rgba_tag23_7x2": {
+        "kind": "formula",
+        "width": 7,
+        "height": 2,
+        "tag": 23
+      },
+      "rgba_tag37_4x6": {
+        "kind": "formula",
+        "width": 4,
+        "height": 6,
+        "tag": 37
+      },
+      "constant_a_5x3": {
+        "kind": "constant",
+        "width": 5,
+        "height": 3,
+        "rgba": [
+          51,
+          153,
+          26,
+          102
+        ]
+      },
+      "constant_b_7x2": {
+        "kind": "constant",
+        "width": 7,
+        "height": 2,
+        "rgba": [
+          230,
+          77,
+          179,
+          204
+        ]
+      },
+      "hue_negative_3x2": {
+        "kind": "constant",
+        "width": 3,
+        "height": 2,
+        "rgba": [
+          230,
+          10,
+          180,
+          177
+        ],
+        "coverage": "red max with g-b<0, forcing negative scalar mod input in rgb2hsv"
+      }
+    }
+  },
+  "probe_layout": {
+    "pixel_indices": [
+      0,
+      31,
+      62
+    ],
+    "lanes": "RGBA little-endian Float32 bit hex; 3 pixels x 4 lanes = 12 float-bit probes"
+  },
+  "known_equivalences": {
+    "classicNoisedeck/coalesce:coalesce": {
+      "groups": [
+        [
+          "blend2",
+          "blend3",
+          "blend7",
+          "blend15"
+        ]
+      ],
+      "note": "Distinct authored blend-mode arms produce the same exact canonical grid under the asymmetric formula fixtures. They remain separate variants because each arm must be locked."
+    },
+    "classicNoisedeck/composite:composite": {
+      "groups": [
+        [
+          "mode1",
+          "mode8",
+          "mode9"
+        ],
+        [
+          "mode2",
+          "mode2Far"
+        ],
+        [
+          "mode3",
+          "mode4",
+          "mode2Near"
+        ],
+        [
+          "mode14",
+          "mode1Far"
+        ]
+      ],
+      "note": "These are fixture-conditioned canonical equivalences among separately exercised threshold/blend arms; branch cases remain separately recorded."
+    },
+    "mixer/uvRemap:uvRemap": {
+      "groups": [
+        [
+          "map1_channel2_wrap2",
+          "fallbacks"
+        ]
+      ],
+      "note": "The explicit nonzero mapSource/channel-else/wrap-else fallback is canonically equivalent to the representative map1/channel2/wrap2 case."
+    }
+  },
+  "variants": [
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend0",
+      "coverage": "blend mode 0; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 0,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "97dd85fd6dbce05a97547a57f6d635a5a709b41ba90f3a0daeaee122e462c0f6",
+      "rgba8_sha256": "dced92b303abbead204edbe034f652745ba54202d0ba9c5e8fe5512f49c55401",
+      "probes": {
+        "0": [
+          "3f72f2f3",
+          "3f6eeeef",
+          "3e9f9fa0",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f4d4d4e",
+          "3f616162",
+          "3f747474",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f72f2f3",
+          "3f6eeeef",
+          "3f0d0d0d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend1",
+      "coverage": "blend mode 1; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 1,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "010e98b26d5f6d11f1718bc0c343f64a02539e74b0d251304370125e00f83360",
+      "rgba8_sha256": "b9c4ca55c9be71fb6dc752539a6c85c580ec8e7dd7320f2a1e2e42e2641b4d2b",
+      "probes": {
+        "0": [
+          "3f49033e",
+          "3f42f930",
+          "3e58c0a8",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ee6092d",
+          "3f00e040",
+          "3f07735f",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f2a229b",
+          "3f380451",
+          "3ee5e4e4",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend2",
+      "coverage": "blend mode 2; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 2,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "e3e883d48f8eedf9f0aaccb4944d84b096bcf34b4a8a88657fd4b0741fdb462a",
+      "rgba8_sha256": "b030e63c975c7d9f2b2a0b9afad4e93162c225ca396c9a5fc24c6ee25667ee5e",
+      "probes": {
+        "0": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ec6c6c7",
+          "3ed2d2d3",
+          "3ef0f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend3",
+      "coverage": "blend mode 3; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 3,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "e3e883d48f8eedf9f0aaccb4944d84b096bcf34b4a8a88657fd4b0741fdb462a",
+      "rgba8_sha256": "b030e63c975c7d9f2b2a0b9afad4e93162c225ca396c9a5fc24c6ee25667ee5e",
+      "probes": {
+        "0": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ec6c6c7",
+          "3ed2d2d3",
+          "3ef0f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend4",
+      "coverage": "blend mode 4; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 4,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "16041dc80ee5178474a01ea40a8a505c5a45cb4c3df85c1450b345e3a055c1dc",
+      "rgba8_sha256": "74b0dd10bc88d961544f04fba9e85638783b0f30f57004fdaf15a3dd5d6bb008",
+      "probes": {
+        "0": [
+          "3f48c8c9",
+          "3f42c2c3",
+          "3e4ccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ed3d3d4",
+          "3eefeff0",
+          "3ef7f7f8",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f29a9aa",
+          "3f37b7b8",
+          "3e4ccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend5",
+      "coverage": "blend mode 5; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 5,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "1c25c866a2ba32469e9742c88f7e98279195d84a493ab37f0f4a73ce4538117c",
+      "rgba8_sha256": "01a782720c33dc05beeeff915d29c5c940d1ec6b268c5503b60f3ff4077c3511",
+      "probes": {
+        "0": [
+          "3f101010",
+          "3f0a0a0a",
+          "3de4e4e5",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f404040",
+          "3f444444",
+          "3f6d6d6e",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f2f2f2f",
+          "3f151515",
+          "3eb3b3b4",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend6",
+      "coverage": "blend mode 6; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 6,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "d069ee7802684b68933c586e29ddf36f71b9aa20395cbcec669d2d57869dc482",
+      "rgba8_sha256": "b16833853a09b7e3b15796cc07963aa64336484c5781e811d19f11f7934fc98e",
+      "probes": {
+        "0": [
+          "3f219100",
+          "3f2064a9",
+          "3e88bbef",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f432b13",
+          "3f496786",
+          "3f6dd740",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f3a5774",
+          "3f287dd3",
+          "3ed2389f",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend7",
+      "coverage": "blend mode 7; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 7,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "e3e883d48f8eedf9f0aaccb4944d84b096bcf34b4a8a88657fd4b0741fdb462a",
+      "rgba8_sha256": "b030e63c975c7d9f2b2a0b9afad4e93162c225ca396c9a5fc24c6ee25667ee5e",
+      "probes": {
+        "0": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ec6c6c7",
+          "3ed2d2d3",
+          "3ef0f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend8",
+      "coverage": "blend mode 8; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 8,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "8df042311d6246611c8943527d0680d66fb8bf3c53dde3e3397f1708ddd8a747",
+      "rgba8_sha256": "8a41124d09c78487025fc06de361902e9965fa8321b6ee60288435449aa48065",
+      "probes": {
+        "0": [
+          "3f6a59ca",
+          "3f63276c",
+          "3e142dc8",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f2d14fd",
+          "3f415f7e",
+          "3f69d33c",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f64011e",
+          "3f60358b",
+          "3e76295e",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend9",
+      "coverage": "blend mode 9; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 9,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "54a4e6c5c2ac39904394ee80bc94c7b3268fb56bb0b40f7d3e53f0c4c9aebd19",
+      "rgba8_sha256": "a30bfa597b2538c3e9000ddb0448f78b8253db4faa4e307562a928e219ac11fe",
+      "probes": {
+        "0": [
+          "3f65e5e6",
+          "3f5dddde",
+          "3e58d8d9",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f46c6c7",
+          "3f52d2d3",
+          "3f70f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f65e5e6",
+          "3f5dddde",
+          "3ee6e6e7",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend10",
+      "coverage": "blend mode 10; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 10,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "0eba4cb58aec5b8e28267fde3ea52621641b8e5a834ebd932980a852377b80bc",
+      "rgba8_sha256": "e498b09ba8005d8111da2fdaeb2477b870d0c6f43525d701393d45a3de831dc7",
+      "probes": {
+        "0": [
+          "3f575758",
+          "3f505050",
+          "3e52d2d3",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f185858",
+          "3f256566",
+          "3f367676",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f47c7c8",
+          "3f4acacb",
+          "3ea6a6a7",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend11",
+      "coverage": "blend mode 11; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 11,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "aa08828b6905a370b6803e0994f0f7bbdcd37bd5f5c3b994b2d32e3db06a4c3f",
+      "rgba8_sha256": "2ef61859ad040cde81da9715a9271396c630454fa45fbcb350611029c1b6d6c2",
+      "probes": {
+        "0": [
+          "3f400851",
+          "3f379574",
+          "3dfa942e",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ed0e901",
+          "3eeaccaf",
+          "3ef78e25",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f241587",
+          "3f2e0359",
+          "3e2e47e2",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend12",
+      "coverage": "blend mode 12; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 12,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "5a9bdd243c8e3546d249355735adc77f4f027fc5c626fd08c898ba5b3d904643",
+      "rgba8_sha256": "691c5bfa4bc802f45ec9325180891d76b3470973e4431da3aa5af7c7ad049471",
+      "probes": {
+        "0": [
+          "3f2a2a2a",
+          "3f2c2c2c",
+          "3e9f9f9f",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f4d4d4e",
+          "3f616162",
+          "3f747474",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f494949",
+          "3f373737",
+          "3f0d0d0d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend13",
+      "coverage": "blend mode 13; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 13,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "d8cf67de2bcb45a8601f54714e41932ce8516d7c9822bf2ddfa534b5d02ac73d",
+      "rgba8_sha256": "6406114e5d74b570aad63f790b0cea9f9ff22c050e8cb2529e3de6faf990733a",
+      "probes": {
+        "0": [
+          "3f6a59ca",
+          "3f63276c",
+          "3e142dc8",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3edb0b3c",
+          "3f016345",
+          "3efe2b59",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f55381b",
+          "3f60358b",
+          "3eb91f86",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend14",
+      "coverage": "blend mode 14; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 14,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "2a72bc28555439f5cd50708f60c89507bb185ea9d301aea5db4156e12fe5c4fb",
+      "rgba8_sha256": "6a048fb6988a59141173557055e70207fb0fde33e925837f79683d2334a536ad",
+      "probes": {
+        "0": [
+          "3f55d5d6",
+          "3f53d3d4",
+          "3f169697",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f068686",
+          "3f0e8e8e",
+          "3f038384",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f36b6b7",
+          "3f48c8c9",
+          "3eb2b2b2",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend15",
+      "coverage": "blend mode 15; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 15,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "e3e883d48f8eedf9f0aaccb4944d84b096bcf34b4a8a88657fd4b0741fdb462a",
+      "rgba8_sha256": "b030e63c975c7d9f2b2a0b9afad4e93162c225ca396c9a5fc24c6ee25667ee5e",
+      "probes": {
+        "0": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ec6c6c7",
+          "3ed2d2d3",
+          "3ef0f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3ee5e5e6",
+          "3eddddde",
+          "3dcccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend16",
+      "coverage": "blend mode 16; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 16,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "3cd0b5d51880aa489c8aa57d5550162a12a410a7517bed4cd5d128bbebea4314",
+      "rgba8_sha256": "814372e7e5f0295360b38b9de4b1e186d38d3eb393aa8aa93e5949049a5b850d",
+      "probes": {
+        "0": [
+          "3f6ea65e",
+          "3f690b2e",
+          "3e942dc7",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f483c30",
+          "3f556474",
+          "3f7125da",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f6b7a08",
+          "3f67923d",
+          "3ef6295d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend17",
+      "coverage": "blend mode 17; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 17,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "8544639f3c57b4baf86aba51f609fa581187de4d8f40de12f88d83e98fd3114e",
+      "rgba8_sha256": "9be011e81b437f1306d2663e52328b1fbbc9260a3cada4d06d11bcf5a8d4ff1b",
+      "probes": {
+        "0": [
+          "3f57e57c",
+          "3f513ff8",
+          "3e238738",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3eec9271",
+          "3f0a7af1",
+          "3f0b98b0",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f40ba1c",
+          "3f491ff9",
+          "3ec6c45c",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "blend18",
+      "coverage": "blend mode 18; asymmetric two-texture refracted alpha",
+      "bindings": {
+        "blendMode": 18,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "02d8fe233dd0b3f9d7e98e9ac9506d416171aaab8e48c574fefb63c6b6402559",
+      "rgba8_sha256": "13ba700ea98744eea9def8c768fc677edd618494bd83c61402b5c14f36794140",
+      "probes": {
+        "0": [
+          "3f3bbbbc",
+          "3f31b1b2",
+          "3dcccccd",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ec6c6c7",
+          "3ed2d2d3",
+          "3ef0f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f1c9c9d",
+          "3f26a6a7",
+          "3dcccccd",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1000",
+      "coverage": "HSV blend arm 1000; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1000,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "4f936dcacfa894d969837b80ccdef19599bba16b56ec905f6a0ab9732be3c8d4",
+      "rgba8_sha256": "bfef8307b61ff2402cc8c0d1dacce10df0a840a4413bbe8bb2ea46504e271712",
+      "probes": {
+        "0": [
+          "3f48c8c9",
+          "3f423260",
+          "3e58d8d8",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ecdcdce",
+          "3ee0294e",
+          "3f070707",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f4ccccd",
+          "3f473482",
+          "3ea0a0a1",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1001",
+      "coverage": "HSV blend arm 1001; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1001,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "71faabeb22159fa0c80835a53babd0b281c7eecabdf9d490fe194aaed5b4acba",
+      "rgba8_sha256": "2bacf96b0b99ea26c93091d05195fdad7ee35a948cac7c4a7045b8e0d83c2d8a",
+      "probes": {
+        "0": [
+          "3f65e5e6",
+          "3f5ebf50",
+          "3e4cccce",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f4c86b6",
+          "3f61e1e2",
+          "3f5bdbdc",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f0c8c8d",
+          "3f367bfa",
+          "3f0c8c8d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1002",
+      "coverage": "HSV blend arm 1002; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1002,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "79f2f32e9abcd657d696adc9c8cb7b3a04a1ee9ce012b8c6d900d12dc4dabad2",
+      "rgba8_sha256": "ab31ff46412a6396ea0beee57f5d2d55bfefcd1b7c3295118bdbedb55a642c22",
+      "probes": {
+        "0": [
+          "3f48c8c9",
+          "3f426d78",
+          "3e32dd59",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ee02f50",
+          "3eefeff0",
+          "3f047ae1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f06f5a2",
+          "3f26dc9f",
+          "3ee6e6e7",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1003",
+      "coverage": "HSV blend arm 1003; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1003,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "c56e4546631f9e9010bd997327ca1435bb8ec29f87167edfeb939a04b81d9950",
+      "rgba8_sha256": "742664dadd912b3f14a79ab7cade9521752981edc8aebb86c18ad7b658c95dff",
+      "probes": {
+        "0": [
+          "3f65e5e6",
+          "3f5e702d",
+          "3e7faa54",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f0077a4",
+          "3f209a4c",
+          "3f70f0f1",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f65e5e6",
+          "3f5fdcae",
+          "3ebf319b",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1004",
+      "coverage": "HSV blend arm 1004; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1004,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "02a6c56b5401a2482fb8b60597c5a2516a738a0c5680b72110b1a151eac0e24c",
+      "rgba8_sha256": "a172f7327e9024f0f6434f6309d158019c7ebeed50f647f3fa579ec429a045d6",
+      "probes": {
+        "0": [
+          "3f65e5e6",
+          "3f5f3188",
+          "3e7faa54",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3f19646d",
+          "3f61e1e2",
+          "3f158cb9",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f38f227",
+          "3f4c0c68",
+          "3f0c8c8d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "hsv1005",
+      "coverage": "HSV blend arm 1005; rgb2hsv negative mod and hsv2rgb sectors",
+      "bindings": {
+        "blendMode": 1005,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "59dd13159cefe5d01861c0d21e749bd869eee9808990f28a5c1afc6feca42fa1",
+      "rgba8_sha256": "bf9578683acb572624c98e6390178e00e87cd4179f1c076abca5f7728d17c665",
+      "probes": {
+        "0": [
+          "3f48c8c9",
+          "3f41c520",
+          "3e32dd59",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3edecb99",
+          "3eec4c4c",
+          "3f070707",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f4ccccd",
+          "3f45a53a",
+          "3e367122",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "cloak100",
+      "coverage": "special cloak main-path branch",
+      "bindings": {
+        "blendMode": 100,
+        "mixAmt": 50,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "06a4b6bdfeb87ebac2b8746d1cb87a653432a9be54d1e2bf14c787afb0f2ba4e",
+      "rgba8_sha256": "06f3512c3e40857ecd5978e0c929f9ecc4269a0053ea9b7766678fbaae3d24aa",
+      "probes": {
+        "0": [
+          "3ec23535",
+          "3f4d00e8",
+          "3e53e4ec",
+          "3e77f7f9"
+        ],
+        "31": [
+          "3f077d94",
+          "3f381baf",
+          "3ec42070",
+          "3e68d70a"
+        ],
+        "62": [
+          "3f333334",
+          "3f35cd18",
+          "3ece5d85",
+          "3e07953e"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "factorHalf",
+      "coverage": "blend factor == 0.5 branch",
+      "bindings": {
+        "blendMode": 10,
+        "mixAmt": 0.5,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "175a02c6b6f312fe1e96e83046efac5df4caaacd09b0acc82d3c8d27c05d6528",
+      "rgba8_sha256": "d31a5ee03d93287dc62c4b83b4f9fee5310a209faa0bfc53a642acebc9b1c092",
+      "probes": {
+        "0": [
+          "3f48c8c9",
+          "3f42c2c3",
+          "3e58d8d9",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ed3d3d4",
+          "3eefeff0",
+          "3ef7f7f8",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f29a9aa",
+          "3f37b7b8",
+          "3ee6e6e7",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "factorLow",
+      "coverage": "blend factor < 0.5 branch",
+      "bindings": {
+        "blendMode": 10,
+        "mixAmt": 0.25,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "5e993773b3e0f57325c1cddbe366977e60f785d01be1938b4def671914170b39",
+      "rgba8_sha256": "c3687230c83f7c1b144ee5ecb1cfc9db9f98d8b5dee7151b37e470ad1903a372",
+      "probes": {
+        "0": [
+          "3f48db6b",
+          "3f42d41c",
+          "3e58d123",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3ed44ab1",
+          "3ef0643b",
+          "3ef88dac",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f29d037",
+          "3f37d022",
+          "3ee694a9",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/coalesce:coalesce",
+      "variant": "alphaNegative",
+      "coverage": "mode1 negative mix amount branch",
+      "bindings": {
+        "blendMode": 1,
+        "mixAmt": -37,
+        "refractAAmt": 43,
+        "refractBAmt": 61,
+        "refractADir": -137,
+        "refractBDir": 211
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "9711c8c238fb1ce6a92a904618d0a66d5bd28e8dbed3f7f0bec06c2e8544c173",
+      "rgba8_sha256": "158ff2f84e964bab7ea5553ad33e9cfa47f0833844948bb6227d991247f913b8",
+      "probes": {
+        "0": [
+          "3f44451d",
+          "3f3e8ecb",
+          "3e5ab70f",
+          "3ea8a8a9"
+        ],
+        "31": [
+          "3d758617",
+          "3dfaddf4",
+          "3d1eabec",
+          "3f7afafb"
+        ],
+        "62": [
+          "3f12a1b1",
+          "3f29219b",
+          "3f0c047d",
+          "3f028283"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode0",
+      "coverage": "composite blend arm 0; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 0,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "1c97ee807c26e716990d362cc0d80bf6ee69e0d1d5648617da5f71d0dd24adb4",
+      "rgba8_sha256": "184fe3300052193070ee37ee5bc9901c499b29c378d665fe6c86a4bb788b0021",
+      "probes": {
+        "0": [
+          "3f246988",
+          "3f4a4cdc",
+          "3f1b203f",
+          "3f26e979"
+        ],
+        "31": [
+          "3f246988",
+          "3f4a4cdc",
+          "3f1b203f",
+          "3f26e979"
+        ],
+        "62": [
+          "3f246988",
+          "3f4a4cdc",
+          "3f1b203f",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode1",
+      "coverage": "composite blend arm 1; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 1,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "06b8dded3cb3f30524aacf8a8644808ee9d3142063030db2cbc195d0a2a99116",
+      "rgba8_sha256": "4e419de20f12944324c0ad6ef9f7ef6ed7fef1936977905f0ed5e3c96f3b0f53",
+      "probes": {
+        "0": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "31": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "62": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode2",
+      "coverage": "composite blend arm 2; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 2,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "45d6f828e4ea8e0b1870f11ecc5c6c7d2663a9eb01c8f058a4885afc48274ded",
+      "rgba8_sha256": "095a9894b8b9368ed433e9afe2ab6233153eba1e1d35171ce73fa78ac1163e34",
+      "probes": {
+        "0": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ],
+        "31": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ],
+        "62": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode3",
+      "coverage": "composite blend arm 3; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 3,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "c4e5526867dd5900e871968f69fbf817cd4e725ab2a3f41c4ae7415ff160a935",
+      "rgba8_sha256": "83e8b74fb862d8d9d82bce1edaf28781f27dc2245c3170e11ca501c304cdaea8",
+      "probes": {
+        "0": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "31": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "62": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode4",
+      "coverage": "composite blend arm 4; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 4,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "c4e5526867dd5900e871968f69fbf817cd4e725ab2a3f41c4ae7415ff160a935",
+      "rgba8_sha256": "83e8b74fb862d8d9d82bce1edaf28781f27dc2245c3170e11ca501c304cdaea8",
+      "probes": {
+        "0": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "31": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "62": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode5",
+      "coverage": "composite blend arm 5; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 5,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "f6bb7c19d94c08601d7515eb4fedf7a9a001851330a8390c55ddaad66f9ca89f",
+      "rgba8_sha256": "8f6df0b1523ef39e74988a6a477411b46a389f578ce724cbd93f246387571586",
+      "probes": {
+        "0": [
+          "3e50d349",
+          "3f192c38",
+          "3dd7b26d",
+          "3f26e979"
+        ],
+        "31": [
+          "3e50d349",
+          "3f192c38",
+          "3dd7b26d",
+          "3f26e979"
+        ],
+        "62": [
+          "3e50d349",
+          "3f192c38",
+          "3dd7b26d",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode6",
+      "coverage": "composite blend arm 6; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 6,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "9268c15fb4ee01a292d0684b1a52c4ea676edb4c23ad34ec239746b8a074601c",
+      "rgba8_sha256": "8f6df0b1523ef39e74988a6a477411b46a389f578ce724cbd93f246387571586",
+      "probes": {
+        "0": [
+          "3e4fcffb",
+          "3f1947be",
+          "3dd5f727",
+          "3f26e979"
+        ],
+        "31": [
+          "3e4fcffb",
+          "3f1947be",
+          "3dd5f727",
+          "3f26e979"
+        ],
+        "62": [
+          "3e4fcffb",
+          "3f1947be",
+          "3dd5f727",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode7",
+      "coverage": "composite blend arm 7; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 7,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "a8ed2b07653714ca34e1582ecabf785a538044ebaf145aa81c486ee6925e155e",
+      "rgba8_sha256": "8f6df0b1523ef39e74988a6a477411b46a389f578ce724cbd93f246387571586",
+      "probes": {
+        "0": [
+          "3e50e270",
+          "3f192a9d",
+          "3dd7cc55",
+          "3f26e979"
+        ],
+        "31": [
+          "3e50e270",
+          "3f192a9d",
+          "3dd7cc55",
+          "3f26e979"
+        ],
+        "62": [
+          "3e50e270",
+          "3f192a9d",
+          "3dd7cc55",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode8",
+      "coverage": "composite blend arm 8; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 8,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "06b8dded3cb3f30524aacf8a8644808ee9d3142063030db2cbc195d0a2a99116",
+      "rgba8_sha256": "4e419de20f12944324c0ad6ef9f7ef6ed7fef1936977905f0ed5e3c96f3b0f53",
+      "probes": {
+        "0": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "31": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "62": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode9",
+      "coverage": "composite blend arm 9; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 9,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "06b8dded3cb3f30524aacf8a8644808ee9d3142063030db2cbc195d0a2a99116",
+      "rgba8_sha256": "4e419de20f12944324c0ad6ef9f7ef6ed7fef1936977905f0ed5e3c96f3b0f53",
+      "probes": {
+        "0": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "31": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ],
+        "62": [
+          "3f66e6e7",
+          "3e9a9a9b",
+          "3f33b3b4",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode10",
+      "coverage": "composite blend arm 10; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 10,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "8ad251010e45694aa33d8b15cc373ec4ea939518fb0980d64565bd7d6192bfe5",
+      "rgba8_sha256": "3d8ea2b6aea6301f4fc48637bff3288cfff2e8053f8d15aa471e607c2278b2c9",
+      "probes": {
+        "0": [
+          "3eec0f57",
+          "3efa7357",
+          "3ea67316",
+          "3f26e979"
+        ],
+        "31": [
+          "3eec0f57",
+          "3efa7357",
+          "3ea67316",
+          "3f26e979"
+        ],
+        "62": [
+          "3eec0f57",
+          "3efa7357",
+          "3ea67316",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode11",
+      "coverage": "composite blend arm 11; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 11,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "1d32ab11e44c649af34b0c02b9cd12176cf2bb11cbdf0aedc11c0d94c949e066",
+      "rgba8_sha256": "8e8641d593f9a3f217b366635070c8c11e2673b6b3286bc5d2f4fe3f0454016a",
+      "probes": {
+        "0": [
+          "3eed4249",
+          "3ef9f105",
+          "3ea77973",
+          "3f26e979"
+        ],
+        "31": [
+          "3eed4249",
+          "3ef9f105",
+          "3ea77973",
+          "3f26e979"
+        ],
+        "62": [
+          "3eed4249",
+          "3ef9f105",
+          "3ea77973",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode12",
+      "coverage": "composite blend arm 12; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 12,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "f9a57fb222beb76f05b866c94460ad1ef19b24234b3e35cefba13f5877e6737c",
+      "rgba8_sha256": "3d8ea2b6aea6301f4fc48637bff3288cfff2e8053f8d15aa471e607c2278b2c9",
+      "probes": {
+        "0": [
+          "3eecbcee",
+          "3efa29a3",
+          "3ea70776",
+          "3f26e979"
+        ],
+        "31": [
+          "3eecbcee",
+          "3efa29a3",
+          "3ea70776",
+          "3f26e979"
+        ],
+        "62": [
+          "3eecbcee",
+          "3efa29a3",
+          "3ea70776",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode13",
+      "coverage": "composite blend arm 13; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 13,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "2b66470c3293f8b8353678bcb2de80526ee766c1b4a371582c598ffc93370943",
+      "rgba8_sha256": "8f6df0b1523ef39e74988a6a477411b46a389f578ce724cbd93f246387571586",
+      "probes": {
+        "0": [
+          "3e515418",
+          "3f191e8c",
+          "3dd88ea0",
+          "3f26e979"
+        ],
+        "31": [
+          "3e515418",
+          "3f191e8c",
+          "3dd88ea0",
+          "3f26e979"
+        ],
+        "62": [
+          "3e515418",
+          "3f191e8c",
+          "3dd88ea0",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode14",
+      "coverage": "composite blend arm 14; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 14,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "81f480969103a5beccbbc4bebf5be36d879ca79d77cec83bb8341c2e3be379d4",
+      "rgba8_sha256": "49e4052901e2320afd0ed1313ce86b8320aeb36950009e15945185e47b5b0b31",
+      "probes": {
+        "0": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ],
+        "31": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ],
+        "62": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode15",
+      "coverage": "composite blend arm 15; distinct two-texture alpha",
+      "bindings": {
+        "inputColor": [
+          0.20000000298023224,
+          0.6000000238418579,
+          0.10196078568696976
+        ],
+        "blendMode": 15,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "faf24b99534240f5903c0a1acd1c434d42e9078ef74bd588ba47c805fcd91aa1",
+      "rgba8_sha256": "95fe0daf3fe4b585a15f7c2bd576b225fea408baafb54a8b40c500465ef81107",
+      "probes": {
+        "0": [
+          "00000000",
+          "3f197dd3",
+          "3f3e890d",
+          "3f26e979"
+        ],
+        "31": [
+          "00000000",
+          "3f197dd3",
+          "3f3e890d",
+          "3f26e979"
+        ],
+        "62": [
+          "00000000",
+          "3f197dd3",
+          "3f3e890d",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode0Far",
+      "coverage": "mode0 distance > threshold arms",
+      "bindings": {
+        "inputColor": [
+          0,
+          0,
+          0
+        ],
+        "blendMode": 0,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "c5682747a8aa283055f968e637ed58d2f474703fc81514ac1d3e555ab7069386",
+      "rgba8_sha256": "679b80af8175ef1746d0c585ff6f011dd2bd7b636419ddb67b01a61c8b1f32a6",
+      "probes": {
+        "0": [
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f26e979"
+        ],
+        "31": [
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f26e979"
+        ],
+        "62": [
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f4a4cdc",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode1Far",
+      "coverage": "mode1 false greenscreen branch",
+      "bindings": {
+        "inputColor": [
+          0,
+          0,
+          0
+        ],
+        "blendMode": 1,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "81f480969103a5beccbbc4bebf5be36d879ca79d77cec83bb8341c2e3be379d4",
+      "rgba8_sha256": "49e4052901e2320afd0ed1313ce86b8320aeb36950009e15945185e47b5b0b31",
+      "probes": {
+        "0": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ],
+        "31": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ],
+        "62": [
+          "3f246988",
+          "3ed31082",
+          "3ef5bd6c",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode2Near",
+      "coverage": "mode2 true greenscreen branch",
+      "bindings": {
+        "inputColor": [
+          0.9019607901573181,
+          0.3019607961177826,
+          0.7019608020782471
+        ],
+        "blendMode": 2,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "c4e5526867dd5900e871968f69fbf817cd4e725ab2a3f41c4ae7415ff160a935",
+      "rgba8_sha256": "83e8b74fb862d8d9d82bce1edaf28781f27dc2245c3170e11ca501c304cdaea8",
+      "probes": {
+        "0": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "31": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ],
+        "62": [
+          "3e4ccccd",
+          "3f19999a",
+          "3dd0d0d1",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "classicNoisedeck/composite:composite",
+      "variant": "mode2Far",
+      "coverage": "mode2 false greenscreen branch",
+      "bindings": {
+        "inputColor": [
+          0,
+          0,
+          0
+        ],
+        "blendMode": 2,
+        "range": 1,
+        "mixAmt": 63
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "constant_a_5x3",
+        "tex": "constant_b_7x2"
+      },
+      "f32_sha256": "45d6f828e4ea8e0b1870f11ecc5c6c7d2663a9eb01c8f058a4885afc48274ded",
+      "rgba8_sha256": "095a9894b8b9368ed433e9afe2ab6233153eba1e1d35171ce73fa78ac1163e34",
+      "probes": {
+        "0": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ],
+        "31": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ],
+        "62": [
+          "3eeb6124",
+          "3efabd4d",
+          "3ea5de31",
+          "3f26e979"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector0",
+      "coverage": "hsv2rgb sector rotation 0; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 0,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "23b828a89115e9673d5352bb2e3b531c3073e54c8667572579c04e8ac113d601",
+      "rgba8_sha256": "724734ca08e9535d7894d7e471277daff7ba9444657c9ecef989274f311b84a7",
+      "probes": {
+        "0": [
+          "3f66e6d6",
+          "c2785051",
+          "c1569683",
+          "3f31b1b2"
+        ],
+        "31": [
+          "3f66e6d6",
+          "c2785051",
+          "c1569683",
+          "3f31b1b2"
+        ],
+        "62": [
+          "3f66e6d6",
+          "c2785051",
+          "c1569683",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector60",
+      "coverage": "hsv2rgb sector rotation 60; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 60,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "97ba221ba8c35588003fc8fa71fa869b2c84e8318caf8c9ca54e40946fdad34b",
+      "rgba8_sha256": "724734ca08e9535d7894d7e471277daff7ba9444657c9ecef989274f311b84a7",
+      "probes": {
+        "0": [
+          "3f66e6d6",
+          "c23f0f15",
+          "c2785051",
+          "3f31b1b2"
+        ],
+        "31": [
+          "3f66e6d6",
+          "c23f0f15",
+          "c2785051",
+          "3f31b1b2"
+        ],
+        "62": [
+          "3f66e6d6",
+          "c23f0f15",
+          "c2785051",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector120",
+      "coverage": "hsv2rgb sector rotation 120; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 120,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "4ca720a4e2cadab0bf8f935693407e951381efbe27c43a259cc1e13583e77eeb",
+      "rgba8_sha256": "0dec6ec68a855ff1eac848ab875b0a5bab6c3b1edb7de46a70fb6397a163906b",
+      "probes": {
+        "0": [
+          "c1569683",
+          "3f66e6d6",
+          "c2785051",
+          "3f31b1b2"
+        ],
+        "31": [
+          "c1569683",
+          "3f66e6d6",
+          "c2785051",
+          "3f31b1b2"
+        ],
+        "62": [
+          "c1569683",
+          "3f66e6d6",
+          "c2785051",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector180",
+      "coverage": "hsv2rgb sector rotation 180; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 180,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "4744261d950a958af5edc6efa1b8bec35ed9867811851c385ef5c83ce558a055",
+      "rgba8_sha256": "0dec6ec68a855ff1eac848ab875b0a5bab6c3b1edb7de46a70fb6397a163906b",
+      "probes": {
+        "0": [
+          "c2785051",
+          "3f66e6d6",
+          "c23f0f15",
+          "3f31b1b2"
+        ],
+        "31": [
+          "c2785051",
+          "3f66e6d6",
+          "c23f0f15",
+          "3f31b1b2"
+        ],
+        "62": [
+          "c2785051",
+          "3f66e6d6",
+          "c23f0f15",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector240",
+      "coverage": "hsv2rgb sector rotation 240; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 240,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "0fa1d68e8824cd8655d14c97afe3ab84c4f2fdc71e1c071d2fb576865dc9a886",
+      "rgba8_sha256": "2b0fee1e1ff67cd0d05845d9128b053e39dbb69457174eb04f0ef266f9dbf7fa",
+      "probes": {
+        "0": [
+          "c2785051",
+          "c1569687",
+          "3f66e6d6",
+          "3f31b1b2"
+        ],
+        "31": [
+          "c2785051",
+          "c1569687",
+          "3f66e6d6",
+          "3f31b1b2"
+        ],
+        "62": [
+          "c2785051",
+          "c1569687",
+          "3f66e6d6",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/hs:hs",
+      "variant": "sector300",
+      "coverage": "hsv2rgb sector rotation 300; source rgb2hsv has negative (g-b)/delta mod",
+      "bindings": {
+        "rotation": 300,
+        "hueRange": 100,
+        "saturation": 73
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "hue_negative_3x2"
+      },
+      "f32_sha256": "7adc2e0002f94dbaf6f724f6e7cfe27a153a143c02a8249cdf0fa3839d0f8240",
+      "rgba8_sha256": "2b0fee1e1ff67cd0d05845d9128b053e39dbb69457174eb04f0ef266f9dbf7fa",
+      "probes": {
+        "0": [
+          "c23f0f17",
+          "c2785051",
+          "3f66e6d6",
+          "3f31b1b2"
+        ],
+        "31": [
+          "c23f0f17",
+          "c2785051",
+          "3f66e6d6",
+          "3f31b1b2"
+        ],
+        "62": [
+          "c23f0f17",
+          "c2785051",
+          "3f66e6d6",
+          "3f31b1b2"
+        ]
+      }
+    },
+    {
+      "key": "filter/repeat:repeat",
+      "variant": "wrap0",
+      "coverage": "wrap mirror negative mod with negative tiled coordinate",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -2.700000047683716,
+        "y": 3.4000000953674316,
+        "offsetX": -0.8299999833106995,
+        "offsetY": 0.6700000166893005,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "6bf0356ef1872be7e8bb65979a0b93ba25e45aefea915dcd1e766df0ec1a99a6",
+      "rgba8_sha256": "023bd2ff84dab48219a952a4915d52107a3a3e1e2ff6c69f943473639af2b30c",
+      "probes": {
+        "0": [
+          "3d888889",
+          "3ed6d6d7",
+          "3eb2b2b3",
+          "3f800000"
+        ],
+        "31": [
+          "3e888889",
+          "3f78f8f9",
+          "3f129293",
+          "3f800000"
+        ],
+        "62": [
+          "3da0a0a1",
+          "3f3ebebf",
+          "3e70f0f1",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/repeat:repeat",
+      "variant": "wrap1",
+      "coverage": "wrap repeat fract with negative tiled coordinate",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -2.700000047683716,
+        "y": 3.4000000953674316,
+        "offsetX": -0.8299999833106995,
+        "offsetY": 0.6700000166893005,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "fc09d55e6a6d247d0d8ada961bf67dcb11360901269c42dec55f2d073c8e7d82",
+      "rgba8_sha256": "d62e8c43a065d34b3840c1535a2a77e750ad7d833f13a71ab10ff6646f3e31c4",
+      "probes": {
+        "0": [
+          "3f61e1e2",
+          "3e44c4c5",
+          "3c40c0c1",
+          "3f800000"
+        ],
+        "31": [
+          "3e888889",
+          "3f78f8f9",
+          "3f129293",
+          "3f800000"
+        ],
+        "62": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/repeat:repeat",
+      "variant": "wrap2",
+      "coverage": "wrap clamp fallback with negative tiled coordinate",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -2.700000047683716,
+        "y": 3.4000000953674316,
+        "offsetX": -0.8299999833106995,
+        "offsetY": 0.6700000166893005,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "e51124bccc9def1208fdf206091fd8a56ef928bd8f4c2c17a48678f5297c7d98",
+      "rgba8_sha256": "1ade32a276bdaf67eef3ba09ee893235696431adc1d2da733dba8df545fad08d",
+      "probes": {
+        "0": [
+          "3e78f8f9",
+          "3ea4a4a5",
+          "3f4ccccd",
+          "3f800000"
+        ],
+        "31": [
+          "3e78f8f9",
+          "3ea4a4a5",
+          "3f4ccccd",
+          "3f800000"
+        ],
+        "62": [
+          "3e78f8f9",
+          "3ea4a4a5",
+          "3f4ccccd",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scale:scale",
+      "variant": "wrap0",
+      "coverage": "scale wrap 0 with negative mirror/repeat/clamp coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "scaleX": -1.7000000476837158,
+        "scaleY": 2.299999952316284,
+        "centerX": 0.7300000190734863,
+        "centerY": -0.6100000143051147,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "de18e845862037a5f7c902c4616fa5f4e99d4041e2cfe65947236c02f8da3f4e",
+      "rgba8_sha256": "3844ba13d472e7dd260da5ddbf3830054e8a14e8a3da515f471fe773feb6bbc7",
+      "probes": {
+        "0": [
+          "3ea4a4a5",
+          "3f54d4d5",
+          "3f42c2c3",
+          "3f800000"
+        ],
+        "31": [
+          "3e088889",
+          "3f1a9a9b",
+          "3ed8d8d9",
+          "3f800000"
+        ],
+        "62": [
+          "3f61e1e2",
+          "3e44c4c5",
+          "3c40c0c1",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scale:scale",
+      "variant": "wrap1",
+      "coverage": "scale wrap 1 with negative mirror/repeat/clamp coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "scaleX": -1.7000000476837158,
+        "scaleY": 2.299999952316284,
+        "centerX": 0.7300000190734863,
+        "centerY": -0.6100000143051147,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "4e0f684dd96525d8b744af6ef355421da34fffbd583f1b8a9591f0ef23b0d464",
+      "rgba8_sha256": "effa6aa74b0b276699ded0ba011762a5f3fb299e6583736a72d1bea8fb74fbd2",
+      "probes": {
+        "0": [
+          "3e828283",
+          "3f25a5a6",
+          "3f2fafb0",
+          "3f800000"
+        ],
+        "31": [
+          "3e4ccccd",
+          "3f49c9ca",
+          "3efefeff",
+          "3f800000"
+        ],
+        "62": [
+          "3e58d8d9",
+          "3de0e0e1",
+          "3ec4c4c5",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scale:scale",
+      "variant": "wrap2",
+      "coverage": "scale wrap 2 with negative mirror/repeat/clamp coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "scaleX": -1.7000000476837158,
+        "scaleY": 2.299999952316284,
+        "centerX": 0.7300000190734863,
+        "centerY": -0.6100000143051147,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "c7b08a7a3b9343f6cc84b88e3c2d2b6aa1461548923906a2cf4df9040593be44",
+      "rgba8_sha256": "af4508d5d556374b0eb347da03b39a1a54b3a8ffb630095681145a15d189ac64",
+      "probes": {
+        "0": [
+          "3e58d8d9",
+          "3de0e0e1",
+          "3ec4c4c5",
+          "3f800000"
+        ],
+        "31": [
+          "3e58d8d9",
+          "3de0e0e1",
+          "3ec4c4c5",
+          "3f800000"
+        ],
+        "62": [
+          "3e58d8d9",
+          "3de0e0e1",
+          "3ec4c4c5",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scroll:scroll",
+      "variant": "wrap0",
+      "coverage": "scroll wrap 0; negative offset and non-square tiled full coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -0.8100000023841858,
+        "y": 0.6600000262260437,
+        "speedX": 1.7000000476837158,
+        "speedY": -2.200000047683716,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "6e836e7f4050e3c466970b6bae715e7b631546d5dbe5fe31ed9bc7fea5b57ae3",
+      "rgba8_sha256": "0cec4c7c2936ab9f924c13a991577b8ee90870fe66a7344479cfc5f3deb6eb39",
+      "probes": {
+        "0": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f800000"
+        ],
+        "31": [
+          "3e149495",
+          "3f6dedee",
+          "3e9e9e9f",
+          "3f800000"
+        ],
+        "62": [
+          "3f028283",
+          "3d60e0e1",
+          "3dc0c0c1",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scroll:scroll",
+      "variant": "wrap1",
+      "coverage": "scroll wrap 1; negative offset and non-square tiled full coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -0.8100000023841858,
+        "y": 0.6600000262260437,
+        "speedX": 1.7000000476837158,
+        "speedY": -2.200000047683716,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "632d0f93be85dd7f0b3fe93aa0ba1751a8b315ec4d4eb2e94a0597611f42517c",
+      "rgba8_sha256": "6c951d3662fa309a47448b6b3b2cb0f77557b782cc2bc07e842c6d80a1aea6db",
+      "probes": {
+        "0": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f800000"
+        ],
+        "31": [
+          "3f028283",
+          "3d60e0e1",
+          "3dc0c0c1",
+          "3f800000"
+        ],
+        "62": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/scroll:scroll",
+      "variant": "wrap2",
+      "coverage": "scroll wrap 2; negative offset and non-square tiled full coordinates",
+      "bindings": {
+        "aspect": 1.2857142686843872,
+        "x": -0.8100000023841858,
+        "y": 0.6600000262260437,
+        "speedX": 1.7000000476837158,
+        "speedY": -2.200000047683716,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "b742e2d7dcdc1f604b1c9a6a8d7dcd686aa12b61e13b9376ece7dbf455f38a22",
+      "rgba8_sha256": "dd9d698fd3a5e2f4e36c6ad8dea34942846844e9bbb73234f81922de4d6c854a",
+      "probes": {
+        "0": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f800000"
+        ],
+        "31": [
+          "3f028283",
+          "3d60e0e1",
+          "3dc0c0c1",
+          "3f800000"
+        ],
+        "62": [
+          "3f139394",
+          "3e74f4f5",
+          "3e2cacad",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/translate:translate",
+      "variant": "wrap0",
+      "coverage": "translate wrap 0; negative mod mirror case",
+      "bindings": {
+        "x": -0.9100000262260437,
+        "y": 0.7799999713897705,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "dd60b0d5bbb58c9463d4c29f8e3feb419655f9dd405b64770be07065ac60d383",
+      "rgba8_sha256": "cdb61e7245873910218d0c6af9791cd18c59c228198222665a1f3b1c88216e46",
+      "probes": {
+        "0": [
+          "3f028283",
+          "3d60e0e1",
+          "3dc0c0c1",
+          "3edadadb"
+        ],
+        "31": [
+          "3e149495",
+          "3f6dedee",
+          "3e9e9e9f",
+          "3f32b2b3"
+        ],
+        "62": [
+          "3e9e9e9f",
+          "3f018182",
+          "3f5fdfe0",
+          "3f5cdcdd"
+        ]
+      }
+    },
+    {
+      "key": "filter/translate:translate",
+      "variant": "wrap1",
+      "coverage": "translate wrap 1; negative mod mirror case",
+      "bindings": {
+        "x": -0.9100000262260437,
+        "y": 0.7799999713897705,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "3d564b2d17c9db0fd0d0db02869cc1d331baa1fb5bcfeb18b19d160d254c5ceb",
+      "rgba8_sha256": "880eb138435fd6d11cf4f5e27c8b299956ea5287ef84504fa5fc989b030674eb",
+      "probes": {
+        "0": [
+          "3e149495",
+          "3f6dedee",
+          "3e9e9e9f",
+          "3f32b2b3"
+        ],
+        "31": [
+          "3f72f2f3",
+          "3ec0c0c1",
+          "3db0b0b1",
+          "3e048485"
+        ],
+        "62": [
+          "3e149495",
+          "3f6dedee",
+          "3e9e9e9f",
+          "3f32b2b3"
+        ]
+      }
+    },
+    {
+      "key": "filter/translate:translate",
+      "variant": "wrap2",
+      "coverage": "translate wrap 2; negative mod mirror case",
+      "bindings": {
+        "x": -0.9100000262260437,
+        "y": 0.7799999713897705,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag37_4x6"
+      },
+      "f32_sha256": "57c71ffa3a242b459af2a91d8c7dc93834fd18fe10ce2a9aef7196797ac0fd8a",
+      "rgba8_sha256": "5572bbffba8a4359705b4c98b89ff3148e6c98c25f672a9631b22724b88b1192",
+      "probes": {
+        "0": [
+          "3f028283",
+          "3d60e0e1",
+          "3dc0c0c1",
+          "3edadadb"
+        ],
+        "31": [
+          "3f139394",
+          "3e74f4f5",
+          "3e2cacad",
+          "3e909091"
+        ],
+        "62": [
+          "3f139394",
+          "3e74f4f5",
+          "3e2cacad",
+          "3e909091"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern0",
+      "coverage": "pattern arm 0; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 0,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "213a3100c15275764c114f17f1df6584ca8559709e5cbb7bde1703aac9e00fd2",
+      "rgba8_sha256": "af4025978e4b82393bd1effbcd50c76ca30f49d9bef390c692d466bee2cd2e23",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern1",
+      "coverage": "pattern arm 1; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 1,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "6a88d5832f7c7e867b1e578b7e8ad1c94d3012ad7c253a904a11ba92757b794a",
+      "rgba8_sha256": "dca0bf61d0f2da97eae9eb320a41f08e0ebbd7950aa29caadda56a3e3751c704",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f0d952d",
+          "3eb48deb",
+          "3e1f5d5c",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern2",
+      "coverage": "pattern arm 2; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 2,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "a8334dab60eabeffc17d8961d4f088f5d9445715fcf4f421d614729a0058f376",
+      "rgba8_sha256": "452797aed5e7f7321af7611f9956c3a102e64eff18af272f9049d6eb8af2a035",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern3",
+      "coverage": "pattern arm 3; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 3,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "814b79f4be4d66ac5f1cc64bcfe609d5b4479b200da1c6c545046aeaf1349a5b",
+      "rgba8_sha256": "7f69f7e87413570590b6b0a0a3e089133f54fab1f54170fae0e149d10ad8f5f8",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern4",
+      "coverage": "pattern arm 4; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 4,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "b045d35a387238c609326def9157bf761c436a652a503da18840bf255d8e301e",
+      "rgba8_sha256": "4c485721ff0a5b95fdb3ac98fba79b781134f30eefbe1265dfa23d5af863adc7",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern5",
+      "coverage": "pattern arm 5; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 5,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "8647a1ca66e9499e089c020749627058526051a8baeac206e060b8d368523e2c",
+      "rgba8_sha256": "de0fdcc06eabd77f24f74db2074616e44cb9034fa98a876a424e10d97f826bb9",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern6",
+      "coverage": "pattern arm 6; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 6,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "41af219be145d6a27b7c39133d91a59b34a47abe586fb1a9c07737220036b452",
+      "rgba8_sha256": "1fe233e421c852824c745f5c5ccc3990bb0551dbe5ba14ad59d58c3728556c80",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f2156e5",
+          "3f2d4163",
+          "3f0d424f",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern7",
+      "coverage": "pattern arm 7; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 7,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "c9cbfb9c8ae7570bebab6ffc165348fa2ea1b3f0f70d5d4069dab244a4f3a8cd",
+      "rgba8_sha256": "f228808ec0b5b63148684debce98e6254156c15228b5ad376c2a6fb901aafeff",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "pattern8",
+      "coverage": "pattern arm 8; two-texture mask and alpha max",
+      "bindings": {
+        "patternType": 8,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "f30f70f8747348af843162054d084464b348cf8239385a0c435ce04263560f5c",
+      "rgba8_sha256": "5ebc3fbe6badafe0c77d7abeda38aed7543059da851fc0608de1826aca894dbb",
+      "probes": {
+        "0": [
+          "3e2b3f55",
+          "3f1a1bff",
+          "3f1fccc6",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f0ceecf",
+          "3eaf186c",
+          "3e120544",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "invert",
+      "coverage": "invert branch",
+      "bindings": {
+        "patternType": 0,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "7560bd687b2aa0264b8b6729dcb7d6265fbd488145f2819a390138e16cfede92",
+      "rgba8_sha256": "3ca0b85cace99fb54b3b967322354110092ee3fe0231ea1d26046ab71b2b5df3",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "fallback",
+      "coverage": "unknown pattern leaves zero mask fallback",
+      "bindings": {
+        "patternType": 99,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "dcef139e5081337b2b0f0fda51806028caea30439b72b47fdc1bc277b3dbb387",
+      "rgba8_sha256": "8d66b0def717df10f6a07fef8a12af4ef3b963869e04efa7b11950d5ed27563b",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "variant": "fullResolutionFallback",
+      "coverage": "fullResolution <= 0 fallback to output resolution",
+      "bindings": {
+        "patternType": 4,
+        "scale": 5.699999809265137,
+        "thickness": 0.5799999833106995,
+        "smoothness": 0.04699999839067459,
+        "rotation": 31,
+        "invert": 0
+      },
+      "overrides": {
+        "fullResolution": [
+          0,
+          0
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "8ad3928394e282b65ef29d89f7202f4b08091146c5708ad84471daed8700c6e4",
+      "rgba8_sha256": "91c947bebf55fb99bb0fa5fb2b0094d71184045ce280145ac25e5714bd7c6698",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape0",
+      "coverage": "SDF shape arm 0; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 0,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "ccdd291caef9766a907360bd21e8f82563457ae5d2fd4c46908629e53db2ca5b",
+      "rgba8_sha256": "a6817588b18cf21097b92b4534dd2f78eaf36e3cb20a89b481341c18f7a7dcb7",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f3eabc5",
+          "3f006330",
+          "3e721156",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape1",
+      "coverage": "SDF shape arm 1; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 1,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "d47636df56ef588e885bc074d075f10eb453c82d4b46b7b3a720b1c4cf18e1c2",
+      "rgba8_sha256": "073603161a6a84c4c4398103b1055275351ea60ad2ec2aa3e38cce0791e3b5ab",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape2",
+      "coverage": "SDF shape arm 2; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 2,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "1341dae62a1c5856a0cbf4c32f9f86f07bdf14fd240600754a662c986ffd9926",
+      "rgba8_sha256": "094fd718fc0faf90c17fc9567820718f699c2d028d5b37494425dc07a40e3fcc",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape3",
+      "coverage": "SDF shape arm 3; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 3,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "0ff005e314f6896264572d8643a731cb93a74fca0321e2deb486bee62507bddd",
+      "rgba8_sha256": "88a4c390041dae9e19b869f5f4ab1efa47ec7afeddbf4fd094b8a485531fcc64",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape4",
+      "coverage": "SDF shape arm 4; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 4,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "e65832e83bf6b3bea3f2bf05fea56333b58511548af81aa5f5c7bf84a399b746",
+      "rgba8_sha256": "6bd5a7c3311875778c238ac9ef8f558012d042250b16f7de29bd2ac75319ad8c",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape5",
+      "coverage": "SDF shape arm 5; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 5,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "0eae9e8b4ba0dd0c8a0d22df6db100bd91f29bd5212ae8655babf6a37272a2f7",
+      "rgba8_sha256": "54614a0eaf345755b27bb7fa0c1e5d7783c8e5f145772d18e2d7badcade18c20",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape6",
+      "coverage": "SDF shape arm 6; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 6,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "4746cb91039cc8aa5e52163e7471c35e486d1cf38902bc9f261d31c456a024fd",
+      "rgba8_sha256": "8a6fd852e92c7ac2d72bb09f7d10b849528ef166e805db1a2ce29872a625099e",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f30a4ed",
+          "3f1d6045",
+          "3e6857af",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "shape7",
+      "coverage": "SDF shape arm 7; flower scalar mod at shape5",
+      "bindings": {
+        "shape": 7,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "ec8a7000eae5cfdf4fe509434537806381f221e7c96d4a1faf8dd8a0d23c0227",
+      "rgba8_sha256": "04aef2a8c2307bf605eba0d6e0bb33accf3bfe60bcd2b1d276feb14499a759b0",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "invert",
+      "coverage": "shape invert branch",
+      "bindings": {
+        "shape": 5,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 1,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "fa2812cd1d9359324b438f9492d38783d3b7f38337b5f63e34bef4bab9e920a5",
+      "rgba8_sha256": "e03d0d9c441bf6a98cc8204878dbb2757bb1c60ba7d114c9d180267d8eae62e4",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "animated",
+      "coverage": "speed > 0 pulse branch",
+      "bindings": {
+        "shape": 5,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "6304562c932e79971c3ecfaf838bba47bf78fe3dc105f7c25ec21cba24b3c30a",
+      "rgba8_sha256": "259bad1f6bee680a7f144c9da1f799cfe0c096638439890ad20fc1090408d328",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "fallback",
+      "coverage": "unknown shape retains d=0 fallback",
+      "bindings": {
+        "shape": 99,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "6d8a054edf819f9936b707cacd93c3de7a337ccda6a133f53402b64fbcc0df8e",
+      "rgba8_sha256": "40938e0ba396d44cc2b6500c045542ff57fac15481b3c0560dff5e15359c43cb",
+      "probes": {
+        "0": [
+          "3de0e0e1",
+          "3eb8b8b9",
+          "3ea8a8a9",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f189899",
+          "3f088889",
+          "3ec0c0c1",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f515152",
+          "3eb3b3b4",
+          "3e7eff00",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "variant": "fullResolutionFallback",
+      "coverage": "fullResolution <= 0 fallback",
+      "bindings": {
+        "shape": 5,
+        "radius": 0.5699999928474426,
+        "edgeSmooth": 0.08299999684095383,
+        "rotation": 27,
+        "posX": -0.23000000417232513,
+        "posY": 0.1899999976158142,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {
+        "fullResolution": [
+          0,
+          0
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "81984d710da8b44362f46ba5be0b389c40e6a22234da1bd9a10cce2dd6c13fee",
+      "rgba8_sha256": "4d5d9863f5d1ecaf2205e3db3b625ad5c7863dc43a658f6d9182ded96aee6ce7",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/split:split",
+      "variant": "static",
+      "coverage": "speed == 0 static split",
+      "bindings": {
+        "position": -0.17000000178813934,
+        "rotation": 38,
+        "softness": 0.11999999731779099,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "410258ab438b771127022a1cf1cce9a6a6cb125153b91bddd363a8bd4cfac7d8",
+      "rgba8_sha256": "8a1196a09d9b5af630415993fb98066ec76288792cace264963cac6b936c9930",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/split:split",
+      "variant": "animatedEven",
+      "coverage": "speed > 0 flipCycle false modulo branch",
+      "bindings": {
+        "position": -0.17000000178813934,
+        "rotation": 38,
+        "softness": 0.11999999731779099,
+        "invert": 0,
+        "speed": 0.5
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "34c7b544b45b5957287fcb0bad579fc5fd5f521e36ebccc176bdd943652c5e08",
+      "rgba8_sha256": "cc65fbc09c50cc74ca53d3e59f35121c069c5852b06ec13dafdc19041461992f",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/split:split",
+      "variant": "animatedOdd",
+      "coverage": "speed > 0 flipCycle true modulo branch",
+      "bindings": {
+        "position": -0.17000000178813934,
+        "rotation": 38,
+        "softness": 0.11999999731779099,
+        "invert": 0,
+        "speed": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "6304562c932e79971c3ecfaf838bba47bf78fe3dc105f7c25ec21cba24b3c30a",
+      "rgba8_sha256": "259bad1f6bee680a7f144c9da1f799cfe0c096638439890ad20fc1090408d328",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f27a7a8",
+          "3f47c7c8",
+          "3f2dadae",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f76f6f7",
+          "3d40c0c1",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/split:split",
+      "variant": "invertOdd",
+      "coverage": "invert xor flipCycle branch",
+      "bindings": {
+        "position": -0.17000000178813934,
+        "rotation": 38,
+        "softness": 0.11999999731779099,
+        "invert": 1,
+        "speed": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "dcef139e5081337b2b0f0fda51806028caea30439b72b47fdc1bc277b3dbb387",
+      "rgba8_sha256": "8d66b0def717df10f6a07fef8a12af4ef3b963869e04efa7b11950d5ed27563b",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/split:split",
+      "variant": "fullResolutionFallback",
+      "coverage": "fullResolution <= 0 fallback",
+      "bindings": {
+        "position": -0.17000000178813934,
+        "rotation": 38,
+        "softness": 0.11999999731779099,
+        "invert": 0,
+        "speed": 0
+      },
+      "overrides": {
+        "fullResolution": [
+          0,
+          0
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "c07c651bcbf006819f852bf8d4a3da54e8c30870bf42b0f097780a925b7aec44",
+      "rgba8_sha256": "16ec7fb4bfad43541c99cceedbeb1daf0e134de6ca72c0eab7746dacc2efcccc",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f0d2564",
+          "3eb0e2ee",
+          "3e166610",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f4bc791",
+          "3eca97bf",
+          "3e7b2806",
+          "3f5dddde"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map0_channel0_wrap0",
+      "coverage": "map source 0, channel 0, wrap 0; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 0,
+        "channel": 0,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "b7e71a5dc6bfeda0631c1be0ee5dfb94bf07d056ecc9f5921c636df61a19d9b7",
+      "rgba8_sha256": "23845dad9c0e8a851e035b4bf6bd060041355cbf1ec0685bdf8e8c4e9ecdb616",
+      "probes": {
+        "0": [
+          "3f088889",
+          "3f3cbcbd",
+          "3ed4d4d5",
+          "3e8e8e8f"
+        ],
+        "31": [
+          "3f088889",
+          "3f3cbcbd",
+          "3ed4d4d5",
+          "3e8e8e8f"
+        ],
+        "62": [
+          "3f19999a",
+          "3f6bebec",
+          "3efafafb",
+          "3e088889"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map0_channel1_wrap1",
+      "coverage": "map source 0, channel 1, wrap 1; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 0,
+        "channel": 1,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "515d685ec70b8a9ec91275012474bf628925c9d20fe6842f40020a3b149562f3",
+      "rgba8_sha256": "ed1b7eb0eaa84787acb482a8f4cd3fc665bf26bef8bedf5bdd4adfc885e3f3f1",
+      "probes": {
+        "0": [
+          "3eb6b6b7",
+          "3f55d5d6",
+          "3f77f7f8",
+          "3ea0a0a1"
+        ],
+        "31": [
+          "3e70f0f1",
+          "3f4acacb",
+          "3f34b4b5",
+          "3ecececf"
+        ],
+        "62": [
+          "3f088889",
+          "3f3cbcbd",
+          "3ed4d4d5",
+          "3e8e8e8f"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map0_channel2_wrap2",
+      "coverage": "map source 0, channel 2, wrap 2; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 0,
+        "channel": 2,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "baac9f4e5080444ad9bdacbb315d558ab14f87e188ca179bed30fdea66e1a3d6",
+      "rgba8_sha256": "afa14f24903e5c8001f363edb1a3ee28ab4f6afa0d0bf63a4c1af5d1435a1d2c",
+      "probes": {
+        "0": [
+          "3f38b8b9",
+          "3f76f6f7",
+          "3f40c0c1",
+          "3d30b0b1"
+        ],
+        "31": [
+          "3e70f0f1",
+          "3f4acacb",
+          "3f34b4b5",
+          "3ecececf"
+        ],
+        "62": [
+          "3f19999a",
+          "3f6bebec",
+          "3efafafb",
+          "3e088889"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map1_channel0_wrap0",
+      "coverage": "map source 1, channel 0, wrap 0; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 1,
+        "channel": 0,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "d1e078c456e5774d18be2d6b9b0ee39f906865e2065dd99fe371c8127872a03d",
+      "rgba8_sha256": "e9f79085664a8e718f3cbafa7e5b431c962ea17da5b474370c5ed2f2aae36e5f",
+      "probes": {
+        "0": [
+          "3edadadb",
+          "3f119192",
+          "3f33b3b4",
+          "3f028283"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3eb8b8b9",
+          "3ec4c4c5",
+          "3f20a0a1",
+          "3f27a7a8"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map1_channel1_wrap1",
+      "coverage": "map source 1, channel 1, wrap 1; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 1,
+        "channel": 1,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "39d9bb2c0717cc20cd1964504550350e8e86620d6c34b76fbf03dd5084a55938",
+      "rgba8_sha256": "2e560e492ccf4847b7106242a62ebb379d10836fbff435c29e5921c9ed412847",
+      "probes": {
+        "0": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f1a9a9b",
+          "3ef0f0f1",
+          "3e189899",
+          "3ef2f2f3"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "map1_channel2_wrap2",
+      "coverage": "map source 1, channel 2, wrap 2; mirror path uses negative scalar mod",
+      "bindings": {
+        "mapSource": 1,
+        "channel": 2,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "ffd02d6b8a3e7f6f4769c7d9b7de74dd8b4dba2fd4bfd3406eacbc6c3d01f7d7",
+      "rgba8_sha256": "f23ab9c97dc35424722b2d5b9eea7d8b9c18111cfc4e0fb935a51204f896b120",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ],
+        "31": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ],
+        "62": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ]
+      }
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "variant": "fallbacks",
+      "coverage": "mapSource nonzero/channel else/wrap else fallbacks",
+      "bindings": {
+        "mapSource": 9,
+        "channel": 9,
+        "scale": 260,
+        "offset": -1.2300000190734863,
+        "wrap": 9
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      },
+      "f32_sha256": "ffd02d6b8a3e7f6f4769c7d9b7de74dd8b4dba2fd4bfd3406eacbc6c3d01f7d7",
+      "rgba8_sha256": "f23ab9c97dc35424722b2d5b9eea7d8b9c18111cfc4e0fb935a51204f896b120",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ],
+        "31": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ],
+        "62": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ]
+      }
+    },
+    {
+      "key": "synth/modPattern:modPattern",
+      "variant": "blend0Anim0",
+      "coverage": "shape branches 0/1/2; blend<1 and animMode0 shift",
+      "bindings": {
+        "shape1": 0,
+        "scale1": 5.300000190734863,
+        "repeat1": 3.700000047683716,
+        "shape2": 1,
+        "scale2": 4.599999904632568,
+        "repeat2": 5.099999904632568,
+        "shape3": 2,
+        "scale3": 3.200000047683716,
+        "repeat3": 6.300000190734863,
+        "blend": 0,
+        "smoothing": 12,
+        "speed": 3.700000047683716,
+        "animMode": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "904ff55a6f8b1fe38b1b6583f18ee418f3eb23cf797a7dc3655e768089df8ee5",
+      "rgba8_sha256": "3bacdcce424e877fc88d12cadfe0c9cfa6421651b12a150b2d3580c83375496d",
+      "probes": {
+        "0": [
+          "3f076268",
+          "3f076268",
+          "3f076268",
+          "3f800000"
+        ],
+        "31": [
+          "3f5719a7",
+          "3f5719a7",
+          "3f5719a7",
+          "3f800000"
+        ],
+        "62": [
+          "3cb02eba",
+          "3cb02eba",
+          "3cb02eba",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/modPattern:modPattern",
+      "variant": "blend1Anim1",
+      "coverage": "blend<2 and pan animation branches",
+      "bindings": {
+        "shape1": 1,
+        "scale1": 5.300000190734863,
+        "repeat1": 3.700000047683716,
+        "shape2": 2,
+        "scale2": 4.599999904632568,
+        "repeat2": 5.099999904632568,
+        "shape3": 0,
+        "scale3": 3.200000047683716,
+        "repeat3": 6.300000190734863,
+        "blend": 1,
+        "smoothing": 12,
+        "speed": 3.700000047683716,
+        "animMode": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "69ee857e22e397e6b539158bcd60f3d1f940a008569d5d8fa5842c9269cf2af6",
+      "rgba8_sha256": "04d8112f92d355d0eb6a9a09439cb8d208f679918e95452700456e02f2423b4e",
+      "probes": {
+        "0": [
+          "3f2d1f44",
+          "3f2d1f44",
+          "3f2d1f44",
+          "3f800000"
+        ],
+        "31": [
+          "3f532a37",
+          "3f532a37",
+          "3f532a37",
+          "3f800000"
+        ],
+        "62": [
+          "3f2d1f44",
+          "3f2d1f44",
+          "3f2d1f44",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/modPattern:modPattern",
+      "variant": "blend2Anim2",
+      "coverage": "blend<3 and phase animation branches",
+      "bindings": {
+        "shape1": 2,
+        "scale1": 5.300000190734863,
+        "repeat1": 3.700000047683716,
+        "shape2": 0,
+        "scale2": 4.599999904632568,
+        "repeat2": 5.099999904632568,
+        "shape3": 1,
+        "scale3": 3.200000047683716,
+        "repeat3": 6.300000190734863,
+        "blend": 2,
+        "smoothing": 12,
+        "speed": 3.700000047683716,
+        "animMode": 2
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "44d6f6df118c46a647903bb6f047df9f77302abef5b4067ebf2083c33e8a071b",
+      "rgba8_sha256": "c8ebfb4e079211cb3aabbdefab4fa5604c8f5314741d7926baa0d53300c8a421",
+      "probes": {
+        "0": [
+          "3f258e0d",
+          "3f258e0d",
+          "3f258e0d",
+          "3f800000"
+        ],
+        "31": [
+          "3ec64896",
+          "3ec64896",
+          "3ec64896",
+          "3f800000"
+        ],
+        "62": [
+          "3ea98ba9",
+          "3ea98ba9",
+          "3ea98ba9",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/modPattern:modPattern",
+      "variant": "blend3",
+      "coverage": "blend fallback RGB branch",
+      "bindings": {
+        "shape1": -1,
+        "scale1": 5.300000190734863,
+        "repeat1": 3.700000047683716,
+        "shape2": 1,
+        "scale2": 4.599999904632568,
+        "repeat2": 5.099999904632568,
+        "shape3": 2,
+        "scale3": 3.200000047683716,
+        "repeat3": 6.300000190734863,
+        "blend": 3,
+        "smoothing": 12,
+        "speed": 3.700000047683716,
+        "animMode": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "423fc336468e9c2a851e7c27e593d092dff5619c8906c87f3bc60a59acbdcef5",
+      "rgba8_sha256": "de2e3c5329b0b51c6fbb2be34c7562ca03c3c2542d5515e548c62a1022d68e83",
+      "probes": {
+        "0": [
+          "3f0973d4",
+          "3f028f0c",
+          "3ef6bf10",
+          "3f800000"
+        ],
+        "31": [
+          "3f333334",
+          "3f0cccf4",
+          "3f17197e",
+          "3f800000"
+        ],
+        "62": [
+          "3f0fc10c",
+          "3f260134",
+          "3f4fbf34",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern0",
+      "coverage": "pattern arm 0; animation 2; negative tiled coordinates",
+      "bindings": {
+        "patternType": 0,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 2,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "ffb6e9e731ce29aad4776feff178c40b9d962714ad1d326698aa43ca8ccd4dc9",
+      "rgba8_sha256": "6e437bd47e0081c716da2ca80b8a1dab786b070db4005293c59c1ebe9be1480a",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern1",
+      "coverage": "pattern arm 1; negative tiled coordinates",
+      "bindings": {
+        "patternType": 1,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "44cb6680c69e14162cf803604e78a5f3748f268550101cea72197da5e02d49c0",
+      "rgba8_sha256": "e792a79c71b16dc7622ccc75ceb37ff8ae5c6b55b375d5db062c44e728754320",
+      "probes": {
+        "0": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern2",
+      "coverage": "pattern arm 2; animation 1; negative tiled coordinates",
+      "bindings": {
+        "patternType": 2,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 1,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "a8787a6049ab38853d29b7d9d7bf01af7206e6cc068d620075231020a4b1c251",
+      "rgba8_sha256": "aec5160837e274cfdf9fca07d74d09287759ba415d86a13f311919d61a8d00b5",
+      "probes": {
+        "0": [
+          "3eaf13fa",
+          "3f0be221",
+          "3edcf0c6",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern3",
+      "coverage": "pattern arm 3; negative tiled coordinates",
+      "bindings": {
+        "patternType": 3,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "cf9885ae95b0b8d8d6846841434384f0964214ae12a29a2103e9f7082d2883d9",
+      "rgba8_sha256": "3586262e902fdc56b201dfa657751d4e5242d00278cd385795ef0dc39cefe91a",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern4",
+      "coverage": "pattern arm 4; negative tiled coordinates",
+      "bindings": {
+        "patternType": 4,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "a0df7803e2d2748dec9e01cf0a13818c74939531d9f902bcf1faf5f06422da26",
+      "rgba8_sha256": "be607ff90246e5ed1134fa43a064fca16afca154f29fad0df384c9fc5cd0f7a5",
+      "probes": {
+        "0": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern5",
+      "coverage": "pattern arm 5; negative tiled coordinates",
+      "bindings": {
+        "patternType": 5,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "eae1e338c6344e9c496b22e94bfc3f7e62df157d045bfdfa97010ad3cfdd1f82",
+      "rgba8_sha256": "ca941d37c1c9dee500cc8054648069489100952097babe19b44f98cd069355b9",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3db1d5ec",
+          "3f372926",
+          "3eaf4d71",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern6",
+      "coverage": "pattern arm 6; negative tiled coordinates",
+      "bindings": {
+        "patternType": 6,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "bcba4688612a3333276bcf32dfd7b4d7b110a0a770552097f7dff17be3d86435",
+      "rgba8_sha256": "dde101746a2ba06fa562142f6930d20217543d5d4e44c52a7395ff8df81a9463",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern7",
+      "coverage": "pattern arm 7; negative tiled coordinates",
+      "bindings": {
+        "patternType": 7,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "c238e47ba18b83326b390d1c5193a5c8dfc9fb3b0309c1170690fcf6f52a2ab7",
+      "rgba8_sha256": "16a65955ca902e6746842cde58580358407e7c8f5ade24b4606a3938759e6c60",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern8",
+      "coverage": "pattern arm 8; negative tiled coordinates",
+      "bindings": {
+        "patternType": 8,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "690d7381132717d81bbbbea19fc65ca30b99c382500fcc85e5ddf47f79130d40",
+      "rgba8_sha256": "3f60c7d6f4d4febf7e728976c83a04928efdf31001100740b32815764bf3dd8c",
+      "probes": {
+        "0": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern9",
+      "coverage": "pattern arm 9; negative tiled coordinates",
+      "bindings": {
+        "patternType": 9,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "9795fd701bad6f566171ea1b92648632bebe57e6de83829e99e0ee59b6302169",
+      "rgba8_sha256": "754b3d34ad15540a99be7501dea41c68ae9d4f0d28e6bba4e928614a53a6c6c0",
+      "probes": {
+        "0": [
+          "3dae5584",
+          "3f377366",
+          "3eaeff24",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern10",
+      "coverage": "pattern arm 10; negative tiled coordinates",
+      "bindings": {
+        "patternType": 10,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "2bfca80c49c762e21d370eb6a284d36178e4060ce3d4b31141585c1a7b49f25d",
+      "rgba8_sha256": "82de84498b417ac654ecce4e3aaad85ff791ceb5e864ccdab35c42f6ecabda3a",
+      "probes": {
+        "0": [
+          "3f68f5c3",
+          "3e2e147b",
+          "3f2147ae",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "pattern11",
+      "coverage": "pattern arm 11; negative tiled coordinates",
+      "bindings": {
+        "patternType": 11,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "d7889c848f8185abc1702c2c06d501ffdbf6a4e14f3453bd1ce6a8a2e10cea38",
+      "rgba8_sha256": "84a1a385c3ddb42077c2d022faf1a1c68ef27bc37c9d1d61e82752ea1ea64c20",
+      "probes": {
+        "0": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "31": [
+          "3ee797f4",
+          "3ef2510a",
+          "3ef0afd9",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "variant": "fallback",
+      "coverage": "unknown pattern keeps m=0 background fallback",
+      "bindings": {
+        "patternType": 99,
+        "scale": 5.400000095367432,
+        "thickness": 0.5699999928474426,
+        "smoothness": 0.04600000008940697,
+        "rotation": 29,
+        "skew": -0.3100000023841858,
+        "animation": 0,
+        "speed": 3.5999999046325684,
+        "fgColor": [
+          0.9100000262260437,
+          0.17000000178813934,
+          0.6299999952316284
+        ],
+        "bgColor": [
+          0.07999999821186066,
+          0.7200000286102295,
+          0.3400000035762787
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {},
+      "f32_sha256": "e3b382913869fc4757fbf092c7c3c85f6c4db65c2d7e3ececc4e7880d1b66ab9",
+      "rgba8_sha256": "86fff5aa9a92ed6f71b6cdcf4b96dfbc39c39bde3c0d66f0fa7ea0cc39fcaeba",
+      "probes": {
+        "0": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "31": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ],
+        "62": [
+          "3da3d70a",
+          "3f3851ec",
+          "3eae147b",
+          "3f800000"
+        ]
+      }
+    }
+  ]
+}

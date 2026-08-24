@@ -1,0 +1,1439 @@
+{
+ "family": "unsupported global declaration",
+ "first_blocker_tag_distribution": {
+  "const array": 2,
+  "const matrix": 7,
+  "const non-float scalar (int)": 5,
+  "const non-float scalar (uint)": 4,
+  "const vector": 9,
+  "non-const global (global)": 3
+ },
+ "member_count": 30,
+ "rows": [
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BIT_COUNT",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "mask",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (int)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "BIT_COUNT",
+    "shape": "int",
+    "storage": "const",
+    "tag": "const non-float scalar (int)",
+    "type_kind": "scalar"
+   },
+   "key": "classicNoisedeck/bitEffects:bitEffects",
+   "source_global_count": 2
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "classicNoisedeck/cellNoise:cellNoise",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "emboss",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "sharpen",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "blur",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "edge",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "edge2",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    }
+   ],
+   "first_blocker_tag": "non-const global (global)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": false,
+    "name": "emboss",
+    "shape": "array[9] of float",
+    "storage": "global",
+    "tag": "non-const global (global)",
+    "type_kind": "array"
+   },
+   "key": "classicNoisedeck/cellRefract:cellRefract",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "classicNoisedeck/colorLab:colorLab",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "emboss",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "sharpen",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "blur",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "edge",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "edge2",
+     "shape": "array[9] of float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "array"
+    }
+   ],
+   "first_blocker_tag": "non-const global (global)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": false,
+    "name": "emboss",
+    "shape": "array[9] of float",
+    "storage": "global",
+    "tag": "non-const global (global)",
+    "type_kind": "array"
+   },
+   "key": "classicNoisedeck/kaleido:kaleido",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "classicNoisedeck/moodscape:moodscape",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "classicNoisedeck/shapeMixer:shapeMixer",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "invA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "classicNoisedeck/shapes:shapes",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "filter/adjust:adjust",
+   "source_global_count": 3
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdA",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "fwdB",
+     "shape": "matrix mat3",
+     "storage": "const",
+     "tag": "const matrix",
+     "type_kind": "matrix"
+    }
+   ],
+   "first_blocker_tag": "const matrix",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "fwdA",
+    "shape": "matrix mat3",
+    "storage": "const",
+    "tag": "const matrix",
+    "type_kind": "matrix"
+   },
+   "key": "filter/colorspace:colorspace",
+   "source_global_count": 3
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/edge:edge",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/emboss:emboss",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "CHANNEL_COUNT",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "EPSILON",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (uint)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "CHANNEL_COUNT",
+    "shape": "uint",
+    "storage": "const",
+    "tag": "const non-float scalar (uint)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/fxaa:fxaa",
+   "source_global_count": 3
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPH_COUNT",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (int)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "GLYPH_COUNT",
+    "shape": "int",
+    "storage": "const",
+    "tag": "const non-float scalar (int)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/glyphMap:glyphMap",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA_WEIGHTS",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/grade:creative",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "PI",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA_WEIGHTS",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/grade:hslSecondary",
+   "source_global_count": 2
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA_WEIGHTS",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/grade:primary",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA_WEIGHTS",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/grade:vignette",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LUMA_WEIGHTS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "LUMA_WEIGHTS",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/grade:wheels",
+   "source_global_count": 1
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "PI",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "UINT32_TO_FLOAT",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "CHANNEL_COUNT",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "INTERPOLATION_CONSTANT",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "INTERPOLATION_LINEAR",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "INTERPOLATION_COSINE",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "INTERPOLATION_BICUBIC",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SEED",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (uint)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "CHANNEL_COUNT",
+    "shape": "uint",
+    "storage": "const",
+    "tag": "const non-float scalar (uint)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/grain:grain",
+   "source_global_count": 9
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "PALETTE_COUNT",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "PALETTES",
+     "shape": "array[21] of HistoricPalette",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (int)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "PALETTE_COUNT",
+    "shape": "int",
+    "storage": "const",
+    "tag": "const non-float scalar (int)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/historicPalette:historicPalette",
+   "source_global_count": 2
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "CHANNEL_COUNT",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "CHANNEL_CAP",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "SOBEL_OFFSETS",
+     "shape": "array[9] of ivec2",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "SOBEL_X_KERNEL",
+     "shape": "array[9] of float",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "SOBEL_Y_KERNEL",
+     "shape": "array[9] of float",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (uint)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "CHANNEL_COUNT",
+    "shape": "uint",
+    "storage": "const",
+    "tag": "const non-float scalar (uint)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/normalMap:normalMap",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPHS",
+     "shape": "array[80] of int",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPH_W",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPH_H",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SCALE",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_PADDING",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const array",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "GLYPHS",
+    "shape": "array[80] of int",
+    "storage": "const",
+    "tag": "const array",
+    "type_kind": "array"
+   },
+   "key": "filter/osd:osd",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "MODE_RGB",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "MODE_HSV",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "MODE_OKLAB",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "PALETTE_COUNT",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "PALETTES",
+     "shape": "array[55] of PaletteEntry",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (int)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "MODE_RGB",
+    "shape": "int",
+    "storage": "const",
+    "tag": "const non-float scalar (int)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/palette:palette",
+   "source_global_count": 6
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SEED_LINE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "TIME_SEED_LINE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SEED_SWERVE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "TIME_SEED_SWERVE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SEED_WHITE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "TIME_SEED_WHITE",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "BASE_SEED_LINE",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/scanlineError:scanlineError",
+   "source_global_count": 7
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "CHANNEL_COUNT",
+     "shape": "uint",
+     "storage": "const",
+     "tag": "const non-float scalar (uint)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "TIME_SEED_OFFSETS",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "STATIC_SEED",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "LIMITER_SEED",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (uint)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "CHANNEL_COUNT",
+    "shape": "uint",
+    "storage": "const",
+    "tag": "const non-float scalar (uint)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/snow:snow",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPHS",
+     "shape": "array[80] of int",
+     "storage": "const",
+     "tag": "const array",
+     "type_kind": "array"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPH_W",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "GLYPH_H",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_SCALE",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "BASE_ROW_GAP",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const array",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "GLYPHS",
+    "shape": "array[80] of int",
+    "storage": "const",
+    "tag": "const array",
+    "type_kind": "array"
+   },
+   "key": "filter/spookyTicker:spookyTicker",
+   "source_global_count": 5
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "PI",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "INV_UINT32_MAX",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "Z_LOOP",
+     "shape": "int",
+     "storage": "const",
+     "tag": "const non-float scalar (int)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "SHADE_GAIN",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    }
+   ],
+   "first_blocker_tag": "const non-float scalar (int)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "Z_LOOP",
+    "shape": "int",
+    "storage": "const",
+    "tag": "const non-float scalar (int)",
+    "type_kind": "scalar"
+   },
+   "key": "filter/texture:texture",
+   "source_global_count": 4
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "X_NOISE_SEED",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": true,
+     "name": "Y_NOISE_SEED",
+     "shape": "vector vec3",
+     "storage": "const",
+     "tag": "const vector",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "const vector",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": true,
+    "name": "X_NOISE_SEED",
+    "shape": "vector vec3",
+    "storage": "const",
+    "tag": "const vector",
+    "type_kind": "vector"
+   },
+   "key": "filter/wobble:wobble",
+   "source_global_count": 3
+  },
+  {
+   "declarations": [
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "PI",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": true,
+     "has_initializer": true,
+     "name": "TAU",
+     "shape": "float",
+     "storage": "const",
+     "tag": "admitted (const float scalar)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "aspectRatio",
+     "shape": "float",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "scalar"
+    },
+    {
+     "admitted_by_current_rule": false,
+     "has_initializer": false,
+     "name": "globalCoord",
+     "shape": "vector vec2",
+     "storage": "global",
+     "tag": "non-const global (global)",
+     "type_kind": "vector"
+    }
+   ],
+   "first_blocker_tag": "non-const global (global)",
+   "first_blocking_declaration": {
+    "admitted_by_current_rule": false,
+    "has_initializer": false,
+    "name": "aspectRatio",
+    "shape": "float",
+    "storage": "global",
+    "tag": "non-const global (global)",
+    "type_kind": "scalar"
+   },
+   "key": "synth/shape:shape",
+   "source_global_count": 4
+  }
+ ]
+}

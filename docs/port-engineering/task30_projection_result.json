@@ -1,0 +1,24 @@
+{
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "current_live_state": {
+    "corpus_total": 212,
+    "typed_count": 129,
+    "public_count": 131,
+    "publicly_unported_count": 81,
+    "typed_ordered_sha256": "c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9",
+    "public_ordered_sha256": "2325f8d06d182800af90cd1b0b67efe9d3058d3682f0ceb4d3f5168ff4af5e16"
+  },
+  "projected_after_extrude": {
+    "typed_count": 130,
+    "public_count": 132,
+    "publicly_unported_count": 80,
+    "typed_ordered_sha256": "d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904",
+    "public_ordered_sha256": "4fe573b21a782a784b7fcacacaa276a03a395a1b8c92e83149971b8a19831056",
+    "ordinal": 25,
+    "neighbors": [
+      "filter/directionalBlur:directionalBlur",
+      "filter/extrude:extrude",
+      "filter/fibers:fibersBlend"
+    ]
+  }
+}

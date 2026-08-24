@@ -1,0 +1,671 @@
+{
+  "schema": "noisemaker-for-cpp.task32.projected-state.v1",
+  "current_state": {
+    "typed_count": 131,
+    "typed_sorted_sha256": "ea5c0628867261e889e8235cae1c1da4a92d289cfd3ae97f3bd659728abb0dc2",
+    "public_count": 133,
+    "unported_count": 79,
+    "corpus_count": 212
+  },
+  "candidate_keys_added": [
+    "filter/fxaa:fxaa",
+    "filter/grain:grain",
+    "filter/normalMap:normalMap",
+    "filter/snow:snow"
+  ],
+  "projected_state_if_all_four_land": {
+    "typed_count": 135,
+    "typed_sorted_sha256": "182be487fa009e3bd4cee6b7847674373b23aeffd1097f24c25bf64e4672dac5",
+    "public_count": 137,
+    "unported_count": 75,
+    "corpus_count": 212
+  },
+  "candidate_ordinals": {
+    "filter/fxaa:fxaa": {
+      "zero_based_typed_ordinal": 28,
+      "namespace": "typed_28",
+      "neighbour_before": "filter/flipMirror:flipMirror",
+      "neighbour_after": "filter/glowingEdge:glowingEdge"
+    },
+    "filter/grain:grain": {
+      "zero_based_typed_ordinal": 30,
+      "namespace": "typed_30",
+      "neighbour_before": "filter/glowingEdge:glowingEdge",
+      "neighbour_after": "filter/hatch:hatch"
+    },
+    "filter/normalMap:normalMap": {
+      "zero_based_typed_ordinal": 41,
+      "namespace": "typed_41",
+      "neighbour_before": "filter/mosaicTiles:mosaicTiles",
+      "neighbour_after": "filter/normalize:apply"
+    },
+    "filter/snow:snow": {
+      "zero_based_typed_ordinal": 84,
+      "namespace": "typed_84",
+      "neighbour_before": "filter/smoothstep:smoothstep",
+      "neighbour_after": "filter/sobel:sobel"
+    }
+  },
+  "existing_keys_with_shifted_ordinal_count": 103,
+  "existing_keys_with_shifted_ordinal": [
+    {
+      "key": "filter/glowingEdge:glowingEdge",
+      "old_ordinal": 28,
+      "new_ordinal": 29,
+      "delta": 1
+    },
+    {
+      "key": "filter/hatch:hatch",
+      "old_ordinal": 29,
+      "new_ordinal": 31,
+      "delta": 2
+    },
+    {
+      "key": "filter/highPass:hpBlurH",
+      "old_ordinal": 30,
+      "new_ordinal": 32,
+      "delta": 2
+    },
+    {
+      "key": "filter/highPass:hpBlurV",
+      "old_ordinal": 31,
+      "new_ordinal": 33,
+      "delta": 2
+    },
+    {
+      "key": "filter/highPass:hpCombine",
+      "old_ordinal": 32,
+      "new_ordinal": 34,
+      "delta": 2
+    },
+    {
+      "key": "filter/hs:hs",
+      "old_ordinal": 33,
+      "new_ordinal": 35,
+      "delta": 2
+    },
+    {
+      "key": "filter/lensFlare:lensFlare",
+      "old_ordinal": 34,
+      "new_ordinal": 36,
+      "delta": 2
+    },
+    {
+      "key": "filter/lowPoly:lowPoly",
+      "old_ordinal": 35,
+      "new_ordinal": 37,
+      "delta": 2
+    },
+    {
+      "key": "filter/morphology:morphA",
+      "old_ordinal": 36,
+      "new_ordinal": 38,
+      "delta": 2
+    },
+    {
+      "key": "filter/morphology:morphB",
+      "old_ordinal": 37,
+      "new_ordinal": 39,
+      "delta": 2
+    },
+    {
+      "key": "filter/mosaicTiles:mosaicTiles",
+      "old_ordinal": 38,
+      "new_ordinal": 40,
+      "delta": 2
+    },
+    {
+      "key": "filter/normalize:apply",
+      "old_ordinal": 39,
+      "new_ordinal": 42,
+      "delta": 3
+    },
+    {
+      "key": "filter/normalize:reduce",
+      "old_ordinal": 40,
+      "new_ordinal": 43,
+      "delta": 3
+    },
+    {
+      "key": "filter/normalize:reduceMinmax",
+      "old_ordinal": 41,
+      "new_ordinal": 44,
+      "delta": 3
+    },
+    {
+      "key": "filter/oilPaint:oilPost",
+      "old_ordinal": 42,
+      "new_ordinal": 45,
+      "delta": 3
+    },
+    {
+      "key": "filter/outline:outlineBlend",
+      "old_ordinal": 43,
+      "new_ordinal": 46,
+      "delta": 3
+    },
+    {
+      "key": "filter/outline:outlineSobel",
+      "old_ordinal": 44,
+      "new_ordinal": 47,
+      "delta": 3
+    },
+    {
+      "key": "filter/outline:outlineValueMap",
+      "old_ordinal": 45,
+      "new_ordinal": 48,
+      "delta": 3
+    },
+    {
+      "key": "filter/patchwork:patchwork",
+      "old_ordinal": 46,
+      "new_ordinal": 49,
+      "delta": 3
+    },
+    {
+      "key": "filter/photocopy:pcBlurH",
+      "old_ordinal": 47,
+      "new_ordinal": 50,
+      "delta": 3
+    },
+    {
+      "key": "filter/photocopy:pcBlurV",
+      "old_ordinal": 48,
+      "new_ordinal": 51,
+      "delta": 3
+    },
+    {
+      "key": "filter/photocopy:pcCombine",
+      "old_ordinal": 49,
+      "new_ordinal": 52,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:computeRank",
+      "old_ordinal": 50,
+      "new_ordinal": 53,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:finalize",
+      "old_ordinal": 51,
+      "new_ordinal": 54,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:findBrightest",
+      "old_ordinal": 52,
+      "new_ordinal": 55,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:gatherSorted",
+      "old_ordinal": 53,
+      "new_ordinal": 56,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:luminance",
+      "old_ordinal": 54,
+      "new_ordinal": 57,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixelSort:prepare",
+      "old_ordinal": 55,
+      "new_ordinal": 58,
+      "delta": 3
+    },
+    {
+      "key": "filter/pixels:pixels",
+      "old_ordinal": 56,
+      "new_ordinal": 59,
+      "delta": 3
+    },
+    {
+      "key": "filter/plasticWrap:pwBlurH",
+      "old_ordinal": 57,
+      "new_ordinal": 60,
+      "delta": 3
+    },
+    {
+      "key": "filter/plasticWrap:pwBlurV",
+      "old_ordinal": 58,
+      "new_ordinal": 61,
+      "delta": 3
+    },
+    {
+      "key": "filter/plasticWrap:pwSpec",
+      "old_ordinal": 59,
+      "new_ordinal": 62,
+      "delta": 3
+    },
+    {
+      "key": "filter/prismaticAberration:prismaticAberration",
+      "old_ordinal": 60,
+      "new_ordinal": 63,
+      "delta": 3
+    },
+    {
+      "key": "filter/reindex:nmReindexApply",
+      "old_ordinal": 61,
+      "new_ordinal": 64,
+      "delta": 3
+    },
+    {
+      "key": "filter/relief:rlBlurH",
+      "old_ordinal": 62,
+      "new_ordinal": 65,
+      "delta": 3
+    },
+    {
+      "key": "filter/relief:rlBlurV",
+      "old_ordinal": 63,
+      "new_ordinal": 66,
+      "delta": 3
+    },
+    {
+      "key": "filter/relief:rlShade",
+      "old_ordinal": 64,
+      "new_ordinal": 67,
+      "delta": 3
+    },
+    {
+      "key": "filter/repeat:repeat",
+      "old_ordinal": 65,
+      "new_ordinal": 68,
+      "delta": 3
+    },
+    {
+      "key": "filter/reverb:reverb",
+      "old_ordinal": 66,
+      "new_ordinal": 69,
+      "delta": 3
+    },
+    {
+      "key": "filter/ridge:ridge",
+      "old_ordinal": 67,
+      "new_ordinal": 70,
+      "delta": 3
+    },
+    {
+      "key": "filter/rotate:rot",
+      "old_ordinal": 68,
+      "new_ordinal": 71,
+      "delta": 3
+    },
+    {
+      "key": "filter/scale:scale",
+      "old_ordinal": 69,
+      "new_ordinal": 72,
+      "delta": 3
+    },
+    {
+      "key": "filter/scatter:scatterJitter",
+      "old_ordinal": 70,
+      "new_ordinal": 73,
+      "delta": 3
+    },
+    {
+      "key": "filter/scatter:scatterSmooth",
+      "old_ordinal": 71,
+      "new_ordinal": 74,
+      "delta": 3
+    },
+    {
+      "key": "filter/scratches:scratchesBlend",
+      "old_ordinal": 72,
+      "new_ordinal": 75,
+      "delta": 3
+    },
+    {
+      "key": "filter/scroll:scroll",
+      "old_ordinal": 73,
+      "new_ordinal": 76,
+      "delta": 3
+    },
+    {
+      "key": "filter/seamless:seamless",
+      "old_ordinal": 74,
+      "new_ordinal": 77,
+      "delta": 3
+    },
+    {
+      "key": "filter/sharpen:sharpen",
+      "old_ordinal": 75,
+      "new_ordinal": 78,
+      "delta": 3
+    },
+    {
+      "key": "filter/simpleAberration:chromaticAberration",
+      "old_ordinal": 76,
+      "new_ordinal": 79,
+      "delta": 3
+    },
+    {
+      "key": "filter/sine:sine",
+      "old_ordinal": 77,
+      "new_ordinal": 80,
+      "delta": 3
+    },
+    {
+      "key": "filter/skew:skew",
+      "old_ordinal": 78,
+      "new_ordinal": 81,
+      "delta": 3
+    },
+    {
+      "key": "filter/smooth:smoothEdge",
+      "old_ordinal": 79,
+      "new_ordinal": 82,
+      "delta": 3
+    },
+    {
+      "key": "filter/smoothstep:smoothstep",
+      "old_ordinal": 80,
+      "new_ordinal": 83,
+      "delta": 3
+    },
+    {
+      "key": "filter/sobel:sobel",
+      "old_ordinal": 81,
+      "new_ordinal": 85,
+      "delta": 4
+    },
+    {
+      "key": "filter/spatter:spatter",
+      "old_ordinal": 82,
+      "new_ordinal": 86,
+      "delta": 4
+    },
+    {
+      "key": "filter/spinBlur:spinBlur",
+      "old_ordinal": 83,
+      "new_ordinal": 87,
+      "delta": 4
+    },
+    {
+      "key": "filter/stamp:stBlurH",
+      "old_ordinal": 84,
+      "new_ordinal": 88,
+      "delta": 4
+    },
+    {
+      "key": "filter/stamp:stBlurV",
+      "old_ordinal": 85,
+      "new_ordinal": 89,
+      "delta": 4
+    },
+    {
+      "key": "filter/strayHair:strayHairBlend",
+      "old_ordinal": 86,
+      "new_ordinal": 90,
+      "delta": 4
+    },
+    {
+      "key": "filter/strokes:stkPost",
+      "old_ordinal": 87,
+      "new_ordinal": 91,
+      "delta": 4
+    },
+    {
+      "key": "filter/strokes:stkSmear",
+      "old_ordinal": 88,
+      "new_ordinal": 92,
+      "delta": 4
+    },
+    {
+      "key": "filter/tetraCosine:tetraCosine",
+      "old_ordinal": 89,
+      "new_ordinal": 93,
+      "delta": 4
+    },
+    {
+      "key": "filter/text:text",
+      "old_ordinal": 90,
+      "new_ordinal": 94,
+      "delta": 4
+    },
+    {
+      "key": "filter/threshold:thresh",
+      "old_ordinal": 91,
+      "new_ordinal": 95,
+      "delta": 4
+    },
+    {
+      "key": "filter/tile:tile",
+      "old_ordinal": 92,
+      "new_ordinal": 96,
+      "delta": 4
+    },
+    {
+      "key": "filter/tint:colorize",
+      "old_ordinal": 93,
+      "new_ordinal": 97,
+      "delta": 4
+    },
+    {
+      "key": "filter/translate:translate",
+      "old_ordinal": 94,
+      "new_ordinal": 98,
+      "delta": 4
+    },
+    {
+      "key": "filter/unsharpMask:usmBlurH",
+      "old_ordinal": 95,
+      "new_ordinal": 99,
+      "delta": 4
+    },
+    {
+      "key": "filter/unsharpMask:usmBlurV",
+      "old_ordinal": 96,
+      "new_ordinal": 100,
+      "delta": 4
+    },
+    {
+      "key": "filter/unsharpMask:usmCombine",
+      "old_ordinal": 97,
+      "new_ordinal": 101,
+      "delta": 4
+    },
+    {
+      "key": "filter/vaseline:upsample",
+      "old_ordinal": 98,
+      "new_ordinal": 102,
+      "delta": 4
+    },
+    {
+      "key": "filter/vignette:vignette",
+      "old_ordinal": 99,
+      "new_ordinal": 103,
+      "delta": 4
+    },
+    {
+      "key": "filter/watercolor:wcComposite",
+      "old_ordinal": 100,
+      "new_ordinal": 104,
+      "delta": 4
+    },
+    {
+      "key": "filter/watercolor:wcSeed",
+      "old_ordinal": 101,
+      "new_ordinal": 105,
+      "delta": 4
+    },
+    {
+      "key": "filter/wind:wind",
+      "old_ordinal": 102,
+      "new_ordinal": 106,
+      "delta": 4
+    },
+    {
+      "key": "filter/wormhole:blend",
+      "old_ordinal": 103,
+      "new_ordinal": 107,
+      "delta": 4
+    },
+    {
+      "key": "filter/wormhole:clear",
+      "old_ordinal": 104,
+      "new_ordinal": 108,
+      "delta": 4
+    },
+    {
+      "key": "mixer/alphaMask:alphaMask",
+      "old_ordinal": 105,
+      "new_ordinal": 109,
+      "delta": 4
+    },
+    {
+      "key": "mixer/applyMode:applyMode",
+      "old_ordinal": 106,
+      "new_ordinal": 110,
+      "delta": 4
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "old_ordinal": 107,
+      "new_ordinal": 111,
+      "delta": 4
+    },
+    {
+      "key": "mixer/cellSplit:cellSplit",
+      "old_ordinal": 108,
+      "new_ordinal": 112,
+      "delta": 4
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "old_ordinal": 109,
+      "new_ordinal": 113,
+      "delta": 4
+    },
+    {
+      "key": "mixer/channelCombine:channelCombine",
+      "old_ordinal": 110,
+      "new_ordinal": 114,
+      "delta": 4
+    },
+    {
+      "key": "mixer/focusBlur:focusBlur",
+      "old_ordinal": 111,
+      "new_ordinal": 115,
+      "delta": 4
+    },
+    {
+      "key": "mixer/mashup:mashup",
+      "old_ordinal": 112,
+      "new_ordinal": 116,
+      "delta": 4
+    },
+    {
+      "key": "mixer/patternMix:patternMix",
+      "old_ordinal": 113,
+      "new_ordinal": 117,
+      "delta": 4
+    },
+    {
+      "key": "mixer/shadow:shadow",
+      "old_ordinal": 114,
+      "new_ordinal": 118,
+      "delta": 4
+    },
+    {
+      "key": "mixer/shapeMask:shapeMask",
+      "old_ordinal": 115,
+      "new_ordinal": 119,
+      "delta": 4
+    },
+    {
+      "key": "mixer/split:split",
+      "old_ordinal": 116,
+      "new_ordinal": 120,
+      "delta": 4
+    },
+    {
+      "key": "mixer/thresholdMix:thresholdMix",
+      "old_ordinal": 117,
+      "new_ordinal": 121,
+      "delta": 4
+    },
+    {
+      "key": "mixer/uvRemap:uvRemap",
+      "old_ordinal": 118,
+      "new_ordinal": 122,
+      "delta": 4
+    },
+    {
+      "key": "synth/cell:cell",
+      "old_ordinal": 119,
+      "new_ordinal": 123,
+      "delta": 4
+    },
+    {
+      "key": "synth/curl:curl",
+      "old_ordinal": 120,
+      "new_ordinal": 124,
+      "delta": 4
+    },
+    {
+      "key": "synth/gradient:gradient",
+      "old_ordinal": 121,
+      "new_ordinal": 125,
+      "delta": 4
+    },
+    {
+      "key": "synth/mandala:mandala",
+      "old_ordinal": 122,
+      "new_ordinal": 126,
+      "delta": 4
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "old_ordinal": 123,
+      "new_ordinal": 127,
+      "delta": 4
+    },
+    {
+      "key": "synth/modPattern:modPattern",
+      "old_ordinal": 124,
+      "new_ordinal": 128,
+      "delta": 4
+    },
+    {
+      "key": "synth/osc2d:osc2d",
+      "old_ordinal": 125,
+      "new_ordinal": 129,
+      "delta": 4
+    },
+    {
+      "key": "synth/pattern:pattern",
+      "old_ordinal": 126,
+      "new_ordinal": 130,
+      "delta": 4
+    },
+    {
+      "key": "synth/perlin:perlin",
+      "old_ordinal": 127,
+      "new_ordinal": 131,
+      "delta": 4
+    },
+    {
+      "key": "synth/polygon:shape",
+      "old_ordinal": 128,
+      "new_ordinal": 132,
+      "delta": 4
+    },
+    {
+      "key": "synth/sacredGeometry:sacredGeometry",
+      "old_ordinal": 129,
+      "new_ordinal": 133,
+      "delta": 4
+    },
+    {
+      "key": "synth/subdivide:subdivide",
+      "old_ordinal": 130,
+      "new_ordinal": 134,
+      "delta": 4
+    }
+  ],
+  "warning": "This is the hypothetical the task explicitly requested ('if all four land'). Per gate-chain-output.json and reachability-output.json, only filter/fxaa:fxaa actually clears validator+emitter AND has a live/reachable round() site under const-global+round admission alone; grain needs an additional uvec3>>uvec3 capability, normalMap needs const-array-of-vector global admission (a materially larger scope than the const-global generalization tested here), and snow's only round() call site is unreachable dead code (as_u32 is never called from main), disqualifying it from full-render-parity validation regardless of whether it type-checks."
+}

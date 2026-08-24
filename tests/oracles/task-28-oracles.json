@@ -1,0 +1,2733 @@
+{
+  "schema": "noisemaker-for-cpp.task28.rotate-mat2-return.public-canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "public_api": "kernelFactories.get(key)",
+    "canonical_identity": true,
+    "adapter_entry_absent": true,
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+  },
+  "program": {
+    "key": "filter/rotate:rot",
+    "source": "sources/filter/rotate/rot.glsl",
+    "raw_source_bytes": 1197,
+    "raw_source_sha256": "c23e8462e8240f25a715fa3eb05e567269c8d410d27943ba346ebccdd0de1f8f",
+    "normalized_source_bytes": 964,
+    "normalized_source_sha256": "e0e2b723289b08cbfcd6f1fc0a8481869e674de3cfedc0ec5df6d96f64748bb5",
+    "defines": {},
+    "profile": "rotate-mat2-return-v1",
+    "canonical_factory_name": "canonicalFactory127",
+    "canonical_factory_to_string_sha256": "4dd2ffadbcf25ec3f88c090b014da6cd3ee7faa3ddea970f21714c873dfcf903",
+    "binding_signature": [
+      "inputTex:sampler2D@1/S1",
+      "rotation:float@2",
+      "wrap:int@3",
+      "speed:int@4",
+      "time:float@5"
+    ],
+    "output": "fragColor:vec4@6",
+    "matrix_contract": {
+      "helper": "mat2 rotate2D(in float angle)",
+      "constructor": "mat2(c, -s, s, c)",
+      "layout": "two column vectors [c,-s] and [s,c]",
+      "return": "automatic glsl::Mat2 by value",
+      "use": "one direct mat2 * vec2 call"
+    }
+  },
+  "fixture": {
+    "input": "top-down non-square quadrant-marked deterministic F32 RGBA field",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "verification": "fresh double render, immutable input, finite full output, F32/RGBA8 hashes and five probes"
+  },
+  "cases": [
+    {
+      "name": "mirror-zero-stationary",
+      "dimensions": {
+        "width": 11,
+        "height": 7
+      },
+      "phase": 1,
+      "time": 0,
+      "uniforms": {
+        "rotation": 0,
+        "wrap": 0,
+        "speed": 0
+      },
+      "coverage": [
+        "mirror",
+        "zero angle",
+        "stationary",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8050000071525574,
+              0.09636363387107849,
+              0.17749999463558197,
+              0.2988888919353485
+            ],
+            "f32_bits_le": [
+              "0x3f4e147b",
+              "0x3dc55a4c",
+              "0x3e35c28f",
+              "0x3e9907f7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              0
+            ],
+            "values": [
+              0.15000000596046448,
+              0.7472727298736572,
+              0.2175000011920929,
+              0.4699999988079071
+            ],
+            "f32_bits_le": [
+              "0x3e19999a",
+              "0x3f3f4d44",
+              "0x3e5eb852",
+              "0x3ef0a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.1550000011920929,
+              0.27636364102363586,
+              0.8841666579246521,
+              0.6188889145851135
+            ],
+            "f32_bits_le": [
+              "0x3e1eb852",
+              "0x3e8d7f89",
+              "0x3f6258bf",
+              "0x3f1e6f81"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              6
+            ],
+            "values": [
+              0.9300000071525574,
+              0.7072727084159851,
+              0.09416666626930237,
+              0.7900000214576721
+            ],
+            "f32_bits_le": [
+              "0x3f6e147b",
+              "0x3f350fd3",
+              "0x3dc0da74",
+              "0x3f4a3d71"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.8899999856948853,
+              0.7118181586265564,
+              0.08583333343267441,
+              0.7844444513320923
+            ],
+            "f32_bits_le": [
+              "0x3f63d70a",
+              "0x3f3639b7",
+              "0x3dafc963",
+              "0x3f48d15a"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+        "rgba8_sha256": "fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8050000071525574,
+              0.09636363387107849,
+              0.17749999463558197,
+              0.2988888919353485
+            ],
+            "f32_bits_le": [
+              "0x3f4e147b",
+              "0x3dc55a4c",
+              "0x3e35c28f",
+              "0x3e9907f7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              0
+            ],
+            "values": [
+              0.15000000596046448,
+              0.7472727298736572,
+              0.2175000011920929,
+              0.4699999988079071
+            ],
+            "f32_bits_le": [
+              "0x3e19999a",
+              "0x3f3f4d44",
+              "0x3e5eb852",
+              "0x3ef0a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.1550000011920929,
+              0.27636364102363586,
+              0.8841666579246521,
+              0.6188889145851135
+            ],
+            "f32_bits_le": [
+              "0x3e1eb852",
+              "0x3e8d7f89",
+              "0x3f6258bf",
+              "0x3f1e6f81"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              10,
+              6
+            ],
+            "values": [
+              0.9300000071525574,
+              0.7072727084159851,
+              0.09416666626930237,
+              0.7900000214576721
+            ],
+            "f32_bits_le": [
+              "0x3f6e147b",
+              "0x3f350fd3",
+              "0x3dc0da74",
+              "0x3f4a3d71"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.8899999856948853,
+              0.7118181586265564,
+              0.08583333343267441,
+              0.7844444513320923
+            ],
+            "f32_bits_le": [
+              "0x3f63d70a",
+              "0x3f3639b7",
+              "0x3dafc963",
+              "0x3f48d15a"
+            ]
+          }
+        ],
+        "finite_lanes": 308,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "repeat-quarter-turn-stationary",
+      "dimensions": {
+        "width": 9,
+        "height": 6
+      },
+      "phase": 2,
+      "time": 0.375,
+      "uniforms": {
+        "rotation": 90,
+        "wrap": 1,
+        "speed": 0
+      },
+      "coverage": [
+        "repeat",
+        "90 degrees",
+        "nonzero inert time",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "9d6b77888122776b5b4fd073d97634e31d4e90dd6f45cf7436eeb1499d6ef299",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8100000023841858,
+              0.10545454174280167,
+              0.1899999976158142,
+              0.30444443225860596
+            ],
+            "f32_bits_le": [
+              "0x3f4f5c29",
+              "0x3dd7f88d",
+              "0x3e428f5c",
+              "0x3e9be024"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.12999999523162842,
+              0.7881818413734436,
+              0.23000000417232513,
+              0.4811111092567444
+            ],
+            "f32_bits_le": [
+              "0x3e051eb8",
+              "0x3f49c649",
+              "0x3e6b851f",
+              "0x3ef65432"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.1899999976158142,
+              0.28545454144477844,
+              0.8758333325386047,
+              0.6244444251060486
+            ],
+            "f32_bits_le": [
+              "0x3e428f5c",
+              "0x3e922719",
+              "0x3f60369d",
+              "0x3f1fdb97"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.8949999809265137,
+              0.7481818199157715,
+              0.08583333343267441,
+              0.801111102104187
+            ],
+            "f32_bits_le": [
+              "0x3f651eb8",
+              "0x3f3f88d8",
+              "0x3dafc963",
+              "0x3f4d159e"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.9049999713897705,
+              0.7118181586265564,
+              0.09833333641290665,
+              0.7733333110809326
+            ],
+            "f32_bits_le": [
+              "0x3f67ae14",
+              "0x3f3639b7",
+              "0x3dc962fd",
+              "0x3f45f92c"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "de121a78dbd9dca3da1a045d9745471fd78f259e3299ada738467c2137683d45",
+        "rgba8_sha256": "536341787c2e5ad102b1810fbd5ca8068072ad9a0773f0da59edde5900af1ad7",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8050000071525574,
+              0.12363636493682861,
+              0.2108333259820938,
+              0.2988888919353485
+            ],
+            "f32_bits_le": [
+              "0x3f4e147b",
+              "0x3dfd3510",
+              "0x3e57e4b1",
+              "0x3e9907f7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.18000000715255737,
+              0.294545441865921,
+              0.8758333325386047,
+              0.6411111354827881
+            ],
+            "f32_bits_le": [
+              "0x3e3851ec",
+              "0x3e96cea9",
+              "0x3f60369d",
+              "0x3f241fdc"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.10999999940395355,
+              0.7790908813476562,
+              0.25083333253860474,
+              0.46444445848464966
+            ],
+            "f32_bits_le": [
+              "0x3de147ae",
+              "0x3f477280",
+              "0x3e806d3a",
+              "0x3eedcbaa"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              5
+            ],
+            "values": [
+              0.9049999713897705,
+              0.7390909194946289,
+              0.08583333343267441,
+              0.7844444513320923
+            ],
+            "f32_bits_le": [
+              "0x3f67ae14",
+              "0x3f3d3510",
+              "0x3dafc963",
+              "0x3f48d15a"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              3
+            ],
+            "values": [
+              0.14499999582767487,
+              0.7609090805053711,
+              0.2175000011920929,
+              0.4699999988079071
+            ],
+            "f32_bits_le": [
+              "0x3e147ae1",
+              "0x3f42caf0",
+              "0x3e5eb852",
+              "0x3ef0a3d7"
+            ]
+          }
+        ],
+        "finite_lanes": 216,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "clamp-negative-oblique-stationary",
+      "dimensions": {
+        "width": 12,
+        "height": 7
+      },
+      "phase": 3,
+      "time": 0,
+      "uniforms": {
+        "rotation": -43.25,
+        "wrap": 2,
+        "speed": 0
+      },
+      "coverage": [
+        "clamp",
+        "negative oblique angle",
+        "stationary",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "834f4e8eb624ccc3b7e58af9981aab279d881dd73dd579d3ced5c6f9eec1f453",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8149999976158142,
+              0.11454545706510544,
+              0.20250000059604645,
+              0.3100000023841858
+            ],
+            "f32_bits_le": [
+              "0x3f50a3d7",
+              "0x3dea96cf",
+              "0x3e4f5c29",
+              "0x3e9eb852"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              0
+            ],
+            "values": [
+              0.15000000596046448,
+              0.774545431137085,
+              0.24250000715255737,
+              0.4588888883590698
+            ],
+            "f32_bits_le": [
+              "0x3e19999a",
+              "0x3f46489c",
+              "0x3e7851ec",
+              "0x3eeaf37c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.16500000655651093,
+              0.294545441865921,
+              0.8550000190734863,
+              0.6299999952316284
+            ],
+            "f32_bits_le": [
+              "0x3e28f5c3",
+              "0x3e96cea9",
+              "0x3f5ae148",
+              "0x3f2147ae"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              6
+            ],
+            "values": [
+              0.9300000071525574,
+              0.7345454692840576,
+              0.06499999761581421,
+              0.7788888812065125
+            ],
+            "f32_bits_le": [
+              "0x3f6e147b",
+              "0x3f3c0b2c",
+              "0x3d851eb8",
+              "0x3f476543"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.8899999856948853,
+              0.7390909194946289,
+              0.11083333194255829,
+              0.7733333110809326
+            ],
+            "f32_bits_le": [
+              "0x3f63d70a",
+              "0x3f3d3510",
+              "0x3de2fc96",
+              "0x3f45f92c"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "481e60cd62fd8a220c64bebd9734833db3ce3fee9844ef50b6f03007cb2497f4",
+        "rgba8_sha256": "a89fbf2153c7bfb4f0ea2f0fabcc830e9e60b15f16c389a73bbfd7f498f55a10",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8199999928474426,
+              0.10090909153223038,
+              0.20250000059604645,
+              0.2988888919353485
+            ],
+            "f32_bits_le": [
+              "0x3f51eb85",
+              "0x3dcea96d",
+              "0x3e4f5c29",
+              "0x3e9907f7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              0
+            ],
+            "values": [
+              0.9150000214576721,
+              0.7345454692840576,
+              0.09833333641290665,
+              0.7788888812065125
+            ],
+            "f32_bits_le": [
+              "0x3f6a3d71",
+              "0x3f3c0b2c",
+              "0x3dc962fd",
+              "0x3f476543"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.8299999833106995,
+              0.11454545706510544,
+              0.1691666692495346,
+              0.3100000023841858
+            ],
+            "f32_bits_le": [
+              "0x3f547ae1",
+              "0x3dea96cf",
+              "0x3e2d3a07",
+              "0x3e9eb852"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              11,
+              6
+            ],
+            "values": [
+              0.925000011920929,
+              0.7481818199157715,
+              0.06499999761581421,
+              0.7900000214576721
+            ],
+            "f32_bits_le": [
+              "0x3f6ccccd",
+              "0x3f3f88d8",
+              "0x3d851eb8",
+              "0x3f4a3d71"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.8899999856948853,
+              0.7390909194946289,
+              0.11083333194255829,
+              0.7733333110809326
+            ],
+            "f32_bits_le": [
+              "0x3f63d70a",
+              "0x3f3d3510",
+              "0x3de2fc96",
+              "0x3f45f92c"
+            ]
+          }
+        ],
+        "finite_lanes": 336,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "mirror-positive-animation",
+      "dimensions": {
+        "width": 10,
+        "height": 6
+      },
+      "phase": 4,
+      "time": 0.1875,
+      "uniforms": {
+        "rotation": 17.5,
+        "wrap": 0,
+        "speed": 2
+      },
+      "coverage": [
+        "mirror",
+        "positive speed",
+        "animated angle",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "178ecc29418523cf6bcdd228e1c84e3e3cc471e33b5f572fdefe213b589cd3f3",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8199999928474426,
+              0.12363636493682861,
+              0.2150000035762787,
+              0.31555554270744324
+            ],
+            "f32_bits_le": [
+              "0x3f51eb85",
+              "0x3dfd3510",
+              "0x3e5c28f6",
+              "0x3ea1907f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.12999999523162842,
+              0.7654545307159424,
+              0.2549999952316284,
+              0.4699999988079071
+            ],
+            "f32_bits_le": [
+              "0x3e051eb8",
+              "0x3f43f4d4",
+              "0x3e828f5c",
+              "0x3ef0a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.1550000011920929,
+              0.303636372089386,
+              0.9008333086967468,
+              0.6355555653572083
+            ],
+            "f32_bits_le": [
+              "0x3e1eb852",
+              "0x3e9b763a",
+              "0x3f669d03",
+              "0x3f22b3c5"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              5
+            ],
+            "values": [
+              0.8949999809265137,
+              0.725454568862915,
+              0.11083333194255829,
+              0.7900000214576721
+            ],
+            "f32_bits_le": [
+              "0x3f651eb8",
+              "0x3f39b764",
+              "0x3de2fc96",
+              "0x3f4a3d71"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.9049999713897705,
+              0.7390909194946289,
+              0.06916666775941849,
+              0.801111102104187
+            ],
+            "f32_bits_le": [
+              "0x3f67ae14",
+              "0x3f3d3510",
+              "0x3d8da741",
+              "0x3f4d159e"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "544f50f37cd84a98bb0b935e3fd05fed47a49fc4552171f3293fad060d829190",
+        "rgba8_sha256": "37fdf71d303dcc97f4ba0eb6acf2720da1195974e8689981e653a41d501d20b9",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8999999761581421,
+              0.7072727084159851,
+              0.09000000357627869,
+              0.7955555319786072
+            ],
+            "f32_bits_le": [
+              "0x3f666666",
+              "0x3f350fd3",
+              "0x3db851ec",
+              "0x3f4ba987"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.17000000178813934,
+              0.303636372089386,
+              0.85916668176651,
+              0.6355555653572083
+            ],
+            "f32_bits_le": [
+              "0x3e2e147b",
+              "0x3e9b763a",
+              "0x3f5bf259",
+              "0x3f22b3c5"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.11500000208616257,
+              0.7654545307159424,
+              0.24250000715255737,
+              0.4699999988079071
+            ],
+            "f32_bits_le": [
+              "0x3deb851f",
+              "0x3f43f4d4",
+              "0x3e7851ec",
+              "0x3ef0a3d7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              5
+            ],
+            "values": [
+              0.8149999976158142,
+              0.0918181836605072,
+              0.18166667222976685,
+              0.3100000023841858
+            ],
+            "f32_bits_le": [
+              "0x3f50a3d7",
+              "0x3dbc0b2c",
+              "0x3e3a06d4",
+              "0x3e9eb852"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.8100000023841858,
+              0.10999999940395355,
+              0.20250000059604645,
+              0.30444443225860596
+            ],
+            "f32_bits_le": [
+              "0x3f4f5c29",
+              "0x3de147ae",
+              "0x3e4f5c29",
+              "0x3e9be024"
+            ]
+          }
+        ],
+        "finite_lanes": 240,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "repeat-negative-animation",
+      "dimensions": {
+        "width": 13,
+        "height": 8
+      },
+      "phase": 5,
+      "time": 0.3125,
+      "uniforms": {
+        "rotation": -122.75,
+        "wrap": 1,
+        "speed": -3
+      },
+      "coverage": [
+        "repeat",
+        "negative speed",
+        "animated angle",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "bc345d3136a17110cfb549b21a36acf17dce48e76d6ad1de0ad41a8ddddb0c2c",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.824999988079071,
+              0.1327272653579712,
+              0.1733333319425583,
+              0.32111111283302307
+            ],
+            "f32_bits_le": [
+              "0x3f533333",
+              "0x3e07e9a8",
+              "0x3e317e4b",
+              "0x3ea468ad"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.15000000596046448,
+              0.7518181800842285,
+              0.2133333384990692,
+              0.4866666793823242
+            ],
+            "f32_bits_le": [
+              "0x3e19999a",
+              "0x3f407728",
+              "0x3e5a740e",
+              "0x3ef92c60"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.1899999976158142,
+              0.31272727251052856,
+              0.9008333086967468,
+              0.6411111354827881
+            ],
+            "f32_bits_le": [
+              "0x3e428f5c",
+              "0x3ea01dca",
+              "0x3f669d03",
+              "0x3f241fdc"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              12,
+              7
+            ],
+            "values": [
+              0.8999999761581421,
+              0.7118181586265564,
+              0.11083333194255829,
+              0.8066666722297668
+            ],
+            "f32_bits_le": [
+              "0x3f666666",
+              "0x3f3639b7",
+              "0x3de2fc96",
+              "0x3f4e81b5"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              4
+            ],
+            "values": [
+              0.9150000214576721,
+              0.7072727084159851,
+              0.10249999910593033,
+              0.7844444513320923
+            ],
+            "f32_bits_le": [
+              "0x3f6a3d71",
+              "0x3f350fd3",
+              "0x3dd1eb85",
+              "0x3f48d15a"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "9e9528a344e390e6503da8731f2b105d422585ed37dd5ab14675a7d5f8c0e8d4",
+        "rgba8_sha256": "9d586478e50550322e3ec8eef0b14bd4efff63b43fb120bad77a8267740f25e1",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8949999809265137,
+              0.7527272701263428,
+              0.09000000357627869,
+              0.7900000214576721
+            ],
+            "f32_bits_le": [
+              "0x3f651eb8",
+              "0x3f40b2bc",
+              "0x3db851ec",
+              "0x3f4a3d71"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.12999999523162842,
+              0.7654545307159424,
+              0.2549999952316284,
+              0.4588888883590698
+            ],
+            "f32_bits_le": [
+              "0x3e051eb8",
+              "0x3f43f4d4",
+              "0x3e828f5c",
+              "0x3eeaf37c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.16500000655651093,
+              0.2990909218788147,
+              0.85916668176651,
+              0.6299999952316284
+            ],
+            "f32_bits_le": [
+              "0x3e28f5c3",
+              "0x3e992272",
+              "0x3f5bf259",
+              "0x3f2147ae"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              12,
+              7
+            ],
+            "values": [
+              0.8299999833106995,
+              0.0918181836605072,
+              0.1941666603088379,
+              0.2988888919353485
+            ],
+            "f32_bits_le": [
+              "0x3f547ae1",
+              "0x3dbc0b2c",
+              "0x3e46d3a0",
+              "0x3e9907f7"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              4
+            ],
+            "values": [
+              0.11999999731779099,
+              0.7472727298736572,
+              0.22166666388511658,
+              0.46444445848464966
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3f3f4d44",
+              "0x3e62fc96",
+              "0x3eedcbaa"
+            ]
+          }
+        ],
+        "finite_lanes": 416,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "clamp-large-angle-animation",
+      "dimensions": {
+        "width": 8,
+        "height": 5
+      },
+      "phase": 6,
+      "time": 0.53125,
+      "uniforms": {
+        "rotation": 179.5,
+        "wrap": 2,
+        "speed": 4
+      },
+      "coverage": [
+        "clamp",
+        "large accumulated angle",
+        "animated angle",
+        "non-square quadrant input"
+      ],
+      "input": {
+        "f32_sha256": "df455e6ad1fbbb4be5dc9625bd6dda79e3e776d8d69bd8d2e2eef249464f35c4",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8299999833106995,
+              0.0918181836605072,
+              0.18583333492279053,
+              0.3266666531562805
+            ],
+            "f32_bits_le": [
+              "0x3f547ae1",
+              "0x3dbc0b2c",
+              "0x3e3e4b18",
+              "0x3ea740da"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.11500000208616257,
+              0.7654545307159424,
+              0.22583332657814026,
+              0.4866666793823242
+            ],
+            "f32_bits_le": [
+              "0x3deb851f",
+              "0x3f43f4d4",
+              "0x3e6740da",
+              "0x3ef92c60"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.15000000596046448,
+              0.2718181908130646,
+              0.9049999713897705,
+              0.6466666460037231
+            ],
+            "f32_bits_le": [
+              "0x3e19999a",
+              "0x3e8b2bc1",
+              "0x3f67ae14",
+              "0x3f258bf2"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              4
+            ],
+            "values": [
+              0.9100000262260437,
+              0.725454568862915,
+              0.11500000208616257,
+              0.8066666722297668
+            ],
+            "f32_bits_le": [
+              "0x3f68f5c3",
+              "0x3f39b764",
+              "0x3deb851f",
+              "0x3f4e81b5"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.9100000262260437,
+              0.7481818199157715,
+              0.07333333045244217,
+              0.7955555319786072
+            ],
+            "f32_bits_le": [
+              "0x3f68f5c3",
+              "0x3f3f88d8",
+              "0x3d962fc9",
+              "0x3f4ba987"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "ecaa74dc28582aa09cc04a51a64e23e3e2a1304f932b0e732f7feb57cc52b7cb",
+        "rgba8_sha256": "92aac1693d164fe1d3c8568a40a1b5c95c6fc46d15234fad379262d222ce8067",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.12999999523162842,
+              0.7654545307159424,
+              0.24666666984558105,
+              0.4866666793823242
+            ],
+            "f32_bits_le": [
+              "0x3e051eb8",
+              "0x3f43f4d4",
+              "0x3e7c9630",
+              "0x3ef92c60"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.17499999701976776,
+              0.28999999165534973,
+              0.9049999713897705,
+              0.6411111354827881
+            ],
+            "f32_bits_le": [
+              "0x3e333333",
+              "0x3e947ae1",
+              "0x3f67ae14",
+              "0x3f241fdc"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.13500000536441803,
+              0.7472727298736572,
+              0.22583332657814026,
+              0.4533333480358124
+            ],
+            "f32_bits_le": [
+              "0x3e0a3d71",
+              "0x3f3f4d44",
+              "0x3e6740da",
+              "0x3ee81b4f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              4
+            ],
+            "values": [
+              0.18000000715255737,
+              0.2718181908130646,
+              0.8841666579246521,
+              0.6466666460037231
+            ],
+            "f32_bits_le": [
+              "0x3e3851ec",
+              "0x3e8b2bc1",
+              "0x3f6258bf",
+              "0x3f258bf2"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.18000000715255737,
+              0.2990909218788147,
+              0.8633333444595337,
+              0.6188889145851135
+            ],
+            "f32_bits_le": [
+              "0x3e3851ec",
+              "0x3e992272",
+              "0x3f5d036a",
+              "0x3f1e6f81"
+            ]
+          }
+        ],
+        "finite_lanes": 160,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "input_immutable": true
+    }
+  ],
+  "public_factory_mutations": [
+    {
+      "id": "transpose-constructor",
+      "hazard": "constructor-lane-order",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "mirror-zero-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+          "candidate_rgba8_sha256": "fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587"
+        },
+        {
+          "case": "repeat-quarter-turn-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 205,
+          "different_rgba8_bytes": 205,
+          "max_abs_f32_delta": 0.794999971985817,
+          "candidate_f32_sha256": "f766d19ccf47cdaa626c6a69e6b402659d2304677b367d5c36511520fb686867",
+          "candidate_rgba8_sha256": "07ac302976145442303109d3a810c11b9d4a230327e02dc9fc9fb5ca126ae418"
+        },
+        {
+          "case": "clamp-negative-oblique-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 328,
+          "different_rgba8_bytes": 327,
+          "max_abs_f32_delta": 0.8358333110809326,
+          "candidate_f32_sha256": "1cbbe7854c5ed6a9c5422849cc50bd019f6c86c444ff6d03d1885c9f8e88b235",
+          "candidate_rgba8_sha256": "bed9ae8524e11ab6be6913d52f0ac92c336ba7ee0cc864712b7688156683fa5f"
+        },
+        {
+          "case": "mirror-positive-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 222,
+          "different_rgba8_bytes": 221,
+          "max_abs_f32_delta": 0.8108333051204681,
+          "candidate_f32_sha256": "55306c0045ec63c412faf8e3322a181621545712be83c9fc92982d15d7d82cd7",
+          "candidate_rgba8_sha256": "8f99974abaf2c2328b1844842ba66a2ad67c28370f79e261662f15c7801692c1"
+        },
+        {
+          "case": "repeat-negative-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 405,
+          "different_rgba8_bytes": 405,
+          "max_abs_f32_delta": 0.8200000077486038,
+          "candidate_f32_sha256": "ad604ccd1dcec2a0a04f932b86ab7a04f3f5ccd9a7152eec37951dfbb3c352cd",
+          "candidate_rgba8_sha256": "7d6406a97624022895c3ca48a398bdf475ac674098dcacb472ab6139b9c775b6"
+        },
+        {
+          "case": "clamp-large-angle-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 151,
+          "different_rgba8_bytes": 151,
+          "max_abs_f32_delta": 0.8316666409373283,
+          "candidate_f32_sha256": "60ccd92d6514c631429b3c9c1edac4a102a11ed9c6e682c35e17206d10d168e0",
+          "candidate_rgba8_sha256": "b7038a6193d8b862eeee080f40394b2c73a1d2639a77829c5a3c72523bcd6f9e"
+        }
+      ]
+    },
+    {
+      "id": "quarter-turn-constructor",
+      "hazard": "constructor-child-identity",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "mirror-zero-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 304,
+          "different_rgba8_bytes": 304,
+          "max_abs_f32_delta": 0.823333315551281,
+          "candidate_f32_sha256": "88374d6dafeae1971d3ad5bca9f91311aa306fed1b5c5ca87cf6332cf82a8680",
+          "candidate_rgba8_sha256": "320702dd75ed5779f456b9433a8bcea8f27e8d422a992bf55a92d24c69d314a8"
+        },
+        {
+          "case": "repeat-quarter-turn-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 211,
+          "different_rgba8_bytes": 211,
+          "max_abs_f32_delta": 0.8108333349227905,
+          "candidate_f32_sha256": "b15848bf07afc191e338cbc7f5c55d0b72c560dcd8464f5762e437d794a64da5",
+          "candidate_rgba8_sha256": "8d444e1ee3fc076def8698221be018626bd02a92d02515154850c05313ac70f0"
+        },
+        {
+          "case": "clamp-negative-oblique-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 48,
+          "different_rgba8_bytes": 48,
+          "max_abs_f32_delta": 0.0350000262260437,
+          "candidate_f32_sha256": "1c73c0a5e3ef9ad5df1f3fadeda8e1459e10b0b3df102d1c500e3a3b8d55b5ab",
+          "candidate_rgba8_sha256": "3e851771cc1260a51825dba330ac4135ef7f3a51b37a6429fdc59be3e2f795e1"
+        },
+        {
+          "case": "mirror-positive-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 224,
+          "different_rgba8_bytes": 224,
+          "max_abs_f32_delta": 0.8100000098347664,
+          "candidate_f32_sha256": "60c25ea9ac7598a5b953dc2a5951fac224a4c780935a1aeb96d48469e53791e4",
+          "candidate_rgba8_sha256": "499df07c00a2712842ece070d4cd56100d308fb8c4d0e9da5d97e310d18d37dc"
+        },
+        {
+          "case": "repeat-negative-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 412,
+          "different_rgba8_bytes": 411,
+          "max_abs_f32_delta": 0.8316666409373283,
+          "candidate_f32_sha256": "3e755d2f42ff8d8d66c7cabb44358783db9f385365d93ddae580a0c100c536db",
+          "candidate_rgba8_sha256": "b9678422520b44bae77962668498ac4deabcf323e3fc4ff9c2ffcc94b2ef62d2"
+        },
+        {
+          "case": "clamp-large-angle-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 160,
+          "different_rgba8_bytes": 160,
+          "max_abs_f32_delta": 0.7900000140070915,
+          "candidate_f32_sha256": "6b90ad40b37023b9ce8b23a41e324c4833a0101e11246ef95c255cb3bfb915d6",
+          "candidate_rgba8_sha256": "f16b577f5e84c04b0ec458053ea019e81fee64d9d9be176e392eb700dbd8de7c"
+        }
+      ]
+    },
+    {
+      "id": "diagonal-constructor",
+      "hazard": "constructor-arity-semantics",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "mirror-zero-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+          "candidate_rgba8_sha256": "fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587"
+        },
+        {
+          "case": "repeat-quarter-turn-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 198,
+          "different_rgba8_bytes": 198,
+          "max_abs_f32_delta": 0.8200000077486038,
+          "candidate_f32_sha256": "9cf98a09a795c8bf440e11542a95c5001744b51f5e3969487aef3c83b7d291fd",
+          "candidate_rgba8_sha256": "355bda8782cf51a86e570ffd7690926546b2f43fdcd474a0e50e2b7715f08f8d"
+        },
+        {
+          "case": "clamp-negative-oblique-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 304,
+          "different_rgba8_bytes": 304,
+          "max_abs_f32_delta": 0.8150000125169754,
+          "candidate_f32_sha256": "ce1c4a3c21d4e4f1bda8406fac6f230136221b963cc87d3e527d2c720cc39897",
+          "candidate_rgba8_sha256": "c06b3face43f06cae225c31bf1e29eb6b6b354c7881dd5e68b81df6a3634bdf4"
+        },
+        {
+          "case": "mirror-positive-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 200,
+          "different_rgba8_bytes": 200,
+          "max_abs_f32_delta": 0.810000017285347,
+          "candidate_f32_sha256": "5862518555975887b8e2d577ced3a91ed7623210f22b1203c11abf45e69a7b75",
+          "candidate_rgba8_sha256": "9c0ca12b459d1e06f0f8470b5a7dec3b119635655d6faaad3a8b48123e1422c1"
+        },
+        {
+          "case": "repeat-negative-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 388,
+          "different_rgba8_bytes": 388,
+          "max_abs_f32_delta": 0.8200000077486038,
+          "candidate_f32_sha256": "94300417b868be59a24b5f375b5c18773b5e859eeccd334626ea241a61a658f9",
+          "candidate_rgba8_sha256": "658da58c519148bf0c495b81e19adf8faef85a9fa6828ac17d8a7aed7e7768d9"
+        },
+        {
+          "case": "clamp-large-angle-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 138,
+          "different_rgba8_bytes": 138,
+          "max_abs_f32_delta": 0.7899999916553497,
+          "candidate_f32_sha256": "dbc17b1a0d38418a9e949ea66b8382910e5c7af7719065d2a3f90278a92eaccd",
+          "candidate_rgba8_sha256": "234dfdeef1b615610191e41ebd18a95817ec08252a683751e64f9e9c3e49e215"
+        }
+      ]
+    },
+    {
+      "id": "row-major-multiply",
+      "hazard": "matrix-layout",
+      "expectation": "diverge",
+      "case_results": [
+        {
+          "case": "mirror-zero-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+          "candidate_rgba8_sha256": "fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587"
+        },
+        {
+          "case": "repeat-quarter-turn-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 205,
+          "different_rgba8_bytes": 205,
+          "max_abs_f32_delta": 0.794999971985817,
+          "candidate_f32_sha256": "f766d19ccf47cdaa626c6a69e6b402659d2304677b367d5c36511520fb686867",
+          "candidate_rgba8_sha256": "07ac302976145442303109d3a810c11b9d4a230327e02dc9fc9fb5ca126ae418"
+        },
+        {
+          "case": "clamp-negative-oblique-stationary",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 328,
+          "different_rgba8_bytes": 327,
+          "max_abs_f32_delta": 0.8358333110809326,
+          "candidate_f32_sha256": "1cbbe7854c5ed6a9c5422849cc50bd019f6c86c444ff6d03d1885c9f8e88b235",
+          "candidate_rgba8_sha256": "bed9ae8524e11ab6be6913d52f0ac92c336ba7ee0cc864712b7688156683fa5f"
+        },
+        {
+          "case": "mirror-positive-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 222,
+          "different_rgba8_bytes": 221,
+          "max_abs_f32_delta": 0.8108333051204681,
+          "candidate_f32_sha256": "55306c0045ec63c412faf8e3322a181621545712be83c9fc92982d15d7d82cd7",
+          "candidate_rgba8_sha256": "8f99974abaf2c2328b1844842ba66a2ad67c28370f79e261662f15c7801692c1"
+        },
+        {
+          "case": "repeat-negative-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 405,
+          "different_rgba8_bytes": 405,
+          "max_abs_f32_delta": 0.8200000077486038,
+          "candidate_f32_sha256": "ad604ccd1dcec2a0a04f932b86ab7a04f3f5ccd9a7152eec37951dfbb3c352cd",
+          "candidate_rgba8_sha256": "7d6406a97624022895c3ca48a398bdf475ac674098dcacb472ab6139b9c775b6"
+        },
+        {
+          "case": "clamp-large-angle-animation",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_lanes": 151,
+          "different_rgba8_bytes": 151,
+          "max_abs_f32_delta": 0.8316666409373283,
+          "candidate_f32_sha256": "60ccd92d6514c631429b3c9c1edac4a102a11ed9c6e682c35e17206d10d168e0",
+          "candidate_rgba8_sha256": "b7038a6193d8b862eeee080f40394b2c73a1d2639a77829c5a3c72523bcd6f9e"
+        }
+      ]
+    },
+    {
+      "id": "helper-local-return",
+      "hazard": "return-expression-shape",
+      "expectation": "identity-but-structurally-reject",
+      "case_results": [
+        {
+          "case": "mirror-zero-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3709622bba358109b11d4db19416b92ee536566f831cf0422bf39fab80372304",
+          "candidate_rgba8_sha256": "fdd0aaa3a244b6f82bf8cd31d4f721a24a0df27bc8c9c2628df9ec8297e45587"
+        },
+        {
+          "case": "repeat-quarter-turn-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "de121a78dbd9dca3da1a045d9745471fd78f259e3299ada738467c2137683d45",
+          "candidate_rgba8_sha256": "536341787c2e5ad102b1810fbd5ca8068072ad9a0773f0da59edde5900af1ad7"
+        },
+        {
+          "case": "clamp-negative-oblique-stationary",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "481e60cd62fd8a220c64bebd9734833db3ce3fee9844ef50b6f03007cb2497f4",
+          "candidate_rgba8_sha256": "a89fbf2153c7bfb4f0ea2f0fabcc830e9e60b15f16c389a73bbfd7f498f55a10"
+        },
+        {
+          "case": "mirror-positive-animation",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "544f50f37cd84a98bb0b935e3fd05fed47a49fc4552171f3293fad060d829190",
+          "candidate_rgba8_sha256": "37fdf71d303dcc97f4ba0eb6acf2720da1195974e8689981e653a41d501d20b9"
+        },
+        {
+          "case": "repeat-negative-animation",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "9e9528a344e390e6503da8731f2b105d422585ed37dd5ab14675a7d5f8c0e8d4",
+          "candidate_rgba8_sha256": "9d586478e50550322e3ec8eef0b14bd4efff63b43fb120bad77a8267740f25e1"
+        },
+        {
+          "case": "clamp-large-angle-animation",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "ecaa74dc28582aa09cc04a51a64e23e3e2a1304f932b0e732f7feb57cc52b7cb",
+          "candidate_rgba8_sha256": "92aac1693d164fe1d3c8568a40a1b5c95c6fc46d15234fad379262d222ce8067"
+        }
+      ]
+    }
+  ],
+  "direct_matrix_modes": [
+    {
+      "id": 0,
+      "name": "exact-direct-return-column-major",
+      "association": "direct-return"
+    },
+    {
+      "id": 1,
+      "name": "transposed-constructor",
+      "association": "direct-return"
+    },
+    {
+      "id": 2,
+      "name": "row-major-multiply",
+      "association": "direct-return"
+    },
+    {
+      "id": 3,
+      "name": "diagonal-constructor",
+      "association": "direct-return"
+    },
+    {
+      "id": 4,
+      "name": "wrong-sine-sign",
+      "association": "direct-return"
+    },
+    {
+      "id": 5,
+      "name": "helper-local-return",
+      "association": "local-return"
+    }
+  ],
+  "direct_matrix_cases": [
+    {
+      "input": {
+        "angle_radians": 0,
+        "angle_f32_bits_le": "0x00000000",
+        "vector": [
+          1.25,
+          -0.75
+        ],
+        "vector_f32_bits_le": [
+          "0x3fa00000",
+          "0xbf400000"
+        ]
+      },
+      "cos_f32_bits_le": "0x3f800000",
+      "sin_f32_bits_le": "0x00000000",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x80000000",
+            "0x00000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x00000000",
+            "0x80000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x80000000",
+            "0x00000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f800000",
+            "0x80000000",
+            "0x00000000",
+            "0x3f800000"
+          ],
+          "product": [
+            1.25,
+            -0.75
+          ],
+          "product_f32_bits_le": [
+            "0x3fa00000",
+            "0xbf400000"
+          ]
+        }
+      ]
+    },
+    {
+      "input": {
+        "angle_radians": 0.5235987901687622,
+        "angle_f32_bits_le": "0x3f060a92",
+        "vector": [
+          1,
+          2
+        ],
+        "vector_f32_bits_le": [
+          "0x3f800000",
+          "0x40000000"
+        ]
+      },
+      "cos_f32_bits_le": "0x3f5db3d7",
+      "sin_f32_bits_le": "0x3f000000",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            -0.5,
+            0.5,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0xbf000000",
+            "0x3f000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            1.866025447845459,
+            1.2320507764816284
+          ],
+          "product_f32_bits_le": [
+            "0x3feed9ec",
+            "0x3f9db3d7"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            0.5,
+            -0.5,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0x3f000000",
+            "0xbf000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            -0.1339746117591858,
+            2.232050895690918
+          ],
+          "product_f32_bits_le": [
+            "0xbe0930a4",
+            "0x400ed9ec"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            -0.5,
+            0.5,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0xbf000000",
+            "0x3f000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            -0.1339746117591858,
+            2.232050895690918
+          ],
+          "product_f32_bits_le": [
+            "0xbe0930a4",
+            "0x400ed9ec"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            0,
+            0,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0x00000000",
+            "0x00000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            0.8660253882408142,
+            1.7320507764816284
+          ],
+          "product_f32_bits_le": [
+            "0x3f5db3d7",
+            "0x3fddb3d7"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            0.5,
+            0.5,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0x3f000000",
+            "0x3f000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            1.866025447845459,
+            2.232050895690918
+          ],
+          "product_f32_bits_le": [
+            "0x3feed9ec",
+            "0x400ed9ec"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            0.8660253882408142,
+            -0.5,
+            0.5,
+            0.8660253882408142
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f5db3d7",
+            "0xbf000000",
+            "0x3f000000",
+            "0x3f5db3d7"
+          ],
+          "product": [
+            1.866025447845459,
+            1.2320507764816284
+          ],
+          "product_f32_bits_le": [
+            "0x3feed9ec",
+            "0x3f9db3d7"
+          ]
+        }
+      ]
+    },
+    {
+      "input": {
+        "angle_radians": -1.5707963705062866,
+        "angle_f32_bits_le": "0xbfc90fdb",
+        "vector": [
+          -2.5,
+          0.5
+        ],
+        "vector_f32_bits_le": [
+          "0xc0200000",
+          "0x3f000000"
+        ]
+      },
+      "cos_f32_bits_le": "0xb33bbd2e",
+      "sin_f32_bits_le": "0xbf800000",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            1,
+            -1,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0x3f800000",
+            "0xbf800000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            -0.49999988079071045,
+            -2.5
+          ],
+          "product_f32_bits_le": [
+            "0xbefffffc",
+            "0xc0200000"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            -1,
+            1,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0xbf800000",
+            "0x3f800000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            0.5000001192092896,
+            2.5
+          ],
+          "product_f32_bits_le": [
+            "0x3f000002",
+            "0x40200000"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            1,
+            -1,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0x3f800000",
+            "0xbf800000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            0.5000001192092896,
+            2.5
+          ],
+          "product_f32_bits_le": [
+            "0x3f000002",
+            "0x40200000"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            0,
+            0,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0x00000000",
+            "0x00000000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            1.092784742695585e-7,
+            -2.1855694143368964e-8
+          ],
+          "product_f32_bits_le": [
+            "0x33eaac7a",
+            "0xb2bbbd2e"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            -1,
+            -1,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0xbf800000",
+            "0xbf800000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            -0.49999988079071045,
+            2.5
+          ],
+          "product_f32_bits_le": [
+            "0xbefffffc",
+            "0x40200000"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            -4.371138828673793e-8,
+            1,
+            -1,
+            -4.371138828673793e-8
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xb33bbd2e",
+            "0x3f800000",
+            "0xbf800000",
+            "0xb33bbd2e"
+          ],
+          "product": [
+            -0.49999988079071045,
+            -2.5
+          ],
+          "product_f32_bits_le": [
+            "0xbefffffc",
+            "0xc0200000"
+          ]
+        }
+      ]
+    },
+    {
+      "input": {
+        "angle_radians": 3.1415927410125732,
+        "angle_f32_bits_le": "0x40490fdb",
+        "vector": [
+          0.125,
+          -3
+        ],
+        "vector_f32_bits_le": [
+          "0x3e000000",
+          "0xc0400000"
+        ]
+      },
+      "cos_f32_bits_le": "0xbf800000",
+      "sin_f32_bits_le": "0xb3bbbd2e",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -1,
+            8.742277657347586e-8,
+            -8.742277657347586e-8,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0x33bbbd2e",
+            "0xb3bbbd2e",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.12499973922967911,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbdffffdd",
+            "0x40400000"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -1,
+            -8.742277657347586e-8,
+            8.742277657347586e-8,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0xb3bbbd2e",
+            "0x33bbbd2e",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.1250002682209015,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbe000012",
+            "0x40400000"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -1,
+            8.742277657347586e-8,
+            -8.742277657347586e-8,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0x33bbbd2e",
+            "0xb3bbbd2e",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.1250002682209015,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbe000012",
+            "0x40400000"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -1,
+            0,
+            0,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0x00000000",
+            "0x00000000",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.125,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbe000000",
+            "0x40400000"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -1,
+            -8.742277657347586e-8,
+            -8.742277657347586e-8,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0xb3bbbd2e",
+            "0xb3bbbd2e",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.12499973922967911,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbdffffdd",
+            "0x40400000"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            -1,
+            8.742277657347586e-8,
+            -8.742277657347586e-8,
+            -1
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf800000",
+            "0x33bbbd2e",
+            "0xb3bbbd2e",
+            "0xbf800000"
+          ],
+          "product": [
+            -0.12499973922967911,
+            3
+          ],
+          "product_f32_bits_le": [
+            "0xbdffffdd",
+            "0x40400000"
+          ]
+        }
+      ]
+    },
+    {
+      "input": {
+        "angle_radians": 0.699999988079071,
+        "angle_f32_bits_le": "0x3f333333",
+        "vector": [
+          7.25,
+          -1.5
+        ],
+        "vector_f32_bits_le": [
+          "0x40e80000",
+          "0xbfc00000"
+        ]
+      },
+      "cos_f32_bits_le": "0x3f43ccb3",
+      "sin_f32_bits_le": "0x3f24eb73",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            -0.6442176699638367,
+            0.6442176699638367,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0xbf24eb73",
+            "0x3f24eb73",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            4.578779697418213,
+            -5.817841529846191
+          ],
+          "product_f32_bits_le": [
+            "0x4092855d",
+            "0xc0ba2bc2"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            0.6442176699638367,
+            -0.6442176699638367,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0x3f24eb73",
+            "0xbf24eb73",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            6.511432647705078,
+            3.5233147144317627
+          ],
+          "product_f32_bits_le": [
+            "0x40d05da8",
+            "0x40617dfd"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            -0.6442176699638367,
+            0.6442176699638367,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0xbf24eb73",
+            "0x3f24eb73",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            6.511432647705078,
+            3.5233147144317627
+          ],
+          "product_f32_bits_le": [
+            "0x40d05da8",
+            "0x40617dfd"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            0,
+            0,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0x00000000",
+            "0x00000000",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            5.545105934143066,
+            -1.1472632884979248
+          ],
+          "product_f32_bits_le": [
+            "0x40b17182",
+            "0xbf92d986"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            0.6442176699638367,
+            0.6442176699638367,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0x3f24eb73",
+            "0x3f24eb73",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            4.578779697418213,
+            3.5233147144317627
+          ],
+          "product_f32_bits_le": [
+            "0x4092855d",
+            "0x40617dfd"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            0.7648422122001648,
+            -0.6442176699638367,
+            0.6442176699638367,
+            0.7648422122001648
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0x3f43ccb3",
+            "0xbf24eb73",
+            "0x3f24eb73",
+            "0x3f43ccb3"
+          ],
+          "product": [
+            4.578779697418213,
+            -5.817841529846191
+          ],
+          "product_f32_bits_le": [
+            "0x4092855d",
+            "0xc0ba2bc2"
+          ]
+        }
+      ]
+    },
+    {
+      "input": {
+        "angle_radians": -2.299999952316284,
+        "angle_f32_bits_le": "0xc0133333",
+        "vector": [
+          -0.375,
+          4.5
+        ],
+        "vector_f32_bits_le": [
+          "0xbec00000",
+          "0x40900000"
+        ]
+      },
+      "cos_f32_bits_le": "0xbf2a9110",
+      "sin_f32_bits_le": "0xbf3ee68a",
+      "modes": [
+        {
+          "mode_id": 0,
+          "mode_name": "exact-direct-return-column-major",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            0.745705246925354,
+            -0.745705246925354,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0x3f3ee68a",
+            "0xbf3ee68a",
+            "0xbf2a9110"
+          ],
+          "product": [
+            -3.1058201789855957,
+            -3.277881383895874
+          ],
+          "product_f32_bits_le": [
+            "0xc046c5c2",
+            "0xc051c8cf"
+          ]
+        },
+        {
+          "mode_id": 1,
+          "mode_name": "transposed-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            -0.745705246925354,
+            0.745705246925354,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0xbf3ee68a",
+            "0x3f3ee68a",
+            "0xbf2a9110"
+          ],
+          "product": [
+            3.60552716255188,
+            -2.718602418899536
+          ],
+          "product_f32_bits_le": [
+            "0x4066c0f5",
+            "0xc02dfd95"
+          ]
+        },
+        {
+          "mode_id": 2,
+          "mode_name": "row-major-multiply",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            0.745705246925354,
+            -0.745705246925354,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0x3f3ee68a",
+            "0xbf3ee68a",
+            "0xbf2a9110"
+          ],
+          "product": [
+            3.60552716255188,
+            -2.718602418899536
+          ],
+          "product_f32_bits_le": [
+            "0x4066c0f5",
+            "0xc02dfd95"
+          ]
+        },
+        {
+          "mode_id": 3,
+          "mode_name": "diagonal-constructor",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            0,
+            0,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0x00000000",
+            "0x00000000",
+            "0xbf2a9110"
+          ],
+          "product": [
+            0.2498534917831421,
+            -2.998241901397705
+          ],
+          "product_f32_bits_le": [
+            "0x3e7fd998",
+            "0xc03fe332"
+          ]
+        },
+        {
+          "mode_id": 4,
+          "mode_name": "wrong-sine-sign",
+          "return_shape": "direct-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            -0.745705246925354,
+            -0.745705246925354,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0xbf3ee68a",
+            "0xbf3ee68a",
+            "0xbf2a9110"
+          ],
+          "product": [
+            -3.1058201789855957,
+            -2.718602418899536
+          ],
+          "product_f32_bits_le": [
+            "0xc046c5c2",
+            "0xc02dfd95"
+          ]
+        },
+        {
+          "mode_id": 5,
+          "mode_name": "helper-local-return",
+          "return_shape": "local-return",
+          "matrix_lanes_column_major": [
+            -0.6662759780883789,
+            0.745705246925354,
+            -0.745705246925354,
+            -0.6662759780883789
+          ],
+          "matrix_lane_f32_bits_le": [
+            "0xbf2a9110",
+            "0x3f3ee68a",
+            "0xbf3ee68a",
+            "0xbf2a9110"
+          ],
+          "product": [
+            -3.1058201789855957,
+            -3.277881383895874
+          ],
+          "product_f32_bits_le": [
+            "0xc046c5c2",
+            "0xc051c8cf"
+          ]
+        }
+      ]
+    }
+  ],
+  "direct_harness_contract": {
+    "explicit_enum_switch_arms": 6,
+    "default_throws": true,
+    "records_both_mode_id_and_mode_name": true,
+    "exact_and_helper_local_are_value_identical_but_have_distinct_return_shape_witnesses": true
+  },
+  "negative_closure": {
+    "any_other_key_or_define_map": "reject",
+    "any_other_matrix_return_or_parameter": "reject",
+    "helper_overload_or_recursion": "reject",
+    "changed_constructor_child_or_order_or_arity": "reject",
+    "returned_local_or_state_escape": "reject",
+    "second_call_or_non_direct_use": "reject",
+    "row_major_or_vector_matrix_or_matrix_matrix": "reject",
+    "mat3_or_mat4": "reject",
+    "generic_matrix_return_capability": "forbidden"
+  }
+}

@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Fail-closed C++20 materializer for the frozen Median oracle."""
+from __future__ import annotations
+import copy
+import hashlib
+import json
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+PACKAGE = ROOT / "docs/port-engineering/median-parity"
+ORACLE = PACKAGE / "median-oracles.json"
+INCLUDE = ROOT / "tests/oracles/median_expected.inc"
+SCHEMA = "noisemaker-for-cpp.median.pixel-parity.v1"
+KEY = "filter/median:median"
+
+class MaterializationError(ValueError): pass
+def digest(data: bytes) -> str: return hashlib.sha256(data).hexdigest()
+def checked(path: Path) -> bytes:
+    side = path.with_name(path.name + ".sha256")
+    if not path.is_file() or not side.is_file() or side.read_text() != f"{digest(path.read_bytes())}  {path.name}\n": raise MaterializationError(f"sidecar drift: {path}")
+    return path.read_bytes()
+def exact(value, typ, label):
+    if not isinstance(value, typ): raise MaterializationError(f"{label}: malformed")
+def words(value, count, label):
+    if not isinstance(value, list) or len(value) != count or any(not isinstance(x, str) or not re.fullmatch(r"0x[0-9a-f]{8}", x) for x in value): raise MaterializationError(f"{label}: exact Float32 words required")
+    return [int(x, 16) for x in value]
+def rgba(value, count, label):
+    if not isinstance(value, list) or len(value) != count or any(type(x) is not int or not 0 <= x <= 255 for x in value): raise MaterializationError(f"{label}: exact RGBA8 bytes required")
+    return value
+def surface(value, count, label):
+    if not isinstance(value, dict) or set(value) != {"f32_words_le", "f32_sha256", "rgba8_bytes", "rgba8_sha256"}: raise MaterializationError(f"{label}: surface schema drift")
+    ws = words(value["f32_words_le"], count, f"{label}.f32_words_le"); rb = rgba(value["rgba8_bytes"], count, f"{label}.rgba8_bytes")
+    if value["f32_sha256"] != digest(b"".join(x.to_bytes(4, "little") for x in ws)) or value["rgba8_sha256"] != digest(bytes(rb)): raise MaterializationError(f"{label}: surface digest drift")
+def validate(doc):
+    if not isinstance(doc, dict) or doc.get("schema") != SCHEMA or doc.get("program_key") != KEY: raise MaterializationError("schema/program identity drift")
+    provenance = doc.get("provenance", {}); snapshot = provenance.get("cpu_snapshot", {})
+    if not all(snapshot.get(k) is True for k in ("immutable_snapshot", "live_checkout_rejected", "realpath_containment_checked", "symlink_escape_rejected")): raise MaterializationError("closure provenance drift")
+    if snapshot.get("closure_cardinality") != len(snapshot.get("import_closure", [])): raise MaterializationError("closure cardinality drift")
+    if not isinstance(doc.get("runtime_binding_abi"), dict) or set(doc["runtime_binding_abi"]) != {"inputTex", "threshold", "RADIUS", "tileOffset", "fullResolution"}: raise MaterializationError("runtime ABI drift")
+    comparer = doc.get("comparer_self_tests", {}); expected_comparer = {"good_equal", "dimensions_mismatch", "short_lane_count", "rgba8_mismatch", "signed_zero", "nan_payload"}
+    if set(comparer) != expected_comparer or not all(comparer.values()): raise MaterializationError("strict comparer self-tests missing")
+    cases = doc.get("render_cases")
+    if not isinstance(cases, list) or len(cases) < 9: raise MaterializationError("case cardinality drift")
+    for i, case in enumerate(cases):
+        width, height = case.get("width"), case.get("height"); count = width * height * 4 if type(width) is int and type(height) is int and width > 0 and height > 0 else 0
+        if count == 0 or case.get("radius") not in (1, 2, 3): raise MaterializationError(f"case {i}: dimensions/radius drift")
+        surface(case.get("input"), count, f"case {i}.input"); surface(case.get("expected"), count, f"case {i}.expected"); surface(case.get("public_expected"), count, f"case {i}.public_expected")
+        if not all(case.get(k) is True for k in ("input_immutable_exact_bits", "public_direct_exact")): raise MaterializationError(f"case {i}: parity/lifetime drift")
+        repeat = case.get("repeat", {}); 
+        if not all(repeat.get(k) is True for k in ("exact", "output_object_distinct", "output_data_distinct")): raise MaterializationError(f"case {i}: repeat identity drift")
+    ledger = doc.get("mutation_ledger")
+    if not isinstance(ledger, list) or len(ledger) < 4: raise MaterializationError("mutation ledger drift")
+    for i, row in enumerate(ledger):
+        if not row.get("independent") or not row.get("required_witnesses"): raise MaterializationError(f"mutation {i}: witness contract drift")
+        if any(item.get("mismatched_lanes", 0) <= 0 or item.get("mismatched_bytes", 0) <= 0 for item in row.get("required_witness_results", [])): raise MaterializationError(f"mutation {i}: non-diverging witness")
+    return doc
+def q(value): return json.dumps(value, separators=(",", ":"))
+def render(doc):
+    lines = ["// Authenticated Median oracle; generated by generate_median_native_oracle_include.py.", "#pragma once", "#include <array>", "#include <cstdint>", "#include <span>", "#include <string_view>", "namespace noisemaker_median_oracle {", "struct Case { std::string_view name; std::uint32_t width, height, radius; std::int32_t threshold; std::span<const std::uint32_t> input_f32, expected_f32, public_f32; std::span<const std::uint8_t> input_rgba8, expected_rgba8, public_rgba8; };", "struct MutationResult { std::string_view case_name; std::uint32_t mismatched_lanes, mismatched_bytes; };", "struct Mutation { std::string_view name; std::span<const MutationResult> results; };"]
+    for i, case in enumerate(doc["render_cases"]):
+        for label in ("input", "expected", "public_expected"):
+            ws = [int(x, 16) for x in case[label]["f32_words_le"]]; rb = case[label]["rgba8_bytes"]; prefix = {"input": "Input", "expected": "Expected", "public_expected": "Public"}[label]
+            lines.append(f"inline constexpr std::array<std::uint32_t, {len(ws)}> k{prefix}F32{i} = {{{', '.join(f'0x{x:08x}u' for x in ws)}}};")
+            lines.append(f"inline constexpr std::array<std::uint8_t, {len(rb)}> k{prefix}Rgba8{i} = {{{', '.join(map(str, rb))}}};")
+    lines.append(f"inline constexpr std::array<Case, {len(doc['render_cases'])}> kCases = {{")
+    for i, case in enumerate(doc["render_cases"]): lines.append(f"  Case{{{q(case['name'])}, {case['width']}u, {case['height']}u, {case['radius']}u, {case['threshold']}, kInputF32{i}, kExpectedF32{i}, kPublicF32{i}, kInputRgba8{i}, kExpectedRgba8{i}, kPublicRgba8{i}}},")
+    lines.append("};")
+    for i, mutation in enumerate(doc["mutation_ledger"]):
+        results = mutation["required_witness_results"]; lines.append(f"inline constexpr std::array<MutationResult, {len(results)}> kMutationResults{i} = {{")
+        for result in results: lines.append(f"  MutationResult{{{q(result['case'])}, {result['mismatched_lanes']}u, {result['mismatched_bytes']}u}},")
+        lines.append("};")
+    lines.append(f"inline constexpr std::array<Mutation, {len(doc['mutation_ledger'])}> kMutations = {{")
+    for i, mutation in enumerate(doc["mutation_ledger"]): lines.append(f"  Mutation{{{q(mutation['name'])}, kMutationResults{i}}},")
+    lines += ["};", "}"]
+    return ("\n".join(lines) + "\n").encode()
+def main():
+    mode = next((x for x in __import__("sys").argv[1:] if x in {"--write", "--check", "--self-test"}), None)
+    doc = validate(json.loads(checked(ORACLE))); expected = render(doc)
+    if mode == "--write": INCLUDE.parent.mkdir(parents=True, exist_ok=True); INCLUDE.write_bytes(expected); INCLUDE.with_name(INCLUDE.name + ".sha256").write_text(f"{digest(expected)}  {INCLUDE.name}\n"); print(f"{len(doc['render_cases'])} cases, {len(doc['mutation_ledger'])} mutations materialized")
+    else:
+        if checked(INCLUDE) != expected: raise MaterializationError("native include drift")
+        if mode == "--self-test":
+            forged = copy.deepcopy(doc); forged["render_cases"][0]["expected"]["f32_words_le"][0] = "0x00000000";
+            try: validate(forged)
+            except MaterializationError: print("schema, digest, dimensions, and witness mutation checks verified")
+            else: raise MaterializationError("mutation accepted")
+        else: print("median native oracle include check passed")
+if __name__ == "__main__": main()

@@ -1,0 +1,299 @@
+test_task27_cpp_tables_are_exact_executable_frozen_transcription (tests.test_typed_generator.Task27PerlinTests.test_task27_cpp_tables_are_exact_executable_frozen_transcription) ... [32mok[0m
+test_task27_emitter_uses_direct_left_nested_scalar_uint_xor_only (tests.test_typed_generator.Task27PerlinTests.test_task27_emitter_uses_direct_left_nested_scalar_uint_xor_only) ... [32mok[0m
+test_task27_exhaustive_profile_validator_and_emitter_negative_closure (tests.test_typed_generator.Task27PerlinTests.test_task27_exhaustive_profile_validator_and_emitter_negative_closure) ... [32mok[0m
+test_task27_generation_is_exact_single_program_delta_from_task26 (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) ... [32mok[0m
+test_task27_generation_wires_exact_profile_manifest_and_catalog (tests.test_typed_generator.Task27PerlinTests.test_task27_generation_wires_exact_profile_manifest_and_catalog) ... [32mok[0m
+test_task27_profile_authenticates_only_exact_nested_scalar_uint_xor (tests.test_typed_generator.Task27PerlinTests.test_task27_profile_authenticates_only_exact_nested_scalar_uint_xor) ... [32mok[0m
+test_task27_slice_schema_has_exact_single_perlin_carrier_and_census (tests.test_typed_generator.Task27PerlinTests.test_task27_slice_schema_has_exact_single_perlin_carrier_and_census) ... [32mok[0m
+test_task27_validator_admits_only_authenticated_scalar_xor_objects (tests.test_typed_generator.Task27PerlinTests.test_task27_validator_admits_only_authenticated_scalar_xor_objects) ... [32mok[0m
+test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_analyzer_produced_code_shape_alternatives_reject_every_boundary) ... [32mok[0m
+test_task28_cpp_tables_are_exact_executable_frozen_transcription (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_cpp_tables_are_exact_executable_frozen_transcription) ... [32mok[0m
+test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_emitter_rejects_foreign_matrix_programs_for_every_carrier)
+A foreign key must never inherit Rotate's matrix-emission capability. ... [32mok[0m
+test_task28_exhaustive_single_axis_negative_closure (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_exhaustive_single_axis_negative_closure) ... [32mok[0m
+test_task28_full_carrier_caller_numeric_define_and_identity_matrix (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_full_carrier_caller_numeric_define_and_identity_matrix) ... [32mok[0m
+test_task28_profile_validator_and_emitter_exact_identity (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_profile_validator_and_emitter_exact_identity) ... [32mok[0m
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... [32mok[0m
+test_task29_analyzer_produced_sampler_and_call_shape_alternatives_reject_every_boundary (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_analyzer_produced_sampler_and_call_shape_alternatives_reject_every_boundary) ... [32mok[0m
+test_task29_complete_call_ancestry_move_copy_swap_and_predicate_controls_reject (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_complete_call_ancestry_move_copy_swap_and_predicate_controls_reject) ... [32mok[0m
+test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription) ... [32mok[0m
+test_task29_exact_profile_owns_complete_candidate_ancestry_and_emits_narrow_abi (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_exact_profile_owns_complete_candidate_ancestry_and_emits_narrow_abi) ... [32mok[0m
+test_task29_exhaustive_single_axis_protected_coordinate_negative_closure (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_exhaustive_single_axis_protected_coordinate_negative_closure) ... [32mok[0m
+test_task29_full_carrier_caller_numeric_defines_and_coexistence_matrix (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_full_carrier_caller_numeric_defines_and_coexistence_matrix) ... [32mok[0m
+test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation) ... [32mok[0m
+test_task30_capability_and_type_vocabulary_are_identity_scoped_not_widened (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_capability_and_type_vocabulary_are_identity_scoped_not_widened) ... [32mok[0m
+test_task30_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission) ... [32mok[0m
+test_task30_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task30_history_coexistence_and_live_schema_matches_130_program_state (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_history_coexistence_and_live_schema_matches_130_program_state) ... [32mok[0m
+test_task30_native_executable_tables_are_exact_frozen_transcription_and_tamper_sensitive (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_native_executable_tables_are_exact_frozen_transcription_and_tamper_sensitive) ... [32mok[0m
+test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+The profile's node-walk/pairing/typing logic must itself reject. ... [32mok[0m
+test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte) ... [32mok[0m
+test_task30_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+test_task31_capability_and_type_vocabulary_are_identity_scoped_not_widened (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_capability_and_type_vocabulary_are_identity_scoped_not_widened) ... [32mok[0m
+test_task31_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission) ... [32mok[0m
+test_task31_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state) ... [32mok[0m
+test_task31_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+The profile's node-walk/typing logic must itself reject. ... [32mok[0m
+test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte) ... [31mFAIL[0m
+test_task31_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+test_task32_authenticates_frozen_index_expression_sites_for_six_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_index_expression_sites_for_six_programs) ... [32mok[0m
+test_task32_authenticates_frozen_luma_weights_for_five_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_luma_weights_for_five_programs) ... [32mok[0m
+test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) ... [32mok[0m
+test_task32_emitted_primary_shows_narrow_global_and_index_lowering (tests.test_typed_generator.Task32GradeClusterTests.test_task32_emitted_primary_shows_narrow_global_and_index_lowering) ... [32mok[0m
+test_task32_hslsecondary_luma_weights_is_structurally_validated_only (tests.test_typed_generator.Task32GradeClusterTests.test_task32_hslsecondary_luma_weights_is_structurally_validated_only)
+Disclosure: `hslSecondary`'s LUMA_WEIGHTS type-checks (admission ... [32mok[0m
+test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate)
+The single-axis rejection above is absorbed by the coarse ... [32mok[0m
+test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate)
+Sibling of the index-track coarse-gate-bypass test above, for the ... [32mok[0m
+test_task32_no_history_collision_and_fresh_capability_and_type_tuples (tests.test_typed_generator.Task32GradeClusterTests.test_task32_no_history_collision_and_fresh_capability_and_type_tuples) ... [32mok[0m
+test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31 (tests.test_typed_generator.Task32GradeClusterTests.test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31)
+Removing all six grade keys from the live typed list must ... [32mok[0m
+test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks (tests.test_typed_generator.Task32GradeClusterTests.test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks) ... [32mok[0m
+test_task32_validator_and_emitter_require_both_profiles_where_expected (tests.test_typed_generator.Task32GradeClusterTests.test_task32_validator_and_emitter_require_both_profiles_where_expected) ... [32mok[0m
+test_task33_all_seventeen_authenticate_and_lower_with_narrow_abi (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_all_seventeen_authenticate_and_lower_with_narrow_abi) ... [32mok[0m
+test_task33_capability_vocabulary_is_identity_scoped_not_widened (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_capability_vocabulary_is_identity_scoped_not_widened) ... [32mok[0m
+test_task33_history_schema_and_vendored_oracle_match_152_program_state (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_history_schema_and_vendored_oracle_match_152_program_state) ... [31mFAIL[0m
+test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+Prove the profile's node-walk/typing logic itself rejects, not ... [32mok[0m
+test_task33_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task33_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys) ... [31mFAIL[0m
+test_capability_validation_rejects_every_remaining_frontier_family_with_spans (tests.test_typed_generator.TypedGeneratorTests.test_capability_validation_rejects_every_remaining_frontier_family_with_spans) ... [32mok[0m
+test_capability_vocabulary_and_typed_usage_are_fail_closed (tests.test_typed_generator.TypedGeneratorTests.test_capability_vocabulary_and_typed_usage_are_fail_closed) ... [32mok[0m
+test_coalesce_uv_alias_transform_is_symbol_exact_and_cloak_main_scoped (tests.test_typed_generator.TypedGeneratorTests.test_coalesce_uv_alias_transform_is_symbol_exact_and_cloak_main_scoped) ... [32mok[0m
+test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths (tests.test_typed_generator.TypedGeneratorTests.test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths) ... [32mok[0m
+test_compatibility_transform_contract_rejects_extra_keys_and_unknown_modes (tests.test_typed_generator.TypedGeneratorTests.test_compatibility_transform_contract_rejects_extra_keys_and_unknown_modes) ... [32mok[0m
+test_corrupt_alias_transform_is_symbol_exact_and_main_scoped (tests.test_typed_generator.TypedGeneratorTests.test_corrupt_alias_transform_is_symbol_exact_and_main_scoped) ... [32mok[0m
+test_counted_for_v1_accepts_only_exact_proved_headers_and_control (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_accepts_only_exact_proved_headers_and_control) ... [32mok[0m
+test_counted_for_v1_emits_native_for_break_and_continue_without_broad_increment (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_emits_native_for_break_and_continue_without_broad_increment) ... [32mok[0m
+test_counted_for_v1_preserves_plain_array_scalar_map_precision (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_preserves_plain_array_scalar_map_precision) ... [32mok[0m
+test_counted_for_v1_rejects_effective_depth_product_charge_and_call_cycles (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_rejects_effective_depth_product_charge_and_call_cycles) ... [32mok[0m
+test_counted_for_v1_rejects_forged_induction_symbol_in_validator_and_emitter (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_rejects_forged_induction_symbol_in_validator_and_emitter) ... [32mok[0m
+test_counted_for_v1_rejects_header_and_control_near_misses (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_rejects_header_and_control_near_misses) ... [32mok[0m
+test_counted_for_v1_rejects_malformed_control_depth_and_tampered_proofs (tests.test_typed_generator.TypedGeneratorTests.test_counted_for_v1_rejects_malformed_control_depth_and_tampered_proofs) ... [32mok[0m
+test_discarded_local_counter_v1_rejects_adjacent_body_mutations (tests.test_typed_generator.TypedGeneratorTests.test_discarded_local_counter_v1_rejects_adjacent_body_mutations) ... [32mok[0m
+test_discarded_local_counter_v1_rejects_forged_control_tree_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_discarded_local_counter_v1_rejects_forged_control_tree_at_both_boundaries) ... [32mok[0m
+test_discarded_local_counter_v1_rejects_source_and_frozen_proof_tampering (tests.test_typed_generator.TypedGeneratorTests.test_discarded_local_counter_v1_rejects_source_and_frozen_proof_tampering) ... [32mok[0m
+test_discarded_local_counter_v1_validates_and_emits_only_compute_rank_statement (tests.test_typed_generator.TypedGeneratorTests.test_discarded_local_counter_v1_validates_and_emits_only_compute_rank_statement) ... [32mok[0m
+test_fixed_grid_counter_store_control_index_and_update_forgery_reject_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_fixed_grid_counter_store_control_index_and_update_forgery_reject_at_both_boundaries) ... [32mok[0m
+test_fixed_grid_counter_store_keeps_refract_and_sacred_geometry_excluded_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_fixed_grid_counter_store_keeps_refract_and_sacred_geometry_excluded_at_both_boundaries) ... [32mok[0m
+test_fixed_grid_counter_store_provenance_and_whole_program_tampering_reject_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_fixed_grid_counter_store_provenance_and_whole_program_tampering_reject_at_both_boundaries) ... [32mok[0m
+test_fixed_grid_counter_store_validates_and_emits_only_exact_proved_sites (tests.test_typed_generator.TypedGeneratorTests.test_fixed_grid_counter_store_validates_and_emits_only_exact_proved_sites) ... [32mok[0m
+test_fixed_nine_provenance_rejects_define_and_raw_source_forgery_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_fixed_nine_provenance_rejects_define_and_raw_source_forgery_at_both_boundaries) ... [32mok[0m
+test_fixed_nine_slice_validates_and_emits_only_exact_proved_tables (tests.test_typed_generator.TypedGeneratorTests.test_fixed_nine_slice_validates_and_emits_only_exact_proved_tables) ... [32mok[0m
+test_fixed_nine_structural_proof_tampering_is_rejected_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_fixed_nine_structural_proof_tampering_is_rejected_at_both_boundaries) ... [32mok[0m
+test_fixed_nine_whole_program_profile_rejects_binding_resource_and_global_array_forgery (tests.test_typed_generator.TypedGeneratorTests.test_fixed_nine_whole_program_profile_rejects_binding_resource_and_global_array_forgery) ... [32mok[0m
+test_hash_precision_fences_are_structural_and_scatter_is_excluded (tests.test_typed_generator.TypedGeneratorTests.test_hash_precision_fences_are_structural_and_scatter_is_excluded) ... [32mok[0m
+test_integral_call_map_return_preserves_plain_array_scalar_chain (tests.test_typed_generator.TypedGeneratorTests.test_integral_call_map_return_preserves_plain_array_scalar_chain) ... [32mok[0m
+test_integral_vector_call_conversion_materializes_before_arithmetic (tests.test_typed_generator.TypedGeneratorTests.test_integral_vector_call_conversion_materializes_before_arithmetic) ... [32mok[0m
+test_integral_vector_conversion_defers_float_rounding_until_expression_storage (tests.test_typed_generator.TypedGeneratorTests.test_integral_vector_conversion_defers_float_rounding_until_expression_storage) ... [32mok[0m
+test_literal_float_folder_does_not_hide_malformed_or_unsupported_typed_ir (tests.test_typed_generator.TypedGeneratorTests.test_literal_float_folder_does_not_hide_malformed_or_unsupported_typed_ir) ... [32mok[0m
+test_literal_only_float_arithmetic_folds_once_at_canonical_precision (tests.test_typed_generator.TypedGeneratorTests.test_literal_only_float_arithmetic_folds_once_at_canonical_precision) ... [32mok[0m
+test_math_builtins_emit_only_from_typed_calls (tests.test_typed_generator.TypedGeneratorTests.test_math_builtins_emit_only_from_typed_calls) ... [32mok[0m
+test_numeric_literal_contract_rejects_extra_keys_and_unknown_modes (tests.test_typed_generator.TypedGeneratorTests.test_numeric_literal_contract_rejects_extra_keys_and_unknown_modes) ... [32mok[0m
+test_polygon_zero_smoothing_transform_is_exact_and_rejects_near_misses (tests.test_typed_generator.TypedGeneratorTests.test_polygon_zero_smoothing_transform_is_exact_and_rejects_near_misses) ... [32mok[0m
+test_refract_fixed_array_parameter_exclusions_and_task17_task18_regressions (tests.test_typed_generator.TypedGeneratorTests.test_refract_fixed_array_parameter_exclusions_and_task17_task18_regressions) ... [32mok[0m
+test_refract_fixed_array_parameter_rejects_structural_and_forged_proof_mutations_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_refract_fixed_array_parameter_rejects_structural_and_forged_proof_mutations_at_both_boundaries) ... [32mok[0m
+test_refract_fixed_array_parameter_validates_and_emits_only_exact_owned_sites (tests.test_typed_generator.TypedGeneratorTests.test_refract_fixed_array_parameter_validates_and_emits_only_exact_owned_sites) ... [32mok[0m
+test_refract_truthy_vector_conditionals_transform_is_exact_and_source_locked (tests.test_typed_generator.TypedGeneratorTests.test_refract_truthy_vector_conditionals_transform_is_exact_and_source_locked) ... [32mok[0m
+test_sacred_fixed_affine_centers13_proof_is_exact (tests.test_typed_generator.TypedGeneratorTests.test_sacred_fixed_affine_centers13_proof_is_exact) ... [32mok[0m
+test_sacred_fixed_affine_centers13_proof_rejects_structural_drift (tests.test_typed_generator.TypedGeneratorTests.test_sacred_fixed_affine_centers13_proof_rejects_structural_drift) ... [32mok[0m
+test_sacred_fixed_affine_centers13_validates_and_emits_only_proved_sites (tests.test_typed_generator.TypedGeneratorTests.test_sacred_fixed_affine_centers13_validates_and_emits_only_proved_sites) ... [32mok[0m
+test_sacred_star_number_division_transform_is_exact_and_source_locked (tests.test_typed_generator.TypedGeneratorTests.test_sacred_star_number_division_transform_is_exact_and_source_locked) ... [32mok[0m
+test_sacred_star_number_division_transform_rejects_partial_duplicate_and_drift (tests.test_typed_generator.TypedGeneratorTests.test_sacred_star_number_division_transform_rejects_partial_duplicate_and_drift) ... [32mok[0m
+test_sacred_task20_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_sacred_task20_exclusions_remain_closed) ... [32mok[0m
+test_sacred_task20_tampering_rejects_at_both_boundaries (tests.test_typed_generator.TypedGeneratorTests.test_sacred_task20_tampering_rejects_at_both_boundaries) ... [32mok[0m
+test_scalar_uniforms_preserve_renderer_number_precision_in_generated_state (tests.test_typed_generator.TypedGeneratorTests.test_scalar_uniforms_preserve_renderer_number_precision_in_generated_state) ... [32mok[0m
+test_scoped_blocks_if_else_and_lazy_ternary_emit_from_typed_ir (tests.test_typed_generator.TypedGeneratorTests.test_scoped_blocks_if_else_and_lazy_ternary_emit_from_typed_ir) ... [32mok[0m
+test_shape_mask_sequential_lane_transform_is_function_and_symbol_exact (tests.test_typed_generator.TypedGeneratorTests.test_shape_mask_sequential_lane_transform_is_function_and_symbol_exact) ... [32mok[0m
+test_task11_language_frontier_is_schema_locked_and_fail_closed (tests.test_typed_generator.TypedGeneratorTests.test_task11_language_frontier_is_schema_locked_and_fail_closed) ... [32mok[0m
+test_task11_language_vocabularies_reject_add_remove_and_reordering (tests.test_typed_generator.TypedGeneratorTests.test_task11_language_vocabularies_reject_add_remove_and_reordering) ... [32mok[0m
+test_task11_rejects_adjacent_bitwise_matrix_and_modulo_forms (tests.test_typed_generator.TypedGeneratorTests.test_task11_rejects_adjacent_bitwise_matrix_and_modulo_forms) ... [32mok[0m
+test_task11_uint_multideclaration_and_mat2_emit_from_typed_ir (tests.test_typed_generator.TypedGeneratorTests.test_task11_uint_multideclaration_and_mat2_emit_from_typed_ir) ... [32mok[0m
+test_task12_mod_builtin_is_exactly_vec2_or_scalar_and_emits_glsl_mod (tests.test_typed_generator.TypedGeneratorTests.test_task12_mod_builtin_is_exactly_vec2_or_scalar_and_emits_glsl_mod) ... [32mok[0m
+test_task12_mod_capability_does_not_admit_adjacent_builtins (tests.test_typed_generator.TypedGeneratorTests.test_task12_mod_capability_does_not_admit_adjacent_builtins) ... [32mok[0m
+test_task13_texel_fetch_is_exactly_sampler2d_ivec2_literal_zero (tests.test_typed_generator.TypedGeneratorTests.test_task13_texel_fetch_is_exactly_sampler2d_ivec2_literal_zero) ... [32mok[0m
+test_task14_admits_only_initialized_const_float_source_globals (tests.test_typed_generator.TypedGeneratorTests.test_task14_admits_only_initialized_const_float_source_globals) ... [32mok[0m
+test_task14_const_globals_are_localized_per_function_with_dependency_closure (tests.test_typed_generator.TypedGeneratorTests.test_task14_const_globals_are_localized_per_function_with_dependency_closure) ... [32mok[0m
+test_task14_malformed_typed_globals_fail_both_validator_and_emitter_audits (tests.test_typed_generator.TypedGeneratorTests.test_task14_malformed_typed_globals_fail_both_validator_and_emitter_audits) ... [32mok[0m
+test_task21_adds_no_capability_transform_or_numeric_exception (tests.test_typed_generator.TypedGeneratorTests.test_task21_adds_no_capability_transform_or_numeric_exception) ... [32mok[0m
+test_task21_degauss_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_exclusions_remain_closed) ... [32mok[0m
+test_task21_degauss_profile_is_exact_and_current_vocabulary (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_profile_is_exact_and_current_vocabulary) ... [32mok[0m
+test_task21_degauss_profile_rejects_identity_interface_and_tree_drift (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_profile_rejects_identity_interface_and_tree_drift) ... [32mok[0m
+test_task22_adds_only_exact_transform_no_capability_proof_or_numeric_mode (tests.test_typed_generator.TypedGeneratorTests.test_task22_adds_only_exact_transform_no_capability_proof_or_numeric_mode) ... [32mok[0m
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... [32mok[0m
+test_task22_crt_four_mode_forgery_matrix (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_four_mode_forgery_matrix) ... [32mok[0m
+test_task22_crt_profile_rejects_identity_interface_and_tree_drift (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_profile_rejects_identity_interface_and_tree_drift) ... [32mok[0m
+test_task22_crt_transform_is_exact (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_transform_is_exact) ... [32mok[0m
+test_task23_caller_source_hash_has_exact_four_state_boundary (tests.test_typed_generator.TypedGeneratorTests.test_task23_caller_source_hash_has_exact_four_state_boundary) ... [32mok[0m
+test_task23_cpp_canonical_fixture_table_is_an_exact_oracle_transcription (tests.test_typed_generator.TypedGeneratorTests.test_task23_cpp_canonical_fixture_table_is_an_exact_oracle_transcription) ... [32mok[0m
+test_task23_literal_int_profile_is_independently_required_by_validator_and_emitter (tests.test_typed_generator.TypedGeneratorTests.test_task23_literal_int_profile_is_independently_required_by_validator_and_emitter) ... [32mok[0m
+test_task23_rejected_structural_mutations_have_exact_native_sensitivity (tests.test_typed_generator.TypedGeneratorTests.test_task23_rejected_structural_mutations_have_exact_native_sensitivity) ... [31mERROR[0m
+test_task23_six_key_counts_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact) ... [31mFAIL[0m
+test_task23_six_key_generator_emitter_forgery_and_mode_matrix_is_closed (tests.test_typed_generator.TypedGeneratorTests.test_task23_six_key_generator_emitter_forgery_and_mode_matrix_is_closed) ... [32mok[0m
+test_task24_cpp_oracle_table_is_exact_frozen_json_transcription (tests.test_typed_generator.TypedGeneratorTests.test_task24_cpp_oracle_table_is_exact_frozen_json_transcription) ... [32mok[0m
+test_task24_design_section_six_forgery_and_driver_matrix_is_closed (tests.test_typed_generator.TypedGeneratorTests.test_task24_design_section_six_forgery_and_driver_matrix_is_closed) ... [32mok[0m
+test_task24_emitter_initializes_empty_authorization_for_non_gather_programs (tests.test_typed_generator.TypedGeneratorTests.test_task24_emitter_initializes_empty_authorization_for_non_gather_programs) ... [32mok[0m
+test_task24_four_mode_caller_and_complete_profile_forgery_matrix (tests.test_typed_generator.TypedGeneratorTests.test_task24_four_mode_caller_and_complete_profile_forgery_matrix) ... [32mok[0m
+test_task24_gather_sorted_identity_profile_owns_exact_parent_and_round (tests.test_typed_generator.TypedGeneratorTests.test_task24_gather_sorted_identity_profile_owns_exact_parent_and_round) ... [32mok[0m
+test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry (tests.test_typed_generator.TypedGeneratorTests.test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry) ... [32mok[0m
+test_task24_loader_carries_only_gather_profile_and_generates_one_new_block (tests.test_typed_generator.TypedGeneratorTests.test_task24_loader_carries_only_gather_profile_and_generates_one_new_block) ... [32mok[0m
+test_task24_loader_negative_profile_matrix_is_closed (tests.test_typed_generator.TypedGeneratorTests.test_task24_loader_negative_profile_matrix_is_closed) ... [32mok[0m
+test_task24_rejected_round_and_loop_mutations_have_exact_native_sensitivity (tests.test_typed_generator.TypedGeneratorTests.test_task24_rejected_round_and_loop_mutations_have_exact_native_sensitivity) ... [32mok[0m
+test_task24_resource_contract_is_mechanical_and_mutation_closed (tests.test_typed_generator.TypedGeneratorTests.test_task24_resource_contract_is_mechanical_and_mutation_closed) ... [32mok[0m
+test_task25_cpp_native_oracle_table_is_exact_frozen_transcription (tests.test_typed_generator.TypedGeneratorTests.test_task25_cpp_native_oracle_table_is_exact_frozen_transcription) ... [32mok[0m
+test_task25_driver_rejects_patched_profile_disagreement_before_emission (tests.test_typed_generator.TypedGeneratorTests.test_task25_driver_rejects_patched_profile_disagreement_before_emission) ... [32mok[0m
+test_task25_exact_site_shape_origin_and_context_cartesians_are_closed (tests.test_typed_generator.TypedGeneratorTests.test_task25_exact_site_shape_origin_and_context_cartesians_are_closed) ... [32mok[0m
+test_task25_four_modes_and_value_forgery_reject_at_each_boundary (tests.test_typed_generator.TypedGeneratorTests.test_task25_four_modes_and_value_forgery_reject_at_each_boundary) ... [32mok[0m
+test_task25_lens_custom_comparer_profile_is_admitted_with_lane_profile (tests.test_typed_generator.TypedGeneratorTests.test_task25_lens_custom_comparer_profile_is_admitted_with_lane_profile) ... [32mok[0m
+test_task25_lens_custom_comparer_profile_rejects_structural_mutations (tests.test_typed_generator.TypedGeneratorTests.test_task25_lens_custom_comparer_profile_rejects_structural_mutations) ... [32mok[0m
+test_task25_lens_custom_comparer_routes_only_the_tint_predicate (tests.test_typed_generator.TypedGeneratorTests.test_task25_lens_custom_comparer_routes_only_the_tint_predicate) ... [32mok[0m
+test_task25_literal_vec3_lane_profile_authenticates_and_rewrites_exact_sites (tests.test_typed_generator.TypedGeneratorTests.test_task25_literal_vec3_lane_profile_authenticates_and_rewrites_exact_sites) ... [32mok[0m
+test_task25_literal_vec3_lane_profile_rejects_proof_injection_and_nonmain_indexes (tests.test_typed_generator.TypedGeneratorTests.test_task25_literal_vec3_lane_profile_rejects_proof_injection_and_nonmain_indexes) ... [32mok[0m
+test_task25_loader_rejects_transitional_task24_no_carrier_slice (tests.test_typed_generator.TypedGeneratorTests.test_task25_loader_rejects_transitional_task24_no_carrier_slice) ... [32mok[0m
+test_task25_loader_schema_admits_only_the_two_later_lane_carriers (tests.test_typed_generator.TypedGeneratorTests.test_task25_loader_schema_admits_only_the_two_later_lane_carriers) ... [32mok[0m
+test_task25_pre_and_exact_raw_post_forgery_cartesians_are_closed (tests.test_typed_generator.TypedGeneratorTests.test_task25_pre_and_exact_raw_post_forgery_cartesians_are_closed) ... [32mok[0m
+test_task25_profiled_emission_uses_only_fixed_hsv_lanes (tests.test_typed_generator.TypedGeneratorTests.test_task25_profiled_emission_uses_only_fixed_hsv_lanes) ... [32mok[0m
+test_task25_real_parser_semantic_resource_and_control_exclusions_are_closed (tests.test_typed_generator.TypedGeneratorTests.test_task25_real_parser_semantic_resource_and_control_exclusions_are_closed) ... [32mok[0m
+test_task25_selected_corpus_identity_drift_rejects_at_real_preflight (tests.test_typed_generator.TypedGeneratorTests.test_task25_selected_corpus_identity_drift_rejects_at_real_preflight) ... [32mok[0m
+test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact) ... [32mok[0m
+test_task26_cpp_native_oracle_table_is_exact_frozen_transcription (tests.test_typed_generator.TypedGeneratorTests.test_task26_cpp_native_oracle_table_is_exact_frozen_transcription) ... [32mok[0m
+test_task26_exhaustive_profile_validator_and_emitter_negative_closure (tests.test_typed_generator.TypedGeneratorTests.test_task26_exhaustive_profile_validator_and_emitter_negative_closure) ... [32mok[0m
+test_task26_generation_adds_only_smooth_block_manifest_and_catalog (tests.test_typed_generator.TypedGeneratorTests.test_task26_generation_adds_only_smooth_block_manifest_and_catalog) ... [32mok[0m
+test_task26_generation_driver_rejects_identity_forgery_after_profile_apply (tests.test_typed_generator.TypedGeneratorTests.test_task26_generation_driver_rejects_identity_forgery_after_profile_apply) ... [32mok[0m
+test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census) ... [31mFAIL[0m
+test_task26_profile_authenticates_exact_identity_and_rejects_mutations (tests.test_typed_generator.TypedGeneratorTests.test_task26_profile_authenticates_exact_identity_and_rejects_mutations) ... [32mok[0m
+test_task26_validator_and_emitter_independently_authorize_exact_declaration (tests.test_typed_generator.TypedGeneratorTests.test_task26_validator_and_emitter_independently_authorize_exact_declaration) ... [32mok[0m
+test_typed_check_rejects_committed_tamper_and_failed_restore_retains_backup (tests.test_typed_generator.TypedGeneratorTests.test_typed_check_rejects_committed_tamper_and_failed_restore_retains_backup) ... [32mok[0m
+test_typed_emitter_refuses_raw_or_unsupported_nodes_with_program_span (tests.test_typed_generator.TypedGeneratorTests.test_typed_emitter_refuses_raw_or_unsupported_nodes_with_program_span) ... [32mok[0m
+test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice) ... [31mFAIL[0m
+test_typed_generator_owns_exact_public_catalog_header (tests.test_typed_generator.TypedGeneratorTests.test_typed_generator_owns_exact_public_catalog_header) ... [32mok[0m
+test_typed_owned_tree_rejects_path_attacks_devices_fifos_and_directories (tests.test_typed_generator.TypedGeneratorTests.test_typed_owned_tree_rejects_path_attacks_devices_fifos_and_directories) ... [32mok[0m
+test_typed_writer_rolls_back_every_swap_step_and_rejects_invalid_owned_targets (tests.test_typed_generator.TypedGeneratorTests.test_typed_writer_rolls_back_every_swap_step_and_rejects_invalid_owned_targets) ... [32mok[0m
+test_vector_arithmetic_rooted_in_builtin_materializes_each_operation (tests.test_typed_generator.TypedGeneratorTests.test_vector_arithmetic_rooted_in_builtin_materializes_each_operation) ... [32mok[0m
+test_vector_builtin_boundary_materializes_plain_binary_operand (tests.test_typed_generator.TypedGeneratorTests.test_vector_builtin_boundary_materializes_plain_binary_operand) ... [32mok[0m
+test_vector_vector_declaration_remains_concrete_storage (tests.test_typed_generator.TypedGeneratorTests.test_vector_vector_declaration_remains_concrete_storage) ... [32mok[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task23_rejected_structural_mutations_have_exact_native_sensitivity (tests.test_typed_generator.TypedGeneratorTests.test_task23_rejected_structural_mutations_have_exact_native_sensitivity)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2848[0m, in [35mtest_task23_rejected_structural_mutations_have_exact_native_sensitivity[0m
+    rendered = render_rejected_mutation(
+        mutated, source_hashes[key], f"task23_mut_{index}",
+        f"bind_task23_mut_{index}")
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2831[0m, in [35mrender_rejected_mutation[0m
+    return "\n".join([31memitter.render_body[0m[1;31m(namespace, factory)[0m) + "\n"
+                     [31m~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35mrender_body[0m
+    [31mlines.extend[0m[1;31m(self.function_declaration(function) for function in helpers)[0m
+    [31m~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35m<genexpr>[0m
+    lines.extend([31mself.function_declaration[0m[1;31m(function)[0m for function in helpers)
+                 [31m~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^[0m
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2341[0m, in [35mfunction_declaration[0m
+    parameters = ", ".join([1;31m["[[maybe_unused]] const State& state",[0m
+                           [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    ...<3 lines>...
+        [1;31mfor ordinal, parameter in enumerate(function.parameters))][0m)
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2343[0m, in [35m<genexpr>[0m
+    f"[[maybe_unused]] {[31mself.function_parameter_type[0m[1;31m(function, ordinal, parameter)[0m} "
+                        [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m1272[0m, in [35mfunction_parameter_type[0m
+    inout_proof = [1;31mself.authorized_inout_vec3_swap_proof[0m
+                  [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAttributeError[0m: [35m'tools.glslcpp.emit_typed_cpp._Emitter' object has no attribute 'authorized_inout_vec3_swap_proof'[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m16050[0m, in [35mtest_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[0m
+    [31mself.assertEqual[0m[1;31m(145, len(task30_keys))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m145 != 151[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task33_history_schema_and_vendored_oracle_match_152_program_state (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_history_schema_and_vendored_oracle_match_152_program_state)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m17150[0m, in [35mtest_task33_history_schema_and_vendored_oracle_match_152_program_state[0m
+    [31mself.assertEqual[0m[1;31m(DERIVATIVE_ADMISSION_KEYS,[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31mfrozenset(item["key"] for item in oracle["programs"].values()))[0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mItems in the first set but not the second:
+'filter/posterize:posterize'
+'filter/waves:waves'[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m5171[0m, in [35mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m
+    [31mself.assertEqual[0m[1;31m(50, len(corpus_keys - public_keys))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m50 != 46[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task23_six_key_counts_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2414[0m, in [35mtest_task23_six_key_counts_positions_and_generated_isolation_are_exact[0m
+    [31mself.assertEqual[0m[1;31m((122, 124, 88, 212), ([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mlen(keys), len(public), len(corpus["programs"]) - len(public),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mlen(corpus["programs"])))[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: (122, 124, 88, 212) != (123, 125, 87, 212)
+
+First differing element 0:
+122
+123
+
+- (122, 124, 88, 212)
+?    ^    ^   ^
+
++ (123, 125, 87, 212)
+?    ^    ^   ^
+[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m11468[0m, in [35mtest_task26_loader_admits_only_exact_smooth_carrier_and_census[0m
+    [31mself.assertEqual[0m[1;31m((147, 149, 63, 212),[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31m(len(typed), len(public), len(unported),[0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                      [1;31mlen(corpus["programs"])))[0m
+                      [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: (147, 149, 63, 212) != (153, 155, 59, 212)
+
+First differing element 0:
+147
+153
+
+- (147, 149, 63, 212)
++ (153, 155, 59, 212)[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m6168[0m, in [35mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[0m
+    [31mself.assertIn[0m[1;31m("typed slice ok (160 programs)", output)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'typed slice ok (160 programs)' not found in 'generate_typed_slice: typed slice ok (166 programs)\n'[0m
+
+----------------------------------------------------------------------
+Ran 170 tests in 2364.068s
+
+[1;31mFAILED[0m ([1;31mfailures=6[0m, [1;31merrors=1[0m)
+EXIT=1

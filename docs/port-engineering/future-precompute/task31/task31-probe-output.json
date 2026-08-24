@@ -1,0 +1,1257 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.task31.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "note": "Identity/whole/interface hashes use the exact _whole/_interface field-order copied from extrude_bvec2_relational_reduction_profile.py. All monkeypatches restored in finally; nothing under noisemaker-for-cpp was modified (verified separately via find -newer).",
+  "identity": {
+    "curl": {
+      "key": "synth/curl:curl",
+      "source": "sources/synth/curl/curl.glsl",
+      "raw_bytes": 7290,
+      "raw_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
+      "raw_sha256_matches_manifest": true,
+      "normalized_bytes": 4673,
+      "normalized_sha256": "405774c12a29bff814b92ffbe2cc5f3b267367aa40832befc59b509573be91e9",
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "function_count": 7,
+      "functions": [
+        {
+          "id": 16,
+          "name": "curlNoise3D",
+          "return": "vec3",
+          "span": "137:1-181:2",
+          "body_statement_count": 25,
+          "parameters": [
+            {
+              "name": "p",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 17,
+          "name": "fbmSimplex3D",
+          "return": "float",
+          "span": "114:1-130:2",
+          "body_statement_count": 6,
+          "parameters": [
+            {
+              "name": "p",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 18,
+          "name": "main",
+          "return": "void",
+          "span": "183:1-208:2",
+          "body_statement_count": 11,
+          "parameters": []
+        },
+        {
+          "id": 19,
+          "name": "permute",
+          "return": "vec3",
+          "span": "31:1-33:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 20,
+          "name": "permute",
+          "return": "vec4",
+          "span": "34:1-36:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "vec4",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 21,
+          "name": "simplex3D",
+          "return": "float",
+          "span": "43:1-110:2",
+          "body_statement_count": 41,
+          "parameters": [
+            {
+              "name": "v",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 22,
+          "name": "taylorInvSqrt",
+          "return": "vec4",
+          "span": "38:1-40:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "r",
+              "type": "vec4",
+              "direction": "in"
+            }
+          ]
+        }
+      ],
+      "whole_program_sha256": "a7c44947e08fdf478857d1f9c400cd5072df99a14ae4d63aebcbd6d1fc1d9374",
+      "interface_sha256": "0ff5180a4e2bbbf81e9a2705e99a155d9e9c378fbcbe5729eaa43a941c0227ae",
+      "loop_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 1,
+        "entrypoint_charge": 12,
+        "call_graph_acyclic": true
+      },
+      "loop_proof_tuple": [
+        1,
+        0,
+        1,
+        1,
+        12,
+        true
+      ],
+      "resources": {
+        "uniforms": [
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "time",
+          "scale",
+          "seed",
+          "speed",
+          "intensity"
+        ],
+        "samplers": [],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": false,
+        "uses_derivatives": false
+      },
+      "resources_tuple": [
+        [
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "time",
+          "scale",
+          "seed",
+          "speed",
+          "intensity"
+        ],
+        [],
+        [
+          "fragColor"
+        ],
+        false,
+        false
+      ],
+      "typed_count_at_probe_time": 130,
+      "typed_sorted_sha256_at_probe_time": "d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904"
+    },
+    "caustic": {
+      "key": "classicNoisedeck/caustic:caustic",
+      "source": "sources/classicNoisedeck/caustic/caustic.glsl",
+      "raw_bytes": 15645,
+      "raw_sha256": "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d",
+      "raw_sha256_matches_manifest": true,
+      "normalized_bytes": 7999,
+      "normalized_sha256": "b4a45216e62c5facade77e64925075e736ee3ed0eb7b1798bc777ba1bb714b83",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "function_count": 22,
+      "functions": [
+        {
+          "id": 75,
+          "name": "blendBicubic",
+          "return": "float",
+          "span": "240:1-250:2",
+          "body_statement_count": 7,
+          "parameters": [
+            {
+              "name": "p0",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p1",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p2",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p3",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 76,
+          "name": "blendLinearOrCosine",
+          "return": "float",
+          "span": "257:1-262:2",
+          "body_statement_count": 2,
+          "parameters": [
+            {
+              "name": "a",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "b",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "amount",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "nType",
+              "type": "int",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 77,
+          "name": "brightnessContrast",
+          "return": "vec3",
+          "span": "55:1-66:2",
+          "body_statement_count": 5,
+          "parameters": [
+            {
+              "name": "color",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 78,
+          "name": "catmullRom3",
+          "return": "float",
+          "span": "229:1-236:2",
+          "body_statement_count": 3,
+          "parameters": [
+            {
+              "name": "p0",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p1",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p2",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 79,
+          "name": "catmullRom4",
+          "return": "float",
+          "span": "252:1-255:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "p0",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p1",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p2",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p3",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 80,
+          "name": "constant",
+          "return": "float",
+          "span": "210:1-214:2",
+          "body_statement_count": 3,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "xFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "yFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 81,
+          "name": "constantOffset",
+          "return": "float",
+          "span": "216:1-220:2",
+          "body_statement_count": 3,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "xFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "yFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "offset",
+              "type": "ivec2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "name": "hsv2rgb",
+          "return": "vec3",
+          "span": "68:1-96:2",
+          "body_statement_count": 9,
+          "parameters": [
+            {
+              "name": "hsv",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 83,
+          "name": "main",
+          "return": "void",
+          "span": "295:1-312:2",
+          "body_statement_count": 11,
+          "parameters": []
+        },
+        {
+          "id": 84,
+          "name": "map",
+          "return": "float",
+          "span": "27:1-29:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "inMin",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "inMax",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "outMin",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "outMax",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 85,
+          "name": "mod289",
+          "return": "vec2",
+          "span": "107:1-109:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "vec2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 86,
+          "name": "mod289",
+          "return": "vec3",
+          "span": "103:1-105:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 87,
+          "name": "noise",
+          "return": "vec3",
+          "span": "271:1-293:2",
+          "body_statement_count": 9,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "name": "pcg",
+          "return": "uvec3",
+          "span": "32:1-46:2",
+          "body_statement_count": 9,
+          "parameters": [
+            {
+              "name": "v",
+              "type": "uvec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "name": "periodicFunction",
+          "return": "float",
+          "span": "98:1-100:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "p",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "name": "permute",
+          "return": "vec3",
+          "span": "111:1-113:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "x",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 91,
+          "name": "positiveModulo",
+          "return": "int",
+          "span": "155:1-162:2",
+          "body_statement_count": 3,
+          "parameters": [
+            {
+              "name": "value",
+              "type": "int",
+              "direction": "in"
+            },
+            {
+              "name": "modulus",
+              "type": "int",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 92,
+          "name": "prng",
+          "return": "vec3",
+          "span": "48:1-53:2",
+          "body_statement_count": 4,
+          "parameters": [
+            {
+              "name": "p",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 93,
+          "name": "quadratic3",
+          "return": "float",
+          "span": "222:1-227:2",
+          "body_statement_count": 2,
+          "parameters": [
+            {
+              "name": "p0",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p1",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "p2",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "t",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 94,
+          "name": "randomFromLatticeWithOffset",
+          "return": "vec3",
+          "span": "164:1-208:2",
+          "body_statement_count": 19,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "xFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "yFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "offset",
+              "type": "ivec2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 95,
+          "name": "simplexValue",
+          "return": "float",
+          "span": "115:1-151:2",
+          "body_statement_count": 24,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "xFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "yFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "blend",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 96,
+          "name": "value",
+          "return": "float",
+          "span": "266:1-269:2",
+          "body_statement_count": 2,
+          "parameters": [
+            {
+              "name": "st",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "xFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "yFreq",
+              "type": "float",
+              "direction": "in"
+            },
+            {
+              "name": "s",
+              "type": "float",
+              "direction": "in"
+            }
+          ]
+        }
+      ],
+      "whole_program_sha256": "b0ffb30caee0d301f54d42892a6e70619fd4cf1e4c19d5fc3f399b3bfc598624",
+      "interface_sha256": "094c31b573c08cfdf9e3c76e766c4b4ca96a2df12d6a1629f18b141624464b50",
+      "loop_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "loop_proof_tuple": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        true
+      ],
+      "resources": {
+        "uniforms": [
+          "time",
+          "seed",
+          "wrap",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "noiseScale",
+          "speed",
+          "hueRotation",
+          "hueRange",
+          "intensity"
+        ],
+        "samplers": [],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": false,
+        "uses_derivatives": false
+      },
+      "resources_tuple": [
+        [
+          "time",
+          "seed",
+          "wrap",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "noiseScale",
+          "speed",
+          "hueRotation",
+          "hueRange",
+          "intensity"
+        ],
+        [],
+        [
+          "fragColor"
+        ],
+        false,
+        false
+      ],
+      "typed_count_at_probe_time": 130,
+      "typed_sorted_sha256_at_probe_time": "d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904"
+    },
+    "lighting": {
+      "key": "filter/lighting:lighting",
+      "source": "sources/filter/lighting/lighting.glsl",
+      "raw_bytes": 6049,
+      "raw_sha256": "a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f",
+      "raw_sha256_matches_manifest": true,
+      "normalized_bytes": 4997,
+      "normalized_sha256": "c35208b3f864c1a3a75e0aa1f500fab3391c3bef31c6e80da153f04e02b6f343",
+      "defines": {},
+      "function_count": 6,
+      "functions": [
+        {
+          "id": 27,
+          "name": "applyReflection",
+          "return": "vec4",
+          "span": "88:1-109:2",
+          "body_statement_count": 11,
+          "parameters": [
+            {
+              "name": "uv",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "globalUV",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "normal",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 28,
+          "name": "applyRefraction",
+          "return": "vec4",
+          "span": "82:1-85:2",
+          "body_statement_count": 2,
+          "parameters": [
+            {
+              "name": "uv",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "normal",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 29,
+          "name": "calculateNormal",
+          "return": "vec3",
+          "span": "35:1-79:2",
+          "body_statement_count": 38,
+          "parameters": [
+            {
+              "name": "uv",
+              "type": "vec2",
+              "direction": "in"
+            },
+            {
+              "name": "texelSize",
+              "type": "vec2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 30,
+          "name": "getHeight",
+          "return": "float",
+          "span": "28:1-32:2",
+          "body_statement_count": 3,
+          "parameters": [
+            {
+              "name": "uv",
+              "type": "vec2",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 31,
+          "name": "getLuminosity",
+          "return": "float",
+          "span": "24:1-26:2",
+          "body_statement_count": 1,
+          "parameters": [
+            {
+              "name": "color",
+              "type": "vec3",
+              "direction": "in"
+            }
+          ]
+        },
+        {
+          "id": 32,
+          "name": "main",
+          "return": "void",
+          "span": "111:1-162:2",
+          "body_statement_count": 23,
+          "parameters": []
+        }
+      ],
+      "whole_program_sha256": "a24152ae1a234052831e0ab0761aa1b5389ed6aa9a3ea59b5ae1a09216c6220b",
+      "interface_sha256": "ee35749b616ce087ae1b837c9f5da32f1e27b795904edc8ed19249451551fc2d",
+      "loop_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 9,
+        "entrypoint_charge": 9,
+        "call_graph_acyclic": true
+      },
+      "loop_proof_tuple": [
+        1,
+        0,
+        1,
+        9,
+        9,
+        true
+      ],
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "heightMap",
+          "tileOffset",
+          "fullResolution",
+          "diffuseColor",
+          "specularColor",
+          "specularIntensity",
+          "shininess",
+          "ambientColor",
+          "lightDirection",
+          "normalStrength",
+          "smoothing",
+          "renderScale",
+          "reflection",
+          "refraction",
+          "aberration"
+        ],
+        "samplers": [
+          "inputTex",
+          "heightMap"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "resources_tuple": [
+        [
+          "inputTex",
+          "heightMap",
+          "tileOffset",
+          "fullResolution",
+          "diffuseColor",
+          "specularColor",
+          "specularIntensity",
+          "shininess",
+          "ambientColor",
+          "lightDirection",
+          "normalStrength",
+          "smoothing",
+          "renderScale",
+          "reflection",
+          "refraction",
+          "aberration"
+        ],
+        [
+          "inputTex",
+          "heightMap"
+        ],
+        [
+          "fragColor"
+        ],
+        true,
+        false
+      ],
+      "typed_count_at_probe_time": 130,
+      "typed_sorted_sha256_at_probe_time": "d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904"
+    }
+  },
+  "first_gates_unmodified": {
+    "curl": {
+      "key": "synth/curl:curl",
+      "validator_unmodified": "synth/curl:curl:196:12: unsupported builtin tanh",
+      "emitter_unmodified": "synth/curl:curl:32:12: unsupported builtin mod overload"
+    },
+    "caustic": {
+      "key": "classicNoisedeck/caustic:caustic",
+      "validator_unmodified": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+      "emitter_unmodified": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint"
+    },
+    "lighting": {
+      "key": "filter/lighting:lighting",
+      "validator_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+      "emitter_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect"
+    }
+  },
+  "curl_chain": {
+    "key": "synth/curl:curl",
+    "chain": [
+      {
+        "step": 0,
+        "description": "unmodified",
+        "validator_unmodified": "synth/curl:curl:196:12: unsupported builtin tanh",
+        "emitter_unmodified": "synth/curl:curl:32:12: unsupported builtin mod overload"
+      },
+      {
+        "step": 1,
+        "description": "admit builtin tanh (capability+builtin sets)",
+        "admitted": [
+          "tanh"
+        ],
+        "validator": "synth/curl:curl:32:12: unsupported builtin mod overload",
+        "emitter": "synth/curl:curl:32:12: unsupported builtin mod overload"
+      },
+      {
+        "step": 2,
+        "description": "admit tanh + relax mod overload set to include (vec3,float),(vec4,float)",
+        "validator": "pass",
+        "emitter": "pass",
+        "cpp_sha256": "4235c64644702021dbab9d391b8fc4918017697214b1c2c18ba9fb510fe608c2",
+        "cpp_bytes": 15659
+      }
+    ]
+  },
+  "caustic_chain": {
+    "key": "classicNoisedeck/caustic:caustic",
+    "chain": [
+      {
+        "step": 0,
+        "description": "unmodified",
+        "validator_unmodified": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+        "emitter_unmodified": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint"
+      },
+      {
+        "step": 1,
+        "description": "admit builtin floatBitsToUint (capability+builtin sets)",
+        "admitted": [
+          "floatBitsToUint"
+        ],
+        "validator": "classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^",
+        "emitter": "classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^"
+      },
+      {
+        "step": 2,
+        "description": "admit floatBitsToUint + admit scalar uint^uint diagnostically",
+        "validator": "pass",
+        "emitter": "pass",
+        "cpp_sha256": "9bea765eecec96ce92538e6a129814b816393ded0a5b1e14dd3021feff6d8d3d",
+        "cpp_bytes": 33146
+      }
+    ]
+  },
+  "lighting_chain": {
+    "key": "filter/lighting:lighting",
+    "chain": [
+      {
+        "step": 0,
+        "description": "unmodified",
+        "validator_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+        "emitter_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect"
+      },
+      {
+        "step": 1,
+        "description": "admit builtin reflect (capability+builtin sets)",
+        "admitted": [
+          "reflect"
+        ],
+        "validator": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+        "emitter": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration"
+      },
+      {
+        "step": 2,
+        "description": "DIAGNOSTIC ONLY: admit reflect + bypass reject_type's array-kind rejection for exactly float[9]/vec2[9] in the VALIDATOR. The emitter has no equivalent narrow toggle -- fixed-nine array codegen is gated by prove_fixed_nine_local_tables()/SOURCE_LOCKS, a whole-program structural proof keyed to filter/sharpen:sharpen and filter/sobel:sobel only, not a type-admission flag. This step shows what the validator alone would say next; it is not evidence that float[9] could ever be admitted this way for real.",
+        "validator": "filter/lighting:lighting:41:5: unsupported typed expression index",
+        "emitter": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration"
+      }
+    ]
+  },
+  "closures": {
+    "curl": [
+      {
+        "owner": "main",
+        "owner_id": 18,
+        "path": [
+          6,
+          "e0",
+          1,
+          0,
+          0
+        ],
+        "span": "196:12-196:34",
+        "kind": "builtin",
+        "callee": "tanh",
+        "operator": null,
+        "type": "vec3",
+        "child_types": [
+          "vec3"
+        ]
+      },
+      {
+        "owner": "permute",
+        "owner_id": 19,
+        "path": [
+          0,
+          "e0"
+        ],
+        "span": "32:12-32:47",
+        "kind": "builtin",
+        "callee": "mod",
+        "operator": null,
+        "type": "vec3",
+        "child_types": [
+          "vec3",
+          "float"
+        ]
+      },
+      {
+        "owner": "permute",
+        "owner_id": 20,
+        "path": [
+          0,
+          "e0"
+        ],
+        "span": "35:12-35:47",
+        "kind": "builtin",
+        "callee": "mod",
+        "operator": null,
+        "type": "vec4",
+        "child_types": [
+          "vec4",
+          "float"
+        ]
+      },
+      {
+        "owner": "simplex3D",
+        "owner_id": 21,
+        "path": [
+          12,
+          "e0",
+          1
+        ],
+        "span": "65:9-65:22",
+        "kind": "builtin",
+        "callee": "mod",
+        "operator": null,
+        "type": "vec3",
+        "child_types": [
+          "vec3",
+          "float"
+        ]
+      }
+    ],
+    "caustic": [
+      {
+        "owner": "randomFromLatticeWithOffset",
+        "owner_id": 94,
+        "path": [
+          13,
+          "e0",
+          0
+        ],
+        "span": "192:21-192:46",
+        "kind": "builtin",
+        "callee": "floatBitsToUint",
+        "operator": null,
+        "type": "uint",
+        "child_types": [
+          "float"
+        ]
+      },
+      {
+        "owner": "randomFromLatticeWithOffset",
+        "owner_id": 94,
+        "path": [
+          14,
+          "e0",
+          0,
+          0
+        ],
+        "span": "195:10-195:46",
+        "kind": "binary",
+        "callee": null,
+        "operator": "^",
+        "type": "uint",
+        "child_types": [
+          "uint",
+          "uint"
+        ]
+      },
+      {
+        "owner": "randomFromLatticeWithOffset",
+        "owner_id": 94,
+        "path": [
+          14,
+          "e0",
+          0,
+          1
+        ],
+        "span": "196:10-196:46",
+        "kind": "binary",
+        "callee": null,
+        "operator": "^",
+        "type": "uint",
+        "child_types": [
+          "uint",
+          "uint"
+        ]
+      },
+      {
+        "owner": "randomFromLatticeWithOffset",
+        "owner_id": 94,
+        "path": [
+          14,
+          "e0",
+          0,
+          2
+        ],
+        "span": "197:10-197:47",
+        "kind": "binary",
+        "callee": null,
+        "operator": "^",
+        "type": "uint",
+        "child_types": [
+          "uint",
+          "uint"
+        ]
+      }
+    ],
+    "lighting": [
+      {
+        "owner": "applyReflection",
+        "owner_id": 27,
+        "path": [
+          1,
+          "e0",
+          0
+        ],
+        "span": "93:26-93:51",
+        "kind": "builtin",
+        "callee": "reflect",
+        "operator": null,
+        "type": "vec3",
+        "child_types": [
+          "vec3",
+          "vec3"
+        ]
+      },
+      {
+        "owner": "calculateNormal",
+        "owner_id": 29,
+        "path": [
+          1,
+          "e0"
+        ],
+        "span": "40:11-40:21",
+        "kind": "declaration",
+        "callee": null,
+        "operator": null,
+        "type": "float[9]",
+        "child_types": []
+      },
+      {
+        "owner": "calculateNormal",
+        "owner_id": 29,
+        "path": [
+          11,
+          "e0"
+        ],
+        "span": "46:11-46:21",
+        "kind": "declaration",
+        "callee": null,
+        "operator": null,
+        "type": "float[9]",
+        "child_types": []
+      },
+      {
+        "owner": "calculateNormal",
+        "owner_id": 29,
+        "path": [
+          21,
+          "e0"
+        ],
+        "span": "51:10-51:20",
+        "kind": "declaration",
+        "callee": null,
+        "operator": null,
+        "type": "vec2[9]",
+        "child_types": []
+      }
+    ]
+  }
+}

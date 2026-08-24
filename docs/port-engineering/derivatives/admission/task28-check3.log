@@ -1,0 +1,18 @@
+test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task28_schema_generation_and_task27_reconstruction (tests.test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m13326[0m, in [35mtest_task28_schema_generation_and_task27_reconstruction[0m
+    [31mself.assertEqual[0m[1;31m(digest, hashlib.sha256(prior[path]).hexdigest())[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'aa15e469d2283ac4f919a3f61edf85f5046f414674ff3cebdb85e5c06d2327c5' != 'ba195255c3bf2ae75f3c6a056ec2a162a618022e5c2da5099f9acfcb7640388c'
+- aa15e469d2283ac4f919a3f61edf85f5046f414674ff3cebdb85e5c06d2327c5
++ ba195255c3bf2ae75f3c6a056ec2a162a618022e5c2da5099f9acfcb7640388c
+[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 61.758s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

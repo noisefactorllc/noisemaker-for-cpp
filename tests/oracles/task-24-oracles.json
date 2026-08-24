@@ -1,0 +1,2805 @@
+{
+  "schema": "noisemaker-for-cpp.task24-gather-sorted-round-to-int.public-canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "public_api": "kernelFactories.get(key)",
+    "canonical_identity": true,
+    "adapter_entry_absent": true,
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56"
+  },
+  "program": {
+    "key": "filter/pixelSort:gatherSorted",
+    "source": "sources/filter/pixelSort/gatherSorted.glsl",
+    "raw_source_bytes": 1896,
+    "raw_source_sha256": "a45eb039bae3e7b0a5f804de68c441092b6b7826b594c4aa5221c22a6c7b1386",
+    "normalized_source_bytes": 1185,
+    "normalized_source_sha256": "28e7ad80ef7db266559deb4b822f52251ab899af61feb9f915e32c0ecce079a9",
+    "defines": {},
+    "profile": "gather-sorted-round-to-int-v1",
+    "unrestricted_round_capability": false,
+    "canonical_factory_name": "canonicalFactory107",
+    "canonical_factory_to_string_sha256": "6f4021f01bc289554506215c3f01d716b4fcbf2b458527d02f1a0888d7eecb7c",
+    "bindings": [
+      "preparedTex:sampler2D@1/S1",
+      "rankTex:sampler2D@2/S2",
+      "brightestTex:sampler2D@3/S3"
+    ],
+    "output": "fragColor:vec4@4",
+    "resources": {
+      "samplers": 3,
+      "outputs": 1,
+      "uses_texture": true,
+      "uses_derivatives": false,
+      "static_texelFetch_sites": 3,
+      "dynamic_texelFetch_per_pixel": 66,
+      "textureSize_calls_per_pixel": 1
+    },
+    "loop": {
+      "count": 1,
+      "bound_kind": "local-const-literal",
+      "bound": 64,
+      "trip_count": 64,
+      "lexical_depth": 1,
+      "effective_depth": 1,
+      "lexical_product": 64,
+      "entrypoint_charge": 64,
+      "call_graph_acyclic": true
+    }
+  },
+  "fixture": {
+    "prepared": "top-down F32 deterministic RGBA modular field",
+    "rank": "top-down F32 deterministic per-row rank permutation",
+    "brightest": "1xheight F32 R values with other color lanes zero and alpha one",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "verification": "fresh double render, immutable three inputs, finite full output, F32/RGBA8 hashes and probes"
+  },
+  "normative_domain": "brightestTex.r is normalized to [0,1] and dimensions fit signed int32; negative zero is an explicit sign-erasure control",
+  "cases": [
+    {
+      "name": "normalized-positive-zero",
+      "dimensions": {
+        "width": 9,
+        "height": 4
+      },
+      "coverage": [
+        "normalized-domain",
+        "positive-zero",
+        "round-to-zero",
+        "64-trip-loop"
+      ],
+      "brightest_rows": [
+        {
+          "value": 0,
+          "f32_bits_le": "0x00000000",
+          "negative_zero": false
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x00000000",
+          "negative_zero": false
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x00000000",
+          "negative_zero": false
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x00000000",
+          "negative_zero": false
+        }
+      ],
+      "inputs": {
+        "prepared_f32_sha256": "fd8676de3db42ed5006381c3b0d49e0634480f698be13ecfce074b99b80d2dfe",
+        "rank_f32_sha256": "4182254aabbfd31fc2d1771ad050e3fa482dad10d49e2aef4c5f9ab583f1820d",
+        "brightest_f32_sha256": "9ba3b531624710dece54456c2e5cb1cb31d7df8cfb6fee2b1180d0cb791ea049",
+        "prepared_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.0982142835855484,
+              0.06481481343507767,
+              0.028301887214183807,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3dc92492",
+              "0x3d84bda1",
+              "0x3ce7d95c",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.7232142686843872,
+              0.46296295523643494,
+              1,
+              -0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f392492",
+              "0x3eed097b",
+              "0x3f800000",
+              "0xbe8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.5535714030265808,
+              0.8703703880310059,
+              0.3962264060974121,
+              1.1818181276321411
+            ],
+            "f32_bits_le": [
+              "0x3f0db6db",
+              "0x3f5ed098",
+              "0x3ecade30",
+              "0x3f9745d1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.1696428507566452,
+              0.25925925374031067,
+              0.35849055647850037,
+              1.0909091234207153
+            ],
+            "f32_bits_le": [
+              "0x3e2db6db",
+              "0x3e84bda1",
+              "0x3eb78c13",
+              "0x3f8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.7142857313156128,
+              0.29629629850387573,
+              0.25471699237823486,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3f36db6e",
+              "0x3e97b426",
+              "0x3e826a44",
+              "0xbe3a2e8c"
+            ]
+          }
+        ],
+        "rank_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.625,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f200000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0,
+              0.25,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3e800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.25,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.75,
+              0.25,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f400000",
+              "0x3e800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.25,
+              0.875,
+              0.5,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e800000",
+              "0x3f600000",
+              "0x3f000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "brightest_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+        "rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7232142686843872,
+              0.46296295523643494,
+              1,
+              -0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f392492",
+              "0x3eed097b",
+              "0x3f800000",
+              "0xbe8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.0625,
+              0.1111111119389534,
+              0,
+              0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3d800000",
+              "0x3de38e39",
+              "0x00000000",
+              "0x3e3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.1875,
+              0.7407407164573669,
+              0.8773584961891174,
+              0.9090909361839294
+            ],
+            "f32_bits_le": [
+              "0x3e400000",
+              "0x3f3da12f",
+              "0x3f609a91",
+              "0x3f68ba2f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.5357142686843872,
+              0.3888888955116272,
+              0.8867924809455872,
+              -0.3636363744735718
+            ],
+            "f32_bits_le": [
+              "0x3f092492",
+              "0x3ec71c72",
+              "0x3f6304d5",
+              "0xbeba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.01785714365541935,
+              1,
+              0.2358490526676178,
+              0.6363636255264282
+            ],
+            "f32_bits_le": [
+              "0x3c924925",
+              "0x3f800000",
+              "0x3e71826a",
+              "0x3f22e8ba"
+            ]
+          }
+        ],
+        "finite_lanes": 144,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "all_inputs_immutable": true
+    },
+    {
+      "name": "normalized-negative-zero-control",
+      "dimensions": {
+        "width": 9,
+        "height": 4
+      },
+      "coverage": [
+        "signed-zero-control",
+        "immediate-int-erases-sign",
+        "same-output-as-positive-zero",
+        "64-trip-loop"
+      ],
+      "brightest_rows": [
+        {
+          "value": 0,
+          "f32_bits_le": "0x80000000",
+          "negative_zero": true
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x80000000",
+          "negative_zero": true
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x80000000",
+          "negative_zero": true
+        },
+        {
+          "value": 0,
+          "f32_bits_le": "0x80000000",
+          "negative_zero": true
+        }
+      ],
+      "inputs": {
+        "prepared_f32_sha256": "fd8676de3db42ed5006381c3b0d49e0634480f698be13ecfce074b99b80d2dfe",
+        "rank_f32_sha256": "4182254aabbfd31fc2d1771ad050e3fa482dad10d49e2aef4c5f9ab583f1820d",
+        "brightest_f32_sha256": "87f0038e40412bb31ab4bf3580ff2551eb8352d4dc2bb62b66e1429074ef1422",
+        "prepared_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.0982142835855484,
+              0.06481481343507767,
+              0.028301887214183807,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3dc92492",
+              "0x3d84bda1",
+              "0x3ce7d95c",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.7232142686843872,
+              0.46296295523643494,
+              1,
+              -0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f392492",
+              "0x3eed097b",
+              "0x3f800000",
+              "0xbe8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.5535714030265808,
+              0.8703703880310059,
+              0.3962264060974121,
+              1.1818181276321411
+            ],
+            "f32_bits_le": [
+              "0x3f0db6db",
+              "0x3f5ed098",
+              "0x3ecade30",
+              "0x3f9745d1"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.1696428507566452,
+              0.25925925374031067,
+              0.35849055647850037,
+              1.0909091234207153
+            ],
+            "f32_bits_le": [
+              "0x3e2db6db",
+              "0x3e84bda1",
+              "0x3eb78c13",
+              "0x3f8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.7142857313156128,
+              0.29629629850387573,
+              0.25471699237823486,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3f36db6e",
+              "0x3e97b426",
+              "0x3e826a44",
+              "0xbe3a2e8c"
+            ]
+          }
+        ],
+        "rank_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.625,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f200000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0,
+              0.25,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3e800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.25,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.75,
+              0.25,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f400000",
+              "0x3e800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.25,
+              0.875,
+              0.5,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e800000",
+              "0x3f600000",
+              "0x3f000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "brightest_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x80000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x80000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x80000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x80000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x80000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+        "rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7232142686843872,
+              0.46296295523643494,
+              1,
+              -0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f392492",
+              "0x3eed097b",
+              "0x3f800000",
+              "0xbe8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.0625,
+              0.1111111119389534,
+              0,
+              0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3d800000",
+              "0x3de38e39",
+              "0x00000000",
+              "0x3e3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.1875,
+              0.7407407164573669,
+              0.8773584961891174,
+              0.9090909361839294
+            ],
+            "f32_bits_le": [
+              "0x3e400000",
+              "0x3f3da12f",
+              "0x3f609a91",
+              "0x3f68ba2f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              3
+            ],
+            "values": [
+              0.5357142686843872,
+              0.3888888955116272,
+              0.8867924809455872,
+              -0.3636363744735718
+            ],
+            "f32_bits_le": [
+              "0x3f092492",
+              "0x3ec71c72",
+              "0x3f6304d5",
+              "0xbeba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.01785714365541935,
+              1,
+              0.2358490526676178,
+              0.6363636255264282
+            ],
+            "f32_bits_le": [
+              "0x3c924925",
+              "0x3f800000",
+              "0x3e71826a",
+              "0x3f22e8ba"
+            ]
+          }
+        ],
+        "finite_lanes": 144,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "all_inputs_immutable": true
+    },
+    {
+      "name": "normalized-half-boundaries",
+      "dimensions": {
+        "width": 9,
+        "height": 5
+      },
+      "coverage": [
+        "below-half",
+        "exact-half-up",
+        "above-half",
+        "upper-endpoint",
+        "normalized-domain"
+      ],
+      "brightest_rows": [
+        {
+          "value": 0.312375009059906,
+          "f32_bits_le": "0x3e9fef9e",
+          "negative_zero": false
+        },
+        {
+          "value": 0.3125,
+          "f32_bits_le": "0x3ea00000",
+          "negative_zero": false
+        },
+        {
+          "value": 0.312624990940094,
+          "f32_bits_le": "0x3ea01062",
+          "negative_zero": false
+        },
+        {
+          "value": 1,
+          "f32_bits_le": "0x3f800000",
+          "negative_zero": false
+        },
+        {
+          "value": 0.125,
+          "f32_bits_le": "0x3e000000",
+          "negative_zero": false
+        }
+      ],
+      "inputs": {
+        "prepared_f32_sha256": "8e50e22afb9c0c0cbe337179d6ac6990795c2ba49fd1f169c6fe31d67f18ae53",
+        "rank_f32_sha256": "e757d15e6b98efedc9c1c79bfbc79e46ac4ebffe700f623b06eb8bbbbae52e0e",
+        "brightest_f32_sha256": "aae4685952a5df9fe87ab87dbac30dad91807b4e4cf65b56e53fdc3092731429",
+        "prepared_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.0982142835855484,
+              0.06481481343507767,
+              0.028301887214183807,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3dc92492",
+              "0x3d84bda1",
+              "0x3ce7d95c",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.7232142686843872,
+              0.46296295523643494,
+              1,
+              -0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f392492",
+              "0x3eed097b",
+              "0x3f800000",
+              "0xbe8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7053571343421936,
+              0.12962962687015533,
+              0.5188679099082947,
+              -0.09090909361839294
+            ],
+            "f32_bits_le": [
+              "0x3f349249",
+              "0x3e04bda1",
+              "0x3f04d487",
+              "0xbdba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              4
+            ],
+            "values": [
+              0.3214285671710968,
+              0.5277777910232544,
+              0.4811320900917053,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3ea49249",
+              "0x3f071c72",
+              "0x3ef656f2",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.7142857313156128,
+              0.29629629850387573,
+              0.25471699237823486,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3f36db6e",
+              "0x3e97b426",
+              "0x3e826a44",
+              "0xbe3a2e8c"
+            ]
+          }
+        ],
+        "rank_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.625,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f200000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0,
+              0.25,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3e800000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.5,
+              0.375,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3ec00000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              4
+            ],
+            "values": [
+              1,
+              0.625,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f200000",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.25,
+              0.875,
+              0.5,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e800000",
+              "0x3f600000",
+              "0x3f000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "brightest_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.312375009059906,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e9fef9e",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.312375009059906,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e9fef9e",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.125,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.125,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0.312624990940094,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ea01062",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "66e27bbf10a8708b0fa12a5b3a37b98433cb27409e1b19d75477f026a9074381",
+        "rgba8_sha256": "e0e4181ebf3958dda73bc3f2d1e653d11a86cdcf457029d99875a10a07303f11",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.4107142984867096,
+              0.7685185074806213,
+              0.009433962404727936,
+              0.6363636255264282
+            ],
+            "f32_bits_le": [
+              "0x3ed24925",
+              "0x3f44bda1",
+              "0x3c1a90e8",
+              "0x3f22e8ba"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.7589285969734192,
+              0.4166666567325592,
+              0.01886792480945587,
+              1.0909091234207153
+            ],
+            "f32_bits_le": [
+              "0x3f424925",
+              "0x3ed55555",
+              "0x3c9a90e8",
+              "0x3f8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.3214285671710968,
+              0.5277777910232544,
+              0.4811320900917053,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3ea49249",
+              "0x3f071c72",
+              "0x3ef656f2",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              4
+            ],
+            "values": [
+              0.6696428656578064,
+              0.17592592537403107,
+              0.49056604504585266,
+              0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3f2b6db7",
+              "0x3e3425ed",
+              "0x3efb2b79",
+              "0x3e8ba2e9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.0535714291036129,
+              0.9537037014961243,
+              0.2641509473323822,
+              0.27272728085517883
+            ],
+            "f32_bits_le": [
+              "0x3d5b6db7",
+              "0x3f7425ed",
+              "0x3e873ecb",
+              "0x3e8ba2e9"
+            ]
+          }
+        ],
+        "finite_lanes": 180,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "all_inputs_immutable": true
+    },
+    {
+      "name": "normalized-wide-67",
+      "dimensions": {
+        "width": 67,
+        "height": 5
+      },
+      "coverage": [
+        "width-above-loop-count",
+        "sparse-64-sample-search",
+        "normalized-domain",
+        "endpoints-and-halves"
+      ],
+      "brightest_rows": [
+        {
+          "value": 0,
+          "f32_bits_le": "0x00000000",
+          "negative_zero": false
+        },
+        {
+          "value": 0.25,
+          "f32_bits_le": "0x3e800000",
+          "negative_zero": false
+        },
+        {
+          "value": 0.5,
+          "f32_bits_le": "0x3f000000",
+          "negative_zero": false
+        },
+        {
+          "value": 0.75,
+          "f32_bits_le": "0x3f400000",
+          "negative_zero": false
+        },
+        {
+          "value": 1,
+          "f32_bits_le": "0x3f800000",
+          "negative_zero": false
+        }
+      ],
+      "inputs": {
+        "prepared_f32_sha256": "8819bb184289f395f26d09155b8ecbe1cc3f701bbc83500f5ab39159dadcc797",
+        "rank_f32_sha256": "a35f91c95d7d860270d6295f24e0d925246200cd0181d77b3db8665d72bfac15",
+        "brightest_f32_sha256": "5d63331e169452b78a89c8e0b0f26ea142d55cceb76ccfd02386f5b02f547252",
+        "prepared_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.0982142835855484,
+              0.06481481343507767,
+              0.028301887214183807,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3dc92492",
+              "0x3d84bda1",
+              "0x3ce7d95c",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              0
+            ],
+            "values": [
+              0.7142857313156128,
+              0.5740740895271301,
+              0.7264150977134705,
+              0.3636363744735718
+            ],
+            "f32_bits_le": [
+              "0x3f36db6e",
+              "0x3f12f685",
+              "0x3f39f657",
+              "0x3eba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7053571343421936,
+              0.12962962687015533,
+              0.5188679099082947,
+              -0.09090909361839294
+            ],
+            "f32_bits_le": [
+              "0x3f349249",
+              "0x3e04bda1",
+              "0x3f04d487",
+              "0xbdba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              4
+            ],
+            "values": [
+              0.3125,
+              0.6388888955116272,
+              0.2075471729040146,
+              0.4545454680919647
+            ],
+            "f32_bits_le": [
+              "0x3ea00000",
+              "0x3f238e39",
+              "0x3e54873f",
+              "0x3ee8ba2f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              33,
+              2
+            ],
+            "values": [
+              0.2053571492433548,
+              0.35185185074806213,
+              0.6226415038108826,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e524925",
+              "0x3eb425ed",
+              "0x3f1f656f",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "rank_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.07575757801532745,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d9b26ca",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              0
+            ],
+            "values": [
+              0.7424242496490479,
+              0.9090909361839294,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f3e0f84",
+              "0x3f68ba2f",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7424242496490479,
+              0.1818181872367859,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f3e0f84",
+              "0x3e3a2e8c",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              4
+            ],
+            "values": [
+              0.39393940567970276,
+              0.07575757801532745,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ec9b26d",
+              "0x3d9b26ca",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              33,
+              2
+            ],
+            "values": [
+              0.7424242496490479,
+              0.5454545617103577,
+              0.5,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f3e0f84",
+              "0x3f0ba2e9",
+              "0x3f000000",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "brightest_probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0.5,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
+        "rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.6160714030265808,
+              0.6018518805503845,
+              0.9150943160057068,
+              0.8181818127632141
+            ],
+            "f32_bits_le": [
+              "0x3f1db6db",
+              "0x3f1a12f7",
+              "0x3f6a439f",
+              "0x3f51745d"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              0
+            ],
+            "values": [
+              0.0892857164144516,
+              0.17592592537403107,
+              0.7641509175300598,
+              0.4545454680919647
+            ],
+            "f32_bits_le": [
+              "0x3db6db6e",
+              "0x3e3425ed",
+              "0x3f439f65",
+              "0x3ee8ba2f"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0,
+              0.9444444179534912,
+              0.22641509771347046,
+              -0.3636363744735718
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3f71c71c",
+              "0x3e67d95c",
+              "0xbeba2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              66,
+              4
+            ],
+            "values": [
+              0.5446428656578064,
+              0.8425925970077515,
+              0.8962264060974121,
+              -0.1818181872367859
+            ],
+            "f32_bits_le": [
+              "0x3f0b6db7",
+              "0x3f57b426",
+              "0x3f656f18",
+              "0xbe3a2e8c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              33,
+              2
+            ],
+            "values": [
+              0.0446428582072258,
+              0.0555555559694767,
+              1,
+              0.9090909361839294
+            ],
+            "f32_bits_le": [
+              "0x3d36db6e",
+              "0x3d638e39",
+              "0x3f800000",
+              "0x3f68ba2f"
+            ]
+          }
+        ],
+        "finite_lanes": 1340,
+        "nonfinite_lanes": 0
+      },
+      "repeat_identity": true,
+      "all_inputs_immutable": true
+    }
+  ],
+  "cross_case_controls": [
+    {
+      "name": "positive-vs-negative-zero-erased-by-immediate-int",
+      "same_f32_bytes": true,
+      "same_rgba8_bytes": true
+    }
+  ],
+  "mutations": [
+    {
+      "name": "round-replaced-by-floor",
+      "case_results": [
+        {
+          "case": "normalized-positive-zero",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-negative-zero-control",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-half-boundaries",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 258,
+          "different_f32_lanes": 72,
+          "different_rgba8_bytes": 72,
+          "max_absolute_f32_difference": 1.2727273106575012,
+          "candidate_f32_sha256": "fcd7c1b7f7eb80f3ebf5325586fb0a16ccabfd0d9d497a8e3556a43018406f46",
+          "candidate_rgba8_sha256": "3ab32b36bbe43abb0e911878264e63fbd89cb4ad11703c1ec2d9f1784de59568"
+        },
+        {
+          "case": "normalized-wide-67",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 1801,
+          "different_f32_lanes": 512,
+          "different_rgba8_bytes": 490,
+          "max_absolute_f32_difference": 1.5454545319080353,
+          "candidate_f32_sha256": "0b24384f62cd3a7782be8f9cc8bb2ebe5e62f74705213d8acbcd40c62f5536a2",
+          "candidate_rgba8_sha256": "6412a80aec08a3ef1ea2c36214a7bdc4599de4119e976fa6e9d859a9db3829ed"
+        }
+      ]
+    },
+    {
+      "name": "round-replaced-by-ceil",
+      "case_results": [
+        {
+          "case": "normalized-positive-zero",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-negative-zero-control",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-half-boundaries",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 125,
+          "different_f32_lanes": 36,
+          "different_rgba8_bytes": 36,
+          "max_absolute_f32_difference": 1.2727273106575012,
+          "candidate_f32_sha256": "cb5fa60e95d842065f356db867e346e0fe7358205a23d9dfec217afc595b2b08",
+          "candidate_rgba8_sha256": "a5daa2bdb5bad8b55b5bfe9f2956fb4e157983356179b7a4bdac2d8c4ab0dc64"
+        },
+        {
+          "case": "normalized-wide-67",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
+          "candidate_rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c"
+        }
+      ]
+    },
+    {
+      "name": "sample-loop-64-to-8",
+      "case_results": [
+        {
+          "case": "normalized-positive-zero",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 59,
+          "different_f32_lanes": 16,
+          "different_rgba8_bytes": 16,
+          "max_absolute_f32_difference": 1.0000000298023224,
+          "candidate_f32_sha256": "24301ffa7941c2e621c6f03e2eb3a2b98c98f1937bcb5dc79c169f43a830e4f2",
+          "candidate_rgba8_sha256": "58706b0118cc4dfe5fcd3a02e5325cd958f03670bab59cd58a4d263c41a8fa0b"
+        },
+        {
+          "case": "normalized-negative-zero-control",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 59,
+          "different_f32_lanes": 16,
+          "different_rgba8_bytes": 16,
+          "max_absolute_f32_difference": 1.0000000298023224,
+          "candidate_f32_sha256": "24301ffa7941c2e621c6f03e2eb3a2b98c98f1937bcb5dc79c169f43a830e4f2",
+          "candidate_rgba8_sha256": "58706b0118cc4dfe5fcd3a02e5325cd958f03670bab59cd58a4d263c41a8fa0b"
+        },
+        {
+          "case": "normalized-half-boundaries",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 74,
+          "different_f32_lanes": 20,
+          "different_rgba8_bytes": 20,
+          "max_absolute_f32_difference": 1.0000000298023224,
+          "candidate_f32_sha256": "181479fabbc1973c1da4c602a0518c6627ab7ffc96cc2c26ca1ce4f2061a1227",
+          "candidate_rgba8_sha256": "ca80f7a0297ce583c0429c5f6f9a6efe7d086429c38b33b2aa62c63cfa93c26b"
+        },
+        {
+          "case": "normalized-wide-67",
+          "same_f32_bytes": false,
+          "same_rgba8_bytes": false,
+          "different_f32_bytes": 4016,
+          "different_f32_lanes": 1161,
+          "different_rgba8_bytes": 1131,
+          "max_absolute_f32_difference": 1.5454545319080353,
+          "candidate_f32_sha256": "6b5a08534824cf65038153647791d6680b66279b3ec3abcdb8ac7e8fe4ead4b6",
+          "candidate_rgba8_sha256": "ae415e5d25131b7edcb705f06ab7333189a7a6ad335c7b4d7ce3dc319b4e13fa"
+        }
+      ]
+    },
+    {
+      "name": "native-floor-plus-half-with-int32-clamp",
+      "case_results": [
+        {
+          "case": "normalized-positive-zero",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-negative-zero-control",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "566cc3c05492199a3daf8bdcfffe9f610703f74e74defd5583b7e99f768f4390",
+          "candidate_rgba8_sha256": "cf0f9c006514afc91c0d06aa64053f5bab69a226385d6e15afe05f11786e4bf7"
+        },
+        {
+          "case": "normalized-half-boundaries",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "66e27bbf10a8708b0fa12a5b3a37b98433cb27409e1b19d75477f026a9074381",
+          "candidate_rgba8_sha256": "e0e4181ebf3958dda73bc3f2d1e653d11a86cdcf457029d99875a10a07303f11"
+        },
+        {
+          "case": "normalized-wide-67",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_bytes": 0,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_absolute_f32_difference": 0,
+          "candidate_f32_sha256": "156bb977e833e4b09b51a83b2a357dec5baef1608224512c2920b78cd5dfbd43",
+          "candidate_rgba8_sha256": "67367ef5cae19cfb7c03d76d63f59e1b26a019531d23f15979c39629a6b57d3c"
+        }
+      ]
+    }
+  ],
+  "exclusions": {
+    "contract": "not native parity acceptance cases; these freeze why the exact profile cannot authorize generic round or out-of-range conversion",
+    "cases": [
+      {
+        "name": "excluded-negative-half",
+        "dimensions": {
+          "width": 9,
+          "height": 2
+        },
+        "coverage": [
+          "outside-normalized-domain",
+          "Math.round-negative-zero",
+          "immediate-int-erases-sign"
+        ],
+        "brightest_rows": [
+          {
+            "value": -0.0625,
+            "f32_bits_le": "0xbd800000",
+            "negative_zero": false
+          },
+          {
+            "value": -0.0625,
+            "f32_bits_le": "0xbd800000",
+            "negative_zero": false
+          }
+        ],
+        "inputs": {
+          "prepared_f32_sha256": "c1b8a73f5ca15349c1cc7a9fbac1547310ec0c8940faa6a8e3e55f5be15df83d",
+          "rank_f32_sha256": "d96d629895ed03065c6a9ec5b72539fb473d185e66049ad311549078cafeaa2e",
+          "brightest_f32_sha256": "24c603ab03f160d3d0ecfd2b6d692748ceb139130f36c269e3f95258736e676a",
+          "prepared_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.0982142835855484,
+                0.06481481343507767,
+                0.028301887214183807,
+                -0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3dc92492",
+                "0x3d84bda1",
+                "0x3ce7d95c",
+                "0xbe3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0.7232142686843872,
+                0.46296295523643494,
+                1,
+                -0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3f392492",
+                "0x3eed097b",
+                "0x3f800000",
+                "0xbe8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.25,
+                0.3333333432674408,
+                0.15094339847564697,
+                0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3e800000",
+                "0x3eaaaaab",
+                "0x3e1a90e8",
+                "0x3e8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.875,
+                0.7314814925193787,
+                0.11320754885673523,
+                0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3f600000",
+                "0x3f3b425f",
+                "0x3de7d95c",
+                "0x3e3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0.5625,
+                0.02777777798473835,
+                0.1320754736661911,
+                1.0909091234207153
+              ],
+              "f32_bits_le": [
+                "0x3f100000",
+                "0x3ce38e39",
+                "0x3e073ecb",
+                "0x3f8ba2e9"
+              ]
+            }
+          ],
+          "rank_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f200000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0,
+                0.25,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3e800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.875,
+                0.375,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f600000",
+                "0x3ec00000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.25,
+                0.625,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3e800000",
+                "0x3f200000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0,
+                0.5,
+                0.5,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f000000",
+                "0x3f000000",
+                "0x3f800000"
+              ]
+            }
+          ],
+          "brightest_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                -0.0625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0xbd800000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                -0.0625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0xbd800000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                -0.0625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0xbd800000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                -0.0625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0xbd800000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                -0.0625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0xbd800000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            }
+          ]
+        },
+        "output": {
+          "f32_sha256": "795d16640209e8a06f4e3e8913233aca45bb519e3d457a5da130027c3af8609e",
+          "rgba8_sha256": "54cf47fa165718a20e1c5ad47c03b5e56e40afdfdc2bf80c981ce3fc3b8fca57",
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.7232142686843872,
+                0.46296295523643494,
+                1,
+                -0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3f392492",
+                "0x3eed097b",
+                "0x3f800000",
+                "0xbe8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0.0625,
+                0.1111111119389534,
+                0,
+                0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3d800000",
+                "0x3de38e39",
+                "0x00000000",
+                "0x3e3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.5625,
+                0.02777777798473835,
+                0.1320754736661911,
+                1.0909091234207153
+              ],
+              "f32_bits_le": [
+                "0x3f100000",
+                "0x3ce38e39",
+                "0x3e073ecb",
+                "0x3f8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.9107142686843872,
+                0.6851851940155029,
+                0.14150942862033844,
+                -0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3f692492",
+                "0x3f2f684c",
+                "0x3e10e7d9",
+                "0xbe3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0.2321428507566452,
+                0.8611111044883728,
+                0.6415094137191772,
+                0.4545454680919647
+              ],
+              "f32_bits_le": [
+                "0x3e6db6db",
+                "0x3f5c71c7",
+                "0x3f2439f6",
+                "0x3ee8ba2f"
+              ]
+            }
+          ],
+          "finite_lanes": 72,
+          "nonfinite_lanes": 0
+        },
+        "repeat_identity": true,
+        "all_inputs_immutable": true
+      },
+      {
+        "name": "excluded-out-of-range-wrap",
+        "dimensions": {
+          "width": 9,
+          "height": 2
+        },
+        "coverage": [
+          "outside-normalized-domain",
+          "JavaScript-ToInt32-wrap",
+          "native-int32-clamp-diverges"
+        ],
+        "brightest_rows": [
+          {
+            "value": 536870912,
+            "f32_bits_le": "0x4e000000",
+            "negative_zero": false
+          },
+          {
+            "value": 536870912,
+            "f32_bits_le": "0x4e000000",
+            "negative_zero": false
+          }
+        ],
+        "inputs": {
+          "prepared_f32_sha256": "c1b8a73f5ca15349c1cc7a9fbac1547310ec0c8940faa6a8e3e55f5be15df83d",
+          "rank_f32_sha256": "d96d629895ed03065c6a9ec5b72539fb473d185e66049ad311549078cafeaa2e",
+          "brightest_f32_sha256": "45b964948abb0bed0fdca6efc3fe50c508dfd7d55eba2a098c564a857b9b9905",
+          "prepared_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.0982142835855484,
+                0.06481481343507767,
+                0.028301887214183807,
+                -0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3dc92492",
+                "0x3d84bda1",
+                "0x3ce7d95c",
+                "0xbe3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0.7232142686843872,
+                0.46296295523643494,
+                1,
+                -0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3f392492",
+                "0x3eed097b",
+                "0x3f800000",
+                "0xbe8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.25,
+                0.3333333432674408,
+                0.15094339847564697,
+                0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3e800000",
+                "0x3eaaaaab",
+                "0x3e1a90e8",
+                "0x3e8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.875,
+                0.7314814925193787,
+                0.11320754885673523,
+                0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3f600000",
+                "0x3f3b425f",
+                "0x3de7d95c",
+                "0x3e3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0.5625,
+                0.02777777798473835,
+                0.1320754736661911,
+                1.0909091234207153
+              ],
+              "f32_bits_le": [
+                "0x3f100000",
+                "0x3ce38e39",
+                "0x3e073ecb",
+                "0x3f8ba2e9"
+              ]
+            }
+          ],
+          "rank_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.625,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f200000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0,
+                0.25,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3e800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.875,
+                0.375,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f600000",
+                "0x3ec00000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.25,
+                0.625,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3e800000",
+                "0x3f200000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0,
+                0.5,
+                0.5,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f000000",
+                "0x3f000000",
+                "0x3f800000"
+              ]
+            }
+          ],
+          "brightest_probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                536870912,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x4e000000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                536870912,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x4e000000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                536870912,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x4e000000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                536870912,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x4e000000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                536870912,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x4e000000",
+                "0x00000000",
+                "0x00000000",
+                "0x3f800000"
+              ]
+            }
+          ]
+        },
+        "output": {
+          "f32_sha256": "795d16640209e8a06f4e3e8913233aca45bb519e3d457a5da130027c3af8609e",
+          "rgba8_sha256": "54cf47fa165718a20e1c5ad47c03b5e56e40afdfdc2bf80c981ce3fc3b8fca57",
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.7232142686843872,
+                0.46296295523643494,
+                1,
+                -0.27272728085517883
+              ],
+              "f32_bits_le": [
+                "0x3f392492",
+                "0x3eed097b",
+                "0x3f800000",
+                "0xbe8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                0
+              ],
+              "values": [
+                0.0625,
+                0.1111111119389534,
+                0,
+                0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3d800000",
+                "0x3de38e39",
+                "0x00000000",
+                "0x3e3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                1
+              ],
+              "values": [
+                0.5625,
+                0.02777777798473835,
+                0.1320754736661911,
+                1.0909091234207153
+              ],
+              "f32_bits_le": [
+                "0x3f100000",
+                "0x3ce38e39",
+                "0x3e073ecb",
+                "0x3f8ba2e9"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                8,
+                1
+              ],
+              "values": [
+                0.9107142686843872,
+                0.6851851940155029,
+                0.14150942862033844,
+                -0.1818181872367859
+              ],
+              "f32_bits_le": [
+                "0x3f692492",
+                "0x3f2f684c",
+                "0x3e10e7d9",
+                "0xbe3a2e8c"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                1
+              ],
+              "values": [
+                0.2321428507566452,
+                0.8611111044883728,
+                0.6415094137191772,
+                0.4545454680919647
+              ],
+              "f32_bits_le": [
+                "0x3e6db6db",
+                "0x3f5c71c7",
+                "0x3f2439f6",
+                "0x3ee8ba2f"
+              ]
+            }
+          ],
+          "finite_lanes": 72,
+          "nonfinite_lanes": 0
+        },
+        "repeat_identity": true,
+        "all_inputs_immutable": true
+      }
+    ],
+    "controls": [
+      {
+        "name": "negative-half-native-floor-plus-half-control",
+        "case_results": [
+          {
+            "case": "excluded-negative-half",
+            "same_f32_bytes": true,
+            "same_rgba8_bytes": true,
+            "different_f32_bytes": 0,
+            "different_f32_lanes": 0,
+            "different_rgba8_bytes": 0,
+            "max_absolute_f32_difference": 0,
+            "candidate_f32_sha256": "795d16640209e8a06f4e3e8913233aca45bb519e3d457a5da130027c3af8609e",
+            "candidate_rgba8_sha256": "54cf47fa165718a20e1c5ad47c03b5e56e40afdfdc2bf80c981ce3fc3b8fca57"
+          }
+        ]
+      },
+      {
+        "name": "negative-half-std-round-away-from-zero-control",
+        "case_results": [
+          {
+            "case": "excluded-negative-half",
+            "same_f32_bytes": false,
+            "same_rgba8_bytes": false,
+            "different_f32_bytes": 255,
+            "different_f32_lanes": 72,
+            "different_rgba8_bytes": 72,
+            "max_absolute_f32_difference": 1.2727273106575012,
+            "candidate_f32_sha256": "ebc73d739665db18cc1e770599b19a8fa411016b88413604aa98f1cdf5a26abb",
+            "candidate_rgba8_sha256": "fa0708b8574f7b77219418e0f563cf5882eeee3656318f773b1461720fa8c067"
+          }
+        ]
+      },
+      {
+        "name": "out-of-range-native-int32-clamp-control",
+        "case_results": [
+          {
+            "case": "excluded-out-of-range-wrap",
+            "same_f32_bytes": false,
+            "same_rgba8_bytes": false,
+            "different_f32_bytes": 218,
+            "different_f32_lanes": 64,
+            "different_rgba8_bytes": 61,
+            "max_absolute_f32_difference": 1.5454545319080353,
+            "candidate_f32_sha256": "0d14c497753088590f7b45ee48075c7969b8ddc65a486f2fbe79c235c8cf1b64",
+            "candidate_rgba8_sha256": "94de999d1cc8e125614b07a69e70e80ca5f86efac621bf8d8481fb542a4216d1"
+          }
+        ]
+      }
+    ]
+  }
+}

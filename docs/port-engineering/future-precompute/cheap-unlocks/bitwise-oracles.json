@@ -1,0 +1,1105 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.cheap-unlocks.bitwise-cluster1.oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "glsl_kernel_sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+    "glsl_runtime_sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+    "pass_runner_sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
+    "surface_sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "node": "v24.7.0",
+    "public_identity": true,
+    "adapter_absent": true
+  },
+  "authorized_defines": {},
+  "defines_axis_note": "synth/bitwise:bitwise authorizes the empty define map {} -- confirmed live via tools.glslcpp.generate_typed_slice._defaults(repo, 'synth/bitwise:bitwise') -> {} in this session, and independently by reading the source: bitwise.glsl has NO preprocessor directive at all (starts `#version 300 es` directly, no #ifdef/#define anywhere). The defines-as-uniforms hazard from the grade/derivative clusters cannot arise here.",
+  "shift_semantics_finding": {
+    "claim": "synth/bitwise:bitwise has ZERO shift-operator (<<, >>) sites -- the bitops-precompute.md headline \"JS emits signed >> for uint>>uint\" hazard does NOT apply to this program.",
+    "evidence": [
+      "grep -n '<<\\\\|>>' sources/synth/bitwise/bitwise.glsl -- zero matches across all 90 lines of the pinned corpus source (verified live in this session).",
+      "canonicalFactory244's compiled JS body (the actual JS-golden reference this oracle freezes) contains no '<<' or '>>' substring anywhere -- verified live via a regex scan of canonical.toString() in loadProgram(), which throws if this claim is ever wrong.",
+      "bitOp() contains only r = a^b, r = a&b, r = a|b, r = ~(a&b), r = ~(a^b) (plus the pre-existing *; +; - arithmetic branches, already admitted); main() has two more scalar ^ sites (x ^= seed; y ^= seed*3) and nothing else touches a bit operator."
+    ],
+    "consequence": "This program's entire new-capability surface is scalar signed-int &, |, ^, unary ~ (and their op=3/op=4 nand/xnor combinations) -- governed only by bitops-precompute.md Hazard #2 (JS ToInt32-based bitwise ops already match C++20 two's-complement int32_t bit-for-bit) and NOT Hazard #1 (signed-vs-logical shift) or Hazard #3 (shift-count masking), both of which are structurally inapplicable: there is no shift op, so there is no shift semantics to get wrong and no shift count to mask. Stated explicitly rather than fabricating a shift test this program's compiled JS does not exercise."
+  },
+  "high_bit_operand_confirmation": "Every non-diagnostic case supplies at least one operand with the int32 sign bit set: mask values at/near INT32_MIN/INT32_MAX or with only bit 31 set (-2147483648, 2147483647, -65536, -3), and/or seed/offset values at or near INT32_MIN/INT32_MAX (-1, -2000000000, 2147483647, +-1500000000/+-2000000000) that XOR directly into the per-pixel integer coordinates before every bitOp() call. This matches the discriminating-test intent stated for the shift hazard (operands with the high bit set), applied here to the hazard that actually governs this program: a naive reimplementation that widens to float, or uses unsigned-only arithmetic, or gets two's-complement NOT wrong would diverge on exactly these operands while a small-positive-only suite would never catch it.",
+  "program": {
+    "key": "synth/bitwise:bitwise",
+    "source_file": "synth/bitwise/bitwise.glsl",
+    "source_raw_bytes": 3095,
+    "source_sha256": "1beb9d4b4fff3466587b9c942af3b1a46c0f35a1bf41874c7461c18dcf2f923f",
+    "canonical_factory_name": "canonicalFactory244",
+    "canonical_factory_to_string_sha256": "a00438c5b07fb3e4cfe58a511453f8856f70cb9449465c9bd8d2f35a3afdd3e2",
+    "defines": {},
+    "cases": [
+      {
+        "name": "xor-mono-seed-negative-one-signbit-mask",
+        "dimensions": {
+          "width": 6,
+          "height": 5
+        },
+        "diagnostic": false,
+        "operation": 0,
+        "operation_name": "xor",
+        "color_mode": 0,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 3.5,
+          "offsetX": 17,
+          "offsetY": -9,
+          "speed": 0.4,
+          "rotation": 15,
+          "colorOffset": 0,
+          "operation": 0,
+          "colorMode": 0,
+          "mask": -2147483648,
+          "seed": -1
+        },
+        "time": 0,
+        "tile_offset": [
+          0,
+          0
+        ],
+        "full_resolution": [
+          6,
+          5
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "6b974a31a2eb50d7d7a809bfafe3a477c1838657941f6a1dd55674b19ec02d8b",
+          "rgba8_sha256": "a867f774a9b52de6716665e4f23ed7b0342508511fb112b49fd3d46600e4b209",
+          "finite_lanes": 120,
+          "nonfinite_lanes": 0,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x80000000",
+                "0x80000000",
+                "0x80000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                5,
+                0
+              ],
+              "values": [
+                0,
+                0,
+                0,
+                1
+              ],
+              "f32_bits_le": [
+                "0x80000000",
+                "0x80000000",
+                "0x80000000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                4
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                5,
+                4
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                3,
+                2
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "and-rgb-int32min-offsets-near-max-mask",
+        "dimensions": {
+          "width": 5,
+          "height": 6
+        },
+        "diagnostic": false,
+        "operation": 1,
+        "operation_name": "and",
+        "color_mode": 1,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 1.7,
+          "offsetX": -1500000000,
+          "offsetY": 500000000,
+          "speed": 1.1,
+          "rotation": -40,
+          "colorOffset": 37,
+          "operation": 1,
+          "colorMode": 1,
+          "mask": 2147483647,
+          "seed": -2000000000
+        },
+        "time": 0.75,
+        "tile_offset": [
+          0,
+          0
+        ],
+        "full_resolution": [
+          5,
+          6
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "35d4755eb6b88c0a2fa5b9a1109e00cbaed2203c0ed99045dee6fc9538cb2c46",
+          "rgba8_sha256": "02bc6717b1256d975316f93619834874ef320092e10e23eb08dff0971e795e28",
+          "finite_lanes": 120,
+          "nonfinite_lanes": 0,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0.04736709967255592,
+                0.04736711457371712,
+                0.04736712947487831,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3d420401",
+                "0x3d420405",
+                "0x3d420409",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                0
+              ],
+              "values": [
+                0.047367095947265625,
+                0.04736709967255592,
+                0.04736711084842682,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3d420400",
+                "0x3d420401",
+                "0x3d420404",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                5
+              ],
+              "values": [
+                0.04736710339784622,
+                0.047367095947265625,
+                0.047367118299007416,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3d420402",
+                "0x3d420400",
+                "0x3d420406",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                4,
+                5
+              ],
+              "values": [
+                0.04736713320016861,
+                0.0473671481013298,
+                0.047367095947265625,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3d42040a",
+                "0x3d42040e",
+                "0x3d420400",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                2,
+                3
+              ],
+              "values": [
+                0.04736710339784622,
+                0.047367095947265625,
+                0.04736709967255592,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3d420402",
+                "0x3d420400",
+                "0x3d420401",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "or-hsv-negative-offsets-large-seed",
+        "dimensions": {
+          "width": 7,
+          "height": 4
+        },
+        "diagnostic": false,
+        "operation": 2,
+        "operation_name": "or",
+        "color_mode": 2,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 0.6,
+          "offsetX": -777,
+          "offsetY": 888,
+          "speed": -0.3,
+          "rotation": 200,
+          "colorOffset": 5,
+          "operation": 2,
+          "colorMode": 2,
+          "mask": 999983,
+          "seed": 123456789
+        },
+        "time": 0,
+        "tile_offset": [
+          0,
+          0
+        ],
+        "full_resolution": [
+          7,
+          4
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "9a7907811e4db580b1ce3bf3b477da2eb667768ed329c5fad6ff05948a81ac5b",
+          "rgba8_sha256": "03fe3364206e61a0a511a12a9f965e61447407287081fb42ae6efeca72fb3378",
+          "finite_lanes": 112,
+          "nonfinite_lanes": 0,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                0,
+                1,
+                0.8511319160461426,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f800000",
+                "0x3f59e3c8",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                6,
+                0
+              ],
+              "values": [
+                0,
+                1,
+                0.8509516716003418,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f800000",
+                "0x3f59d7f8",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                3
+              ],
+              "values": [
+                0,
+                1,
+                0.851137638092041,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f800000",
+                "0x3f59e428",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                6,
+                3
+              ],
+              "values": [
+                0,
+                1,
+                0.8511257171630859,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f800000",
+                "0x3f59e360",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                3,
+                2
+              ],
+              "values": [
+                0,
+                1,
+                0.8511438369750977,
+                1
+              ],
+              "f32_bits_le": [
+                "0x00000000",
+                "0x3f800000",
+                "0x3f59e490",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "nand-mono-int32-extremes-tiled",
+        "dimensions": {
+          "width": 4,
+          "height": 7
+        },
+        "diagnostic": false,
+        "operation": 3,
+        "operation_name": "nand",
+        "color_mode": 0,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 2.2,
+          "offsetX": 2000000000,
+          "offsetY": -2000000000,
+          "speed": 0.9,
+          "rotation": 77,
+          "colorOffset": 0,
+          "operation": 3,
+          "colorMode": 0,
+          "mask": -65536,
+          "seed": -1
+        },
+        "time": 0,
+        "tile_offset": [
+          1,
+          1
+        ],
+        "full_resolution": [
+          6,
+          9
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "18df6df90284225e0d2850a3858d3bab3a8bffdd75f0804f440c053cd820ead1",
+          "rgba8_sha256": "d583aef59874543a14822c32be48385b86bd239a918575d36cf695b0eb1e0c1c",
+          "finite_lanes": 112,
+          "nonfinite_lanes": 0,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                3,
+                0
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                6
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                3,
+                6
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                2,
+                3
+              ],
+              "values": [
+                1,
+                1,
+                1,
+                1
+              ],
+              "f32_bits_le": [
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "xnor-rgb-high-bit-mixed-signs",
+        "dimensions": {
+          "width": 6,
+          "height": 6
+        },
+        "diagnostic": false,
+        "operation": 4,
+        "operation_name": "xnor",
+        "color_mode": 1,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 4.1,
+          "offsetX": 333,
+          "offsetY": -444,
+          "speed": 0.2,
+          "rotation": -15,
+          "colorOffset": -19,
+          "operation": 4,
+          "colorMode": 1,
+          "mask": -3,
+          "seed": 2147483647
+        },
+        "time": 2.3,
+        "tile_offset": [
+          0,
+          0
+        ],
+        "full_resolution": [
+          6,
+          6
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "5ab11529ca24e34bf7a38b09a757690d18dde44d219fe554006e8cf8365ec100",
+          "rgba8_sha256": "218be6c5703006d77363e4bda8ff683649616f6314ff9dab331b6f4974c4934c",
+          "finite_lanes": 144,
+          "nonfinite_lanes": 0,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                -84.33333587646484,
+                -68,
+                -68,
+                1
+              ],
+              "f32_bits_le": [
+                "0xc2a8aaab",
+                "0xc2880000",
+                "0xc2880000",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                5,
+                0
+              ],
+              "values": [
+                -77.66666412353516,
+                -73.33333587646484,
+                -65.33333587646484,
+                1
+              ],
+              "f32_bits_le": [
+                "0xc29b5555",
+                "0xc292aaab",
+                "0xc282aaab",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                5
+              ],
+              "values": [
+                -81.33333587646484,
+                -76.33333587646484,
+                -77.66666412353516,
+                1
+              ],
+              "f32_bits_le": [
+                "0xc2a2aaab",
+                "0xc298aaab",
+                "0xc29b5555",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                5,
+                5
+              ],
+              "values": [
+                -76,
+                -71,
+                -80.33333587646484,
+                1
+              ],
+              "f32_bits_le": [
+                "0xc2980000",
+                "0xc28e0000",
+                "0xc2a0aaab",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                3,
+                3
+              ],
+              "values": [
+                -75,
+                -73.33333587646484,
+                -81.33333587646484,
+                1
+              ],
+              "f32_bits_le": [
+                "0xc2960000",
+                "0xc292aaab",
+                "0xc2a2aaab",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "mask-zero-divide-by-zero-diagnostic",
+        "dimensions": {
+          "width": 3,
+          "height": 3
+        },
+        "diagnostic": true,
+        "operation": 0,
+        "operation_name": "xor",
+        "color_mode": 0,
+        "uniforms": {
+          "renderScale": 1,
+          "scale": 2,
+          "offsetX": 1,
+          "offsetY": 1,
+          "speed": 0,
+          "rotation": 0,
+          "colorOffset": 0,
+          "operation": 0,
+          "colorMode": 0,
+          "mask": 0,
+          "seed": 5
+        },
+        "time": 0,
+        "tile_offset": [
+          0,
+          0
+        ],
+        "full_resolution": [
+          3,
+          3
+        ],
+        "repeat_identity": true,
+        "output": {
+          "f32_sha256": "720415a4af3de87c558c06dbc5c970ee576379eb01d0e3af743c30b35a93986c",
+          "rgba8_sha256": "d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538",
+          "finite_lanes": 9,
+          "nonfinite_lanes": 27,
+          "probes": [
+            {
+              "at_top_down_xy": [
+                0,
+                0
+              ],
+              "values": [
+                null,
+                null,
+                null,
+                1
+              ],
+              "f32_bits_le": [
+                "nan",
+                "nan",
+                "nan",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                2,
+                0
+              ],
+              "values": [
+                null,
+                null,
+                null,
+                1
+              ],
+              "f32_bits_le": [
+                "nan",
+                "nan",
+                "nan",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                0,
+                2
+              ],
+              "values": [
+                null,
+                null,
+                null,
+                1
+              ],
+              "f32_bits_le": [
+                "nan",
+                "nan",
+                "nan",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                2,
+                2
+              ],
+              "values": [
+                null,
+                null,
+                null,
+                1
+              ],
+              "f32_bits_le": [
+                "nan",
+                "nan",
+                "nan",
+                "0x3f800000"
+              ]
+            },
+            {
+              "at_top_down_xy": [
+                1,
+                1
+              ],
+              "values": [
+                null,
+                null,
+                null,
+                1
+              ],
+              "f32_bits_le": [
+                "nan",
+                "nan",
+                "nan",
+                "0x3f800000"
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "mutations": [
+      {
+        "id": "bitwise-xor-and-confusion",
+        "op_index": 0,
+        "op_name": "xor",
+        "anchor": "r = a ^ b;",
+        "mutated": "r = a & b;",
+        "description": "op=0 (xor) mutated to `a & b` -- the classic XOR/AND confusion bug.",
+        "case_results": [
+          {
+            "case": "xor-mono-seed-negative-one-signbit-mask",
+            "diagnostic": false,
+            "reaches": true,
+            "diverges": true
+          },
+          {
+            "case": "and-rgb-int32min-offsets-near-max-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "or-hsv-negative-offsets-large-seed",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "nand-mono-int32-extremes-tiled",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "xnor-rgb-high-bit-mixed-signs",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "mask-zero-divide-by-zero-diagnostic",
+            "diagnostic": true,
+            "reaches": false,
+            "diverges": false
+          }
+        ],
+        "summary": {
+          "reaching_cases": 1,
+          "divergent_reaching": 1,
+          "non_reaching_cases": 5,
+          "divergent_non_reaching": 0
+        }
+      },
+      {
+        "id": "bitwise-and-or-confusion",
+        "op_index": 1,
+        "op_name": "and",
+        "anchor": "r = a & b;",
+        "mutated": "r = a | b;",
+        "description": "op=1 (and) mutated to `a | b` -- the classic AND/OR confusion bug.",
+        "case_results": [
+          {
+            "case": "xor-mono-seed-negative-one-signbit-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "and-rgb-int32min-offsets-near-max-mask",
+            "diagnostic": false,
+            "reaches": true,
+            "diverges": true
+          },
+          {
+            "case": "or-hsv-negative-offsets-large-seed",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "nand-mono-int32-extremes-tiled",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "xnor-rgb-high-bit-mixed-signs",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "mask-zero-divide-by-zero-diagnostic",
+            "diagnostic": true,
+            "reaches": false,
+            "diverges": false
+          }
+        ],
+        "summary": {
+          "reaching_cases": 1,
+          "divergent_reaching": 1,
+          "non_reaching_cases": 5,
+          "divergent_non_reaching": 0
+        }
+      },
+      {
+        "id": "bitwise-or-xor-confusion",
+        "op_index": 2,
+        "op_name": "or",
+        "anchor": "r = a | b;",
+        "mutated": "r = a ^ b;",
+        "description": "op=2 (or) mutated to `a ^ b` -- OR/XOR confusion, plausible when an implementer conflates \"combine\" operators.",
+        "case_results": [
+          {
+            "case": "xor-mono-seed-negative-one-signbit-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "and-rgb-int32min-offsets-near-max-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "or-hsv-negative-offsets-large-seed",
+            "diagnostic": false,
+            "reaches": true,
+            "diverges": true
+          },
+          {
+            "case": "nand-mono-int32-extremes-tiled",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "xnor-rgb-high-bit-mixed-signs",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "mask-zero-divide-by-zero-diagnostic",
+            "diagnostic": true,
+            "reaches": false,
+            "diverges": false
+          }
+        ],
+        "summary": {
+          "reaching_cases": 1,
+          "divergent_reaching": 1,
+          "non_reaching_cases": 5,
+          "divergent_non_reaching": 0
+        }
+      },
+      {
+        "id": "bitwise-nand-nor-confusion",
+        "op_index": 3,
+        "op_name": "nand",
+        "anchor": "r = ~(a & b);",
+        "mutated": "r = ~(a | b);",
+        "description": "op=3 (nand) mutated to `~(a | b)` (nor) -- the classic NAND/NOR confusion, and exercises the unary ~ interacting with a differently-computed pre-image, per the task's ~(a&b)/~(a^b) discriminating-test callout.",
+        "case_results": [
+          {
+            "case": "xor-mono-seed-negative-one-signbit-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "and-rgb-int32min-offsets-near-max-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "or-hsv-negative-offsets-large-seed",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "nand-mono-int32-extremes-tiled",
+            "diagnostic": false,
+            "reaches": true,
+            "diverges": true
+          },
+          {
+            "case": "xnor-rgb-high-bit-mixed-signs",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "mask-zero-divide-by-zero-diagnostic",
+            "diagnostic": true,
+            "reaches": false,
+            "diverges": false
+          }
+        ],
+        "summary": {
+          "reaching_cases": 1,
+          "divergent_reaching": 1,
+          "non_reaching_cases": 5,
+          "divergent_non_reaching": 0
+        }
+      },
+      {
+        "id": "bitwise-xnor-nand-confusion",
+        "op_index": 4,
+        "op_name": "xnor",
+        "anchor": "r = ~(a ^ b);",
+        "mutated": "r = ~(a & b);",
+        "description": "op=4 (xnor) mutated to `~(a & b)` (nand) -- XNOR/NAND confusion, same unary-~ interaction as above for the other combinator pair.",
+        "case_results": [
+          {
+            "case": "xor-mono-seed-negative-one-signbit-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "and-rgb-int32min-offsets-near-max-mask",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "or-hsv-negative-offsets-large-seed",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "nand-mono-int32-extremes-tiled",
+            "diagnostic": false,
+            "reaches": false,
+            "diverges": false
+          },
+          {
+            "case": "xnor-rgb-high-bit-mixed-signs",
+            "diagnostic": false,
+            "reaches": true,
+            "diverges": true
+          },
+          {
+            "case": "mask-zero-divide-by-zero-diagnostic",
+            "diagnostic": true,
+            "reaches": false,
+            "diverges": false
+          }
+        ],
+        "summary": {
+          "reaching_cases": 1,
+          "divergent_reaching": 1,
+          "non_reaching_cases": 5,
+          "divergent_non_reaching": 0
+        }
+      }
+    ]
+  },
+  "eligibility_summary": {
+    "total_cases": 6,
+    "eligible_cases": 5,
+    "diagnostic_cases": 1,
+    "note": "The one diagnostic case (mask=0) is a structural negative control, not an unreached-code diagnostic: mask=0 makes `r = r & m` collapse to 0 regardless of which operator computed the pre-mask r, so bitOp returns float(0)/float(0) = NaN identically for the real implementation AND for every operator-swap mutation -- reach=false for all five mutations is asserted live (reachesMutation() returns false whenever mask===0), not assumed. This case independently exercises discriminating-test #3 from bitops-precompute.md SS5 (mask=0 divide-by-zero propagation): the rendered output must show NaN in every channel, matching JS x/0 semantics exactly, not a C++ divide-by-zero guard that silently substitutes a different value."
+  },
+  "negative_closure": {
+    "shift_semantics_test_fabricated": "refused -- loadProgram() asserts, live, that neither the pinned source nor the compiled factory text contains a shift operator; a shift-count-masking test was not constructed because there is no shift to test. See shift_semantics_finding.",
+    "small_positive_only_operands_used": "refused -- see high_bit_operand_confirmation; every non-diagnostic case has at least one sign-bit-set operand.",
+    "mask_zero_case_silently_dropped": "refused -- included, documented as a structural (not coverage-gap) zero-reach case for every operator mutation, with its own independent NaN-propagation assertion in the render output.",
+    "mul_add_sub_ops_covered": "not applicable -- op=5/6/7 (mul/add/sub) are pre-existing, already-admitted int arithmetic, not part of this unlock; out of scope for this oracle by design."
+  }
+}

@@ -1,0 +1,786 @@
+{
+  "id": "mandelbrot",
+  "key": "synth/mandelbrot:mandelbrot",
+  "defines": {},
+  "cases": [
+    {
+      "name": "never-escapes-real-axis-boundary",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": true,
+        "swap": true
+      },
+      "uniforms": {
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 500,
+        "centerHiX": -1.256,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "moderate-escape-273-seahorse-tip",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": false,
+        "swap": true
+      },
+      "uniforms": {
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 500,
+        "centerHiX": -0.74543,
+        "centerHiY": 0.11301,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "04b6da77619e432e300deeb26ece9ec2649b51eeebd14fbf4b14606ac2b06495",
+        "rgba8_sha256": "1325e312c1ed19752f5ae7a463e3f6ca3df90c7fc2779645144add0fb53a0431",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5465710163116455,
+              0.5465710163116455,
+              0.5465710163116455,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5465710163116455,
+              0.5465710163116455,
+              0.5465710163116455,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5465710163116455,
+              0.5465710163116455,
+              0.5465710163116455,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5465710163116455,
+              0.5465710163116455,
+              0.5465710163116455,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5465710163116455,
+              0.5465710163116455,
+              0.5465710163116455,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f0bec14",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "slow-escape-112-seahorse-alt",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": false,
+      "reach": {
+        "offByOne": false,
+        "swap": true
+      },
+      "uniforms": {
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 500,
+        "centerHiX": -0.7269,
+        "centerHiY": 0.1889,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "ae1ea09d439ef8dd7cdc3da120dd6d8af216527e0e2873f3dd583624504403c4",
+        "rgba8_sha256": "7019c7a9cbef5ceaf857d55042fca17bd8b2a2785268d2b0d7034910d3f2dbaf",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.22460207343101501,
+              0.22460207343101501,
+              0.22460207343101501,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.22460207343101501,
+              0.22460207343101501,
+              0.22460207343101501,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.22460207343101501,
+              0.22460207343101501,
+              0.22460207343101501,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.22460207343101501,
+              0.22460207343101501,
+              0.22460207343101501,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.22460207343101501,
+              0.22460207343101501,
+              0.22460207343101501,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3e65fe16",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "cardioid-early-out-diagnostic",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": true,
+      "reach": {
+        "offByOne": false,
+        "swap": false
+      },
+      "uniforms": {
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 500,
+        "centerHiX": 0,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "fast-escape-far-outside-diagnostic",
+      "dimensions": {
+        "width": 1,
+        "height": 1
+      },
+      "diagnostic": true,
+      "reach": {
+        "offByOne": false,
+        "swap": false
+      },
+      "uniforms": {
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 500,
+        "centerHiX": 2.5,
+        "centerHiY": 2.5,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1,
+        1
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "965fab9464705b2c88b44ecf84a0a9fa477a871f5227bf4395d7ca9ba76b04f1",
+        "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+        "finite_lanes": 4,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.00005692213017027825,
+              0.00005692213017027825,
+              0.00005692213017027825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.00005692213017027825,
+              0.00005692213017027825,
+              0.00005692213017027825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.00005692213017027825,
+              0.00005692213017027825,
+              0.00005692213017027825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.00005692213017027825,
+              0.00005692213017027825,
+              0.00005692213017027825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.00005692213017027825,
+              0.00005692213017027825,
+              0.00005692213017027825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x386ebfac",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "mandelbrot-max-iter-off-by-one",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "offByOne",
+      "anchor": "for (var n = 0; n < MAX_ITER; n++) {",
+      "mutated": "for (var n = 0; n < 499; n++) {",
+      "description": "Drop the static cap from 500 to 499 -- the smallest possible wrong trip count. Only the never-escapes case (true rawIter=500) reaches a cap this close to the real bound.",
+      "case_results": [
+        {
+          "case": "never-escapes-real-axis-boundary",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "moderate-escape-273-seahorse-tip",
+          "diagnostic": false,
+          "reaches": false,
+          "diverges": false
+        },
+        {
+          "case": "slow-escape-112-seahorse-alt",
+          "diagnostic": false,
+          "reaches": false,
+          "diverges": false
+        },
+        {
+          "case": "cardioid-early-out-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        },
+        {
+          "case": "fast-escape-far-outside-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 1,
+        "divergent_reaching": 1,
+        "non_reaching_cases": 4,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "mandelbrot-max-iter-swap",
+      "kind": "trip_count_swap",
+      "reach_key": "swap",
+      "anchor": "for (var n = 0; n < MAX_ITER; n++) {",
+      "mutated": "for (var n = 0; n < 80; n++) {",
+      "description": "Shrink the static cap to 80 -- a materially wrong trip count. Reach-eligible for all three non-diagnostic cases (true iteration counts 500/273/112, all exceeding 80).",
+      "case_results": [
+        {
+          "case": "never-escapes-real-axis-boundary",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "moderate-escape-273-seahorse-tip",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "slow-escape-112-seahorse-alt",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "cardioid-early-out-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        },
+        {
+          "case": "fast-escape-far-outside-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 2,
+        "divergent_non_reaching": 0
+      }
+    }
+  ]
+}

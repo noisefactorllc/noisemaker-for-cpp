@@ -1,0 +1,376 @@
+...................................................FFFF..F.......F......F...F..F....F.F.........F........F...F.......................................................FF..F.......F......FF..E.........FF....F..F.F....F......
+======================================================================
+ERROR: test_task24_resource_contract_is_mechanical_and_mutation_closed (test_typed_generator.TypedGeneratorTests.test_task24_resource_contract_is_mechanical_and_mutation_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 1422, in test_task24_resource_contract_is_mechanical_and_mutation_closed
+    self.assertEqual(66, audit(block))
+                         ~~~~~^^^^^^^
+  File "tests/test_typed_generator.py", line 1388, in audit
+    raise ValueError("State/binder ABI")
+ValueError: State/binder ABI
+
+======================================================================
+FAIL: test_task27_generation_is_exact_single_program_delta_from_task26 (test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) (task26_artifact='src/typed_generated/typed_slice.cpp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 12310, in test_task27_generation_is_exact_single_program_delta_from_task26
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        expected, hashlib.sha256(prior_with_header[path]).hexdigest())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'df4aa212f312dcaf12bc348df1b1449a25db52542c97d0bc0350a7a2162b2d38' != '6144fc63bce016880687a1f1920f9b0a7fdd7173c730043862055afe73a30851'
+- df4aa212f312dcaf12bc348df1b1449a25db52542c97d0bc0350a7a2162b2d38
++ 6144fc63bce016880687a1f1920f9b0a7fdd7173c730043862055afe73a30851
+
+
+======================================================================
+FAIL: test_task27_generation_is_exact_single_program_delta_from_task26 (test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) (task26_artifact='src/typed_generated/typed_manifest.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 12310, in test_task27_generation_is_exact_single_program_delta_from_task26
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        expected, hashlib.sha256(prior_with_header[path]).hexdigest())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'e7f7acd56c96951d5610276cb72ad2df19637f142ae08022b92c2c718a7e7def' != '246bd5e7a60eeeceb86e6bf32cef628e36f253a8d56e888f8288d0c690c90ecd'
+- e7f7acd56c96951d5610276cb72ad2df19637f142ae08022b92c2c718a7e7def
++ 246bd5e7a60eeeceb86e6bf32cef628e36f253a8d56e888f8288d0c690c90ecd
+
+
+======================================================================
+FAIL: test_task27_generation_is_exact_single_program_delta_from_task26 (test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26) (task26_artifact='include/noisemaker/generated/catalog.hpp')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 12310, in test_task27_generation_is_exact_single_program_delta_from_task26
+    self.assertEqual(
+    ~~~~~~~~~~~~~~~~^
+        expected, hashlib.sha256(prior_with_header[path]).hexdigest())
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '557ccdbee5a58ff6129269ad4a4dfdc25486b8a9f8c455da2bf2c8663d55527d' != '0ea829319737d399cfaf6e39da9a048038877476efaab88744879bd0aee1b783'
+- 557ccdbee5a58ff6129269ad4a4dfdc25486b8a9f8c455da2bf2c8663d55527d
++ 0ea829319737d399cfaf6e39da9a048038877476efaab88744879bd0aee1b783
+
+
+======================================================================
+FAIL: test_task27_generation_is_exact_single_program_delta_from_task26 (test_typed_generator.Task27PerlinTests.test_task27_generation_is_exact_single_program_delta_from_task26)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 12328, in test_task27_generation_is_exact_single_program_delta_from_task26
+    self.assertEqual((127, 126),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+                     (len(current_blocks), len(prior_blocks)))
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (127, 126) != (142, 141)
+
+First differing element 0:
+127
+142
+
+- (127, 126)
++ (142, 141)
+
+======================================================================
+FAIL: test_task27_slice_schema_has_exact_single_perlin_carrier_and_census (test_typed_generator.Task27PerlinTests.test_task27_slice_schema_has_exact_single_perlin_carrier_and_census)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 12189, in test_task27_slice_schema_has_exact_single_perlin_carrier_and_census
+    self.assertEqual(127, len(keys))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: 127 != 142
+
+======================================================================
+FAIL: test_task28_schema_generation_and_task27_reconstruction (test_typed_generator.Task28RotateMat2ReturnTests.test_task28_schema_generation_and_task27_reconstruction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 13299, in test_task28_schema_generation_and_task27_reconstruction
+    self.assertEqual((128, 67, "30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55"),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     (len(keys), keys.index(ROTATE_KEY), hashlib.sha256(
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                         ("\n".join(keys) + "\n").encode()).hexdigest()))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (128, 67, '30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55') != (143, 76, '5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076')
+
+First differing element 0:
+128
+143
+
+- (128, 67, '30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55')
++ (143, 76, '5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076')
+
+======================================================================
+FAIL: test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 14062, in test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation
+    self.assertEqual((137, 139, 73, 212),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+                     (len(typed), len(public), len(unported),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      len(corpus["programs"])))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (137, 139, 73, 212) != (152, 154, 58, 212)
+
+First differing element 0:
+137
+152
+
+- (137, 139, 73, 212)
++ (152, 154, 58, 212)
+
+======================================================================
+FAIL: test_task30_history_coexistence_and_live_schema_matches_130_program_state (test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_history_coexistence_and_live_schema_matches_130_program_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 14744, in test_task30_history_coexistence_and_live_schema_matches_130_program_state
+    self.assertEqual((137, 139, 73, 212),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+                     (len(typed), len(public), len(unported),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      len(corpus["programs"])))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (137, 139, 73, 212) != (152, 154, 58, 212)
+
+First differing element 0:
+137
+152
+
+- (137, 139, 73, 212)
++ (152, 154, 58, 212)
+
+======================================================================
+FAIL: test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte (test_typed_generator.Task30ExtrudeBvec2RelationalReductionTests.test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 14844, in test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte
+    self.assertEqual(129, len(task29_keys))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 129 != 144
+
+======================================================================
+FAIL: test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state (test_typed_generator.Task31CurlVectorMathTests.test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 15653, in test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state
+    self.assertEqual((137, 139, 73, 212),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+                     (len(typed), len(public), len(unported),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      len(corpus["programs"])))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (137, 139, 73, 212) != (152, 154, 58, 212)
+
+First differing element 0:
+137
+152
+
+- (137, 139, 73, 212)
++ (152, 154, 58, 212)
+
+======================================================================
+FAIL: test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 15735, in test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte
+    self.assertEqual(130, len(task30_keys))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 130 != 145
+
+======================================================================
+FAIL: test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31 (test_typed_generator.Task32GradeClusterTests.test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31)
+Removing all six grade keys from the live typed list must
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 16241, in test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31
+    self.assertEqual(137, len(typed))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 137 != 152
+
+======================================================================
+FAIL: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 4956, in test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys
+    self.assertEqual(sorted([*existing, *task15, "filter/pixelSort:computeRank",
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                             "filter/sharpen:sharpen", "filter/sobel:sobel",
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<12 lines>...
+                             "filter/grade:vignette", "filter/grade:wheels"]),
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     [entry["program_key"] for entry in slice_spec["programs"]])
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['cla[291 chars]lter/celShading:celShadingBlend', 'filter/celS[3529 chars]ide'] != ['cla[291 chars]lter/bulge:bulge', 'filter/celShading:celShadi[3916 chars]ide']
+
+First differing element 9:
+'filter/celShading:celShadingBlend'
+'filter/bulge:bulge'
+
+Second list contains 15 additional elements.
+First extra element 137:
+'mixer/split:split'
+
+Diff is 4719 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths (test_typed_generator.TypedGeneratorTests.test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 6548, in test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths
+    self.assertEqual(137, len(manifest["programs"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 137 != 152
+
+======================================================================
+FAIL: test_task21_degauss_exclusions_remain_closed (test_typed_generator.TypedGeneratorTests.test_task21_degauss_exclusions_remain_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 7576, in test_task21_degauss_exclusions_remain_closed
+    self.assertEqual(127, len(keys))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: 127 != 142
+
+======================================================================
+FAIL: test_task21_degauss_profile_is_exact_and_current_vocabulary (test_typed_generator.TypedGeneratorTests.test_task21_degauss_profile_is_exact_and_current_vocabulary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 7359, in test_task21_degauss_profile_is_exact_and_current_vocabulary
+    self.assertEqual(127, len(slice_spec["programs"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 127 != 142
+
+======================================================================
+FAIL: test_task22_crt_exclusions_remain_closed (test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 8645, in test_task22_crt_exclusions_remain_closed
+    self.assertEqual(127, len(typed))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: 127 != 142
+
+======================================================================
+FAIL: test_task23_six_key_counts_positions_and_generated_isolation_are_exact (test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 2336, in test_task23_six_key_counts_positions_and_generated_isolation_are_exact
+    self.assertEqual((122, 124, 88, 212), (
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+        len(keys), len(public), len(corpus["programs"]) - len(public),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        len(corpus["programs"])))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (122, 124, 88, 212) != (137, 139, 73, 212)
+
+First differing element 0:
+122
+137
+
+- (122, 124, 88, 212)
++ (137, 139, 73, 212)
+
+======================================================================
+FAIL: test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry (test_typed_generator.TypedGeneratorTests.test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 1493, in test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry
+    self.assertEqual(expected, hashlib.sha256(prior[path]).hexdigest(), path)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'c36f84aa5bcf09d932837bb84ba323ce51d44398ca29deb4dfb71151c32442a8' != '5521c979239df6c7cc6347530e22a5a7758292298311f38a9f5093c2de68b132'
+- c36f84aa5bcf09d932837bb84ba323ce51d44398ca29deb4dfb71151c32442a8
++ 5521c979239df6c7cc6347530e22a5a7758292298311f38a9f5093c2de68b132
+ : src/typed_generated/typed_slice.cpp
+
+======================================================================
+FAIL: test_task24_loader_carries_only_gather_profile_and_generates_one_new_block (test_typed_generator.TypedGeneratorTests.test_task24_loader_carries_only_gather_profile_and_generates_one_new_block)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 585, in test_task24_loader_carries_only_gather_profile_and_generates_one_new_block
+    self.assertEqual(123, len(spec["programs"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 123 != 138
+
+======================================================================
+FAIL: test_task25_loader_rejects_transitional_task24_no_carrier_slice (test_typed_generator.TypedGeneratorTests.test_task25_loader_rejects_transitional_task24_no_carrier_slice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 9218, in test_task25_loader_rejects_transitional_task24_no_carrier_slice
+    self.assertEqual(123, len(task24["programs"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 123 != 138
+
+======================================================================
+FAIL: test_task25_loader_schema_admits_only_the_two_later_lane_carriers (test_typed_generator.TypedGeneratorTests.test_task25_loader_schema_admits_only_the_two_later_lane_carriers) (schema='exact')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 9759, in test_task25_loader_schema_admits_only_the_two_later_lane_carriers
+    self.assertEqual(137, len(loaded["programs"]))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 137 != 152
+
+======================================================================
+FAIL: test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact (test_typed_generator.TypedGeneratorTests.test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 9013, in test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact
+    self.assertEqual(expected_typed, typed)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: ('cla[291 chars]lter/celShading:celShadingBlend', 'filter/celS[3237 chars]ide') != ('cla[291 chars]lter/bulge:bulge', 'filter/celShading:celShadi[3624 chars]ide')
+
+First differing element 9:
+'filter/celShading:celShadingBlend'
+'filter/bulge:bulge'
+
+Second tuple contains 15 additional elements.
+First extra element 125:
+'mixer/shadow:shadow'
+
+Diff is 4391 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_task26_generation_adds_only_smooth_block_manifest_and_catalog (test_typed_generator.TypedGeneratorTests.test_task26_generation_adds_only_smooth_block_manifest_and_catalog)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 11357, in test_task26_generation_adds_only_smooth_block_manifest_and_catalog
+    self.assertEqual(126, len(current_blocks))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 126 != 141
+
+======================================================================
+FAIL: test_task26_loader_admits_only_exact_smooth_carrier_and_census (test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 11217, in test_task26_loader_admits_only_exact_smooth_carrier_and_census
+    self.assertEqual((127, 129, 83, 212),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+                     (len(typed), len(public), len(unported),
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      len(corpus["programs"])))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (127, 129, 83, 212) != (142, 144, 68, 212)
+
+First differing element 0:
+127
+142
+
+- (127, 129, 83, 212)
+?    -   ^^   -
+
++ (142, 144, 68, 212)
+?   +    ^^  +
+
+
+======================================================================
+FAIL: test_typed_generation_is_cwd_independent_and_matches_committed_slice (test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 6025, in test_typed_generation_is_cwd_independent_and_matches_committed_slice
+    self.assertIn("typed slice ok (137 programs)", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'typed slice ok (137 programs)' not found in 'generate_typed_slice: typed slice ok (152 programs)\n'
+
+----------------------------------------------------------------------
+Ran 218 tests in 668.892s
+
+FAILED (failures=26, errors=1)
+EXIT=1

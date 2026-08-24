@@ -1,0 +1,12 @@
+[  6%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/generated/synth_solid.cpp.o
+[  6%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/generated/filter_invert.cpp.o
+[  9%] Building CXX object CMakeFiles/noisemaker-cpu.dir/src/typed_generated/typed_slice.cpp.o
+[ 12%] Linking CXX static library libnoisemaker-cpu.a
+[ 50%] Built target noisemaker-cpu
+[ 53%] Building CXX object CMakeFiles/noisemaker-cpu-example-perlin.dir/examples/perlin.cpp.o
+[ 59%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_generated_kernels.cpp.o
+[ 59%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_typed_slice.cpp.o
+[ 62%] Linking CXX executable noisemaker-cpu-example-perlin
+[ 62%] Built target noisemaker-cpu-example-perlin
+[ 65%] Linking CXX executable noisemaker-cpu-tests
+[100%] Built target noisemaker-cpu-tests

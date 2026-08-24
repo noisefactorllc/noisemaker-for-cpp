@@ -1,0 +1,117 @@
+--- live_probe/tools/glslcpp/generate_typed_slice.py	2026-08-13 09:58:25
++++ live_probe/tools/glslcpp/generate_typed_slice_relaxed4.py	2026-08-13 10:24:57
+@@ -1865,6 +1865,11 @@
+                 used.add(FIXED_ARRAY_PARAMETER_CAPABILITY)
+                 return
+             raise GeneratorError(f"{location(value)}: unsupported typed type {typ.display()}")
++        if typ.display() == "mat3":
++            # RELAXED PROBE layer 2: provisionally admit mat3 as a typed
++            # type to find the NEXT blocker behind it. Never used outside
++            # this read-only probe.
++            return
+         if typ.display() == "bvec2":
+             # `bvec2` is deliberately absent from APPROVED_TYPES. It is admitted
+             # only as the result type of an exact authenticated Extrude
+@@ -2096,7 +2101,11 @@
+             admitted_globals[declaration.symbol.id] = declaration
+             continue
+         if storage != "const" or declaration.type != FLOAT or declaration.initializer is None:
+-            raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
++            # RELAXED PROBE layer 1: treat as provisionally admitted so
++            # downstream blockers become visible. Never used outside this
++            # read-only probe; the real generator is untouched.
++            admitted_globals[declaration.symbol.id] = declaration
++            continue
+ 
+         def global_initializer(value) -> None:
+             if value.type != FLOAT:
+@@ -2160,7 +2169,7 @@
+         raise GeneratorError(f"{location(typed.interface_symbols[0])}: unsupported varying")
+     for declaration in typed.declarations:
+         reject_type(declaration.type, declaration)
+-        if declaration.type.kind == "matrix":
++        if declaration.type.kind == "matrix" and declaration.type.display() != "mat3":
+             raise GeneratorError(f"{location(declaration)}: unsupported global matrix declaration")
+         if declaration.symbol.storage not in {"uniform", "output", "const"}:
+             raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
+@@ -2176,7 +2185,11 @@
+         if value.kind == "construct":
+             used.add("constructors")
+             if value.type.kind == "matrix":
+-                if (value.type.display() != "mat2" or len(value.children) != 4
++                if value.type.display() == "mat3":
++                    # RELAXED PROBE layer 4: provisionally admit any mat3
++                    # constructor shape. Never used outside this probe.
++                    pass
++                elif (value.type.display() != "mat2" or len(value.children) != 4
+                         or any(child.type.display() != "float" for child in value.children)):
+                     raise GeneratorError(f"{location(value)}: unsupported matrix constructor")
+                 used.add("mat2-vector-multiply")
+@@ -2218,7 +2231,12 @@
+                             f"{location(value)}: unsupported binary operator ^")
+                     used.add("uint-vector-bitwise")
+             elif left.type.kind == "matrix" or right.type.kind == "matrix":
+-                if value.operator != "*" or left_type != "mat2" or right_type != "vec2":
++                if value.operator == "*" and left_type == "mat3" and right_type in {"vec3", "mat3"}:
++                    # RELAXED PROBE layer 4: provisionally admit mat3*vec3
++                    # and mat3*mat3 to find the NEXT blocker behind them.
++                    # Never used outside this probe.
++                    pass
++                elif value.operator != "*" or left_type != "mat2" or right_type != "vec2":
+                     raise GeneratorError(f"{location(value)}: unsupported matrix binary expression")
+                 used.add("mat2-vector-multiply")
+             used.add("scalar-vector-arithmetic")
+@@ -2266,6 +2284,11 @@
+                     raise GeneratorError(
+                         f"{location(value)}: unsupported builtin {value.callee}")
+                 visited_derivative_nodes.append(value)
++            elif value.callee in {"reflect", "refract"}:
++                # RELAXED PROBE layer 4: provisionally admit reflect()/
++                # refract() to find the NEXT blocker behind them. Never used
++                # outside this read-only probe.
++                pass
+             elif value.callee not in _BUILTINS:
+                 raise GeneratorError(f"{location(value)}: unsupported builtin {value.callee}")
+             if value.callee == "mod":
+@@ -2273,7 +2296,8 @@
+                 # The shared overload tuple stays untouched so no other program
+                 # gains wider mod. Curl's three calls are admitted by object
+                 # identity only.
+-                if argument_types not in {("float", "float"), ("vec2", "float"), ("vec2", "vec2")}:
++                if argument_types not in {("float", "float"), ("vec2", "float"), ("vec2", "vec2"),
++                                          ("vec3", "float"), ("vec3", "vec3")}:
+                     if not any(value is item for item in authorized_curl_mod_nodes):
+                         raise GeneratorError(f"{location(value)}: unsupported builtin mod overload")
+                     visited_curl_nodes.append(value)
+@@ -2342,8 +2366,14 @@
+             # skip-list below: the 44-entry capability vocabulary must not
+             # grow for this shape.
+             grade_valid = any(value is item for item in authorized_grade_index_sites)
++            matrix_index_probe_valid = base.type.kind in {"matrix", "vector"}
+             if grade_valid:
+                 visited_grade_index_sites.append(value)
++            elif matrix_index_probe_valid:
++                # RELAXED PROBE layer 4: provisionally admit ANY index into a
++                # matrix-typed base, to find the NEXT blocker behind matrix
++                # indexing. Never used outside this read-only probe.
++                pass
+             elif not base_valid or not (
+                     store_valid or read_valid or grid_store_valid or grid_read_valid
+                     or task19_store_valid or task19_read_valid or task20_valid):
+@@ -2429,6 +2459,7 @@
+             raise GeneratorError(
+                 f"{location(function)}: unsupported sampler return type")
+         if (function.return_type.kind == "matrix"
++                and function.return_type.display() != "mat3"
+                 and function is not authorized_rotate_helper):
+             raise GeneratorError(f"{location(function)}: unsupported matrix return type")
+         for parameter in function.parameters:
+@@ -2440,7 +2471,7 @@
+                                     authorized_focus_blur_proof.sampler_parameters))):
+                 raise GeneratorError(
+                     f"{location(parameter)}: unsupported sampler parameter")
+-            if parameter.type.kind == "matrix":
++            if parameter.type.kind == "matrix" and parameter.type.display() != "mat3":
+                 raise GeneratorError(f"{location(parameter)}: unsupported matrix parameter")
+             if parameter.direction != "in":
+                 raise GeneratorError(

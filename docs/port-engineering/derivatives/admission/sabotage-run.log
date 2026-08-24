@@ -1,0 +1,43 @@
+test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+Prove the profile's node-walk/typing logic itself rejects, not ... 
+  test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis='dFdy loses its only child')
+Prove the profile's node-walk/typing logic itself rejects, not ... [31mFAIL[0m
+  test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis='dFdx gains a second argument')
+Prove the profile's node-walk/typing logic itself rejects, not ... [31mFAIL[0m
+  test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis="dFdy's vec2 argument retyped to vec3")
+Prove the profile's node-walk/typing logic itself rejects, not ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis='dFdy loses its only child')
+Prove the profile's node-walk/typing logic itself rejects, not[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m16620[0m, in [35mtest_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate[0m
+    [31mself.assertIn[0m[1;31m(expected, message, label)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'closure node identity mismatch' not found in 'derivative-admission-v1: derivative builtin arity mismatch' : dFdy loses its only child[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis='dFdx gains a second argument')
+Prove the profile's node-walk/typing logic itself rejects, not[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m16620[0m, in [35mtest_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate[0m
+    [31mself.assertIn[0m[1;31m(expected, message, label)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'closure node identity mismatch' not found in 'derivative-admission-v1: derivative builtin arity mismatch' : dFdx gains a second argument[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate) (node_axis="dFdy's vec2 argument retyped to vec3")
+Prove the profile's node-walk/typing logic itself rejects, not[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m16620[0m, in [35mtest_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate[0m
+    [31mself.assertIn[0m[1;31m(expected, message, label)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'closure node identity mismatch' not found in 'derivative-admission-v1: derivative argument/result type mismatch' : dFdy's vec2 argument retyped to vec3[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 0.178s
+
+[1;31mFAILED[0m ([1;31mfailures=3[0m)

@@ -1,0 +1,89 @@
+"""Exact identity profiles for the six grade-cluster index-expression sites.
+
+Every ``filter/grade:*`` program lane-indexes a plain local ``vec3`` (never a
+proved fixed-size array) with a ``for``-loop induction variable, on both the
+read and the write side, inside ``srgbToLinear``/``linearToSrgb`` (all six
+programs) and, for ``hslSecondary``/``lut``, one or two additional per-program
+helpers (``hslToRgb``; ``lutHardLight``/``lutSolarize``).  No existing index
+track admits this: every prior track (``store_valid``, ``read_valid``,
+``grid_store_valid``/``grid_read_valid``, ``task19_*``, ``task20_valid``) is
+gated by ``base_valid``, which requires the base symbol to be a member of
+``proved_array_declarations``/``proved_array_parameters`` -- i.e. a proved
+fixed-size array.  Grade's bases are plain local ``vec3``s with no array proof
+of any kind, so ``base_valid`` is unconditionally false for all 74 sites here
+regardless of index kind or read/write direction (this is the corrected
+reasoning from the Task 32 brief's Important finding I1: the blocker is
+array-only base scoping, not an absence of any id-indexed-write track --
+``grid_store_valid`` is exactly that, just gated to proved arrays).
+
+This module authenticates by node identity from a frozen per-program proof
+set (span + SHA-256 for every one of the 74 sites, tabulated below), never by
+widening the array machinery and never by adding a new token to the 44-entry
+``APPROVED_CAPABILITIES`` vocabulary -- the caller must skip ``used.add(...)``
+entirely for a site admitted through this module, symmetric with the existing
+``round``/``tanh``/``floatBitsToUint``/``all``+``lessThanEqual`` callee
+skip-list at ``generate_typed_slice.py``'s node walker.
+"""
+
+from __future__ import annotations
+
+import hashlib
+
+from .typed_ir import TypedExpression, TypedProgram, TypedStatement
+
+
+KEYS = (
+    'filter/grade:creative',
+    'filter/grade:hslSecondary',
+    'filter/grade:lut',
+    'filter/grade:primary',
+    'filter/grade:vignette',
+    'filter/grade:wheels',
+)
+PROFILES = {
+    'filter/grade:creative': 'grade-creative-index-expression-v1',
+    'filter/grade:hslSecondary': 'grade-hslsecondary-index-expression-v1',
+    'filter/grade:lut': 'grade-lut-index-expression-v1',
+    'filter/grade:primary': 'grade-primary-index-expression-v1',
+    'filter/grade:vignette': 'grade-vignette-index-expression-v1',
+    'filter/grade:wheels': 'grade-wheels-index-expression-v1',
+}
+_OPTIONAL_PROOF_FIELDS = (
+    "fixed_nine_table_proof",
+    "fixed_grid_counter_store_proof",
+    "fixed_array_in_parameter_proof",
+    "fixed_affine_centers13_proof",
+)
+
+__all__ = ("KEYS", "PROFILES", "authenticate_grade_index_expression",
+           "apply_grade_index_expression")
+
+
+def _sha(value: object) -> str:
+    return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
+
+
+def _span(value: object) -> str:
+    span = getattr(value, "span")
+    return (f"{span.start_line}:{span.start_column}-"
+            f"{span.end_line}:{span.end_column}")
+
+
+def _whole_fingerprint(program: TypedProgram) -> str:
+    return _sha((
+        program.key, program.source, program.raw_source, program.declarations,
+        program.functions, program.resources, program.body_status,
+        program.local_type_names, program.structs, program.uniform_blocks,
+        program.interface_symbols, program.builtin_symbols,
+        program.counted_loop_proof, program.preprocessor_defines,
+    ))
+
+
+def _interface_fingerprint(program: TypedProgram) -> str:
+    return _sha((
+        program.declarations, program.resources, program.local_type_names,
+        program.structs, program.uniform_blocks, program.interface_symbols,
+        program.builtin_symbols, program.preprocessor_defines,
+    ))
+
+

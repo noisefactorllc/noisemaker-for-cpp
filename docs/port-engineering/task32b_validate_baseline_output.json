@@ -1,0 +1,38 @@
+{
+  "filter/grade:primary": {
+    "validator": "filter/grade:primary:22:1: unsupported global declaration",
+    "emitter": "filter/grade:primary:22:1: unsupported source global declaration",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  },
+  "filter/grade:hslSecondary": {
+    "validator": "filter/grade:hslSecondary:21:1: unsupported global declaration",
+    "emitter": "filter/grade:hslSecondary:21:1: unsupported source global declaration",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  },
+  "filter/grade:wheels": {
+    "validator": "filter/grade:wheels:14:1: unsupported global declaration",
+    "emitter": "filter/grade:wheels:14:1: unsupported source global declaration",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  },
+  "filter/grade:vignette": {
+    "validator": "filter/grade:vignette:15:1: unsupported global declaration",
+    "emitter": "filter/grade:vignette:15:1: unsupported source global declaration",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  },
+  "filter/grade:creative": {
+    "validator": "filter/grade:creative:15:1: unsupported global declaration",
+    "emitter": "filter/grade:creative:15:1: unsupported source global declaration",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  },
+  "filter/grade:lut": {
+    "validator": "filter/grade:lut:29:13: unsupported typed expression index",
+    "emitter": "filter/grade:lut:29:13: unsupported typed expression index",
+    "cpp_sha256": null,
+    "cpp_bytes": null
+  }
+}

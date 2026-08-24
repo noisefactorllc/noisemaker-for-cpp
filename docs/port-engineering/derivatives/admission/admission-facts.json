@@ -1,0 +1,2172 @@
+{
+  "filter/bulge:bulge": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "72:5-84:6",
+          "72:20-82:6",
+          "74:9-74:34"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "72:5-84:6",
+          "72:20-82:6",
+          "75:9-75:34"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        14,
+        "main",
+        "void",
+        0,
+        16,
+        "27:1-85:2"
+      ],
+      [
+        15,
+        "rotate2D",
+        "vec2",
+        3,
+        7,
+        "17:1-25:2"
+      ]
+    ],
+    "functions_sha256": "9b1c1b27669b99f6ef51a1f7796a570acf7b4be401a67402e9b59da02d7c7154",
+    "interface_sha256": "b5e71e3377314023e8738e808a6634b7827f0408447bea21a405e4a9a0aae949",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        14,
+        [
+          15,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "74:19-74:33",
+        "vec2",
+        "20a71d7a29d19cf3678048b7dedfac7c2710f431af3433bdab05f469296f2477",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "ec32dffcc8ca18b768b2a5c4ef7da06c62e2a5e0fb3f1c19031378605d732666"
+        ]
+      ],
+      [
+        "dFdy",
+        14,
+        [
+          15,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "75:19-75:33",
+        "vec2",
+        "4046755cbb6e29423861ccac3ca587a7d22675ff06a0f828b30b6367e69d9735",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "f722ccaa9f9b3fa6db42275e9910f4b5ec336b5a5f876f75eb44e84ebb3fd5d9"
+        ]
+      ]
+    ],
+    "normalized_bytes": 1953,
+    "normalized_sha256": "3526dd01153e7def1e3eb6f1dff1b39cfdb1ba275aa81b92732c07206d41d060",
+    "preprocessor_defines": [],
+    "program_key": "filter/bulge:bulge",
+    "raw_bytes": 2352,
+    "raw_sha256": "87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "11cd75f0fc758ad6de796bc1a1448902214f946dba727120bce3603c7e4a3faf"
+  },
+  "filter/celShading:celShadingColor": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "82:5-89:6",
+          "82:20-87:6",
+          "84:9-84:34"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        17,
+        "linear_to_srgb_component",
+        "float",
+        1,
+        2,
+        "24:1-29:2"
+      ],
+      [
+        18,
+        "linear_to_srgb_rgb",
+        "vec3",
+        1,
+        1,
+        "39:1-45:2"
+      ],
+      [
+        19,
+        "main",
+        "void",
+        0,
+        22,
+        "55:1-94:2"
+      ],
+      [
+        20,
+        "pow_vec3",
+        "vec3",
+        2,
+        1,
+        "47:1-53:2"
+      ],
+      [
+        21,
+        "srgb_to_linear_component",
+        "float",
+        1,
+        2,
+        "17:1-22:2"
+      ],
+      [
+        22,
+        "srgb_to_linear_rgb",
+        "vec3",
+        1,
+        1,
+        "31:1-37:2"
+      ]
+    ],
+    "functions_sha256": "ab51cb78b516454f8be97ab2bb226f31efb2f3daacba4521ab93bc325a0924cd",
+    "interface_sha256": "337682508a486618d2deb6bc1c0275078132c3e5c24fc16b8e54c4553cb2e684",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "fwidth",
+        19,
+        [
+          18,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "84:19-84:33",
+        "vec3",
+        "9f8bb2f21d35491406e75523546eefe77eb61d9887980880bd7853fc869117c6",
+        "declaration",
+        [
+          "vec3"
+        ],
+        [
+          "c24b82eb573678af3e3fa7704350683d23b7965ad2474e416dd7e460f55bf4b2"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2530,
+    "normalized_sha256": "52086cb69a9db0eccff5d37d369f94f672a8290a006999f00ca81742ca1e3d4f",
+    "preprocessor_defines": [],
+    "program_key": "filter/celShading:celShadingColor",
+    "raw_bytes": 2780,
+    "raw_sha256": "90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4",
+    "resources": [
+      [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "levels",
+        "gamma",
+        "antialias",
+        "lightDirection",
+        "strength"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "9012723f042dcc2fc823ffb36ef7e4cdbff48529f8ec074bd89cd00c58b9e53a"
+  },
+  "filter/halftone:halftone": {
+    "ancestors": [
+      [
+        [
+          "decl"
+        ],
+        [
+          "87:5-87:67"
+        ]
+      ],
+      [
+        [
+          "decl"
+        ],
+        [
+          "109:5-109:86"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {
+      "MODE": 0,
+      "PATTERN": 0
+    },
+    "functions": [
+      [
+        37,
+        "boxBlur3",
+        "vec3",
+        2,
+        3,
+        "55:1-64:2"
+      ],
+      [
+        38,
+        "cellSampleFromRuv",
+        "vec3",
+        3,
+        4,
+        "71:1-76:2"
+      ],
+      [
+        39,
+        "halftoneCoverage",
+        "float",
+        3,
+        4,
+        "84:1-89:2"
+      ],
+      [
+        40,
+        "lum",
+        "float",
+        1,
+        1,
+        "26:1-28:2"
+      ],
+      [
+        41,
+        "main",
+        "void",
+        0,
+        19,
+        "115:1-137:2"
+      ],
+      [
+        42,
+        "rgbToCmyk",
+        "vec4",
+        1,
+        4,
+        "36:1-41:2"
+      ],
+      [
+        43,
+        "rotate2D",
+        "vec2",
+        2,
+        4,
+        "48:1-53:2"
+      ],
+      [
+        44,
+        "roundDotCoverage",
+        "float",
+        3,
+        8,
+        "100:1-113:2"
+      ],
+      [
+        45,
+        "tonemap2",
+        "vec3",
+        3,
+        1,
+        "30:1-32:2"
+      ]
+    ],
+    "functions_sha256": "9d055dcad8dc24cfa85c7a1a4317b0fe849e7202c512affb4c682cab23d3cebd",
+    "interface_sha256": "2f2bdb794aeb2fbb252bf6c80fda24f0d73bb20754b11eed0a051b982cb5722f",
+    "loop_proof": [
+      2,
+      0,
+      2,
+      9,
+      48,
+      true
+    ],
+    "nodes": [
+      [
+        "fwidth",
+        39,
+        [
+          2,
+          "e0",
+          0,
+          0,
+          0,
+          0
+        ],
+        "87:24-87:33",
+        "float",
+        "93f6be1083c4c3ddfd255ec24766618c50d933d5354a3e73df010b8b3ce7fa20",
+        "binary",
+        [
+          "float"
+        ],
+        [
+          "ba4d6eb504a6e888e500072b8e9446c58652a2814eaf52ec23816d76c5ecb81b"
+        ]
+      ],
+      [
+        "fwidth",
+        44,
+        [
+          5,
+          "e0",
+          0,
+          0,
+          0,
+          0
+        ],
+        "109:30-109:52",
+        "float",
+        "c51209ca4742a638cb51182aad20b498dd365c8b4921b3dc195f8c69b20e0ed6",
+        "binary",
+        [
+          "float"
+        ],
+        [
+          "7a44ce7e86059a35c92decafd790c1b407b65fc9fe13479b7af6f410ca286313"
+        ]
+      ]
+    ],
+    "normalized_bytes": 3828,
+    "normalized_sha256": "f62382b453796c16948943e002b2498021827314793ab80f0fd66473c4fcb307",
+    "preprocessor_defines": [
+      [
+        "MODE",
+        "int",
+        "0"
+      ],
+      [
+        "PATTERN",
+        "int",
+        "0"
+      ]
+    ],
+    "program_key": "filter/halftone:halftone",
+    "raw_bytes": 8440,
+    "raw_sha256": "063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "frequency",
+        "cyanAngle",
+        "magentaAngle",
+        "yellowAngle",
+        "blackAngle",
+        "monoAngle",
+        "sharpness",
+        "inkColor",
+        "paperColor"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "5ddb9ed688497772657c9d3eda11e90eb703b151b779a580ba234f49f236697e"
+  },
+  "filter/lens:lens": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "65:5-78:6",
+          "65:20-76:6",
+          "66:9-66:35"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "65:5-78:6",
+          "65:20-76:6",
+          "67:9-67:35"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        9,
+        "main",
+        "void",
+        0,
+        23,
+        "15:1-79:2"
+      ]
+    ],
+    "functions_sha256": "4eaba58099b88677cb99c1a603433a77be8638868cf4e3fd6ddedbc57555e249",
+    "interface_sha256": "370d530b1fd84b9a3e0ddb8665f189bc10bf6d4da1f84349aac583dc6fd29e7a",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        9,
+        [
+          22,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "66:19-66:34",
+        "vec2",
+        "70aa57fde35df66eb6a2211a91c66bb2c270444463a2383023076435acf50ebc",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "d2011ab14b62182633bbb70ccabf923ed3bd8a773465c5c65b2c806c61f36ceb"
+        ]
+      ],
+      [
+        "dFdy",
+        9,
+        [
+          22,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "67:19-67:34",
+        "vec2",
+        "33e9b6c11a26ca9b478315003742b5ee491e0ab7dad9557269c3a2d5c30465bd",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "ebf32dce1141226c2b4d2a36f7a6f2859d90eb3e0c2ab04d31d68c677e5ccf10"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2194,
+    "normalized_sha256": "72c7169c1f606090fd80c1a9763b757af6aed98ac54543580c480d2a04a95d61",
+    "preprocessor_defines": [],
+    "program_key": "filter/lens:lens",
+    "raw_bytes": 2909,
+    "raw_sha256": "6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5",
+    "resources": [
+      [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "lensDisplacement",
+        "aspectLens",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "7ea51ed2362674cb6fddae77b82a0c5b49280021c28d3504033f98e8a99e1fa0"
+  },
+  "filter/lensWarp:lensWarp": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "97:5-117:6",
+          "97:20-115:6",
+          "98:9-98:28"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "97:5-117:6",
+          "97:20-115:6",
+          "99:9-99:28"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        20,
+        "grid",
+        "float",
+        2,
+        5,
+        "44:1-50:2"
+      ],
+      [
+        21,
+        "main",
+        "void",
+        0,
+        18,
+        "65:1-118:2"
+      ],
+      [
+        22,
+        "pcg",
+        "uvec3",
+        1,
+        9,
+        "17:1-27:2"
+      ],
+      [
+        23,
+        "perlinNoise",
+        "float",
+        2,
+        10,
+        "52:1-63:2"
+      ],
+      [
+        24,
+        "prng",
+        "vec3",
+        1,
+        4,
+        "29:1-34:2"
+      ],
+      [
+        25,
+        "smootherstep",
+        "float",
+        1,
+        1,
+        "36:1-38:2"
+      ],
+      [
+        26,
+        "smoothlerp",
+        "float",
+        3,
+        1,
+        "40:1-42:2"
+      ]
+    ],
+    "functions_sha256": "f8c4e268beaa15b2dc4c4bdaae870d0c14d180c75440c8db57aa831ab4b67286",
+    "interface_sha256": "aad79dc32807a531c08566f437e17df28d5d5f54c552626488211aa5de6c11da",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        21,
+        [
+          17,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "98:19-98:27",
+        "vec2",
+        "d57ec902e546cfe31dc4ba727d82799d83cc0e4b87f58ca25316ac2697acc75c",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "0a2776c07711c1be968a90cb80fcc51bea59310315d978435c186df0144540e5"
+        ]
+      ],
+      [
+        "dFdy",
+        21,
+        [
+          17,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "99:19-99:27",
+        "vec2",
+        "18a2210cba6baa219781eac3cdefdbc5d771ba488fc5f292b6d7a66a16574d47",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "08474a87a0cb11063848af4a6c0928758c9ad555b181bd22ccb9364fed867afe"
+        ]
+      ]
+    ],
+    "normalized_bytes": 3446,
+    "normalized_sha256": "4d2c5e5d33e31c902b0506daa6f8ec0a1c76dfc3355c6c5f5604e752a6ed862d",
+    "preprocessor_defines": [],
+    "program_key": "filter/lensWarp:lensWarp",
+    "raw_bytes": 4033,
+    "raw_sha256": "543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "displacement",
+        "speed",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "8dfa839595d6a87429845ed4015cb25ac9ee162631d1b5d491ee0bfeeca2c647"
+  },
+  "filter/octaveWarp:octaveWarp": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "145:5-156:6",
+          "145:20-154:6",
+          "146:9-146:33"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "145:5-156:6",
+          "145:20-154:6",
+          "147:9-147:33"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        25,
+        "hash21",
+        "float",
+        1,
+        2,
+        "32:1-39:2"
+      ],
+      [
+        26,
+        "main",
+        "void",
+        0,
+        15,
+        "86:1-157:2"
+      ],
+      [
+        27,
+        "noise",
+        "float",
+        1,
+        8,
+        "41:1-52:2"
+      ],
+      [
+        28,
+        "pcg",
+        "uvec3",
+        1,
+        9,
+        "20:1-30:2"
+      ],
+      [
+        29,
+        "simplexNoise",
+        "float",
+        4,
+        7,
+        "59:1-67:2"
+      ],
+      [
+        30,
+        "wrapFloat",
+        "float",
+        3,
+        4,
+        "69:1-84:2"
+      ]
+    ],
+    "functions_sha256": "44d5a0bd997f31c441f25ab198858bc7fc902949014c0c350172947e0ef21ea8",
+    "interface_sha256": "4b6c99dad1fc3289edd53b8d830722ab7aaec2cb6c442939c80508064de20fb7",
+    "loop_proof": [
+      1,
+      0,
+      1,
+      10,
+      10,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        26,
+        [
+          14,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "146:19-146:32",
+        "vec2",
+        "7a345f7b0084acf0484dd8a2c7fb04b28ca2373f1efb876faefe3323552cf9ac",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "b46d9fd9654f0b5a289370d87e124e9bfe49deccad329cb32943b7a7ea1d404c"
+        ]
+      ],
+      [
+        "dFdy",
+        26,
+        [
+          14,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "147:19-147:32",
+        "vec2",
+        "e5c56800891c24d1b0eaccac2b6eb4765fabcc6a3e190ba029359dc63322453c",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "df3d1f50ed9076235d9fa22f89facd0fb26f99b5668cf147e9c14e18b1439bbf"
+        ]
+      ]
+    ],
+    "normalized_bytes": 4110,
+    "normalized_sha256": "f2b635bd9858cc2f9f33d5490844fc331ca3f8d52f10c76b30f52d3492918a4b",
+    "preprocessor_defines": [],
+    "program_key": "filter/octaveWarp:octaveWarp",
+    "raw_bytes": 4902,
+    "raw_sha256": "ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "frequency",
+        "octaves",
+        "displacement",
+        "speed",
+        "wrap",
+        "seed",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "8bb2272c78dba6aa780c7b934852617e478bec35dfe47af03fb2aaffc546e492"
+  },
+  "filter/pinch:pinch": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "72:5-83:6",
+          "72:20-81:6",
+          "73:9-73:34"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "72:5-83:6",
+          "72:20-81:6",
+          "74:9-74:34"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        14,
+        "main",
+        "void",
+        0,
+        16,
+        "27:1-84:2"
+      ],
+      [
+        15,
+        "rotate2D",
+        "vec2",
+        3,
+        7,
+        "17:1-25:2"
+      ]
+    ],
+    "functions_sha256": "9d5adc1c2e6f6976072522df0066fdf1a3c2dc490246173675fff139e9ffc7cf",
+    "interface_sha256": "c502a3f375d985c7c8a74c1bbbbf32f1cc44d78b3a98fb61ef26ee5fcf03d600",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        14,
+        [
+          15,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "73:19-73:33",
+        "vec2",
+        "c0114126cb10c4ec21376e314bc26874cb2bd7ffde8e38fb36a7e9208f9ba969",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "8dd2f772f646141247b6e980c9ca35220fccf4b290b086496bab79c98d471b3c"
+        ]
+      ],
+      [
+        "dFdy",
+        14,
+        [
+          15,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "74:19-74:33",
+        "vec2",
+        "a1e7cd3eae483f8d05b85afdbf660006ed369f8359dba2d444a8ad1ba9225ef5",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "0b96611b00b4e44055db6b25b6535b4860e2267372b9819eb58712016624af35"
+        ]
+      ]
+    ],
+    "normalized_bytes": 1954,
+    "normalized_sha256": "2f6e983bdc1a21b043ef40ccdf5f02902a38274fcbac7db5c5f9cd231749427d",
+    "preprocessor_defines": [],
+    "program_key": "filter/pinch:pinch",
+    "raw_bytes": 2296,
+    "raw_sha256": "031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "strength",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "c5c15b401c3e8601a4a2ebe97be02840fc3327b3e9ea6a94628db76e1b19f5d1"
+  },
+  "filter/polar:polar": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "60:5-71:6",
+          "60:20-69:6",
+          "61:9-61:31"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "60:5-71:6",
+          "60:20-69:6",
+          "62:9-62:31"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        21,
+        "main",
+        "void",
+        0,
+        8,
+        "46:1-72:2"
+      ],
+      [
+        22,
+        "polarCoords",
+        "vec2",
+        2,
+        6,
+        "27:1-34:2"
+      ],
+      [
+        23,
+        "smod",
+        "float",
+        2,
+        1,
+        "19:1-21:2"
+      ],
+      [
+        24,
+        "smod2",
+        "vec2",
+        2,
+        1,
+        "23:1-25:2"
+      ],
+      [
+        25,
+        "vortexCoords",
+        "vec2",
+        2,
+        7,
+        "36:1-44:2"
+      ]
+    ],
+    "functions_sha256": "8d507070121c5ad9020357677186846e9e133b82d6f27421efafdc367699a22d",
+    "interface_sha256": "a812e3ae963a9cf4bc898d90678f536d5e502aa78efec86eb52eb2116f94aa41",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        21,
+        [
+          7,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "61:19-61:30",
+        "vec2",
+        "525d95a395790c5d91788b4fa72762abf89b54d2ef11a2d472549fd9ffade116",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "414058d43f2566233f4dd03862f071e8ea8518d536c6800e3e92d50da851ffd0"
+        ]
+      ],
+      [
+        "dFdy",
+        21,
+        [
+          7,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "62:19-62:30",
+        "vec2",
+        "f3ad5a9e25263699d2296f69c4ab70ca6086aeb645035176ddf95c3ac19d45ce",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "8a1d3d95ef0ab16ad0e61ae5ab84350d6c8b8991dc14f1cbddaa00bf47446c7f"
+        ]
+      ]
+    ],
+    "normalized_bytes": 1933,
+    "normalized_sha256": "c928b6cbc717ec436c915e763a00f23ce67eb4dd338f0bdd365dbd8dfc217785",
+    "preprocessor_defines": [],
+    "program_key": "filter/polar:polar",
+    "raw_bytes": 2027,
+    "raw_sha256": "391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d",
+    "resources": [
+      [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "polarMode",
+        "speed",
+        "rotation",
+        "scale",
+        "aspectLens",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "5486890330682b31c6df1ea2e5fdcb1b4cdb1ca461efcce72007d7e327abfe9a"
+  },
+  "filter/pondRipples:pondRipples": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "83:5-94:6",
+          "83:20-92:6",
+          "84:9-84:34"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "83:5-94:6",
+          "83:20-92:6",
+          "85:9-85:34"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {
+      "STYLE": 2,
+      "WRAP": 0
+    },
+    "functions": [
+      [
+        11,
+        "main",
+        "void",
+        0,
+        25,
+        "22:1-95:2"
+      ]
+    ],
+    "functions_sha256": "0a92078091db5118a786f4236ae51102d437f4ff412ff31be4c383d7ee066721",
+    "interface_sha256": "b077289afefd2696448b3217df31da05be3f37a746431183656ae4f68094ca7f",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        11,
+        [
+          24,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "84:19-84:33",
+        "vec2",
+        "5067f94b6fa789e93e1af4c7c7db81c195c29277ee417e53946f8721da4813a4",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "b1aeb7f6e113902453c337a9a4f2b926eace9954624b08c2dc0a4204b502b008"
+        ]
+      ],
+      [
+        "dFdy",
+        11,
+        [
+          24,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "85:19-85:33",
+        "vec2",
+        "37470c371104cc1e7fd11abfb151a535ce3d742c44524e0f38d6dfdb7e7542fb",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "02059af9182619848414f863411afc56a0942e4896ef8beabf7e3216f63a980d"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2017,
+    "normalized_sha256": "4c67016be6c30065f90ac45df03be2c633a3809bfcf992a226d9aec956710f91",
+    "preprocessor_defines": [
+      [
+        "STYLE",
+        "int",
+        "2"
+      ],
+      [
+        "WRAP",
+        "int",
+        "0"
+      ]
+    ],
+    "program_key": "filter/pondRipples:pondRipples",
+    "raw_bytes": 5187,
+    "raw_sha256": "2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "amount",
+        "ridges",
+        "speed",
+        "time",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "90f998dff32ff548fcf155301f942f78009a6832483ddb3de9207be6c752de1e"
+  },
+  "filter/spiral:spiral": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "84:5-95:6",
+          "84:20-93:6",
+          "85:9-85:34"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "84:5-95:6",
+          "84:20-93:6",
+          "86:9-86:34"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        16,
+        "main",
+        "void",
+        0,
+        17,
+        "29:1-96:2"
+      ],
+      [
+        17,
+        "rotate2D",
+        "vec2",
+        3,
+        7,
+        "19:1-27:2"
+      ]
+    ],
+    "functions_sha256": "96d3129f74aa9f70b713b8b66d99219c4ea9c5359bac7512e007c683b5d30516",
+    "interface_sha256": "076dcb4d51978fa60df5a9186a5a7447df28a3078e1157eafe9e64912d2d97b8",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        16,
+        [
+          16,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "85:19-85:33",
+        "vec2",
+        "2d69beddbd2285adbc92b181d6e8ffea9d79f67366ffa4f4c1e75e887f310e21",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "f079d8dca3fead496edf9da0e6432166bf43b914e15740804d0958599293fad6"
+        ]
+      ],
+      [
+        "dFdy",
+        16,
+        [
+          16,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "86:19-86:33",
+        "vec2",
+        "536129cbb6d8a4ed549c5113a32d2910f82e3ac541125b5358dcddc7540cb381",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "a027e66cdba6a3004a851b7adc6517a2cbe39db7ff104b761f4b5e7680e44172"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2107,
+    "normalized_sha256": "6e516a2d27e14fbbe0c6c1b200625efbdad09283e5ee09cc8d69e5c372b3ca34",
+    "preprocessor_defines": [],
+    "program_key": "filter/spiral:spiral",
+    "raw_bytes": 2869,
+    "raw_sha256": "3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "strength",
+        "speed",
+        "aspectLens",
+        "wrap",
+        "rotation",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "694cd7517a81e3aebe8b24a18e529f06fd5b534c541f1475e34f97c6a561874d"
+  },
+  "filter/stamp:stThreshold": {
+    "ancestors": [
+      [
+        [
+          "decl"
+        ],
+        [
+          "60:5-60:66"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        17,
+        "fbm",
+        "float",
+        1,
+        4,
+        "31:1-40:2"
+      ],
+      [
+        18,
+        "hash12",
+        "float",
+        1,
+        3,
+        "17:1-21:2"
+      ],
+      [
+        19,
+        "lum",
+        "float",
+        1,
+        1,
+        "15:1-15:67"
+      ],
+      [
+        20,
+        "main",
+        "void",
+        0,
+        12,
+        "46:1-65:2"
+      ],
+      [
+        21,
+        "tonemap2",
+        "vec3",
+        3,
+        1,
+        "42:1-44:2"
+      ],
+      [
+        22,
+        "vnoise",
+        "float",
+        1,
+        4,
+        "23:1-29:2"
+      ]
+    ],
+    "functions_sha256": "fccb3a9d9cf9b02f1f30087c58827ce3f5de4c659168c843cc283748edbcc9d1",
+    "interface_sha256": "ef70990afd3060826ca720c7419901188c453957b62df786272a3f41244905cd",
+    "loop_proof": [
+      1,
+      0,
+      1,
+      5,
+      5,
+      true
+    ],
+    "nodes": [
+      [
+        "fwidth",
+        20,
+        [
+          8,
+          "e0",
+          0,
+          0,
+          0
+        ],
+        "60:20-60:29",
+        "float",
+        "90dbf96779f56fe2a99dff03f9e12829706830d7d423f03e4c8b848bccd4c8d1",
+        "builtin",
+        [
+          "float"
+        ],
+        [
+          "5ac5381033586f5f051e3e2b9b35e6538cfe3793b3c314ba0e4b7bdb016c4b71"
+        ]
+      ]
+    ],
+    "normalized_bytes": 1565,
+    "normalized_sha256": "f6593ec857c845845201652026bd375e8860d4e107e7528a82e4519c9b085bbe",
+    "preprocessor_defines": [],
+    "program_key": "filter/stamp:stThreshold",
+    "raw_bytes": 3467,
+    "raw_sha256": "d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94",
+    "resources": [
+      [
+        "inputTex",
+        "blurTex",
+        "resolution",
+        "tileOffset",
+        "balance",
+        "roughness",
+        "inkColor",
+        "paperColor"
+      ],
+      [
+        "inputTex",
+        "blurTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "7a5f47aeda690b1bc649e54662dd2b47aed69f68bded0a5fc1e658bd448c456d"
+  },
+  "filter/step:step": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "18:5-23:6",
+          "18:20-21:6",
+          "19:9-19:37"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        7,
+        "main",
+        "void",
+        0,
+        6,
+        "12:1-26:2"
+      ]
+    ],
+    "functions_sha256": "52e93d37d80c993d92ee8910fa4c6804fcd5ebe3933e722c0c385ec70ba3ace8",
+    "interface_sha256": "405fbda2028d8696ca0b0e620efeebded0037a5bbd6705b3f59aef6f84b1e08f",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "fwidth",
+        7,
+        [
+          4,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "19:19-19:36",
+        "vec3",
+        "4e60a910e83e13ad110a54fc08afad0b3a262eb309b087358bc0099e797635d2",
+        "declaration",
+        [
+          "vec3"
+        ],
+        [
+          "871f69c735c5bd378c876e123b6abe14400a4829b473c2715b18f9fc93c436a3"
+        ]
+      ]
+    ],
+    "normalized_bytes": 592,
+    "normalized_sha256": "d77e236beca61d709a7b0e5320aa76b3a1e068ee0014bd3e41c31bd3fd4b0f6f",
+    "preprocessor_defines": [],
+    "program_key": "filter/step:step",
+    "raw_bytes": 709,
+    "raw_sha256": "4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf",
+    "resources": [
+      [
+        "tileOffset",
+        "fullResolution",
+        "inputTex",
+        "threshold",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "0aa2574412206287d46dddc3504e9909788870874a2514202270c39b0415bef2"
+  },
+  "filter/stipple:stipple": {
+    "ancestors": [
+      [
+        [
+          "decl"
+        ],
+        [
+          "112:5-112:46"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {
+      "MODE": 0
+    },
+    "functions": [
+      [
+        23,
+        "fbm",
+        "float",
+        1,
+        4,
+        "47:1-56:2"
+      ],
+      [
+        24,
+        "hash12",
+        "float",
+        1,
+        3,
+        "21:1-25:2"
+      ],
+      [
+        25,
+        "hash22",
+        "vec2",
+        1,
+        3,
+        "27:1-31:2"
+      ],
+      [
+        26,
+        "lum",
+        "float",
+        1,
+        1,
+        "34:1-36:2"
+      ],
+      [
+        27,
+        "main",
+        "void",
+        0,
+        15,
+        "95:1-117:2"
+      ],
+      [
+        28,
+        "rotate2D",
+        "vec2",
+        2,
+        4,
+        "88:1-93:2"
+      ],
+      [
+        29,
+        "tonemap2",
+        "vec3",
+        3,
+        1,
+        "82:1-84:2"
+      ],
+      [
+        30,
+        "vnoise",
+        "float",
+        1,
+        4,
+        "39:1-45:2"
+      ],
+      [
+        31,
+        "voronoiCell",
+        "vec4",
+        3,
+        6,
+        "62:1-79:2"
+      ]
+    ],
+    "functions_sha256": "7b5f228b32b8a64996ceaa6a54629ea640816469dffb6cc9a3268c954c9c6162",
+    "interface_sha256": "5a609da7b87f4e672c3bc02c80393f216b9efc7ba03781a927b67a1221e8c89d",
+    "loop_proof": [
+      3,
+      0,
+      2,
+      9,
+      12,
+      true
+    ],
+    "nodes": [
+      [
+        "fwidth",
+        27,
+        [
+          11,
+          "e0",
+          0,
+          0,
+          0
+        ],
+        "112:20-112:29",
+        "float",
+        "7fdc46282f7011e6058b576dc4488a2720a84b9f33db1ecd78078083cfb06515",
+        "binary",
+        [
+          "float"
+        ],
+        [
+          "78e670e9c2dc2fbe6a4c618af698d3f0d8093a659cc83402e3e94a52364a7b80"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2598,
+    "normalized_sha256": "5bf1e7ef4187d31b9b6d7836537eb7a9ba3df04eaf782629a899a47ca6ccc64f",
+    "preprocessor_defines": [
+      [
+        "MODE",
+        "int",
+        "0"
+      ]
+    ],
+    "program_key": "filter/stipple:stipple",
+    "raw_bytes": 8490,
+    "raw_sha256": "69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "cellSize",
+        "grainSize",
+        "density",
+        "paperColor",
+        "seed"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "ccb94ec0b07abeea1f047aafe38627c4309f84f80a623c302a5ed4b4f1e7a37b"
+  },
+  "filter/tunnel:tunnel": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "79:5-90:6",
+          "79:20-88:6",
+          "80:9-80:38"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "79:5-90:6",
+          "79:20-88:6",
+          "81:9-81:38"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        19,
+        "main",
+        "void",
+        0,
+        16,
+        "31:1-104:2"
+      ],
+      [
+        20,
+        "polygonShape",
+        "float",
+        2,
+        3,
+        "21:1-25:2"
+      ],
+      [
+        21,
+        "smod",
+        "vec2",
+        2,
+        1,
+        "27:1-29:2"
+      ]
+    ],
+    "functions_sha256": "14de75890dea3ba98f0df57ecadb98a6f06bf4b3d64a6706d1c4138e110bcb5a",
+    "interface_sha256": "d8540a43bc855db657b2f93b6910a463eadf77ba85e7cd6c5fb6cd165188baca",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        19,
+        [
+          13,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "80:19-80:37",
+        "vec2",
+        "ad03275c33c292482bb7d39cb68276dd182a403d7c65515af00b403d59ee9e6b",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "e1a8b82acf43a65063759ed05cfee478a4f0f54638a5d42bdbdbbdc6a3c4e17c"
+        ]
+      ],
+      [
+        "dFdy",
+        19,
+        [
+          13,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "81:19-81:37",
+        "vec2",
+        "44afbee4b3ac996e52e5c03f349b74ce4b4b69dba640507a8d3c6994e77abd33",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "e9994e5fc09c259f4aabb033a393d94d50af0b02c90cecd41ec65391b3f0b553"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2637,
+    "normalized_sha256": "38d97378dc7d3b0e558f08717a40a03d0369ff9776260e42cbed3e7f5ec7033c",
+    "preprocessor_defines": [],
+    "program_key": "filter/tunnel:tunnel",
+    "raw_bytes": 3062,
+    "raw_sha256": "c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193",
+    "resources": [
+      [
+        "inputTex",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "shape",
+        "speed",
+        "rotation",
+        "scale",
+        "center",
+        "aspectLens",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "a6b7ecb1d5ab1c08a5a476e58f0b34102ff7a7a4566dabc9dd28b8c2c9d5d18a"
+  },
+  "filter/warp:warp": {
+    "ancestors": [
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "93:5-104:6",
+          "93:20-102:6",
+          "94:9-94:28"
+        ]
+      ],
+      [
+        [
+          "if",
+          "block",
+          "decl"
+        ],
+        [
+          "93:5-104:6",
+          "93:20-102:6",
+          "95:9-95:28"
+        ]
+      ]
+    ],
+    "body_status": "analyzed",
+    "defines": {},
+    "functions": [
+      [
+        23,
+        "grid",
+        "float",
+        2,
+        5,
+        "47:1-53:2"
+      ],
+      [
+        24,
+        "main",
+        "void",
+        0,
+        11,
+        "68:1-105:2"
+      ],
+      [
+        25,
+        "pcg",
+        "uvec3",
+        1,
+        9,
+        "20:1-30:2"
+      ],
+      [
+        26,
+        "perlinNoise",
+        "float",
+        2,
+        10,
+        "55:1-66:2"
+      ],
+      [
+        27,
+        "prng",
+        "vec3",
+        1,
+        4,
+        "32:1-37:2"
+      ],
+      [
+        28,
+        "smootherstep",
+        "float",
+        1,
+        1,
+        "39:1-41:2"
+      ],
+      [
+        29,
+        "smoothlerp",
+        "float",
+        3,
+        1,
+        "43:1-45:2"
+      ]
+    ],
+    "functions_sha256": "85a83512222d058b07514fbb35aeaa78d6762434fc945bd3c9bff8e152df08bf",
+    "interface_sha256": "55bc224d9217f43f4fff711cb897cd48fe5cff0e446305ada90b61d42a35d611",
+    "loop_proof": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      true
+    ],
+    "nodes": [
+      [
+        "dFdx",
+        24,
+        [
+          10,
+          "s0",
+          "s0",
+          "e0",
+          0
+        ],
+        "94:19-94:27",
+        "vec2",
+        "a9b4fa5fe4803cab408ce7c3817daa9e49f96f4ed0e1f167ecc55bdfe383b2cc",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "4e736d8d126b6a9b8c0555a8a7265ec517934302b94af3f9630681470b7921f0"
+        ]
+      ],
+      [
+        "dFdy",
+        24,
+        [
+          10,
+          "s0",
+          "s1",
+          "e0",
+          0
+        ],
+        "95:19-95:27",
+        "vec2",
+        "33f8835fb114c665173aa44ab38b2ef25e29a2ea6d6594ae9bac49d6e5989c74",
+        "declaration",
+        [
+          "vec2"
+        ],
+        [
+          "b9fb0341fd643a9b547f941684abc487ab610319feb65e9fdc65aa8d2f3ed356"
+        ]
+      ]
+    ],
+    "normalized_bytes": 2840,
+    "normalized_sha256": "f3b4c97572bf2868710033cb82244c52233434df8c91ebde50d181983ab89e60",
+    "preprocessor_defines": [],
+    "program_key": "filter/warp:warp",
+    "raw_bytes": 3095,
+    "raw_sha256": "f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee",
+    "resources": [
+      [
+        "inputTex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "time",
+        "strength",
+        "scale",
+        "seed",
+        "speed",
+        "wrap",
+        "antialias"
+      ],
+      [
+        "inputTex"
+      ],
+      [
+        "fragColor"
+      ],
+      true,
+      true
+    ],
+    "structs_empty": true,
+    "uniform_blocks_empty": true,
+    "whole_sha256": "6e2aa3c9af8aadcc4de8bbae83259be59902873db002ed39aca31d54750e3a9b"
+  }
+}

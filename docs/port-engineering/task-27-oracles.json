@@ -1,0 +1,1768 @@
+{
+  "schema": "noisemaker-for-cpp.task27.perlin-scalar-uint-xor.public-canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "public_api": "kernelFactories.get(key)",
+    "canonical_identity": true,
+    "adapter_entry_absent": true,
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+  },
+  "program": {
+    "key": "synth/perlin:perlin",
+    "source": "sources/synth/perlin/perlin.glsl",
+    "raw_source_bytes": 10882,
+    "raw_source_sha256": "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318",
+    "normalized_source_bytes": 4875,
+    "normalized_source_sha256": "88cb30dfb53c75f2d1bf51e9f9b865dca48ffb528e6ff2f77dec224dab309f64",
+    "defines": {
+      "DIMENSIONS": 2
+    },
+    "profile": "perlin-scalar-uint-xor-v1",
+    "generic_scalar_bitwise_capability": false,
+    "dimensions_3_authorized": false,
+    "canonical_factory_name": "canonicalFactory268",
+    "canonical_factory_to_string_sha256": "55ea0bb422438d8ed6182fc4f587395de5321dc8f8ca0588c0202f23732ca0f4",
+    "binding_signature": [
+      "resolution:vec2@1",
+      "tileOffset:vec2@2",
+      "fullResolution:vec2@3",
+      "aspect:float@4",
+      "time:float@5",
+      "scale:float@6",
+      "seed:int@7",
+      "octaves:int@8",
+      "colorMode:int@9",
+      "ridges:int@10",
+      "warpIterations:int@11",
+      "warpScale:float@12",
+      "warpIntensity:float@13",
+      "speed:float@14"
+    ],
+    "output": "fragColor:vec4@15",
+    "scalar_uint_xor": {
+      "static_sites": 2,
+      "owner": "hash3",
+      "owner_signature_id": 49,
+      "normalized_line": 73,
+      "default_entrypoint_reachable": false,
+      "source_typed_semantics": "left-associated std::uint32_t XOR",
+      "public_javascript_semantics": "signed Int32 XOR; not an oracle for future DIMENSIONS=3"
+    }
+  },
+  "fixture": {
+    "output": "top-down F32 RGBA Surface",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "verification": "fresh double render, finite full output, F32/RGBA8 hashes and five probes"
+  },
+  "cases": [
+    {
+      "name": "mono-default-shape",
+      "dimensions": {
+        "width": 8,
+        "height": 5
+      },
+      "time": 0,
+      "seed": 0,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 25,
+        "seed": 0,
+        "octaves": 1,
+        "colorMode": 0,
+        "ridges": 0,
+        "warpIterations": 0,
+        "warpScale": 50,
+        "warpIntensity": 50,
+        "speed": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        8,
+        5
+      ],
+      "coverage": [
+        "DIMENSIONS=2",
+        "mono",
+        "one octave",
+        "no warp",
+        "rectangular"
+      ],
+      "output": {
+        "f32_sha256": "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
+        "rgba8_sha256": "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5766311883926392,
+              0.5766311883926392,
+              0.5766311883926392,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f139e1a",
+              "0x3f139e1a",
+              "0x3f139e1a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.40169572830200195,
+              0.40169572830200195,
+              0.40169572830200195,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ecdab10",
+              "0x3ecdab10",
+              "0x3ecdab10",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.8261551856994629,
+              0.8261551856994629,
+              0.8261551856994629,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f537ee8",
+              "0x3f537ee8",
+              "0x3f537ee8",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              4
+            ],
+            "values": [
+              0.5910654664039612,
+              0.5910654664039612,
+              0.5910654664039612,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f175011",
+              "0x3f175011",
+              "0x3f175011",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.706497073173523,
+              0.706497073173523,
+              0.706497073173523,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f34dcfe",
+              "0x3f34dcfe",
+              "0x3f34dcfe",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 160
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "rgb-four-octaves",
+      "dimensions": {
+        "width": 7,
+        "height": 6
+      },
+      "time": 0.125,
+      "seed": 17,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 43,
+        "seed": 17,
+        "octaves": 4,
+        "colorMode": 1,
+        "ridges": 0,
+        "warpIterations": 0,
+        "warpScale": 50,
+        "warpIntensity": 50,
+        "speed": 2
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        7,
+        6
+      ],
+      "coverage": [
+        "RGB channel offsets",
+        "four octaves",
+        "time animation"
+      ],
+      "output": {
+        "f32_sha256": "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0",
+        "rgba8_sha256": "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5426994562149048,
+              0.577735185623169,
+              0.37972038984298706,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0aee5a",
+              "0x3f13e674",
+              "0x3ec26ab6",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5403620004653931,
+              0.4893035888671875,
+              0.47048091888427734,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0a552a",
+              "0x3efa8600",
+              "0x3ef0e2e0",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.3528296947479248,
+              0.5573365092277527,
+              0.5892995595932007,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3eb4a618",
+              "0x3f0ead9b",
+              "0x3f16dc56",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              5
+            ],
+            "values": [
+              0.5114547610282898,
+              0.3684939742088318,
+              0.6200928092002869,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f02eeb3",
+              "0x3ebcab3e",
+              "0x3f1ebe67",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.44220682978630066,
+              0.5242557525634766,
+              0.5333276391029358,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ee268ef",
+              "0x3f0635a0",
+              "0x3f088829",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 168
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "ridged-six-octaves",
+      "dimensions": {
+        "width": 6,
+        "height": 7
+      },
+      "time": 0.625,
+      "seed": 99,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 8,
+        "seed": 99,
+        "octaves": 6,
+        "colorMode": 1,
+        "ridges": 1,
+        "warpIterations": 0,
+        "warpScale": 50,
+        "warpIntensity": 50,
+        "speed": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        7
+      ],
+      "coverage": [
+        "ridged branch",
+        "six public octaves",
+        "portrait"
+      ],
+      "output": {
+        "f32_sha256": "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2",
+        "rgba8_sha256": "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8834264278411865,
+              0.8308895826339722,
+              0.8915103673934937,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f62283c",
+              "0x3f54b52e",
+              "0x3f643a06",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.8444039225578308,
+              0.7939863801002502,
+              0.8646117448806763,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f582adb",
+              "0x3f4b42b1",
+              "0x3f5d5732",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.5368173718452454,
+              0.7290776968002319,
+              0.5692329406738281,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f096cdd",
+              "0x3f3aa4d6",
+              "0x3f11b940",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              6
+            ],
+            "values": [
+              0.668332576751709,
+              0.6647481322288513,
+              0.8756877779960632,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f2b17d8",
+              "0x3f2a2cef",
+              "0x3f602d13",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.7583475708961487,
+              0.8731841444969177,
+              0.8507305979728699,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f422311",
+              "0x3f5f88ff",
+              "0x3f59c97b",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 168
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "single-domain-warp",
+      "dimensions": {
+        "width": 9,
+        "height": 5
+      },
+      "time": 0.33000001311302185,
+      "seed": 5,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 72,
+        "seed": 5,
+        "octaves": 3,
+        "colorMode": 1,
+        "ridges": 0,
+        "warpIterations": 1,
+        "warpScale": 40,
+        "warpIntensity": 65,
+        "speed": 3
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        9,
+        5
+      ],
+      "coverage": [
+        "one warp iteration",
+        "nonzero intensity",
+        "three octaves"
+      ],
+      "output": {
+        "f32_sha256": "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a",
+        "rgba8_sha256": "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.46665284037590027,
+              0.44707950949668884,
+              0.5861465930938721,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3eeeed1f",
+              "0x3ee4e79b",
+              "0x3f160db4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              0
+            ],
+            "values": [
+              0.2880525290966034,
+              0.6787492036819458,
+              0.5324289202690125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e937b9f",
+              "0x3f2dc282",
+              "0x3f084d43",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.548103392124176,
+              0.40460243821144104,
+              0.5474687814712524,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0c5081",
+              "0x3ecf280d",
+              "0x3f0c26ea",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              8,
+              4
+            ],
+            "values": [
+              0.4475723206996918,
+              0.6397141218185425,
+              0.4125232696533203,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ee52833",
+              "0x3f23c44e",
+              "0x3ed33640",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.325477659702301,
+              0.49534302949905396,
+              0.6785458326339722,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ea6a502",
+              "0x3efd9d9a",
+              "0x3f2db52e",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 180
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "four-domain-warps-ridged",
+      "dimensions": {
+        "width": 5,
+        "height": 8
+      },
+      "time": 0.9100000262260437,
+      "seed": 64,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 15,
+        "seed": 64,
+        "octaves": 5,
+        "colorMode": 1,
+        "ridges": 1,
+        "warpIterations": 4,
+        "warpScale": 7,
+        "warpIntensity": 100,
+        "speed": 5
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        5,
+        8
+      ],
+      "coverage": [
+        "four public warp iterations",
+        "ridged",
+        "five octaves",
+        "high speed"
+      ],
+      "output": {
+        "f32_sha256": "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242",
+        "rgba8_sha256": "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8625825643539429,
+              0.8483012318611145,
+              0.8329766392707825,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f5cd236",
+              "0x3f592a45",
+              "0x3f553df5",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.5902329087257385,
+              0.749181866645813,
+              0.7962145209312439,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f171981",
+              "0x3f3fca62",
+              "0x3f4bd4b7",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.8431941270828247,
+              0.7182658910751343,
+              0.6576986908912659,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f57db92",
+              "0x3f37e046",
+              "0x3f285ef1",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              7
+            ],
+            "values": [
+              0.7158976197242737,
+              0.7523884773254395,
+              0.7362034320831299,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f374511",
+              "0x3f409c88",
+              "0x3f3c77d4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              4
+            ],
+            "values": [
+              0.9259544014930725,
+              0.9441753029823303,
+              0.9188961386680603,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f6d0b59",
+              "0x3f71b579",
+              "0x3f6b3cc7",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 160
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "tiled-full-resolution",
+      "dimensions": {
+        "width": 6,
+        "height": 4
+      },
+      "time": 0.4399999976158142,
+      "seed": 12,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 31,
+        "seed": 12,
+        "octaves": 2,
+        "colorMode": 1,
+        "ridges": 0,
+        "warpIterations": 2,
+        "warpScale": 80,
+        "warpIntensity": 22,
+        "speed": 2
+      },
+      "tile_offset": [
+        7,
+        11
+      ],
+      "full_resolution": [
+        19,
+        17
+      ],
+      "coverage": [
+        "nonzero tile offset",
+        "larger full resolution",
+        "two warps"
+      ],
+      "output": {
+        "f32_sha256": "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112",
+        "rgba8_sha256": "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.40694892406463623,
+              0.404377281665802,
+              0.6883360743522644,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ed05b9c",
+              "0x3ecf0a8a",
+              "0x3f3036cb",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.4882596433162689,
+              0.5542123913764954,
+              0.4574853777885437,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ef9fd2b",
+              "0x3f0de0dd",
+              "0x3eea3b86",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.5313327312469482,
+              0.498721182346344,
+              0.4700597822666168,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f08056c",
+              "0x3eff5862",
+              "0x3ef0abad",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.4585387706756592,
+              0.6177494525909424,
+              0.4235612750053406,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3eeac598",
+              "0x3f1e24d4",
+              "0x3ed8dd06",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.6936500668525696,
+              0.48762333393096924,
+              0.31942951679229736,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f31930d",
+              "0x3ef9a9c4",
+              "0x3ea38c44",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 96
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "speed-zero-time-inert",
+      "dimensions": {
+        "width": 4,
+        "height": 4
+      },
+      "time": 0.875,
+      "seed": 31,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 55,
+        "seed": 31,
+        "octaves": 3,
+        "colorMode": 0,
+        "ridges": 0,
+        "warpIterations": 0,
+        "warpScale": 50,
+        "warpIntensity": 50,
+        "speed": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        4,
+        4
+      ],
+      "coverage": [
+        "speed zero",
+        "nonzero time",
+        "mono"
+      ],
+      "output": {
+        "f32_sha256": "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e",
+        "rgba8_sha256": "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.3936365246772766,
+              0.3936365246772766,
+              0.3936365246772766,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ec98aba",
+              "0x3ec98aba",
+              "0x3ec98aba",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.6035592555999756,
+              0.6035592555999756,
+              0.6035592555999756,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f1a82dc",
+              "0x3f1a82dc",
+              "0x3f1a82dc",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.47072285413742065,
+              0.47072285413742065,
+              0.47072285413742065,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ef10296",
+              "0x3ef10296",
+              "0x3ef10296",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.6294994950294495,
+              0.6294994950294495,
+              0.6294994950294495,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f2126e1",
+              "0x3f2126e1",
+              "0x3f2126e1",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.5934659242630005,
+              0.5934659242630005,
+              0.5934659242630005,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f17ed62",
+              "0x3f17ed62",
+              "0x3f17ed62",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 64
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "full-resolution-fallback",
+      "dimensions": {
+        "width": 5,
+        "height": 3
+      },
+      "time": 0.20000000298023224,
+      "seed": 3,
+      "uniforms": {
+        "DIMENSIONS": 2,
+        "scale": 100,
+        "seed": 3,
+        "octaves": 1,
+        "colorMode": 1,
+        "ridges": 0,
+        "warpIterations": 0,
+        "warpScale": 50,
+        "warpIntensity": 50,
+        "speed": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        1024,
+        1024
+      ],
+      "coverage": [
+        "fullResolution.x below one",
+        "1024 fallback",
+        "scale maximum"
+      ],
+      "output": {
+        "f32_sha256": "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873",
+        "rgba8_sha256": "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7",
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.15107712149620056,
+              0.7238893508911133,
+              0.6237669587135315,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1ab3f6",
+              "0x3f3950d0",
+              "0x3f1faf31",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.15120258927345276,
+              0.7248557806015015,
+              0.6226755976676941,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1ad4da",
+              "0x3f399026",
+              "0x3f1f67ab",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0.15112453699111938,
+              0.7238174080848694,
+              0.6237917542457581,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1ac064",
+              "0x3f394c19",
+              "0x3f1fb0d1",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              2
+            ],
+            "values": [
+              0.15125969052314758,
+              0.7247964143753052,
+              0.6226780414581299,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1ae3d2",
+              "0x3f398c42",
+              "0x3f1f67d4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              1
+            ],
+            "values": [
+              0.15114164352416992,
+              0.7243435382843018,
+              0.6232485175132751,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1ac4e0",
+              "0x3f396e94",
+              "0x3f1f8d37",
+              "0x3f800000"
+            ]
+          }
+        ],
+        "finite_lanes": 60
+      },
+      "repeat_identity": true
+    }
+  ],
+  "unreachable_mutation_controls": [
+    {
+      "id": "outer-xor-to-or",
+      "hazard": "outer-operator",
+      "expectation": "identity-because-unreachable-structural-reject",
+      "case_results": [
+        {
+          "case": "mono-default-shape",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
+          "candidate_rgba8_sha256": "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947"
+        },
+        {
+          "case": "rgb-four-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0",
+          "candidate_rgba8_sha256": "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69"
+        },
+        {
+          "case": "ridged-six-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2",
+          "candidate_rgba8_sha256": "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae"
+        },
+        {
+          "case": "single-domain-warp",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a",
+          "candidate_rgba8_sha256": "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3"
+        },
+        {
+          "case": "four-domain-warps-ridged",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242",
+          "candidate_rgba8_sha256": "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22"
+        },
+        {
+          "case": "tiled-full-resolution",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112",
+          "candidate_rgba8_sha256": "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779"
+        },
+        {
+          "case": "speed-zero-time-inert",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e",
+          "candidate_rgba8_sha256": "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478"
+        },
+        {
+          "case": "full-resolution-fallback",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873",
+          "candidate_rgba8_sha256": "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7"
+        }
+      ]
+    },
+    {
+      "id": "inner-xor-to-or",
+      "hazard": "inner-operator",
+      "expectation": "identity-because-unreachable-structural-reject",
+      "case_results": [
+        {
+          "case": "mono-default-shape",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
+          "candidate_rgba8_sha256": "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947"
+        },
+        {
+          "case": "rgb-four-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0",
+          "candidate_rgba8_sha256": "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69"
+        },
+        {
+          "case": "ridged-six-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2",
+          "candidate_rgba8_sha256": "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae"
+        },
+        {
+          "case": "single-domain-warp",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a",
+          "candidate_rgba8_sha256": "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3"
+        },
+        {
+          "case": "four-domain-warps-ridged",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242",
+          "candidate_rgba8_sha256": "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22"
+        },
+        {
+          "case": "tiled-full-resolution",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112",
+          "candidate_rgba8_sha256": "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779"
+        },
+        {
+          "case": "speed-zero-time-inert",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e",
+          "candidate_rgba8_sha256": "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478"
+        },
+        {
+          "case": "full-resolution-fallback",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873",
+          "candidate_rgba8_sha256": "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7"
+        }
+      ]
+    },
+    {
+      "id": "left-tree-to-right-tree",
+      "hazard": "parent/associativity",
+      "expectation": "identity-because-unreachable-structural-reject",
+      "case_results": [
+        {
+          "case": "mono-default-shape",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
+          "candidate_rgba8_sha256": "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947"
+        },
+        {
+          "case": "rgb-four-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0",
+          "candidate_rgba8_sha256": "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69"
+        },
+        {
+          "case": "ridged-six-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2",
+          "candidate_rgba8_sha256": "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae"
+        },
+        {
+          "case": "single-domain-warp",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a",
+          "candidate_rgba8_sha256": "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3"
+        },
+        {
+          "case": "four-domain-warps-ridged",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242",
+          "candidate_rgba8_sha256": "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22"
+        },
+        {
+          "case": "tiled-full-resolution",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112",
+          "candidate_rgba8_sha256": "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779"
+        },
+        {
+          "case": "speed-zero-time-inert",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e",
+          "candidate_rgba8_sha256": "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478"
+        },
+        {
+          "case": "full-resolution-fallback",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873",
+          "candidate_rgba8_sha256": "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7"
+        }
+      ]
+    },
+    {
+      "id": "both-xor-to-add",
+      "hazard": "operator/type-semantics",
+      "expectation": "identity-because-unreachable-structural-reject",
+      "case_results": [
+        {
+          "case": "mono-default-shape",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b018f8cc1fdda9f62e8bf4c98b348cb2ab30d06f7d7431f085fada7e846d5370",
+          "candidate_rgba8_sha256": "5e2f72a42f80ea0c4f8d817158bea3192c765447fb7163332762600b7ae30947"
+        },
+        {
+          "case": "rgb-four-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "2fffa3f23b68dd43c770264906426da052343f893116fa083cbb430862ada8e0",
+          "candidate_rgba8_sha256": "94a046751fea8a2c23f1832e05cad33037b586c74f2605520a1bf62e8ef86f69"
+        },
+        {
+          "case": "ridged-six-octaves",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "3d387b3e9cdb11992f2d5534161a0fe69fbb407d69647b9bddf7a6bf493463f2",
+          "candidate_rgba8_sha256": "54aed294f85f2c315738ce0af00de16f207e67185da8a469767dbd5c8b78aeae"
+        },
+        {
+          "case": "single-domain-warp",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "25965f069dbd1511129c5e0ffc3a1a7e17c9f0158e113c0ec43c06a010b0941a",
+          "candidate_rgba8_sha256": "52bef32bb985f21f8f6502352359bfa37f03dd3bd48c59a60861696f42301bf3"
+        },
+        {
+          "case": "four-domain-warps-ridged",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "5ee347f46136546e8a7eaf49930534a6e9f06613f428e3be90b227e9eb9f4242",
+          "candidate_rgba8_sha256": "b9f70845a761d8fc419d699931b081955eb49f2df457ea5d4edc769e706d5a22"
+        },
+        {
+          "case": "tiled-full-resolution",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "b7e8f598b5bfa125f415c3f1f48639714bfb09ddb15d8c15b3ed90e837682112",
+          "candidate_rgba8_sha256": "41c6ba39021f77993884418c097f25b138686797768a6b4f801856edfb126779"
+        },
+        {
+          "case": "speed-zero-time-inert",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "333db2d83ff72baa64118005b283482855237626d94bf251f4b341e08a52b11e",
+          "candidate_rgba8_sha256": "2a500a663087433951e28b012b09495546d1cccd016aa0d0e1fa75e330573478"
+        },
+        {
+          "case": "full-resolution-fallback",
+          "same_f32_bytes": true,
+          "same_rgba8_bytes": true,
+          "different_f32_lanes": 0,
+          "different_rgba8_bytes": 0,
+          "max_abs_f32_delta": 0,
+          "candidate_f32_sha256": "0b0cc11694cc7fdc5eeed2e0354b8382c94cf3d23d66e47c03477ee0a885d873",
+          "candidate_rgba8_sha256": "d617a8636255b0f49ed91dd82b255867fa698497c2286ba707839e98d721eac7"
+        }
+      ]
+    }
+  ],
+  "direct_unsigned_word_cases": [
+    {
+      "inputs_hex": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "inner_u32_hex": "0x00000000",
+      "result_u32_hex": "0x00000000",
+      "js_signed_result": 0,
+      "source_unsigned_numerator_f32": 0,
+      "source_unsigned_numerator_f32_bits_le": "0x00000000",
+      "canonical_js_signed_numerator_f32_bits_le": "0x00000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0,
+      "source_typed_ratio_f64_bits_le": "0x0000000000000000",
+      "mutations": {
+        "outer_or": "0x00000000",
+        "inner_or": "0x00000000",
+        "outer_and": "0x00000000",
+        "inner_and": "0x00000000",
+        "right_associated_xor": "0x00000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0xffffffff",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "inner_u32_hex": "0xffffffff",
+      "result_u32_hex": "0xffffffff",
+      "js_signed_result": -1,
+      "source_unsigned_numerator_f32": 4294967296,
+      "source_unsigned_numerator_f32_bits_le": "0x4f800000",
+      "canonical_js_signed_numerator_f32_bits_le": "0xbf800000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 1,
+      "source_typed_ratio_f64_bits_le": "0x3ff0000000000000",
+      "mutations": {
+        "outer_or": "0xffffffff",
+        "inner_or": "0xffffffff",
+        "outer_and": "0x00000000",
+        "inner_and": "0x00000000",
+        "right_associated_xor": "0xffffffff"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x80000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "inner_u32_hex": "0x80000000",
+      "result_u32_hex": "0x80000000",
+      "js_signed_result": -2147483648,
+      "source_unsigned_numerator_f32": 2147483648,
+      "source_unsigned_numerator_f32_bits_le": "0x4f000000",
+      "canonical_js_signed_numerator_f32_bits_le": "0xcf000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.5,
+      "source_typed_ratio_f64_bits_le": "0x3fe0000000000000",
+      "mutations": {
+        "outer_or": "0x80000000",
+        "inner_or": "0x80000000",
+        "outer_and": "0x00000000",
+        "inner_and": "0x00000000",
+        "right_associated_xor": "0x80000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x7fffffff",
+        "0xffffffff",
+        "0x00000000"
+      ],
+      "inner_u32_hex": "0x80000000",
+      "result_u32_hex": "0x80000000",
+      "js_signed_result": -2147483648,
+      "source_unsigned_numerator_f32": 2147483648,
+      "source_unsigned_numerator_f32_bits_le": "0x4f000000",
+      "canonical_js_signed_numerator_f32_bits_le": "0xcf000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.5,
+      "source_typed_ratio_f64_bits_le": "0x3fe0000000000000",
+      "mutations": {
+        "outer_or": "0x80000000",
+        "inner_or": "0xffffffff",
+        "outer_and": "0x00000000",
+        "inner_and": "0x7fffffff",
+        "right_associated_xor": "0x80000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0xaaaaaaaa",
+        "0x55555555",
+        "0xffffffff"
+      ],
+      "inner_u32_hex": "0xffffffff",
+      "result_u32_hex": "0x00000000",
+      "js_signed_result": 0,
+      "source_unsigned_numerator_f32": 0,
+      "source_unsigned_numerator_f32_bits_le": "0x00000000",
+      "canonical_js_signed_numerator_f32_bits_le": "0x00000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0,
+      "source_typed_ratio_f64_bits_le": "0x0000000000000000",
+      "mutations": {
+        "outer_or": "0xffffffff",
+        "inner_or": "0x00000000",
+        "outer_and": "0xffffffff",
+        "inner_and": "0xffffffff",
+        "right_associated_xor": "0x00000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x01234567",
+        "0x89abcdef",
+        "0xfedcba98"
+      ],
+      "inner_u32_hex": "0x88888888",
+      "result_u32_hex": "0x76543210",
+      "js_signed_result": 1985229328,
+      "source_unsigned_numerator_f32": 1985229312,
+      "source_unsigned_numerator_f32_bits_le": "0x4eeca864",
+      "canonical_js_signed_numerator_f32_bits_le": "0x4eeca864",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.46222221851348877,
+      "source_typed_ratio_f64_bits_le": "0x3fdd950c80000000",
+      "mutations": {
+        "outer_or": "0xfedcba98",
+        "inner_or": "0x77777777",
+        "outer_and": "0x88888888",
+        "inner_and": "0xffffffff",
+        "right_associated_xor": "0x76543210"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0xdeadbeef",
+        "0xcafebabe",
+        "0x8badf00d"
+      ],
+      "inner_u32_hex": "0x14530451",
+      "result_u32_hex": "0x9ffef45c",
+      "js_signed_result": -1610681252,
+      "source_unsigned_numerator_f32": 2684285952,
+      "source_unsigned_numerator_f32_bits_le": "0x4f1ffef4",
+      "canonical_js_signed_numerator_f32_bits_le": "0xcec00217",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.6249840259552002,
+      "source_typed_ratio_f64_bits_le": "0x3fe3ffde80000000",
+      "mutations": {
+        "outer_or": "0x9ffff45d",
+        "inner_or": "0x55524ef2",
+        "outer_and": "0x00010001",
+        "inner_and": "0x41014aa3",
+        "right_associated_xor": "0x9ffef45c"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x00000001",
+        "0x00000002",
+        "0x00000004"
+      ],
+      "inner_u32_hex": "0x00000003",
+      "result_u32_hex": "0x00000007",
+      "js_signed_result": 7,
+      "source_unsigned_numerator_f32": 7,
+      "source_unsigned_numerator_f32_bits_le": "0x40e00000",
+      "canonical_js_signed_numerator_f32_bits_le": "0x40e00000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 1.6298145055770874e-9,
+      "source_typed_ratio_f64_bits_le": "0x3e1c000000000000",
+      "mutations": {
+        "outer_or": "0x00000007",
+        "inner_or": "0x00000007",
+        "outer_and": "0x00000000",
+        "inner_and": "0x00000004",
+        "right_associated_xor": "0x00000007"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x80000000",
+        "0x40000000",
+        "0x20000000"
+      ],
+      "inner_u32_hex": "0xc0000000",
+      "result_u32_hex": "0xe0000000",
+      "js_signed_result": -536870912,
+      "source_unsigned_numerator_f32": 3758096384,
+      "source_unsigned_numerator_f32_bits_le": "0x4f600000",
+      "canonical_js_signed_numerator_f32_bits_le": "0xce000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.875,
+      "source_typed_ratio_f64_bits_le": "0x3fec000000000000",
+      "mutations": {
+        "outer_or": "0xe0000000",
+        "inner_or": "0xe0000000",
+        "outer_and": "0x00000000",
+        "inner_and": "0x20000000",
+        "right_associated_xor": "0xe0000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0xffffffff",
+        "0xffffffff",
+        "0x80000000"
+      ],
+      "inner_u32_hex": "0x00000000",
+      "result_u32_hex": "0x80000000",
+      "js_signed_result": -2147483648,
+      "source_unsigned_numerator_f32": 2147483648,
+      "source_unsigned_numerator_f32_bits_le": "0x4f000000",
+      "canonical_js_signed_numerator_f32_bits_le": "0xcf000000",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.5,
+      "source_typed_ratio_f64_bits_le": "0x3fe0000000000000",
+      "mutations": {
+        "outer_or": "0x80000000",
+        "inner_or": "0x7fffffff",
+        "outer_and": "0x00000000",
+        "inner_and": "0x7fffffff",
+        "right_associated_xor": "0x80000000"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x13579bdf",
+        "0x2468ace0",
+        "0xf0f0f0f0"
+      ],
+      "inner_u32_hex": "0x373f373f",
+      "result_u32_hex": "0xc7cfc7cf",
+      "js_signed_result": -942684209,
+      "source_unsigned_numerator_f32": 3352283136,
+      "source_unsigned_numerator_f32_bits_le": "0x4f47cfc8",
+      "canonical_js_signed_numerator_f32_bits_le": "0xce60c0e1",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.7805142402648926,
+      "source_typed_ratio_f64_bits_le": "0x3fe8f9f900000000",
+      "mutations": {
+        "outer_or": "0xf7fff7ff",
+        "inner_or": "0xc78f4f0f",
+        "outer_and": "0x30303030",
+        "inner_and": "0xf0b07830",
+        "right_associated_xor": "0xc7cfc7cf"
+      }
+    },
+    {
+      "inputs_hex": [
+        "0x0000ffff",
+        "0xffff0000",
+        "0x00ff00ff"
+      ],
+      "inner_u32_hex": "0xffffffff",
+      "result_u32_hex": "0xff00ff00",
+      "js_signed_result": -16711936,
+      "source_unsigned_numerator_f32": 4278255360,
+      "source_unsigned_numerator_f32_bits_le": "0x4f7f00ff",
+      "canonical_js_signed_numerator_f32_bits_le": "0xcb7f0100",
+      "denominator_f32_bits_le": "0x4f800000",
+      "source_typed_ratio": 0.9961089491844177,
+      "source_typed_ratio_f64_bits_le": "0x3fefe01fe0000000",
+      "mutations": {
+        "outer_or": "0xffffffff",
+        "inner_or": "0xff00ff00",
+        "outer_and": "0x00ff00ff",
+        "inner_and": "0x00ff00ff",
+        "right_associated_xor": "0xff00ff00"
+      }
+    }
+  ],
+  "direct_word_contract": {
+    "expression": "(a ^ b) ^ c",
+    "operand_and_result_type": "std::uint32_t",
+    "numerator_conversion": "binary32",
+    "denominator_source": "4294967295.0",
+    "denominator_f32_bits_le": "0x4f800000",
+    "right_association_observably_equivalent_but_structurally_rejected": true
+  },
+  "negative_closure": {
+    "foreign_key": "reject",
+    "missing_or_foreign_profile": "reject",
+    "operator_other_than_exact_two_xor_nodes": "reject",
+    "signed_int_operands_or_result": "reject",
+    "vector_scalar_or_mixed_operands": "reject",
+    "changed_parent_or_owner_or_path": "reject",
+    "defines_other_than_exact_DIMENSIONS_2": "reject",
+    "DIMENSIONS_3": "reject",
+    "generic_scalar_bitwise_helper_or_overload": "forbidden"
+  }
+}

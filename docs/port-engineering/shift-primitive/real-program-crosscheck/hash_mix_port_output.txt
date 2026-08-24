@@ -1,0 +1,2 @@
+hash_mix cross-check: N compared=100206 N exact=100206 N divergent=0
+cpu_umul spot-check: N compared=5000 N exact=5000 N divergent=0

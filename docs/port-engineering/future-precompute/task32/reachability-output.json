@@ -1,0 +1,413 @@
+{
+  "schema": "noisemaker-for-cpp.task32.reachability.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "method": "call graph from main(), following `call` node signature_id, one BFS pass; round() sites located as `builtin` nodes with callee=='round'; owner function membership in the reachable set determines liveness, matching task-31-target-reselection.md's method.",
+  "rows": [
+    {
+      "key": "filter/fxaa:fxaa",
+      "defines": {},
+      "main_signature_id": 24,
+      "total_functions_with_body": 7,
+      "reachable_function_ids": [
+        21,
+        22,
+        23,
+        24,
+        25,
+        27
+      ],
+      "all_functions": [
+        {
+          "id": 21,
+          "name": "as_u32",
+          "reachable_from_main": true
+        },
+        {
+          "id": 22,
+          "name": "load_texel",
+          "reachable_from_main": true
+        },
+        {
+          "id": 23,
+          "name": "luminance_from_rgb",
+          "reachable_from_main": true
+        },
+        {
+          "id": 24,
+          "name": "main",
+          "reachable_from_main": true
+        },
+        {
+          "id": 25,
+          "name": "reflect_coord",
+          "reachable_from_main": true
+        },
+        {
+          "id": 26,
+          "name": "sanitized_channelCount",
+          "reachable_from_main": false
+        },
+        {
+          "id": 27,
+          "name": "weight_from_luma",
+          "reachable_from_main": true
+        }
+      ],
+      "round_call_sites": [
+        {
+          "owner_function": "as_u32",
+          "owner_signature_id": 21,
+          "owner_reachable_from_main": true,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "22:21-22:33",
+          "argument_types": [
+            "float"
+          ],
+          "result_type": "float"
+        },
+        {
+          "owner_function": "sanitized_channelCount",
+          "owner_signature_id": 26,
+          "owner_reachable_from_main": false,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "26:23-26:43",
+          "argument_types": [
+            "float"
+          ],
+          "result_type": "float"
+        }
+      ],
+      "callers_of_round_owning_functions": {
+        "21": [
+          {
+            "caller_function": "main",
+            "caller_signature_id": 24,
+            "caller_reachable_from_main": true
+          },
+          {
+            "caller_function": "main",
+            "caller_signature_id": 24,
+            "caller_reachable_from_main": true
+          }
+        ],
+        "26": []
+      },
+      "any_round_site_reachable": true,
+      "all_round_sites_reachable": false
+    },
+    {
+      "key": "filter/grain:grain",
+      "defines": {},
+      "main_signature_id": 57,
+      "total_functions_with_body": 12,
+      "reachable_function_ids": [
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64
+      ],
+      "all_functions": [
+        {
+          "id": 53,
+          "name": "as_u32",
+          "reachable_from_main": true
+        },
+        {
+          "id": 54,
+          "name": "blend_cubic",
+          "reachable_from_main": true
+        },
+        {
+          "id": 55,
+          "name": "clamp01",
+          "reachable_from_main": true
+        },
+        {
+          "id": 56,
+          "name": "interpolation_weight",
+          "reachable_from_main": true
+        },
+        {
+          "id": 57,
+          "name": "main",
+          "reachable_from_main": true
+        },
+        {
+          "id": 58,
+          "name": "pcg3d",
+          "reachable_from_main": true
+        },
+        {
+          "id": 59,
+          "name": "periodic_value",
+          "reachable_from_main": true
+        },
+        {
+          "id": 60,
+          "name": "random_from_cell_3d",
+          "reachable_from_main": true
+        },
+        {
+          "id": 61,
+          "name": "sample_bicubic_layer",
+          "reachable_from_main": true
+        },
+        {
+          "id": 62,
+          "name": "sample_grain_noise",
+          "reachable_from_main": true
+        },
+        {
+          "id": 63,
+          "name": "sample_raw_value_noise",
+          "reachable_from_main": true
+        },
+        {
+          "id": 64,
+          "name": "sample_value_noise",
+          "reachable_from_main": true
+        }
+      ],
+      "round_call_sites": [
+        {
+          "owner_function": "as_u32",
+          "owner_signature_id": 53,
+          "owner_reachable_from_main": true,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "31:21-31:33",
+          "argument_types": [
+            "float"
+          ],
+          "result_type": "float"
+        }
+      ],
+      "callers_of_round_owning_functions": {
+        "53": [
+          {
+            "caller_function": "main",
+            "caller_signature_id": 57,
+            "caller_reachable_from_main": true
+          },
+          {
+            "caller_function": "main",
+            "caller_signature_id": 57,
+            "caller_reachable_from_main": true
+          }
+        ]
+      },
+      "any_round_site_reachable": true,
+      "all_round_sites_reachable": true
+    },
+    {
+      "key": "filter/normalMap:normalMap",
+      "defines": {},
+      "main_signature_id": 28,
+      "total_functions_with_body": 10,
+      "reachable_function_ids": [
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "all_functions": [
+        {
+          "id": 24,
+          "name": "as_u32",
+          "reachable_from_main": true
+        },
+        {
+          "id": 25,
+          "name": "cbrt_safe",
+          "reachable_from_main": true
+        },
+        {
+          "id": 26,
+          "name": "clamp01",
+          "reachable_from_main": true
+        },
+        {
+          "id": 27,
+          "name": "compute_reference_value",
+          "reachable_from_main": true
+        },
+        {
+          "id": 28,
+          "name": "main",
+          "reachable_from_main": true
+        },
+        {
+          "id": 29,
+          "name": "oklab_l_component",
+          "reachable_from_main": true
+        },
+        {
+          "id": 30,
+          "name": "sanitize_channelCount",
+          "reachable_from_main": true
+        },
+        {
+          "id": 31,
+          "name": "srgb_to_linear",
+          "reachable_from_main": true
+        },
+        {
+          "id": 32,
+          "name": "value_map_component",
+          "reachable_from_main": true
+        },
+        {
+          "id": 33,
+          "name": "wrap_coord",
+          "reachable_from_main": true
+        }
+      ],
+      "round_call_sites": [
+        {
+          "owner_function": "as_u32",
+          "owner_signature_id": 24,
+          "owner_reachable_from_main": true,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "34:21-34:33",
+          "argument_types": [
+            "float"
+          ],
+          "result_type": "float"
+        }
+      ],
+      "callers_of_round_owning_functions": {
+        "24": [
+          {
+            "caller_function": "main",
+            "caller_signature_id": 28,
+            "caller_reachable_from_main": true
+          },
+          {
+            "caller_function": "main",
+            "caller_signature_id": 28,
+            "caller_reachable_from_main": true
+          },
+          {
+            "caller_function": "sanitize_channelCount",
+            "caller_signature_id": 30,
+            "caller_reachable_from_main": true
+          }
+        ]
+      },
+      "any_round_site_reachable": true,
+      "all_round_sites_reachable": true
+    },
+    {
+      "key": "filter/snow:snow",
+      "defines": {},
+      "main_signature_id": 28,
+      "total_functions_with_body": 8,
+      "reachable_function_ids": [
+        28,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "all_functions": [
+        {
+          "id": 26,
+          "name": "as_u32",
+          "reachable_from_main": false
+        },
+        {
+          "id": 27,
+          "name": "clamp_01",
+          "reachable_from_main": false
+        },
+        {
+          "id": 28,
+          "name": "main",
+          "reachable_from_main": true
+        },
+        {
+          "id": 29,
+          "name": "normalized_sine",
+          "reachable_from_main": true
+        },
+        {
+          "id": 30,
+          "name": "periodic_value",
+          "reachable_from_main": true
+        },
+        {
+          "id": 31,
+          "name": "snow_fract_vec3",
+          "reachable_from_main": true
+        },
+        {
+          "id": 32,
+          "name": "snow_hash",
+          "reachable_from_main": true
+        },
+        {
+          "id": 33,
+          "name": "snow_noise",
+          "reachable_from_main": true
+        }
+      ],
+      "round_call_sites": [
+        {
+          "owner_function": "as_u32",
+          "owner_signature_id": 26,
+          "owner_reachable_from_main": false,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "26:21-26:33",
+          "argument_types": [
+            "float"
+          ],
+          "result_type": "float"
+        }
+      ],
+      "callers_of_round_owning_functions": {
+        "26": []
+      },
+      "any_round_site_reachable": false,
+      "all_round_sites_reachable": false
+    }
+  ]
+}

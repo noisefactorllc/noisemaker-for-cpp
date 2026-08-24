@@ -1,0 +1,980 @@
+[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31m [ 15%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31m [ 32%]
+[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[31m                                                   [100%][0m
+=================================== FAILURES ===================================
+[31m[1m_ TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys _[0m
+
+self = <test_typed_generator.TypedGeneratorTests testMethod=test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m generate_typed_slice[90m[39;49;00m
+    [90m[39;49;00m
+        slice_spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m1[39;49;00m, slice_spec[[33m"[39;49;00m[33mschema[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([33m"[39;49;00m[33ma024dc3a960cc44af454abc7aebce50456c194e6[39;49;00m[33m"[39;49;00m, slice_spec[[33m"[39;49;00m[33mrevision[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({[33m"[39;49;00m[33mfilter/scatter:scatterJitter[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33msource-double[39;49;00m[33m"[39;49;00m},[90m[39;49;00m
+                         slice_spec[[33m"[39;49;00m[33mnumeric_literal_contracts[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({[33m"[39;49;00m[33mclassicNoisedeck/coalesce:coalesce[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mcoalesce-uv-alias-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mclassicNoisedeck/refract:refract[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                              [33m"[39;49;00m[33mrefract-truthy-vector-conditional-noop-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/corrupt:corrupt[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mcorrupt-sample-uv-alias-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/crt:crt[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mcrt-metal-sine-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mmixer/shapeMask:shapeMask[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mshape-mask-sequential-lanes-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33msynth/polygon:shape[39;49;00m[33m"[39;49;00m: [33m"[39;49;00m[33mpolygon-zero-smoothing-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33msynth/sacredGeometry:sacredGeometry[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                              [33m"[39;49;00m[33msacred-star-number-division-v1[39;49;00m[33m"[39;49;00m},[90m[39;49;00m
+                         slice_spec[[33m"[39;49;00m[33mcompatibility_transforms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({[90m[39;49;00m
+            [33m"[39;49;00m[33mclassicNoisedeck/lensDistortion:lensDistortion[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [33m"[39;49;00m[33mcanonical-js-vector-equality-result-truthiness-v1[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }, slice_spec[[33m"[39;49;00m[33mcustom_comparer_profiles[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        existing = [[90m[39;49;00m
+            [33m"[39;49;00m[33mclassicNoisedeck/coalesce:coalesce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mclassicNoisedeck/composite:composite[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mclassicNoisedeck/splat:splat[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bc:bc[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bloom:brightPass[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bloom:composite[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/celShading:celShadingBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/channel:channel[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/chroma:chroma[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/chromaticAberration:chromaticAberration[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/chrome:chMap[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/colorReplace:colorReplace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/corrupt:corrupt[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/deriv:deriv[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/fibers:fibersBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/flipMirror:flipMirror[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/glowingEdge:glowingEdge[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/highPass:hpCombine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/hs:hs[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/lensFlare:lensFlare[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/mosaicTiles:mosaicTiles[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/normalize:apply[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/outline:outlineBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/outline:outlineValueMap[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/photocopy:pcCombine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixelSort:finalize[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixelSort:luminance[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixelSort:prepare[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixels:pixels[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/plasticWrap:pwSpec[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/reindex:nmReindexApply[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/relief:rlShade[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/repeat:repeat[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/ridge:ridge[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scale:scale[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scatter:scatterJitter[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scratches:scratchesBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scroll:scroll[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/seamless:seamless[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/simpleAberration:chromaticAberration[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/sine:sine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/skew:skew[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/smoothstep:smoothstep[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/spatter:spatter[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/strayHair:strayHairBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/tetraCosine:tetraCosine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/text:text[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/threshold:thresh[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/tile:tile[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/tint:colorize[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/translate:translate[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/unsharpMask:usmCombine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/vignette:vignette[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/watercolor:wcComposite[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/watercolor:wcSeed[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/wormhole:clear[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/alphaMask:alphaMask[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/applyMode:applyMode[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/blendMode:blendMode[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/centerMask:centerMask[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/channelCombine:channelCombine[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/patternMix:patternMix[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/shapeMask:shapeMask[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/split:split[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/thresholdMix:thresholdMix[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/uvRemap:uvRemap[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/media:mediaInput[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/modPattern:modPattern[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/osc2d:osc2d[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/pattern:pattern[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/polygon:shape[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        ][90m[39;49;00m
+        task15 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/chrome:chBlurH[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/chrome:chBlurV[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/clouds:clouds[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/craquelure:craquelure[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/hatch:hatch[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/highPass:hpBlurH[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/highPass:hpBlurV[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/lowPoly:lowPoly[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/morphology:morphA[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/morphology:morphB[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/normalize:reduce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/normalize:reduceMinmax[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/oilPaint:oilPost[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/patchwork:patchwork[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/photocopy:pcBlurH[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/photocopy:pcBlurV[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/pixelSort:findBrightest[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/plasticWrap:pwBlurH[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/plasticWrap:pwBlurV[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/relief:rlBlurH[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/relief:rlBlurV[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/reverb:reverb[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/scatter:scatterSmooth[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/stamp:stBlurH[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/stamp:stBlurV[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/strokes:stkPost[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/unsharpMask:usmBlurH[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/unsharpMask:usmBlurV[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/wormhole:blend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/cellSplit:cellSplit[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmixer/mashup:mashup[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/shadow:shadow[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/cell:cell[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/gradient:gradient[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/mandala:mandala[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/subdivide:subdivide[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m36[39;49;00m, [96mlen[39;49;00m(task15))[90m[39;49;00m
+        task18 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/celShading:celShadingEdges[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/outline:outlineSobel[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        task23 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bloom:ntapGather[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/directionalBlur:directionalBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/spinBlur:spinBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/strokes:stkSmear[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/vaseline:upsample[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/wind:wind[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [90m# Task 33: the dFdx/dFdy/fwidth cluster, admitted by node identity.[39;49;00m[90m[39;49;00m
+        [90m# `filter/posterize` and `filter/waves` also call a derivative builtin[39;49;00m[90m[39;49;00m
+        [90m# but are deliberately absent — they carry unrelated second blockers[39;49;00m[90m[39;49;00m
+        [90m# (`round` and `any` respectively) that no admission here resolves.[39;49;00m[90m[39;49;00m
+        task33 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bulge:bulge[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/celShading:celShadingColor[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/halftone:halftone[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/lens:lens[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/lensWarp:lensWarp[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/octaveWarp:octaveWarp[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pinch:pinch[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/polar:polar[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pondRipples:pondRipples[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/spiral:spiral[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/stamp:stThreshold[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/step:step[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/stipple:stipple[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/tunnel:tunnel[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/warp:warp[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m15[39;49;00m, [96mlen[39;49;00m(task33))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([96msorted[39;49;00m([*existing, *task15, [33m"[39;49;00m[33mfilter/pixelSort:computeRank[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/sharpen:sharpen[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/sobel:sobel[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 *task18, [33m"[39;49;00m[33mclassicNoisedeck/refract:refract[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mclassicNoisedeck/lensDistortion:lensDistortion[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/prismaticAberration:prismaticAberration[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33msynth/sacredGeometry:sacredGeometry[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/crt:crt[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/degauss:degauss[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 *task23, [33m"[39;49;00m[33mfilter/pixelSort:gatherSorted[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/smooth:smoothEdge[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33msynth/perlin:perlin[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/rotate:rot[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mmixer/focusBlur:focusBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/extrude:extrude[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/curl:curl[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 *task33, [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/bitwise:bitwise[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/adjust:adjust[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/colorspace:colorspace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mclassicNoisedeck/cellNoise:cellNoise[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/lighting:lighting[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/reindex:nmReindexReduce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/posterize:posterize[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/waves:waves[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                 [33m"[39;49;00m[33mfilter/watercolor:wcSimplify[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/snow:snow[39;49;00m[33m"[39;49;00m]),[90m[39;49;00m
+                         [entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]])[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(entry[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m] == {} [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                            [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task18))[90m[39;49;00m
+        task15_defines = {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m]: entry[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                          [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                          [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task15}[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({[90m[39;49;00m
+            **{key: {} [94mfor[39;49;00m key [95min[39;49;00m task15},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/hatch:hatch[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/lowPoly:lowPoly[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mLP_BORDER[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m, [33m"[39;49;00m[33mLP_LIGHT[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/morphology:morphA[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mSHAPE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/morphology:morphB[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mSHAPE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/oilPaint:oilPost[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m1[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/relief:rlBlurH[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/relief:rlBlurV[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scatter:scatterSmooth[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/strokes:stkPost[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mMODE[39;49;00m[33m"[39;49;00m: [94m0[39;49;00m},[90m[39;49;00m
+        }, task15_defines)[90m[39;49;00m
+    [90m[39;49;00m
+        task12 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mclassicNoisedeck/coalesce:coalesce[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mclassicNoisedeck/composite:composite[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/hs:hs[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/repeat:repeat[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/scale:scale[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scroll:scroll[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/translate:translate[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/patternMix:patternMix[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmixer/shapeMask:shapeMask[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mmixer/split:split[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmixer/uvRemap:uvRemap[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msynth/modPattern:modPattern[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/pattern:pattern[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(task12, {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                  [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task12})[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(entry[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m] == {} [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                            [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task12))[90m[39;49;00m
+    [90m[39;49;00m
+        task13 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bloom:brightPass[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/bloom:composite[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/fibers:fibersBlend[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/normalize:apply[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixelSort:luminance[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexApply[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/scratches:scratchesBlend[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/strayHair:strayHairBlend[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(task13, {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                  [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task13})[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(entry[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m] == {} [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                            [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task13))[90m[39;49;00m
+        task14 = {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/pixelSort:finalize[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/pixelSort:prepare[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/skew:skew[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/tetraCosine:tetraCosine[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/tile:tile[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/osc2d:osc2d[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(task14, {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                  [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task14})[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(entry[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m] == {} [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                            [94mif[39;49;00m entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95min[39;49;00m task14))[90m[39;49;00m
+        corpus_manifest = json.loads(([90m[39;49;00m
+            REPOSITORY / [33m"[39;49;00m[33mtools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/manifest.json[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+        ).read_text())[90m[39;49;00m
+        corpus_keys = {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m corpus_manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]}[90m[39;49;00m
+        public_keys = {entry[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m entry [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]} | {[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual([94m50[39;49;00m, [96mlen[39;49;00m(corpus_keys - public_keys))[90m[39;49;00m
+[1m[31mE       AssertionError: 50 != 45[0m
+
+[1m[31mtests/test_typed_generator.py[0m:5173: AssertionError
+[31m[1m_ TypedGeneratorTests.test_task23_rejected_structural_mutations_have_exact_native_sensitivity _[0m
+
+self = <test_typed_generator.TypedGeneratorTests testMethod=test_task23_rejected_structural_mutations_have_exact_native_sensitivity>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task23_rejected_structural_mutations_have_exact_native_sensitivity[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mdataclasses[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mstruct[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96memit_typed_cpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            TypedEmissionError, _Emitter, render_typed_cpp,[90m[39;49;00m
+        )[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[90m [39;49;00m[94mimport[39;49;00m parse_program[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96msemantic[39;49;00m[90m [39;49;00m[94mimport[39;49;00m analyze_program[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mtyped_ir[39;49;00m[90m [39;49;00m[94mimport[39;49;00m TypedExpression[90m[39;49;00m
+    [90m[39;49;00m
+        oracle_path = pathlib.Path([90m[39;49;00m
+            REPOSITORY / [33m"[39;49;00m[33mtests/oracles/task-23-oracles.json[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue(oracle_path.is_file(), [33m"[39;49;00m[33mTask 23 frozen oracle JSON is required[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        oracle = json.loads(oracle_path.read_text())[90m[39;49;00m
+        sensitivity = oracle[[33m"[39;49;00m[33mmutation_sensitivity[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+        frozen_sensitivity = json.dumps([90m[39;49;00m
+            sensitivity, sort_keys=[94mTrue[39;49;00m, separators=([33m"[39;49;00m[33m,[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33m:[39;49;00m[33m"[39;49;00m)).encode()[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33mdf29ceac2f2df56b9e73fe8fa92842b39dee48e0f0482367f2bb6ec56d5bccca[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(frozen_sensitivity).hexdigest())[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# name, key, owner, target, mutation kind, before shape/value,[39;49;00m[90m[39;49;00m
+        [90m# replacement spelling/value.  The full contract, source replacement,[39;49;00m[90m[39;49;00m
+        [90m# controls, results, and ordering are frozen by the digest above and[39;49;00m[90m[39;49;00m
+        [90m# then consumed field-for-field below.[39;49;00m[90m[39;49;00m
+        structural_specs = ([90m[39;49;00m
+            ([33m"[39;49;00m[33mbloom-global-bound-64-to-8[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/bloom:ntapGather[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mMAX_TAPS[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m64[39;49;00m, [33m"[39;49;00m[33m8[39;49;00m[33m"[39;49;00m, [94m8[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mbloom-tap-count-forced-one[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/bloom:ntapGather[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mtapCount[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mbuiltin[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mint[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mclamp[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [94m30[39;49;00m, [94m20[39;49;00m), [33m"[39;49;00m[33m1[39;49;00m[33m"[39;49;00m, [94m1[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mdirectional-global-bound-32-to-8[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/directionalBlur:directionalBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [94mNone[39;49;00m, [33m"[39;49;00m[33mN[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m32[39;49;00m, [33m"[39;49;00m[33m8[39;49;00m[33m"[39;49;00m, [94m8[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mdirectional-jitter-disabled[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/directionalBlur:directionalBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mjitter[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mbinary[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfloat[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [33m"[39;49;00m[33m*[39;49;00m[33m"[39;49;00m, [94m23[39;49;00m, [94m21[39;49;00m),[90m[39;49;00m
+             [33m"[39;49;00m[33m0.0[39;49;00m[33m"[39;49;00m, [94m0.0[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mspin-global-bound-32-to-8[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/spinBlur:spinBlur[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mN[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m32[39;49;00m, [33m"[39;49;00m[33m8[39;49;00m[33m"[39;49;00m, [94m8[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mspin-jitter-disabled[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/spinBlur:spinBlur[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mjitter[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mbinary[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfloat[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [33m"[39;49;00m[33m*[39;49;00m[33m"[39;49;00m, [94m51[39;49;00m, [94m21[39;49;00m), [33m"[39;49;00m[33m0.0[39;49;00m[33m"[39;49;00m, [94m0.0[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mstrokes-global-bound-24-to-8[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/strokes:stkSmear[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mMAX_TAPS[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m24[39;49;00m, [33m"[39;49;00m[33m8[39;49;00m[33m"[39;49;00m, [94m8[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mstrokes-field-selection-forced-135[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/strokes:stkSmear[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mside[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mbuiltin[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfloat[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msmoothstep[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [94m196[39;49;00m, [94m18[39;49;00m),[90m[39;49;00m
+             [33m"[39;49;00m[33m0.0[39;49;00m[33m"[39;49;00m, [94m0.0[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mvaseline-global-bound-32-to-8[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/vaseline:upsample[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mTAP_COUNT[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m32[39;49;00m, [33m"[39;49;00m[33m8[39;49;00m[33m"[39;49;00m, [94m8[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mvaseline-edge-mask-forced-zero[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/vaseline:upsample[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33medgeMask[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mcall[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfloat[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mchebyshev_mask[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [94m68[39;49;00m, [94m22[39;49;00m),[90m[39;49;00m
+             [33m"[39;49;00m[33m0.0[39;49;00m[33m"[39;49;00m, [94m0.0[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mwind-global-bound-128-to-16[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/wind:wind[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mMAX_STEPS[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m, [94m128[39;49;00m, [33m"[39;49;00m[33m16[39;49;00m[33m"[39;49;00m, [94m16[39;49;00m),[90m[39;49;00m
+            ([33m"[39;49;00m[33mwind-direction-forced-right[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/wind:wind[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmain[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmarchDir[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+             [33m"[39;49;00m[33mlocal[39;49;00m[33m"[39;49;00m, ([33m"[39;49;00m[33mconditional[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfloat[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m, [94mNone[39;49;00m, [94m38[39;49;00m, [94m23[39;49;00m), [33m"[39;49;00m[33m1.0[39;49;00m[33m"[39;49;00m, [94m1.0[39;49;00m),[90m[39;49;00m
+        )[90m[39;49;00m
+        mutations = sensitivity[[33m"[39;49;00m[33mmutations[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m12[39;49;00m, sensitivity[[33m"[39;49;00m[33mmutation_count[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [(item[[94m0[39;49;00m], item[[94m1[39;49;00m]) [94mfor[39;49;00m item [95min[39;49;00m structural_specs],[90m[39;49;00m
+            [(item[[33m"[39;49;00m[33mname[39;49;00m[33m"[39;49;00m], item[[33m"[39;49;00m[33mkey[39;49;00m[33m"[39;49;00m]) [94mfor[39;49;00m item [95min[39;49;00m mutations])[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(item[[33m"[39;49;00m[33mreplacement[39;49;00m[33m"[39;49;00m][[33m"[39;49;00m[33mexact_replacement_count[39;49;00m[33m"[39;49;00m] == [94m1[39;49;00m[90m[39;49;00m
+                            [94mfor[39;49;00m item [95min[39;49;00m mutations))[90m[39;49;00m
+    [90m[39;49;00m
+        corpus_root = check_corpus._corpus_root(REPOSITORY)[90m[39;49;00m
+        corpus_manifest = json.loads((corpus_root / [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+        slice_spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        defines_by_key = {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m]: item[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                          [94mfor[39;49;00m item [95min[39;49;00m slice_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]}[90m[39;49;00m
+        profile = [33m"[39;49;00m[33msource-global-literal-int-v1[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+        programs = {}[90m[39;49;00m
+        source_hashes = {}[90m[39;49;00m
+        canonical_cpp = {}[90m[39;49;00m
+        ordered_keys = [96mtuple[39;49;00m([96mdict[39;49;00m.fromkeys(item[[94m1[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m structural_specs))[90m[39;49;00m
+        [94mfor[39;49;00m canonical_index, key [95min[39;49;00m [96menumerate[39;49;00m(ordered_keys):[90m[39;49;00m
+            entry = [96mnext[39;49;00m(item [94mfor[39;49;00m item [95min[39;49;00m corpus_manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                         [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] == key)[90m[39;49;00m
+            raw = (corpus_root / entry[[33m"[39;49;00m[33msource[39;49;00m[33m"[39;49;00m]).read_text()[90m[39;49;00m
+            source_hash = hashlib.sha256(raw.encode()).hexdigest()[90m[39;49;00m
+            [96mself[39;49;00m.assertEqual(entry[[33m"[39;49;00m[33mraw_sha256[39;49;00m[33m"[39;49;00m], source_hash)[90m[39;49;00m
+            typed = analyze_program([90m[39;49;00m
+                parse_program(raw, key, defines_by_key[key]), key,[90m[39;49;00m
+                source_global_literal_int_profile=profile)[90m[39;49;00m
+            generate_typed_slice.validate_capabilities([90m[39;49;00m
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,[90m[39;49;00m
+                source_hash=source_hash,[90m[39;49;00m
+                source_global_literal_int_profile=profile)[90m[39;49;00m
+            programs[key] = typed[90m[39;49;00m
+            source_hashes[key] = source_hash[90m[39;49;00m
+            canonical_cpp[key] = render_typed_cpp([90m[39;49;00m
+                typed, key, source_hash,[90m[39;49;00m
+                [33mf[39;49;00m[33m"[39;49;00m[33mtask23_canonical_[39;49;00m[33m{[39;49;00mcanonical_index[33m}[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33mf[39;49;00m[33m"[39;49;00m[33mbind_task23_canonical_[39;49;00m[33m{[39;49;00mcanonical_index[33m}[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                source_global_literal_int_profile=profile)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mdef[39;49;00m[90m [39;49;00m[92mmutate_program[39;49;00m(spec):[90m[39;49;00m
+            name, key, owner, target, kind, before, spelling, value = spec[90m[39;49;00m
+            program = programs[key][90m[39;49;00m
+            [94mif[39;49;00m kind == [33m"[39;49;00m[33mglobal[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                matches = [item [94mfor[39;49;00m item [95min[39;49;00m program.declarations[90m[39;49;00m
+                           [94mif[39;49;00m item.symbol.name == target][90m[39;49;00m
+                [96mself[39;49;00m.assertEqual([94m1[39;49;00m, [96mlen[39;49;00m(matches), name)[90m[39;49;00m
+                declaration = matches[[94m0[39;49;00m][90m[39;49;00m
+                initializer = declaration.initializer[90m[39;49;00m
+                [96mself[39;49;00m.assertIsNotNone(initializer)[90m[39;49;00m
+                [96mself[39;49;00m.assertEqual([90m[39;49;00m
+                    ([33m"[39;49;00m[33mconst[39;49;00m[33m"[39;49;00m, [94mFalse[39;49;00m, [33m"[39;49;00m[33min[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mint[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mliteral[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mrvalue[39;49;00m[33m"[39;49;00m, before,[90m[39;49;00m
+                     [96mstr[39;49;00m(before), (), declaration.symbol.span.program_key),[90m[39;49;00m
+                    (declaration.symbol.storage, declaration.symbol.writable,[90m[39;49;00m
+                     declaration.symbol.direction, declaration.type.display(),[90m[39;49;00m
+                     initializer.kind, initializer.category, initializer.literal_value,[90m[39;49;00m
+                     initializer.literal, initializer.children,[90m[39;49;00m
+                     declaration.symbol.span.program_key))[90m[39;49;00m
+                replacement = dataclasses.replace([90m[39;49;00m
+                    initializer, literal=spelling, literal_value=value)[90m[39;49;00m
+                changed = dataclasses.replace(declaration, initializer=replacement)[90m[39;49;00m
+                declarations = [96mtuple[39;49;00m(changed [94mif[39;49;00m item [95mis[39;49;00m declaration [94melse[39;49;00m item[90m[39;49;00m
+                                     [94mfor[39;49;00m item [95min[39;49;00m program.declarations)[90m[39;49;00m
+                [94mreturn[39;49;00m dataclasses.replace(program, declarations=declarations)[90m[39;49;00m
+    [90m[39;49;00m
+            found = [94m0[39;49;00m[90m[39;49;00m
+            [94mdef[39;49;00m[90m [39;49;00m[92mstatement[39;49;00m(item, function_name):[90m[39;49;00m
+                [94mnonlocal[39;49;00m found[90m[39;49;00m
+                expressions = [][90m[39;49;00m
+                [94mfor[39;49;00m expression [95min[39;49;00m item.expressions:[90m[39;49;00m
+                    candidate = expression[90m[39;49;00m
+                    [94mif[39;49;00m (function_name == owner [95mand[39;49;00m expression.kind == [33m"[39;49;00m[33mdeclaration[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                            [95mand[39;49;00m expression.symbol [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m[90m[39;49;00m
+                            [95mand[39;49;00m expression.symbol.name == target):[90m[39;49;00m
+                        found += [94m1[39;49;00m[90m[39;49;00m
+                        [96mself[39;49;00m.assertEqual([94m1[39;49;00m, [96mlen[39;49;00m(expression.children), name)[90m[39;49;00m
+                        initializer = expression.children[[94m0[39;49;00m][90m[39;49;00m
+                        actual = (initializer.kind, initializer.type.display(),[90m[39;49;00m
+                                  initializer.callee, initializer.operator,[90m[39;49;00m
+                                  initializer.span.start_line,[90m[39;49;00m
+                                  initializer.span.start_column)[90m[39;49;00m
+                        [96mself[39;49;00m.assertEqual(before, actual, name)[90m[39;49;00m
+                        [96mself[39;49;00m.assertEqual([33m"[39;49;00m[33mrvalue[39;49;00m[33m"[39;49;00m, initializer.category, name)[90m[39;49;00m
+                        replacement = TypedExpression([90m[39;49;00m
+                            [33m"[39;49;00m[33mliteral[39;49;00m[33m"[39;49;00m, initializer.type, initializer.span,[90m[39;49;00m
+                            initializer.category, literal=spelling,[90m[39;49;00m
+                            literal_value=value)[90m[39;49;00m
+                        candidate = dataclasses.replace([90m[39;49;00m
+                            expression, children=(replacement,))[90m[39;49;00m
+                    expressions.append(candidate)[90m[39;49;00m
+                [94mreturn[39;49;00m dataclasses.replace([90m[39;49;00m
+                    item, expressions=[96mtuple[39;49;00m(expressions),[90m[39;49;00m
+                    children=[96mtuple[39;49;00m(statement(child, function_name)[90m[39;49;00m
+                                   [94mfor[39;49;00m child [95min[39;49;00m item.children))[90m[39;49;00m
+            functions = [96mtuple[39;49;00m(dataclasses.replace([90m[39;49;00m
+                function, body=[96mtuple[39;49;00m(statement(item, function.name)[90m[39;49;00m
+                                     [94mfor[39;49;00m item [95min[39;49;00m function.body))[90m[39;49;00m
+                [94mfor[39;49;00m function [95min[39;49;00m program.functions)[90m[39;49;00m
+            [96mself[39;49;00m.assertEqual([94m1[39;49;00m, found, name)[90m[39;49;00m
+            [94mreturn[39;49;00m dataclasses.replace(program, functions=functions)[90m[39;49;00m
+    [90m[39;49;00m
+        [94mdef[39;49;00m[90m [39;49;00m[92mrender_rejected_mutation[39;49;00m(program, source_hash, namespace, factory):[90m[39;49;00m
+            [90m# Deliberately bypass only _Emitter.__post_init__, after the test[39;49;00m[90m[39;49;00m
+            [90m# has proved both production boundaries reject this exact tree.[39;49;00m[90m[39;49;00m
+            [90m# Rebuild every program-derived rendering cache from the mutation.[39;49;00m[90m[39;49;00m
+            emitter = [96mobject[39;49;00m.[92m__new__[39;49;00m(_Emitter)[90m[39;49;00m
+            emitter.program = program[90m[39;49;00m
+            emitter.source_hash = source_hash[90m[39;49;00m
+            emitter.numeric_literal_contract = [33m"[39;49;00m[33mglsl-f32[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+            emitter.compatibility_transform = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.custom_comparer_profile = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.source_global_literal_int_profile = profile[90m[39;49;00m
+            emitter.authorized_round_parent = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_round = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_custom_comparer_predicate = [94mNone[39;49;00m[90m[39;49;00m
+            [90m# Every authorized_*/emitted_* field _Emitter.__post_init__ would[39;49;00m[90m[39;49;00m
+            [90m# otherwise set. object.__new__ bypasses __post_init__ entirely,[39;49;00m[90m[39;49;00m
+            [90m# so each field added by a later profile must be mirrored here by[39;49;00m[90m[39;49;00m
+            [90m# hand or expression()/statement() raises AttributeError on the[39;49;00m[90m[39;49;00m
+            [90m# first program that never sets it.[39;49;00m[90m[39;49;00m
+            emitter.authorized_literal_vec3_lane_sites = ()[90m[39;49;00m
+            emitter.authorized_smooth_edge_luma_weights_declaration = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_perlin_scalar_uint_xors = ()[90m[39;49;00m
+            emitter.emitted_perlin_scalar_uint_xors = [][90m[39;49;00m
+            emitter.authorized_bitwise_scalar_int_ops_sites = ()[90m[39;49;00m
+            emitter.emitted_bitwise_scalar_int_ops_sites = [][90m[39;49;00m
+            emitter.authorized_bitwise_narrowing_skip_nodes = ()[90m[39;49;00m
+            emitter.emitted_bitwise_narrowing_skip_nodes = [][90m[39;49;00m
+            emitter.authorized_rotate_helper = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_rotate_expressions = ()[90m[39;49;00m
+            emitter.emitted_rotate_helper_count = [94m0[39;49;00m[90m[39;49;00m
+            emitter.emitted_rotate_expressions = [][90m[39;49;00m
+            emitter.authorized_focus_blur_proof = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_extrude_proof = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_caustic_proof = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_curl_proof = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.emitted_curl_nodes = [][90m[39;49;00m
+            emitter.emitted_caustic_nodes = [][90m[39;49;00m
+            emitter.emitted_extrude_nodes = [][90m[39;49;00m
+            emitter.emitted_focus_blur_parameter_sites = [][90m[39;49;00m
+            emitter.emitted_focus_blur_uses = [][90m[39;49;00m
+            emitter.emitted_focus_blur_calls = [][90m[39;49;00m
+            emitter.authorized_grade_luma_weights_declaration = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.authorized_grade_index_sites = ()[90m[39;49;00m
+            emitter.emitted_grade_index_sites = [][90m[39;49;00m
+            emitter.authorized_linear_srgb_lane_index_sites = ()[90m[39;49;00m
+            emitter.emitted_linear_srgb_lane_index_sites = [][90m[39;49;00m
+            emitter.authorized_derivative_proof = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.emitted_derivative_nodes = [][90m[39;49;00m
+            emitter.authorized_reflect_node = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.emitted_reflect_nodes = [][90m[39;49;00m
+            emitter.uniforms = {[90m[39;49;00m
+                item.symbol.id: item.symbol [94mfor[39;49;00m item [95min[39;49;00m program.declarations[90m[39;49;00m
+                [94mif[39;49;00m item.symbol.storage == [33m"[39;49;00m[33muniform[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+            emitter.outputs = {[90m[39;49;00m
+                item.symbol.id: item.symbol [94mfor[39;49;00m item [95min[39;49;00m program.declarations[90m[39;49;00m
+                [94mif[39;49;00m item.symbol.storage == [33m"[39;49;00m[33moutput[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+            emitter.source_globals = {[90m[39;49;00m
+                item.symbol.id: item [94mfor[39;49;00m item [95min[39;49;00m program.declarations[90m[39;49;00m
+                [94mif[39;49;00m item.symbol.storage == [33m"[39;49;00m[33mconst[39;49;00m[33m"[39;49;00m}[90m[39;49;00m
+            emitter.source_global_dependencies = {}[90m[39;49;00m
+            integer = [96mnext[39;49;00m(item [94mfor[39;49;00m item [95min[39;49;00m program.declarations[90m[39;49;00m
+                           [94mif[39;49;00m item.symbol.storage == [33m"[39;49;00m[33mconst[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                           [95mand[39;49;00m item.type.display() == [33m"[39;49;00m[33mint[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+            emitter.source_global_bounds = (([90m[39;49;00m
+                integer.symbol.id, integer.initializer.literal_value,[90m[39;49;00m
+                [33m"[39;49;00m[33msource-global-const-literal[39;49;00m[33m"[39;49;00m, integer.symbol),)[90m[39;49;00m
+            emitter.function_names = {[90m[39;49;00m
+                item.signature.id: item.name [94mfor[39;49;00m item [95min[39;49;00m program.functions}[90m[39;49;00m
+            emitter.ordinary_array_return_signatures = {[90m[39;49;00m
+                item.signature.id [94mfor[39;49;00m item [95min[39;49;00m program.functions[90m[39;49;00m
+                [94mif[39;49;00m emitter._function_returns_integral_call_map(item)}[90m[39;49;00m
+            emitter.mutated_symbol_ids = [96mset[39;49;00m()[90m[39;49;00m
+            [94mfor[39;49;00m function [95min[39;49;00m program.functions:[90m[39;49;00m
+                [94mfor[39;49;00m item [95min[39;49;00m function.body:[90m[39;49;00m
+                    emitter._collect_mutated_symbols(item)[90m[39;49;00m
+            emitter.locals = {}[90m[39;49;00m
+            emitter.current_function_name = [94mNone[39;49;00m[90m[39;49;00m
+            emitter.current_function_signature_id = [94mNone[39;49;00m[90m[39;49;00m
+            emitter._validate_source_globals()[90m[39;49;00m
+            [94mreturn[39;49;00m [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(emitter.render_body(namespace, factory)) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+    [90m[39;49;00m
+        rendered_mutations = [][90m[39;49;00m
+        [94mfor[39;49;00m index, spec [95min[39;49;00m [96menumerate[39;49;00m(structural_specs):[90m[39;49;00m
+            name, key, _owner, target, kind, _before, spelling, _value = spec[90m[39;49;00m
+            mutated = mutate_program(spec)[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.subTest(mutation=name, boundary=[33m"[39;49;00m[33mvalidator[39;49;00m[33m"[39;49;00m), [96mself[39;49;00m.assertRaises([90m[39;49;00m
+                    generate_typed_slice.GeneratorError):[90m[39;49;00m
+                generate_typed_slice.validate_capabilities([90m[39;49;00m
+                    mutated, generate_typed_slice.APPROVED_CAPABILITIES,[90m[39;49;00m
+                    source_hash=source_hashes[key],[90m[39;49;00m
+                    source_global_literal_int_profile=profile)[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.subTest(mutation=name, boundary=[33m"[39;49;00m[33memitter[39;49;00m[33m"[39;49;00m), [96mself[39;49;00m.assertRaises([90m[39;49;00m
+                    TypedEmissionError):[90m[39;49;00m
+                render_typed_cpp([90m[39;49;00m
+                    mutated, key, source_hashes[key],[90m[39;49;00m
+                    source_global_literal_int_profile=profile)[90m[39;49;00m
+>           rendered = render_rejected_mutation([90m[39;49;00m
+                mutated, source_hashes[key], [33mf[39;49;00m[33m"[39;49;00m[33mtask23_mut_[39;49;00m[33m{[39;49;00mindex[33m}[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33mf[39;49;00m[33m"[39;49;00m[33mbind_task23_mut_[39;49;00m[33m{[39;49;00mindex[33m}[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+
+[1m[31mtests/test_typed_generator.py[0m:2850: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+[1m[31mtests/test_typed_generator.py[0m:2833: in render_rejected_mutation
+    [0m[94mreturn[39;49;00m [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(emitter.render_body(namespace, factory)) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31mtools/glslcpp/emit_typed_cpp.py[0m:2501: in render_body
+    [0mlines.extend([96mself[39;49;00m.function_declaration(function) [94mfor[39;49;00m function [95min[39;49;00m helpers)[90m[39;49;00m
+[1m[31mtools/glslcpp/emit_typed_cpp.py[0m:2501: in <genexpr>
+    [0mlines.extend([96mself[39;49;00m.function_declaration(function) [94mfor[39;49;00m function [95min[39;49;00m helpers)[90m[39;49;00m
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31mtools/glslcpp/emit_typed_cpp.py[0m:2444: in function_declaration
+    [0mparameters = [33m"[39;49;00m[33m, [39;49;00m[33m"[39;49;00m.join([[33m"[39;49;00m[33m[[maybe_unused]] const State& state[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+[1m[31mtools/glslcpp/emit_typed_cpp.py[0m:2446: in <genexpr>
+    [0m[33mf[39;49;00m[33m"[39;49;00m[33m[[maybe_unused]] [39;49;00m[33m{[39;49;00m[96mself[39;49;00m.function_parameter_type(function,[90m [39;49;00mordinal,[90m [39;49;00mparameter)[33m}[39;49;00m[33m [39;49;00m[33m"[39;49;00m[90m[39;49;00m
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <[AttributeError("'tools.glslcpp.emit_typed_cpp._Emitter' object has no attribute 'gather_sorted_round_profile'") raised in repr()] _Emitter object at 0x107067e50>
+function = TypedFunction(signature=FunctionSignature(id=8, name='hash12', return_type=Type(kind='scalar', base='float', width=Non...er=None, constructor_type=None, symbol=None, literal_value=None),), children=(), loop_proof=None, counter_proof=None)))
+ordinal = 0
+parameter = Symbol(id=7, name='p', type=Type(kind='vector', base='float', width=2, columns=None, rows=None, element=None, size=Non...lBlur', start=156, end=162, start_line=13, start_column=14, end_line=13, end_column=20), writable=True, direction='in')
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mfunction_parameter_type[39;49;00m([96mself[39;49;00m, function: [96mobject[39;49;00m, ordinal: [96mint[39;49;00m,[90m[39;49;00m
+                                parameter: [96mobject[39;49;00m) -> [96mstr[39;49;00m:[90m[39;49;00m
+        focus = [96mgetattr[39;49;00m([96mself[39;49;00m, [33m"[39;49;00m[33mauthorized_focus_blur_proof[39;49;00m[33m"[39;49;00m, [94mNone[39;49;00m)[90m[39;49;00m
+        [94mif[39;49;00m focus [95mis[39;49;00m [95mnot[39;49;00m [94mNone[39;49;00m [95mand[39;49;00m [96many[39;49;00m(parameter [95mis[39;49;00m item[90m[39;49;00m
+                                     [94mfor[39;49;00m item [95min[39;49;00m focus.sampler_parameters):[90m[39;49;00m
+            [94mif[39;49;00m (function [95mis[39;49;00m [95mnot[39;49;00m focus.helper [95mor[39;49;00m ordinal [95mnot[39;49;00m [95min[39;49;00m ([94m0[39;49;00m, [94m1[39;49;00m)[90m[39;49;00m
+                    [95mor[39;49;00m focus.sampler_parameters[ordinal] [95mis[39;49;00m [95mnot[39;49;00m parameter[90m[39;49;00m
+                    [95mor[39;49;00m parameter.type.display() != [33m"[39;49;00m[33msampler2D[39;49;00m[33m"[39;49;00m):[90m[39;49;00m
+                [94mraise[39;49;00m _error([96mself[39;49;00m.program, parameter,[90m[39;49;00m
+                             [33m"[39;49;00m[33mmalformed authenticated borrowed sampler parameter[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+            [96mself[39;49;00m.emitted_focus_blur_parameter_sites.append(parameter)[90m[39;49;00m
+            [94mreturn[39;49;00m [33m"[39;49;00m[33mconst Surface&[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+>       inout_proof = [96mself[39;49;00m.authorized_inout_vec3_swap_proof[90m[39;49;00m
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31mE       AttributeError: 'tools.glslcpp.emit_typed_cpp._Emitter' object has no attribute 'authorized_inout_vec3_swap_proof'[0m
+
+[1m[31mtools/glslcpp/emit_typed_cpp.py[0m:1374: AttributeError
+----------------------------- Captured stdout call -----------------------------
+[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m
+[31m[1m_ TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact _[0m
+
+self = <test_typed_generator.TypedGeneratorTests testMethod=test_task23_six_key_counts_positions_and_generated_isolation_are_exact>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task23_six_key_counts_positions_and_generated_isolation_are_exact[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mcopy[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96munittest[39;49;00m[90m [39;49;00m[94mimport[39;49;00m mock[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+    [90m[39;49;00m
+        new_keys = ([90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/bloom:ntapGather[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/directionalBlur:directionalBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/spinBlur:spinBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/strokes:stkSmear[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/vaseline:upsample[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33mfilter/wind:wind[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        )[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mderivative_admission_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            DERIVATIVE_ADMISSION_KEYS)[90m[39;49;00m
+    [90m[39;49;00m
+        live_spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        spec = copy.deepcopy(live_spec)[90m[39;49;00m
+        spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m] = [[90m[39;49;00m
+            item [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+            [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m DERIVATIVE_ADMISSION_KEYS[90m[39;49;00m
+            [95mand[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m {[90m[39;49;00m
+                [33m"[39;49;00m[33mclassicNoisedeck/lensDistortion:lensDistortion[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/pixelSort:gatherSorted[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/prismaticAberration:prismaticAberration[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/smooth:smoothEdge[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33msynth/perlin:perlin[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/rotate:rot[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mmixer/focusBlur:focusBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/extrude:extrude[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33msynth/curl:curl[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/bitwise:bitwise[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/adjust:adjust[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/colorspace:colorspace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mclassicNoisedeck/cellNoise:cellNoise[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/lighting:lighting[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                [33m"[39;49;00m[33mfilter/reindex:nmReindexReduce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            }][90m[39;49;00m
+        keys = [item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] != [33m"[39;49;00m[33mfilter/rotate:rot[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+        public = [96msorted[39;49;00m((*keys, [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m))[90m[39;49;00m
+        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) / [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual(([94m122[39;49;00m, [94m124[39;49;00m, [94m88[39;49;00m, [94m212[39;49;00m), ([90m[39;49;00m
+            [96mlen[39;49;00m(keys), [96mlen[39;49;00m(public), [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]) - [96mlen[39;49;00m(public),[90m[39;49;00m
+            [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])))[90m[39;49;00m
+[1m[31mE       AssertionError: Tuples differ: (122, 124, 88, 212) != (124, 126, 86, 212)[0m
+[1m[31mE       [0m
+[1m[31mE       First differing element 0:[0m
+[1m[31mE       122[0m
+[1m[31mE       124[0m
+[1m[31mE       [0m
+[1m[31mE       - (122, 124, 88, 212)[0m
+[1m[31mE       + (124, 126, 86, 212)[0m
+
+[1m[31mtests/test_typed_generator.py[0m:2416: AssertionError
+[31m[1m_ TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census _[0m
+
+self = <test_typed_generator.TypedGeneratorTests testMethod=test_task26_loader_admits_only_exact_smooth_carrier_and_census>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task26_loader_admits_only_exact_smooth_carrier_and_census[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mcopy[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96msmooth_edge_luma_weights_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            PROFILE, SMOOTH_EDGE_KEY)[90m[39;49;00m
+    [90m[39;49;00m
+        spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        typed = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                      [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m {[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/rotate:rot[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mmixer/focusBlur:focusBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/extrude:extrude[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/curl:curl[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m})[90m[39;49;00m
+        public = [96mtuple[39;49;00m([96msorted[39;49;00m((*typed, [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m)))[90m[39;49;00m
+        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /[90m[39;49;00m
+                             [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+        unported = [96mtuple[39;49;00m([96msorted[39;49;00m([90m[39;49;00m
+            {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]} - [96mset[39;49;00m(public)))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(typed, [96mtuple[39;49;00m([96msorted[39;49;00m([96mset[39;49;00m(typed))))[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual(([94m147[39;49;00m, [94m149[39;49;00m, [94m63[39;49;00m, [94m212[39;49;00m),[90m[39;49;00m
+                         ([96mlen[39;49;00m(typed), [96mlen[39;49;00m(public), [96mlen[39;49;00m(unported),[90m[39;49;00m
+                          [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])))[90m[39;49;00m
+[1m[31mE       AssertionError: Tuples differ: (147, 149, 63, 212) != (154, 156, 58, 212)[0m
+[1m[31mE       [0m
+[1m[31mE       First differing element 0:[0m
+[1m[31mE       147[0m
+[1m[31mE       154[0m
+[1m[31mE       [0m
+[1m[31mE       - (147, 149, 63, 212)[0m
+[1m[31mE       + (154, 156, 58, 212)[0m
+
+[1m[31mtests/test_typed_generator.py[0m:11510: AssertionError
+[31m[1m_ TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice _[0m
+
+self = <test_typed_generator.TypedGeneratorTests testMethod=test_typed_generation_is_cwd_independent_and_matches_committed_slice>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m generate_typed_slice[90m[39;49;00m
+    [90m[39;49;00m
+        expected = generate_typed_slice.generate_outputs(REPOSITORY)[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(expected[[33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m],[90m[39;49;00m
+                         (REPOSITORY / [33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m).read_bytes())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(expected[[33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m],[90m[39;49;00m
+                         (REPOSITORY / [33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m).read_bytes())[90m[39;49;00m
+        output = subprocess.check_output([90m[39;49;00m
+            [sys.executable, [96mstr[39;49;00m(REPOSITORY / [33m"[39;49;00m[33mtools/glslcpp/generate_typed_slice.py[39;49;00m[33m"[39;49;00m), [33m"[39;49;00m[33m--check[39;49;00m[33m"[39;49;00m],[90m[39;49;00m
+            cwd=[33m"[39;49;00m[33m/tmp[39;49;00m[33m"[39;49;00m, text=[94mTrue[39;49;00m)[90m[39;49;00m
+>       [96mself[39;49;00m.assertIn([33m"[39;49;00m[33mtyped slice ok (160 programs)[39;49;00m[33m"[39;49;00m, output)[90m[39;49;00m
+[1m[31mE       AssertionError: 'typed slice ok (160 programs)' not found in 'generate_typed_slice: typed slice ok (167 programs)\n'[0m
+
+[1m[31mtests/test_typed_generator.py[0m:6209: AssertionError
+[31m[1m_ Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation _[0m
+
+self = <test_typed_generator.Task29FocusBlurBorrowedSamplerTests testMethod=test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mcopy[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mcurl_vector_math_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m CURL_KEY[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mextrude_bvec2_relational_reduction_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            EXTRUDE_KEY)[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mfocus_blur_borrowed_sampler_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            FOCUS_BLUR_KEY, PROFILE)[90m[39;49;00m
+    [90m[39;49;00m
+        spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        typed = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [90m# filter/invert:inv and synth/solid:solid landed through the typed[39;49;00m[90m[39;49;00m
+        [90m# slice (see the "two free programs" batch in[39;49;00m[90m[39;49;00m
+        [90m# docs/port-engineering/REMAINING-WORK-ROADMAP.md) and are not[39;49;00m[90m[39;49;00m
+        [90m# excluded anywhere above, so they are already inside `typed` -- a[39;49;00m[90m[39;49;00m
+        [90m# plain tuple-concat union would double-count them (see the[39;49;00m[90m[39;49;00m
+        [90m# identical fix and its rationale in[39;49;00m[90m[39;49;00m
+        [90m# test_task22_crt_exclusions_remain_closed).[39;49;00m[90m[39;49;00m
+        public = [96mtuple[39;49;00m([96msorted[39;49;00m([96mset[39;49;00m(typed) | {[33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m}))[90m[39;49;00m
+        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /[90m[39;49;00m
+                             [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+        unported = [96mtuple[39;49;00m([96msorted[39;49;00m([90m[39;49;00m
+            {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]} - [96mset[39;49;00m(public)))[90m[39;49;00m
+        [90m# Live current state: filter/invert:inv, synth/solid:solid (zero-[39;49;00m[90m[39;49;00m
+        [90m# blocker free programs) and filter/reindex:nmReindexReduce (a[39;49;00m[90m[39;49;00m
+        [90m# deliberate loop-proof cap widening) landed after the mat3/linear-[39;49;00m[90m[39;49;00m
+        [90m# srgb-lane-index Slice A state this comment used to describe.[39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([94m167[39;49;00m, [94m167[39;49;00m, [94m45[39;49;00m, [94m212[39;49;00m),[90m[39;49;00m
+                         ([96mlen[39;49;00m(typed), [96mlen[39;49;00m(public), [96mlen[39;49;00m(unported),[90m[39;49;00m
+                          [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m3a7ea78437b30f99de56f6189490e77db5d6a3ce6a7c9d6b8346fcb4de9469de[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(typed) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m3a7ea78437b30f99de56f6189490e77db5d6a3ce6a7c9d6b8346fcb4de9469de[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(public) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m145[39;49;00m, typed.index(FOCUS_BLUR_KEY))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([33m"[39;49;00m[33mmixer/channelCombine:channelCombine[39;49;00m[33m"[39;49;00m, FOCUS_BLUR_KEY,[90m[39;49;00m
+                          [33m"[39;49;00m[33mmixer/mashup:mashup[39;49;00m[33m"[39;49;00m), typed[[94m144[39;49;00m:[94m147[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([{[90m[39;49;00m
+            [33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m: {},[90m[39;49;00m
+            [33m"[39;49;00m[33mfocus_blur_borrowed_sampler_profile[39;49;00m[33m"[39;49;00m: PROFILE,[90m[39;49;00m
+            [33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m: FOCUS_BLUR_KEY,[90m[39;49;00m
+        }], [item [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+             [94mif[39;49;00m [33m"[39;49;00m[33mfocus_blur_borrowed_sampler_profile[39;49;00m[33m"[39;49;00m [95min[39;49;00m item])[90m[39;49;00m
+    [90m[39;49;00m
+        current = generate_typed_slice.generate_outputs(REPOSITORY)[90m[39;49;00m
+        current_header = generate_typed_slice.render_catalog_header(spec)[90m[39;49;00m
+        manifest = json.loads(current[[90m[39;49;00m
+            [33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        focus_row = [96mnext[39;49;00m(item [94mfor[39;49;00m item [95min[39;49;00m manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                         [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] == FOCUS_BLUR_KEY)[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(PROFILE,[90m[39;49;00m
+                         focus_row[[33m"[39;49;00m[33mfocus_blur_borrowed_sampler_profile[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({}, focus_row[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+    [90m[39;49;00m
+        task28_spec = copy.deepcopy(spec)[90m[39;49;00m
+        task28_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m] = [item [94mfor[39;49;00m item [95min[39;49;00m task28_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                   [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m[90m[39;49;00m
+                                   (FOCUS_BLUR_KEY, EXTRUDE_KEY, CURL_KEY,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/bitwise:bitwise[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/adjust:adjust[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/colorspace:colorspace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mclassicNoisedeck/cellNoise:cellNoise[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/lighting:lighting[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/reindex:nmReindexReduce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/posterize:posterize[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/waves:waves[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                    [33m"[39;49;00m[33mfilter/watercolor:wcSimplify[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/snow:snow[39;49;00m[33m"[39;49;00m)][90m[39;49;00m
+        task28_keys = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m task28_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        task28_public = [96mtuple[39;49;00m([96msorted[39;49;00m((*task28_keys, [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                     [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m)))[90m[39;49;00m
+        task28_unported = [96mtuple[39;49;00m([96msorted[39;49;00m([90m[39;49;00m
+            {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]}[90m[39;49;00m
+            - [96mset[39;49;00m(task28_public)))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([94m143[39;49;00m, [94m145[39;49;00m, [94m67[39;49;00m),[90m[39;49;00m
+                         ([96mlen[39;49;00m(task28_keys), [96mlen[39;49;00m(task28_public),[90m[39;49;00m
+                          [96mlen[39;49;00m(task28_unported)))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m5b8cf6cccc9b953b9f8fbb0bbe5d5c2795f30fab8048d92b8cfa24c51e90e076[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(task28_keys) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m6e778c9dd254880bff0bd4aba1f97d4c2e6c948f9b150bbd3a6d29ec62ad52a6[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(task28_public) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [94mwith[39;49;00m mock.patch.object(generate_typed_slice, [33m"[39;49;00m[33mload_slice[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                               return_value=task28_spec):[90m[39;49;00m
+            task28 = generate_typed_slice.generate_outputs(REPOSITORY)[90m[39;49;00m
+        task28[[33m"[39;49;00m[33minclude/noisemaker/generated/catalog.hpp[39;49;00m[33m"[39;49;00m] = ([90m[39;49;00m
+            generate_typed_slice.render_catalog_header(task28_spec))[90m[39;49;00m
+        expected_task28 = {[90m[39;49;00m
+            [33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [33m"[39;49;00m[33m8b5795ec772543204a3c00e8cf7847118caf1a2a6cc31cc5e0c4ab0ac1fb52ea[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [33m"[39;49;00m[33mb8e26db3016fcaf6c64ce9dd74896f7acb4dde7a205d0254eddc89479e5fdcd8[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            [33m"[39;49;00m[33minclude/noisemaker/generated/catalog.hpp[39;49;00m[33m"[39;49;00m:[90m[39;49;00m
+                [33m"[39;49;00m[33m68b9aa5a8e6bdc4f22b1537b3691026f20920a7c72cc4897ba22a910926c6354[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+        }[90m[39;49;00m
+        [94mfor[39;49;00m path, expected [95min[39;49;00m expected_task28.items():[90m[39;49;00m
+            [96mself[39;49;00m.assertEqual(expected, hashlib.sha256(task28[path]).hexdigest(), path)[90m[39;49;00m
+    [90m[39;49;00m
+        marker = re.compile([33mr[39;49;00m[33m"[39;49;00m[33m(?m)^// Typed IR program: ([^[39;49;00m[33m\[39;49;00m[33mn]+)[39;49;00m[33m\[39;49;00m[33mn[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        [94mdef[39;49;00m[90m [39;49;00m[92mblocks[39;49;00m(payload):[90m[39;49;00m
+            source = payload.decode()[90m[39;49;00m
+            starts = [96mlist[39;49;00m(marker.finditer(source))[90m[39;49;00m
+            catalog = source.index([90m[39;49;00m
+                [33m"[39;49;00m[33m\n[39;49;00m[33mnamespace [39;49;00m[33m{[39;49;00m[33m\n[39;49;00m[33mconstexpr std::array<KernelFactory[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+            [94mreturn[39;49;00m {match.group([94m1[39;49;00m): source[[90m[39;49;00m
+                [94mmatch[39;49;00m.start():(starts[index + [94m1[39;49;00m].start()[90m[39;49;00m
+                               [94mif[39;49;00m index + [94m1[39;49;00m < [96mlen[39;49;00m(starts) [94melse[39;49;00m catalog)][90m[39;49;00m
+                [94mfor[39;49;00m index, match [95min[39;49;00m [96menumerate[39;49;00m(starts)}[90m[39;49;00m
+    [90m[39;49;00m
+        current_blocks = blocks(current[[33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        task28_blocks = blocks(task28[[33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([94m167[39;49;00m, [94m143[39;49;00m), ([96mlen[39;49;00m(current_blocks), [96mlen[39;49;00m(task28_blocks)))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({FOCUS_BLUR_KEY, EXTRUDE_KEY, CURL_KEY,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/bitwise:bitwise[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/adjust:adjust[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/colorspace:colorspace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mclassicNoisedeck/cellNoise:cellNoise[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/lighting:lighting[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/reindex:nmReindexReduce[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/posterize:posterize[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/waves:waves[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                          [33m"[39;49;00m[33mfilter/watercolor:wcSimplify[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/snow:snow[39;49;00m[33m"[39;49;00m},[90m[39;49;00m
+                         [96mset[39;49;00m(current_blocks) - [96mset[39;49;00m(task28_blocks))[90m[39;49;00m
+        ordinal = re.compile([33mr[39;49;00m[33m"[39;49;00m[33mtyped_[0-9]+[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        [94mfor[39;49;00m key, block [95min[39;49;00m task28_blocks.items():[90m[39;49;00m
+            [94mwith[39;49;00m [96mself[39;49;00m.subTest(historical_task28_block=key):[90m[39;49;00m
+                [96mself[39;49;00m.assertEqual([90m[39;49;00m
+                    ordinal.sub([33m"[39;49;00m[33mtyped_SENTINEL[39;49;00m[33m"[39;49;00m, block),[90m[39;49;00m
+                    ordinal.sub([33m"[39;49;00m[33mtyped_SENTINEL[39;49;00m[33m"[39;49;00m, current_blocks[key]))[90m[39;49;00m
+        focus = current_blocks[FOCUS_BLUR_KEY][90m[39;49;00m
+>       [96mself[39;49;00m.assertIn([33m"[39;49;00m[33mnamespace typed_144 [39;49;00m[33m{[39;49;00m[33m"[39;49;00m, focus)[90m[39;49;00m
+[1m[31mE       AssertionError: 'namespace typed_144 {' not found in '// Typed IR program: mixer/focusBlur:focusBlur\n// Source SHA-256: dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1\nnamespace typed_145 {\nstruct State final : KernelState {\n  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double focalDistance_value, double aperture_value, double sampleBias_value, std::int32_t depthSource_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), focalDistance(focalDistance_value), aperture(aperture_value), sampleBias(sampleBias_value), depthSource(depthSource_value) {}\n  const Surface* inputTex;\n  const Surface* tex;\n  glsl::Vec2 resolution;\n  glsl::Vec2 tileOffset;\n  glsl::Vec2 fullResolution;\n  double focalDistance;\n  double aperture;\n  double sampleBias;\n  std::int32_t depthSource;\n};\n\n[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {\n  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {\n  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {\n  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));\n}\n\n[[nodiscard]] glsl::Vec4 applyFocusBlur([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& sceneTex, [[maybe_unused]] const Surface& depthTex, [[maybe_unused]] glsl::Vec2 uv) noexcept;\n[[nodiscard]] double computeBlurFactor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double depth) noexcept;\n[[nodiscard]] double getLuminosity([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color) noexcept;\n\n[[nodiscard]] glsl::Vec4 applyFocusBlur([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& sceneTex, [[maybe_unused]] const Surface& depthTex, [[maybe_unused]] glsl::Vec2 uv) noexcept {\n  [[maybe_unused]] glsl::Vec4 depthSample = sample_texture(depthTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(depthTex))));\n  [[maybe_unused]] double depth = getLuminosity(state, context, glsl::swizzle<0, 1, 2>(depthSample));\n  [[maybe_unused]] double blurRadius = (static_cast<double>(computeBlurFactor(state, context, depth)) * static_cast<double>(state.sampleBias));\n  [[maybe_unused]] glsl::Vec4 color = glsl::FloatExpr<4>(static_cast<float>(0.0));\n  [[maybe_unused]] double GOLDEN = static_cast<float>(2.399963);\n  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(64)); ++i) {\n    [[maybe_unused]] double r = glsl::sqrt((static_cast<double>(float(i)) / static_cast<double>(static_cast<float>(64.0))));\n    [[maybe_unused]] double theta = (static_cast<double>(float(i)) * static_cast<double>(GOLDEN));\n    [[maybe_unused]] glsl::Vec2 offset = (((glsl::FloatExpr<2>(glsl::cos(theta), glsl::sin(theta)) * r) * blurRadius) / state.resolution);\n    color = glsl::Vec4((color + sample_texture(sceneTex, ((((uv + offset) * state.fullResolution) - state.tileOffset) / glsl::Vec2(texture_size(sceneTex))))));\n  }\n  return (color / static_cast<float>(64.0));\n}\n\n[[nodiscard]] double computeBlurFactor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double depth) noexcept {\n  [[maybe_unused]] double focalPlane = (static_cast<double>(state.focalDistance) * static_cast<double>(static_cast<float>(0.01)));\n  [[maybe_unused]] double blur = (static_cast<double>(glsl::abs((static_cast<double>(depth) - static_cast<double>(focalPlane)))) * static_cast<double>(state.aperture));\n  return glsl::clamp(blur, static_cast<float>(0.0), static_cast<float>(1.0));\n}\n\n[[nodiscard]] double getLuminosity([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color) noexcept {\n  return glsl::dot(color, glsl::FloatExpr<3>(static_cast<float>(0.2126), static_cast<float>(0.7152), static_cast<float>(0.0722)));\n}\n\nvoid pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {\n  const auto& state = static_cast<const State&>(kernel_base);\n  (void)state;\n  (void)context;\n  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);\n  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);\n  [[maybe_unused]] glsl::Vec4 color = {};\n  if (state.depthSource == std::int32_t(0)) {\n    color = glsl::Vec4(applyFocusBlur(state, context, *state.tex, *state.inputTex, uv));\n  } else {\n    color = glsl::Vec4(applyFocusBlur(state, context, *state.inputTex, *state.tex, uv));\n  }\n  glsl::set_swizzle<3>(color, glsl::component_max(glsl::swizzle<3>(sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))))), glsl::swizzle<3>(sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex)))))));\n  output = glsl::Vec4(color);\n}\n}  // namespace typed_145\n\nBoundKernel bind_mixer_focusBlur_focusBlur(const glsl::Bindings& bindings) {\n  const auto state = std::make_shared<typed_145::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("focalDistance"), bindings.get_number("aperture"), bindings.get_number("sampleBias"), bindings.get<std::int32_t>("depthSource"));\n  (void)bindings;\n  return BoundKernel(state, &typed_145::pixel);\n}\n\n'[0m
+
+[1m[31mtests/test_typed_generator.py[0m:14500: AssertionError
+----------------------------- Captured stdout call -----------------------------
+[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[31m [ 81%]
+[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[32mu[0m[31m [ 81%]
+[0m[32mu[0m[32mu[0m[32mu[0m
+[31m[1m_ Task31CurlVectorMathTests.test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state _[0m
+
+self = <test_typed_generator.Task31CurlVectorMathTests testMethod=test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mcurl_vector_math_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m CURL_KEY, PROFILE[90m[39;49;00m
+    [90m[39;49;00m
+        spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        typed = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [90m# See the identical fix (and its rationale) in[39;49;00m[90m[39;49;00m
+        [90m# test_task22_crt_exclusions_remain_closed: filter/invert:inv and[39;49;00m[90m[39;49;00m
+        [90m# synth/solid:solid are now already inside `typed`.[39;49;00m[90m[39;49;00m
+        public = [96mtuple[39;49;00m([96msorted[39;49;00m([96mset[39;49;00m(typed) | {[33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m}))[90m[39;49;00m
+        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /[90m[39;49;00m
+                             [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+        unported = [96mtuple[39;49;00m([96msorted[39;49;00m([90m[39;49;00m
+            {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]} - [96mset[39;49;00m(public)))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([94m167[39;49;00m, [94m167[39;49;00m, [94m45[39;49;00m, [94m212[39;49;00m),[90m[39;49;00m
+                         ([96mlen[39;49;00m(typed), [96mlen[39;49;00m(public), [96mlen[39;49;00m(unported),[90m[39;49;00m
+                          [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m3a7ea78437b30f99de56f6189490e77db5d6a3ce6a7c9d6b8346fcb4de9469de[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(typed) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m3a7ea78437b30f99de56f6189490e77db5d6a3ce6a7c9d6b8346fcb4de9469de[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(public) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m155[39;49;00m, typed.index(CURL_KEY))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([33m"[39;49;00m[33msynth/cell:cell[39;49;00m[33m"[39;49;00m, CURL_KEY, [33m"[39;49;00m[33msynth/gradient:gradient[39;49;00m[33m"[39;49;00m),[90m[39;49;00m
+                         typed[[94m154[39;49;00m:[94m157[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([{[90m[39;49;00m
+            [33m"[39;49;00m[33mcurl_vector_math_profile[39;49;00m[33m"[39;49;00m: PROFILE,[90m[39;49;00m
+            [33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m: {[33m"[39;49;00m[33mOCTAVES[39;49;00m[33m"[39;49;00m: [94m1[39;49;00m, [33m"[39;49;00m[33mOUTPUT_MODE[39;49;00m[33m"[39;49;00m: [94m3[39;49;00m, [33m"[39;49;00m[33mRIDGES[39;49;00m[33m"[39;49;00m: [94mTrue[39;49;00m},[90m[39;49;00m
+            [33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m: CURL_KEY,[90m[39;49;00m
+        }], [item [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m] [94mif[39;49;00m [33m"[39;49;00m[33mcurl_vector_math_profile[39;49;00m[33m"[39;49;00m [95min[39;49;00m item])[90m[39;49;00m
+    [90m[39;49;00m
+        current_outputs = generate_typed_slice.generate_outputs(REPOSITORY)[90m[39;49;00m
+        manifest = json.loads([90m[39;49;00m
+            current_outputs[[33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        curl_row = [96mnext[39;49;00m(item [94mfor[39;49;00m item [95min[39;49;00m manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                        [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] == CURL_KEY)[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(PROFILE, curl_row[[33m"[39;49;00m[33mcurl_vector_math_profile[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual({[33m"[39;49;00m[33mOCTAVES[39;49;00m[33m"[39;49;00m: [94m1[39;49;00m, [33m"[39;49;00m[33mOUTPUT_MODE[39;49;00m[33m"[39;49;00m: [94m3[39;49;00m, [33m"[39;49;00m[33mRIDGES[39;49;00m[33m"[39;49;00m: [94mTrue[39;49;00m},[90m[39;49;00m
+                         curl_row[[33m"[39;49;00m[33mdefines[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [90m# The live ordinal is baked into the generated namespace name.[39;49;00m[90m[39;49;00m
+        current_cpp = current_outputs[[33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m].decode()[90m[39;49;00m
+        curl_start = current_cpp.index([33mf[39;49;00m[33m"[39;49;00m[33m// Typed IR program: [39;49;00m[33m{[39;49;00mCURL_KEY[33m}[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        curl_end = current_cpp.index([33m"[39;49;00m[33m// Typed IR program:[39;49;00m[33m"[39;49;00m, curl_start + [94m1[39;49;00m)[90m[39;49;00m
+>       [96mself[39;49;00m.assertIn([33m"[39;49;00m[33mnamespace typed_154 [39;49;00m[33m{[39;49;00m[33m"[39;49;00m, current_cpp[curl_start:curl_end])[90m[39;49;00m
+[1m[31mE       AssertionError: 'namespace typed_154 {' not found in '// Typed IR program: synth/curl:curl\n// Source SHA-256: 33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce\nnamespace typed_155 {\nstruct State final : KernelState {\n  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, double speed_value, double intensity_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), speed(speed_value), intensity(intensity_value) {}\n  glsl::Vec2 resolution;\n  glsl::Vec2 tileOffset;\n  glsl::Vec2 fullResolution;\n  double time;\n  double scale;\n  std::int32_t seed;\n  double speed;\n  double intensity;\n};\n\n[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {\n  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {\n  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {\n  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));\n}\n\n[[nodiscard]] glsl::Vec3 curlNoise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;\n[[nodiscard]] double fbmSimplex3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;\n[[nodiscard]] glsl::Vec3 permute([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 x) noexcept;\n[[nodiscard]] glsl::Vec4 permute([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 x) noexcept;\n[[nodiscard]] double simplex3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 v) noexcept;\n[[nodiscard]] glsl::Vec4 taylorInvSqrt([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 r) noexcept;\n\n[[nodiscard]] glsl::Vec3 curlNoise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {\n  [[maybe_unused]] double eps = static_cast<float>(1.0);\n  [[maybe_unused]] double a = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::sin((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(std::int32_t(1))))) * static_cast<double>(static_cast<float>(0.2)));\n  [[maybe_unused]] double b = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(std::int32_t(1))))) * static_cast<double>(static_cast<float>(0.2)));\n  [[maybe_unused]] glsl::Vec3 offset1 = glsl::FloatExpr<3>(a, b, static_cast<float>(0.0));\n  [[maybe_unused]] glsl::Vec3 offset2 = glsl::FloatExpr<3>((static_cast<double>(static_cast<float>(31.416)) - static_cast<double>(a)), (static_cast<double>(static_cast<float>(47.853)) - static_cast<double>(b)), static_cast<float>(12.793));\n  [[maybe_unused]] glsl::Vec3 offset3 = glsl::FloatExpr<3>((static_cast<double>(static_cast<float>(93.719)) - static_cast<double>(b)), (static_cast<double>(static_cast<float>(61.248)) - static_cast<double>(a)), static_cast<float>(73.561));\n  [[maybe_unused]] double Fx_py = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))) - offset1));\n  [[maybe_unused]] double Fx_ny = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))) + offset1));\n  [[maybe_unused]] double Fx_pz = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)) - offset1));\n  [[maybe_unused]] double Fx_nz = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)) + offset1));\n  [[maybe_unused]] double Fy_px = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))) - offset2));\n  [[maybe_unused]] double Fy_nx = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))) + offset2));\n  [[maybe_unused]] double Fy_pz = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)) - offset2));\n  [[maybe_unused]] double Fy_nz = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)) + offset2));\n  [[maybe_unused]] double Fz_px = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))) - offset3));\n  [[maybe_unused]] double Fz_nx = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))) + offset3));\n  [[maybe_unused]] double Fz_py = fbmSimplex3D(state, context, ((p + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))) - offset3));\n  [[maybe_unused]] double Fz_ny = fbmSimplex3D(state, context, ((p - glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))) + offset3));\n  [[maybe_unused]] double dFx_dy = (static_cast<double>((static_cast<double>(Fx_py) - static_cast<double>(Fx_ny))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  [[maybe_unused]] double dFx_dz = (static_cast<double>((static_cast<double>(Fx_pz) - static_cast<double>(Fx_nz))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  [[maybe_unused]] double dFy_dx = (static_cast<double>((static_cast<double>(Fy_px) - static_cast<double>(Fy_nx))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  [[maybe_unused]] double dFy_dz = (static_cast<double>((static_cast<double>(Fy_pz) - static_cast<double>(Fy_nz))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  [[maybe_unused]] double dFz_dx = (static_cast<double>((static_cast<double>(Fz_px) - static_cast<double>(Fz_nx))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  [[maybe_unused]] double dFz_dy = (static_cast<double>((static_cast<double>(Fz_py) - static_cast<double>(Fz_ny))) / static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(eps))));\n  return glsl::FloatExpr<3>((static_cast<double>(dFz_dy) - static_cast<double>(dFy_dz)), (static_cast<double>(dFx_dz) - static_cast<double>(dFz_dx)), (static_cast<double>(dFy_dx) - static_cast<double>(dFx_dy)));\n}\n\n[[nodiscard]] double fbmSimplex3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {\n  [[maybe_unused]] double sum = static_cast<float>(0.0);\n  [[maybe_unused]] double amp = static_cast<float>(1.0);\n  [[maybe_unused]] double freq = static_cast<float>(1.0);\n  [[maybe_unused]] double maxAmp = static_cast<float>(0.0);\n  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(1)); ++i) {\n    [[maybe_unused]] double n = simplex3D(state, context, (p * freq));\n    sum = (sum + (static_cast<double>(n) * static_cast<double>(amp)));\n    maxAmp = (maxAmp + amp);\n    freq = (freq * static_cast<float>(2.0));\n    amp = (amp * static_cast<float>(0.5));\n  }\n  return (static_cast<double>(sum) / static_cast<double>(maxAmp));\n}\n\n[[nodiscard]] glsl::Vec3 permute([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 x) noexcept {\n  return glsl::mod((((x * static_cast<float>(34.0)) + static_cast<float>(10.0)) * x), static_cast<float>(289.0));\n}\n\n[[nodiscard]] glsl::Vec4 permute([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 x) noexcept {\n  return glsl::mod((((x * static_cast<float>(34.0)) + static_cast<float>(10.0)) * x), static_cast<float>(289.0));\n}\n\n[[nodiscard]] double simplex3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 v) noexcept {\n  [[maybe_unused]] glsl::Vec2 C = glsl::FloatExpr<2>(static_cast<float>(0.1666666716337204), static_cast<float>(0.3333333432674408));\n  [[maybe_unused]] glsl::Vec4 D = glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.5), static_cast<float>(1.0), static_cast<float>(2.0));\n  v = glsl::Vec3((v + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1271)))));\n  [[maybe_unused]] glsl::Vec3 i = glsl::floor((v + glsl::dot(v, glsl::swizzle<1, 1, 1>(C))));\n  [[maybe_unused]] glsl::Vec3 x0 = ((v - i) + glsl::dot(i, glsl::swizzle<0, 0, 0>(C)));\n  [[maybe_unused]] glsl::Vec3 g = glsl::step(glsl::swizzle<1, 2, 0>(x0), glsl::swizzle<0, 1, 2>(x0));\n  [[maybe_unused]] glsl::Vec3 l = (static_cast<float>(1.0) - g);\n  [[maybe_unused]] glsl::Vec3 i1 = glsl::component_min(glsl::swizzle<0, 1, 2>(g), glsl::swizzle<2, 0, 1>(l));\n  [[maybe_unused]] glsl::Vec3 i2 = glsl::component_max(glsl::swizzle<0, 1, 2>(g), glsl::swizzle<2, 0, 1>(l));\n  [[maybe_unused]] glsl::Vec3 x1 = ((x0 - i1) + glsl::swizzle<0, 0, 0>(C));\n  [[maybe_unused]] glsl::Vec3 x2 = ((x0 - i2) + glsl::swizzle<1, 1, 1>(C));\n  [[maybe_unused]] glsl::Vec3 x3 = (x0 - glsl::swizzle<1, 1, 1>(D));\n  i = glsl::Vec3(glsl::mod(i, static_cast<float>(289.0)));\n  [[maybe_unused]] glsl::Vec4 p = permute(state, context, glsl::Vec4((glsl::Vec4((permute(state, context, glsl::Vec4((glsl::Vec4((permute(state, context, (glsl::swizzle<2>(i) + glsl::FloatExpr<4>(static_cast<float>(0.0), glsl::swizzle<2>(i1), glsl::swizzle<2>(i2), static_cast<float>(1.0)))) + glsl::swizzle<1>(i))) + glsl::FloatExpr<4>(static_cast<float>(0.0), glsl::swizzle<1>(i1), glsl::swizzle<1>(i2), static_cast<float>(1.0))))) + glsl::swizzle<0>(i))) + glsl::FloatExpr<4>(static_cast<float>(0.0), glsl::swizzle<0>(i1), glsl::swizzle<0>(i2), static_cast<float>(1.0)))));\n  [[maybe_unused]] double n_ = static_cast<float>(0.142857142857);\n  [[maybe_unused]] glsl::Vec3 ns = ((n_ * glsl::swizzle<3, 1, 2>(D)) - glsl::swizzle<0, 2, 0>(D));\n  [[maybe_unused]] glsl::Vec4 j = glsl::Vec4((p - glsl::Vec4((static_cast<float>(49.0) * glsl::floor(((p * glsl::swizzle<2>(ns)) * glsl::swizzle<2>(ns)))))));\n  [[maybe_unused]] glsl::Vec4 x_ = glsl::floor((j * glsl::swizzle<2>(ns)));\n  [[maybe_unused]] glsl::Vec4 y_ = glsl::floor((j - (static_cast<float>(7.0) * x_)));\n  [[maybe_unused]] glsl::Vec4 x = ((x_ * glsl::swizzle<0>(ns)) + glsl::swizzle<1, 1, 1, 1>(ns));\n  [[maybe_unused]] glsl::Vec4 y = ((y_ * glsl::swizzle<0>(ns)) + glsl::swizzle<1, 1, 1, 1>(ns));\n  [[maybe_unused]] glsl::Vec4 h = glsl::Vec4((glsl::Vec4((static_cast<float>(1.0) - glsl::abs(x))) - glsl::abs(y)));\n  [[maybe_unused]] glsl::Vec4 b0 = glsl::Vec4(glsl::swizzle<0, 1>(x), glsl::swizzle<0, 1>(y));\n  [[maybe_unused]] glsl::Vec4 b1 = glsl::Vec4(glsl::swizzle<2, 3>(x), glsl::swizzle<2, 3>(y));\n  [[maybe_unused]] glsl::Vec4 s0 = glsl::Vec4((glsl::Vec4((glsl::floor(b0) * static_cast<float>(2.0))) + static_cast<float>(1.0)));\n  [[maybe_unused]] glsl::Vec4 s1 = glsl::Vec4((glsl::Vec4((glsl::floor(b1) * static_cast<float>(2.0))) + static_cast<float>(1.0)));\n  [[maybe_unused]] glsl::Vec4 sh = (-glsl::step(h, glsl::FloatExpr<4>(static_cast<float>(0.0))));\n  [[maybe_unused]] glsl::Vec4 a0 = (glsl::swizzle<0, 2, 1, 3>(b0) + (glsl::swizzle<0, 2, 1, 3>(s0) * glsl::swizzle<0, 0, 1, 1>(sh)));\n  [[maybe_unused]] glsl::Vec4 a1 = (glsl::swizzle<0, 2, 1, 3>(b1) + (glsl::swizzle<0, 2, 1, 3>(s1) * glsl::swizzle<2, 2, 3, 3>(sh)));\n  [[maybe_unused]] glsl::Vec3 p0 = glsl::Vec3(glsl::swizzle<0, 1>(a0), glsl::swizzle<0>(h));\n  [[maybe_unused]] glsl::Vec3 p1 = glsl::Vec3(glsl::swizzle<2, 3>(a0), glsl::swizzle<1>(h));\n  [[maybe_unused]] glsl::Vec3 p2 = glsl::Vec3(glsl::swizzle<0, 1>(a1), glsl::swizzle<2>(h));\n  [[maybe_unused]] glsl::Vec3 p3 = glsl::Vec3(glsl::swizzle<2, 3>(a1), glsl::swizzle<3>(h));\n  [[maybe_unused]] glsl::Vec4 norm = taylorInvSqrt(state, context, glsl::FloatExpr<4>(glsl::dot(p0, p0), glsl::dot(p1, p1), glsl::dot(p2, p2), glsl::dot(p3, p3)));\n  p0 = glsl::Vec3((p0 * glsl::swizzle<0>(norm)));\n  p1 = glsl::Vec3((p1 * glsl::swizzle<1>(norm)));\n  p2 = glsl::Vec3((p2 * glsl::swizzle<2>(norm)));\n  p3 = glsl::Vec3((p3 * glsl::swizzle<3>(norm)));\n  [[maybe_unused]] glsl::Vec4 m = glsl::component_max((static_cast<float>(0.6) - glsl::FloatExpr<4>(glsl::dot(x0, x0), glsl::dot(x1, x1), glsl::dot(x2, x2), glsl::dot(x3, x3))), static_cast<float>(0.0));\n  m = glsl::Vec4((m * m));\n  return (static_cast<double>(static_cast<float>(42.0)) * static_cast<double>(glsl::dot((m * m), glsl::FloatExpr<4>(glsl::dot(p0, x0), glsl::dot(p1, x1), glsl::dot(p2, x2), glsl::dot(p3, x3)))));\n}\n\n[[nodiscard]] glsl::Vec4 taylorInvSqrt([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 r) noexcept {\n  return (static_cast<float>(1.79284291400159) - (static_cast<float>(0.85373472095314) * r));\n}\n\nvoid pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {\n  const auto& state = static_cast<const State&>(kernel_base);\n  (void)state;\n  (void)context;\n  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);\n  [[maybe_unused]] glsl::Vec2 uv = (globalCoord / state.fullResolution);\n  [[maybe_unused]] double aspect = (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)));\n  [[maybe_unused]] glsl::Vec2 centered = ((uv - static_cast<float>(0.5)) * glsl::FloatExpr<2>(aspect, static_cast<float>(1.0)));\n  [[maybe_unused]] glsl::Vec3 p = glsl::Vec3((centered * (static_cast<double>(static_cast<float>(21.0)) - static_cast<double>(state.scale))), static_cast<float>(0.5));\n  [[maybe_unused]] glsl::Vec3 curl = curlNoise3D(state, context, p);\n  curl = glsl::Vec3(glsl::Vec3((glsl::Vec3((glsl::tanh_lanewise((curl * state.intensity)) * static_cast<float>(0.5))) + static_cast<float>(0.5))));\n  [[maybe_unused]] glsl::Vec3 color = {};\n  color = glsl::Vec3(curl);\n  if (true) {\n    color = glsl::Vec3(glsl::Vec3((static_cast<float>(1.0) - glsl::abs(((color * static_cast<float>(2.0)) - static_cast<float>(1.0))))));\n  }\n  output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));\n}\n}  // namespace typed_155\n\nBoundKernel bind_synth_curl_curl(const glsl::Bindings& bindings) {\n  const auto state = std::make_shared<typed_155::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("intensity"));\n  (void)bindings;\n  return BoundKernel(state, &typed_155::pixel);\n}\n\n'[0m
+
+[1m[31mtests/test_typed_generator.py[0m:16038: AssertionError
+[31m[1m_ Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte _[0m
+
+self = <test_typed_generator.Task31CurlVectorMathTests testMethod=test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mcopy[39;49;00m[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mcurl_vector_math_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m CURL_KEY[90m[39;49;00m
+    [90m[39;49;00m
+        spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        task30_spec = copy.deepcopy(spec)[90m[39;49;00m
+        task30_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m] = [item [94mfor[39;49;00m item [95min[39;49;00m task30_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                   [94mif[39;49;00m item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [95mnot[39;49;00m [95min[39;49;00m ([90m[39;49;00m
+                                       CURL_KEY,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:creative[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:hslSecondary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:lut[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:primary[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:vignette[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/grade:wheels[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/reindex:nmReindexStats[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/zoomBlur:zoomBlur[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mclassicNoisedeck/caustic:caustic[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/bitwise:bitwise[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mfilter/adjust:adjust[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/colorspace:colorspace[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+                                       [33m"[39;49;00m[33mclassicNoisedeck/cellNoise:cellNoise[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfilter/lighting:lighting[39;49;00m[33m"[39;49;00m)][90m[39;49;00m
+        task30_keys = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m task30_spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual([94m145[39;49;00m, [96mlen[39;49;00m(task30_keys))[90m[39;49;00m
+[1m[31mE       AssertionError: 145 != 152[0m
+
+[1m[31mtests/test_typed_generator.py[0m:16092: AssertionError
+[31m[1m_ Task33DerivativeAdmissionTests.test_task33_history_schema_and_vendored_oracle_match_152_program_state _[0m
+
+self = <test_typed_generator.Task33DerivativeAdmissionTests testMethod=test_task33_history_schema_and_vendored_oracle_match_152_program_state>
+
+    [0m[94mdef[39;49;00m[90m [39;49;00m[92mtest_task33_history_schema_and_vendored_oracle_match_152_program_state[39;49;00m([96mself[39;49;00m) -> [94mNone[39;49;00m:[90m[39;49;00m
+        [94mimport[39;49;00m[90m [39;49;00m[04m[96mhashlib[39;49;00m[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[90m [39;49;00m[94mimport[39;49;00m check_corpus, generate_typed_slice[90m[39;49;00m
+        [94mfrom[39;49;00m[90m [39;49;00m[04m[96mtools[39;49;00m[04m[96m.[39;49;00m[04m[96mglslcpp[39;49;00m[04m[96m.[39;49;00m[04m[96mfrontend[39;49;00m[04m[96m.[39;49;00m[04m[96mderivative_admission_profile[39;49;00m[90m [39;49;00m[94mimport[39;49;00m ([90m[39;49;00m
+            DERIVATIVE_ADMISSION_KEYS, PROFILE)[90m[39;49;00m
+    [90m[39;49;00m
+        spec = generate_typed_slice.load_slice(REPOSITORY)[90m[39;49;00m
+        typed = [96mtuple[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [90m# See the identical fix (and its rationale) in[39;49;00m[90m[39;49;00m
+        [90m# test_task22_crt_exclusions_remain_closed: filter/invert:inv and[39;49;00m[90m[39;49;00m
+        [90m# synth/solid:solid are now already inside `typed`.[39;49;00m[90m[39;49;00m
+        public = [96mtuple[39;49;00m([96msorted[39;49;00m([96mset[39;49;00m(typed) | {[33m"[39;49;00m[33mfilter/invert:inv[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33msynth/solid:solid[39;49;00m[33m"[39;49;00m}))[90m[39;49;00m
+        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /[90m[39;49;00m
+                             [33m"[39;49;00m[33mmanifest.json[39;49;00m[33m"[39;49;00m).read_text())[90m[39;49;00m
+        unported = [96mtuple[39;49;00m([96msorted[39;49;00m([90m[39;49;00m
+            {item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]} - [96mset[39;49;00m(public)))[90m[39;49;00m
+        [90m# Live current state: filter/posterize:posterize and filter/waves:[39;49;00m[90m[39;49;00m
+        [90m# waves landed after the 152-program state this test name anchors[39;49;00m[90m[39;49;00m
+        [90m# to (round admission plus the already-built derivative-admission-[39;49;00m[90m[39;49;00m
+        [90m# v1 mechanism for posterize; any/notEqual/bvec2 admission plus the[39;49;00m[90m[39;49;00m
+        [90m# same derivative mechanism for waves) -- 163 -> 165, unported[39;49;00m[90m[39;49;00m
+        [90m# 49 -> 47.[39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual(([94m167[39;49;00m, [94m167[39;49;00m, [94m45[39;49;00m, [94m212[39;49;00m),[90m[39;49;00m
+                         ([96mlen[39;49;00m(typed), [96mlen[39;49;00m(public), [96mlen[39;49;00m(unported),[90m[39;49;00m
+                          [96mlen[39;49;00m(corpus[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m])))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33m3a7ea78437b30f99de56f6189490e77db5d6a3ce6a7c9d6b8346fcb4de9469de[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(([33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m.join(typed) + [33m"[39;49;00m[33m\n[39;49;00m[33m"[39;49;00m).encode()).hexdigest())[90m[39;49;00m
+    [90m[39;49;00m
+        derivative_rows = [item [94mfor[39;49;00m item [95min[39;49;00m spec[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                           [94mif[39;49;00m [33m"[39;49;00m[33mderivative_admission_profile[39;49;00m[33m"[39;49;00m [95min[39;49;00m item][90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m17[39;49;00m, [96mlen[39;49;00m(derivative_rows))[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([96mself[39;49;00m.KEYS, [96mtuple[39;49;00m([96msorted[39;49;00m(item[[33m"[39;49;00m[33mprogram_key[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+                                                  [94mfor[39;49;00m item [95min[39;49;00m derivative_rows)))[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue([96mall[39;49;00m(item[[33m"[39;49;00m[33mderivative_admission_profile[39;49;00m[33m"[39;49;00m] == PROFILE[90m[39;49;00m
+                            [94mfor[39;49;00m item [95min[39;49;00m derivative_rows))[90m[39;49;00m
+    [90m[39;49;00m
+        current_outputs = generate_typed_slice.generate_outputs(REPOSITORY)[90m[39;49;00m
+        manifest = json.loads([90m[39;49;00m
+            current_outputs[[33m"[39;49;00m[33msrc/typed_generated/typed_manifest.json[39;49;00m[33m"[39;49;00m])[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m167[39;49;00m, [96mlen[39;49;00m(manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]))[90m[39;49;00m
+        derivative_manifest_rows = [[90m[39;49;00m
+            item [94mfor[39;49;00m item [95min[39;49;00m manifest[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m][90m[39;49;00m
+            [94mif[39;49;00m [33m"[39;49;00m[33mderivative_admission_profile[39;49;00m[33m"[39;49;00m [95min[39;49;00m item][90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m17[39;49;00m, [96mlen[39;49;00m(derivative_manifest_rows))[90m[39;49;00m
+    [90m[39;49;00m
+        current_cpp = current_outputs[[33m"[39;49;00m[33msrc/typed_generated/typed_slice.cpp[39;49;00m[33m"[39;49;00m].decode()[90m[39;49;00m
+        [94mfor[39;49;00m name [95min[39;49;00m ([33m"[39;49;00m[33mdFdx[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mdFdy[39;49;00m[33m"[39;49;00m, [33m"[39;49;00m[33mfwidth[39;49;00m[33m"[39;49;00m):[90m[39;49;00m
+            [96mself[39;49;00m.assertGreater(current_cpp.count([33mf[39;49;00m[33m"[39;49;00m[33mglsl::[39;49;00m[33m{[39;49;00mname[33m}[39;49;00m[33m(context, [39;49;00m[33m"[39;49;00m), [94m0[39;49;00m)[90m[39;49;00m
+        [90m# Exactly one BoundKernel construction site per admitted program[39;49;00m[90m[39;49;00m
+        [90m# passes the third (uses_derivatives) argument as `true`.[39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m17[39;49;00m, current_cpp.count([33m"[39;49;00m[33m::pixel, true);[39;49;00m[33m"[39;49;00m))[90m[39;49;00m
+    [90m[39;49;00m
+        [90m# The oracle vendored for the native fixture.[39;49;00m[90m[39;49;00m
+        oracle_path = REPOSITORY / [33m"[39;49;00m[33mtests/oracles/task-33-oracles.json[39;49;00m[33m"[39;49;00m[90m[39;49;00m
+        [96mself[39;49;00m.assertTrue(oracle_path.is_file(), [33m"[39;49;00m[33mTask 33 frozen oracle JSON is required[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+        oracle_bytes = oracle_path.read_bytes()[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([90m[39;49;00m
+            [33m"[39;49;00m[33mb3f3db2d7c2bdc970ba799db71e702974628fbd6e2a5a5a787b073882f4855c3[39;49;00m[33m"[39;49;00m,[90m[39;49;00m
+            hashlib.sha256(oracle_bytes).hexdigest())[90m[39;49;00m
+        oracle = json.loads(oracle_bytes)[90m[39;49;00m
+        [96mself[39;49;00m.assertEqual([94m15[39;49;00m, [96mlen[39;49;00m(oracle[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m]))[90m[39;49;00m
+>       [96mself[39;49;00m.assertEqual(DERIVATIVE_ADMISSION_KEYS,[90m[39;49;00m
+                         [96mfrozenset[39;49;00m(item[[33m"[39;49;00m[33mkey[39;49;00m[33m"[39;49;00m] [94mfor[39;49;00m item [95min[39;49;00m oracle[[33m"[39;49;00m[33mprograms[39;49;00m[33m"[39;49;00m].values()))[90m[39;49;00m
+[1m[31mE       AssertionError: Items in the first set but not the second:[0m
+[1m[31mE       'filter/waves:waves'[0m
+[1m[31mE       'filter/posterize:posterize'[0m
+
+[1m[31mtests/test_typed_generator.py[0m:17192: AssertionError
+[36m[1m=========================== short test summary info ============================[0m
+[31mFAILED[0m tests/test_typed_generator.py::[1mTypedGeneratorTests::test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m - AssertionError: 50 != 45
+[31mFAILED[0m tests/test_typed_generator.py::[1mTypedGeneratorTests::test_task23_rejected_structural_mutations_have_exact_native_sensitivity[0m - AttributeError: 'tools.glslcpp.emit_typed_cpp._Emitter' object has no attri...
+[31mFAILED[0m tests/test_typed_generator.py::[1mTypedGeneratorTests::test_task23_six_key_counts_positions_and_generated_isolation_are_exact[0m - AssertionError: Tuples differ: (122, 124, 88, 212) != (124, 126, 86, 212)
+[31mFAILED[0m tests/test_typed_generator.py::[1mTypedGeneratorTests::test_task26_loader_admits_only_exact_smooth_carrier_and_census[0m - AssertionError: Tuples differ: (147, 149, 63, 212) != (154, 156, 58, 212)
+[31mFAILED[0m tests/test_typed_generator.py::[1mTypedGeneratorTests::test_typed_generation_is_cwd_independent_and_matches_committed_slice[0m - AssertionError: 'typed slice ok (160 programs)' not found in 'generate_type...
+[31mFAILED[0m tests/test_typed_generator.py::[1mTask29FocusBlurBorrowedSamplerTests::test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation[0m - AssertionError: 'namespace typed_144 {' not found in '// Typed IR program: ...
+[31mFAILED[0m tests/test_typed_generator.py::[1mTask31CurlVectorMathTests::test_task31_history_live_schema_ordinal_and_vendored_oracle_match_131_program_state[0m - AssertionError: 'namespace typed_154 {' not found in '// Typed IR program: ...
+[31mFAILED[0m tests/test_typed_generator.py::[1mTask31CurlVectorMathTests::test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[0m - AssertionError: 145 != 152
+[31mFAILED[0m tests/test_typed_generator.py::[1mTask33DerivativeAdmissionTests::test_task33_history_schema_and_vendored_oracle_match_152_program_state[0m - AssertionError: Items in the first set but not the second:
+[31m[31m[1m9 failed[0m, [32m161 passed[0m, [32m13748 subtests passed[0m[31m in 1807.39s (0:30:07)[0m[0m
+EXIT=1

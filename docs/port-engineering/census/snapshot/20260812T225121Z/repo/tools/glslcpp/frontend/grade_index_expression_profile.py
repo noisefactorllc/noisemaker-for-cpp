@@ -1,0 +1,349 @@
+"""Exact identity profiles for the six grade-cluster index-expression sites.
+
+Every ``filter/grade:*`` program lane-indexes a plain local ``vec3`` (never a
+proved fixed-size array) with a ``for``-loop induction variable, on both the
+read and the write side, inside ``srgbToLinear``/``linearToSrgb`` (all six
+programs) and, for ``hslSecondary``/``lut``, one or two additional per-program
+helpers (``hslToRgb``; ``lutHardLight``/``lutSolarize``).  No existing index
+track admits this: every prior track (``store_valid``, ``read_valid``,
+``grid_store_valid``/``grid_read_valid``, ``task19_*``, ``task20_valid``) is
+gated by ``base_valid``, which requires the base symbol to be a member of
+``proved_array_declarations``/``proved_array_parameters`` -- i.e. a proved
+fixed-size array.  Grade's bases are plain local ``vec3``s with no array proof
+of any kind, so ``base_valid`` is unconditionally false for all 74 sites here
+regardless of index kind or read/write direction (this is the corrected
+reasoning from the Task 32 brief's Important finding I1: the blocker is
+array-only base scoping, not an absence of any id-indexed-write track --
+``grid_store_valid`` is exactly that, just gated to proved arrays).
+
+This module authenticates by node identity from a frozen per-program proof
+set (span + SHA-256 for every one of the 74 sites, tabulated below), never by
+widening the array machinery and never by adding a new token to the 44-entry
+``APPROVED_CAPABILITIES`` vocabulary -- the caller must skip ``used.add(...)``
+entirely for a site admitted through this module, symmetric with the existing
+``round``/``tanh``/``floatBitsToUint``/``all``+``lessThanEqual`` callee
+skip-list at ``generate_typed_slice.py``'s node walker.
+"""
+
+from __future__ import annotations
+
+import hashlib
+
+from .typed_ir import TypedExpression, TypedProgram, TypedStatement
+
+
+KEYS = (
+    'filter/grade:creative',
+    'filter/grade:hslSecondary',
+    'filter/grade:lut',
+    'filter/grade:primary',
+    'filter/grade:vignette',
+    'filter/grade:wheels',
+)
+PROFILES = {
+    'filter/grade:creative': 'grade-creative-index-expression-v1',
+    'filter/grade:hslSecondary': 'grade-hslsecondary-index-expression-v1',
+    'filter/grade:lut': 'grade-lut-index-expression-v1',
+    'filter/grade:primary': 'grade-primary-index-expression-v1',
+    'filter/grade:vignette': 'grade-vignette-index-expression-v1',
+    'filter/grade:wheels': 'grade-wheels-index-expression-v1',
+}
+_OPTIONAL_PROOF_FIELDS = (
+    "fixed_nine_table_proof",
+    "fixed_grid_counter_store_proof",
+    "fixed_array_in_parameter_proof",
+    "fixed_affine_centers13_proof",
+)
+
+__all__ = ("KEYS", "PROFILES", "authenticate_grade_index_expression",
+           "apply_grade_index_expression")
+
+
+def _sha(value: object) -> str:
+    return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
+
+
+def _span(value: object) -> str:
+    span = getattr(value, "span")
+    return (f"{span.start_line}:{span.start_column}-"
+            f"{span.end_line}:{span.end_column}")
+
+
+def _whole_fingerprint(program: TypedProgram) -> str:
+    return _sha((
+        program.key, program.source, program.raw_source, program.declarations,
+        program.functions, program.resources, program.body_status,
+        program.local_type_names, program.structs, program.uniform_blocks,
+        program.interface_symbols, program.builtin_symbols,
+        program.counted_loop_proof, program.preprocessor_defines,
+    ))
+
+
+def _interface_fingerprint(program: TypedProgram) -> str:
+    return _sha((
+        program.declarations, program.resources, program.local_type_names,
+        program.structs, program.uniform_blocks, program.interface_symbols,
+        program.builtin_symbols, program.preprocessor_defines,
+    ))
+
+
+_LOCKS = {
+    'filter/grade:creative': {
+        "profile": 'grade-creative-index-expression-v1',
+        "raw_bytes": 4230,
+        "raw_sha256": 'b043aa43d17e098ffb736f16e6c81a5ca422ecdd6fc37fef03c39b01cc939bd3',
+        "normalized_bytes": 3231,
+        "normalized_sha256": '0a690075dd6e709f41978baecc5106689637648fe4fa7ccad203ccc890f5f48f',
+        "whole_sha256": '8a5fb6c925dae811442b04f549109f71155db4eb45ced227ac1f7f83bef0ea41',
+        "interface_sha256": 'd484112887f0a77bedd887b8e7bc5a038497d196bcac8d7924b9937372b87366',
+        "functions_sha256": '383755f2cf32faa3b0e848bca74ebcdf48405911391862d4781489a35a9461ec',
+        "sites": (
+            (24, 'linearToSrgb', '34:13-34:22', '1aec2abcebae25f02c2a9858c9941254240f7a6ef2f1f78c0da3cd0166e9f245', 'read', 12, 'linear', 'parameter', 51, 'i'),
+            (24, 'linearToSrgb', '35:13-35:20', '7a5e79c9550bb07c250c75a27678486e424c5988b2696d71a98ac8a1dfb843c9', 'write', 50, 'srgb', 'local', 51, 'i'),
+            (24, 'linearToSrgb', '35:23-35:32', 'fa396683ec9ac64d8f2474713bcdf1a761bebc896862011e68c308df6508fc9a', 'read', 12, 'linear', 'parameter', 51, 'i'),
+            (24, 'linearToSrgb', '37:13-37:20', '6855aeafda4085ceadf739b3c4b01755918f8126f5900f3e89663a6a6b66c6eb', 'write', 50, 'srgb', 'local', 51, 'i'),
+            (24, 'linearToSrgb', '37:35-37:44', '49ee9c053bb89d52b0dcaeebcba0210f8fbd2c07c0d11dd79eed6c3ffd07f5d4', 'read', 12, 'linear', 'parameter', 51, 'i'),
+            (26, 'srgbToLinear', '21:13-21:20', '52dae6afd41d07d9f83e629340c9475b4f093ff82000e5965ea9b708cf6cbd7c', 'read', 11, 'srgb', 'parameter', 57, 'i'),
+            (26, 'srgbToLinear', '22:13-22:22', '0eb094e98f3a3de14122e3ecc01fd66bc963ca37e80c7f3ce8cfe7a87273288c', 'write', 56, 'linear', 'local', 57, 'i'),
+            (26, 'srgbToLinear', '22:25-22:32', '64ae05599265f74a81b0a6e066a6456d7d1ad58629758a75742ff17a92eb2b16', 'read', 11, 'srgb', 'parameter', 57, 'i'),
+            (26, 'srgbToLinear', '24:13-24:22', 'de6cc2deb9f0f226c875eb09d694672b8832e8a51187b456931d6c54b1beab1b', 'write', 56, 'linear', 'local', 57, 'i'),
+            (26, 'srgbToLinear', '24:30-24:37', '08167753b42cc145d5d36f48be9b88e8524c8372edf27cb9f3663e6581134b42', 'read', 11, 'srgb', 'parameter', 57, 'i'),
+        ),
+    },
+    'filter/grade:hslSecondary': {
+        "profile": 'grade-hslsecondary-index-expression-v1',
+        "raw_bytes": 4975,
+        "raw_sha256": '2f2c54a6d977ccc0ba8657c02f1fc2fecfb576ad85f6d03ea16468fc9cbd095a',
+        "normalized_bytes": 4260,
+        "normalized_sha256": 'e2e2faa0484d7d8bce8d786bee19ef30ae258d9910f3691efd31d7c4f00469d5',
+        "whole_sha256": 'fab6e7a4d97ceeb8dae400465b2efc034521c58fd04d1ab229606fe90c908874',
+        "interface_sha256": 'ad58e18b0a04a1069ad381d78e534541a80ec5c6c70bf97b0ed00818a90a6f08',
+        "functions_sha256": '5e36bba6ffb8fecee6c1f293c282f52de8a583045e4e6e469d7422be5ca77910',
+        "sites": (
+            (36, 'hslToRgb', '96:13-96:19', '3d062c91ea636f82f84c6a385596b21adbe3a089059e148e127df22df456f85f', 'write', 52, 'rgb', 'local', 53, 'i'),
+            (36, 'hslToRgb', '98:13-98:19', '112929cc70c09231139c9f1679350c12a581c5392b7e74e9d199e0a07e781965', 'write', 52, 'rgb', 'local', 53, 'i'),
+            (36, 'hslToRgb', '100:13-100:19', '3c475ede0dd8545da27aa8a60359e33c9cffdae2f38b6e1cb50b911a9c36dc5d', 'write', 52, 'rgb', 'local', 53, 'i'),
+            (36, 'hslToRgb', '102:13-102:19', '2aee1523e8ca6b404dfb4b8eaa6a5a7d80257ef9b2c03fe297f000e96aa4a6c9', 'write', 52, 'rgb', 'local', 53, 'i'),
+            (37, 'linearToSrgb', '41:13-41:22', '6445c0a729cc78ccdb6385385f0666ad5b5607e5b743092a8fc2a1b74c7d7a80', 'read', 19, 'linear', 'parameter', 56, 'i'),
+            (37, 'linearToSrgb', '42:13-42:20', '26eca14dce4d68ce90863c59b2675f327dbeb9ab154825d65ca6db45386f01ce', 'write', 55, 'srgb', 'local', 56, 'i'),
+            (37, 'linearToSrgb', '42:23-42:32', '4b656cff779e5f986abd4f8e15bf968b5e6d1facdfe4e021a814a07bc446982b', 'read', 19, 'linear', 'parameter', 56, 'i'),
+            (37, 'linearToSrgb', '44:13-44:20', '890242a06dbc8cf34364c613cd5f0c4b6452f099952de0b8ee0ca3c25c69d5f2', 'write', 55, 'srgb', 'local', 56, 'i'),
+            (37, 'linearToSrgb', '44:35-44:44', 'f8682fa317e82b84e0db7c7e1f6fd1b03f9cbb8d7253398a3e9cd4d7c3e2cf44', 'read', 19, 'linear', 'parameter', 56, 'i'),
+            (40, 'srgbToLinear', '28:13-28:20', '2475038fd0df20649b4de127140a48956452aa70df8dc6fb8f74734f012feb16', 'read', 18, 'srgb', 'parameter', 72, 'i'),
+            (40, 'srgbToLinear', '29:13-29:22', '81a3e4e0e848ad174957e3314603f3d67533e23b75c070a99c339f4474e9091f', 'write', 71, 'linear', 'local', 72, 'i'),
+            (40, 'srgbToLinear', '29:25-29:32', '041181c63f834d620c2cf49d65942b3901642df7852c8357c66852f7457e0fee', 'read', 18, 'srgb', 'parameter', 72, 'i'),
+            (40, 'srgbToLinear', '31:13-31:22', '53bfe161a725565d4d2ca912718a85bb8326ae0c6599efebde0d9682d652797f', 'write', 71, 'linear', 'local', 72, 'i'),
+            (40, 'srgbToLinear', '31:30-31:37', 'e1e1db3f37c00f93bbc85535b05b52ba865353984ebf6685c8b6c17665129ee2', 'read', 18, 'srgb', 'parameter', 72, 'i'),
+        ),
+    },
+    'filter/grade:lut': {
+        "profile": 'grade-lut-index-expression-v1',
+        "raw_bytes": 13745,
+        "raw_sha256": '0a8a3ae4d2a14142ae7d53373bfac6ac87a0b175dff132d71cd80e6226f9ec40',
+        "normalized_bytes": 10588,
+        "normalized_sha256": 'c384a8759f681d191d6f6f5560101b2ed62ba3e187f4bdfb0574f608fca84881',
+        "whole_sha256": 'c0f640cb5d166ecbf3d2b30373af46313835f0c59f1c8a3608192991675f4a26',
+        "interface_sha256": 'c18fe18ba6259647463eef30713c7db0cbbdf0d9ec98795b8447da429bb71e93',
+        "functions_sha256": 'ff78c83268699eae11d81331f346043bf6e36809ad1c0bc3f45724040e436420',
+        "sites": (
+            (38, 'linearToSrgb', '29:13-29:22', '3bec4e1df0ec3c3fde3d9a7e6d89043c19626865f37df0475f2d09e6976cee4d', 'read', 8, 'linear', 'parameter', 68, 'i'),
+            (38, 'linearToSrgb', '30:13-30:20', '64d152bc1943aa873514051a0c8650a9c3ee92f42966d26a6b67f6fd43092933', 'write', 67, 'srgb', 'local', 68, 'i'),
+            (38, 'linearToSrgb', '30:23-30:32', '6014ccbe1c50e836725b360b700e824c42bcf7ce0132e715bc543ee972619cd6', 'read', 8, 'linear', 'parameter', 68, 'i'),
+            (38, 'linearToSrgb', '32:13-32:20', '0d7704e58b35b63527d55654764e95a284a4b57f7db4696c9dae8b62ef7938e3', 'write', 67, 'srgb', 'local', 68, 'i'),
+            (38, 'linearToSrgb', '32:35-32:44', 'c05c780cc6469e5a3db7f99c844987da03a8ed92a9ad1aee49ef99cabf91d135', 'read', 8, 'linear', 'parameter', 68, 'i'),
+            (45, 'lutHardLight', '392:13-392:19', 'bf8ce1dfe993e1280befbb28df50b3c652bc4d2add7e32364918a6a3d4e3df84', 'read', 33, 'rgb', 'parameter', 82, 'i'),
+            (45, 'lutHardLight', '393:13-393:22', '05ea5df9e619ac221c7f34a8267303b4d7e56e4ab73f3d32091bc9508bb6c8d7', 'write', 81, 'result', 'local', 82, 'i'),
+            (45, 'lutHardLight', '393:31-393:37', 'b695fb48c173808e5d7896cc351f272f069206d3ae7a726a437c2b894429e008', 'read', 33, 'rgb', 'parameter', 82, 'i'),
+            (45, 'lutHardLight', '395:13-395:22', '6909028c076e4fcac2362ddeddfde7225e9e7ef747dde8b21305ddeaa277ef27', 'write', 81, 'result', 'local', 82, 'i'),
+            (45, 'lutHardLight', '395:44-395:50', '75e7edcb9cf3fe1c8afecae09635bd59fa829fc525d859b97f8a7363d2284083', 'read', 33, 'rgb', 'parameter', 82, 'i'),
+            (54, 'lutSolarize', '447:13-447:19', 'da8bd7811250566525e26d2399f4e9ccd6bd676a0ca3c5edc062a2e792e02870', 'read', 35, 'rgb', 'parameter', 108, 'i'),
+            (54, 'lutSolarize', '448:13-448:22', '2bc453c67c449c1bd749b93a24caaa380e1cab784aed3f0ac12d8cb64a77dc7e', 'write', 107, 'result', 'local', 108, 'i'),
+            (54, 'lutSolarize', '448:38-448:44', '4fff72d9f176704a58ae4408a3dcb0d2b563700b443d24795bb32ab60c9c048b', 'read', 35, 'rgb', 'parameter', 108, 'i'),
+            (54, 'lutSolarize', '450:13-450:22', '0ea66bd3750f5941b909d5357ad9e17ca4d5cbabfde0b32c67e4a3874c4450fb', 'write', 107, 'result', 'local', 108, 'i'),
+            (54, 'lutSolarize', '450:31-450:37', 'cac89aacc6d3c444fe5a1c02ea7aefbf4b27b4de3d6fc71c8efdd1132e6336c6', 'read', 35, 'rgb', 'parameter', 108, 'i'),
+            (63, 'srgbToLinear', '16:13-16:20', 'ee70860e5caf712e2ba1c01db1239003f11806925a1965dd6c7250968f6659cb', 'read', 7, 'srgb', 'parameter', 135, 'i'),
+            (63, 'srgbToLinear', '17:13-17:22', 'f04b84ea8e4fef8ecaa548b13b3e91025439327b6e91226d47888415b5d26ee7', 'write', 134, 'linear', 'local', 135, 'i'),
+            (63, 'srgbToLinear', '17:25-17:32', '29372ac4ade2fecc313b91860b2f9789333481662f506f8b7f10476ea82478b8', 'read', 7, 'srgb', 'parameter', 135, 'i'),
+            (63, 'srgbToLinear', '19:13-19:22', 'c50f19f5e80f2460085d21764cb18ba5e23a411de2b28bacdbd249ee3bce3b24', 'write', 134, 'linear', 'local', 135, 'i'),
+            (63, 'srgbToLinear', '19:30-19:37', '704d380022dce824cb932cfb00d24f608cb3e3748f59d312bd92090c23b3795c', 'read', 7, 'srgb', 'parameter', 135, 'i'),
+        ),
+    },
+    'filter/grade:primary': {
+        "profile": 'grade-primary-index-expression-v1',
+        "raw_bytes": 5839,
+        "raw_sha256": '008521bf82834ef55383a492adacb259964170831c92d6c9ddc6368acc850cc2',
+        "normalized_bytes": 4149,
+        "normalized_sha256": '6ce48b1dfd729e61d6f36a929a361b2597cd2989fde7bce75e488d18332af4f1',
+        "whole_sha256": '8c86ac4c453be44b558d423b93b172d1f1c0b8310c1574a8c9d79ef17a67dcbc',
+        "interface_sha256": '6716f9f839199c7ccaccdf6c0d94f617bf3167014a44b6400b52b6e0f2f963ed',
+        "functions_sha256": '91aba72dac52ee0ba63b532e28f67c3194f483704446508d5c39d74092bc0163',
+        "sites": (
+            (48, 'linearToSrgb', '41:13-41:22', '2613d8077777ee0a5dba5e750f2d6cedb5f02599f3db4900d870e2e5a6f5bb17', 'read', 19, 'linear', 'parameter', 81, 'i'),
+            (48, 'linearToSrgb', '42:13-42:20', '375abb89e1c7f8c130879c6d8845188bf99817d4f97d55dce086a7122ae4ee42', 'write', 80, 'srgb', 'local', 81, 'i'),
+            (48, 'linearToSrgb', '42:23-42:32', 'c46ac1519d9567fc0c0a4625b44178501eff14f7e04821a4f1d9ea9edaccca22', 'read', 19, 'linear', 'parameter', 81, 'i'),
+            (48, 'linearToSrgb', '44:13-44:20', 'a84fa2d243936e2ca8c8dedfdce5bde0fb2226523b8da2a15291712104d96b1a', 'write', 80, 'srgb', 'local', 81, 'i'),
+            (48, 'linearToSrgb', '44:35-44:44', '50f7440b3ccf3bd4594cc99edb0a64d9d745507af367eb0b5aed58a6ebc04278', 'read', 19, 'linear', 'parameter', 81, 'i'),
+            (52, 'srgbToLinear', '28:13-28:20', 'a4e50cbd301e83037492d2cfb515616d57a32a6f5ad8731301a6a5b660017dfb', 'read', 18, 'srgb', 'parameter', 87, 'i'),
+            (52, 'srgbToLinear', '29:13-29:22', '174c9ea3c148376a8c5a47d8751e834a6e6304fb462249b507fa42a205ffdeaa', 'write', 86, 'linear', 'local', 87, 'i'),
+            (52, 'srgbToLinear', '29:25-29:32', '6d10567e16ae294d2558cd19c72ced3f780652050096ece6d5927c1b67b7c69e', 'read', 18, 'srgb', 'parameter', 87, 'i'),
+            (52, 'srgbToLinear', '31:13-31:22', '138bfedfef4bd444de1abde5a27adebd27090c017ff5695ce4972915a46b895e', 'write', 86, 'linear', 'local', 87, 'i'),
+            (52, 'srgbToLinear', '31:30-31:37', '3abe01841a9c4c3241a935c05bbcbab44036ab527134caa584af46ab93a42754', 'read', 18, 'srgb', 'parameter', 87, 'i'),
+        ),
+    },
+    'filter/grade:vignette': {
+        "profile": 'grade-vignette-index-expression-v1',
+        "raw_bytes": 4133,
+        "raw_sha256": '740ad849a37c99d87962a376c2e618b24248dc4b2799066aaf6364861727c1fa',
+        "normalized_bytes": 3158,
+        "normalized_sha256": 'da1e995c43c079d01112112d7fcc82db19e0720567637351bb1fa5f777caf82b',
+        "whole_sha256": 'd8265fbf3722040699e064bfc24120d8f33dc42d8699e7055d91c4f3f0dc9a77',
+        "interface_sha256": '0439b9b58f6275497cc9967f8187a2c9d729d892fa660ce1d2faf170c94a4a32',
+        "functions_sha256": 'cdc48970399ad47c9075348c1e103edda1caa3776b3b0afc7b0211188608dd53',
+        "sites": (
+            (24, 'linearToSrgb', '34:13-34:22', 'd090fda6678f83e47bb21081349fc11db400d0a79b061a64e5080bff3dc2192f', 'read', 12, 'linear', 'parameter', 37, 'i'),
+            (24, 'linearToSrgb', '35:13-35:20', '8390e03013779382d075b13565499301da682bd8ee3be9c721da8c782315793a', 'write', 36, 'srgb', 'local', 37, 'i'),
+            (24, 'linearToSrgb', '35:23-35:32', 'a0fd97451bafa249bd4438a02adfe66f3c87078295b66a3d19b51b28f0d1b8ae', 'read', 12, 'linear', 'parameter', 37, 'i'),
+            (24, 'linearToSrgb', '37:13-37:20', '056e7b29799ef15429a57ce31fb9d2341582a9ed8914073cd3807eaf6e24b661', 'write', 36, 'srgb', 'local', 37, 'i'),
+            (24, 'linearToSrgb', '37:35-37:44', 'a69bbc97c42d2d4c5a35ccc961bdc8ce68d7d1f475233f085366277b5229cbf6', 'read', 12, 'linear', 'parameter', 37, 'i'),
+            (26, 'srgbToLinear', '21:13-21:20', '55be133cbb2b6c92cf809e2199ceeb64611b6118a047e3fbfbc8fcd589ef90c7', 'read', 11, 'srgb', 'parameter', 49, 'i'),
+            (26, 'srgbToLinear', '22:13-22:22', 'd74603f48294c778f400ad287e2f68e6d2caad9ef2c13ad966938ef6d151288c', 'write', 48, 'linear', 'local', 49, 'i'),
+            (26, 'srgbToLinear', '22:25-22:32', 'cbb5f1e07415d79026c07611021e8b263caa320af56bf1058dc8f9def24c1d2e', 'read', 11, 'srgb', 'parameter', 49, 'i'),
+            (26, 'srgbToLinear', '24:13-24:22', '79884f969663341ca3f5ca75c6c69c31a10e46588f3a41f8103da7892b613d73', 'write', 48, 'linear', 'local', 49, 'i'),
+            (26, 'srgbToLinear', '24:30-24:37', 'c6871c2779154adcca8fd574b7d7c635c12511e4e65e820413f25ef1f9f4bd10', 'read', 11, 'srgb', 'parameter', 49, 'i'),
+        ),
+    },
+    'filter/grade:wheels': {
+        "profile": 'grade-wheels-index-expression-v1',
+        "raw_bytes": 3529,
+        "raw_sha256": 'fa9c411096816263985e8d5ef82ade976667a6cadecf8929ecd185edbc71f479',
+        "normalized_bytes": 2789,
+        "normalized_sha256": 'cc34a0287290b7084fdb8d5611b7aacb6bdcfec5a229770823b5e2891cb27efc',
+        "whole_sha256": '3bdd83a3c201f78d00b04bc8360bd1ea670f046f81fcadde8aa6989f0d3ed7e6',
+        "interface_sha256": '52983f7002275735864a8837e14cd67c6ac2621efe2fff644643c0e34845bed9',
+        "functions_sha256": '65b54adce4a12f67aa82dac71df1a2889ce23b83b4919ec0c1f3f4b1b7c8948b',
+        "sites": (
+            (25, 'linearToSrgb', '33:13-33:22', '75d5b9502043b1214a84f1eb93373c5ce2cc3cc2c66d9ceaefc874e621a3de0b', 'read', 11, 'linear', 'parameter', 45, 'i'),
+            (25, 'linearToSrgb', '34:13-34:20', '981f9dd559e29fbf0c655dc207bbc3ab8fc4146149109c3edc89c350f067d351', 'write', 44, 'srgb', 'local', 45, 'i'),
+            (25, 'linearToSrgb', '34:23-34:32', '751be25cea912a5c96441d535f81846baf81813cf782898f5bb7ae6a43e6f459', 'read', 11, 'linear', 'parameter', 45, 'i'),
+            (25, 'linearToSrgb', '36:13-36:20', '46e7b3e749e22056e71a85fc2abf23bb7a64ea8acbb68d586269fcc2edb284b6', 'write', 44, 'srgb', 'local', 45, 'i'),
+            (25, 'linearToSrgb', '36:35-36:44', '365b5584a18115b15edb689648d28193319e9107b4c5c34999758a23dd7e5747', 'read', 11, 'linear', 'parameter', 45, 'i'),
+            (29, 'srgbToLinear', '20:13-20:20', 'e6191cc9185cc6a8bb6123266f72688941e6cf9f553c7761054cd0db2ce794fb', 'read', 10, 'srgb', 'parameter', 55, 'i'),
+            (29, 'srgbToLinear', '21:13-21:22', '8f39e8edd7e58c29a5cae396d6f7e562724ddf8949ba64c93e825b23614fcb75', 'write', 54, 'linear', 'local', 55, 'i'),
+            (29, 'srgbToLinear', '21:25-21:32', '050c16188d6dab7cbf12eef218697e842cfceaadfbd386ab43718d3905c9b043', 'read', 10, 'srgb', 'parameter', 55, 'i'),
+            (29, 'srgbToLinear', '23:13-23:22', 'a4ee2afeaa06ea9b3ae6475f03b6e96a2b238f5c6866b3ce48d4e13d6273edd3', 'write', 54, 'linear', 'local', 55, 'i'),
+            (29, 'srgbToLinear', '23:30-23:37', '9908da897785232617fa6cb3155a56e710fc08bce8ac7ba35b2c3eb12a5a8973', 'read', 10, 'srgb', 'parameter', 55, 'i'),
+        ),
+    },
+}
+
+def _fail(message: str) -> ValueError:
+    return ValueError(f"grade-index-expression-v1: {message}")
+
+
+def _walk_statement(statement: TypedStatement, results: list) -> None:
+    for index, expression in enumerate(statement.expressions):
+        _walk_expression(expression, statement, index, results)
+    for child in statement.children:
+        _walk_statement(child, results)
+
+
+def _walk_expression(value: TypedExpression, parent: object, child_index: int | None,
+                     results: list) -> None:
+    results.append((value, parent, child_index))
+    for index, child in enumerate(value.children):
+        _walk_expression(child, value, index, results)
+
+
+def authenticate_grade_index_expression(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> tuple[TypedExpression, ...]:
+    """Authenticate and return only the exact frozen index-node identities
+    for ``program.key``'s grade lane-index closure.
+
+    Every ``index``-kind node in the whole program is censused (not merely
+    the frozen sites looked up) and the count must match the frozen per-key
+    site count exactly -- this is the whole-program completeness proof: no
+    stray, un-authenticated index node can exist anywhere in the program.
+    """
+    lock = _LOCKS.get(program.key)
+    if lock is None:
+        raise _fail("selected key is not in the grade index expression cluster")
+    if profile != lock["profile"]:
+        raise _fail("exact profile carrier required")
+    if source_hash != lock["raw_sha256"]:
+        raise _fail("exact caller source hash required")
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    if (len(raw) != lock["raw_bytes"]
+            or hashlib.sha256(raw).hexdigest() != lock["raw_sha256"]
+            or len(normalized) != lock["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest() != lock["normalized_sha256"]
+            or program.preprocessor_defines != ()
+            or program.body_status != "analyzed"
+            or _sha(program.functions) != lock["functions_sha256"]
+            or _whole_fingerprint(program) != lock["whole_sha256"]
+            or _interface_fingerprint(program) != lock["interface_sha256"]):
+        raise _fail("source, define, function, whole-program, or interface mismatch")
+    if any(getattr(program, field) is not None for field in _OPTIONAL_PROOF_FIELDS):
+        raise _fail("unrelated proof carrier is not absent")
+    proof = program.counted_loop_proof
+    if proof is None or not proof.call_graph_acyclic:
+        raise _fail("loop or call graph profile mismatch")
+
+    census: list[tuple[TypedExpression, object, int | None, int, str]] = []
+    for function in program.functions:
+        results: list[tuple[TypedExpression, object, int | None]] = []
+        for statement in function.body:
+            _walk_statement(statement, results)
+        for node, parent, child_index in results:
+            if node.kind == "index":
+                census.append((node, parent, child_index, function.id, function.name))
+
+    expected_sites = lock["sites"]
+    if len(census) != len(expected_sites):
+        raise _fail("index-node census cardinality mismatch")
+
+    resolved: list[TypedExpression] = []
+    for (node, parent, child_index, function_id, function_name), expected in zip(
+            census, expected_sites):
+        (expected_function_id, expected_function_name, expected_span, expected_sha,
+         expected_role, expected_base_symbol_id, expected_base_name, expected_base_storage,
+         expected_index_symbol_id, expected_index_name) = expected
+        if (function_id != expected_function_id
+                or function_name != expected_function_name
+                or _span(node) != expected_span
+                or _sha(node) != expected_sha
+                or node.type.display() != "float"
+                or node.category != "lvalue"
+                or len(node.children) != 2):
+            raise _fail("index site node profile mismatch")
+        expected_role_computed = (
+            "write" if isinstance(parent, TypedExpression) and parent.kind == "assign"
+            and parent.operator == "=" and child_index == 0 else "read")
+        if expected_role_computed != expected_role:
+            raise _fail("index site role profile mismatch")
+        base, index = node.children
+        if (base.kind != "id" or base.symbol_id != expected_base_symbol_id
+                or base.symbol is None or base.symbol.id != expected_base_symbol_id
+                or base.symbol.name != expected_base_name
+                or base.symbol.storage != expected_base_storage
+                or not base.symbol.writable
+                or base.type.display() != "vec3" or base.category != "lvalue"):
+            raise _fail("index site base profile mismatch")
+        if (index.kind != "id" or index.symbol_id != expected_index_symbol_id
+                or index.symbol is None or index.symbol.id != expected_index_symbol_id
+                or index.symbol.name != expected_index_name
+                or index.symbol.storage != "local"
+                or index.type.display() != "int"):
+            raise _fail("index site induction-variable profile mismatch")
+        resolved.append(node)
+
+    return tuple(resolved)
+
+
+def apply_grade_index_expression(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> TypedProgram:
+    """Authenticate the frozen identity profile without changing the tree."""
+    authenticate_grade_index_expression(program, source_hash, profile)
+    return program

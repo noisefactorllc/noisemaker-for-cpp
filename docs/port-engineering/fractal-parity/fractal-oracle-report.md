@@ -1,0 +1,3 @@
+# Fractal pixel-parity oracle
+
+Frozen Node v24.7.0 canonical-adapter oracle for **classicNoisedeck/fractal:fractal**. It covers Julia, Newton, Mandelbrot, both Julia/Mandelbrot distance (mode=1) paths, adversarial near-escape and nonrepresentable tiled coordinates, grayscale, HSV, RGB palette, Oklab palette, cycling/levels, escaped-background alpha, exact Float32 words, RGBA8 bytes, public/direct identity, repeat storage, and five independent canonical-factory mutation witnesses. The typed landing remains intentionally outside this package; the prepared frontend profile records the first counted-loop blocker at julia 261:5-269:6.

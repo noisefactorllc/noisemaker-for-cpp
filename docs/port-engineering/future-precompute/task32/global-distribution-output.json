@@ -1,0 +1,494 @@
+{
+  "schema": "noisemaker-for-cpp.task32.global-declaration-distribution.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "member_count": 30,
+  "sanity_all_fail_with_family_message": [
+    [
+      "classicNoisedeck/bitEffects:bitEffects",
+      "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/cellNoise:cellNoise",
+      "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/cellRefract:cellRefract",
+      "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/colorLab:colorLab",
+      "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/kaleido:kaleido",
+      "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/moodscape:moodscape",
+      "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/shapeMixer:shapeMixer",
+      "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration"
+    ],
+    [
+      "classicNoisedeck/shapes:shapes",
+      "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration"
+    ],
+    [
+      "filter/adjust:adjust",
+      "filter/adjust:adjust:62:1: unsupported global declaration"
+    ],
+    [
+      "filter/colorspace:colorspace",
+      "filter/colorspace:colorspace:32:1: unsupported global declaration"
+    ],
+    [
+      "filter/edge:edge",
+      "filter/edge:edge:19:1: unsupported global declaration"
+    ],
+    [
+      "filter/emboss:emboss",
+      "filter/emboss:emboss:19:1: unsupported global declaration"
+    ],
+    [
+      "filter/fxaa:fxaa",
+      "filter/fxaa:fxaa:9:1: unsupported global declaration"
+    ],
+    [
+      "filter/glyphMap:glyphMap",
+      "filter/glyphMap:glyphMap:186:1: unsupported global declaration"
+    ],
+    [
+      "filter/grade:creative",
+      "filter/grade:creative:15:1: unsupported global declaration"
+    ],
+    [
+      "filter/grade:hslSecondary",
+      "filter/grade:hslSecondary:21:1: unsupported global declaration"
+    ],
+    [
+      "filter/grade:primary",
+      "filter/grade:primary:22:1: unsupported global declaration"
+    ],
+    [
+      "filter/grade:vignette",
+      "filter/grade:vignette:15:1: unsupported global declaration"
+    ],
+    [
+      "filter/grade:wheels",
+      "filter/grade:wheels:14:1: unsupported global declaration"
+    ],
+    [
+      "filter/grain:grain",
+      "filter/grain:grain:12:1: unsupported global declaration"
+    ],
+    [
+      "filter/historicPalette:historicPalette",
+      "filter/historicPalette:historicPalette:26:1: unsupported global declaration"
+    ],
+    [
+      "filter/normalMap:normalMap",
+      "filter/normalMap:normalMap:4:1: unsupported global declaration"
+    ],
+    [
+      "filter/osd:osd",
+      "filter/osd:osd:24:1: unsupported global declaration"
+    ],
+    [
+      "filter/palette:palette",
+      "filter/palette:palette:17:1: unsupported global declaration"
+    ],
+    [
+      "filter/scanlineError:scanlineError",
+      "filter/scanlineError:scanlineError:197:1: unsupported global declaration"
+    ],
+    [
+      "filter/snow:snow",
+      "filter/snow:snow:7:1: unsupported global declaration"
+    ],
+    [
+      "filter/spookyTicker:spookyTicker",
+      "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration"
+    ],
+    [
+      "filter/texture:texture",
+      "filter/texture:texture:30:1: unsupported global declaration"
+    ],
+    [
+      "filter/wobble:wobble",
+      "filter/wobble:wobble:16:1: unsupported global declaration"
+    ],
+    [
+      "synth/shape:shape",
+      "synth/shape:shape:31:1: unsupported global declaration"
+    ]
+  ],
+  "rows": [
+    {
+      "key": "classicNoisedeck/bitEffects:bitEffects",
+      "declaration_name": "BIT_COUNT",
+      "span": "129:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "int",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (int)"
+    },
+    {
+      "key": "classicNoisedeck/cellNoise:cellNoise",
+      "declaration_name": "fwdA",
+      "span": "137:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "classicNoisedeck/cellRefract:cellRefract",
+      "declaration_name": "emboss",
+      "span": "32:1",
+      "storage": "global",
+      "type_kind": "array",
+      "type_detail": "float[9]",
+      "has_initializer": false,
+      "initializer_shape": "none",
+      "bucket": "non-const global (global)"
+    },
+    {
+      "key": "classicNoisedeck/colorLab:colorLab",
+      "declaration_name": "fwdA",
+      "span": "191:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "classicNoisedeck/kaleido:kaleido",
+      "declaration_name": "emboss",
+      "span": "33:1",
+      "storage": "global",
+      "type_kind": "array",
+      "type_detail": "float[9]",
+      "has_initializer": false,
+      "initializer_shape": "none",
+      "bucket": "non-const global (global)"
+    },
+    {
+      "key": "classicNoisedeck/moodscape:moodscape",
+      "declaration_name": "fwdA",
+      "span": "149:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "classicNoisedeck/shapeMixer:shapeMixer",
+      "declaration_name": "fwdA",
+      "span": "128:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "classicNoisedeck/shapes:shapes",
+      "declaration_name": "fwdA",
+      "span": "588:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "filter/adjust:adjust",
+      "declaration_name": "fwdA",
+      "span": "62:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "filter/colorspace:colorspace",
+      "declaration_name": "fwdA",
+      "span": "32:1",
+      "storage": "const",
+      "type_kind": "matrix",
+      "type_detail": "mat3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const matrix"
+    },
+    {
+      "key": "filter/edge:edge",
+      "declaration_name": "LUMA",
+      "span": "19:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/emboss:emboss",
+      "declaration_name": "LUMA",
+      "span": "19:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/fxaa:fxaa",
+      "declaration_name": "CHANNEL_COUNT",
+      "span": "9:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "uint",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (uint)"
+    },
+    {
+      "key": "filter/glyphMap:glyphMap",
+      "declaration_name": "GLYPH_COUNT",
+      "span": "186:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "int",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (int)"
+    },
+    {
+      "key": "filter/grade:creative",
+      "declaration_name": "LUMA_WEIGHTS",
+      "span": "15:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/grade:hslSecondary",
+      "declaration_name": "LUMA_WEIGHTS",
+      "span": "21:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/grade:primary",
+      "declaration_name": "LUMA_WEIGHTS",
+      "span": "22:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/grade:vignette",
+      "declaration_name": "LUMA_WEIGHTS",
+      "span": "15:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/grade:wheels",
+      "declaration_name": "LUMA_WEIGHTS",
+      "span": "14:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/grain:grain",
+      "declaration_name": "CHANNEL_COUNT",
+      "span": "12:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "uint",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (uint)"
+    },
+    {
+      "key": "filter/historicPalette:historicPalette",
+      "declaration_name": "PALETTE_COUNT",
+      "span": "26:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "int",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (int)"
+    },
+    {
+      "key": "filter/normalMap:normalMap",
+      "declaration_name": "CHANNEL_COUNT",
+      "span": "4:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "uint",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (uint)"
+    },
+    {
+      "key": "filter/osd:osd",
+      "declaration_name": "GLYPHS",
+      "span": "24:1",
+      "storage": "const",
+      "type_kind": "array",
+      "type_detail": "int[80]",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const array"
+    },
+    {
+      "key": "filter/palette:palette",
+      "declaration_name": "MODE_RGB",
+      "span": "17:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "int",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (int)"
+    },
+    {
+      "key": "filter/scanlineError:scanlineError",
+      "declaration_name": "BASE_SEED_LINE",
+      "span": "197:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "filter/snow:snow",
+      "declaration_name": "CHANNEL_COUNT",
+      "span": "7:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "uint",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (uint)"
+    },
+    {
+      "key": "filter/spookyTicker:spookyTicker",
+      "declaration_name": "GLYPHS",
+      "span": "19:1",
+      "storage": "const",
+      "type_kind": "array",
+      "type_detail": "int[80]",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const array"
+    },
+    {
+      "key": "filter/texture:texture",
+      "declaration_name": "Z_LOOP",
+      "span": "30:1",
+      "storage": "const",
+      "type_kind": "scalar",
+      "type_detail": "int",
+      "has_initializer": true,
+      "initializer_shape": "literal",
+      "bucket": "const non-float scalar (int)"
+    },
+    {
+      "key": "filter/wobble:wobble",
+      "declaration_name": "X_NOISE_SEED",
+      "span": "16:1",
+      "storage": "const",
+      "type_kind": "vector",
+      "type_detail": "vec3",
+      "has_initializer": true,
+      "initializer_shape": "constructor",
+      "bucket": "const vector"
+    },
+    {
+      "key": "synth/shape:shape",
+      "declaration_name": "aspectRatio",
+      "span": "31:1",
+      "storage": "global",
+      "type_kind": "scalar",
+      "type_detail": "float",
+      "has_initializer": false,
+      "initializer_shape": "none",
+      "bucket": "non-const global (global)"
+    }
+  ],
+  "storage_type_bucket_distribution": {
+    "const non-float scalar (int)": 5,
+    "const matrix": 7,
+    "non-const global (global)": 3,
+    "const vector": 9,
+    "const non-float scalar (uint)": 4,
+    "const array": 2
+  },
+  "initializer_shape_distribution": {
+    "literal": 9,
+    "constructor": 18,
+    "none": 3
+  },
+  "resolved_bitEffects": {
+    "key": "classicNoisedeck/bitEffects:bitEffects",
+    "declaration_name": "BIT_COUNT",
+    "span": "129:1",
+    "storage": "const",
+    "type_kind": "scalar",
+    "type_detail": "int",
+    "has_initializer": true,
+    "initializer_shape": "literal",
+    "bucket": "const non-float scalar (int)"
+  },
+  "resolved_scanlineError": {
+    "key": "filter/scanlineError:scanlineError",
+    "declaration_name": "BASE_SEED_LINE",
+    "span": "197:1",
+    "storage": "const",
+    "type_kind": "vector",
+    "type_detail": "vec3",
+    "has_initializer": true,
+    "initializer_shape": "constructor",
+    "bucket": "const vector"
+  }
+}

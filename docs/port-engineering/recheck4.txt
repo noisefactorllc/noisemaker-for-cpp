@@ -1,0 +1,18 @@
+test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys) ... [31mFAIL[0m
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... [32mok[0m
+test_task25_loader_rejects_transitional_task24_no_carrier_slice (tests.test_typed_generator.TypedGeneratorTests.test_task25_loader_rejects_transitional_task24_no_carrier_slice) ... [32mok[0m
+test_task24_resource_contract_is_mechanical_and_mutation_closed (tests.test_typed_generator.TypedGeneratorTests.test_task24_resource_contract_is_mechanical_and_mutation_closed) ... [32mok[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m5026[0m, in [35mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m
+    [31mself.assertEqual[0m[1;31m(79, len(corpus_keys - public_keys))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m79 != 73[0m
+
+----------------------------------------------------------------------
+Ran 4 tests in 141.978s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

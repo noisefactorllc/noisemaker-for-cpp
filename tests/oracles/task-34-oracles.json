@@ -1,0 +1,1349 @@
+{
+  "schema": "noisemaker-for-cpp.tests.task-34-oracles.v1",
+  "note": "Vendored subset for the two programs landed in this batch from the loop-proof program-proof-gate cluster. filter/zoomBlur:zoomBlur extracted verbatim from docs/port-engineering/loopproof/oracle-a/loopproof-a-oracles.json (programs.zoomBlur); filter/reindex:nmReindexStats extracted verbatim from docs/port-engineering/future-precompute/cheap-unlocks/loopproof-oracles.json (programs.reindexStats). Field values are byte-identical to the source documents; only the wrapping structure differs.",
+  "sources": {
+    "zoomBlur": {
+      "path": "docs/port-engineering/loopproof/oracle-a/loopproof-a-oracles.json",
+      "schema": "noisemaker-for-cpp.loopproof.oracle-a.eight-program-loop-trip-count-oracles.v1",
+      "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+      "provenance": {
+        "glsl_kernel_sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+        "glsl_runtime_sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+        "pass_runner_sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
+        "surface_sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
+        "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+        "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+        "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+        "node": "v24.7.0"
+      }
+    },
+    "reindexStats": {
+      "path": "docs/port-engineering/future-precompute/cheap-unlocks/loopproof-oracles.json",
+      "schema": "noisemaker-for-cpp.future-precompute.cheap-unlocks.loopproof-cluster3.oracles.v1",
+      "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+      "provenance": {
+        "glsl_kernel_sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+        "glsl_runtime_sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+        "pass_runner_sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
+        "surface_sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
+        "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+        "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+        "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+        "node": "v24.7.0"
+      }
+    }
+  },
+  "programs": {
+    "zoomBlur": {
+      "key": "filter/zoomBlur:zoomBlur",
+      "defines": {},
+      "source_file": "zoomBlur.glsl",
+      "source_raw_bytes": 1496,
+      "source_sha256": "3b24e68c6aec2161bbac73f5cac3d21e658531fff6a365ae78a4982179a707bd",
+      "canonical_factory_name": "canonicalFactory182",
+      "public_is_canonical": true,
+      "adapter_override": null,
+      "loop_role": "Radial zoom-blur sample count: `for(t=0;t<=40;t++)` (float induction, the loop-proof-study shape this program is blocked on) drives a 41-tap parabolic-weighted radial sample average. A wrong trip count drops samples asymmetrically across the `percent=(t+offset)/40` parabola, changing both the weighted color sum and the normalizing `total`.",
+      "cases": [
+        {
+          "name": "moderate-strength-wide",
+          "dimensions": {
+            "width": 12,
+            "height": 10
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "strength": 0.6
+          },
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            12,
+            10
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "71ba1cdbe602acc73c12f91f5f1dd52d3e25018bb010957901a952e4b7783d66",
+            "rgba8_sha256": "274ec8ae29b164a8c4c4cc655053c4e8f117602b492de4f99612fc5be1105b9a",
+            "finite_lanes": 480,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.8811882138252258,
+                  0.4432990550994873,
+                  0.04395604506134987,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f61958d",
+                  "0x3ee2f818",
+                  "0x3d340b41",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  11,
+                  0
+                ],
+                "values": [
+                  0.4158414602279663,
+                  0.0824742317199707,
+                  0.6813185811042786,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ed4e92c",
+                  "0x3da8e840",
+                  "0x3f2e6ae5",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  9
+                ],
+                "values": [
+                  0.4752475619316101,
+                  0.20618554949760437,
+                  0.5384615063667297,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ef353a6",
+                  "0x3e53224e",
+                  "0x3f09d89d",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  11,
+                  9
+                ],
+                "values": [
+                  0.00990099087357521,
+                  0.7628864645957947,
+                  0.2637362480163574,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c2237c4",
+                  "0x3f434c87",
+                  "0x3e870870",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  6,
+                  5
+                ],
+                "values": [
+                  0.6831682920455933,
+                  0.40206179022789,
+                  0.4175824522972107,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f2ee41e",
+                  "0x3ecddb0b",
+                  "0x3ed5cd5e",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "strong-strength-tall",
+          "dimensions": {
+            "width": 10,
+            "height": 12
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "strength": 0.9
+          },
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            10,
+            12
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "d2fc016eb42e0fce5aefe654d1350cccaa2b3e4978f31579211d259f680d4a3e",
+            "rgba8_sha256": "20e5b4c9c2d43b8a43fc4a5ff0726ddef84dbb6ae041933592fc12b6fbbe23a7",
+            "finite_lanes": 480,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10891089588403702,
+                  0.6804123520851135,
+                  0.36263740062713623,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ddf0cad",
+                  "0x3f2e2f81",
+                  "0x3eb9ab9c",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  9,
+                  0
+                ],
+                "values": [
+                  0.9504951238632202,
+                  0.05154638737440109,
+                  0.05494505167007446,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7353a6",
+                  "0x3d53224e",
+                  "0x3d610e10",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  11
+                ],
+                "values": [
+                  0.03960396349430084,
+                  0.2886597812175751,
+                  0.05494505167007446,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d2237c4",
+                  "0x3e93cb37",
+                  "0x3d610e10",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  9,
+                  11
+                ],
+                "values": [
+                  0.8811882138252258,
+                  0.5773195624351501,
+                  0.6593406796455383,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f61958d",
+                  "0x3f13cb37",
+                  "0x3f28ca8d",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  6
+                ],
+                "values": [
+                  0.7326732873916626,
+                  0.8865981101989746,
+                  0.31868141889572144,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f3b907a",
+                  "0x3f62f818",
+                  "0x3ea32a36",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "weak-strength-tiled",
+          "dimensions": {
+            "width": 16,
+            "height": 14
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "strength": 0.3
+          },
+          "time": 0,
+          "tile_offset": [
+            2,
+            2
+          ],
+          "full_resolution": [
+            20,
+            18
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "ebbf972233c25ceb9727ee1137744b42cdd10178c47d7cdd16a2edf7d8061df0",
+            "rgba8_sha256": "b717c87ca9cd47df3b0e5a525bdd0605a076f49e4faff0379c52a3fa7df4aa77",
+            "finite_lanes": 896,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.2970297336578369,
+                  0.9175258278846741,
+                  0.6813185811042786,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e981448",
+                  "0x3f6ae2f9",
+                  "0x3f2e6ae5",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  15,
+                  0
+                ],
+                "values": [
+                  0.0990099236369133,
+                  0.17525771260261536,
+                  0.472527414560318,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcac5b7",
+                  "0x3e3376c2",
+                  "0x3ef1ef1d",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  13
+                ],
+                "values": [
+                  0.5643563270568848,
+                  0.37113404273986816,
+                  0.48351651430130005,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f1079a8",
+                  "0x3ebe0548",
+                  "0x3ef78f7a",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  15,
+                  13
+                ],
+                "values": [
+                  0.3663366436958313,
+                  0.5463917851448059,
+                  0.2747252881526947,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ebb907a",
+                  "0x3f0be055",
+                  "0x3e8ca8cb",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  7
+                ],
+                "values": [
+                  0.0891089215874672,
+                  0.07216494530439377,
+                  0.2857142984867096,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3db67ebd",
+                  "0x3d93cb37",
+                  "0x3e924925",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "large-strength-square",
+          "dimensions": {
+            "width": 9,
+            "height": 9
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "strength": 1.5
+          },
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            9,
+            9
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "4cf1885db024c94080147df57f1cad232bb1cd1cdd2a3fd8ff7d62efb45b6392",
+            "rgba8_sha256": "4ffbf9c084b70ad84332674fddb5a457060510350e5d6436295bd4aca4501296",
+            "finite_lanes": 324,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.485148549079895,
+                  0.2371133714914322,
+                  0.08791209012269974,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ef86564",
+                  "0x3e72cdd9",
+                  "0x3db40b41",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  0
+                ],
+                "values": [
+                  0.05940594524145126,
+                  0.39175260066986084,
+                  0.21978020668029785,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d7353a6",
+                  "0x3ec893cc",
+                  "0x3e610e10",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  8
+                ],
+                "values": [
+                  0.8712871670722961,
+                  0.5360825061798096,
+                  0.5274724960327148,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f5f0cad",
+                  "0x3f093cb4",
+                  "0x3f070870",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  8
+                ],
+                "values": [
+                  0.445544570684433,
+                  0.6907215714454651,
+                  0.6593406796455383,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ee41e6b",
+                  "0x3f30d321",
+                  "0x3f28ca8d",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  4,
+                  4
+                ],
+                "values": [
+                  0.4653465449810028,
+                  0.4639175236225128,
+                  0.37362638115882874,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3eee41e7",
+                  "0x3eed8699",
+                  "0x3ebf4bf5",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "zero-strength-uniform-sampling",
+          "dimensions": {
+            "width": 5,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "strength": 0
+          },
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            5,
+            5
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "7a28fbe1981ea48e9fe59b8b513c9e0176a07493f0587ce00e756852b5f07b0d",
+            "rgba8_sha256": "5c2ad9cd988968c2da9e0a993601e21a1fb7dfec0511352d4c6633d522f1e8b6",
+            "finite_lanes": 100,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.6732673048973083,
+                  0.4742267429828644,
+                  0.40659353137016296,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f2c5b3f",
+                  "0x3ef2cdd9",
+                  "0x3ed02d07",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  4,
+                  0
+                ],
+                "values": [
+                  0.9405940175056458,
+                  0.09278351068496704,
+                  0.472527414560318,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f70cac5",
+                  "0x3dbe0548",
+                  "0x3ef1ef1d",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.3861386179924011,
+                  0.1649484634399414,
+                  0.6263737082481384,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ec5b3f6",
+                  "0x3e28e840",
+                  "0x3f205a07",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  4,
+                  4
+                ],
+                "values": [
+                  0.6534652709960938,
+                  0.7010308504104614,
+                  0.6923078298568726,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f274980",
+                  "0x3f3376c2",
+                  "0x3f313b16",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  2,
+                  2
+                ],
+                "values": [
+                  0.6633663773536682,
+                  0.5876288414001465,
+                  0.5494505763053894,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f29d261",
+                  "0x3f166ed8",
+                  "0x3f0ca8cb",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "zoomBlur-sample-count-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "default",
+          "anchor": "for (var t = 0; t <= 40; t++) {",
+          "mutated": "for (var t = 0; t < 40; t++) {",
+          "description": "Drop the `t<=40` upper bound to `t<40`: smallest possible wrong trip count, dropping the t=40 sample (percent=1, the parabola's other zero-weight endpoint -- still touches `total` at float32 precision because `offset` is nonzero).",
+          "case_results": [
+            {
+              "case": "moderate-strength-wide",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "strong-strength-tall",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "weak-strength-tiled",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "large-strength-square",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "zero-strength-uniform-sampling",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 5,
+            "divergent_reaching": 5,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          },
+          "partial_divergence_note": null
+        },
+        {
+          "id": "zoomBlur-sample-count-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "default",
+          "anchor": "for (var t = 0; t <= 40; t++) {",
+          "mutated": "for (var t = 0; t <= 20; t++) {",
+          "description": "Halve the sample count to 21 taps (t=0..20): a materially wrong trip count that drops the entire back half of the parabola, including its highest-weight taps near t=20..40.",
+          "case_results": [
+            {
+              "case": "moderate-strength-wide",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "strong-strength-tall",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "weak-strength-tiled",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "large-strength-square",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "zero-strength-uniform-sampling",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 5,
+            "divergent_reaching": 5,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          },
+          "partial_divergence_note": null
+        }
+      ]
+    },
+    "reindexStats": {
+      "key": "filter/reindex:nmReindexStats",
+      "defines": {},
+      "source_file": "reindex/nmReindexStats.glsl",
+      "source_raw_bytes": 2395,
+      "source_sha256": "06525e054fc4910e7bc53345ad656071d2fcb33fc897f4aa35e8fc59b6f0b951",
+      "canonical_factory_name": "canonicalFactory120",
+      "public_is_canonical": false,
+      "adapter_override": {
+        "name": "reindexStatsFactory",
+        "hardcoded_tile_size": 8
+      },
+      "const_name": "TILE_SIZE",
+      "const_original_value": 8,
+      "loop_role": "Per-tile min/max lightness reduction window: TILE_SIZE governs BOTH which pixels are \"tile anchors\" (`fragCoord % TILE_SIZE == 0`, the only pixels that run the reduction at all) AND the nested loop bound of the reduction itself, so a wrong value changes which pixels carry output at all, not just the aggregated value.",
+      "cases": [
+        {
+          "name": "single-tile-small",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": true,
+          "uniforms": {},
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            6,
+            5
+          ],
+          "flat_height": null,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "403f6472864b91201c7fac1341efa845bc83cc3cb0995553589750f2e1e67efb",
+            "rgba8_sha256": "bace24b546c4739eca1de9383831becfee9456f3fae5017a7688b007c44cc686",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.23415207862854004,
+                  0.8850399255752563,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e6fc590",
+                  "0x3f6291fa",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "exact-multiple-tiles",
+          "dimensions": {
+            "width": 16,
+            "height": 8
+          },
+          "diagnostic": false,
+          "reach": true,
+          "uniforms": {},
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            16,
+            8
+          ],
+          "flat_height": null,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "25cc3cc6134817517a5f092f09ed5604e70fb878e02bd5aa1652469685de97d4",
+            "rgba8_sha256": "d2288cc97b270e81554cabc810322e1a99d24624b675ff7fa678c005a81e1367",
+            "finite_lanes": 512,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  15,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  7
+                ],
+                "values": [
+                  0.25579023361206055,
+                  0.8887308835983276,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e82f6f0",
+                  "0x3f6383de",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  15,
+                  7
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  4
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "partial-edge-tile",
+          "dimensions": {
+            "width": 9,
+            "height": 9
+          },
+          "diagnostic": false,
+          "reach": true,
+          "uniforms": {},
+          "time": 0,
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            9,
+            9
+          ],
+          "flat_height": null,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "4f4da78b444e6118c7efb592a75d05a9321eded7adbd4cdeb25cc2798a8897ce",
+            "rgba8_sha256": "f32f0458ee8edcbfac1bdec8ee7d669409c1414a363468fc0080202aee7a19bb",
+            "finite_lanes": 324,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.365160197019577,
+                  0.8098173141479492,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ebaf647",
+                  "0x3f4f5030",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  0
+                ],
+                "values": [
+                  0.74577796459198,
+                  0.74577796459198,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f3eeb4e",
+                  "0x3f3eeb4e",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  8
+                ],
+                "values": [
+                  0.2800827622413635,
+                  0.9018100500106812,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e8f6702",
+                  "0x3f66dd06",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  8,
+                  8
+                ],
+                "values": [
+                  0.37779465317726135,
+                  0.8540721535682678,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ec16e4d",
+                  "0x3f5aa479",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  4,
+                  4
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "multi-tile-tiled-offset",
+          "dimensions": {
+            "width": 20,
+            "height": 17
+          },
+          "diagnostic": false,
+          "reach": true,
+          "uniforms": {},
+          "time": 0,
+          "tile_offset": [
+            3,
+            2
+          ],
+          "full_resolution": [
+            23,
+            19
+          ],
+          "flat_height": null,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "23918ad257b39af4c24f3f520e9623b2bad8584f78e5d924e8f22dbef3d90e23",
+            "rgba8_sha256": "b292785463dda92c0ca6677e83914837e776c3618375249c7bac03abdc10a4ee",
+            "finite_lanes": 1360,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.3437422811985016,
+                  0.8863264918327332,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3eaffefd",
+                  "0x3f62e64b",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  19,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  16
+                ],
+                "values": [
+                  0.22734154760837555,
+                  0.8854583501815796,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e68cc39",
+                  "0x3f62ad66",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  19,
+                  16
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  10,
+                  8
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  0
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "reindexStats-tile-size-minus-one",
+          "kind": "trip_count_off_by_one",
+          "new_value": 7,
+          "description": "TILE_SIZE 8 -> 7: smallest possible wrong trip count, also shifts which pixels are tile anchors.",
+          "anchor": "var TILE_SIZE = 8;",
+          "mutated": "var TILE_SIZE = 7;",
+          "case_results": [
+            {
+              "case": "single-tile-small",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": false
+            },
+            {
+              "case": "exact-multiple-tiles",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "partial-edge-tile",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "multi-tile-tiled-offset",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 4,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          },
+          "partial_divergence_note": "Only 3/4 reach-eligible cases diverged -- investigated, see report."
+        },
+        {
+          "id": "reindexStats-tile-size-swap",
+          "kind": "trip_count_swap",
+          "new_value": 4,
+          "description": "TILE_SIZE 8 -> 4: halves the tile window, a materially wrong trip count and a materially different anchor grid.",
+          "anchor": "var TILE_SIZE = 8;",
+          "mutated": "var TILE_SIZE = 4;",
+          "case_results": [
+            {
+              "case": "single-tile-small",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "exact-multiple-tiles",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "partial-edge-tile",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "multi-tile-tiled-offset",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 4,
+            "divergent_reaching": 4,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          },
+          "partial_divergence_note": null
+        }
+      ]
+    }
+  }
+}

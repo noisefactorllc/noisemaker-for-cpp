@@ -1,0 +1,2617 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.task31.caustic-floatbits-scalar-xor-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "source_sha256": "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d",
+    "canonical_factory_name": "canonicalFactory1",
+    "canonical_factory_to_string_sha256": "27beaa017be557b5960bd072d74247896e596fa0b71b5c331c7795f5732a7488",
+    "node": "v24.7.0",
+    "public_identity": true,
+    "adapter_absent": true
+  },
+  "program": {
+    "key": "classicNoisedeck/caustic:caustic",
+    "defines": {
+      "NOISE_TYPE": 10
+    },
+    "profile_candidate": "caustic-floatbits-scalar-xor-v1",
+    "closure": {
+      "owning_function": "randomFromLatticeWithOffset",
+      "owning_function_id": 94,
+      "floatBitsToUint_sites": 1,
+      "scalar_uint_xor_sites": 3,
+      "helper_text_sha256": {
+        "map": "e608a090926c4d8c4d3cfd2b702ef3d1eccf4f547730010b63c0347b6b36113f",
+        "pcg": "98775ddc2352ef7e416ad68e5799d20036ee65cb764c5ccdbf5b9addb38c57c4",
+        "positiveModulo": "2ec68800c2e30d17b322203d78987eef127599a3b9bb09c053edcb9b9820f8e2",
+        "periodicFunction": "be53736b4aadb38bc80c5bc04377bf61634770c7fcb4686bb332d95afc769525",
+        "constant": "17a9bf45bb576109735fa25047ca732dbd98368ae7941f9cbc448505b1d46ef0",
+        "constantOffset": "a4e65a3f73c7b655603c235109f2766b68147b7263fc84a1028673f13acb34ff",
+        "randomFromLatticeWithOffset": "25b1f3b01dfcf939ef854692bc4453d94445fa3ebaa37cb37c3e2eb6c0748621"
+      },
+      "site_anchor_occurrence_checked": true
+    },
+    "reachability_finding": {
+      "claim_in_brief": "randomFromLatticeWithOffset is called from constant()/constantOffset(), which the #if NOISE_TYPE == 10 branch of noise() calls directly",
+      "verified_status": "CONTRADICTED",
+      "static_evidence": {
+        "tool": "tools.glslcpp.generate_typed_slice.parse_program + analyze_program, run live against corpus revision a024dc3a960cc44af454abc7aebce50456c194e6 with defines {\"NOISE_TYPE\": 10}",
+        "function_count": 22,
+        "value_function_id": 96,
+        "value_function_body_statement_count": 2,
+        "value_function_calls_at_NOISE_TYPE_10": [
+          "simplexValue",
+          "simplexValue"
+        ],
+        "call_graph_reachable_from_main": [
+          "brightnessContrast",
+          "hsv2rgb",
+          "main",
+          "map",
+          "mod289",
+          "noise",
+          "periodicFunction",
+          "permute",
+          "simplexValue",
+          "value"
+        ],
+        "randomFromLatticeWithOffset_reachable_from_main": false,
+        "constant_reachable_from_main": false,
+        "constantOffset_reachable_from_main": false,
+        "randomFromLatticeWithOffset_function_id": 94
+      },
+      "dynamic_evidence": {
+        "method": "render the real, hash-pinned canonicalFactory1 at every NOISE_TYPE with each of this oracle's 4 structural mutations applied, diff full F32 bytes against the unmutated baseline",
+        "note": "see full_render_mutations.eligible_case_results (NOISE_TYPE=10: 0/N for all 4 mutations) and full_render_mutations.ineligible_diagnostic_case_results (NOISE_TYPE=0: only the AND mutation diverges) below"
+      },
+      "forced_zero_seedFrac_finding": {
+        "description": "Every legitimate call path threads `s` from `float(seed) + <integer literal offset>` (seed is `uniform int`), so seedFrac = fract(s) is always exactly 0.0 wherever the closure IS reachable (NOISE_TYPE in {0,1,3,4,5,6}). floatBitsToUint(0.0) === uint(0.0) === 0, and 0 is the identity element for ^ / + / |, so the floatBitsToUint->uint mutation and the +/| XOR-site mutations are structurally non-discriminating via ANY full-kernel render, reachable or not. Only an AND-style mutation (0 & X = 0 != X = 0 ^ X) discriminates via full render, and only where reachable."
+      },
+      "conclusion": "No full-kernel pixel render, at any uniform combination (eligible or not), can exercise or discriminate this closure. This oracle uses direct invocation of the byte-for-byte-extracted public-factory function (with non-integer `s`, which the function's own signature permits even though no in-repo caller ever supplies one) as the authoritative closure-parity surface, matching the brief's own Native Test Plan recommendation to test via \"the smallest wrapping public call, constant()/constantOffset()\"."
+    }
+  },
+  "fixture": {
+    "full_render": "no input texture (resources: samplers=()); uniforms + defines only",
+    "fragment_origin": "bottom-left runPass coordinates",
+    "direct_closure_probe": "byte-for-byte extraction of constant/constantOffset/randomFromLatticeWithOffset from the pinned public factory text, invoked directly with synthetic (including non-integer) arguments"
+  },
+  "eligible_render_cases": [
+    {
+      "name": "simplex-default-seed44",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 44,
+        "wrap": true,
+        "time": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        5
+      ],
+      "output": {
+        "f32_sha256": "439bc0ab9c741bef0190b9bd9ab802644fa3d117eb60b830572343123fed9be2",
+        "rgba8_sha256": "54a0a2fb520578917435bd4312dc8af39ea0584f3d92d1c9176fe2a3c2f3fd85",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.04774277284741402,
+              0.04789349064230919,
+              0.08212261646986008,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d438ded",
+              "0x3d442bf7",
+              "0x3da82fe7",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.004242919851094484,
+              0.003581263590604067,
+              0.005324286874383688,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3b8b0831",
+              "0x3b6ab3a2",
+              "0x3bae775b",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.17580203711986542,
+              0.22344742715358734,
+              0.23739638924598694,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e340573",
+              "0x3e64cf67",
+              "0x3e73180a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.0029928702861070633,
+              0.003162714187055826,
+              0.003271180670708418,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3b442408",
+              "0x3b4f458a",
+              "0x3b56614e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.00042321596993133426,
+              0.0004252942744642496,
+              0.0004282340232748538,
+              1
+            ],
+            "f32_bits_le": [
+              "0x39dde316",
+              "0x39defa08",
+              "0x39e08499",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    },
+    {
+      "name": "simplex-seed-zero-nowrap",
+      "dimensions": {
+        "width": 7,
+        "height": 4
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 0,
+        "wrap": false,
+        "time": 3.5
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        7,
+        4
+      ],
+      "output": {
+        "f32_sha256": "1a59b36b792ac130eec49bfc910f58099031f16d532018f7e1c16fbe640bebb4",
+        "rgba8_sha256": "c7d1dd8abae53d951910bcc0eb1c7cb5eb59dbcd952b7340c2e075ee5534eba8",
+        "finite_lanes": 112,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.109543576836586,
+              0.11567781120538712,
+              0.11650603264570236,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3de05862",
+              "0x3dece87d",
+              "0x3dee9ab7",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.020656701177358627,
+              0.015194820240139961,
+              0.0333235003054142,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ca9383e",
+              "0x3c78f3b2",
+              "0x3d087e39",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.04811659827828407,
+              0.06075451895594597,
+              0.08061172068119049,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d4515e9",
+              "0x3d78d9bb",
+              "0x3da517c2",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              3
+            ],
+            "values": [
+              0.003125794231891632,
+              0.0032743136398494244,
+              0.0032956821378320456,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3b4cda20",
+              "0x3b5695de",
+              "0x3b57fc5f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.14064446091651917,
+              0.14290320873260498,
+              0.14642471075057983,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e10051a",
+              "0x3e125538",
+              "0x3e15f05c",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    },
+    {
+      "name": "simplex-large-seed-tiled",
+      "dimensions": {
+        "width": 5,
+        "height": 7
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 99,
+        "wrap": true,
+        "time": 12
+      },
+      "tile_offset": [
+        3,
+        2
+      ],
+      "full_resolution": [
+        13,
+        11
+      ],
+      "output": {
+        "f32_sha256": "a389f7860dbcd2f5da1daa7de559afc4a10cebe5014bd794a67722a4f6ad8e85",
+        "rgba8_sha256": "7c6c9033558930821daf5fdb6eae35a32f14e90887df2a2e43d7a913cdee4638",
+        "finite_lanes": 140,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.001277143252082169,
+              0.0011592222144827247,
+              0.0017513835337013006,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3aa765d1",
+              "0x3a97f10b",
+              "0x3ae58eae",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.02631254307925701,
+              0.022554390132427216,
+              0.03379976004362106,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3cd78d67",
+              "0x3cb8c3fc",
+              "0x3d0a719e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.07058663666248322,
+              0.10499955713748932,
+              0.10558729618787766,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d908fba",
+              "0x3dd70a02",
+              "0x3dd83e27",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              6
+            ],
+            "values": [
+              0.03183624893426895,
+              0.0404093973338604,
+              0.04691285267472267,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d0266ba",
+              "0x3d258453",
+              "0x3d4027b1",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              3
+            ],
+            "values": [
+              0.3987031877040863,
+              0.4357239902019501,
+              0.6728485226631165,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ecc22d3",
+              "0x3edf1737",
+              "0x3f2c3fcd",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    },
+    {
+      "name": "simplex-negative-intensity-full-hue",
+      "dimensions": {
+        "width": 8,
+        "height": 3
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 17,
+        "hueRotation": 0,
+        "hueRange": 100,
+        "intensity": -80,
+        "speed": 100,
+        "time": 1.25
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        8,
+        3
+      ],
+      "output": {
+        "f32_sha256": "17d58c1c11dd4a4775de0a52b21f4cb4b28e9961456aea5e305ca48c78d607c9",
+        "rgba8_sha256": "d52c2ac9fe2f27c2c08c17af9e24c08ca3772048c38e54cc7e2d480506729248",
+        "finite_lanes": 96,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              -0.11341606825590134,
+              -0.11464975029230118,
+              -0.11064540594816208,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbde846af",
+              "0xbdeacd7d",
+              "0xbde29a0f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.47999998927116394,
+              0.47999998927116394,
+              0.47999998927116394,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ef5c28f",
+              "0x3ef5c28f",
+              "0x3ef5c28f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              -0.06760536134243011,
+              -0.06316825747489929,
+              -0.07628921419382095,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbd8a74ae",
+              "0xbd815e5c",
+              "0xbd9c3d85",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              2
+            ],
+            "values": [
+              -0.11975164711475372,
+              -0.11972782015800476,
+              -0.11964816600084305,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbdf5405a",
+              "0xbdf533dc",
+              "0xbdf50a19",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              1
+            ],
+            "values": [
+              -0.0804186537861824,
+              -0.08480527251958847,
+              -0.06956976652145386,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbda4b289",
+              "0xbdadae63",
+              "0xbd8e7a98",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    },
+    {
+      "name": "simplex-min-scale-zero-speed",
+      "dimensions": {
+        "width": 4,
+        "height": 4
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 1,
+        "noiseScale": 1,
+        "speed": 0,
+        "time": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        4,
+        4
+      ],
+      "output": {
+        "f32_sha256": "2a18955e6761b3858ca5a68698aef270adf6129339532b86e2f6791edd5d66ab",
+        "rgba8_sha256": "cca8adddd7713c1a5aa46e309a1536d3f65b28b370a2b4a1169e883a42cc3f5a",
+        "finite_lanes": 64,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.0012039064895361662,
+              0.0017569172196090221,
+              0.001841853721998632,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3a9dcc66",
+              "0x3ae6485c",
+              "0x3af16a5b",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.3353751003742218,
+              0.35625889897346497,
+              0.3795415461063385,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3eabb649",
+              "0x3eb66791",
+              "0x3ec25345",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.06304405629634857,
+              0.07573512196540833,
+              0.09984999150037766,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d811d3e",
+              "0x3d9b1b04",
+              "0x3dcc7e27",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.0589885488152504,
+              0.07659301161766052,
+              0.10379678010940552,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d719dfa",
+              "0x3d9cdccc",
+              "0x3dd49368",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.09308182448148727,
+              0.066329725086689,
+              0.1451863795518875,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dbea1af",
+              "0x3d87d7e1",
+              "0x3e14abbd",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    },
+    {
+      "name": "simplex-max-scale-large-canvas",
+      "dimensions": {
+        "width": 10,
+        "height": 6
+      },
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "seed": 71,
+        "noiseScale": 200,
+        "speed": 63,
+        "hueRange": 5,
+        "time": 40
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        10,
+        6
+      ],
+      "output": {
+        "f32_sha256": "4b9128eb902d74d0c13e4fd44cd0a3c7a24edbbde129721b69cc3346be79ab19",
+        "rgba8_sha256": "57714528081646c2e13253cd995151f9d339b317403cb9bf438860c35a6fb802",
+        "finite_lanes": 240,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.000019880002582794987,
+              0.000034909295209217817,
+              0.000039233149436768144,
+              1
+            ],
+            "f32_bits_le": [
+              "0x37a6c3fb",
+              "0x38126b92",
+              "0x38248e46",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.00009251912706531584,
+              0.00016185107233468443,
+              0.00018092607206199318,
+              1
+            ],
+            "f32_bits_le": [
+              "0x38c206d4",
+              "0x3929b691",
+              "0x393db6f9",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.00015069062646944076,
+              0.00026382182841189206,
+              0.00029504133271984756,
+              1
+            ],
+            "f32_bits_le": [
+              "0x391e02b5",
+              "0x398a5191",
+              "0x399aafc7",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              5
+            ],
+            "values": [
+              0.0006032545934431255,
+              0.0010520444484427571,
+              0.0011703871423378587,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3a1e23bb",
+              "0x3a89e4c1",
+              "0x3a9967ad",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              3
+            ],
+            "values": [
+              0.00016647588927298784,
+              0.000291180273052305,
+              0.0003253079776186496,
+              1
+            ],
+            "f32_bits_le": [
+              "0x392e9008",
+              "0x3998a98e",
+              "0x39aa8e19",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false,
+      "closure_reachable_note": "randomFromLatticeWithOffset is unreachable from main() at NOISE_TYPE=10 -- see program.reachability_finding"
+    }
+  ],
+  "ineligible_render_cases": [
+    {
+      "name": "value-constant-interp0",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "NOISE_TYPE": 0
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"NOISE_TYPE\":0} != authorized {\"NOISE_TYPE\":10} -- this is a different, never-ported preprocessor branch of the same shared classicNoisedeck/caustic source; its C++-side comparison target does not exist",
+      "uniforms": {
+        "seed": 44,
+        "wrap": true,
+        "time": 0
+      },
+      "output": {
+        "f32_sha256": "70a84c7d97568d35b36c6dae3732804ee0087a5c5230aada4263381d43764905",
+        "rgba8_sha256": "ddc740d0117e1c8181ca39324816a093ab86e07a24911eaeca6238b62a5ae483",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.21403703093528748,
+              0.24352751672267914,
+              0.25997206568717957,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e5b2c86",
+              "0x3e795f47",
+              "0x3e851b0f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.21403703093528748,
+              0.24352751672267914,
+              0.25997206568717957,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e5b2c86",
+              "0x3e795f47",
+              "0x3e851b0f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.0660136491060257,
+              0.05359049513936043,
+              0.10905785858631134,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d87322a",
+              "0x3d5b81b5",
+              "0x3ddf59ba",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.0660136491060257,
+              0.05359049513936043,
+              0.10905785858631134,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d87322a",
+              "0x3d5b81b5",
+              "0x3ddf59ba",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.674677312374115,
+              0.8346334099769592,
+              1,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f2cb7a7",
+              "0x3f55aa89",
+              "0x3f800000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": true
+    },
+    {
+      "name": "value-linear-interp1",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "NOISE_TYPE": 1
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"NOISE_TYPE\":1} != authorized {\"NOISE_TYPE\":10} -- this is a different, never-ported preprocessor branch of the same shared classicNoisedeck/caustic source; its C++-side comparison target does not exist",
+      "uniforms": {
+        "seed": 44,
+        "wrap": true,
+        "time": 0
+      },
+      "output": {
+        "f32_sha256": "d6c6dd7511ebc91826e21784eadf572831963a0df5ba9f3db356885f1264acb7",
+        "rgba8_sha256": "a0573cefa72b5384922fa3d1eea60583269ffad119c882c04b203f4d87eb4ea5",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.2353658229112625,
+              0.22139355540275574,
+              0.45691996812820435,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e7103bd",
+              "0x3e62b4fe",
+              "0x3ee9f16a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.2353658229112625,
+              0.22139355540275574,
+              0.45691996812820435,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e7103bd",
+              "0x3e62b4fe",
+              "0x3ee9f16a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.2353658229112625,
+              0.22139355540275574,
+              0.45691996812820435,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e7103bd",
+              "0x3e62b4fe",
+              "0x3ee9f16a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.2353658229112625,
+              0.22139355540275574,
+              0.45691996812820435,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e7103bd",
+              "0x3e62b4fe",
+              "0x3ee9f16a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.5442224740982056,
+              0.6606137752532959,
+              0.8055051565170288,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f0b522a",
+              "0x3f291dfc",
+              "0x3f4e3596",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": true
+    },
+    {
+      "name": "sine-interp11",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "NOISE_TYPE": 11
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"NOISE_TYPE\":11} != authorized {\"NOISE_TYPE\":10} -- this is a different, never-ported preprocessor branch of the same shared classicNoisedeck/caustic source; its C++-side comparison target does not exist",
+      "uniforms": {
+        "seed": 44,
+        "wrap": true,
+        "time": 0
+      },
+      "output": {
+        "f32_sha256": "edc797a7b21f907514d9d67f76bed6cee3a3ae1e091d7dd8a68328919da4699e",
+        "rgba8_sha256": "b31a897a381b8a806f1933ca0f4ba995df853294dad1167a6dbf9e40598f70b9",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              -0.2604900598526001,
+              -0.20161749422550201,
+              -0.408883661031723,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbe855ef4",
+              "0xbe4e74d1",
+              "0xbed15933",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              -0.19717593491077423,
+              -0.15395940840244293,
+              -0.31408917903900146,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbe49e87d",
+              "0xbe1da789",
+              "0xbea0d04c",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.4921157658100128,
+              0.5860533118247986,
+              0.9994502067565918,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3efbf699",
+              "0x3f160797",
+              "0x3f7fdbf8",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              -0.14278241991996765,
+              -0.14269913733005524,
+              -0.239560067653656,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbe12358e",
+              "0xbe121fb9",
+              "0xbe754f3c",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              -0.2752891778945923,
+              -0.2495489865541458,
+              -0.4396461844444275,
+              1
+            ],
+            "f32_bits_le": [
+              "0xbe8cf2b4",
+              "0xbe7f89c5",
+              "0xbee1194e",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true,
+      "closure_reachable": false
+    }
+  ],
+  "direct_closure_probe_cases": [
+    {
+      "name": "baseline-integer-seed-matches-full-render",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          0.31,
+          0.72
+        ],
+        "xFreq": 4,
+        "yFreq": 4,
+        "s": 44,
+        "s_bits": "0x42300000",
+        "offset": [
+          0,
+          0
+        ],
+        "seed_uniform": 44,
+        "wrap_uniform": true
+      },
+      "seedFrac": 0,
+      "seedFrac_bits": "0x00000000",
+      "fracBits": 0,
+      "fracBits_hex": "0x00000000",
+      "xBits": 1,
+      "yBits": 2,
+      "seedBits": 44,
+      "jitter": [
+        2654435769,
+        2135587861,
+        2496678324
+      ],
+      "jitter_hex": [
+        "0x9e3779b9",
+        "0x7f4a7c15",
+        "0x94d049b4"
+      ],
+      "state": [
+        2654435768,
+        2135587863,
+        2496678296
+      ],
+      "prngState": [
+        1717661739,
+        1590404958,
+        2493950620
+      ],
+      "result": [
+        0.39992427825927734,
+        0.3702950179576874,
+        0.5806681513786316
+      ],
+      "result_bits": [
+        "0x3eccc2e0",
+        "0x3ebd974f",
+        "0x3f14a6ab"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "fractional-seed-simple-half",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          0.31,
+          0.72
+        ],
+        "xFreq": 4,
+        "yFreq": 4,
+        "s": 44.5,
+        "s_bits": "0x42320000",
+        "offset": [
+          0,
+          0
+        ],
+        "seed_uniform": 44,
+        "wrap_uniform": true
+      },
+      "seedFrac": 0.5,
+      "seedFrac_bits": "0x3f000000",
+      "fracBits": 1056964608,
+      "fracBits_hex": "0x3f000000",
+      "xBits": 1,
+      "yBits": 2,
+      "seedBits": 44,
+      "jitter": [
+        288848313,
+        3997858837,
+        3721415092
+      ],
+      "jitter_hex": [
+        "0x113779b9",
+        "0xee4a7c15",
+        "0xddd049b4"
+      ],
+      "state": [
+        288848312,
+        3997858839,
+        3721415064
+      ],
+      "prngState": [
+        2283172395,
+        2375253598,
+        1002060444
+      ],
+      "result": [
+        0.5315924882888794,
+        0.5530318021774292,
+        0.23331037163734436
+      ],
+      "result_bits": [
+        "0x3f081672",
+        "0x3f0d937e",
+        "0x3e6ee8ea"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "fractional-seed-float32-rounding-boundary",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          0.31,
+          0.72
+        ],
+        "xFreq": 4,
+        "yFreq": 4,
+        "s": 44.1,
+        "s_bits": "0x42306666",
+        "offset": [
+          1,
+          -1
+        ],
+        "seed_uniform": 44,
+        "wrap_uniform": true
+      },
+      "seedFrac": 0.10000000149011612,
+      "seedFrac_bits": "0x3dcccccd",
+      "fracBits": 1036831949,
+      "fracBits_hex": "0x3dcccccd",
+      "xBits": 2,
+      "yBits": 1,
+      "seedBits": 44,
+      "jitter": [
+        367619332,
+        1377285302,
+        1076608255
+      ],
+      "jitter_hex": [
+        "0x15e96d04",
+        "0x5217b4b6",
+        "0x402bbcff"
+      ],
+      "state": [
+        367619334,
+        1377285303,
+        1076608211
+      ],
+      "prngState": [
+        1700865909,
+        783643347,
+        1325784464
+      ],
+      "result": [
+        0.39601370692253113,
+        0.18245618045330048,
+        0.30868324637413025
+      ],
+      "result_bits": [
+        "0x3ecac24f",
+        "0x3e3ad5cb",
+        "0x3e9e0bbb"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "negative-fractional-seed",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          -2.4,
+          9.9
+        ],
+        "xFreq": 12,
+        "yFreq": 3,
+        "s": -0.5,
+        "s_bits": "0xbf000000",
+        "offset": [
+          0,
+          2
+        ],
+        "seed_uniform": 0,
+        "wrap_uniform": false
+      },
+      "seedFrac": 0.5,
+      "seedFrac_bits": "0x3f000000",
+      "fracBits": 1056964608,
+      "fracBits_hex": "0x3f000000",
+      "xBits": -30,
+      "yBits": 31,
+      "seedBits": 0,
+      "jitter": [
+        288848313,
+        3997858837,
+        3721415092
+      ],
+      "jitter_hex": [
+        "0x113779b9",
+        "0xee4a7c15",
+        "0xddd049b4"
+      ],
+      "state": [
+        4006119003,
+        3997858826,
+        3721415092
+      ],
+      "prngState": [
+        2400829720,
+        2240774032,
+        898225821
+      ],
+      "result": [
+        0.5589867234230042,
+        0.5217208862304688,
+        0.20913448929786682
+      ],
+      "result_bits": [
+        "0x3f0f19c1",
+        "0x3f058f80",
+        "0x3e56275a"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "near-one-fractional-seed-no-wrap",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          0,
+          0
+        ],
+        "xFreq": 1,
+        "yFreq": 1,
+        "s": 100.999999,
+        "s_bits": "0x42ca0000",
+        "offset": [
+          -3,
+          5
+        ],
+        "seed_uniform": 99,
+        "wrap_uniform": true
+      },
+      "seedFrac": 0.9999989867210388,
+      "seedFrac_bits": "0x3f7fffef",
+      "fracBits": 1065353199,
+      "fracBits_hex": "0x3f7fffef",
+      "xBits": 0,
+      "yBits": 0,
+      "seedBits": 99,
+      "jitter": [
+        1978950790,
+        4229307892,
+        185059245
+      ],
+      "jitter_hex": [
+        "0x75f46486",
+        "0xfc161df4",
+        "0x0b07c7ad"
+      ],
+      "state": [
+        1978950790,
+        4229307892,
+        185059278
+      ],
+      "prngState": [
+        3396845940,
+        4102525109,
+        2884743845
+      ],
+      "result": [
+        0.7908897995948792,
+        0.9551935791969299,
+        0.6716567873954773
+      ],
+      "result_bits": [
+        "0x3f4a77c1",
+        "0x3f748791",
+        "0x3f2bf1b3"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "small-fractional-seed-large-offset",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          5.5,
+          -3.25
+        ],
+        "xFreq": 85,
+        "yFreq": 85,
+        "s": 7.000123,
+        "s_bits": "0x40e00102",
+        "offset": [
+          17,
+          -22
+        ],
+        "seed_uniform": 3,
+        "wrap_uniform": true
+      },
+      "seedFrac": 0.0001230000052601099,
+      "seedFrac_bits": "0x3900f990",
+      "fracBits": 956365200,
+      "fracBits_hex": "0x3900f990",
+      "xBits": 66,
+      "yBits": 41,
+      "seedBits": 3,
+      "jitter": [
+        2588017961,
+        2295299429,
+        3210733636
+      ],
+      "jitter_hex": [
+        "0x9a420529",
+        "0x88cf7d65",
+        "0xbf5fe844"
+      ],
+      "state": [
+        2588018027,
+        2295299404,
+        3210733639
+      ],
+      "prngState": [
+        3053054938,
+        2227110304,
+        2599001242
+      ],
+      "result": [
+        0.7108447551727295,
+        0.518539547920227,
+        0.6051271557807922
+      ],
+      "result_bits": [
+        "0x3f35f9ec",
+        "0x3f04bf02",
+        "0x3f1ae99d"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "one-third-fractional-seed",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          1.1,
+          1.1
+        ],
+        "xFreq": 6,
+        "yFreq": 6,
+        "s": 12.333333333333334,
+        "s_bits": "0x41455555",
+        "offset": [
+          0,
+          0
+        ],
+        "seed_uniform": 12,
+        "wrap_uniform": false
+      },
+      "seedFrac": 0.3333333432674408,
+      "seedFrac_bits": "0x3eaaaaab",
+      "fracBits": 1051372203,
+      "fracBits_hex": "0x3eaaaaab",
+      "xBits": 18,
+      "yBits": 6,
+      "seedBits": 12,
+      "jitter": [
+        2553001090,
+        4057346672,
+        3643345609
+      ],
+      "jitter_hex": [
+        "0x982bb482",
+        "0xf1d63270",
+        "0xd9290ac9"
+      ],
+      "state": [
+        2553001104,
+        4057346678,
+        3643345605
+      ],
+      "prngState": [
+        184136705,
+        3641068868,
+        551994655
+      ],
+      "result": [
+        0.04287266731262207,
+        0.8477523922920227,
+        0.12852126359939575
+      ],
+      "result_bits": [
+        "0x3d2f9b40",
+        "0x3f59064d",
+        "0x3e039b14"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    },
+    {
+      "name": "wrap-toggle-otherwise-identical",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "eligible_for_native_binding": true,
+      "inputs": {
+        "st": [
+          5.5,
+          -3.25
+        ],
+        "xFreq": 85,
+        "yFreq": 85,
+        "s": 7.000123,
+        "s_bits": "0x40e00102",
+        "offset": [
+          17,
+          -22
+        ],
+        "seed_uniform": 3,
+        "wrap_uniform": false
+      },
+      "seedFrac": 0.0001230000052601099,
+      "seedFrac_bits": "0x3900f990",
+      "fracBits": 956365200,
+      "fracBits_hex": "0x3900f990",
+      "xBits": 491,
+      "yBits": -299,
+      "seedBits": 3,
+      "jitter": [
+        2588017961,
+        2295299429,
+        3210733636
+      ],
+      "jitter_hex": [
+        "0x9a420529",
+        "0x88cf7d65",
+        "0xbf5fe844"
+      ],
+      "state": [
+        2588017858,
+        1999668144,
+        3210733639
+      ],
+      "prngState": [
+        2336879107,
+        3994798011,
+        2411440820
+      ],
+      "result": [
+        0.5440970659255981,
+        0.9301114082336426,
+        0.5614573359489441
+      ],
+      "result_bits": [
+        "0x3f0b49f2",
+        "0x3f6e1bc8",
+        "0x3f0fbbab"
+      ],
+      "repeat_identity": true,
+      "input_immutable": true
+    }
+  ],
+  "direct_scalar_rows": [
+    {
+      "seedFrac_input": 0,
+      "seedFrac_double_repr": "0",
+      "seedFrac_f32_bits": "0x00000000",
+      "fracBits": 0,
+      "fracBits_hex": "0x00000000",
+      "jitter": [
+        2654435769,
+        2135587861,
+        2496678324
+      ],
+      "jitter_hex": [
+        "0x9e3779b9",
+        "0x7f4a7c15",
+        "0x94d049b4"
+      ]
+    },
+    {
+      "seedFrac_input": 0,
+      "seedFrac_double_repr": "0",
+      "seedFrac_f32_bits": "0x80000000",
+      "fracBits": 2147483648,
+      "fracBits_hex": "0x80000000",
+      "jitter": [
+        506952121,
+        4283071509,
+        349194676
+      ],
+      "jitter_hex": [
+        "0x1e3779b9",
+        "0xff4a7c15",
+        "0x14d049b4"
+      ]
+    },
+    {
+      "seedFrac_input": 0.5,
+      "seedFrac_double_repr": "0.5",
+      "seedFrac_f32_bits": "0x3f000000",
+      "fracBits": 1056964608,
+      "fracBits_hex": "0x3f000000",
+      "jitter": [
+        288848313,
+        3997858837,
+        3721415092
+      ],
+      "jitter_hex": [
+        "0x113779b9",
+        "0xee4a7c15",
+        "0xddd049b4"
+      ]
+    },
+    {
+      "seedFrac_input": 0.1,
+      "seedFrac_double_repr": "0.1",
+      "seedFrac_f32_bits": "0x3dcccccd",
+      "fracBits": 1036831949,
+      "fracBits_hex": "0x3dcccccd",
+      "jitter": [
+        367619332,
+        1377285302,
+        1076608255
+      ],
+      "jitter_hex": [
+        "0x15e96d04",
+        "0x5217b4b6",
+        "0x402bbcff"
+      ]
+    },
+    {
+      "seedFrac_input": 0.3333333333333333,
+      "seedFrac_double_repr": "0.3333333333333333",
+      "seedFrac_f32_bits": "0x3eaaaaab",
+      "fracBits": 1051372203,
+      "fracBits_hex": "0x3eaaaaab",
+      "jitter": [
+        2553001090,
+        4057346672,
+        3643345609
+      ],
+      "jitter_hex": [
+        "0x982bb482",
+        "0xf1d63270",
+        "0xd9290ac9"
+      ]
+    },
+    {
+      "seedFrac_input": 0.999999,
+      "seedFrac_double_repr": "0.999999",
+      "seedFrac_f32_bits": "0x3f7fffef",
+      "fracBits": 1065353199,
+      "fracBits_hex": "0x3f7fffef",
+      "jitter": [
+        1978950790,
+        4229307892,
+        185059245
+      ],
+      "jitter_hex": [
+        "0x75f46486",
+        "0xfc161df4",
+        "0x0b07c7ad"
+      ]
+    },
+    {
+      "seedFrac_input": 0.9999999403953552,
+      "seedFrac_double_repr": "0.9999999403953552",
+      "seedFrac_f32_bits": "0x3f7fffff",
+      "fracBits": 1065353215,
+      "fracBits_hex": "0x3f7fffff",
+      "jitter": [
+        3474907638,
+        2145478852,
+        1782873149
+      ],
+      "jitter_hex": [
+        "0xcf1ee1f6",
+        "0x7fe168c4",
+        "0x6a447c3d"
+      ]
+    },
+    {
+      "seedFrac_input": 1.401298464324817e-45,
+      "seedFrac_double_repr": "1.401298464324817e-45",
+      "seedFrac_f32_bits": "0x00000001",
+      "fracBits": 1,
+      "fracBits_hex": "0x00000001",
+      "jitter": [
+        2288066056,
+        1486788410,
+        289113027
+      ],
+      "jitter_hex": [
+        "0x88611e08",
+        "0x589e973a",
+        "0x113b83c3"
+      ]
+    },
+    {
+      "seedFrac_input": 0.10000000000000142,
+      "seedFrac_double_repr": "0.10000000000000142",
+      "seedFrac_f32_bits": "0x3dcccccd",
+      "fracBits": 1036831949,
+      "fracBits_hex": "0x3dcccccd",
+      "jitter": [
+        367619332,
+        1377285302,
+        1076608255
+      ],
+      "jitter_hex": [
+        "0x15e96d04",
+        "0x5217b4b6",
+        "0x402bbcff"
+      ]
+    },
+    {
+      "seedFrac_input": null,
+      "seedFrac_double_repr": "NaN",
+      "seedFrac_f32_bits": "nan",
+      "fracBits": 2143289344,
+      "fracBits_hex": "0x7fc00000",
+      "jitter": [
+        234322361,
+        3406461973,
+        1989167540
+      ],
+      "jitter_hex": [
+        "0x0df779b9",
+        "0xcb0a7c15",
+        "0x769049b4"
+      ]
+    },
+    {
+      "seedFrac_input": null,
+      "seedFrac_double_repr": "Infinity",
+      "seedFrac_f32_bits": "0x7f800000",
+      "fracBits": 2139095040,
+      "fracBits_hex": "0x7f800000",
+      "jitter": [
+        968325561,
+        2546629653,
+        3494922676
+      ],
+      "jitter_hex": [
+        "0x39b779b9",
+        "0x97ca7c15",
+        "0xd05049b4"
+      ]
+    },
+    {
+      "seedFrac_input": null,
+      "seedFrac_double_repr": "-Infinity",
+      "seedFrac_f32_bits": "0xff800000",
+      "fracBits": 4286578688,
+      "fracBits_hex": "0xff800000",
+      "jitter": [
+        3115809209,
+        399146005,
+        1347439028
+      ],
+      "jitter_hex": [
+        "0xb9b779b9",
+        "0x17ca7c15",
+        "0x505049b4"
+      ]
+    }
+  ],
+  "direct_closure_mutations": [
+    {
+      "id": "floatbits-to-numeric-uint-conversion",
+      "hazard": "bit-reinterpretation-vs-numeric-conversion",
+      "case_results": [
+        {
+          "case": "baseline-integer-seed-matches-full-render",
+          "diverges": false,
+          "baseline_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ],
+          "mutated_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ]
+        },
+        {
+          "case": "fractional-seed-simple-half",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f081672",
+            "0x3f0d937e",
+            "0x3e6ee8ea"
+          ],
+          "mutated_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ]
+        },
+        {
+          "case": "fractional-seed-float32-rounding-boundary",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3ecac24f",
+            "0x3e3ad5cb",
+            "0x3e9e0bbb"
+          ],
+          "mutated_result_bits": [
+            "0x3dcbb448",
+            "0x3f207c35",
+            "0x3f75fbdc"
+          ]
+        },
+        {
+          "case": "negative-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0f19c1",
+            "0x3f058f80",
+            "0x3e56275a"
+          ],
+          "mutated_result_bits": [
+            "0x3f36e527",
+            "0x3f3be889",
+            "0x3f1144f5"
+          ]
+        },
+        {
+          "case": "near-one-fractional-seed-no-wrap",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f4a77c1",
+            "0x3f748791",
+            "0x3f2bf1b3"
+          ],
+          "mutated_result_bits": [
+            "0x3ecee530",
+            "0x3dcafff1",
+            "0x3eed16fa"
+          ]
+        },
+        {
+          "case": "small-fractional-seed-large-offset",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f35f9ec",
+            "0x3f04bf02",
+            "0x3f1ae99d"
+          ],
+          "mutated_result_bits": [
+            "0x3f045836",
+            "0x3e607708",
+            "0x3e6aa098"
+          ]
+        },
+        {
+          "case": "one-third-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3d2f9b40",
+            "0x3f59064d",
+            "0x3e039b14"
+          ],
+          "mutated_result_bits": [
+            "0x3f747116",
+            "0x3ea02446",
+            "0x3e432d2a"
+          ]
+        },
+        {
+          "case": "wrap-toggle-otherwise-identical",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0b49f2",
+            "0x3f6e1bc8",
+            "0x3f0fbbab"
+          ],
+          "mutated_result_bits": [
+            "0x3f5789d7",
+            "0x3f4b7cef",
+            "0x3f6fba22"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xor-site-1-to-add",
+      "hazard": "xor-vs-add",
+      "case_results": [
+        {
+          "case": "baseline-integer-seed-matches-full-render",
+          "diverges": false,
+          "baseline_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ],
+          "mutated_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ]
+        },
+        {
+          "case": "fractional-seed-simple-half",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f081672",
+            "0x3f0d937e",
+            "0x3e6ee8ea"
+          ],
+          "mutated_result_bits": [
+            "0x3f59288e",
+            "0x3e1978a9",
+            "0x3f739b67"
+          ]
+        },
+        {
+          "case": "fractional-seed-float32-rounding-boundary",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3ecac24f",
+            "0x3e3ad5cb",
+            "0x3e9e0bbb"
+          ],
+          "mutated_result_bits": [
+            "0x3e898802",
+            "0x3f6e86ca",
+            "0x3e77c74a"
+          ]
+        },
+        {
+          "case": "negative-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0f19c1",
+            "0x3f058f80",
+            "0x3e56275a"
+          ],
+          "mutated_result_bits": [
+            "0x3f703dd1",
+            "0x3db9061c",
+            "0x3f2be5d3"
+          ]
+        },
+        {
+          "case": "near-one-fractional-seed-no-wrap",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f4a77c1",
+            "0x3f748791",
+            "0x3f2bf1b3"
+          ],
+          "mutated_result_bits": [
+            "0x3f36fd31",
+            "0x3ea76d95",
+            "0x3ef533f2"
+          ]
+        },
+        {
+          "case": "small-fractional-seed-large-offset",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f35f9ec",
+            "0x3f04bf02",
+            "0x3f1ae99d"
+          ],
+          "mutated_result_bits": [
+            "0x3f696b09",
+            "0x3f7393af",
+            "0x3dc235c6"
+          ]
+        },
+        {
+          "case": "one-third-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3d2f9b40",
+            "0x3f59064d",
+            "0x3e039b14"
+          ],
+          "mutated_result_bits": [
+            "0x3e866a39",
+            "0x3f438cc8",
+            "0x3f5b1f25"
+          ]
+        },
+        {
+          "case": "wrap-toggle-otherwise-identical",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0b49f2",
+            "0x3f6e1bc8",
+            "0x3f0fbbab"
+          ],
+          "mutated_result_bits": [
+            "0x3f3bd524",
+            "0x3e692c9f",
+            "0x3f7e5215"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xor-site-2-to-or",
+      "hazard": "xor-vs-or",
+      "case_results": [
+        {
+          "case": "baseline-integer-seed-matches-full-render",
+          "diverges": false,
+          "baseline_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ],
+          "mutated_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ]
+        },
+        {
+          "case": "fractional-seed-simple-half",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f081672",
+            "0x3f0d937e",
+            "0x3e6ee8ea"
+          ],
+          "mutated_result_bits": [
+            "0x3e400ba5",
+            "0x3eaea07f",
+            "0x3dabee95"
+          ]
+        },
+        {
+          "case": "fractional-seed-float32-rounding-boundary",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3ecac24f",
+            "0x3e3ad5cb",
+            "0x3e9e0bbb"
+          ],
+          "mutated_result_bits": [
+            "0x3e857e99",
+            "0x3f696600",
+            "0x3eca36bd"
+          ]
+        },
+        {
+          "case": "negative-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0f19c1",
+            "0x3f058f80",
+            "0x3e56275a"
+          ],
+          "mutated_result_bits": [
+            "0x3f63dc10",
+            "0x3d95f3e4",
+            "0x3efe7f01"
+          ]
+        },
+        {
+          "case": "near-one-fractional-seed-no-wrap",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f4a77c1",
+            "0x3f748791",
+            "0x3f2bf1b3"
+          ],
+          "mutated_result_bits": [
+            "0x3ef71d47",
+            "0x3f2bd192",
+            "0x3f13f8bf"
+          ]
+        },
+        {
+          "case": "small-fractional-seed-large-offset",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f35f9ec",
+            "0x3f04bf02",
+            "0x3f1ae99d"
+          ],
+          "mutated_result_bits": [
+            "0x3dc9530b",
+            "0x3ca1c216",
+            "0x3f7d80f8"
+          ]
+        },
+        {
+          "case": "one-third-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3d2f9b40",
+            "0x3f59064d",
+            "0x3e039b14"
+          ],
+          "mutated_result_bits": [
+            "0x3f7c9a6c",
+            "0x3f04ce18",
+            "0x3f78ab23"
+          ]
+        },
+        {
+          "case": "wrap-toggle-otherwise-identical",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0b49f2",
+            "0x3f6e1bc8",
+            "0x3f0fbbab"
+          ],
+          "mutated_result_bits": [
+            "0x3f2c53fa",
+            "0x3d317320",
+            "0x3f7c5ff1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xor-site-3-to-and",
+      "hazard": "xor-vs-and",
+      "case_results": [
+        {
+          "case": "baseline-integer-seed-matches-full-render",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3eccc2e0",
+            "0x3ebd974f",
+            "0x3f14a6ab"
+          ],
+          "mutated_result_bits": [
+            "0x3e9e7615",
+            "0x3f424608",
+            "0x3f5fbcf4"
+          ]
+        },
+        {
+          "case": "fractional-seed-simple-half",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f081672",
+            "0x3f0d937e",
+            "0x3e6ee8ea"
+          ],
+          "mutated_result_bits": [
+            "0x3ec377db",
+            "0x3e4c4d0e",
+            "0x3f42c2d1"
+          ]
+        },
+        {
+          "case": "fractional-seed-float32-rounding-boundary",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3ecac24f",
+            "0x3e3ad5cb",
+            "0x3e9e0bbb"
+          ],
+          "mutated_result_bits": [
+            "0x3f553973",
+            "0x3f028d00",
+            "0x3f3d259b"
+          ]
+        },
+        {
+          "case": "negative-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0f19c1",
+            "0x3f058f80",
+            "0x3e56275a"
+          ],
+          "mutated_result_bits": [
+            "0x3dcbcda4",
+            "0x3dacff98",
+            "0x3d77aa82"
+          ]
+        },
+        {
+          "case": "near-one-fractional-seed-no-wrap",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f4a77c1",
+            "0x3f748791",
+            "0x3f2bf1b3"
+          ],
+          "mutated_result_bits": [
+            "0x3f770bfe",
+            "0x3ea38b89",
+            "0x3eb74482"
+          ]
+        },
+        {
+          "case": "small-fractional-seed-large-offset",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f35f9ec",
+            "0x3f04bf02",
+            "0x3f1ae99d"
+          ],
+          "mutated_result_bits": [
+            "0x3e970d0a",
+            "0x3f342534",
+            "0x3f3323ae"
+          ]
+        },
+        {
+          "case": "one-third-fractional-seed",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3d2f9b40",
+            "0x3f59064d",
+            "0x3e039b14"
+          ],
+          "mutated_result_bits": [
+            "0x3e3e5afc",
+            "0x3f62ed8b",
+            "0x3e79b1db"
+          ]
+        },
+        {
+          "case": "wrap-toggle-otherwise-identical",
+          "diverges": true,
+          "baseline_result_bits": [
+            "0x3f0b49f2",
+            "0x3f6e1bc8",
+            "0x3f0fbbab"
+          ],
+          "mutated_result_bits": [
+            "0x3ef0e47b",
+            "0x3f3d8a9d",
+            "0x3ed8b731"
+          ]
+        }
+      ]
+    }
+  ],
+  "full_render_mutations": [
+    {
+      "id": "floatbits-to-numeric-uint-conversion",
+      "hazard": "bit-reinterpretation-vs-numeric-conversion",
+      "eligible_case_results": [
+        {
+          "case": "simplex-default-seed44",
+          "diverges": false
+        },
+        {
+          "case": "simplex-seed-zero-nowrap",
+          "diverges": false
+        },
+        {
+          "case": "simplex-large-seed-tiled",
+          "diverges": false
+        },
+        {
+          "case": "simplex-negative-intensity-full-hue",
+          "diverges": false
+        },
+        {
+          "case": "simplex-min-scale-zero-speed",
+          "diverges": false
+        },
+        {
+          "case": "simplex-max-scale-large-canvas",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "value-constant-interp0",
+          "defines": {
+            "NOISE_TYPE": 0
+          },
+          "diverges": false
+        },
+        {
+          "case": "value-linear-interp1",
+          "defines": {
+            "NOISE_TYPE": 1
+          },
+          "diverges": false
+        },
+        {
+          "case": "sine-interp11",
+          "defines": {
+            "NOISE_TYPE": 11
+          },
+          "diverges": false
+        }
+      ]
+    },
+    {
+      "id": "xor-site-1-to-add",
+      "hazard": "xor-vs-add",
+      "eligible_case_results": [
+        {
+          "case": "simplex-default-seed44",
+          "diverges": false
+        },
+        {
+          "case": "simplex-seed-zero-nowrap",
+          "diverges": false
+        },
+        {
+          "case": "simplex-large-seed-tiled",
+          "diverges": false
+        },
+        {
+          "case": "simplex-negative-intensity-full-hue",
+          "diverges": false
+        },
+        {
+          "case": "simplex-min-scale-zero-speed",
+          "diverges": false
+        },
+        {
+          "case": "simplex-max-scale-large-canvas",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "value-constant-interp0",
+          "defines": {
+            "NOISE_TYPE": 0
+          },
+          "diverges": false
+        },
+        {
+          "case": "value-linear-interp1",
+          "defines": {
+            "NOISE_TYPE": 1
+          },
+          "diverges": false
+        },
+        {
+          "case": "sine-interp11",
+          "defines": {
+            "NOISE_TYPE": 11
+          },
+          "diverges": false
+        }
+      ]
+    },
+    {
+      "id": "xor-site-2-to-or",
+      "hazard": "xor-vs-or",
+      "eligible_case_results": [
+        {
+          "case": "simplex-default-seed44",
+          "diverges": false
+        },
+        {
+          "case": "simplex-seed-zero-nowrap",
+          "diverges": false
+        },
+        {
+          "case": "simplex-large-seed-tiled",
+          "diverges": false
+        },
+        {
+          "case": "simplex-negative-intensity-full-hue",
+          "diverges": false
+        },
+        {
+          "case": "simplex-min-scale-zero-speed",
+          "diverges": false
+        },
+        {
+          "case": "simplex-max-scale-large-canvas",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "value-constant-interp0",
+          "defines": {
+            "NOISE_TYPE": 0
+          },
+          "diverges": false
+        },
+        {
+          "case": "value-linear-interp1",
+          "defines": {
+            "NOISE_TYPE": 1
+          },
+          "diverges": false
+        },
+        {
+          "case": "sine-interp11",
+          "defines": {
+            "NOISE_TYPE": 11
+          },
+          "diverges": false
+        }
+      ]
+    },
+    {
+      "id": "xor-site-3-to-and",
+      "hazard": "xor-vs-and",
+      "eligible_case_results": [
+        {
+          "case": "simplex-default-seed44",
+          "diverges": false
+        },
+        {
+          "case": "simplex-seed-zero-nowrap",
+          "diverges": false
+        },
+        {
+          "case": "simplex-large-seed-tiled",
+          "diverges": false
+        },
+        {
+          "case": "simplex-negative-intensity-full-hue",
+          "diverges": false
+        },
+        {
+          "case": "simplex-min-scale-zero-speed",
+          "diverges": false
+        },
+        {
+          "case": "simplex-max-scale-large-canvas",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "value-constant-interp0",
+          "defines": {
+            "NOISE_TYPE": 0
+          },
+          "diverges": true
+        },
+        {
+          "case": "value-linear-interp1",
+          "defines": {
+            "NOISE_TYPE": 1
+          },
+          "diverges": true
+        },
+        {
+          "case": "sine-interp11",
+          "defines": {
+            "NOISE_TYPE": 11
+          },
+          "diverges": false
+        }
+      ]
+    }
+  ],
+  "eligibility_summary": {
+    "total_cases": 17,
+    "eligible_cases": 14,
+    "ineligible_cases": 3,
+    "eligible_render_cases": 6,
+    "ineligible_render_cases": 3,
+    "eligible_direct_closure_probe_cases": 8
+  },
+  "negative_closure": {
+    "any_other_define_map": "reject",
+    "generic_floatBitsToUint_capability": "forbidden",
+    "uintBitsToFloat": "absent, forbidden",
+    "float_to_uint32_reused_for_floatBitsToUint": "forbidden",
+    "any_uint_xor_site_outside_the_three_authenticated_nodes": "reject",
+    "perlin_scalar_uint_xor_profile_reuse": "forbidden"
+  },
+  "risks_and_rejected_designs": [
+    {
+      "id": "nan-bit-pattern-cross-engine-parity",
+      "severity": "flag-for-operator-signoff",
+      "description": "GLSL NaN bit-pattern behavior is implementation-defined. This oracle pins the exact bit pattern V8/Node produces for a plain `NaN` double routed through floatBitsToUint (Float32Array/Uint32Array alias): direct_scalar_rows entry with seedFrac_double_repr=\"NaN\" freezes fracBits_hex=0x7fc00000 (a canonical quiet NaN, sign=0, all-mantissa-MSB-set). A C++ static_cast<double,NaN> -> float -> std::bit_cast<uint32_t> is NOT guaranteed to reproduce this exact payload/quiet-bit pattern on every platform/compiler. This is not exercised by any legitimate uniform-driven call path in this program (seedFrac is always fract() of a finite value in every real caller), so it is LOW practical risk for Caustic specifically, but is frozen here and flagged per the brief's explicit request rather than silently assumed to match."
+    },
+    {
+      "id": "xor-operand-order-swap-rejected",
+      "severity": "rejected-non-discriminating",
+      "description": "The brief suggests \"swapping operand order where that changes results\" as an XOR-site mutation. Rejected: binary ^ is commutative, so swapping (cpu_umul(fracBits, K) ^ MAGIC) to (MAGIC ^ cpu_umul(fracBits, K)) produces bit-identical results for every input -- a mutation that diverges in 0 cases by construction, exactly the Task 30 \"useless mutation\" trap. Replaced with genuinely non-commutative-preserving operator swaps (+, |, &) that do discriminate, verified per-case above."
+    },
+    {
+      "id": "plus-or-mutations-non-discriminating-at-any-full-render-uniform",
+      "severity": "documented-not-a-flaw",
+      "description": "The xor-site-1-to-add and xor-site-2-to-or mutations never discriminate via ANY full-kernel render (eligible or not), because 0 is the identity element for + and | and seedFrac is always exactly 0.0 on every legitimate call path (uniform int seed). This is not a defect in the mutation choice -- it is a genuine property of this program's uniform surface, independently confirmed by the AND mutation (0 & X = 0 != X = 0 ^ X) discriminating at the same reachable-but-ineligible NOISE_TYPE values where + and | do not. All four mutations DO discriminate via the direct-closure-probe surface, which is not restricted to integer s."
+    }
+  ]
+}

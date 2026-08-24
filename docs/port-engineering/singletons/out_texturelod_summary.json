@@ -1,0 +1,10 @@
+{
+ "out_or_inout_gated_programs": [
+  "filter/lightLeak:lightLeak",
+  "filter/watercolor:wcSimplify",
+  "synth/mandelbrot:mandelbrot"
+ ],
+ "textureLod_gated_programs": [
+  "filter/parallax:parallax"
+ ]
+}

@@ -1,0 +1,827 @@
+{
+  "assignment_operators": [
+    "*=",
+    "+=",
+    "-=",
+    "/=",
+    "=",
+    "^="
+  ],
+  "binary_operators": [
+    "!=",
+    "%",
+    "&&",
+    "*",
+    "+",
+    "-",
+    "/",
+    "<",
+    "<=",
+    "==",
+    ">",
+    ">=",
+    ">>",
+    "^",
+    "||"
+  ],
+  "capabilities": [
+    "assign",
+    "abs",
+    "atan",
+    "blocks",
+    "clamp",
+    "conditional",
+    "cos",
+    "constructors",
+    "distance",
+    "dot",
+    "exp",
+    "floor",
+    "fract",
+    "functions",
+    "if",
+    "integer-modulo",
+    "length",
+    "mat2-vector-multiply",
+    "max",
+    "min",
+    "mix",
+    "mod",
+    "multi-declarations",
+    "normalize",
+    "pow",
+    "radians",
+    "scalar-vector-arithmetic",
+    "sign",
+    "sin",
+    "smoothstep",
+    "sqrt",
+    "step",
+    "swizzles",
+    "texelFetch",
+    "texture",
+    "textureSize",
+    "uint-vector-bitwise",
+    "counted-for-v1",
+    "discarded-local-counter-statement-v1",
+    "fixed-nine-local-literal-init-counted-read-v1",
+    "fixed-grid-counter-store-v1",
+    "fixed-array-in-parameter-v1",
+    "fixed-affine-centers13-v1",
+    "source-global-literal-int-v1"
+  ],
+  "compatibility_transforms": {
+    "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
+    "classicNoisedeck/refract:refract": "refract-truthy-vector-conditional-noop-v1",
+    "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+    "filter/crt:crt": "crt-metal-sine-v1",
+    "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
+    "synth/polygon:shape": "polygon-zero-smoothing-v1",
+    "synth/sacredGeometry:sacredGeometry": "sacred-star-number-division-v1"
+  },
+  "custom_comparer_profiles": {
+    "classicNoisedeck/lensDistortion:lensDistortion": "canonical-js-vector-equality-result-truthiness-v1"
+  },
+  "numeric_literal_contracts": {
+    "filter/scatter:scatterJitter": "source-double"
+  },
+  "programs": [
+    {
+      "defines": {},
+      "program_key": "classicNoisedeck/coalesce:coalesce"
+    },
+    {
+      "defines": {},
+      "program_key": "classicNoisedeck/composite:composite"
+    },
+    {
+      "defines": {},
+      "literal_vec3_lane_index_profile": "literal-vec3-lane-index-v1",
+      "program_key": "classicNoisedeck/lensDistortion:lensDistortion"
+    },
+    {
+      "defines": {},
+      "program_key": "classicNoisedeck/refract:refract"
+    },
+    {
+      "defines": {},
+      "program_key": "classicNoisedeck/splat:splat"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/bc:bc"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/bloom:brightPass"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/bloom:composite"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/bloom:ntapGather"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/bulge:bulge"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/celShading:celShadingBlend"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/celShading:celShadingColor"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/celShading:celShadingEdges"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/channel:channel"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/chroma:chroma"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/chromaticAberration:chromaticAberration"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/chrome:chBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/chrome:chBlurV"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/chrome:chMap"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/clouds:clouds"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/colorReplace:colorReplace"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/corrupt:corrupt"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/craquelure:craquelure"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/crt:crt"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/degauss:degauss"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/deriv:deriv"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/directionalBlur:directionalBlur"
+    },
+    {
+      "defines": {
+        "DEPTH_SOURCE": 0,
+        "EXTRUDE_TYPE": 0
+      },
+      "extrude_bvec2_relational_reduction_profile": "extrude-bvec2-relational-reduction-v1",
+      "program_key": "filter/extrude:extrude"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/fibers:fibersBlend"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/flipMirror:flipMirror"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/glowingEdge:glowingEdge"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-creative-index-expression-v1",
+      "grade_luma_weights_profile": "grade-creative-luma-weights-v1",
+      "program_key": "filter/grade:creative"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-hslsecondary-index-expression-v1",
+      "grade_luma_weights_profile": "grade-hslsecondary-luma-weights-v1",
+      "program_key": "filter/grade:hslSecondary"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-lut-index-expression-v1",
+      "program_key": "filter/grade:lut"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-primary-index-expression-v1",
+      "grade_luma_weights_profile": "grade-primary-luma-weights-v1",
+      "program_key": "filter/grade:primary"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-vignette-index-expression-v1",
+      "grade_luma_weights_profile": "grade-vignette-luma-weights-v1",
+      "program_key": "filter/grade:vignette"
+    },
+    {
+      "defines": {},
+      "grade_index_expression_profile": "grade-wheels-index-expression-v1",
+      "grade_luma_weights_profile": "grade-wheels-luma-weights-v1",
+      "program_key": "filter/grade:wheels"
+    },
+    {
+      "defines": {
+        "MODE": 0,
+        "PATTERN": 0
+      },
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/halftone:halftone"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/hatch:hatch"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/highPass:hpBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/highPass:hpBlurV"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/highPass:hpCombine"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/hs:hs"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/lens:lens"
+    },
+    {
+      "defines": {
+        "LENS_TYPE": 0
+      },
+      "program_key": "filter/lensFlare:lensFlare"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/lensWarp:lensWarp"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/lightLeak:lightLeak"
+    },
+    {
+      "defines": {
+        "LP_BORDER": 0,
+        "LP_LIGHT": 0
+      },
+      "program_key": "filter/lowPoly:lowPoly"
+    },
+    {
+      "defines": {
+        "SHAPE": 0
+      },
+      "program_key": "filter/morphology:morphA"
+    },
+    {
+      "defines": {
+        "SHAPE": 0
+      },
+      "program_key": "filter/morphology:morphB"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/mosaicTiles:mosaicTiles"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/normalize:apply"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/normalize:reduce"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/normalize:reduceMinmax"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/octaveWarp:octaveWarp"
+    },
+    {
+      "defines": {
+        "MODE": 1
+      },
+      "program_key": "filter/oilPaint:oilFlatten"
+    },
+    {
+      "defines": {
+        "MODE": 1
+      },
+      "program_key": "filter/oilPaint:oilPost"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/outline:outlineBlend"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/outline:outlineSobel"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/outline:outlineValueMap"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/parallax:parallax"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/patchwork:patchwork"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/photocopy:pcBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/photocopy:pcBlurV"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/photocopy:pcCombine"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/pinch:pinch"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixelSort:computeRank"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixelSort:finalize"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixelSort:findBrightest"
+    },
+    {
+      "defines": {},
+      "gather_sorted_round_profile": "gather-sorted-round-to-int-v1",
+      "program_key": "filter/pixelSort:gatherSorted"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixelSort:luminance"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixelSort:prepare"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/pixels:pixels"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/plasticWrap:pwBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/plasticWrap:pwBlurV"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/plasticWrap:pwSpec"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/polar:polar"
+    },
+    {
+      "defines": {
+        "STYLE": 2,
+        "WRAP": 0
+      },
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/pondRipples:pondRipples"
+    },
+    {
+      "defines": {},
+      "literal_vec3_lane_index_profile": "literal-vec3-lane-index-v1",
+      "program_key": "filter/prismaticAberration:prismaticAberration"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/reindex:nmReindexApply"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/reindex:nmReindexStats"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/relief:rlBlurH"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/relief:rlBlurV"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/relief:rlShade"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/repeat:repeat"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/reverb:reverb"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/ridge:ridge"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/rotate:rot",
+      "rotate_mat2_return_profile": "rotate-mat2-return-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/scale:scale"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/scatter:scatterJitter"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/scatter:scatterSmooth"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/scratches:scratchesBlend"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/scroll:scroll"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/seamless:seamless"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/sharpen:sharpen"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/simpleAberration:chromaticAberration"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/sine:sine"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/skew:skew"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/smooth:smoothBlend"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/smooth:smoothEdge",
+      "smooth_edge_luma_weights_profile": "smooth-edge-luma-weights-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/smoothstep:smoothstep"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/sobel:sobel"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/spatter:spatter"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/spinBlur:spinBlur"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/spiral:spiral"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/stamp:stBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/stamp:stBlurV"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/stamp:stThreshold"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/step:step"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/stipple:stipple"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/strayHair:strayHairBlend"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/strokes:stkPost"
+    },
+    {
+      "defines": {
+        "MODE": 0
+      },
+      "program_key": "filter/strokes:stkSmear"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/tetraCosine:tetraCosine"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/text:text"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/threshold:thresh"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/tile:tile"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/tint:colorize"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/translate:translate"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/tunnel:tunnel"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/unsharpMask:usmBlurH"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/unsharpMask:usmBlurV"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/unsharpMask:usmCombine"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/vaseline:upsample"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/vignette:vignette"
+    },
+    {
+      "defines": {},
+      "derivative_admission_profile": "derivative-admission-v1",
+      "program_key": "filter/warp:warp"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/watercolor:wcComposite"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/watercolor:wcSeed"
+    },
+    {
+      "defines": {
+        "METHOD": 1
+      },
+      "program_key": "filter/wind:wind"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/wormhole:blend"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/wormhole:clear"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/zoomBlur:zoomBlur"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/alphaMask:alphaMask"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/applyMode:applyMode"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/blendMode:blendMode"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/cellSplit:cellSplit"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/centerMask:centerMask"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/channelCombine:channelCombine"
+    },
+    {
+      "defines": {},
+      "focus_blur_borrowed_sampler_profile": "focus-blur-borrowed-sampler-parameters-v1",
+      "program_key": "mixer/focusBlur:focusBlur"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/mashup:mashup"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/patternMix:patternMix"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/shadow:shadow"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/shapeMask:shapeMask"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/split:split"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/thresholdMix:thresholdMix"
+    },
+    {
+      "defines": {},
+      "program_key": "mixer/uvRemap:uvRemap"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/cell:cell"
+    },
+    {
+      "curl_vector_math_profile": "curl-vector-math-tanh-wide-mod-v1",
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "program_key": "synth/curl:curl"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/gradient:gradient"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/mandala:mandala"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/media:mediaInput"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/modPattern:modPattern"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/osc2d:osc2d"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/pattern:pattern"
+    },
+    {
+      "defines": {
+        "DIMENSIONS": 2
+      },
+      "perlin_scalar_uint_xor_profile": "perlin-scalar-uint-xor-v1",
+      "program_key": "synth/perlin:perlin"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/polygon:shape"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/sacredGeometry:sacredGeometry"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/subdivide:subdivide"
+    }
+  ],
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "schema": 1,
+  "types": [
+    "bool",
+    "float",
+    "int",
+    "uint",
+    "vec2",
+    "vec3",
+    "vec4",
+    "ivec2",
+    "ivec3",
+    "ivec4",
+    "uvec2",
+    "uvec3",
+    "uvec4",
+    "mat2",
+    "sampler2D",
+    "void"
+  ]
+}

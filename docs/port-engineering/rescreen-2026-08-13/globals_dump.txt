@@ -1,0 +1,309 @@
+=== classicNoisedeck/bitEffects:bitEffects ===
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  n                    storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  scale                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  rotation             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  tiles                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  complexity           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  hueRange             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  hueRotation          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  baseHueRange         storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  BIT_COUNT            storage=const      type=int        init=literal(8)                     (needs source-global-literal-int profile)
+  mask                 storage=const      type=int        init=binary(nchildren=2)            (needs source-global-literal-int profile)
+=== classicNoisedeck/cellRefract:cellRefract ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  scale                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  cellScale            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  cellSmooth           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  variation            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  refractAmt           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  direction            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  wrap                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  effectWidth          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  emboss               storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  sharpen              storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  blur                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge2                storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+=== classicNoisedeck/effects:effects ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  effectAmt            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  scaleAmt             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  rotation             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  offsetX              storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  offsetY              storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  intensity            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  saturation           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  emboss               storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  sharpen              storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  blur                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge2                storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge3                storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  sharpenBlur          storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+=== classicNoisedeck/kaleido:kaleido ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  wrap                 storage=uniform    type=bool       init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  loopScale            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  kaleido              storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  effectWidth          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  emboss               storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  sharpen              storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  blur                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge                 storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+  edge2                storage=global     type=float[9]   init=<none>                         *** BLOCKED SHAPE ***
+=== filter/edge:edge ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  kernel               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  size                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  blend                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  invert               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  channel              storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  threshold            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  amount               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  mixAmt               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  level                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  contourSide          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  LUMA                 storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+=== filter/emboss:emboss ===
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  amount               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  angle                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  height               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  colorAmount          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  LUMA                 storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+=== filter/fxaa:fxaa ===
+  CHANNEL_COUNT        storage=const      type=uint       init=literal(4)                     *** BLOCKED SHAPE ***
+  EPSILON              storage=const      type=float      init=literal(1e-10)                 (likely already admitted: const float)
+  LUMA_WEIGHTS         storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  strength             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  sharpness            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  threshold            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+=== filter/glyphMap:glyphMap ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  cellSize             storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  colorMode            storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  GLYPH_COUNT          storage=const      type=int        init=literal(16)                    (needs source-global-literal-int profile)
+=== filter/grain:grain ===
+  PI                   storage=const      type=float      init=literal(3.141592653589793)     (likely already admitted: const float)
+  TAU                  storage=const      type=float      init=literal(6.283185307179586)     (likely already admitted: const float)
+  UINT32_TO_FLOAT      storage=const      type=float      init=binary(nchildren=2)            (likely already admitted: const float)
+  CHANNEL_COUNT        storage=const      type=uint       init=literal(4)                     *** BLOCKED SHAPE ***
+  INTERPOLATION_CONSTANT storage=const      type=uint       init=literal(0)                     *** BLOCKED SHAPE ***
+  INTERPOLATION_LINEAR storage=const      type=uint       init=literal(1)                     *** BLOCKED SHAPE ***
+  INTERPOLATION_COSINE storage=const      type=uint       init=literal(2)                     *** BLOCKED SHAPE ***
+  INTERPOLATION_BICUBIC storage=const      type=uint       init=literal(3)                     *** BLOCKED SHAPE ***
+  BASE_SEED            storage=const      type=uint       init=literal(4660)                  *** BLOCKED SHAPE ***
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  pause                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+=== filter/historicPalette:historicPalette ===
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  paletteIndex         storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  smoothness           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  rotation             storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  offset               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  repeat               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  PALETTE_COUNT        storage=const      type=int        init=literal(21)                    (needs source-global-literal-int profile)
+  PALETTES             storage=const      type=HistoricPalette[21] init=construct(HistoricPalette[21], nargs=21) *** BLOCKED SHAPE ***
+=== filter/normalMap:normalMap ===
+  CHANNEL_COUNT        storage=const      type=uint       init=literal(4)                     *** BLOCKED SHAPE ***
+  CHANNEL_CAP          storage=const      type=uint       init=literal(4)                     *** BLOCKED SHAPE ***
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  size                 storage=uniform    type=vec4       init=<none>                         (exempt: uniform/output)
+  motion               storage=uniform    type=vec4       init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  SOBEL_OFFSETS        storage=const      type=ivec2[9]   init=construct(ivec2[9], nargs=9)   *** BLOCKED SHAPE ***
+  SOBEL_X_KERNEL       storage=const      type=float[9]   init=construct(float[9], nargs=9)   *** BLOCKED SHAPE ***
+  SOBEL_Y_KERNEL       storage=const      type=float[9]   init=construct(float[9], nargs=9)   *** BLOCKED SHAPE ***
+=== filter/osd:osd ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  corner               storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  GLYPHS               storage=const      type=int[80]    init=construct(int[80], nargs=80)   *** BLOCKED SHAPE ***
+  GLYPH_W              storage=const      type=int        init=literal(7)                     (needs source-global-literal-int profile)
+  GLYPH_H              storage=const      type=int        init=literal(8)                     (needs source-global-literal-int profile)
+  BASE_SCALE           storage=const      type=int        init=literal(3)                     (needs source-global-literal-int profile)
+  BASE_PADDING         storage=const      type=int        init=literal(25)                    (needs source-global-literal-int profile)
+=== filter/palette:palette ===
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  paletteIndex         storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  rotation             storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  offset               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  repeat               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  MODE_RGB             storage=const      type=int        init=literal(0)                     (needs source-global-literal-int profile)
+  MODE_HSV             storage=const      type=int        init=literal(1)                     (needs source-global-literal-int profile)
+  MODE_OKLAB           storage=const      type=int        init=literal(2)                     (needs source-global-literal-int profile)
+  PALETTE_COUNT        storage=const      type=int        init=literal(55)                    (needs source-global-literal-int profile)
+  PALETTES             storage=const      type=PaletteEntry[55] init=construct(PaletteEntry[55], nargs=55) *** BLOCKED SHAPE ***
+  TAU                  storage=const      type=float      init=literal(6.283185307179586)     (likely already admitted: const float)
+=== filter/scanlineError:scanlineError ===
+  TAU                  storage=const      type=float      init=literal(6.283185307179586)     (likely already admitted: const float)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  timeOffset           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  distortion           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  noise                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  mode                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  BASE_SEED_LINE       storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  TIME_SEED_LINE       storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  BASE_SEED_SWERVE     storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  TIME_SEED_SWERVE     storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  BASE_SEED_WHITE      storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  TIME_SEED_WHITE      storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+=== filter/smooth:smoothBlend ===
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  edgeTex              storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  smoothType           storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  strength             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  threshold            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  radius               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  samples              storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  searchSteps          storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  LUMA_WEIGHTS         storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+=== filter/snow:snow ===
+  CHANNEL_COUNT        storage=const      type=uint       init=literal(4)                     *** BLOCKED SHAPE ***
+  TAU                  storage=const      type=float      init=literal(6.283185307179586)     (likely already admitted: const float)
+  TIME_SEED_OFFSETS    storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  STATIC_SEED          storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  LIMITER_SEED         storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  pause                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  density              storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+=== filter/spookyTicker:spookyTicker ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  renderScale          storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  rows                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  GLYPHS               storage=const      type=int[80]    init=construct(int[80], nargs=80)   *** BLOCKED SHAPE ***
+  GLYPH_W              storage=const      type=int        init=literal(7)                     (needs source-global-literal-int profile)
+  GLYPH_H              storage=const      type=int        init=literal(8)                     (needs source-global-literal-int profile)
+  BASE_SCALE           storage=const      type=int        init=literal(3)                     (needs source-global-literal-int profile)
+  BASE_ROW_GAP         storage=const      type=int        init=literal(4)                     (needs source-global-literal-int profile)
+=== filter/texture:texture ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  alpha                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  scale                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  intensity            storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  contrast             storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  mono                 storage=uniform    type=bool       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  PI                   storage=const      type=float      init=literal(3.14159265359)         (likely already admitted: const float)
+  INV_UINT32_MAX       storage=const      type=float      init=binary(nchildren=2)            (likely already admitted: const float)
+  Z_LOOP               storage=const      type=int        init=literal(2)                     (needs source-global-literal-int profile)
+  SHADE_GAIN           storage=const      type=float      init=literal(4.4)                   (likely already admitted: const float)
+=== filter/wobble:wobble ===
+  inputTex             storage=uniform    type=sampler2D  init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speed                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  range                storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  wrap                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  TAU                  storage=const      type=float      init=literal(6.28318530717959)      (likely already admitted: const float)
+  X_NOISE_SEED         storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+  Y_NOISE_SEED         storage=const      type=vec3       init=construct(vec3, nargs=3)       *** BLOCKED SHAPE ***
+=== synth/shape:shape ===
+  resolution           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  tileOffset           storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  fullResolution       storage=uniform    type=vec2       init=<none>                         (exempt: uniform/output)
+  time                 storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  seed                 storage=uniform    type=int        init=<none>                         (exempt: uniform/output)
+  wrap                 storage=uniform    type=bool       init=<none>                         (exempt: uniform/output)
+  loopAScale           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  loopBScale           storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speedA               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  speedB               storage=uniform    type=float      init=<none>                         (exempt: uniform/output)
+  fragColor            storage=output     type=vec4       init=<none>                         (exempt: uniform/output)
+  PI                   storage=const      type=float      init=literal(3.14159265359)         (likely already admitted: const float)
+  TAU                  storage=const      type=float      init=literal(6.28318530718)         (likely already admitted: const float)
+  aspectRatio          storage=global     type=float      init=<none>                         *** BLOCKED SHAPE ***
+  globalCoord          storage=global     type=vec2       init=<none>                         *** BLOCKED SHAPE ***

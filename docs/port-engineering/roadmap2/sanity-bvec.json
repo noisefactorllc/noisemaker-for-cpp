@@ -1,0 +1,362 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.gate-chain.v2",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "unported_count": 81,
+  "keys_probed": 3,
+  "max_depth": 8,
+  "rows": [
+    {
+      "key": "filter/emboss:emboss",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/emboss:emboss:19:1: unsupported global declaration",
+            "emitter": "filter/emboss:emboss:19:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:19:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:28:5: unsupported typed expression index",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:28:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:22: unsupported builtin all",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:110:22: unsupported builtin all",
+          "classified_gate": "builtin:all"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:all"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+          "classified_gate": "bvec_type_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:all",
+            "bvec_type_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:26: unsupported builtin equal",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:110:26: unsupported builtin equal",
+          "classified_gate": "builtin:equal"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:all",
+            "bvec_type_admission",
+            "builtin:equal"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "array_global_admission",
+        "index_expression_admission",
+        "builtin:all",
+        "bvec_type_admission",
+        "builtin:equal"
+      ],
+      "terminal_blocker": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/waves:waves",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/waves:waves:41:9: unsupported builtin any",
+            "emitter": "filter/waves:waves:41:13: unsupported builtin notEqual",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/waves:waves:41:9: unsupported builtin any",
+          "classified_gate": "builtin:any"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "builtin:any"
+          ],
+          "result": {
+            "validator": "filter/waves:waves:41:13: unsupported typed type bvec2",
+            "emitter": "filter/waves:waves:41:13: unsupported builtin notEqual",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/waves:waves:41:13: unsupported typed type bvec2",
+          "classified_gate": "bvec_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "builtin:any",
+            "bvec_type_admission"
+          ],
+          "result": {
+            "validator": "filter/waves:waves:41:13: unsupported builtin notEqual",
+            "emitter": "filter/waves:waves:41:13: unsupported builtin notEqual",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/waves:waves:41:13: unsupported builtin notEqual",
+          "classified_gate": "builtin:notEqual"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "builtin:any",
+            "bvec_type_admission",
+            "builtin:notEqual"
+          ],
+          "result": {
+            "validator": "filter/waves:waves:70:19: unsupported builtin dFdx",
+            "emitter": "filter/waves:waves:70:19: unsupported builtin dFdx",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/waves:waves:70:19: unsupported builtin dFdx",
+          "classified_gate": "builtin:dFdx"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "builtin:any",
+            "bvec_type_admission",
+            "builtin:notEqual",
+            "builtin:dFdx"
+          ],
+          "result": {
+            "validator": "filter/waves:waves:71:19: unsupported builtin dFdy",
+            "emitter": "filter/waves:waves:71:19: unsupported builtin dFdy",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/waves:waves:71:19: unsupported builtin dFdy",
+          "classified_gate": "builtin:dFdy"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "builtin:any",
+            "bvec_type_admission",
+            "builtin:notEqual",
+            "builtin:dFdx",
+            "builtin:dFdy"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "ce670d993238416350cc4a12f0df8bba23975b08090883d561dc5669b34ecdb1",
+            "cpp_bytes": 7054
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "builtin:any",
+        "bvec_type_admission",
+        "builtin:notEqual",
+        "builtin:dFdx",
+        "builtin:dFdy"
+      ]
+    },
+    {
+      "key": "filter/edge:edge",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/edge:edge:19:1: unsupported global declaration",
+            "emitter": "filter/edge:edge:19:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/edge:edge:19:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/edge:edge:73:11: unsupported typed type bvec3",
+            "emitter": "filter/edge:edge:73:38: unsupported builtin greaterThanEqual",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/edge:edge:73:11: unsupported typed type bvec3",
+          "classified_gate": "bvec_type_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "bvec_type_admission"
+          ],
+          "result": {
+            "validator": "filter/edge:edge:73:38: unsupported builtin greaterThanEqual",
+            "emitter": "filter/edge:edge:73:38: unsupported builtin greaterThanEqual",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/edge:edge:73:38: unsupported builtin greaterThanEqual",
+          "classified_gate": "builtin:greaterThanEqual"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "bvec_type_admission",
+            "builtin:greaterThanEqual"
+          ],
+          "result": {
+            "validator": "filter/edge:edge:74:39: unsupported builtin lessThan",
+            "emitter": "filter/edge:edge:74:39: unsupported builtin lessThan",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/edge:edge:74:39: unsupported builtin lessThan",
+          "classified_gate": "builtin:lessThan"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "bvec_type_admission",
+            "builtin:greaterThanEqual",
+            "builtin:lessThan"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "64e7b04cab2b63b6b285833790fd4f68dbec1da3463d644189deb1fd54d85314",
+            "cpp_bytes": 14684
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "bvec_type_admission",
+        "builtin:greaterThanEqual",
+        "builtin:lessThan"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4195 @@
+{
+  "schema": 1,
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "node": "v24.7.0",
+  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass",
+  "base": {
+    "output": "7x5 top-down",
+    "sampling": "nearest bottom-left",
+    "time": "f32(.125)",
+    "seed": "f32(7)",
+    "tileOffset": [
+      3,
+      2
+    ],
+    "fullResolution": [
+      13,
+      11
+    ],
+    "textures": {
+      "inputTex": "5x3/tag1",
+      "tex": "7x2/tag23",
+      "edgesTexture": "4x6/tag37",
+      "imageTex": "5x3/tag1"
+    }
+  },
+  "sources": {
+    "classicNoisedeck/splat:splat": {
+      "source": "sources/classicNoisedeck/splat/splat.glsl",
+      "raw_sha256": "cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced",
+      "factory_source_sha256": "a4238c0fa17c69e89910c708d7a46f6eff49043a11f8851b67384f2e05a2451a",
+      "pass_index": 0
+    },
+    "filter/corrupt:corrupt": {
+      "source": "sources/filter/corrupt/corrupt.glsl",
+      "raw_sha256": "b81642d2e63294f9f51656eb2441cdaf479c495c5e4acb0d3a4907a13b070d02",
+      "factory_source_sha256": "7c8e4652a1e8787dfd8b226e76cbfbd4d3a330ad8c17a7730d161a72f58fe25f",
+      "pass_index": 0
+    },
+    "filter/flipMirror:flipMirror": {
+      "source": "sources/filter/flipMirror/flipMirror.glsl",
+      "raw_sha256": "696263e373913b7ab71430189fb7626ca966780ff645384b89509cf9d1a3fa7e",
+      "factory_source_sha256": "0d29e4d562a208ffb4b5911b186539f452880ea8a058af07b2df8fcf1cddc113",
+      "pass_index": 0
+    },
+    "filter/outline:outlineBlend": {
+      "source": "sources/filter/outline/outlineBlend.glsl",
+      "raw_sha256": "5cf1613b00702bda4ccd5a03c1beee0aa779c1a947dc77d2adb78c854dad1a0d",
+      "factory_source_sha256": "082079151de99925485a7ab66362752d0b64f236d312bdfd924acba37d3b546e",
+      "pass_index": 2
+    },
+    "filter/outline:outlineValueMap": {
+      "source": "sources/filter/outline/outlineValueMap.glsl",
+      "raw_sha256": "8d6504a8464a44cb4d1e86d2596c0d7a60d4924d18bd2114dc1f5ce5d49434cb",
+      "factory_source_sha256": "7d03750cc4e3c8225840e70340dab1edbab225ef63026650c41bf46b118a4a8a",
+      "pass_index": 0
+    },
+    "filter/spatter:spatter": {
+      "source": "sources/filter/spatter/spatter.glsl",
+      "raw_sha256": "9d8cb56f43761cdb52a36935a7c3b66d758189d82db0c52ad93b5090206579af",
+      "factory_source_sha256": "9430e004fda86cbb8dca735314b0b8da8a9c18130440a5a74db3b53beeb4f52d",
+      "pass_index": 0
+    },
+    "filter/tint:colorize": {
+      "source": "sources/filter/tint/colorize.glsl",
+      "raw_sha256": "2af8eca3f8e54ddde3decc2d6bc03723833b50239ade32de04b968d3b88359a6",
+      "factory_source_sha256": "c4308bccb7126fd7e45a280bf397742193cd79a4b72994b81966da040ea189b9",
+      "pass_index": 0
+    },
+    "mixer/blendMode:blendMode": {
+      "source": "sources/mixer/blendMode/blendMode.glsl",
+      "raw_sha256": "a33eb805a9ee8fe2ee5b807db1141a5570afa84af92a5c65db7a2f828a6d9e66",
+      "factory_source_sha256": "2252c783080476c75eaa349acf7c0e82b0d3813c54ca2f84b08e93b1b82bbbe5",
+      "pass_index": 0
+    },
+    "mixer/centerMask:centerMask": {
+      "source": "sources/mixer/centerMask/centerMask.glsl",
+      "raw_sha256": "55d708d50af0c0d0a6caf8a32ca3621f8137ff0d489aeb8d5f579e20984599e2",
+      "factory_source_sha256": "95d1869309242dc9f61acfc21af7ec342b4244188cadd9f845cbae5cb5d96490",
+      "pass_index": 0
+    },
+    "synth/media:mediaInput": {
+      "source": "sources/synth/media/mediaInput.glsl",
+      "raw_sha256": "2e984ec5f95008b83fdccd3bc3e266a4c68b58488096d9de343ff16f0199313e",
+      "factory_source_sha256": "347dd57642761747ab4be2eae33483364440e3b54f5fe2a05eb785081236bd9a",
+      "pass_index": 0
+    }
+  },
+  "partial_pass_truth": {
+    "filter/outline:outlineBlend": "pass 2 only; requires edgesTexture from outlineSobel fed by outlineValueMap"
+  },
+  "variants": [
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "primary",
+      "coverage": "enabled/useSpecks true; splat mode2; speck mode3",
+      "bindings": {
+        "enabled": true,
+        "useSpecks": true,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 2,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "77fb7861a5efe9cca6f4a87c80107bfcab4b13ce5268d8eabda4a844d181024d",
+      "rgba8_sha256": "471ba80050899bdbd3df48d182b63835d52498757538de99f466520369d11829",
+      "probes": {
+        "0": [
+          "3f800000",
+          "3f800000",
+          "3f800000",
+          "3f7afafb"
+        ],
+        "17": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3f35b5b6"
+        ],
+        "34": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "disabledNoSpecks",
+      "coverage": "both outer false",
+      "bindings": {
+        "enabled": false,
+        "useSpecks": false,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 2,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "bde61fe2cc345cd2979280e465847046eec54926ac7a5569ab36b7c9d4fac749",
+      "rgba8_sha256": "5f07b0549bb0b7480f9f9709f6e2d863b9e1f93ebe4a6147459092c931e38718",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "splatMode0",
+      "coverage": "splat mode 0",
+      "bindings": {
+        "enabled": true,
+        "useSpecks": false,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 0,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "37feba56785adb2568f60167b7579a27110cbcc0d610171eeb4344eb37d74815",
+      "rgba8_sha256": "bd183f92cc92ef33c45e7f2409a0399c555f28567fcebb6b34ed69317cccb497",
+      "probes": {
+        "0": [
+          "3f4f5c29",
+          "3e6147ae",
+          "3f2147ae",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "splatMode1",
+      "coverage": "splat mode 1",
+      "bindings": {
+        "enabled": true,
+        "useSpecks": false,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 1,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "73c09a29cfcb0de5dacd0afb9f2cbcda72af8cdabd2c92b84873af0f68b1d5b6",
+      "rgba8_sha256": "ca3a227c5563a19fb603f9d4436009351938656f07286d9ef463b42e012560a0",
+      "probes": {
+        "0": [
+          "3e30b0b1",
+          "3e20a0a1",
+          "3e949495",
+          "3f63e3e4"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "splatMode3",
+      "coverage": "splat mode 3",
+      "bindings": {
+        "enabled": true,
+        "useSpecks": false,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 3,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "5c76f624ece1f6d9b1a09fb0d94be63dd961cfd99ae7211e9cd8d808cbb164d3",
+      "rgba8_sha256": "bf9cedbbfd750d46348f0c51bf368c9a79b191cb8e684cc6c317ec7f30e660be",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "bed4d4d5",
+          "be78f8f9",
+          "bf50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "bf2babac",
+          "bf27a7a8",
+          "be64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "speckMode0",
+      "coverage": "speck mode 0",
+      "bindings": {
+        "enabled": false,
+        "useSpecks": true,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 2,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 0
+      },
+      "overrides": {},
+      "f32_sha256": "f2e0515020598be5382aa29212fcbdc35f7f597469d8fa5a63032fc9300a4e97",
+      "rgba8_sha256": "68f35d0e3e68d05d8d6da4e8786c9ea83dff024b3b9cc0f5327419a7cb474532",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "speckMode1",
+      "coverage": "speck mode 1",
+      "bindings": {
+        "enabled": false,
+        "useSpecks": true,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 2,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 1
+      },
+      "overrides": {},
+      "f32_sha256": "58d0e5f43b86d2c809b5b760fe708fd97e83de45bed964aee212dc0cfd858c23",
+      "rgba8_sha256": "9c957b4db8b693f2e72fb23a4dd0786ca9baefd63e993a7cdbd77bab0984b33e",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "classicNoisedeck/splat:splat",
+      "variant": "speckMode2",
+      "coverage": "speck mode 2",
+      "bindings": {
+        "enabled": false,
+        "useSpecks": true,
+        "splatSource": 0,
+        "scale": 3.700000047683716,
+        "cutoff": 41,
+        "speed": 2,
+        "splatColor": [
+          0.8100000023841858,
+          0.2199999988079071,
+          0.6299999952316284
+        ],
+        "mode": 2,
+        "speckScale": 2.5999999046325684,
+        "speckCutoff": 38,
+        "speckSpeed": 3,
+        "speckSeed": 5,
+        "speckColor": [
+          0.17000000178813934,
+          0.7400000095367432,
+          0.38999998569488525
+        ],
+        "speckMode": 2
+      },
+      "overrides": {},
+      "f32_sha256": "c2273fa0b5e338423b0e2ad732f9976c5f07467bc3bc333ad68f2ed88d03bf41",
+      "rgba8_sha256": "5c1ac7c999fa5603fbd7715bbc6844d2252f300c7a1c7a4f9385b6def25fd826",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/corrupt:corrupt",
+      "variant": "clean",
+      "coverage": "all optional controls false",
+      "bindings": {
+        "intensity": 0,
+        "sort": 0,
+        "shift": 0,
+        "bits": 0,
+        "channelShift": 0,
+        "speed": 3,
+        "melt": 0,
+        "scatter": 0,
+        "bandHeight": 3,
+        "renderScale": 1
+      },
+      "overrides": {},
+      "f32_sha256": "5385521f89dc3bd327884c1acc0427df1f73927f3c59fda35e36f315aabee201",
+      "rgba8_sha256": "1e13cb21ecc9f33657c512001a706582b326ff762ea82cb71f96c97a119b3e28",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f800000"
+        ],
+        "17": [
+          "3eb8b8b9",
+          "3ec4c4c5",
+          "3f20a0a1",
+          "3f800000"
+        ],
+        "34": [
+          "3f0c8c8d",
+          "3f1c9c9d",
+          "3f76f6f7",
+          "3f800000"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/corrupt:corrupt",
+      "variant": "full",
+      "coverage": "corrupt/melt/scatter/sort/shift/channel/bits true; bit thresholds >.3 and >.6",
+      "bindings": {
+        "intensity": 100,
+        "sort": 100,
+        "shift": 100,
+        "bits": 100,
+        "channelShift": 100,
+        "speed": 3,
+        "melt": 100,
+        "scatter": 100,
+        "bandHeight": 3,
+        "renderScale": 1
+      },
+      "overrides": {},
+      "f32_sha256": "dadcec28de46470b6abff92ed36b480e7dc9c776f4ff07847086b35c2ac9a3fb",
+      "rgba8_sha256": "f9dac4c788d1e069268eb38aec9328925617aff12d1dc67c8755d37d276cfb66",
+      "probes": {
+        "0": [
+          "3f7ffffe",
+          "3f7fffff",
+          "3f7fffff",
+          "3f800000"
+        ],
+        "17": [
+          "3f7ffff8",
+          "3f7ffff8",
+          "3f7ffff8",
+          "3f800000"
+        ],
+        "34": [
+          "3f7ffff8",
+          "3f7ffff8",
+          "00000000",
+          "3f800000"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/corrupt:corrupt",
+      "variant": "bitsMid",
+      "coverage": "bit xor true, bit-shift false",
+      "bindings": {
+        "intensity": 100,
+        "sort": 100,
+        "shift": 100,
+        "bits": 45,
+        "channelShift": 100,
+        "speed": 3,
+        "melt": 0,
+        "scatter": 0,
+        "bandHeight": 3,
+        "renderScale": 1
+      },
+      "overrides": {},
+      "f32_sha256": "4dc8b2479d94d4720439b3c8fa73ca9cd65ae54cd7b3157a28b65c99001263f3",
+      "rgba8_sha256": "d90817e6767ecd683f59d04178dd89c834e2599d2fd69d6cca81f1c5a36d8617",
+      "probes": {
+        "0": [
+          "3e75480d",
+          "3eaf3377",
+          "3ebbb724",
+          "3f800000"
+        ],
+        "17": [
+          "3eb93668",
+          "3f1d22f6",
+          "3f202f0e",
+          "3f800000"
+        ],
+        "34": [
+          "3f0c292c",
+          "3f1c6df3",
+          "3f76886b",
+          "3f800000"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode0",
+      "coverage": "flipMode 0",
+      "bindings": {
+        "flipMode": 0
+      },
+      "overrides": {},
+      "f32_sha256": "328f5db410ea63e4db4daccdfc9512006a8734c7467071ad31a87e3bf9e805fa",
+      "rgba8_sha256": "b1f29e6195516c6556e95c5cc3e7b82498cd484458e693ee30fc255685973077",
+      "probes": {
+        "0": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode1",
+      "coverage": "flipMode 1",
+      "bindings": {
+        "flipMode": 1
+      },
+      "overrides": {},
+      "f32_sha256": "61192595d3b576b6066b1a780b6f79b084b98aa360a9fee2a3525590407f5d5e",
+      "rgba8_sha256": "57665f37c80fb363105581bd9def3d3a0db19a17e3e38dca53ba3db3c04d305b",
+      "probes": {
+        "0": [
+          "3e30b0b1",
+          "3e20a0a1",
+          "3e949495",
+          "3f63e3e4"
+        ],
+        "17": [
+          "3ef6f6f7",
+          "3edadadb",
+          "3f63e3e4",
+          "3f109091"
+        ],
+        "34": [
+          "3e3cbcbd",
+          "3ef6f6f7",
+          "3e34b4b5",
+          "3f30b0b1"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode2",
+      "coverage": "flipMode 2",
+      "bindings": {
+        "flipMode": 2
+      },
+      "overrides": {},
+      "f32_sha256": "ca29ed8e6fe6b70cd1f0c34005ea2a90d0870e600ab0ad553b030409cb816b18",
+      "rgba8_sha256": "2811ae9a5195440ec0e9dfa6b3eb386ce8f164322c82ba4252b1aac5d42cd37d",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e3cbcbd",
+          "3ef6f6f7",
+          "3e34b4b5",
+          "3f30b0b1"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode3",
+      "coverage": "flipMode 3",
+      "bindings": {
+        "flipMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "df7494bc0f9867902e62d5236cd2d329bcc561b7661c94cc0ae6c14b7ad2c9d8",
+      "rgba8_sha256": "129a0e3849b93a62531a7b7ebfd63f09a001f81f1e9e4f98a1a8c4f89b9c27cd",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ef6f6f7",
+          "3edadadb",
+          "3f63e3e4",
+          "3f109091"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode11",
+      "coverage": "flipMode 11",
+      "bindings": {
+        "flipMode": 11
+      },
+      "overrides": {},
+      "f32_sha256": "1dd4a1e147bb3156ba5ce8640bb197ff8db4835def2968b29ea8ef3b596fc706",
+      "rgba8_sha256": "16f24bcf6c1f3873ece584e5ab789dbc27c8348ea4acce76fd564c3a908e159c",
+      "probes": {
+        "0": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e3cbcbd",
+          "3ef6f6f7",
+          "3e34b4b5",
+          "3f30b0b1"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode12",
+      "coverage": "flipMode 12",
+      "bindings": {
+        "flipMode": 12
+      },
+      "overrides": {},
+      "f32_sha256": "0bfcbace47d4cbf80b37a9771171f91c2c9a0f97eb7c59ad29496f13fa6a1951",
+      "rgba8_sha256": "6eb8d177280f0beaaab6bd1e90d16135c27b14d86b35a4ed15f17d8260b7b066",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode13",
+      "coverage": "flipMode 13",
+      "bindings": {
+        "flipMode": 13
+      },
+      "overrides": {},
+      "f32_sha256": "78bb5263b566554cd1b657a78cbf7801056e781b5897595f125574bec39c66cc",
+      "rgba8_sha256": "f384f18a85804e3898b7f575e41db5ef5a066d13c6fdc960760854e89db2b865",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode14",
+      "coverage": "flipMode 14",
+      "bindings": {
+        "flipMode": 14
+      },
+      "overrides": {},
+      "f32_sha256": "94530fe46f0be26947f3a6a65f886ad256abe2f88ced2e7740249f597f7943eb",
+      "rgba8_sha256": "701ff504f64f54e5915628896069f414aa71bd66731659fe34cb16cf0d2ecb47",
+      "probes": {
+        "0": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "17": [
+          "3ef6f6f7",
+          "3edadadb",
+          "3f63e3e4",
+          "3f109091"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode15",
+      "coverage": "flipMode 15",
+      "bindings": {
+        "flipMode": 15
+      },
+      "overrides": {},
+      "f32_sha256": "805d52e217cf9be1d6cf40f0bf19b967586ce4fe0c6b8561497edf750b61f44d",
+      "rgba8_sha256": "bed103fbaa2856ca2635775fafd33f8f851ccb18e2b61fd849fedf96333d5822",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e3cbcbd",
+          "3ef6f6f7",
+          "3e34b4b5",
+          "3f30b0b1"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode16",
+      "coverage": "flipMode 16",
+      "bindings": {
+        "flipMode": 16
+      },
+      "overrides": {},
+      "f32_sha256": "e51fedd8e508906c9b4b58af638d3509b9f03605ddd8ad8187399b4b9bee6cf0",
+      "rgba8_sha256": "8cc2ee9f2991443b5afc9e88b4f468495c4fbdff4d7333416b5e9b189819d7c6",
+      "probes": {
+        "0": [
+          "3df0f0f1",
+          "3e989899",
+          "3dd0d0d1",
+          "3f55d5d6"
+        ],
+        "17": [
+          "3ef6f6f7",
+          "3edadadb",
+          "3f63e3e4",
+          "3f109091"
+        ],
+        "34": [
+          "3e3cbcbd",
+          "3ef6f6f7",
+          "3e34b4b5",
+          "3f30b0b1"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode17",
+      "coverage": "flipMode 17",
+      "bindings": {
+        "flipMode": 17
+      },
+      "overrides": {},
+      "f32_sha256": "2fd95f9588d3fca68235ab90eff6767aa40337de9f16bf74db9930ec5a0e8524",
+      "rgba8_sha256": "13e1c98242807c2a5187f2627dfaaf0ee6b7fe07a88a776557259382b8f312ab",
+      "probes": {
+        "0": [
+          "3e30b0b1",
+          "3e20a0a1",
+          "3e949495",
+          "3f63e3e4"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/flipMirror:flipMirror",
+      "variant": "mode18",
+      "coverage": "flipMode 18",
+      "bindings": {
+        "flipMode": 18
+      },
+      "overrides": {},
+      "f32_sha256": "add5bc60f389d32a8f60298df83293070708d8bef46b37465a579bab9d3f1915",
+      "rgba8_sha256": "c3658b0c1350d0262eab797816b720931da7bf414ff84152865c965daec8fa37",
+      "probes": {
+        "0": [
+          "3e74f4f5",
+          "3eaeaeaf",
+          "3ebababb",
+          "3f3ebebf"
+        ],
+        "17": [
+          "3ef6f6f7",
+          "3edadadb",
+          "3f63e3e4",
+          "3f109091"
+        ],
+        "34": [
+          "3e9c9c9d",
+          "3f068687",
+          "3ee0e0e1",
+          "3f19999a"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/outline:outlineBlend",
+      "variant": "blackOutline",
+      "coverage": "invert false edges fixture contains r=0, intermediate, and exact r=255",
+      "bindings": {
+        "invert": 0
+      },
+      "overrides": {},
+      "f32_sha256": "a2aab4900a449027ed69993a88d7c968b929ba1d0a1c8d06a2eaf7232eb19317",
+      "rgba8_sha256": "7d22be0b86afb76aca616b4edad9e24f726a8a8cc19ab39853297d3cb0a82804",
+      "probes": {
+        "0": [
+          "3bc4884b",
+          "3c5b358f",
+          "3b53a679",
+          "3f7afafb"
+        ],
+        "17": [
+          "3eacc4dd",
+          "3e4a1b6d",
+          "3f29825b",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3ea84df3",
+          "3ea45e18",
+          "3de067ef",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "edgesTexture": "rgba_tag37_full_4x6"
+      }
+    },
+    {
+      "key": "filter/outline:outlineBlend",
+      "variant": "whiteOutline",
+      "coverage": "invert true; edges fixture contains r=0, intermediate, and exact r=255",
+      "bindings": {
+        "invert": 1
+      },
+      "overrides": {},
+      "f32_sha256": "6db4db090e13c80eaa2c8b5988712ed2d20e4d0afb506bbe26c7e4268da8d937",
+      "rgba8_sha256": "239586e2a1ae6ba3046bfe13b4ba8c08c363c14468eff650e302da2ab33d9456",
+      "probes": {
+        "0": [
+          "3f636af3",
+          "3f654eb8",
+          "3f62b588",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f06929f",
+          "3ec56e17",
+          "3f59b28c",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f56a97d",
+          "3f54b18f",
+          "3f1e8f81",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "edgesTexture": "rgba_tag37_full_4x6"
+      }
+    },
+    {
+      "key": "filter/outline:outlineValueMap",
+      "variant": "colorOklab",
+      "coverage": "spread>=1e-5 path",
+      "bindings": {},
+      "overrides": {},
+      "f32_sha256": "856c984b4d37fdded7e9e7cd117a64bbf218658cfb51dc572f92d7c9b0332306",
+      "rgba8_sha256": "349d19d5f9238b64607c265a97cee2e57558f49b2254a613efb80f334e4fef88",
+      "probes": {
+        "0": [
+          "3e56cac9",
+          "3e56cac9",
+          "3e56cac9",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f00d280",
+          "3f00d280",
+          "3f00d280",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f36081f",
+          "3f36081f",
+          "3f36081f",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/outline:outlineValueMap",
+      "variant": "grayscale",
+      "coverage": "spread<1e-5 fast path",
+      "bindings": {},
+      "overrides": {},
+      "f32_sha256": "17137e5da9dba3919e6fc1a42221ddfd166388e8059fc671b73e04ea354041f2",
+      "rgba8_sha256": "c6ded0a7986409c32fd2cea123458989295584a3857f5e856a6ccc0870d40eb1",
+      "probes": {
+        "0": [
+          "3df8f8f9",
+          "3df8f8f9",
+          "3df8f8f9",
+          "3f41c1c2"
+        ],
+        "17": [
+          "3ed0d0d1",
+          "3ed0d0d1",
+          "3ed0d0d1",
+          "3f189899"
+        ],
+        "34": [
+          "3efcfcfd",
+          "3efcfcfd",
+          "3efcfcfd",
+          "3f0a8a8b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "grayscale_4x6"
+      }
+    },
+    {
+      "key": "filter/spatter:spatter",
+      "variant": "primary",
+      "coverage": "fullResolution nonzero seed=11 density=1.5 creates active mask",
+      "bindings": {
+        "color": {
+          "0": 0.8299999833106995,
+          "1": 0.1899999976158142,
+          "2": 0.4699999988079071
+        },
+        "density": 1.5,
+        "alpha": 0.8299999833106995,
+        "seed": 11
+      },
+      "overrides": {},
+      "f32_sha256": "f106b4d60c9e1b0ce579b25adcadb918f220d94bf62ea73a615ccd06dc1c3143",
+      "rgba8_sha256": "2270dc9fe831c33940eb09df5ac36a0d97d8cd9793449e21924298df6b599cd4",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f50d0d1",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f1372a8",
+          "3e5bc316",
+          "3e00341f",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/spatter:spatter",
+      "variant": "fallbackResolution",
+      "coverage": "fullResolution false arm; seed=11 density=1.5 creates active mask",
+      "bindings": {
+        "color": {
+          "0": 0.8299999833106995,
+          "1": 0.1899999976158142,
+          "2": 0.4699999988079071
+        },
+        "density": 1.5,
+        "alpha": 0.8299999833106995,
+        "seed": 11
+      },
+      "overrides": {
+        "fullResolution": [
+          0,
+          0
+        ]
+      },
+      "f32_sha256": "50439a305aa93b986840fe29f7732b31d4694adfc7addeaf64167d6cc4008f6c",
+      "rgba8_sha256": "4314515902999d5f9ae734fc41592f1e76cd9d909e17f8b06efaa072e7c7187c",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "17": [
+          "3eb6cd06",
+          "3da32d37",
+          "3ee9ea53",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/tint:colorize",
+      "variant": "mode0",
+      "coverage": "tint mode 0",
+      "bindings": {
+        "color": [
+          0.1599999964237213,
+          0.6899999976158142,
+          0.8299999833106995
+        ],
+        "alpha": 0.6200000047683716,
+        "mode": 0
+      },
+      "overrides": {},
+      "f32_sha256": "d943408565025ec93b59fed744cbc7407efe108776b650af43eb5f711093cdf0",
+      "rgba8_sha256": "ea6d7456750550b923b42ac58699b43eb16ddf37f80e7e83ffff22532c211120",
+      "probes": {
+        "0": [
+          "3df2d62a",
+          "3ef128f8",
+          "3f066875",
+          "3f7afafb"
+        ],
+        "17": [
+          "3e83aa94",
+          "3f052b50",
+          "3f53166a",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3eb54293",
+          "3f2d39c5",
+          "3f197b88",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/tint:colorize",
+      "variant": "mode1",
+      "coverage": "tint mode 1",
+      "bindings": {
+        "color": [
+          0.1599999964237213,
+          0.6899999976158142,
+          0.8299999833106995
+        ],
+        "alpha": 0.6200000047683716,
+        "mode": 1
+      },
+      "overrides": {},
+      "f32_sha256": "c449315bf1455a8d6f3e656564ccdd3076f2fd5a873307ca648cd38d20af73d3",
+      "rgba8_sha256": "28957404e858969a8c81309e757c3db69c899c6b8d4693c18d79b924467b78af",
+      "probes": {
+        "0": [
+          "3cc82103",
+          "3dbc2501",
+          "3cc92d1e",
+          "3f7afafb"
+        ],
+        "17": [
+          "3e4bfa43",
+          "3e491eba",
+          "3f3ace78",
+          "3f35b5b6"
+        ],
+        "34": [
+          "3ea48773",
+          "3f076e80",
+          "3e4cc4c8",
+          "3ea8a8a9"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      }
+    },
+    {
+      "key": "filter/tint:colorize",
+      "variant": "mode2",
+      "coverage": "tint mode 2 with grayscale/zero-saturation plus chromatic R/G/B-max source pixels",
+      "bindings": {
+        "color": [
+          0.1599999964237213,
+          0.6899999976158142,
+          0.8299999833106995
+        ],
+        "alpha": 0.6200000047683716,
+        "mode": 2
+      },
+      "overrides": {},
+      "f32_sha256": "ece4139d0a0a3b0e2f816c0340cb5edd7f639b9b5cde0113ce0393dfe152df8c",
+      "rgba8_sha256": "9e00b953b553b6d83198b6b479dd0ee5e4e18c18ee3230404070cf10d818eab9",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3f800000"
+        ],
+        "17": [
+          "3df1eae3",
+          "3f442d43",
+          "3f277441",
+          "3f5ededf"
+        ],
+        "34": [
+          "3f0530dd",
+          "3ef174ce",
+          "3f34b4b5",
+          "3ecacacb"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "tint_hybrid_5x3"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode0",
+      "coverage": "blend mode 0; ",
+      "bindings": {
+        "mode": 0,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "5d67858d1b1300ee8c641358f85ea0800536206c19de4f3a109117da19fdb23c",
+      "rgba8_sha256": "b952c8b2156aca097681a3f189985a521263a432841ea5b532b8dbe23160fab2",
+      "probes": {
+        "0": [
+          "3ddfdba5",
+          "3ea5df19",
+          "3e7bbb49",
+          "3f7bd937"
+        ],
+        "17": [
+          "3f025d81",
+          "3ebeb323",
+          "3f5917a6",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f59b6e7",
+          "3f2e3b8c",
+          "3ebf2fd4",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode1",
+      "coverage": "blend mode 1; ",
+      "bindings": {
+        "mode": 1,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "eb9158e28951ccfa4703c72ce57280b889cea2407fc1a3d555f58f2badf0c537",
+      "rgba8_sha256": "b21e0c6854707d9d7073cb7188006f998ba04ba7ac05670a77b6ba766f9e30b0",
+      "probes": {
+        "0": [
+          "3d08970c",
+          "3d9859b4",
+          "3c9318d1",
+          "3f7bd937"
+        ],
+        "17": [
+          "3eaf7f8d",
+          "3e4d4cc2",
+          "3f452e76",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f29fc6e",
+          "3e983b0c",
+          "3dcfd5fb",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode2",
+      "coverage": "blend mode 2; ",
+      "bindings": {
+        "mode": 2,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "e5eb5f978953a3bef31e0758369fea8480d07bab4fa45bb5eab6fe61979fac2b",
+      "rgba8_sha256": "0662ddff5b427f2cf1a4c1f14eadb42389b2a7be3d06d4df1784c7f0f51ab795",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7bd937"
+        ],
+        "17": [
+          "3ed4d4d5",
+          "3e78f8f9",
+          "3f3eda81",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f2babac",
+          "3ea562d4",
+          "3e64e4e5",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode3",
+      "coverage": "blend mode 3; ",
+      "bindings": {
+        "mode": 3,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "b6081b8afc898213e2133a91f839f7a79b153bbd1957964c1496b5f908e4bb36",
+      "rgba8_sha256": "841fe893c0fd61fa0e2b257cb098a0c2e410e8ecf9910621491eb82273c291a5",
+      "probes": {
+        "0": [
+          "3d97a1e0",
+          "3e7b2efe",
+          "3e684945",
+          "3f7bd937"
+        ],
+        "17": [
+          "3eba1071",
+          "3e9306ec",
+          "3f3e262d",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3eee191b",
+          "3f2113c4",
+          "3e046bd9",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode4",
+      "coverage": "blend mode 4; ",
+      "bindings": {
+        "mode": 4,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "3733abfe0f847632dd8da9f41fd6ebef98b7aee1e3405cb87053abda6b769dbe",
+      "rgba8_sha256": "7825df965f3b4ef0f5a21d8cfb0667b797c670a7693404960504db36ddcdfb7a",
+      "probes": {
+        "0": [
+          "3d5f771a",
+          "3e32e371",
+          "3d330cca",
+          "3f7bd937"
+        ],
+        "17": [
+          "3eff7f71",
+          "3eb9c22a",
+          "3f5917a6",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f59b6e7",
+          "3f2c2ce6",
+          "3e8a1759",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode5",
+      "coverage": "blend mode 5; ",
+      "bindings": {
+        "mode": 5,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "a2cb5a0fa19cc0531ca2a75f28404f7b9bed85ff893c930636f24cdbc9e22506",
+      "rgba8_sha256": "19158647faa4c4c03267a821a9c9c803591859e7948141400e2ded5d2443d364",
+      "probes": {
+        "0": [
+          "3dd3adc4",
+          "3e8d6342",
+          "3e6f744d",
+          "3f7bd937"
+        ],
+        "17": [
+          "3edce892",
+          "3e9e8077",
+          "3f4507b7",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3efb54b2",
+          "3f259dfb",
+          "3e9ce130",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode6",
+      "coverage": "blend mode 6; ",
+      "bindings": {
+        "mode": 6,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "4bdc0f6f4cb81ce45bffe2a7f85f4212090c62592e8478caaadf84e8e9fec033",
+      "rgba8_sha256": "4385135c13f9824deeaa2a7cec4f019a02849db7df042320a15b10b360d02e31",
+      "probes": {
+        "0": [
+          "3d20f2d0",
+          "3e3828e0",
+          "3ded3aff",
+          "3f7bd937"
+        ],
+        "17": [
+          "3ed85474",
+          "3e9cbda7",
+          "3f4aa39b",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f5676dc",
+          "3ea9762e",
+          "3e2c8846",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode7",
+      "coverage": "blend mode 7; ",
+      "bindings": {
+        "mode": 7,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "cb79424d50498166da27202ddb6caa73a3280f25620c1e9caa5f6609735e9edf",
+      "rgba8_sha256": "30b600e80768e1188ad59c115f7679d8b4f0e7b00e7b5dfb613a48758b33d68f",
+      "probes": {
+        "0": [
+          "3dbbbec3",
+          "3e91bb4c",
+          "3e720247",
+          "3f7bd937"
+        ],
+        "17": [
+          "3edf65b9",
+          "3ea8dd07",
+          "3f50d0d1",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f54c7fb",
+          "3f27a7a8",
+          "3e80b2e0",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode8",
+      "coverage": "blend mode 8; ",
+      "bindings": {
+        "mode": 8,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "7faa43d7d4f60bc40b5bf80b9a0b5928e00c38ad48b12961bc54c2320612631f",
+      "rgba8_sha256": "36b3da46e2b1988ccb0a2c510335ba042ce28616c46ebc2e6e1595e751d4f857",
+      "probes": {
+        "0": [
+          "3d921396",
+          "3e4bf586",
+          "3e070f31",
+          "3f7bd937"
+        ],
+        "17": [
+          "3eda1d47",
+          "3e92acc2",
+          "3f47d5a9",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f4039d4",
+          "3efa5912",
+          "3e732553",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode9",
+      "coverage": "blend mode 9; ",
+      "bindings": {
+        "mode": 9,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "7d6b4a78f0e82da30a330dcd88cd8904c4e3fb30481ef9753e6397d0ea611f76",
+      "rgba8_sha256": "8f6f04de7b7cbdc578b6d2f48c7ab3f6772bfbe134d006abe530de4b286a1b73",
+      "probes": {
+        "0": [
+          "3d14c4ee",
+          "3dc95161",
+          "3cc434bf",
+          "3f7bd937"
+        ],
+        "17": [
+          "3ec368c5",
+          "3e6d7f6d",
+          "3f3b69bc",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f285cc7",
+          "3ea0d89d",
+          "3e0a39a2",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode10",
+      "coverage": "blend mode 10; ",
+      "bindings": {
+        "mode": 10,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "c356e1ebb6e5f0963f181e2651da9e2d3cbb8d1009a05139065ff8ff121a41fd",
+      "rgba8_sha256": "ff1934c1b22ccc5eb117c862c7ea27ad5028121ec3b7cd9bff24fb30c2ee6a56",
+      "probes": {
+        "0": [
+          "3ddfdba5",
+          "3ea5df19",
+          "3e7bbb49",
+          "3f7bd937"
+        ],
+        "17": [
+          "3f025d81",
+          "3ebeb323",
+          "3f4eb3d6",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f00ea63",
+          "3f2e3b8c",
+          "3ebf2fd4",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode11",
+      "coverage": "blend mode 11; ",
+      "bindings": {
+        "mode": 11,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "31e7d51b403e63d5f3a4a81144fca30dd6d0468941b9698b6267ce4897a65fb8",
+      "rgba8_sha256": "2f314d43020e020e4723aafd0b8b5e18c2fec5897883301c768c8dfeddcceb81",
+      "probes": {
+        "0": [
+          "3d20f2d0",
+          "3dfa490d",
+          "3cf550ac",
+          "3f7bd937"
+        ],
+        "17": [
+          "3ed751fc",
+          "3e86d90c",
+          "3f4f6b86",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f5676dc",
+          "3ef7eab2",
+          "3e2c8846",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode12",
+      "coverage": "blend mode 12; ",
+      "bindings": {
+        "mode": 12,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "339fe5e2283dd5cf1d00be4b86d76af2b2ebf1f9232d889f9646f1da210b7217",
+      "rgba8_sha256": "8364f89fe958a62a8d9bf69149eaf0fe76b737a8a15cc82787fb4ba2a377a7c5",
+      "probes": {
+        "0": [
+          "3ead54ca",
+          "3e7f59b4",
+          "3e1eabec",
+          "3f7bd937"
+        ],
+        "17": [
+          "3efebe3b",
+          "3e941568",
+          "3f472155",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f309a97",
+          "3f02edf0",
+          "3f1ea131",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode13",
+      "coverage": "blend mode 13; ",
+      "bindings": {
+        "mode": 13,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "376f3956dc379666f04a16542d10e32fbd21c0eb7660e95921514786d1ea5445",
+      "rgba8_sha256": "f1d1678ec608592958197f302ff938bdf63b37c2bdc9cc4ab39c5ff67beb7341",
+      "probes": {
+        "0": [
+          "3dd9c4b4",
+          "3e99a12e",
+          "3e7597cc",
+          "3f7bd937"
+        ],
+        "17": [
+          "3ef0d1c9",
+          "3eae99cd",
+          "3f544196",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3f5816e1",
+          "3f29ecc3",
+          "3eae0882",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode14",
+      "coverage": "blend mode 14; soft-light ternaries vary by lane",
+      "bindings": {
+        "mode": 14,
+        "mixAmt": 47
+      },
+      "overrides": {},
+      "f32_sha256": "81f4a72f8177c7f9dbd5ca8c288b1e0372f1a090a52f832809531a587e7e061b",
+      "rgba8_sha256": "07de88905801b6e02f4e0d13c426acc127f50f9390e38d7921fcc741ee177449",
+      "probes": {
+        "0": [
+          "3d9378d3",
+          "3e82b0bc",
+          "3e4681e1",
+          "3f7d0186"
+        ],
+        "17": [
+          "3eddde1f",
+          "3ea68de1",
+          "3f427526",
+          "3f44e9bf"
+        ],
+        "34": [
+          "3f5a8c73",
+          "3ea06464",
+          "3e555780",
+          "3f41aeff"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/blendMode:blendMode",
+      "variant": "mode15",
+      "coverage": "blend mode 15; ",
+      "bindings": {
+        "mode": 15,
+        "mixAmt": -37
+      },
+      "overrides": {},
+      "f32_sha256": "102a0276385bc6c1ead16eac4c0051cef0f0cda370db08cafdc81e9783a4c14a",
+      "rgba8_sha256": "756247adbd61445b4c914e674005dcb0f401bb65e5975b4b21b1f1f07d764a1d",
+      "probes": {
+        "0": [
+          "3d08970c",
+          "3d9859b4",
+          "3c9318d1",
+          "3f7bd937"
+        ],
+        "17": [
+          "3eaf7f8d",
+          "3e4d4cc2",
+          "3f3e262d",
+          "3f3c39ba"
+        ],
+        "34": [
+          "3e9be07c",
+          "3f2113c4",
+          "3dcfd5fb",
+          "3f03320b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "shape0",
+      "coverage": "distance metric 0 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 0,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 14
+      },
+      "overrides": {},
+      "f32_sha256": "73b27171063874cb33dd4b58b71a34cb916cdd6103f11bd0a8818eec5cfe1ca8",
+      "rgba8_sha256": "fb2f4443eee54ea948b457ce3649677221ec44f45953624cc15fddfba05b9373",
+      "probes": {
+        "0": [
+          "3e2a86ac",
+          "3f1ad27c",
+          "3f20b166",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088855",
+          "3f3cbc9c",
+          "3ed4d52c",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f771314",
+          "3d504000",
+          "3e887ee1",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "shape1",
+      "coverage": "distance metric 1 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 1,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 14
+      },
+      "overrides": {},
+      "f32_sha256": "830d2f34232ce8fb7c0b5a8b1ca4a41139a469bb16fb8ff9648b653b6575a9bf",
+      "rgba8_sha256": "fee8357930b2f502a39de599779e8c8bfd1ff84c8077850164c723f0fd634076",
+      "probes": {
+        "0": [
+          "3e2b6eba",
+          "3f1b2758",
+          "3f2116c2",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088880",
+          "3f3cbcb7",
+          "3ed4d4e4",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f77138e",
+          "3d50836a",
+          "3e886d3f",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "shape2",
+      "coverage": "distance metric 2 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 14
+      },
+      "overrides": {},
+      "f32_sha256": "53c985d87b0eac145c184c808732caf89a9bc050f10b0f085994e51bb5bad414",
+      "rgba8_sha256": "7d623d76815a34177e50522b0e9bd68c715ebea5f1ee6653677ea59400881fb0",
+      "probes": {
+        "0": [
+          "3e264ee4",
+          "3f1947a2",
+          "3f1ed9c3",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f0887b7",
+          "3f3cbc35",
+          "3ed4d636",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f770a46",
+          "3d4b65d5",
+          "3e89c3c8",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "shape-1",
+      "coverage": "distance metric -1 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": -1,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 14
+      },
+      "overrides": {},
+      "f32_sha256": "53c985d87b0eac145c184c808732caf89a9bc050f10b0f085994e51bb5bad414",
+      "rgba8_sha256": "7d623d76815a34177e50522b0e9bd68c715ebea5f1ee6653677ea59400881fb0",
+      "probes": {
+        "0": [
+          "3e264ee4",
+          "3f1947a2",
+          "3f1ed9c3",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f0887b7",
+          "3f3cbc35",
+          "3ed4d636",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f770a46",
+          "3d4b65d5",
+          "3e89c3c8",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend0",
+      "coverage": "blend mode 0 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 0
+      },
+      "overrides": {},
+      "f32_sha256": "dff36bf5a9ecacb429fd9941dcd084304dd299e8b71ee7c892fa5c7392dc047c",
+      "rgba8_sha256": "0d371efb1919497b67625ce723aacfda45dd312469e50af051fa2c6330fc62c1",
+      "probes": {
+        "0": [
+          "3e2f40a1",
+          "3f1d0ba9",
+          "3f21fa79",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088ccc",
+          "3f3cbfd8",
+          "3ed4e2a3",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f776930",
+          "3da29c22",
+          "3e923360",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend1",
+      "coverage": "blend mode 1 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 1
+      },
+      "overrides": {},
+      "f32_sha256": "0a85606efc13d31c70c8b2bf34b22da7077ec644bf301fb67913fbc3ae9e8b9b",
+      "rgba8_sha256": "9f6bf1b61974bc84ef1bbadaf130656a2c950e25956d5d2e4b2914268cf0801b",
+      "probes": {
+        "0": [
+          "3e2425c0",
+          "3f13ec70",
+          "3f19a650",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f08823c",
+          "3f3cb7c4",
+          "3ed4cca3",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f76bedb",
+          "3d373c00",
+          "3e859bc0",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend2",
+      "coverage": "blend mode 2 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 2
+      },
+      "overrides": {},
+      "f32_sha256": "0e90c5216b68eee493391fab987d326157350800a55de2881316997e2aeca017",
+      "rgba8_sha256": "d29144363b8a1ffe0b89e900304dc43d9459cdbafa63f1c4da8d6ec2e07247d1",
+      "probes": {
+        "0": [
+          "3e26b9b4",
+          "3f155c7d",
+          "3f19ff27",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f08867f",
+          "3f3cb892",
+          "3ed4d4d5",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f733f1b",
+          "3d40c0c1",
+          "3e8b4293",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend3",
+      "coverage": "blend mode 3 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 3
+      },
+      "overrides": {},
+      "f32_sha256": "084acf7c48638f618667e0f367ce13c2aabcd627b01744f4481d9d01c710ddba",
+      "rgba8_sha256": "7f555ee9dfa1754d4780fdc3dcba531706a07eff85cab1dec4df8001480fa1fc",
+      "probes": {
+        "0": [
+          "3e2a18b9",
+          "3f1a2b8f",
+          "3f2148cb",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088446",
+          "3f3cb833",
+          "3ed4d004",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f6e7cbb",
+          "3d991761",
+          "3e86e5ba",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend4",
+      "coverage": "blend mode 4 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 4
+      },
+      "overrides": {},
+      "f32_sha256": "d020f2a13faf9048042f2710eb45cc3e426eb96899d17bbf8ba44f503df91cbd",
+      "rgba8_sha256": "71b5f35b1782baf78252f8a2ab797167bdc4e598c768213c1a7a0141ef969344",
+      "probes": {
+        "0": [
+          "3e2d21f1",
+          "3f1c9809",
+          "3f21db4f",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088c17",
+          "3f3cbfd8",
+          "3ed4e2a3",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f776930",
+          "3d52d10d",
+          "3e8e8c0e",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend5",
+      "coverage": "blend mode 5 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 5
+      },
+      "overrides": {},
+      "f32_sha256": "feefe27e1fc8c5c25b629cfb0e24ed97f9918979550f267b6bea0edb0316293e",
+      "rgba8_sha256": "0d9061f0d9467b951487dbadea8b67250ac9d437d98e9c01c9d725f83c16df5f",
+      "probes": {
+        "0": [
+          "3e2e620f",
+          "3f1b4c3a",
+          "3f218a4a",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088840",
+          "3f3cba96",
+          "3ed4d755",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f6f15ec",
+          "3d9c604d",
+          "3e8f190a",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend6",
+      "coverage": "blend mode 6 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 6
+      },
+      "overrides": {},
+      "f32_sha256": "087d881674cadf6adf27fe4e896397613700772310d2482f956f98eb168b2c69",
+      "rgba8_sha256": "c8357caa22caa438fcec4c5d6a1b8243a2f1cb1c6c15642d245d165b74063761",
+      "probes": {
+        "0": [
+          "3e250452",
+          "3f15abdf",
+          "3f1a167e",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f0886c8",
+          "3f3cbab9",
+          "3ed4d85a",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f771def",
+          "3d7c77d0",
+          "3e88b616",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend7",
+      "coverage": "blend mode 7 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 7
+      },
+      "overrides": {},
+      "f32_sha256": "57bb22d38e903b6c2874e3280fc81c59439b9e44a4a919cdd5764135a6b994f6",
+      "rgba8_sha256": "e2876d73c116a87db47d3be34c0aabc19839d9590cda6625d698040fc5cd131f",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088889",
+          "3f3cbcbd",
+          "3ed4d9d6",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f76f6f7",
+          "3d9dd9c2",
+          "3e8c8c8d",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend8",
+      "coverage": "blend mode 8 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 8
+      },
+      "overrides": {},
+      "f32_sha256": "e1439cbf4124b4aa456fe453674e7fe5a27dfd0c6bc741f4412c0da7ed8b7e2a",
+      "rgba8_sha256": "9720d7113676d477e495ebbb81aadb880f9e61c22d7cc277fbb339b8ce2560b4",
+      "probes": {
+        "0": [
+          "3e26b9b4",
+          "3f155c7d",
+          "3f19ff27",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f08867f",
+          "3f3cb892",
+          "3ed4d9d6",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f733f1b",
+          "3d9dd9c2",
+          "3e8b4293",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend9",
+      "coverage": "blend mode 9 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 9
+      },
+      "overrides": {},
+      "f32_sha256": "8be8a270cfd54bda59386ec449e1975423e41f04e73cf56f6d72f2c5ef5f738b",
+      "rgba8_sha256": "378164bbd61ba9f4b1d4720fd91e97847dcafccb0b110cc3921f6c2a83eee2fb",
+      "probes": {
+        "0": [
+          "3e249509",
+          "3f14cc28",
+          "3f19de67",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088482",
+          "3f3cb760",
+          "3ed4d12c",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f72f283",
+          "3d3d77d6",
+          "3e8728eb",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend10",
+      "coverage": "blend mode 10 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 10
+      },
+      "overrides": {},
+      "f32_sha256": "25c4f0878f8e97627bd7c21b2d4ef0c95d2ae7b395d67f4e200de957a040be13",
+      "rgba8_sha256": "9f5b3bd4ba66262bb30efa61e9240766ce010cd838ab313dd42efce82b76a547",
+      "probes": {
+        "0": [
+          "3e2f40a1",
+          "3f1d0ba9",
+          "3f21fa79",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088ccc",
+          "3f3cbe68",
+          "3ed4e19e",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f6f612d",
+          "3da29c22",
+          "3e923360",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend11",
+      "coverage": "blend mode 11 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 11
+      },
+      "overrides": {},
+      "f32_sha256": "0bc082f57c71cace17c911e319064e76a167ac1d8b1a372ae3897b23e9ebb5ef",
+      "rgba8_sha256": "80527316f793005a4f0b9ab483fdd60a82f3eae5ec6deb1311c53e8a60ca10ef",
+      "probes": {
+        "0": [
+          "3e250452",
+          "3f17c722",
+          "3f1d3a23",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088700",
+          "3f3cbc05",
+          "3ed4d756",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f771def",
+          "3d43b3ac",
+          "3e88b616",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend12",
+      "coverage": "blend mode 12 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 12
+      },
+      "overrides": {},
+      "f32_sha256": "1aeda69548f51d92bd9977a6c15380ee0e6cdd96d6f757531f4bb6d4e2d00b5e",
+      "rgba8_sha256": "f8280e6463bfee3f320b3bee1f70778cc999c4d596a3fff991c503c803667297",
+      "probes": {
+        "0": [
+          "3e50c40a",
+          "3f1a51a2",
+          "3f1ea826",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088c02",
+          "3f3cbbac",
+          "3ed4dda2",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f73b155",
+          "3d834726",
+          "3e9d9a68",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend13",
+      "coverage": "blend mode 13 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 13
+      },
+      "overrides": {},
+      "f32_sha256": "cefabaeffe378c100461868731f6b377e5f86839250633926aac9480ebd0285d",
+      "rgba8_sha256": "de9fe75087ade4eb6229b313f14f19f0c1627f0518601ef71106bbfc4d1beca4",
+      "probes": {
+        "0": [
+          "3e2ed158",
+          "3f1c2bf1",
+          "3f21c262",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088a86",
+          "3f3cbdee",
+          "3ed4dd7e",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f774390",
+          "3d9f7e37",
+          "3e90a635",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "mixer/centerMask:centerMask",
+      "variant": "blend15",
+      "coverage": "blend mode 15 with nonzero/intermediate mask",
+      "bindings": {
+        "shape": 2,
+        "power": -80,
+        "hardness": 0,
+        "blendMode": 15
+      },
+      "overrides": {},
+      "f32_sha256": "bffcfca7b3058ce9271326024127de295e50c5feb18407832a77fd22dfff7a91",
+      "rgba8_sha256": "6776de4da65e05bdf73267c3cea164f5820516df7be227ba8cf5d49c2da7a106",
+      "probes": {
+        "0": [
+          "3e2a18b9",
+          "3f1a2b8f",
+          "3f2148cb",
+          "3f7afafb"
+        ],
+        "17": [
+          "3f088446",
+          "3f3cb833",
+          "3ed4cb03",
+          "3f27a7a8"
+        ],
+        "34": [
+          "3f6e7cbb",
+          "3d373c00",
+          "3e86e5ba",
+          "3f5dddde"
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3",
+        "tex": "rgba_tag23_7x2"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position0",
+      "coverage": "media position 0",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 0,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "512025f5b5e2b16202acae068c540742c835e2738bfbae6f54fd64a865f90331",
+      "rgba8_sha256": "de41efcd1fe37a46ee8a65eb1334935c0bd7be60d06a963efe9b30b9e5c46daf",
+      "probes": {
+        "0": [
+          "4022067b",
+          "3fe95103",
+          "40000000",
+          "3e9e9e9f"
+        ],
+        "17": [
+          "3d124924",
+          "3f7cf3cf",
+          "3f461862",
+          "3ea8a8a9"
+        ],
+        "34": [
+          "3f32564b",
+          "3e7d1fa4",
+          "4023f47e",
+          "3eb2b2b3"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position1",
+      "coverage": "media position 1",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 1,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "5d54c7e0539377a8a47401951a0f44e2db6d3416c6a689d02dbb691e29feabbf",
+      "rgba8_sha256": "fe312349954c70c1eb9f3934dab27944e4379a5aef79d543fbad20b9d5ec6789",
+      "probes": {
+        "0": [
+          "3e8f4696",
+          "3f460ec0",
+          "3f33183b",
+          "3f73f3f4"
+        ],
+        "17": [
+          "3f0318c6",
+          "3f0318c6",
+          "3e9ef7be",
+          "3f78f8f9"
+        ],
+        "34": [
+          "3f3c349e",
+          "3e8590b3",
+          "3f72d88a",
+          "3f7dfdfe"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position2",
+      "coverage": "media position 2",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 2,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "a5f5785193c889dd233568f3c059ad0ab5b24e371418efbfb549cd39cadef9cc",
+      "rgba8_sha256": "1e6a6e569fa19c868bcad1fad139d4c98746040ba63a545368d80caeccafb85f",
+      "probes": {
+        "0": [
+          "3fdeffff",
+          "3ff2ffff",
+          "3ff8ffff",
+          "3f008081"
+        ],
+        "17": [
+          "3e482e32",
+          "3faf286b",
+          "3f9622a5",
+          "3f058586"
+        ],
+        "34": [
+          "3f1dae60",
+          "3f6076b9",
+          "3ee9bd37",
+          "3f0a8a8b"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position3",
+      "coverage": "media position 3",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 3,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "6682585c9bcee2860fc8a74684d79cffb0592e23d9d55a3cebf39c71eb9c01ea",
+      "rgba8_sha256": "1cbc81d8e20096f7535f3c36fdc9ce82642e132c493a1a920a7bfe9f37af142b",
+      "probes": {
+        "0": [
+          "3f8ae035",
+          "3ea751fc",
+          "3f48c8c8",
+          "3f19999a"
+        ],
+        "17": [
+          "3fb6474a",
+          "3fc67b23",
+          "3e2efcc2",
+          "3f1e9e9f"
+        ],
+        "34": [
+          "3e2fe6df",
+          "3f907da5",
+          "3f9533d4",
+          "3f23a3a4"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position4",
+      "coverage": "media position 4",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "d265ac74abeb0174b8089a161abbb64310197a86b934cd4dbd36abaa57c2fd37",
+      "rgba8_sha256": "d12699ea4e6b0fd408cffa9df747a63672f28379b54c6ec006571f10bbd55fd7",
+      "probes": {
+        "0": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position5",
+      "coverage": "media position 5",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 5,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "6cd2cbb26c447feccd43a0e60de0e7901106fb7a7036c4aa0372358ebf429531",
+      "rgba8_sha256": "d7bf04bdb038a4fb47b1e17aa68a2c05b4e7e7ba90c334926aa6debebe0eccec",
+      "probes": {
+        "0": [
+          "3f6f8656",
+          "3f3cd4ea",
+          "3f85b3f6",
+          "3f4acacb"
+        ],
+        "17": [
+          "3f995a48",
+          "3ed9a96e",
+          "3f11eeb0",
+          "3f4fcfd0"
+        ],
+        "34": [
+          "3e7656f2",
+          "3e026a44",
+          "3df1826a",
+          "3f54d4d5"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position6",
+      "coverage": "media position 6",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 6,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "064eedf3dd82d71640df6244fe870690388a2e601454ae2a44a24ffb87718b34",
+      "rgba8_sha256": "06265073c8a79fcc51684b1a89a3bc4e2a54c61432dd04cb40db1f2751921455",
+      "probes": {
+        "0": [
+          "3f09ae41",
+          "3e4e8561",
+          "3d4e8561",
+          "3eeeeeef"
+        ],
+        "17": [
+          "3f7def7c",
+          "3fe21084",
+          "3fae739d",
+          "3ef8f8f9"
+        ],
+        "34": [
+          "3df5c28f",
+          "3eae147b",
+          "3f0f5c29",
+          "3f35c28f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position7",
+      "coverage": "media position 7",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 7,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "dce268e662dedf47d4f5427bd310dbdc849ece9c071da9e2783d9e238dfbcd0b",
+      "rgba8_sha256": "4a37e49739b5512f633ed3925d884bbe658a46e3a1e4bf38c0a84f7f947fb394",
+      "probes": {
+        "0": [
+          "40ded098",
+          "40212f69",
+          "3f2aaaab",
+          "3dd8d8d9"
+        ],
+        "17": [
+          "40f6ffff",
+          "3e5fffff",
+          "40b50000",
+          "3e008081"
+        ],
+        "34": [
+          "3df5c28f",
+          "3eae147b",
+          "3f0f5c29",
+          "3f35c28f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "position8",
+      "coverage": "media position 8",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 8,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "d3ff133753bc2994ef73106a59788d90623bbbeab767b8d51b295cb615a0762e",
+      "rgba8_sha256": "7270fddcdf5ef1c8bd2997dabcb16d7e487806aa7d4bbad2ab38946694793f1f",
+      "probes": {
+        "0": [
+          "3f049249",
+          "3f3b6db7",
+          "3f13cf3d",
+          "3f28a8a9"
+        ],
+        "17": [
+          "3f580bd7",
+          "3eb77dc7",
+          "3cbd6911",
+          "3f2dadae"
+        ],
+        "34": [
+          "3df5c28f",
+          "3eae147b",
+          "3f0f5c29",
+          "3f35c28f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "tiling1",
+      "coverage": "media tiling 1",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 40,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 1,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "271e439a5e5442f51af8603ecb70fc9195724b525c985ca7a31e8eacd2d127a2",
+      "rgba8_sha256": "a82a2c5753240e23def8bdaee227e34fa1dce9be4326d3e30c57883ad3f77935",
+      "probes": {
+        "0": [
+          "3df5c28f",
+          "3eae147b",
+          "3f0f5c29",
+          "3f35c28f"
+        ],
+        "17": [
+          "3fc27628",
+          "3fa9d89e",
+          "40980000",
+          "3e50d0d1"
+        ],
+        "34": [
+          "40bb13b1",
+          "40af96f9",
+          "40520d21",
+          "3e1c9c9d"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "tiling2",
+      "coverage": "media tiling 2",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 40,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 2,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "37670cbf2ca6c53f0295daa65d7bf0aaa014bd8876974e8a596211661a62ce3e",
+      "rgba8_sha256": "1bc50b99cd6e2fce4e7d25b52c3343f525dd3273241148f5b3dd7cf20fc82471",
+      "probes": {
+        "0": [
+          "3f8b29ad",
+          "3f5aca6b",
+          "3f83b88f",
+          "3f2cacad"
+        ],
+        "17": [
+          "3fc27628",
+          "3fa9d89e",
+          "40980000",
+          "3e50d0d1"
+        ],
+        "34": [
+          "40bb13b1",
+          "40af96f9",
+          "40520d21",
+          "3e1c9c9d"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "tiling3",
+      "coverage": "media tiling 3",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 40,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 3,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "d53a6ab4a2203129fb92c74b29f808893a7132ebc2f52e8bf25918805e469589",
+      "rgba8_sha256": "ca1537f642bce55f89dfb4e8e4ef7b7ca1eaf84e62dac490f30305b7ceb78bc8",
+      "probes": {
+        "0": [
+          "3df5c28f",
+          "3eae147b",
+          "3f0f5c29",
+          "3f35c28f"
+        ],
+        "17": [
+          "3fc27628",
+          "3fa9d89e",
+          "40980000",
+          "3e50d0d1"
+        ],
+        "34": [
+          "40bb13b1",
+          "40af96f9",
+          "40520d21",
+          "3e1c9c9d"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip1",
+      "coverage": "media flip 1",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 1,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "a2d42c5904c8ed663ba030b9190508bc8b421f0dffea5279edcd2bad2b017a15",
+      "rgba8_sha256": "207eb7434f4fe18dba9762dceb0cf4b617c9a763515ac0714c03c56e4dd58986",
+      "probes": {
+        "0": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip2",
+      "coverage": "media flip 2",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 2,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "dd48034fe9bed59bcd2b260c3448a308ccb06b26da051409a54ce77ec4cfc801",
+      "rgba8_sha256": "02bdba6820c9945a06ea0868df598b8d5916d4b3b43faac1417f3af643b9b3b8",
+      "probes": {
+        "0": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip3",
+      "coverage": "media flip 3",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 3,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "3c82bb5a87fc0a4dc7e4ef9e99841c3984303fd705ce60b4b1036179b5b0d408",
+      "rgba8_sha256": "022cdf98d6efe10a996524bf294e1a7d7b8c87c19358c3feedd6e474d854ac77",
+      "probes": {
+        "0": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip11",
+      "coverage": "media flip 11",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 11,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "9f397166eca9f343d59760e2679017e5d716457f5f3c282ed5b15d496e5a3cb7",
+      "rgba8_sha256": "278eeed0ebf765e7e0f0efb3aeddb1c8d1e560c0b493912c52b7b0582b3ec29b",
+      "probes": {
+        "0": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip12",
+      "coverage": "media flip 12",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 12,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "cdf21fae85ca78a566719b978199bdb1b1738e069cdb75aaa9489e85e2f9ef97",
+      "rgba8_sha256": "ab4fad538485f56fab55b0295b5bdc76097c10bd171870820030332cdc068107",
+      "probes": {
+        "0": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip13",
+      "coverage": "media flip 13",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 13,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "e5f39ee530b2477e427a9b87e23337674fa868bd7c92358cbf6fa956b8785413",
+      "rgba8_sha256": "7c478aabebb382e0c000bc8d6dda59e614b4fa00dee577703411266ac2141520",
+      "probes": {
+        "0": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip14",
+      "coverage": "media flip 14",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 14,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "54117880e55288379acb6eb906ae4f8e22a8c40d1a761e74402339bef9fde7a4",
+      "rgba8_sha256": "fc4e5022caec541600f37d3c92b3018fce470ceb7d9c4f1d44f9a2b1a907f827",
+      "probes": {
+        "0": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip15",
+      "coverage": "media flip 15",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 15,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "b43299dae1f456731538fe936046efa98100367c5808beaf2224bb46d173969c",
+      "rgba8_sha256": "2e2fb1bdb52d7a82ba35dbdc49f1e8a4b04b3eb632580a7e67ba718590cb41bd",
+      "probes": {
+        "0": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip16",
+      "coverage": "media flip 16",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 16,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "af74f97b4c18c12fc2dbb41dcde1812103755cdb504d71fd74364a147dbbfa03",
+      "rgba8_sha256": "80d82ee5cef31b4011d6ff3d2e189e5231283a8ebb7cafb4f5a29d6a9b081d31",
+      "probes": {
+        "0": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f87f633",
+          "3f466e3e",
+          "3e892fc5",
+          "3f51d1d2"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip17",
+      "coverage": "media flip 17",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 17,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "b14b206a2bd7f92c99969b70c35a26b30149d05287e3a9bd9ca82be3a0f96585",
+      "rgba8_sha256": "c06cc2c5c49ef97174fb2188378fbf6ca04322b10117a3394c93a772905ff3ef",
+      "probes": {
+        "0": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "3f9d5185",
+          "3f64d3aa",
+          "3dfbb5a2",
+          "3f33b3b4"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "flip18",
+      "coverage": "media flip 18",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 18,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "eef3575d2818f3d32e29665aa509ac8e80b4474e7c6705748d3b86642e9730f4",
+      "rgba8_sha256": "fab5e43463e2562c0e744cec7c55c3e1065d0c19c62f50ff1e5d53e42c04da6d",
+      "probes": {
+        "0": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "outOfBounds",
+      "coverage": "background return branch",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 0,
+        "rotation": 0,
+        "scaleAmt": 15,
+        "offsetX": 100,
+        "offsetY": 100,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.029999999329447746,
+          0.5699999928474426,
+          0.9100000262260437
+        ],
+        "bgAlpha": 0.6299999952316284
+      },
+      "overrides": {},
+      "f32_sha256": "dc332bda86b5c5f451ce3844867e9f62a2af15ab683b6e5da859165bab81b572",
+      "rgba8_sha256": "12ef692d6c495ab4b84876af5c2ce27c1b5380afac731adb8c81dad74bcabf72",
+      "probes": {
+        "0": [
+          "3cf5c28f",
+          "3f11eb85",
+          "3f68f5c3",
+          "3f2147ae"
+        ],
+        "17": [
+          "3cf5c28f",
+          "3f11eb85",
+          "3f68f5c3",
+          "3f2147ae"
+        ],
+        "34": [
+          "3cf5c28f",
+          "3f11eb85",
+          "3f68f5c3",
+          "3f2147ae"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "transparent",
+      "coverage": "text.a false unpremultiply branch",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": 100,
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "255aa0eeba6b02ace941c1378f9260e4fca0327d50fc2fd68e66be10b8a262cf",
+      "rgba8_sha256": "2d266b9690f8fca32871c0b04cf1df5d37c9216129b144c051ab11dee4a57bb5",
+      "probes": {
+        "0": [
+          "3f53d3d4",
+          "3e149495",
+          "3f0f8f90",
+          "00000000"
+        ],
+        "17": [
+          "3f53d3d4",
+          "3e149495",
+          "3f0f8f90",
+          "00000000"
+        ],
+        "34": [
+          "3f53d3d4",
+          "3e149495",
+          "3f0f8f90",
+          "00000000"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_transparent_constant_17x13"
+      }
+    },
+    {
+      "key": "synth/media:mediaInput",
+      "variant": "scaleZeroGuard",
+      "coverage": "scaleAmt=+Infinity causes scale=0 then guard sets scale=1",
+      "bindings": {
+        "imageSize": [
+          17,
+          13
+        ],
+        "position": 4,
+        "rotation": 0,
+        "scaleAmt": "f32(+Infinity)",
+        "offsetX": 0,
+        "offsetY": 0,
+        "tiling": 0,
+        "flip": 0,
+        "bgColor": [
+          0.11999999731779099,
+          0.3400000035762787,
+          0.5600000023841858
+        ],
+        "bgAlpha": 0.7099999785423279
+      },
+      "overrides": {},
+      "f32_sha256": "d265ac74abeb0174b8089a161abbb64310197a86b934cd4dbd36abaa57c2fd37",
+      "rgba8_sha256": "d12699ea4e6b0fd408cffa9df747a63672f28379b54c6ec006571f10bbd55fd7",
+      "probes": {
+        "0": [
+          "3f0eb044",
+          "3fc53ef4",
+          "400a7de7",
+          "3e74f4f5"
+        ],
+        "17": [
+          "3fb45d17",
+          "3f000000",
+          "3f1745d1",
+          "3e848485"
+        ],
+        "34": [
+          "4009039b",
+          "404d8568",
+          "403615a2",
+          "3e8e8e8f"
+        ]
+      },
+      "texture_fixture_ids": {
+        "imageTex": "media_rgba_tag59_17x13"
+      }
+    },
+    {
+      "key": "filter/corrupt:corrupt",
+      "variant": "mixedLowBits",
+      "coverage": "mixed corrupt/non-corrupt rows at intensity=50; bits=20 gives quantization path while xor/shift bit arms remain false",
+      "bindings": {
+        "intensity": 50,
+        "sort": 0,
+        "shift": 0,
+        "bits": 20,
+        "channelShift": 0,
+        "speed": 3,
+        "melt": 0,
+        "scatter": 0,
+        "bandHeight": 3,
+        "renderScale": 1
+      },
+      "texture_fixture_ids": {
+        "inputTex": "rgba_tag1_5x3"
+      },
+      "overrides": {},
+      "f32_sha256": "4d167d6198b8566191bae0788be0c34b0fd4c891fee4a8b4b770d81a2bf8f372",
+      "rgba8_sha256": "1e13cb21ecc9f33657c512001a706582b326ff762ea82cb71f96c97a119b3e28",
+      "probes": {
+        "0": [
+          "3e75c0db",
+          "3eaef16c",
+          "3ebb7061",
+          "3f800000"
+        ],
+        "17": [
+          "3eb95b39",
+          "3ec3c505",
+          "3f205d4e",
+          "3f800000"
+        ],
+        "34": [
+          "3f0c8c8d",
+          "3f1c9c9d",
+          "3f76f6f7",
+          "3f800000"
+        ]
+      }
+    }
+  ],
+  "fixture_contract": {
+    "surface_api": "Surface.fromRgba8(width,height,bytes); bytes are top-down rows; canonical runtime samples nearest with bottom-left shader coordinates",
+    "byte_formula": "for every formula fixture and x in [0,width), y in [0,height): r=(31*x+17*y+13*tag)%256; g=(11*x+47*y+29*tag)%256; b=(67*x+19*y+7*tag)%256; a=(255-23*x-37*y-5*tag)&255",
+    "output": "new Surface(7,5); tileOffset=f32(3,2); fullResolution=f32(13,11); time=f32(.125); pass seed=f32(7); resolution is canonically overwritten to f32(7,5)",
+    "texture_fixtures": {
+      "rgba_tag1_5x3": {
+        "width": 5,
+        "height": 3,
+        "kind": "formula",
+        "tag": 1
+      },
+      "rgba_tag23_7x2": {
+        "width": 7,
+        "height": 2,
+        "kind": "formula",
+        "tag": 23
+      },
+      "rgba_tag37_4x6": {
+        "width": 4,
+        "height": 6,
+        "kind": "formula",
+        "tag": 37
+      },
+      "grayscale_4x6": {
+        "width": 4,
+        "height": 6,
+        "kind": "formula",
+        "per_pixel": "q=20+17*x+11*y; r=g=b=q; a=200-9*x-7*y"
+      },
+      "transparent_constant_5x3": {
+        "width": 5,
+        "height": 3,
+        "kind": "constant",
+        "rgba": [
+          211,
+          37,
+          143,
+          0
+        ]
+      },
+      "rgba_tag37_full_4x6": {
+        "width": 4,
+        "height": 6,
+        "kind": "formula-plus-override",
+        "tag": 37,
+        "override": "after formula, set red byte at top-down (x=3,y=5) to exactly 255"
+      },
+      "tint_hybrid_5x3": {
+        "width": 5,
+        "height": 3,
+        "kind": "literal-top-down-rgba8",
+        "bytes": [
+          0,
+          0,
+          0,
+          255,
+          64,
+          64,
+          64,
+          244,
+          230,
+          30,
+          80,
+          233,
+          30,
+          220,
+          80,
+          222,
+          40,
+          70,
+          230,
+          211,
+          96,
+          96,
+          96,
+          200,
+          240,
+          80,
+          20,
+          189,
+          20,
+          240,
+          100,
+          178,
+          60,
+          100,
+          240,
+          167,
+          200,
+          30,
+          160,
+          156,
+          17,
+          17,
+          17,
+          145,
+          180,
+          40,
+          90,
+          134,
+          50,
+          180,
+          210,
+          123,
+          210,
+          160,
+          30,
+          112,
+          90,
+          30,
+          180,
+          101
+        ],
+        "coverage": "contains gray zero/saturation, gray nonzero, and R/G/B-dominant chromatic pixels"
+      },
+      "media_rgba_tag59_17x13": {
+        "width": 17,
+        "height": 13,
+        "kind": "formula",
+        "tag": 59,
+        "coverage": "asymmetric image larger than output, used to make all placement, tiling, and flip branches observable"
+      },
+      "media_transparent_constant_17x13": {
+        "width": 17,
+        "height": 13,
+        "kind": "constant",
+        "rgba": [
+          211,
+          37,
+          143,
+          0
+        ],
+        "coverage": "transparent color/alpha branch with visible nonzero RGB"
+      }
+    },
+    "revision_note": "All cases were re-rendered twice byte-identically after fixture strengthening. Media uses a 17x13 asymmetric formula image so every position, tiling, and flip variant observes content; outOfBounds intentionally exercises the background-return path with a distinct background fixture."
+  },
+  "known_equivalences": {
+    "synth/media:mediaInput": {
+      "scaleZeroGuard": "f32(+Infinity) is normalized by the authored scale guard to the same effective centered sampling scale as position4 with scaleAmt=100; this is intentional guard-path equivalence. The remaining 25 media variants have 25 distinct F32 hashes."
+    }
+  },
+  "factory_hash_contract": "SHA-256 over the exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key]."
+}

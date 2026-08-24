@@ -1,0 +1,16 @@
+=== task24 loader ===
+len: 123
+gather index: 51
+manifest programs: 123
+keys sha: df7750a48a77733e50f0e20072e291c2404e761932f6df8ddbcf8793d58fb6ac
+=== task24 generation ===
+prior src/typed_generated/typed_slice.cpp 5521c979239df6c7cc6347530e22a5a7758292298311f38a9f5093c2de68b132
+prior src/typed_generated/typed_manifest.json 2f7ed675a9f77f1679c8502a1decb4acb6002f3508ef1d76772b94a33ab93e78
+prior include/noisemaker/generated/catalog.hpp c7121f7cd2c0cdd5168b8832354435c9cf0b618392cdf64b7ba33fe6cabeb1dd
+prior/current key counts: 137 138
+gather index in current: 58
+window: ['filter/pixelSort:findBrightest', 'filter/pixelSort:gatherSorted', 'filter/pixelSort:luminance']
+prior[:idx] == current[:idx]: True
+diff == {GATHER}: True
+mismatches: []
+DONE2430

@@ -1,0 +1,311 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.gate-chain.v2",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "unported_count": 81,
+  "keys_probed": 4,
+  "max_depth": 8,
+  "rows": [
+    {
+      "key": "filter/fxaa:fxaa",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+            "emitter": "filter/fxaa:fxaa:9:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+            "emitter": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+          "classified_gate": "builtin:round"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "builtin:round"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "cad7afc74c970afacf072f4f9650c0c904035607be3b88004f70157748465a02",
+            "cpp_bytes": 11756
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "builtin:round"
+      ]
+    },
+    {
+      "key": "filter/grain:grain",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/grain:grain:12:1: unsupported global declaration",
+            "emitter": "filter/grain:grain:12:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/grain:grain:12:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/grain:grain:31:21: unsupported builtin round",
+            "emitter": "filter/grain:grain:31:21: unsupported builtin round",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/grain:grain:31:21: unsupported builtin round",
+          "classified_gate": "builtin:round"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "builtin:round"
+          ],
+          "result": {
+            "validator": "filter/grain:grain:43:14: unsupported binary operator >>",
+            "emitter": "filter/grain:grain:43:14: unsupported binary operator >>",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/grain:grain:43:14: unsupported binary operator >>",
+          "classified_gate": "uvec_shift_by_vector"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "builtin:round",
+            "uvec_shift_by_vector"
+          ],
+          "result": {
+            "validator": "filter/grain:grain:52:9: unsupported binary operator ^",
+            "emitter": "filter/grain:grain:52:9: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/grain:grain:52:9: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "builtin:round",
+            "uvec_shift_by_vector",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "e7ae141f38320add96c694744f5f38226ba67fc83f612712db6699ede9d82f16",
+            "cpp_bytes": 22443
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "builtin:round",
+        "uvec_shift_by_vector",
+        "scalar_uint_xor_admission"
+      ]
+    },
+    {
+      "key": "filter/normalMap:normalMap",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+            "emitter": "filter/normalMap:normalMap:4:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+            "emitter": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+            "emitter": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/normalMap:normalMap:34:21: unsupported builtin round",
+          "classified_gate": "builtin:round"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "builtin:round"
+          ],
+          "result": {
+            "validator": "filter/normalMap:normalMap:138:24: unsupported typed expression index",
+            "emitter": "filter/normalMap:normalMap:138:24: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/normalMap:normalMap:138:24: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "builtin:round",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "9afeba1209716b0ba8c9aeb68d2d3ba46a56ca100ca54c0015ace89c7b31392a",
+            "cpp_bytes": 13440
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "array_global_admission",
+        "builtin:round",
+        "index_expression_admission"
+      ]
+    },
+    {
+      "key": "filter/snow:snow",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/snow:snow:7:1: unsupported global declaration",
+            "emitter": "filter/snow:snow:7:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/snow:snow:7:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/snow:snow:26:21: unsupported builtin round",
+            "emitter": "filter/snow:snow:26:21: unsupported builtin round",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/snow:snow:26:21: unsupported builtin round",
+          "classified_gate": "builtin:round"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "builtin:round"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "15d6d14bf896942cb620cbec1934c7ce1940220d3c8997c98b45e8dc6b1d16a4",
+            "cpp_bytes": 10184
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "builtin:round"
+      ]
+    }
+  ]
+}

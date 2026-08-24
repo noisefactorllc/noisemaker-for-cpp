@@ -1,0 +1,3992 @@
+{
+  "filter/grade:primary": {
+    "raw_bytes": 5839,
+    "raw_sha256": "008521bf82834ef55383a492adacb259964170831c92d6c9ddc6368acc850cc2",
+    "normalized_bytes": 4149,
+    "normalized_sha256": "6ce48b1dfd729e61d6f36a929a361b2597cd2989fde7bce75e488d18332af4f1",
+    "whole_sha256": "8c86ac4c453be44b558d423b93b172d1f1c0b8310c1574a8c9d79ef17a67dcbc",
+    "interface_sha256": "6716f9f839199c7ccaccdf6c0d94f617bf3167014a44b6400b52b6e0f2f963ed",
+    "functions_sha256": "91aba72dac52ee0ba63b532e28f67c3194f483704446508d5c39d74092bc0163",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 2,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 6,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 17,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "4:1-4:25",
+        "sha256": "f4626bfd6165932fa7673a1ee3ce6e30b43f2033e47baf8b284528aaec4b334e",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:29",
+        "sha256": "31f59ca82ced69056e4c267ff8424cf5ac4bdd63d56634f05dfd9e0a32d8b8ec",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "6:1-6:28",
+        "sha256": "8b2e980727a8d3e623549caae8591eeaa6d4b887f336ca26fb77e95c38cc3187",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "temperature",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "7:1-7:27",
+        "sha256": "06f711ec3df64cb9540f7563a82ee2a8026e377ff02f84cd10cbe7f1d8b51e5f",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "tint",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "8:1-8:20",
+        "sha256": "14dd81ec8fca78202ca60542924dee131c46025f73fd1af66297958128e9a42e",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "exposure",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "9:1-9:24",
+        "sha256": "3f2fd3706e8e2c3f1f06c3a0d2e245dfa21ded49f9d32e62ebf8ab9250799603",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 6,
+        "symbol_id": 7,
+        "name": "contrast",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "10:1-10:24",
+        "sha256": "49060601a056ed5ed34de89e5e3324ff7136ae41bc010c4c86c839affc316e2a",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 7,
+        "symbol_id": 8,
+        "name": "highlights",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "11:1-11:26",
+        "sha256": "168f169cff998ec665707cf0491c5a02a5532df9b0a027e9f711b63138a2b811",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 8,
+        "symbol_id": 9,
+        "name": "shadows",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "12:1-12:23",
+        "sha256": "6ee1da9cba45b25d70f270df188fed1bd9dd4b47590c68790844223f8622e437",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 9,
+        "symbol_id": 10,
+        "name": "whites",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "13:1-13:22",
+        "sha256": "1fdcd66b9c6afbf9a7eedbcef7b19ce5650c39e8a47e0f81c0137b0d0a8c1e3f",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 10,
+        "symbol_id": 11,
+        "name": "blacks",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "14:1-14:22",
+        "sha256": "0ec7a6e53da5797311819a3a77342c97648c280e55eba99200ee530c84efd7f8",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 11,
+        "symbol_id": 12,
+        "name": "saturation",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "15:1-15:26",
+        "sha256": "978ac6d188491bcd1ccdc8feaf1ea3a05deb7ea06c64e17808b5238df683a24b",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 12,
+        "symbol_id": 13,
+        "name": "curveShadows",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "16:1-16:28",
+        "sha256": "b0c1f3416d3f3a5034ca09cb49fb0570d2aa911e680dfa259fc1ec075d2a0cd4",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 13,
+        "symbol_id": 14,
+        "name": "curveMidtones",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "17:1-17:29",
+        "sha256": "7a78ab33f68022c8c22f99036ba4bba693b1319883e866240bf42933c318c515",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 14,
+        "symbol_id": 15,
+        "name": "curveHighlights",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "18:1-18:31",
+        "sha256": "6e204b2f14be9a016b708d42cfc1cf1ffa9a3236ab0928f706e2e0b3da1f2db8",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 15,
+        "symbol_id": 16,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "20:1-20:16",
+        "sha256": "9f75ee02b4b3f962650f5f84e9756094d2d86636e168fe643246662af74dc3fd",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 16,
+        "symbol_id": 17,
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "22:1-22:56",
+        "sha256": "105d7ec786df6db38cf0ad98d31250d818361d33a169cb059966af66bb13a8ac",
+        "initializer_kind": "construct",
+        "initializer_sha256": "4461b1da004c8387277bac6daa4ddc978cd6a2099d504876cd172cfae9671e18",
+        "initializer_span": "22:27-22:55",
+        "lanes": [
+          {
+            "literal": "0.2126",
+            "value": 0.2126,
+            "span": "22:32-22:38",
+            "sha256": "227160d62ebf98ce2744f27964ba3b76ed122a4ac3ba30aa0e6f1a49b64b25dd"
+          },
+          {
+            "literal": "0.7152",
+            "value": 0.7152,
+            "span": "22:40-22:46",
+            "sha256": "78604562f2701a4df8b69571eda6968f4045d5f5c0b2b490fd300bfa7e2e4f9c"
+          },
+          {
+            "literal": "0.0722",
+            "value": 0.0722,
+            "span": "22:48-22:54",
+            "sha256": "bbdea57479e3b43fbeff8f4fb9dff9e62edf50b5fda987ba96161af988260e74"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "id": 41,
+        "name": "applyContrast",
+        "num_params": 2,
+        "body_len": 8,
+        "sha256": "0ea55c40e6944d93ba2e0ec47e66ce4bf55919e82ce7532a24a7040f4622e4f4",
+        "params": [
+          [
+            33,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            34,
+            "contrast",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 42,
+        "name": "applyCurve",
+        "num_params": 4,
+        "body_len": 12,
+        "sha256": "1253de3b5e9e6c9d18ed20484ee27351a8136bc4a3417a0a8dda0e93b492729a",
+        "params": [
+          [
+            35,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            36,
+            "shadowLift",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            37,
+            "midGamma",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            38,
+            "highGain",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 43,
+        "name": "applySaturation",
+        "num_params": 2,
+        "body_len": 3,
+        "sha256": "5d8051373073eaa32557fbeae4b7c2fc224e38d676c59d753a826152abdfceae",
+        "params": [
+          [
+            39,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            40,
+            "satAmount",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 44,
+        "name": "applyTonalRanges",
+        "num_params": 5,
+        "body_len": 14,
+        "sha256": "23c94c2ef04a18a16ac5e1790d7f97ac272063455d81c73129843d722fd2b29e",
+        "params": [
+          [
+            28,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            29,
+            "highlights",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            30,
+            "shadows",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            31,
+            "whites",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            32,
+            "blacks",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 45,
+        "name": "applyWhiteBalance",
+        "num_params": 3,
+        "body_len": 2,
+        "sha256": "01af5d9475c4d2292f90d5c88e495cda3f9a11f233305dc3b612d1578e6cdaf8",
+        "params": [
+          [
+            20,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            21,
+            "temp",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            22,
+            "tint",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 46,
+        "name": "blacksWeight",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "08009f6943e27d1538eaa551ab43d88312e19d58c26200bd9aadd5696d1e1e55",
+        "params": [
+          [
+            27,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 47,
+        "name": "highlightWeight",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "bebc927aa7b5858b47dbb26e2e62ad52847dd49824be0255dac5b26cb303835e",
+        "params": [
+          [
+            24,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 48,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "600e909d790d7dd8048393693b897e3f6a4ec820e1ca154a9ad4f31f87128f5c",
+        "params": [
+          [
+            19,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 49,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 12,
+        "sha256": "6e4a7b7fb4926235cefed830040ac7fe433720b9b73b70a7ec4fa8a1a6624cbd",
+        "params": []
+      },
+      {
+        "id": 50,
+        "name": "midtoneWeight",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "e5ddeccb07c45fe3cfa86b971a4e31c2bf1c39b628adb97a5d716062edc3d9ab",
+        "params": [
+          [
+            25,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 51,
+        "name": "shadowWeight",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "e070aa67305c87b58515cd59c04bc74889960b9d880cf95c8e54776677b4f479",
+        "params": [
+          [
+            23,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 52,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "3f2d253d38ab127e1c9d3c825a5b21cc0bc09fccc44228407f2e43a6eeba9971",
+        "params": [
+          [
+            18,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 53,
+        "name": "whitesWeight",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "41d61fcaebd6856ecbe154cabe7651a73710143340bab581d1496823d005209a",
+        "params": [
+          [
+            26,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 48,
+        "function_name": "linearToSrgb",
+        "span": "41:13-41:22",
+        "sha256": "2613d8077777ee0a5dba5e750f2d6cedb5f02599f3db4900d870e2e5a6f5bb17",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 81,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 48,
+        "function_name": "linearToSrgb",
+        "span": "42:13-42:20",
+        "sha256": "375abb89e1c7f8c130879c6d8845188bf99817d4f97d55dce086a7122ae4ee42",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 80,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 81,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 48,
+        "function_name": "linearToSrgb",
+        "span": "42:23-42:32",
+        "sha256": "c46ac1519d9567fc0c0a4625b44178501eff14f7e04821a4f1d9ea9edaccca22",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 81,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 48,
+        "function_name": "linearToSrgb",
+        "span": "44:13-44:20",
+        "sha256": "a84fa2d243936e2ca8c8dedfdce5bde0fb2226523b8da2a15291712104d96b1a",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 80,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 81,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 48,
+        "function_name": "linearToSrgb",
+        "span": "44:35-44:44",
+        "sha256": "50f7440b3ccf3bd4594cc99edb0a64d9d745507af367eb0b5aed58a6ebc04278",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 81,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 52,
+        "function_name": "srgbToLinear",
+        "span": "28:13-28:20",
+        "sha256": "a4e50cbd301e83037492d2cfb515616d57a32a6f5ad8731301a6a5b660017dfb",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 87,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 52,
+        "function_name": "srgbToLinear",
+        "span": "29:13-29:22",
+        "sha256": "174c9ea3c148376a8c5a47d8751e834a6e6304fb462249b507fa42a205ffdeaa",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 86,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 87,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 52,
+        "function_name": "srgbToLinear",
+        "span": "29:25-29:32",
+        "sha256": "6d10567e16ae294d2558cd19c72ced3f780652050096ece6d5927c1b67b7c69e",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 87,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 52,
+        "function_name": "srgbToLinear",
+        "span": "31:13-31:22",
+        "sha256": "138bfedfef4bd444de1abde5a27adebd27090c017ff5695ce4972915a46b895e",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 86,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 87,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 52,
+        "function_name": "srgbToLinear",
+        "span": "31:30-31:37",
+        "sha256": "3abe01841a9c4c3241a935c05bbcbab44036ab527134caa584af46ab93a42754",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 87,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": [
+      {
+        "function_id": 41,
+        "function_name": "applyContrast",
+        "span": "119:27-119:39",
+        "sha256": "4006547d150c39b4bacb66247ef96b84965fa7b1b2d2b7d0df4a880f2d593712"
+      },
+      {
+        "function_id": 42,
+        "function_name": "applyCurve",
+        "span": "136:27-136:39",
+        "sha256": "75fc8b53ab8847661853daf4fa3db75e94a7352ab052dbef760576f093bf8485"
+      },
+      {
+        "function_id": 43,
+        "function_name": "applySaturation",
+        "span": "158:27-158:39",
+        "sha256": "546e71c54667eaa3d76e97245336946a27273b8176f5bdeb8b7d5d40adc06a5c"
+      },
+      {
+        "function_id": 44,
+        "function_name": "applyTonalRanges",
+        "span": "92:27-92:39",
+        "sha256": "0c6a2b04eb6d18504aa9e12bc09ab4e25d80c9705ec82c80f296ffd04c5c9739"
+      }
+    ]
+  },
+  "filter/grade:hslSecondary": {
+    "raw_bytes": 4975,
+    "raw_sha256": "2f2c54a6d977ccc0ba8657c02f1fc2fecfb576ad85f6d03ea16468fc9cbd095a",
+    "normalized_bytes": 4260,
+    "normalized_sha256": "e2e2faa0484d7d8bce8d786bee19ef30ae258d9910f3691efd31d7c4f00469d5",
+    "whole_sha256": "fab6e7a4d97ceeb8dae400465b2efc034521c58fd04d1ab229606fe90c908874",
+    "interface_sha256": "ad58e18b0a04a1069ad381d78e534541a80ec5c6c70bf97b0ed00818a90a6f08",
+    "functions_sha256": "5e36bba6ffb8fecee6c1f293c282f52de8a583045e4e6e469d7422be5ca77910",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 3,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 9,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 17,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "4:1-4:25",
+        "sha256": "38f2709f4a27b71a056ab5d1c2839d3f1a794cc44cc13230b3fa4fcf7c639153",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:29",
+        "sha256": "63c49ebc092eba84e27a97bfc9f04c258f3a65c7ff5c75f7022a0fa9eaafd7ab",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "6:1-6:28",
+        "sha256": "1f8cd09bd239542aece1b0d873907e05ae79f6a1e8806538e28b3b39b01dfa50",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "hslEnable",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "int",
+        "span": "7:1-7:23",
+        "sha256": "5a97bb9310ff0d8c6a230b8fdc8a2465ae4720d17b76d0199091e897493a27be",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "hslHueCenter",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "8:1-8:28",
+        "sha256": "dff1ea25ec6e11b08175005615bfd5c0799ee888dc056881d1c38bd77ff02477",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "hslHueRange",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "9:1-9:27",
+        "sha256": "02050954877f0ee6a9a922fc0a918b8285c9a79afecf3a65a178b2d378a32672",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 6,
+        "symbol_id": 7,
+        "name": "hslSatMin",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "10:1-10:25",
+        "sha256": "d25bc86f7fdfe5fd2b1d73710d064da98677f3d33cd6926c8fcef16d401eb0da",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 7,
+        "symbol_id": 8,
+        "name": "hslSatMax",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "11:1-11:25",
+        "sha256": "de6a876fca16ba698ceed6e79e7ad1feccf7ee2c84000f43149aaf51b25b6bc6",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 8,
+        "symbol_id": 9,
+        "name": "hslLumMin",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "12:1-12:25",
+        "sha256": "c216113e0842a7e5e29d1ffcc3949e70bd56b0217a39a921c0978e0cf9d04db5",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 9,
+        "symbol_id": 10,
+        "name": "hslLumMax",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "13:1-13:25",
+        "sha256": "b63d715a7cf79d3c6aaf50b4d48fb9e5b508015c87cb5637a246f5efdc25d633",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 10,
+        "symbol_id": 11,
+        "name": "hslFeather",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "14:1-14:26",
+        "sha256": "c09444d4249d475a0e4407946b320f1953a9ee95ccfde4086110f5be8ac04250",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 11,
+        "symbol_id": 12,
+        "name": "hslHueShift",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "15:1-15:27",
+        "sha256": "f5067f73449dcddcbeccc31d75983e0d3c45d434037f628631c07e63a137a5e7",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 12,
+        "symbol_id": 13,
+        "name": "hslSatAdjust",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "16:1-16:28",
+        "sha256": "46a0b3f299673a42261c49e941a117069b00d33c7359c6650273972fcd5e1933",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 13,
+        "symbol_id": 14,
+        "name": "hslLumAdjust",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "17:1-17:28",
+        "sha256": "825cec00957cf8850e106d0d89ca90b84aa0a8d72f134171f3a3a7152987db78",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 14,
+        "symbol_id": 15,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "19:1-19:16",
+        "sha256": "9042709dff6646e9c7a9e284729ebf91be92b6dc4634ca68c515327f982e6062",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 15,
+        "symbol_id": 16,
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "21:1-21:56",
+        "sha256": "c854652ded68a20becb5e62d6192bd8e3653681b57e2410de8caff6e5ee3ab23",
+        "initializer_kind": "construct",
+        "initializer_sha256": "a21804beed7e2680203cdafddefe7ed9bfb5f40b039e3a171c1fe2e48d8e7215",
+        "initializer_span": "21:27-21:55",
+        "lanes": [
+          {
+            "literal": "0.2126",
+            "value": 0.2126,
+            "span": "21:32-21:38",
+            "sha256": "c42b84dc28deafcb658d6a36e94534927704044b8ef182ce93b2820bc028d0eb"
+          },
+          {
+            "literal": "0.7152",
+            "value": 0.7152,
+            "span": "21:40-21:46",
+            "sha256": "a475ba62d53aabbaaf430155eee49257853e839e0e12990c13c25cbd776b32f2"
+          },
+          {
+            "literal": "0.0722",
+            "value": 0.0722,
+            "span": "21:48-21:54",
+            "sha256": "984f6f1a6604abdbc839f159e43dbe96cb3906b44f863d6f1120579f06700dc6"
+          }
+        ]
+      },
+      {
+        "index": 16,
+        "symbol_id": 17,
+        "name": "PI",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "22:1-22:32",
+        "sha256": "cc12cf0d3d1c896d2f9de0411d0a765c3b1368365af5a915e727dd7ee928003c",
+        "initializer_kind": "literal",
+        "initializer_sha256": "165cdac9bc9816a2067a12d94d529b2992bb6af95a239a106bf062ca76e669ea",
+        "initializer_span": "22:18-22:31",
+        "lanes": []
+      }
+    ],
+    "functions": [
+      {
+        "id": 34,
+        "name": "applyHslCorrection",
+        "num_params": 4,
+        "body_len": 5,
+        "sha256": "d7395b70a5820525d756a96b6187c4d2845d1a324c43acd7e89cb1b17f52aa8f",
+        "params": [
+          [
+            30,
+            "hsl",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            31,
+            "hueShift",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            32,
+            "satAdjust",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            33,
+            "lumAdjust",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 35,
+        "name": "computeHslKey",
+        "num_params": 8,
+        "body_len": 6,
+        "sha256": "7fa4d6fbec90373f82d600f1c5fe606cbdd6b46664d8e66f10822ed37ee412fc",
+        "params": [
+          [
+            22,
+            "hsl",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            23,
+            "hueCenter",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            24,
+            "hueRange",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            25,
+            "satMin",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            26,
+            "satMax",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            27,
+            "lumMin",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            28,
+            "lumMax",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            29,
+            "feather",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 36,
+        "name": "hslToRgb",
+        "num_params": 1,
+        "body_len": 9,
+        "sha256": "bf27608fcc9c2d92e6f6e7f1c0aa667ead6ae48af7216892ee8a5ac236a06737",
+        "params": [
+          [
+            21,
+            "hsl",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 37,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "debe6cb0ec03cd7541b6028f3a3bbb23f381ed6c2755cb9f72a2753192d91454",
+        "params": [
+          [
+            19,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 38,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 12,
+        "sha256": "e35ebe6732fcfef831f24687e965305b3f40b947321a58018d905278276839e9",
+        "params": []
+      },
+      {
+        "id": 39,
+        "name": "rgbToHsl",
+        "num_params": 1,
+        "body_len": 8,
+        "sha256": "d858103ec7c3a06fd6a9930baf5849f2a35ddda4697e2534e615fd3314f5e9e5",
+        "params": [
+          [
+            20,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 40,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "67928044853fe35577d90f4c6ea628cd4a47a812bd6efcafaf9815b90013acee",
+        "params": [
+          [
+            18,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 36,
+        "function_name": "hslToRgb",
+        "span": "96:13-96:19",
+        "sha256": "3d062c91ea636f82f84c6a385596b21adbe3a089059e148e127df22df456f85f",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 52,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 53,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 36,
+        "function_name": "hslToRgb",
+        "span": "98:13-98:19",
+        "sha256": "112929cc70c09231139c9f1679350c12a581c5392b7e74e9d199e0a07e781965",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 52,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 53,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 36,
+        "function_name": "hslToRgb",
+        "span": "100:13-100:19",
+        "sha256": "3c475ede0dd8545da27aa8a60359e33c9cffdae2f38b6e1cb50b911a9c36dc5d",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 52,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 53,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 36,
+        "function_name": "hslToRgb",
+        "span": "102:13-102:19",
+        "sha256": "2aee1523e8ca6b404dfb4b8eaa6a5a7d80257ef9b2c03fe297f000e96aa4a6c9",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 52,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 53,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 37,
+        "function_name": "linearToSrgb",
+        "span": "41:13-41:22",
+        "sha256": "6445c0a729cc78ccdb6385385f0666ad5b5607e5b743092a8fc2a1b74c7d7a80",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 56,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 37,
+        "function_name": "linearToSrgb",
+        "span": "42:13-42:20",
+        "sha256": "26eca14dce4d68ce90863c59b2675f327dbeb9ab154825d65ca6db45386f01ce",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 55,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 56,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 37,
+        "function_name": "linearToSrgb",
+        "span": "42:23-42:32",
+        "sha256": "4b656cff779e5f986abd4f8e15bf968b5e6d1facdfe4e021a814a07bc446982b",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 56,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 37,
+        "function_name": "linearToSrgb",
+        "span": "44:13-44:20",
+        "sha256": "890242a06dbc8cf34364c613cd5f0c4b6452f099952de0b8ee0ca3c25c69d5f2",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 55,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 56,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 37,
+        "function_name": "linearToSrgb",
+        "span": "44:35-44:44",
+        "sha256": "f8682fa317e82b84e0db7c7e1f6fd1b03f9cbb8d7253398a3e9cd4d7c3e2cf44",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 19,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 56,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 40,
+        "function_name": "srgbToLinear",
+        "span": "28:13-28:20",
+        "sha256": "2475038fd0df20649b4de127140a48956452aa70df8dc6fb8f74734f012feb16",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 72,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 40,
+        "function_name": "srgbToLinear",
+        "span": "29:13-29:22",
+        "sha256": "81a3e4e0e848ad174957e3314603f3d67533e23b75c070a99c339f4474e9091f",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 71,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 72,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 40,
+        "function_name": "srgbToLinear",
+        "span": "29:25-29:32",
+        "sha256": "041181c63f834d620c2cf49d65942b3901642df7852c8357c66852f7457e0fee",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 72,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 40,
+        "function_name": "srgbToLinear",
+        "span": "31:13-31:22",
+        "sha256": "53bfe161a725565d4d2ca912718a85bb8326ae0c6599efebde0d9682d652797f",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 71,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 72,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 40,
+        "function_name": "srgbToLinear",
+        "span": "31:30-31:37",
+        "sha256": "e1e1db3f37c00f93bbc85535b05b52ba865353984ebf6685c8b6c17665129ee2",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 18,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 72,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": []
+  },
+  "filter/grade:wheels": {
+    "raw_bytes": 3529,
+    "raw_sha256": "fa9c411096816263985e8d5ef82ade976667a6cadecf8929ecd185edbc71f479",
+    "normalized_bytes": 2789,
+    "normalized_sha256": "cc34a0287290b7084fdb8d5611b7aacb6bdcfec5a229770823b5e2891cb27efc",
+    "whole_sha256": "3bdd83a3c201f78d00b04bc8360bd1ea670f046f81fcadde8aa6989f0d3ed7e6",
+    "interface_sha256": "52983f7002275735864a8837e14cd67c6ac2621efe2fff644643c0e34845bed9",
+    "functions_sha256": "65b54adce4a12f67aa82dac71df1a2889ce23b83b4919ec0c1f3f4b1b7c8948b",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 2,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 6,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 9,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "4:1-4:25",
+        "sha256": "acad8c062ca7e27964186ea99a82297ca52743769408334e273ce1be9588106d",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:29",
+        "sha256": "fe0c34d73f6e7af8f35ce8fe68ecf3279eb58e91f8620f0a44e2aa23dfada8b8",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "6:1-6:28",
+        "sha256": "4861512abb0b40e18b4f658d68a895af43a64c2290481b3bc732a889a8591975",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "wheelShadows",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "7:1-7:27",
+        "sha256": "0036925c3d0e0e945ca89acf2b65f1cf04b0487c34bd825a0e083ed6e8084fb9",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "wheelMidtones",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "8:1-8:28",
+        "sha256": "2a950253929c70c5631e0f61af74aec054ab35986e2ab49eb7279f8ccb15073d",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "wheelHighlights",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "9:1-9:30",
+        "sha256": "b5d03d69f7cd4340ca3ad578f07cc0169bc25b44f0122a2276f0a7db7f8cbe8a",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 6,
+        "symbol_id": 7,
+        "name": "wheelBalance",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "10:1-10:28",
+        "sha256": "e4142124eff6eb8a565f57e58442711b7c48cea9b6472db45cdc3fd2b29ea7e4",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 7,
+        "symbol_id": 8,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "12:1-12:16",
+        "sha256": "a5a252032fdf747bcd64477a6ff38cfb367ce325cd97d49e1abf188618ac3757",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 8,
+        "symbol_id": 9,
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "14:1-14:56",
+        "sha256": "04adf0103445aa05df16e6855f6e425da475be6ba9f7c0c1cdf8207bf5883ddd",
+        "initializer_kind": "construct",
+        "initializer_sha256": "f69bedc6100c29cfe8a607427b43217bcdac3fbb1517ffb1cdb5f4b387e41f8e",
+        "initializer_span": "14:27-14:55",
+        "lanes": [
+          {
+            "literal": "0.2126",
+            "value": 0.2126,
+            "span": "14:32-14:38",
+            "sha256": "0c88beb5f4f2792f7bc1b53db0002d796bc4d72c421c67929ae2813a542da52e"
+          },
+          {
+            "literal": "0.7152",
+            "value": 0.7152,
+            "span": "14:40-14:46",
+            "sha256": "4ad394877086a9e7fecd08dece5aafb731e2a34ae643d97ea9f343ce0b0293e0"
+          },
+          {
+            "literal": "0.0722",
+            "value": 0.0722,
+            "span": "14:48-14:54",
+            "sha256": "8c32d054335dfddacb64fb286d600fa4f44b16f3659be077cff3ee61c6dbc129"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "id": 23,
+        "name": "applyWheels",
+        "num_params": 5,
+        "body_len": 21,
+        "sha256": "264fa978e582a341266926aa7e716ca1c1702b5e8db958c2361c95a59e623b16",
+        "params": [
+          [
+            18,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            19,
+            "shadowWheel",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            20,
+            "midWheel",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            21,
+            "highWheel",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            22,
+            "balance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 24,
+        "name": "highlightWeight",
+        "num_params": 2,
+        "body_len": 2,
+        "sha256": "72618221cd1c323e7661d5125c83c275fd3f1803498a87085f48d39f482b20e5",
+        "params": [
+          [
+            16,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            17,
+            "balance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 25,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "0b6dbb4fe8f0aca386dc52ba5e162bd095f340b1e10fb40a34bc0b076bf3f13e",
+        "params": [
+          [
+            11,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 26,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 7,
+        "sha256": "43db0aead8a2b4a69b76bbfb955797c6be7866ed1fb42ad79f748618e0d81191",
+        "params": []
+      },
+      {
+        "id": 27,
+        "name": "midtoneWeight",
+        "num_params": 2,
+        "body_len": 4,
+        "sha256": "1cd5ab402e0b82d9035e4a03d9bbe7e5426a603b43f9512784282833c71051b3",
+        "params": [
+          [
+            14,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            15,
+            "balance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 28,
+        "name": "shadowWeight",
+        "num_params": 2,
+        "body_len": 2,
+        "sha256": "6262f33cf9799876a12ffcf010697d902df83d2347659b42d29923bd51f188df",
+        "params": [
+          [
+            12,
+            "luma",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            13,
+            "balance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 29,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "8eda65c94654c8586afeba0c892d7ac30d1d88a7e7ecc76b1a390ebb971fc4b5",
+        "params": [
+          [
+            10,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 25,
+        "function_name": "linearToSrgb",
+        "span": "33:13-33:22",
+        "sha256": "75d5b9502043b1214a84f1eb93373c5ce2cc3cc2c66d9ceaefc874e621a3de0b",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 45,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 25,
+        "function_name": "linearToSrgb",
+        "span": "34:13-34:20",
+        "sha256": "981f9dd559e29fbf0c655dc207bbc3ab8fc4146149109c3edc89c350f067d351",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 44,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 45,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 25,
+        "function_name": "linearToSrgb",
+        "span": "34:23-34:32",
+        "sha256": "751be25cea912a5c96441d535f81846baf81813cf782898f5bb7ae6a43e6f459",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 45,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 25,
+        "function_name": "linearToSrgb",
+        "span": "36:13-36:20",
+        "sha256": "46e7b3e749e22056e71a85fc2abf23bb7a64ea8acbb68d586269fcc2edb284b6",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 44,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 45,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 25,
+        "function_name": "linearToSrgb",
+        "span": "36:35-36:44",
+        "sha256": "365b5584a18115b15edb689648d28193319e9107b4c5c34999758a23dd7e5747",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 45,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 29,
+        "function_name": "srgbToLinear",
+        "span": "20:13-20:20",
+        "sha256": "e6191cc9185cc6a8bb6123266f72688941e6cf9f553c7761054cd0db2ce794fb",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 10,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 55,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 29,
+        "function_name": "srgbToLinear",
+        "span": "21:13-21:22",
+        "sha256": "8f39e8edd7e58c29a5cae396d6f7e562724ddf8949ba64c93e825b23614fcb75",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 54,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 55,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 29,
+        "function_name": "srgbToLinear",
+        "span": "21:25-21:32",
+        "sha256": "050c16188d6dab7cbf12eef218697e842cfceaadfbd386ab43718d3905c9b043",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 10,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 55,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 29,
+        "function_name": "srgbToLinear",
+        "span": "23:13-23:22",
+        "sha256": "a4ee2afeaa06ea9b3ae6475f03b6e96a2b238f5c6866b3ce48d4e13d6273edd3",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 54,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 55,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 29,
+        "function_name": "srgbToLinear",
+        "span": "23:30-23:37",
+        "sha256": "9908da897785232617fa6cb3155a56e710fc08bce8ac7ba35b2c3eb12a5a8973",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 10,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 55,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": [
+      {
+        "function_id": 23,
+        "function_name": "applyWheels",
+        "span": "73:27-73:39",
+        "sha256": "73957fc44adc029e4991bc02b500c8fe072e4bcae1f04002b4fc55ce54603547"
+      },
+      {
+        "function_id": 23,
+        "function_name": "applyWheels",
+        "span": "96:33-96:45",
+        "sha256": "9d8a7ed8dd94ad5a84953cc1ec1a759db6727790283b17ee429087cc9c3d808e"
+      }
+    ]
+  },
+  "filter/grade:vignette": {
+    "raw_bytes": 4133,
+    "raw_sha256": "740ad849a37c99d87962a376c2e618b24248dc4b2799066aaf6364861727c1fa",
+    "normalized_bytes": 3158,
+    "normalized_sha256": "da1e995c43c079d01112112d7fcc82db19e0720567637351bb1fa5f777caf82b",
+    "whole_sha256": "d8265fbf3722040699e064bfc24120d8f33dc42d8699e7055d91c4f3f0dc9a77",
+    "interface_sha256": "0439b9b58f6275497cc9967f8187a2c9d729d892fa660ce1d2faf170c94a4a32",
+    "functions_sha256": "cdc48970399ad47c9075348c1e103edda1caa3776b3b0afc7b0211188608dd53",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 2,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 6,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 10,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "4:1-4:28",
+        "sha256": "f7541051052302c12a6d524e03eda2234da77b124b3f8a7cfb4114d2f132b841",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:25",
+        "sha256": "413ba43617987a8b2e1c6830b1e226dbdba7235de501d07831e36d4764bbc4d0",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "6:1-6:29",
+        "sha256": "f9e85e3eecf1132d6e29fd89692fea8acebc83bbf5b766bc0d10a55d2559da20",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "vignetteAmount",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "7:1-7:30",
+        "sha256": "63864d11bd72a75f7e4fd497ced713687161a3462f4aa5ab284ce88839883eb4",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "vignetteMidpoint",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "8:1-8:32",
+        "sha256": "465fe0e63c50fdf56e4be103117192650af1a7668832c53cad5452b023c01a39",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "vignetteRoundness",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "9:1-9:33",
+        "sha256": "83eac7a76658233045461f1e42d87e337f51f4d333c46a6d93e54999416800db",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 6,
+        "symbol_id": 7,
+        "name": "vignetteFeather",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "10:1-10:31",
+        "sha256": "d99b7d37410567ca2381ea6ffd07265c29ea1064eddfd622e4ef111fba0764f1",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 7,
+        "symbol_id": 8,
+        "name": "vigHiProtect",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "11:1-11:28",
+        "sha256": "c3c24bfe4643f1fe5cbad4749faf0170bbec73cc61521e0f2ebf2d2b95b5e563",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 8,
+        "symbol_id": 9,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "13:1-13:16",
+        "sha256": "c4fe72835fb0fe103eb80b2fae265ffad79c6d12f02a3055ec01b8dfab2cecd2",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 9,
+        "symbol_id": 10,
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "15:1-15:56",
+        "sha256": "77a43c66e6bf41c5a8976abece1b50c5612191c0c89b5ac5d32fdef8c7514098",
+        "initializer_kind": "construct",
+        "initializer_sha256": "29dcba44cb4c504bd9b1088d6e90a756d8907576dd839a3a64c37524bccce385",
+        "initializer_span": "15:27-15:55",
+        "lanes": [
+          {
+            "literal": "0.2126",
+            "value": 0.2126,
+            "span": "15:32-15:38",
+            "sha256": "d57fd8743521bc743290b122971caf467a90c8d80ad6804213b866ab214cdcc8"
+          },
+          {
+            "literal": "0.7152",
+            "value": 0.7152,
+            "span": "15:40-15:46",
+            "sha256": "f408e468628fc0988a99b1817f4d604092d25a79fe0324ce9f398463dcb2a5ed"
+          },
+          {
+            "literal": "0.0722",
+            "value": 0.0722,
+            "span": "15:48-15:54",
+            "sha256": "3c6cf64646f83261b05f467a688a8cc2e3e56f88d21898493c47e6a0cf590775"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "id": 22,
+        "name": "applyVignette",
+        "num_params": 4,
+        "body_len": 4,
+        "sha256": "c3596397e637b3b2870c997687502b6d03fac9a83db51b866d601cb39c167fc2",
+        "params": [
+          [
+            18,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            19,
+            "vignetteMask",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            20,
+            "amount",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            21,
+            "highlightProtect",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 23,
+        "name": "computeVignette",
+        "num_params": 5,
+        "body_len": 8,
+        "sha256": "916158d3bb26b209deda61ec14b16e0db1b381d2ea7b8e05a8abc2f4ed5b14d2",
+        "params": [
+          [
+            13,
+            "uv",
+            "vec2",
+            "parameter",
+            "in"
+          ],
+          [
+            14,
+            "aspectRatio",
+            "vec2",
+            "parameter",
+            "in"
+          ],
+          [
+            15,
+            "midpoint",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            16,
+            "roundness",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            17,
+            "feather",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 24,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "4a67e80f2f445d90c267fec77939eb9368895ed8b65aa674f0c965b6e20d6055",
+        "params": [
+          [
+            12,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 25,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 15,
+        "sha256": "959b9a6ce17c293bbfbeb3cc2c7d14f649dc0a23363cab722bce6958de1e5081",
+        "params": []
+      },
+      {
+        "id": 26,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "9ef0bc374cb9fe9797a2a97273f8df72bd4a4e9d6ca78a0ef467507286ae9a8f",
+        "params": [
+          [
+            11,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "34:13-34:22",
+        "sha256": "d090fda6678f83e47bb21081349fc11db400d0a79b061a64e5080bff3dc2192f",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 37,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "35:13-35:20",
+        "sha256": "8390e03013779382d075b13565499301da682bd8ee3be9c721da8c782315793a",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 36,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 37,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "35:23-35:32",
+        "sha256": "a0fd97451bafa249bd4438a02adfe66f3c87078295b66a3d19b51b28f0d1b8ae",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 37,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "37:13-37:20",
+        "sha256": "056e7b29799ef15429a57ce31fb9d2341582a9ed8914073cd3807eaf6e24b661",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 36,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 37,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "37:35-37:44",
+        "sha256": "a69bbc97c42d2d4c5a35ccc961bdc8ce68d7d1f475233f085366277b5229cbf6",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 37,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "21:13-21:20",
+        "sha256": "55be133cbb2b6c92cf809e2199ceeb64611b6118a047e3fbfbc8fcd589ef90c7",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 49,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "22:13-22:22",
+        "sha256": "d74603f48294c778f400ad287e2f68e6d2caad9ef2c13ad966938ef6d151288c",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 48,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 49,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "22:25-22:32",
+        "sha256": "cbb5f1e07415d79026c07611021e8b263caa320af56bf1058dc8f9def24c1d2e",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 49,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "24:13-24:22",
+        "sha256": "79884f969663341ca3f5ca75c6c69c31a10e46588f3a41f8103da7892b613d73",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 48,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 49,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "24:30-24:37",
+        "sha256": "c6871c2779154adcca8fd574b7d7c635c12511e4e65e820413f25ef1f9f4bd10",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 49,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": [
+      {
+        "function_id": 22,
+        "function_name": "applyVignette",
+        "span": "81:31-81:43",
+        "sha256": "628fc3163edeeccf08c332c8d215d0d4e952ebe56796b17aae456553e2326ef2"
+      }
+    ]
+  },
+  "filter/grade:creative": {
+    "raw_bytes": 4230,
+    "raw_sha256": "b043aa43d17e098ffb736f16e6c81a5ca422ecdd6fc37fef03c39b01cc939bd3",
+    "normalized_bytes": 3231,
+    "normalized_sha256": "0a690075dd6e709f41978baecc5106689637648fe4fa7ccad203ccc890f5f48f",
+    "whole_sha256": "8a5fb6c925dae811442b04f549109f71155db4eb45ced227ac1f7f83bef0ea41",
+    "interface_sha256": "d484112887f0a77bedd887b8e7bc5a038497d196bcac8d7924b9937372b87366",
+    "functions_sha256": "383755f2cf32faa3b0e848bca74ebcdf48405911391862d4781489a35a9461ec",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 2,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 6,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 10,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "4:1-4:25",
+        "sha256": "da49c8bc7c304990377c38b53ee312855f74e093e9870564a5781cb99f502d5d",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:29",
+        "sha256": "56e4092c0593c5d5d37a9d99829f8a9fbe2f86f4e7dae31f21f49e7a07e3a7ee",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "6:1-6:28",
+        "sha256": "18affe0af748f33a7661ccbc9bda8af0ee9aa270eeaebc6eefe7c08f2f32646a",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "vibrance",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "7:1-7:24",
+        "sha256": "78c76006ffd2191f5b65496ef65c62403a335e16f89ef67eee2230448484d31a",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "fadedFilm",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "8:1-8:25",
+        "sha256": "bcb2262b5937efbc9533db62b52aa79178d362b4e608a8fd9676ec7592f14570",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "shadowTint",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "9:1-9:25",
+        "sha256": "462ef821ebacb16ef651becad90de763ea2198260a380d3d030d12b11792c296",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 6,
+        "symbol_id": 7,
+        "name": "highlightTint",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "10:1-10:28",
+        "sha256": "f42326fa304a718dd9e7e365d5ea589763c0b23d5eff5193ac50556082e7ca30",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 7,
+        "symbol_id": 8,
+        "name": "splitToneBalance",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "11:1-11:32",
+        "sha256": "42077b1ca9efe3b03e3e0c1c9b046170121735133f0ffa418ea0e0a3b5105327",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 8,
+        "symbol_id": 9,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "13:1-13:16",
+        "sha256": "f30f8b33d405a511fab12b76a40f5c5518ff7b938598df948151568303216b9f",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 9,
+        "symbol_id": 10,
+        "name": "LUMA_WEIGHTS",
+        "storage": "const",
+        "writable": false,
+        "direction": "in",
+        "type": "vec3",
+        "span": "15:1-15:56",
+        "sha256": "570658142d8113df455df8f84dd0c60d767e2564a0b1c78a605e5b9204dbbe14",
+        "initializer_kind": "construct",
+        "initializer_sha256": "0552b0c3bd0a249fe18c5d17c3d1221d6889c433e8e3fc8c3901348ec58c6750",
+        "initializer_span": "15:27-15:55",
+        "lanes": [
+          {
+            "literal": "0.2126",
+            "value": 0.2126,
+            "span": "15:32-15:38",
+            "sha256": "60bf20eee862d51bbba5fca93636e3d3005276c83d91b0e07d7fb69514a56d40"
+          },
+          {
+            "literal": "0.7152",
+            "value": 0.7152,
+            "span": "15:40-15:46",
+            "sha256": "68a51c71d62856e03511ce138da911c566dddee60dc63731eb1d924520e0cd16"
+          },
+          {
+            "literal": "0.0722",
+            "value": 0.0722,
+            "span": "15:48-15:54",
+            "sha256": "3f9f577bc5785b5148ed0c8cd087e6761df3e12ab079b1e384236325f6335b6c"
+          }
+        ]
+      }
+    ],
+    "functions": [
+      {
+        "id": 21,
+        "name": "applyFadedFilm",
+        "num_params": 2,
+        "body_len": 8,
+        "sha256": "6e9604bab8c774cc04876c88149a55345170d92805f3779b8f9880041c98a097",
+        "params": [
+          [
+            15,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            16,
+            "amount",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 22,
+        "name": "applySplitTone",
+        "num_params": 4,
+        "body_len": 11,
+        "sha256": "fd904b194067e19d6e830acfb35e3791fcbad68b9e95557a1f5d29c3cbce098b",
+        "params": [
+          [
+            17,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            18,
+            "shadowTint",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            19,
+            "highlightTint",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            20,
+            "balance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 23,
+        "name": "applyVibrance",
+        "num_params": 2,
+        "body_len": 11,
+        "sha256": "131e871a376b200839fc9c993613beb32b45c408a3b9f2d0821cb04ab55a1da6",
+        "params": [
+          [
+            13,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ],
+          [
+            14,
+            "vibrance",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 24,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "a5cdebca003ba55123fbabb08dab412314f0a08d2b5baebf2f7a3770bb0c0b6f",
+        "params": [
+          [
+            12,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 25,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 9,
+        "sha256": "992994d902af1034c0a2445f3cdbc7d470654acdf64cf4a0ce2e126af131bf68",
+        "params": []
+      },
+      {
+        "id": 26,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "12c4a3c15f3606a9eed98be5511aaba7934e74fa1005043b669ba5eba17ccd74",
+        "params": [
+          [
+            11,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "34:13-34:22",
+        "sha256": "1aec2abcebae25f02c2a9858c9941254240f7a6ef2f1f78c0da3cd0166e9f245",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 51,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "35:13-35:20",
+        "sha256": "7a5e79c9550bb07c250c75a27678486e424c5988b2696d71a98ac8a1dfb843c9",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 50,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 51,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "35:23-35:32",
+        "sha256": "fa396683ec9ac64d8f2474713bcdf1a761bebc896862011e68c308df6508fc9a",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 51,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "37:13-37:20",
+        "sha256": "6855aeafda4085ceadf739b3c4b01755918f8126f5900f3e89663a6a6b66c6eb",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 50,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 51,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 24,
+        "function_name": "linearToSrgb",
+        "span": "37:35-37:44",
+        "sha256": "49ee9c053bb89d52b0dcaeebcba0210f8fbd2c07c0d11dd79eed6c3ffd07f5d4",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 12,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 51,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "21:13-21:20",
+        "sha256": "52dae6afd41d07d9f83e629340c9475b4f093ff82000e5965ea9b708cf6cbd7c",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 57,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "22:13-22:22",
+        "sha256": "0eb094e98f3a3de14122e3ecc01fd66bc963ca37e80c7f3ce8cfe7a87273288c",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 56,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 57,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "22:25-22:32",
+        "sha256": "64ae05599265f74a81b0a6e066a6456d7d1ad58629758a75742ff17a92eb2b16",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 57,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "24:13-24:22",
+        "sha256": "de6cc2deb9f0f226c875eb09d694672b8832e8a51187b456931d6c54b1beab1b",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 56,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 57,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 26,
+        "function_name": "srgbToLinear",
+        "span": "24:30-24:37",
+        "sha256": "08167753b42cc145d5d36f48be9b88e8524c8372edf27cb9f3663e6581134b42",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 11,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 57,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": [
+      {
+        "function_id": 21,
+        "function_name": "applyFadedFilm",
+        "span": "81:30-81:42",
+        "sha256": "07584292c8092f3becf5ad211d3abddf3a3759dcc3bb5fbd67b1fb9828231a49"
+      },
+      {
+        "function_id": 22,
+        "function_name": "applySplitTone",
+        "span": "102:27-102:39",
+        "sha256": "8fa9450643f5672ee129b1a94587f6f5db30dc29c5b0e815f78995bc06a515bf"
+      },
+      {
+        "function_id": 23,
+        "function_name": "applyVibrance",
+        "span": "47:27-47:39",
+        "sha256": "89e50adda12ac106e2f85320ea34efa26645d06b636cf026839267d4ea04416f"
+      }
+    ]
+  },
+  "filter/grade:lut": {
+    "raw_bytes": 13745,
+    "raw_sha256": "0a8a3ae4d2a14142ae7d53373bfac6ac87a0b175dff132d71cd80e6226f9ec40",
+    "normalized_bytes": 10588,
+    "normalized_sha256": "c384a8759f681d191d6f6f5560101b2ed62ba3e187f4bdfb0574f608fca84881",
+    "whole_sha256": "c0f640cb5d166ecbf3d2b30373af46313835f0c59f1c8a3608192991675f4a26",
+    "interface_sha256": "c18fe18ba6259647463eef30713c7db0cbbdf0d9ec98795b8447da429bb71e93",
+    "functions_sha256": "ff78c83268699eae11d81331f346043bf6e36809ad1c0bc3f45724040e436420",
+    "preprocessor_defines": [],
+    "body_status": "analyzed",
+    "counted_loop_proof": {
+      "loop_count": 4,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 3,
+      "entrypoint_charge": 9,
+      "call_graph_acyclic": true
+    },
+    "num_declarations": 6,
+    "declarations": [
+      {
+        "index": 0,
+        "symbol_id": 1,
+        "name": "tileOffset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "4:1-4:25",
+        "sha256": "87c094ef6815162010f1674ea2e1e724fbd7ee4583e7310ef3f6a8b656255202",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 1,
+        "symbol_id": 2,
+        "name": "fullResolution",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "vec2",
+        "span": "5:1-5:29",
+        "sha256": "d888612c28063592971db977afbfe7b81d087d0e03db4945b62d8783a4fef6f4",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 2,
+        "symbol_id": 3,
+        "name": "inputTex",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "sampler2D",
+        "span": "6:1-6:28",
+        "sha256": "673477d5eab26407bfcacfaa09fe47a7bb05e32f5f926a46f36d553375c2baf2",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 3,
+        "symbol_id": 4,
+        "name": "preset",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "int",
+        "span": "7:1-7:20",
+        "sha256": "6820505ac84b36e898836e8f13b13d1117017109799ff17651f0d64c40e9adef",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 4,
+        "symbol_id": 5,
+        "name": "alpha",
+        "storage": "uniform",
+        "writable": false,
+        "direction": "in",
+        "type": "float",
+        "span": "8:1-8:21",
+        "sha256": "50c2978a4e1d4faf3a53b95eaee1c6b7a7aa6b6224990dd4e684296df019ec1a",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      },
+      {
+        "index": 5,
+        "symbol_id": 6,
+        "name": "fragColor",
+        "storage": "output",
+        "writable": true,
+        "direction": "in",
+        "type": "vec4",
+        "span": "10:1-10:16",
+        "sha256": "eaf24457a287ca2af08788f4bcc0047d72185eda1771c75a63e6844dba437045",
+        "initializer_kind": null,
+        "initializer_sha256": null,
+        "initializer_span": null,
+        "lanes": null
+      }
+    ],
+    "functions": [
+      {
+        "id": 36,
+        "name": "hslToRgb",
+        "num_params": 1,
+        "body_len": 4,
+        "sha256": "69a2745f997177ab7eee9b56ef683c831d13e492a7facbd32034cf5f836fba9d",
+        "params": [
+          [
+            13,
+            "hsl",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 37,
+        "name": "hue2rgb",
+        "num_params": 3,
+        "body_len": 6,
+        "sha256": "bf549c9e854f6fa14fc1826c0ebf4af8d4bac6021df127ae1072ee5970ee5c9d",
+        "params": [
+          [
+            10,
+            "p",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            11,
+            "q",
+            "float",
+            "parameter",
+            "in"
+          ],
+          [
+            12,
+            "t",
+            "float",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 38,
+        "name": "linearToSrgb",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "b796ad308b6b343b78ae2b1e77fe3e2af7bd0004fe992a338c64096f6d1cb9ba",
+        "params": [
+          [
+            8,
+            "linear",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 39,
+        "name": "luma",
+        "num_params": 1,
+        "body_len": 1,
+        "sha256": "c29628a460a730085105bb517a176f1d59970025b7991975d0b6f4db36b5b45d",
+        "params": [
+          [
+            14,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 40,
+        "name": "lutBleachBypass",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "d9c8b6794d61a3aed061a08da3ece88f6f0198f1d7fb0af10cd1ed7c04aba370",
+        "params": [
+          [
+            18,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 41,
+        "name": "lutCinematic",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "2a2dcdea61a627da40e5d6c931562533e214e241353774179e158d54bad922d6",
+        "params": [
+          [
+            20,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 42,
+        "name": "lutCoolShadows",
+        "num_params": 1,
+        "body_len": 5,
+        "sha256": "3afc912e53e1fcd4840927477c6796e2b1f33b3b4eea6d8806f072ff17bad68b",
+        "params": [
+          [
+            17,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 43,
+        "name": "lutCrossProcess",
+        "num_params": 1,
+        "body_len": 11,
+        "sha256": "56d878e14a94a264cf18322aa15ca7200d84ef16024f02c30070d2c9792a7c27",
+        "params": [
+          [
+            19,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 44,
+        "name": "lutDayForNight",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "adc611a936b3c200d655c16a3d681c08fc3e96b2d690d6d1d59ce84a6cfe3ada",
+        "params": [
+          [
+            21,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 45,
+        "name": "lutHardLight",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "3940d339a67a1383a658e7106ef2bcf50e2d27746043db0873bfb0cbadf64827",
+        "params": [
+          [
+            33,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 46,
+        "name": "lutInfrared",
+        "num_params": 1,
+        "body_len": 8,
+        "sha256": "421ebe6dc221d276207116883dec768d68ac9ab3a8609fd9613c3bfb45ef7135",
+        "params": [
+          [
+            25,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 47,
+        "name": "lutMatrix",
+        "num_params": 1,
+        "body_len": 5,
+        "sha256": "49d33be6812dd110655a8d3cf952a12df732f288d755498e56eb6e747c54b4a6",
+        "params": [
+          [
+            28,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 48,
+        "name": "lutMonochrome",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "ac0dc24b449e1e5c3a8de14cd276bbaa73936095ae0e1769102ae49dea3ed15c",
+        "params": [
+          [
+            31,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 49,
+        "name": "lutNeon",
+        "num_params": 1,
+        "body_len": 8,
+        "sha256": "61ff7a8ee77952df53d77fe6564c3227cf7bdcd414dcde46bae130db32a446a6",
+        "params": [
+          [
+            27,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 50,
+        "name": "lutNoir",
+        "num_params": 1,
+        "body_len": 6,
+        "sha256": "7c7b4b504701ec05c07c13520f51b66c689c51870fb94b27c726df39f325996d",
+        "params": [
+          [
+            23,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 51,
+        "name": "lutPosterize",
+        "num_params": 1,
+        "body_len": 9,
+        "sha256": "a6e7b80a303f90ed0d430df5f960c430410576e6e48e7529abd0803344e053e9",
+        "params": [
+          [
+            34,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 52,
+        "name": "lutPsychedelic",
+        "num_params": 1,
+        "body_len": 6,
+        "sha256": "6163d03ed880a85d59863ce01021ee59d7ba22ba64aaba0c381ce9825fe6ecf0",
+        "params": [
+          [
+            32,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 53,
+        "name": "lutSepia",
+        "num_params": 1,
+        "body_len": 5,
+        "sha256": "d7a0d15c5d215328f6f21fa3a3d2e12dd43779e82f740764c9d43165a04294ed",
+        "params": [
+          [
+            24,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 54,
+        "name": "lutSolarize",
+        "num_params": 1,
+        "body_len": 9,
+        "sha256": "7c8750151c35de61658953d457e90fb3c952824ae27bd9e8d80dae491cbc8b9a",
+        "params": [
+          [
+            35,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 55,
+        "name": "lutSunset",
+        "num_params": 1,
+        "body_len": 6,
+        "sha256": "fc4ca584ae37bc3c7c3ba01168e82dbec9a05199a79dde7893e27db22f588114",
+        "params": [
+          [
+            30,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 56,
+        "name": "lutTealOrange",
+        "num_params": 1,
+        "body_len": 8,
+        "sha256": "08c53459541884acefe450a5739480777511ee2664c0e877ff5dce95cc496b21",
+        "params": [
+          [
+            15,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 57,
+        "name": "lutTechnicolor",
+        "num_params": 1,
+        "body_len": 8,
+        "sha256": "47641e9c1b18196cd98c8e6b6fccdf403239fde13ce2981b3578954fa5e3583a",
+        "params": [
+          [
+            26,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 58,
+        "name": "lutUnderwater",
+        "num_params": 1,
+        "body_len": 6,
+        "sha256": "e6fad96d1b58943ef35f6fa75c6dedd945c65a8b2051fcbf26fcd0fce087c796",
+        "params": [
+          [
+            29,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 59,
+        "name": "lutVintage",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "b54ef865f90adb7f929ac34343d6c84c72ab36503718581f4d8e0be180bd4f85",
+        "params": [
+          [
+            22,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 60,
+        "name": "lutWarmFilm",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "c8150f085c57fc475664805f5475a6fabdb5906115aeaf593b5db02fc240a851",
+        "params": [
+          [
+            16,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 61,
+        "name": "main",
+        "num_params": 0,
+        "body_len": 10,
+        "sha256": "ebbdc02deba21af64c019acf18aeafdb7ed3b87ec77d89f2b02e46cd85d63ba6",
+        "params": []
+      },
+      {
+        "id": 62,
+        "name": "rgbToHsl",
+        "num_params": 1,
+        "body_len": 7,
+        "sha256": "3a27cc7c393fac9245d138d75244b12e86a3d41203192fadd8a1637c7abe161d",
+        "params": [
+          [
+            9,
+            "rgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      },
+      {
+        "id": 63,
+        "name": "srgbToLinear",
+        "num_params": 1,
+        "body_len": 3,
+        "sha256": "deb9a9406989537b4974185e655a45279fe95f4d58d8908ecea74034cb9a626f",
+        "params": [
+          [
+            7,
+            "srgb",
+            "vec3",
+            "parameter",
+            "in"
+          ]
+        ]
+      }
+    ],
+    "index_sites": [
+      {
+        "function_id": 38,
+        "function_name": "linearToSrgb",
+        "span": "29:13-29:22",
+        "sha256": "3bec4e1df0ec3c3fde3d9a7e6d89043c19626865f37df0475f2d09e6976cee4d",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 8,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 68,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 38,
+        "function_name": "linearToSrgb",
+        "span": "30:13-30:20",
+        "sha256": "64d152bc1943aa873514051a0c8650a9c3ee92f42966d26a6b67f6fd43092933",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 67,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 68,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 38,
+        "function_name": "linearToSrgb",
+        "span": "30:23-30:32",
+        "sha256": "6014ccbe1c50e836725b360b700e824c42bcf7ce0132e715bc543ee972619cd6",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 8,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 68,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 38,
+        "function_name": "linearToSrgb",
+        "span": "32:13-32:20",
+        "sha256": "0d7704e58b35b63527d55654764e95a284a4b57f7db4696c9dae8b62ef7938e3",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 67,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 68,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 38,
+        "function_name": "linearToSrgb",
+        "span": "32:35-32:44",
+        "sha256": "c05c780cc6469e5a3db7f99c844987da03a8ed92a9ad1aee49ef99cabf91d135",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 8,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 68,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 45,
+        "function_name": "lutHardLight",
+        "span": "392:13-392:19",
+        "sha256": "bf8ce1dfe993e1280befbb28df50b3c652bc4d2add7e32364918a6a3d4e3df84",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 33,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 82,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 45,
+        "function_name": "lutHardLight",
+        "span": "393:13-393:22",
+        "sha256": "05ea5df9e619ac221c7f34a8267303b4d7e56e4ab73f3d32091bc9508bb6c8d7",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 81,
+        "base_name": "result",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 82,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 45,
+        "function_name": "lutHardLight",
+        "span": "393:31-393:37",
+        "sha256": "b695fb48c173808e5d7896cc351f272f069206d3ae7a726a437c2b894429e008",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 33,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 82,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 45,
+        "function_name": "lutHardLight",
+        "span": "395:13-395:22",
+        "sha256": "6909028c076e4fcac2362ddeddfde7225e9e7ef747dde8b21305ddeaa277ef27",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 81,
+        "base_name": "result",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 82,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 45,
+        "function_name": "lutHardLight",
+        "span": "395:44-395:50",
+        "sha256": "75e7edcb9cf3fe1c8afecae09635bd59fa829fc525d859b97f8a7363d2284083",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 33,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 82,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 54,
+        "function_name": "lutSolarize",
+        "span": "447:13-447:19",
+        "sha256": "da8bd7811250566525e26d2399f4e9ccd6bd676a0ca3c5edc062a2e792e02870",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 35,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 108,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 54,
+        "function_name": "lutSolarize",
+        "span": "448:13-448:22",
+        "sha256": "2bc453c67c449c1bd749b93a24caaa380e1cab784aed3f0ac12d8cb64a77dc7e",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 107,
+        "base_name": "result",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 108,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 54,
+        "function_name": "lutSolarize",
+        "span": "448:38-448:44",
+        "sha256": "4fff72d9f176704a58ae4408a3dcb0d2b563700b443d24795bb32ab60c9c048b",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 35,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 108,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 54,
+        "function_name": "lutSolarize",
+        "span": "450:13-450:22",
+        "sha256": "0ea66bd3750f5941b909d5357ad9e17ca4d5cbabfde0b32c67e4a3874c4450fb",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 107,
+        "base_name": "result",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 108,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 54,
+        "function_name": "lutSolarize",
+        "span": "450:31-450:37",
+        "sha256": "cac89aacc6d3c444fe5a1c02ea7aefbf4b27b4de3d6fc71c8efdd1132e6336c6",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 35,
+        "base_name": "rgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 108,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 63,
+        "function_name": "srgbToLinear",
+        "span": "16:13-16:20",
+        "sha256": "ee70860e5caf712e2ba1c01db1239003f11806925a1965dd6c7250968f6659cb",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 7,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 135,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 63,
+        "function_name": "srgbToLinear",
+        "span": "17:13-17:22",
+        "sha256": "f04b84ea8e4fef8ecaa548b13b3e91025439327b6e91226d47888415b5d26ee7",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 134,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 135,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 63,
+        "function_name": "srgbToLinear",
+        "span": "17:25-17:32",
+        "sha256": "29372ac4ade2fecc313b91860b2f9789333481662f506f8b7f10476ea82478b8",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 7,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 135,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 63,
+        "function_name": "srgbToLinear",
+        "span": "19:13-19:22",
+        "sha256": "c50f19f5e80f2460085d21764cb18ba5e23a411de2b28bacdbd249ee3bce3b24",
+        "category": "lvalue",
+        "role": "write",
+        "base_kind": "id",
+        "base_symbol_id": 134,
+        "base_name": "linear",
+        "base_type": "vec3",
+        "base_storage": "local",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 135,
+        "index_name": "i",
+        "index_storage": "local"
+      },
+      {
+        "function_id": 63,
+        "function_name": "srgbToLinear",
+        "span": "19:30-19:37",
+        "sha256": "704d380022dce824cb932cfb00d24f608cb3e3748f59d312bd92090c23b3795c",
+        "category": "lvalue",
+        "role": "read",
+        "base_kind": "id",
+        "base_symbol_id": 7,
+        "base_name": "srgb",
+        "base_type": "vec3",
+        "base_storage": "parameter",
+        "base_writable": true,
+        "index_kind": "id",
+        "index_symbol_id": 135,
+        "index_name": "i",
+        "index_storage": "local"
+      }
+    ],
+    "luma_weight_reads": []
+  }
+}

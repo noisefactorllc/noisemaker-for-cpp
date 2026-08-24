@@ -1,0 +1,604 @@
+
+
+// TASK30_NATIVE_ORACLE_TABLE_BEGIN
+// filter/extrude:extrude, profile extrude-bvec2-relational-reduction-v1.
+// Only the 3 oracle cases whose defines are {EXTRUDE_TYPE:0, DEPTH_SOURCE:0}
+// (the slice's default define map) are authorized for the native port. The
+// other 3 oracle cases use EXTRUDE_TYPE:1 and/or DEPTH_SOURCE:1 and are
+// public-source sensitivity evidence only; they are deliberately excluded
+// here so this table can never silently bind the wrong program.
+struct Task30Case {
+  std::string_view name;
+  std::size_t width, height;
+  std::uint32_t phase;
+  float size, depth;
+  bool solid_front;
+  std::string_view input_f32_hash, f32_hash, rgba8_hash;
+  std::array<std::uint32_t, 30> probes;
+  std::size_t finite_lanes, nonfinite_lanes;
+};
+constexpr std::array<Task30Case, 3> kTask30NativeCases{{
+    {"blocks-default-luminance-solid", 13U, 9U, 1U, 4.0f, 30.0f, true,
+     "5db5d64301b37a599ef05faedca7eaf9d0aec3f32ab0d976b79c34a643c04e3c",
+     "47dee1b5c5d290f510a1c43f81f41bb19782b6f9f7d389e7be6701d0c8a01ac5",
+     "e4ebeebc17816ae9ca551c6a3c50ac250db9a04fee5b695a199dee420a07ec53",
+     {0U,0U,0x3e7ac301U,0x3e8d0abcU,0x3eb7e37fU,0x3e66a172U,
+      12U,0U,0x3e5da7cbU,0x3e898b85U,0x3e902103U,0x3f4d42e3U,
+      0U,8U,0x3ed699c4U,0x3eec5a52U,0x3f115916U,0x3f1d98fdU,
+      12U,8U,0x3ef744feU,0x3eb2e09fU,0x3f0d48d5U,0x3f152422U,
+      6U,4U,0x3e84d811U,0x3ec30cbbU,0x3e5aadabU,0x3f074da5U},
+     468U, 0U},
+    {"blocks-depth-zero-window", 11U, 7U, 2U, 5.0f, 0.0f, false,
+     "f8b901fde60223c9a3068ad5320295eed1098070d882978be5e5d6e3d4693106",
+     "f8b901fde60223c9a3068ad5320295eed1098070d882978be5e5d6e3d4693106",
+     "aec6cc989aecad5bdc5b9c68f8ea13b4dd45f62abbd02851c35da8dbc729257a",
+     {0U,0U,0x3ee93029U,0x3f1bb61aU,0x3f340b41U,0x3e41bad0U,
+      10U,0U,0x3f24c0a2U,0x3de83f57U,0x3f5e3de4U,0x3f03759fU,
+      0U,6U,0x3f014470U,0x3e13cb37U,0x3df78f79U,0x3ecf914cU,
+      10U,6U,0x3f316cfdU,0x3f112796U,0x3e924925U,0x3f3acf91U,
+      5U,3U,0x3f130289U,0x3f166ed8U,0x3efd2fd3U,0x3eeb3e45U},
+     308U, 0U},
+    {"blocks-max-depth-luminance-window", 15U, 10U, 3U, 4.0f, 100.0f, false,
+     "8ea30ec280a1952bfc503c2b23ebd485a06078a697f4579494c9cf32a82409e6",
+     "04ea7d2c0abee1daed54b97dcf1b1efb3c05cd828d23b8d2ac7c65d04d19ef73",
+     "c92a0ebc4b993ee019ac158f8803aa01ce6c21964e45695db14026a9f22e942d",
+     {0U,0U,0x3ed5d1b4U,0x3e797231U,0x3e3cdbcfU,0x3ecf914dU,
+      14U,0U,0x3ea015a1U,0x3eff4634U,0x3ea18619U,0x3ea60dd7U,
+      0U,9U,0x3ef77211U,0x3f28a4afU,0x3ed50d52U,0x3eefdb19U,
+      14U,9U,0x3eaf761cU,0x3eea3a0fU,0x3f177779U,0x3f260dd5U,
+      7U,5U,0x3f40a238U,0x3ca8e83fU,0x3d340b41U,0x3f2cf915U},
+     600U, 0U},
+}};
+
+// The 7 direct_relational_cases rows from the oracle, transcribed verbatim
+// (left/right lane bits and every reduction/lane result the oracle records).
+struct Task30RelationalRow {
+  std::array<std::uint32_t, 2> left_bits, right_bits;
+  std::array<bool, 2> le_lanes;
+  bool all_result;
+  bool any_result;
+  std::array<bool, 2> strict_lanes;
+};
+constexpr std::array<Task30RelationalRow, 7> kTask30RelationalRows{{
+    {{0x00000000U,0x00000000U}, {0x00000000U,0x00000000U}, {true,true}, true, true, {false,false}},
+    {{0x3f800000U,0x40000000U}, {0x3f800000U,0x40000000U}, {true,true}, true, true, {false,false}},
+    {{0x3f800000U,0x40000000U}, {0x3f800000U,0x40400000U}, {true,true}, true, true, {false,true}},
+    {{0x3f800000U,0x40000000U}, {0x40000000U,0x40000000U}, {true,true}, true, true, {true,false}},
+    {{0x80000000U,0x00000000U}, {0x00000000U,0x00000000U}, {true,true}, true, true, {false,false}},
+    {{0xbf800000U,0x40a00000U}, {0xbf800000U,0x40800000U}, {true,false}, false, true, {false,false}},
+    {{0x4b800000U,0x4b800000U}, {0x4b800000U,0x4b800000U}, {true,true}, true, true, {false,false}},
+}};
+// TASK30_NATIVE_ORACLE_TABLE_END
+
+[[nodiscard]] noisemaker::Surface task30_surface(std::size_t width,
+                                                  std::size_t height,
+                                                  std::uint32_t phase) {
+  std::vector<float> data(width * height * 4U);
+  for (std::size_t y = 0; y < height; ++y) {
+    for (std::size_t x = 0; x < width; ++x) {
+      const std::size_t index = (y * width + x) * 4U;
+      data[index] = static_cast<float>(
+          ((31U * x + 17U * y + 7U + 19U * phase) % 97U + 1U) / 101.0);
+      data[index + 1U] = static_cast<float>(
+          ((13U * x + 37U * y + 11U + 23U * phase) % 89U + 2U) / 97.0);
+      data[index + 2U] = static_cast<float>(
+          ((43U * x + 5U * y + 3U + 29U * phase) % 83U + 3U) / 91.0);
+      data[index + 3U] = static_cast<float>(
+          ((7U * x + 11U * y + phase) % 29U + 5U) / 37.0);
+    }
+  }
+  return noisemaker::Surface(width, height, std::move(data));
+}
+
+[[nodiscard]] noisemaker::glsl::Bindings task30_bindings(
+    const Task30Case& fixture, const noisemaker::Surface& input,
+    std::string_view omit = {}, std::string_view wrong = {}) {
+  noisemaker::glsl::Bindings bindings;
+  const auto texture = [&](std::string_view name,
+                           const noisemaker::Surface& surface) {
+    if (name == omit) return;
+    if (name == wrong)
+      bindings.set_uniform(std::string(name), 1.0f);
+    else
+      bindings.set_texture(std::string(name), surface);
+  };
+  const auto vector = [&](std::string_view name, noisemaker::glsl::Vec2 value) {
+    if (name == omit) return;
+    if (name == wrong)
+      bindings.set_uniform(std::string(name), 1.0f);
+    else
+      bindings.set_uniform(std::string(name), value);
+  };
+  const auto number = [&](std::string_view name, float value) {
+    if (name == omit) return;
+    if (name == wrong)
+      bindings.set_uniform(std::string(name), std::int32_t{1});
+    else
+      bindings.set_uniform(std::string(name), value);
+  };
+  const auto boolean = [&](std::string_view name, bool value) {
+    if (name == omit) return;
+    if (name == wrong)
+      bindings.set_uniform(std::string(name), 1.0f);
+    else
+      bindings.set_uniform(std::string(name), value);
+  };
+  texture("inputTex", input);
+  vector("resolution", {static_cast<float>(fixture.width),
+                        static_cast<float>(fixture.height)});
+  vector("tileOffset", {0.0f, 0.0f});
+  vector("fullResolution", {static_cast<float>(fixture.width),
+                            static_cast<float>(fixture.height)});
+  number("size", fixture.size);
+  number("depth", fixture.depth);
+  boolean("solidFront", fixture.solid_front);
+  return bindings;
+}
+
+TEST(typed_task30_extrude_public_oracles_are_exact_repeatable_finite_and_nonmutating) {
+  for (const auto& fixture : kTask30NativeCases) {
+    auto input = task30_surface(fixture.width, fixture.height, fixture.phase);
+    auto input2 = task30_surface(fixture.width, fixture.height, fixture.phase);
+    auto direct_input =
+        task30_surface(fixture.width, fixture.height, fixture.phase);
+    const auto input_before = task23_float_bytes(input);
+    REQUIRE(task23_hex(task23_sha256(input_before)) == fixture.input_f32_hash);
+    const float* const input_address = input.data().data();
+
+    const auto delayed = [&]() {
+      noisemaker::glsl::Bindings scoped = task30_bindings(fixture, input);
+      return noisemaker::generated::bind_filter_extrude_extrude(scoped);
+    }();
+    const auto delayed_output =
+        noisemaker::run_pass(delayed, fixture.width, fixture.height);
+    const auto direct_output = noisemaker::run_pass(
+        noisemaker::generated::bind_filter_extrude_extrude(
+            task30_bindings(fixture, direct_input)),
+        fixture.width, fixture.height);
+    const auto public_output = noisemaker::run_pass(
+        noisemaker::generated::bind("filter/extrude:extrude",
+                                    task30_bindings(fixture, input2)),
+        fixture.width, fixture.height);
+    const auto repeated_output = noisemaker::run_pass(
+        noisemaker::generated::bind_filter_extrude_extrude(
+            task30_bindings(fixture, input)),
+        fixture.width, fixture.height);
+
+    REQUIRE(delayed_output.width() == fixture.width);
+    REQUIRE(delayed_output.height() == fixture.height);
+    REQUIRE(direct_output.width() == fixture.width);
+    REQUIRE(direct_output.height() == fixture.height);
+    REQUIRE(task23_float_bytes(delayed_output) ==
+            task23_float_bytes(direct_output));
+    REQUIRE(task23_float_bytes(delayed_output) ==
+            task23_float_bytes(public_output));
+    REQUIRE(task23_float_bytes(delayed_output) ==
+            task23_float_bytes(repeated_output));
+    REQUIRE(task23_float_bytes(input) == input_before);
+    REQUIRE(input.data().data() == input_address);
+    REQUIRE(delayed_output.data().data() != input_address);
+
+    REQUIRE(task23_hex(task23_sha256(task23_float_bytes(delayed_output))) ==
+            fixture.f32_hash);
+    REQUIRE(task23_hex(task23_sha256(delayed_output.to_rgba8())) ==
+            fixture.rgba8_hash);
+
+    std::size_t finite = 0U;
+    for (float value : delayed_output.data()) {
+      if (std::isfinite(value)) ++finite;
+    }
+    REQUIRE(finite == fixture.finite_lanes);
+    REQUIRE((delayed_output.data().size() - finite) == fixture.nonfinite_lanes);
+
+    for (std::size_t probe = 0; probe < 5U; ++probe) {
+      const std::size_t x = fixture.probes[probe * 6U];
+      const std::size_t y = fixture.probes[probe * 6U + 1U];
+      const std::size_t offset = (y * fixture.width + x) * 4U;
+      for (std::size_t lane = 0; lane < 4U; ++lane) {
+        REQUIRE(noisemaker::float_bits_to_uint(
+                    delayed_output.data()[offset + lane]) ==
+                fixture.probes[probe * 6U + 2U + lane]);
+      }
+    }
+  }
+}
+
+TEST(typed_task30_extrude_binding_abi_rejects_every_missing_and_wrong_input_and_accepts_extras) {
+  constexpr std::array<std::string_view, 7> names{
+      "inputTex", "resolution", "tileOffset", "fullResolution",
+      "size",     "depth",      "solidFront"};
+  const auto& fixture = kTask30NativeCases[0];
+  const auto input = task30_surface(fixture.width, fixture.height, fixture.phase);
+  for (std::string_view name : names) {
+    REQUIRE_THROWS_AS(
+        noisemaker::generated::bind_filter_extrude_extrude(
+            task30_bindings(fixture, input, name)),
+        noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(
+        noisemaker::generated::bind_filter_extrude_extrude(
+            task30_bindings(fixture, input, {}, name)),
+        noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(
+        noisemaker::generated::bind("filter/extrude:extrude",
+                                    task30_bindings(fixture, input, name)),
+        noisemaker::glsl::KernelBindingError);
+  }
+  auto with_extras = task30_bindings(fixture, input);
+  with_extras.set_uniform("unrelated", true);
+  with_extras.set_texture("unrelatedTex", input);
+  const auto output = noisemaker::run_pass(
+      noisemaker::generated::bind_filter_extrude_extrude(with_extras),
+      fixture.width, fixture.height);
+  REQUIRE(task23_hex(task23_sha256(task23_float_bytes(output))) ==
+          fixture.f32_hash);
+}
+
+// TASK30_DIRECT_ABI_HARNESS_BEGIN
+// Five direct relational modes, each a structurally distinct implementation
+// (its own comparison operator and its own reduction loop, never delegating
+// to another mode's arm), so no mode can silently share another's code path
+// the way 3 of 11 Task 26 mutation modes once did. Cross-checked below
+// against every field the oracle records for all 7 direct_relational_cases
+// rows: less_than_equal_lanes, all_result, any_result, and strict_less_lanes.
+enum class Task30RelationalMode : std::uint32_t {
+  exact_inclusive_all = 0,
+  inclusive_any = 1,
+  strict_exclusive_all = 2,
+  strict_exclusive_any = 3,
+  mirrored_inclusive_all = 4,
+};
+constexpr std::array<std::string_view, 5> kTask30RelationalModeNames{{
+    "exact-inclusive-le-all-reduction",
+    "inclusive-le-any-reduction",
+    "strict-exclusive-lt-all-reduction",
+    "strict-exclusive-lt-any-reduction",
+    "mirrored-inclusive-ge-all-reduction",
+}};
+
+struct Task30RelationalCounters {
+  std::array<std::uint32_t, 5> arm_dispatches{};
+  std::uint32_t dispatch{};
+  std::uint32_t le_calls{};
+  std::uint32_t all_calls{};
+  std::uint32_t strict_calls{};
+  std::uint32_t ge_calls{};
+  std::uint32_t and_reduce_iterations{};
+  std::uint32_t or_reduce_iterations{};
+  std::uint32_t rows_processed{};
+};
+
+struct Task30RelationalWitness {
+  Task30RelationalMode mode;
+  std::string_view name;
+  std::array<bool, 7> reduced;
+  std::array<std::array<bool, 2>, 7> lanes;
+  Task30RelationalCounters counters;
+};
+
+// TASK30_DIRECT_ABI_SWITCH_BEGIN
+[[nodiscard]] Task30RelationalWitness task30_dispatch_relational_mode(
+    Task30RelationalMode mode) {
+  Task30RelationalCounters counters;
+  std::array<bool, 7> reduced{};
+  std::array<std::array<bool, 2>, 7> lanes{};
+  bool handled = false;
+  const auto f = [](std::uint32_t bits) { return std::bit_cast<float>(bits); };
+
+  switch (mode) {
+    case Task30RelationalMode::exact_inclusive_all: {
+      ++counters.arm_dispatches[0];
+      ++counters.dispatch;
+      handled = true;
+      for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+        const auto& row = kTask30RelationalRows[i];
+        const noisemaker::glsl::Vec2 left(f(row.left_bits[0]), f(row.left_bits[1]));
+        const noisemaker::glsl::Vec2 right(f(row.right_bits[0]), f(row.right_bits[1]));
+        const auto le = noisemaker::glsl::lessThanEqual<2>(left, right);
+        ++counters.le_calls;
+        lanes[i] = {le[0], le[1]};
+        reduced[i] = noisemaker::glsl::all<2>(le);
+        ++counters.all_calls;
+        ++counters.rows_processed;
+      }
+      break;
+    }
+    case Task30RelationalMode::inclusive_any: {
+      ++counters.arm_dispatches[1];
+      ++counters.dispatch;
+      handled = true;
+      for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+        const auto& row = kTask30RelationalRows[i];
+        const noisemaker::glsl::Vec2 left(f(row.left_bits[0]), f(row.left_bits[1]));
+        const noisemaker::glsl::Vec2 right(f(row.right_bits[0]), f(row.right_bits[1]));
+        const auto le = noisemaker::glsl::lessThanEqual<2>(left, right);
+        ++counters.le_calls;
+        lanes[i] = {le[0], le[1]};
+        bool any = false;
+        for (std::size_t lane = 0; lane < 2U; ++lane) {
+          ++counters.or_reduce_iterations;
+          any = any || le[lane];
+        }
+        reduced[i] = any;
+        ++counters.rows_processed;
+      }
+      break;
+    }
+    case Task30RelationalMode::strict_exclusive_all: {
+      ++counters.arm_dispatches[2];
+      ++counters.dispatch;
+      handled = true;
+      for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+        const auto& row = kTask30RelationalRows[i];
+        const float lx = f(row.left_bits[0]), ly = f(row.left_bits[1]);
+        const float rx = f(row.right_bits[0]), ry = f(row.right_bits[1]);
+        const std::array<bool, 2> lane{lx < rx, ly < ry};
+        counters.strict_calls += 2U;
+        lanes[i] = lane;
+        bool all_true = true;
+        for (std::size_t l = 0; l < 2U; ++l) {
+          ++counters.and_reduce_iterations;
+          all_true = all_true && lane[l];
+        }
+        reduced[i] = all_true;
+        ++counters.rows_processed;
+      }
+      break;
+    }
+    case Task30RelationalMode::strict_exclusive_any: {
+      ++counters.arm_dispatches[3];
+      ++counters.dispatch;
+      handled = true;
+      for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+        const auto& row = kTask30RelationalRows[i];
+        const float lx = f(row.left_bits[0]), ly = f(row.left_bits[1]);
+        const float rx = f(row.right_bits[0]), ry = f(row.right_bits[1]);
+        const std::array<bool, 2> lane{lx < rx, ly < ry};
+        counters.strict_calls += 2U;
+        lanes[i] = lane;
+        bool any = false;
+        for (std::size_t l = 0; l < 2U; ++l) {
+          ++counters.or_reduce_iterations;
+          any = any || lane[l];
+        }
+        reduced[i] = any;
+        ++counters.rows_processed;
+      }
+      break;
+    }
+    case Task30RelationalMode::mirrored_inclusive_all: {
+      ++counters.arm_dispatches[4];
+      ++counters.dispatch;
+      handled = true;
+      for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+        const auto& row = kTask30RelationalRows[i];
+        const float lx = f(row.left_bits[0]), ly = f(row.left_bits[1]);
+        const float rx = f(row.right_bits[0]), ry = f(row.right_bits[1]);
+        // Mirrored argument order: right <= left, i.e. left >= right,
+        // computed without reusing lessThanEqual on (left, right).
+        const std::array<bool, 2> lane{rx <= lx, ry <= ly};
+        counters.ge_calls += 2U;
+        lanes[i] = lane;
+        bool all_true = true;
+        for (std::size_t l = 0; l < 2U; ++l) {
+          ++counters.and_reduce_iterations;
+          all_true = all_true && lane[l];
+        }
+        reduced[i] = all_true;
+        ++counters.rows_processed;
+      }
+      break;
+    }
+  }
+
+  if (!handled || counters.dispatch != 1U)
+    throw std::invalid_argument(
+        "invalid Task30 relational mode " +
+        std::to_string(static_cast<std::uint32_t>(mode)));
+  const std::size_t mode_id = static_cast<std::size_t>(mode);
+  if (mode_id >= counters.arm_dispatches.size() ||
+      counters.arm_dispatches[mode_id] != 1U ||
+      std::count(counters.arm_dispatches.begin(),
+                 counters.arm_dispatches.end(), 1U) != 1)
+    throw std::invalid_argument("invalid Task30 relational arm dispatch");
+
+  return {mode, kTask30RelationalModeNames[mode_id], reduced, lanes, counters};
+}
+// TASK30_DIRECT_ABI_SWITCH_END
+
+[[nodiscard]] std::array<std::uint32_t, 28> task30_relational_signature(
+    const Task30RelationalWitness& witness) {
+  std::array<std::uint32_t, 28> signature{};
+  std::size_t cursor = 0U;
+  for (bool value : witness.reduced) signature[cursor++] = value ? 1U : 0U;
+  for (const auto& lane : witness.lanes) {
+    signature[cursor++] = lane[0] ? 1U : 0U;
+    signature[cursor++] = lane[1] ? 1U : 0U;
+  }
+  signature[cursor++] = witness.counters.le_calls;
+  signature[cursor++] = witness.counters.all_calls;
+  signature[cursor++] = witness.counters.strict_calls;
+  signature[cursor++] = witness.counters.ge_calls;
+  signature[cursor++] = witness.counters.and_reduce_iterations;
+  signature[cursor++] = witness.counters.or_reduce_iterations;
+  signature[cursor++] = witness.counters.rows_processed;
+  return signature;
+}
+// TASK30_DIRECT_ABI_HARNESS_END
+
+TEST(typed_task30_direct_relational_switch_executes_five_distinct_fail_closed_modes) {
+  std::array<Task30RelationalWitness, 5> witnesses{
+      task30_dispatch_relational_mode(Task30RelationalMode::exact_inclusive_all),
+      task30_dispatch_relational_mode(Task30RelationalMode::inclusive_any),
+      task30_dispatch_relational_mode(Task30RelationalMode::strict_exclusive_all),
+      task30_dispatch_relational_mode(Task30RelationalMode::strict_exclusive_any),
+      task30_dispatch_relational_mode(Task30RelationalMode::mirrored_inclusive_all),
+  };
+
+  for (std::size_t index = 0; index < witnesses.size(); ++index) {
+    const auto mode = static_cast<Task30RelationalMode>(index);
+    REQUIRE(witnesses[index].mode == mode);
+    REQUIRE(witnesses[index].name == kTask30RelationalModeNames[index]);
+    REQUIRE(witnesses[index].counters.dispatch == 1U);
+    REQUIRE(witnesses[index].counters.arm_dispatches[index] == 1U);
+    REQUIRE(std::count(witnesses[index].counters.arm_dispatches.begin(),
+                       witnesses[index].counters.arm_dispatches.end(),
+                       1U) == 1);
+    REQUIRE(witnesses[index].counters.rows_processed ==
+            kTask30RelationalRows.size());
+  }
+
+  // Mode 0 is the exact production capability under test: lessThanEqual then
+  // all(), cross-checked against every oracle-recorded field.
+  for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+    const auto& row = kTask30RelationalRows[i];
+    REQUIRE(witnesses[0].lanes[i][0] == row.le_lanes[0]);
+    REQUIRE(witnesses[0].lanes[i][1] == row.le_lanes[1]);
+    REQUIRE(witnesses[0].reduced[i] == row.all_result);
+    // Mode 1 (any-reduction) matches the oracle's any_result field, and
+    // diverges from mode 0 exactly where all_result != any_result.
+    REQUIRE(witnesses[1].reduced[i] == row.any_result);
+    REQUIRE((witnesses[0].reduced[i] == witnesses[1].reduced[i]) ==
+            (row.all_result == row.any_result));
+    // Modes 2/3 (strict, exclusive) match the oracle's strict_less_lanes.
+    REQUIRE(witnesses[2].lanes[i][0] == row.strict_lanes[0]);
+    REQUIRE(witnesses[2].lanes[i][1] == row.strict_lanes[1]);
+    REQUIRE(witnesses[2].reduced[i] ==
+            (row.strict_lanes[0] && row.strict_lanes[1]));
+    REQUIRE(witnesses[3].reduced[i] ==
+            (row.strict_lanes[0] || row.strict_lanes[1]));
+  }
+  REQUIRE(witnesses[0].counters.le_calls == kTask30RelationalRows.size());
+  REQUIRE(witnesses[0].counters.all_calls == kTask30RelationalRows.size());
+  REQUIRE(witnesses[1].counters.le_calls == kTask30RelationalRows.size());
+  REQUIRE(witnesses[1].counters.or_reduce_iterations ==
+          kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[2].counters.strict_calls ==
+          kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[2].counters.and_reduce_iterations ==
+          kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[3].counters.strict_calls ==
+          kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[3].counters.or_reduce_iterations ==
+          kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[4].counters.ge_calls == kTask30RelationalRows.size() * 2U);
+  REQUIRE(witnesses[4].counters.and_reduce_iterations ==
+          kTask30RelationalRows.size() * 2U);
+
+  // The mirrored ge_all mode differs from the exact le_all mode on rows
+  // where left != right on at least one lane in an order-sensitive way
+  // (rows 2, 3, 5), proving it is not a disguised alias of mode 0.
+  bool any_divergence = false;
+  for (std::size_t i = 0; i < kTask30RelationalRows.size(); ++i) {
+    any_divergence = any_divergence ||
+                     (witnesses[4].reduced[i] != witnesses[0].reduced[i]);
+  }
+  REQUIRE(any_divergence);
+  REQUIRE(witnesses[4].reduced[2] != witnesses[0].reduced[2]);
+  REQUIRE(witnesses[4].reduced[3] != witnesses[0].reduced[3]);
+  REQUIRE(witnesses[4].reduced[5] != witnesses[0].reduced[5]);
+
+  std::array<std::array<std::uint32_t, 28>, 5> signatures{};
+  for (std::size_t index = 0; index < witnesses.size(); ++index)
+    signatures[index] = task30_relational_signature(witnesses[index]);
+  for (std::size_t left = 0; left < signatures.size(); ++left) {
+    for (std::size_t right = left + 1U; right < signatures.size(); ++right)
+      REQUIRE(signatures[left] != signatures[right]);
+  }
+
+  REQUIRE_THROWS_AS(
+      task30_dispatch_relational_mode(static_cast<Task30RelationalMode>(5U)),
+      std::invalid_argument);
+  try {
+    (void)task30_dispatch_relational_mode(
+        static_cast<Task30RelationalMode>(5U));
+    REQUIRE(false);
+  } catch (const std::invalid_argument& error) {
+    REQUIRE(std::string_view(error.what()) ==
+            "invalid Task30 relational mode 5");
+  }
+}
+
+TEST(typed_task30_lessThanEqual_and_all_direct_lane_and_reduction_truth_tables) {
+  using noisemaker::glsl::Vec2;
+
+  // Exhaustive 2-lane truth table over the four (le, gt) combinations.
+  struct Row {
+    float lx, ly, rx, ry;
+    bool expected0, expected1, expected_all;
+  };
+  constexpr std::array<Row, 4> table{{
+      {0.0f, 0.0f, 1.0f, 1.0f, true, true, true},
+      {2.0f, 0.0f, 1.0f, 1.0f, false, true, false},
+      {0.0f, 2.0f, 1.0f, 1.0f, true, false, false},
+      {2.0f, 2.0f, 1.0f, 1.0f, false, false, false},
+  }};
+  for (const auto& row : table) {
+    const auto le = noisemaker::glsl::lessThanEqual<2>(
+        Vec2(row.lx, row.ly), Vec2(row.rx, row.ry));
+    REQUIRE(le[0] == row.expected0);
+    REQUIRE(le[1] == row.expected1);
+    REQUIRE(noisemaker::glsl::all<2>(le) == row.expected_all);
+  }
+
+  // Inclusive equality: this is exactly what discriminates <= from <. Equal
+  // lanes must read true under lessThanEqual/all, not false.
+  const auto equal_le = noisemaker::glsl::lessThanEqual<2>(
+      Vec2(3.0f, -7.5f), Vec2(3.0f, -7.5f));
+  REQUIRE(equal_le[0]);
+  REQUIRE(equal_le[1]);
+  REQUIRE(noisemaker::glsl::all<2>(equal_le));
+
+  // Signed zero: IEEE-754 defines -0.0 == 0.0, so <= must hold in both
+  // directions across the signed-zero boundary.
+  const auto neg_then_pos = noisemaker::glsl::lessThanEqual<2>(
+      Vec2(-0.0f, 0.0f), Vec2(0.0f, -0.0f));
+  REQUIRE(neg_then_pos[0]);
+  REQUIRE(neg_then_pos[1]);
+  REQUIRE(noisemaker::glsl::all<2>(neg_then_pos));
+  const auto pos_then_neg = noisemaker::glsl::lessThanEqual<2>(
+      Vec2(0.0f, -0.0f), Vec2(-0.0f, 0.0f));
+  REQUIRE(pos_then_neg[0]);
+  REQUIRE(pos_then_neg[1]);
+  REQUIRE(noisemaker::glsl::all<2>(pos_then_neg));
+
+  // NaN: every IEEE-754 relational comparison against NaN is false, so both
+  // the per-lane result and the all() reduction must read false whenever
+  // either operand of a lane is NaN, including NaN compared to itself.
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  const auto nan_left =
+      noisemaker::glsl::lessThanEqual<2>(Vec2(nan, 0.0f), Vec2(1.0f, 1.0f));
+  REQUIRE(!nan_left[0]);
+  REQUIRE(nan_left[1]);
+  REQUIRE(!noisemaker::glsl::all<2>(nan_left));
+  const auto nan_right =
+      noisemaker::glsl::lessThanEqual<2>(Vec2(0.0f, 0.0f), Vec2(nan, nan));
+  REQUIRE(!nan_right[0]);
+  REQUIRE(!nan_right[1]);
+  REQUIRE(!noisemaker::glsl::all<2>(nan_right));
+  const auto nan_self =
+      noisemaker::glsl::lessThanEqual<2>(Vec2(nan, nan), Vec2(nan, nan));
+  REQUIRE(!nan_self[0]);
+  REQUIRE(!nan_self[1]);
+  REQUIRE(!noisemaker::glsl::all<2>(nan_self));
+
+  // Compile-time proof of the load-bearing constraint: the reduction
+  // capability authenticated by extrude-bvec2-relational-reduction-v1 is
+  // deliberately limited to N == 2, so bvec3/bvec4 relational reduction must
+  // be a hard compile error rather than a silently available
+  // generalization. `requires` expressions detect substitution failure
+  // without needing a separate non-compiling translation unit.
+  static_assert(!requires(noisemaker::glsl::Vec<3, float> a,
+                          noisemaker::glsl::Vec<3, float> b) {
+    noisemaker::glsl::lessThanEqual<3>(a, b);
+  });
+  static_assert(!requires(noisemaker::glsl::Vec<4, float> a,
+                          noisemaker::glsl::Vec<4, float> b) {
+    noisemaker::glsl::lessThanEqual<4>(a, b);
+  });
+  static_assert(!requires(noisemaker::glsl::Vec<3, bool> v) {
+    noisemaker::glsl::all<3>(v);
+  });
+  static_assert(!requires(noisemaker::glsl::Vec<4, bool> v) {
+    noisemaker::glsl::all<4>(v);
+  });
+}

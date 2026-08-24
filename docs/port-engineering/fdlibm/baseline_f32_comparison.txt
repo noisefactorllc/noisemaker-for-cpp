@@ -1,0 +1,15 @@
+=== std:: vs V8 at f32 ===
+N = 403636
+
+tanh   compared=403636  exact=403636  divergent=0  (0.000000%)  maxULP@f32=0
+exp    compared=403636  exact=403636  divergent=0  (0.000000%)  maxULP@f32=0
+expm1  compared=403636  exact=403636  divergent=0  (0.000000%)  maxULP@f32=0
+sin    compared=403636  exact=403636  divergent=0  (0.000000%)  maxULP@f32=0
+cos    compared=403636  exact=403636  divergent=0  (0.000000%)  maxULP@f32=0
+
+=== full divergent-case listing (all, not just worst) ===
+tanh: none
+exp: none
+expm1: none
+sin: none
+cos: none

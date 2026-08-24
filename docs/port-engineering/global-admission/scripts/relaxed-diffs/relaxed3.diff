@@ -1,0 +1,36 @@
+--- live_probe/tools/glslcpp/generate_typed_slice.py	2026-08-13 09:58:25
++++ live_probe/tools/glslcpp/generate_typed_slice_relaxed3.py	2026-08-13 10:16:05
+@@ -1865,6 +1865,11 @@
+                 used.add(FIXED_ARRAY_PARAMETER_CAPABILITY)
+                 return
+             raise GeneratorError(f"{location(value)}: unsupported typed type {typ.display()}")
++        if typ.display() == "mat3":
++            # RELAXED PROBE layer 2: provisionally admit mat3 as a typed
++            # type to find the NEXT blocker behind it. Never used outside
++            # this read-only probe.
++            return
+         if typ.display() == "bvec2":
+             # `bvec2` is deliberately absent from APPROVED_TYPES. It is admitted
+             # only as the result type of an exact authenticated Extrude
+@@ -2096,7 +2101,11 @@
+             admitted_globals[declaration.symbol.id] = declaration
+             continue
+         if storage != "const" or declaration.type != FLOAT or declaration.initializer is None:
+-            raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
++            # RELAXED PROBE layer 1: treat as provisionally admitted so
++            # downstream blockers become visible. Never used outside this
++            # read-only probe; the real generator is untouched.
++            admitted_globals[declaration.symbol.id] = declaration
++            continue
+ 
+         def global_initializer(value) -> None:
+             if value.type != FLOAT:
+@@ -2160,7 +2169,7 @@
+         raise GeneratorError(f"{location(typed.interface_symbols[0])}: unsupported varying")
+     for declaration in typed.declarations:
+         reject_type(declaration.type, declaration)
+-        if declaration.type.kind == "matrix":
++        if declaration.type.kind == "matrix" and declaration.type.display() != "mat3":
+             raise GeneratorError(f"{location(declaration)}: unsupported global matrix declaration")
+         if declaration.symbol.storage not in {"uniform", "output", "const"}:
+             raise GeneratorError(f"{location(declaration)}: unsupported global declaration")

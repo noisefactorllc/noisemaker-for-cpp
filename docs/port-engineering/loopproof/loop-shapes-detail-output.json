@@ -1,0 +1,2394 @@
+{
+ "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+ "keys_probed": 22,
+ "rows": [
+  {
+   "in_terminal_16": false,
+   "key": "classicNoisedeck/effects:effects",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 4
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "bloom",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -4
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 0,
+      "lexical_depth": 1,
+      "lexical_product": 48,
+      "trip_count": 8
+     },
+     "proved": true,
+     "source_text": "for (int i = -4; i < 4; i++) {\n        for (int j = -3; j < 3; j++) {\n            sum += texture(inputTex, st + vec2(j, i) * 0.004).rgb * strength;\n        }\n    }",
+     "span": "503:5-507:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "bloom",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -3
+      },
+      "name": "j",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 0,
+      "lexical_depth": 2,
+      "lexical_product": 48,
+      "trip_count": 6
+     },
+     "proved": true,
+     "source_text": "for (int j = -3; j < 3; j++) {\n            sum += texture(inputTex, st + vec2(j, i) * 0.004).rgb * strength;\n        }",
+     "span": "504:9-506:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 9
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "convolve",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 0,
+      "lexical_depth": 1,
+      "lexical_product": 9,
+      "trip_count": 9
+     },
+     "proved": true,
+     "source_text": "for(int i = 0; i < 9; i++){\n        \n        vec3 color = texture(inputTex, ((uv + offset[i] * effectAmt) * fullResolution - tileOffset) / vec2(textureSize(inputTex, 0))).rgb;\n\n        \n        conv += color * kernel[i];\n\n        \n        kernelWeight += kernel[i];\n    }",
+     "span": "250:5-259:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "other:literal"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "zoomBlur",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:literal"
+      },
+      "name": "t",
+      "storage": "local",
+      "type": "float"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (float t = 0.0; t <= 40.0; t++) {\n        float percent = (t + offset) / 40.0;\n        float weight = 4.0 * (percent - percent * percent);\n        float strength = map(effectAmt, 0.0, 20.0, 0.0, 1.0);\n        vec4 tex = texture(inputTex, st + toCenter * percent * strength);\n        color += tex.rgb * weight;\n        total += weight;\n    }",
+     "span": "531:5-538:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 3,
+    "max_effective_depth": 2,
+    "max_lexical_product": 48,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/classicNoisedeck/effects/effects.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "classicNoisedeck/fractal:fractal",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "iterScaled",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "julia",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i=0; i<iterScaled; i++) { \n        iter = i;\n        float x = (z.x * z.x - z.y * z.y) + c.x;\n        float y = (z.y * z.x + z.x * z.y) + c.y;\n\n        if((x * x + y * y) > 4.0) break;\n        z.x = x;\n        z.y = y;\n    }",
+     "span": "261:5-269:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "linearToSrgb",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 3,
+      "lexical_depth": 1,
+      "lexical_product": 3,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 3; ++i) {\n        if (linear[i] <= 0.0031308) {\n            srgb[i] = linear[i] * 12.92;\n        } else {\n            srgb[i] = 1.055 * pow(linear[i], 1.0 / 2.4) - 0.055;\n        }\n    }",
+     "span": "119:5-125:6",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "other:construct"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "mandelbrot",
+     "induction": {
+      "declared": false,
+      "init": {
+       "shape": "no-decl"
+      },
+      "name": null,
+      "storage": null,
+      "type": null
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (i = 0.0; i < float(iterations); i++) { \n        \n        \n\n        z = mat2(z, -z.y, z.x) * z + c;\n\n        if (dot(z, z) > 4.0 * 4.0) {\n            break;\n        }\n    }",
+     "span": "301:5-310:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "iterations",
+      "shape": "id:storage=uniform",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "newton",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 0; i < iterations; i++) { \n        tst = divide(fx(n), fpx(n));\n\n        \n        tst += vec2(sin(time * 6.28318530718), cos(time * 6.28318530718)) * 0.1 * s;\n        tst += vec2(offX, offY);\n\n        if (length(tst) < 0.001)\n        break;\n        n = n - tst;\n        iter += 1.0;\n    }",
+     "span": "220:5-231:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 3,
+    "loop_count": 1,
+    "max_effective_depth": 1,
+    "max_lexical_product": 3,
+    "unproved_loop_count": 3
+   },
+   "source_file": "sources/classicNoisedeck/fractal/fractal.glsl"
+  },
+  {
+   "in_terminal_16": false,
+   "key": "classicNoisedeck/noise:noise",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "linearToSrgb",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 0,
+      "lexical_depth": 1,
+      "lexical_product": 3,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 3; ++i) {\n        if (linear[i] <= 0.0031308) {\n            srgb[i] = linear[i] * 12.92;\n        } else {\n            srgb[i] = 1.055 * pow(linear[i], 1.0 / 2.4) - 0.055;\n        }\n    }",
+     "span": "459:5-465:6",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "octaves",
+      "shape": "id:storage=parameter",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "multires",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 1; i <= octaves; i++) {\n        float multiplier = pow(2.0, float(i));\n        vec2 baseFreq = freq * 0.5 * multiplier;\n        float nominalBase = nominalFreq.x * 0.5 * multiplier;\n        multiplicand += 1.0 / multiplier;\n\n        {\n            vec2 xRefractFreq = vec2(baseFreq.x, nominalBase);\n            vec2 yRefractFreq = vec2(nominalBase, baseFreq.y);\n            float xRef = value(st, xRefractFreq, s + 10.0 * float(i), blend) - 0.5;\n            float yRef = value(st, yRefractFreq, s + 20.0 * float(i), blend) - 0.5;\n            float ref = map(refractAmt, 0.0, 100.0, 0.0, 1.0) / multiplier;\n            st = vec2(st.x + xRef * ref, st.y + yRef * ref);\n        }\n\n        vec3 layer = generate_octave(st, baseFreq, s + 10.0 * float(i), blend, float(i));\n\n        {\n            float xOff = cos(layer.b) * 0.5 + 0.5;\n            float yOff = sin(layer.b) * 0.5 + 0.5;\n            vec3 ref = generate_octave(vec2(st.x + xOff, st.y + yOff), baseFreq, s + 15.0 * float(i), blend, float(i));\n            layer = mix(layer, ref, map(refractAmt, 0.0, 100.0, 0.0, 1.0));\n        }\n\n        color.rgb += layer / multiplier;\n    }",
+     "span": "533:5-558:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "srgbToLinear",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 0,
+      "lexical_depth": 1,
+      "lexical_product": 3,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 3; ++i) {\n        if (srgb[i] <= 0.04045) {\n            linear[i] = srgb[i] / 12.92;\n        } else {\n            linear[i] = pow((srgb[i] + 0.055) / 1.055, 2.4);\n        }\n    }",
+     "span": "471:5-477:6",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 2,
+    "max_effective_depth": 1,
+    "max_lexical_product": 3,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/classicNoisedeck/noise/noise.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/blur:blurH",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "radius",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = -radius; i <= radius; i++) {\n        float x = float(i);\n        float weight = exp(-(x * x) / (2.0 * sigma2));\n        vec2 offset = vec2(float(i) * texelSize.x, 0.0);\n        sum += texture(inputTex, uv + offset) * weight;\n        weightSum += weight;\n    }",
+     "span": "33:5-39:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/blur/blurH.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/blur:blurV",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "radius",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = -radius; i <= radius; i++) {\n        float x = float(i);\n        float weight = exp(-(x * x) / (2.0 * sigma2));\n        vec2 offset = vec2(0.0, float(i) * texelSize.y);\n        sum += texture(inputTex, uv + offset) * weight;\n        weightSum += weight;\n    }",
+     "span": "33:5-39:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/blur/blurV.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/dither:dither",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "FS_ERR_W",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "errorDiffusion",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 0; i < FS_ERR_W; i++) {\n        errRow[i] = fsSeedNoise(blockOrigin, i) * stepScale;\n    }",
+     "span": "521:5-523:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": true,
+      "return": false
+     },
+     "bound": {
+      "name": "ly",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "errorDiffusion",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "r",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int r = -FS_APRON_MAX; r <= ly; r++) {\n        if (r < -apronY) {\n            continue;\n        }\n        bool lastRow = r == ly;\n        vec3 rightErr = fsSeedNoise(blockOrigin, FS_ERR_W + FS_APRON_MAX + r) * stepScale;\n        vec3 diag = vec3(0.0);\n        for (int c = -FS_APRON_MAX; c < FS_BLOCK + FS_RPAD; c++) {\n            if (c >= -apronX && !(lastRow && c >= lx)) {\n                vec3 src = fsFetchCell(blockOrigin + ivec2(c, r), cellSize, texSize);\n                vec3 v = clamp(src + errRow[c + FS_APRON_MAX + 1] + rightErr + bias, 0.0, 1.0);\n                vec3 err = v - fsQuantize(v);\n                rightErr = err * (7.0 / 16.0);\n                errRow[c + FS_APRON_MAX] += err * (3.0 / 16.0);\n                errRow[c + FS_APRON_MAX + 1] = diag + err * (5.0 / 16.0);\n                diag = err * (1.0 / 16.0);\n            }\n        }\n        if (lastRow) {\n            \n            \n            vec3 incoming = errRow[FS_APRON_MAX + 1];\n            if (lx == 1) incoming = errRow[FS_APRON_MAX + 2];\n            if (lx == 2) incoming = errRow[FS_APRON_MAX + 3];\n            if (lx == 3) incoming = errRow[FS_APRON_MAX + 4];\n            carried = incoming + rightErr;\n        }\n    }",
+     "span": "526:5-553:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "binary:+"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "errorDiffusion",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "c",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int c = -FS_APRON_MAX; c < FS_BLOCK + FS_RPAD; c++) {\n            if (c >= -apronX && !(lastRow && c >= lx)) {\n                vec3 src = fsFetchCell(blockOrigin + ivec2(c, r), cellSize, texSize);\n                vec3 v = clamp(src + errRow[c + FS_APRON_MAX + 1] + rightErr + bias, 0.0, 1.0);\n                vec3 err = v - fsQuantize(v);\n                rightErr = err * (7.0 / 16.0);\n                errRow[c + FS_APRON_MAX] += err * (3.0 / 16.0);\n                errRow[c + FS_APRON_MAX + 1] = diag + err * (5.0 / 16.0);\n                diag = err * (1.0 / 16.0);\n            }\n        }",
+     "span": "533:9-543:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 15
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "findClosest15",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 30,
+      "lexical_depth": 1,
+      "lexical_product": 14,
+      "trip_count": 14
+     },
+     "proved": true,
+     "source_text": "for (int i = 1; i < 15; i++) {\n        float dist = colorDistance(color, pal[i]);\n        if (dist < minDist) {\n            minDist = dist;\n            closest = pal[i];\n        }\n    }",
+     "span": "387:5-393:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 16
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "findClosest16",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 30,
+      "lexical_depth": 1,
+      "lexical_product": 15,
+      "trip_count": 15
+     },
+     "proved": true,
+     "source_text": "for (int i = 1; i < 16; i++) {\n        float dist = colorDistance(color, pal[i]);\n        if (dist < minDist) {\n            minDist = dist;\n            closest = pal[i];\n        }\n    }",
+     "span": "402:5-408:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 4
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "findClosest4",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 30,
+      "lexical_depth": 1,
+      "lexical_product": 3,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int i = 1; i < 4; i++) {\n        float dist = colorDistance(color, pal[i]);\n        if (dist < minDist) {\n            minDist = dist;\n            closest = pal[i];\n        }\n    }",
+     "span": "372:5-378:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 30,
+    "loop_count": 3,
+    "max_effective_depth": 1,
+    "max_lexical_product": 15,
+    "unproved_loop_count": 3
+   },
+   "source_file": "sources/filter/dither/dither.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/lightLeak:lightLeak",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "POINT_COUNT",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "voronoiCell",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 0; i < POINT_COUNT; i++) {\n        vec3 s = vec3(seed_f, float(i) * 7.31, 0.0);\n        vec2 base = hash33(s).xy;\n        vec2 osc = vec2(\n            sin(t * 0.7 + float(i) * 1.618),\n            cos(t * 0.5 + float(i) * 2.236)\n        ) * drift;\n        vec2 pt = fract(base + osc);\n        vec2 delta = abs(uv - pt);\n        vec2 wd = min(delta, 1.0 - delta);\n        float dist = dot(wd, wd);\n        if (dist < best_dist) {\n            best_dist = dist;\n            best_index = i;\n        }\n    }",
+     "span": "65:5-80:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/lightLeak/lightLeak.glsl"
+  },
+  {
+   "in_terminal_16": false,
+   "key": "filter/median:median",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -3
+      },
+      "name": "y",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 56,
+      "lexical_depth": 1,
+      "lexical_product": 49,
+      "trip_count": 7
+     },
+     "proved": true,
+     "source_text": "for (int y = -3; y <= 3; y++) {\n        for (int x = -3; x <= 3; x++) {\n            vec4 sampleColor = readRecord(center, dimensions, x, y);\n            majorRecords[index] = packRecordMajor(sampleColor);\n            blueRecords[index] = packRecordBlue(sampleColor);\n            if (x == 0 && y == 0) {\n                originalRgb = sampleColor.rgb;\n                centerAlpha = sampleColor.a;\n            }\n            index++;\n        }\n    }",
+     "span": "47:5-58:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -3
+      },
+      "name": "x",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 56,
+      "lexical_depth": 2,
+      "lexical_product": 49,
+      "trip_count": 7
+     },
+     "proved": true,
+     "source_text": "for (int x = -3; x <= 3; x++) {\n            vec4 sampleColor = readRecord(center, dimensions, x, y);\n            majorRecords[index] = packRecordMajor(sampleColor);\n            blueRecords[index] = packRecordBlue(sampleColor);\n            if (x == 0 && y == 0) {\n                originalRgb = sampleColor.rgb;\n                centerAlpha = sampleColor.a;\n            }\n            index++;\n        }",
+     "span": "48:9-57:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "condition": {
+      "kind": "binary"
+     },
+     "depth": 1,
+     "function": "main",
+     "kind": "while",
+     "proved": false,
+     "source_text": "while (left < right) {\n        uvec2 pivotMajor = majorRecords[medianIndex];\n        uint pivotBlue = blueRecords[medianIndex];\n        int scanLeft = left;\n        int scanRight = right;\n        while (scanLeft <= scanRight) {\n            while (lessRecord(majorRecords[scanLeft], blueRecords[scanLeft], pivotMajor, pivotBlue)) { scanLeft++; }\n            while (lessRecord(pivotMajor, pivotBlue, majorRecords[scanRight], blueRecords[scanRight])) { scanRight--; }\n            if (scanLeft <= scanRight) {\n                uvec2 temporaryMajor = majorRecords[scanLeft];\n                majorRecords[scanLeft] = majorRecords[scanRight];\n                majorRecords[scanRight] = temporaryMajor;\n                uint temporaryBlue = blueRecords[scanLeft];\n                blueRecords[scanLeft] = blueRecords[scanRight];\n                blueRecords[scanRight] = temporaryBlue;\n                scanLeft++;\n                scanRight--;\n            }\n        }\n        if (scanRight < medianIndex) { left = scanLeft; }\n        if (medianIndex < scanLeft) { right = scanRight; }\n    }",
+     "span": "63:5-84:6"
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "condition": {
+      "kind": "binary"
+     },
+     "depth": 2,
+     "function": "main",
+     "kind": "while",
+     "proved": false,
+     "source_text": "while (scanLeft <= scanRight) {\n            while (lessRecord(majorRecords[scanLeft], blueRecords[scanLeft], pivotMajor, pivotBlue)) { scanLeft++; }\n            while (lessRecord(pivotMajor, pivotBlue, majorRecords[scanRight], blueRecords[scanRight])) { scanRight--; }\n            if (scanLeft <= scanRight) {\n                uvec2 temporaryMajor = majorRecords[scanLeft];\n                majorRecords[scanLeft] = majorRecords[scanRight];\n                majorRecords[scanRight] = temporaryMajor;\n                uint temporaryBlue = blueRecords[scanLeft];\n                blueRecords[scanLeft] = blueRecords[scanRight];\n                blueRecords[scanRight] = temporaryBlue;\n                scanLeft++;\n                scanRight--;\n            }\n        }",
+     "span": "68:9-81:10"
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "condition": {
+      "kind": "call"
+     },
+     "depth": 3,
+     "function": "main",
+     "kind": "while",
+     "proved": false,
+     "source_text": "while (lessRecord(majorRecords[scanLeft], blueRecords[scanLeft], pivotMajor, pivotBlue)) { scanLeft++; }",
+     "span": "69:13-69:117"
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "condition": {
+      "kind": "call"
+     },
+     "depth": 3,
+     "function": "main",
+     "kind": "while",
+     "proved": false,
+     "source_text": "while (lessRecord(pivotMajor, pivotBlue, majorRecords[scanRight], blueRecords[scanRight])) { scanRight--; }",
+     "span": "70:13-70:120"
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 56,
+    "loop_count": 2,
+    "max_effective_depth": 2,
+    "max_lexical_product": 49,
+    "unproved_loop_count": 4
+   },
+   "source_file": "sources/filter/median/median.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/normalize:statsFinal",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "base_kind": "id",
+      "member": "y",
+      "shape": "swizzle/member"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "y",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int y = 0; y < inSize.y; y++) {\n        for (int x = 0; x < inSize.x; x++) {\n            vec4 color = texelFetch(inputTex, ivec2(x, y), 0);\n            \n            \n            minVal = min(minVal, color.r);\n            maxVal = max(maxVal, color.g);\n        }\n    }",
+     "span": "18:5-26:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "base_kind": "id",
+      "member": "x",
+      "shape": "swizzle/member"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "x",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int x = 0; x < inSize.x; x++) {\n            vec4 color = texelFetch(inputTex, ivec2(x, y), 0);\n            \n            \n            minVal = min(minVal, color.r);\n            maxVal = max(maxVal, color.g);\n        }",
+     "span": "19:9-25:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 2
+   },
+   "source_file": "sources/filter/normalize/statsFinal.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/oilPaint:oilFlatten",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": true,
+      "return": false
+     },
+     "bound": {
+      "name": "sampleLimit",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "y",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int y = -sampleLimit; y <= sampleLimit; y++) {\n        for (int x = -sampleLimit; x <= sampleLimit; x++) {\n            vec2 d = vec2(float(x), float(y));\n            if (abs(d.x) > fr || abs(d.y) > fr || dot(d, d) > frSq) { continue; }\n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            if (fr > 8.0 && dot(d, d) > 64.0 && (abs(x) + abs(y)) % 2 != 0) { continue; }\n\n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            ivec2 sc = clamp(icenter + ivec2(x, y), ivec2(0), dims - ivec2(1));\n            vec3 c = texelFetch(inputTex, sc, 0).rgb;\n            vec3 cc = c * c;\n            \n            \n            \n            \n            if (x == 0 && y == 0) {\n                m4 += c; q4 += cc; n4 += 1.0;\n            } else if (d.x > 0.0 && d.y >= 0.0) {\n                if (abs(d.x) <= abs(d.y)) { m5 += c; q5 += cc; n5 += 1.0; }\n                else                      { m4 += c; q4 += cc; n4 += 1.0; }\n            } else if (d.x <= 0.0 && d.y > 0.0) {\n                if (abs(d.x) < abs(d.y))  { m6 += c; q6 += cc; n6 += 1.0; }\n                else                      { m7 += c; q7 += cc; n7 += 1.0; }\n            } else if (d.x < 0.0 && d.y <= 0.0) {\n                if (abs(d.x) <= abs(d.y)) { m1 += c; q1 += cc; n1 += 1.0; }\n                else                      { m0 += c; q0 += cc; n0 += 1.0; }\n            } else {\n                \n                if (abs(d.x) < abs(d.y))  { m2 += c; q2 += cc; n2 += 1.0; }\n                else                      { m3 += c; q3 += cc; n3 += 1.0; }\n            }\n        }\n    }",
+     "span": "33:5-98:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": true,
+      "return": false
+     },
+     "bound": {
+      "name": "sampleLimit",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:unary"
+      },
+      "name": "x",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int x = -sampleLimit; x <= sampleLimit; x++) {\n            vec2 d = vec2(float(x), float(y));\n            if (abs(d.x) > fr || abs(d.y) > fr || dot(d, d) > frSq) { continue; }\n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            if (fr > 8.0 && dot(d, d) > 64.0 && (abs(x) + abs(y)) % 2 != 0) { continue; }\n\n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            \n            ivec2 sc = clamp(icenter + ivec2(x, y), ivec2(0), dims - ivec2(1));\n            vec3 c = texelFetch(inputTex, sc, 0).rgb;\n            vec3 cc = c * c;\n            \n            \n            \n            \n            if (x == 0 && y == 0) {\n                m4 += c; q4 += cc; n4 += 1.0;\n            } else if (d.x > 0.0 && d.y >= 0.0) {\n                if (abs(d.x) <= abs(d.y)) { m5 += c; q5 += cc; n5 += 1.0; }\n                else                      { m4 += c; q4 += cc; n4 += 1.0; }\n            } else if (d.x <= 0.0 && d.y > 0.0) {\n                if (abs(d.x) < abs(d.y))  { m6 += c; q6 += cc; n6 += 1.0; }\n                else                      { m7 += c; q7 += cc; n7 += 1.0; }\n            } else if (d.x < 0.0 && d.y <= 0.0) {\n                if (abs(d.x) <= abs(d.y)) { m1 += c; q1 += cc; n1 += 1.0; }\n                else                      { m0 += c; q0 += cc; n0 += 1.0; }\n            } else {\n                \n                if (abs(d.x) < abs(d.y))  { m2 += c; q2 += cc; n2 += 1.0; }\n                else                      { m3 += c; q3 += cc; n3 += 1.0; }\n            }\n        }",
+     "span": "34:9-97:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 2
+   },
+   "source_file": "sources/filter/oilPaint/oilFlatten.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/parallax:parallax",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "MARCH_STEPS",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 1; i <= MARCH_STEPS; i++) {\n            float prevF = f;\n            vec2 prevUV = rayUV;\n            t = 1.0 - float(i) * stepSize;\n            rayUV = uv + shift * (t - pivot);\n            f = t - getHeight(rayUV);\n            if (f <= 0.0) {\n                \n                float w = f / (f - prevF);\n                rayUV = mix(rayUV, prevUV, w);\n                break;\n            }\n        }",
+     "span": "59:9-71:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/parallax/parallax.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/reindex:nmReindexReduce",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "MAX_TILE_DIM",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "ty",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int ty = 0; ty < MAX_TILE_DIM; ++ty) {\n        if (ty >= tileCount.y) break;\n        for (int tx = 0; tx < MAX_TILE_DIM; ++tx) {\n            if (tx >= tileCount.x) break;\n            ivec2 sampleCoord = ivec2(tx * TILE_SIZE, ty * TILE_SIZE);\n            vec2 tileStats = texelFetch(statsTex, sampleCoord, 0).xy;\n            globalMin = min(globalMin, tileStats.x);\n            globalMax = max(globalMax, tileStats.y);\n        }\n    }",
+     "span": "32:5-41:6",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "MAX_TILE_DIM",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "tx",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int tx = 0; tx < MAX_TILE_DIM; ++tx) {\n            if (tx >= tileCount.x) break;\n            ivec2 sampleCoord = ivec2(tx * TILE_SIZE, ty * TILE_SIZE);\n            vec2 tileStats = texelFetch(statsTex, sampleCoord, 0).xy;\n            globalMin = min(globalMin, tileStats.x);\n            globalMax = max(globalMax, tileStats.y);\n        }",
+     "span": "34:9-40:10",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 2
+   },
+   "source_file": "sources/filter/reindex/nmReindexReduce.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/reindex:nmReindexStats",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "TILE_SIZE",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "oy",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int oy = 0; oy < TILE_SIZE; ++oy) {\n        int py = tileOrigin.y + oy;\n        if (py >= texSize.y) break;\n        for (int ox = 0; ox < TILE_SIZE; ++ox) {\n            int px = tileOrigin.x + ox;\n            if (px >= texSize.x) break;\n            vec4 texel = texelFetch(inputTex, ivec2(px, py), 0);\n            float value = value_map_component(texel);\n            minValue = min(minValue, value);\n            maxValue = max(maxValue, value);\n        }\n    }",
+     "span": "72:5-83:6",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "TILE_SIZE",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "ox",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int ox = 0; ox < TILE_SIZE; ++ox) {\n            int px = tileOrigin.x + ox;\n            if (px >= texSize.x) break;\n            vec4 texel = texelFetch(inputTex, ivec2(px, py), 0);\n            float value = value_map_component(texel);\n            minValue = min(minValue, value);\n            maxValue = max(maxValue, value);\n        }",
+     "span": "75:9-82:10",
+     "update": {
+      "kind": "unary",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 2
+   },
+   "source_file": "sources/filter/reindex/nmReindexStats.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/smooth:smoothBlend",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": true,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 4
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "edgeBlur",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -4
+      },
+      "name": "dy",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 90,
+      "lexical_depth": 1,
+      "lexical_product": 81,
+      "trip_count": 9
+     },
+     "proved": true,
+     "source_text": "for (int dy = -4; dy <= 4; dy++) {\n        for (int dx = -4; dx <= 4; dx++) {\n            if (dx == 0 && dy == 0) continue;\n            if (abs(dx) > r || abs(dy) > r) continue;\n\n            float d = float(dx * dx + dy * dy);\n            float w = exp(-d / sigma2);\n\n            sum += texelFetch(inputTex, clamp(coord + ivec2(dx, dy), ivec2(0), maxC), 0) * w;\n            totalWeight += w;\n        }\n    }",
+     "span": "175:5-186:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": true,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 4
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 2,
+     "function": "edgeBlur",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -4
+      },
+      "name": "dx",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 90,
+      "lexical_depth": 2,
+      "lexical_product": 81,
+      "trip_count": 9
+     },
+     "proved": true,
+     "source_text": "for (int dx = -4; dx <= 4; dx++) {\n            if (dx == 0 && dy == 0) continue;\n            if (abs(dx) > r || abs(dy) > r) continue;\n\n            float d = float(dx * dx + dy * dy);\n            float w = exp(-d / sigma2);\n\n            sum += texelFetch(inputTex, clamp(coord + ivec2(dx, dy), ivec2(0), maxC), 0) * w;\n            totalWeight += w;\n        }",
+     "span": "176:9-185:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 8
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "msaaBlend",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 90,
+      "lexical_depth": 1,
+      "lexical_product": 8,
+      "trip_count": 8
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 8; i++) {\n        if (i >= count) break;\n        vec2 offset = getSampleOffset(i, count) * radius;\n        sum += sampleBilinear(uv + offset * texelSize, texSize);\n    }",
+     "span": "91:5-95:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": true
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 32
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "searchEdge",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 1; i <= 32; i++) {\n        if (i > searchSteps) break;\n        ivec2 sampleCoord = clamp(coord + dir * i, ivec2(0), maxC);\n        float edge = (component == 0) ? texelFetch(edgeTex, sampleCoord, 0).r\n                                      : texelFetch(edgeTex, sampleCoord, 0).g;\n        if (edge < 0.5) {\n            return float(i - 1);\n        }\n    }",
+     "span": "102:5-110:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 90,
+    "loop_count": 3,
+    "max_effective_depth": 2,
+    "max_lexical_product": 81,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/smooth/smoothBlend.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/tetraColorArray:tetraColorArray",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "count",
+      "shape": "id:storage=parameter",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "sampleColorArray",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 1; i < count; i++) {\n        float boundary, bw;\n\n        if (positionMode == 0) {\n            \n            boundary = float(i) / float(count);\n            bw = smoothAmount * 0.5 / float(count);\n        } else {\n            \n            float pPrev = getPosition(i - 1, count);\n            float pCurr = getPosition(i, count);\n            boundary = (pPrev + pCurr) * 0.5;\n            bw = smoothAmount * (pCurr - pPrev) * 0.25;\n        }\n\n        float blend = smoothstep(boundary - bw, boundary + bw, t);\n        vec3 nextColor = rgbToColorSpace(getColor(i), mode);\n        result = mixInColorSpace(result, nextColor, blend, mode);\n    }",
+     "span": "243:5-261:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/tetraColorArray/tetraColorArray.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "filter/zoomBlur:zoomBlur",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "other:literal"
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "other:literal"
+      },
+      "name": "t",
+      "storage": "local",
+      "type": "float"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (float t = 0.0; t <= 40.0; t++) {\n        float percent = (t + offset) / 40.0;\n        float weight = 4.0 * (percent - percent * percent);\n        vec4 tex = texture(inputTex, uv + toCenter * percent * strength);\n        color += tex.rgb * weight;\n        total += weight;\n    }",
+     "span": "43:5-49:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/filter/zoomBlur/zoomBlur.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "synth/mandelbrot:mandelbrot",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "MAX_ITER",
+      "shape": "id:storage=const",
+      "writable": false
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "mandelbrot_df64",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "n",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int n = 0; n < MAX_ITER; n++) {\n        if (n >= maxIter) break;\n\n        \n        float zx = df64_to_float(zr);\n        float zy = df64_to_float(zi);\n\n        \n        dz = vec2(\n            2.0 * (zx * dz.x - zy * dz.y) + 1.0,\n            2.0 * (zx * dz.y + zy * dz.x)\n        );\n\n        \n        vec2 zr2 = df64_mul(zr, zr);       \n        vec2 zi2 = df64_mul(zi, zi);       \n        vec2 zri = df64_mul(zr, zi);       \n        vec2 new_zr = df64_add(df64_sub(zr2, zi2), c_re);  \n        vec2 new_zi = df64_add(df64_mul_f(zri, 2.0), c_im); \n        zr = new_zr;\n        zi = new_zi;\n\n        \n        float post_zx = df64_to_float(zr);\n        float post_zy = df64_to_float(zi);\n        float post_mag2 = post_zx * post_zx + post_zy * post_zy;\n\n        \n        if (stripeFreq > 0.0) {\n            stripe += sin(stripeFreq * atan(post_zy, post_zx));\n        }\n        trap = min(trap, trapDistance(vec2(post_zx, post_zy), trapShape));\n\n        if (post_mag2 > BAILOUT * BAILOUT) break;\n        i += 1.0;\n    }",
+     "span": "226:5-261:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/synth/mandelbrot/mandelbrot.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "synth/noise:noise",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "name": "oct",
+      "shape": "id:storage=parameter",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "multires",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 1
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int i = 1; i <= oct; i++) {\n        float multiplier = pow(2.0, float(i));\n        vec2 baseFreq = freq * 0.5 * multiplier;\n        multiplicand += 1.0 / multiplier;\n\n        vec3 layer = generate_octave(st, baseFreq, s + 10.0 * float(i), blend, float(i));\n\n        color.rgb += layer / multiplier;\n    }",
+     "span": "250:5-258:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 0,
+    "loop_count": 0,
+    "max_effective_depth": 0,
+    "max_lexical_product": 0,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/synth/noise/noise.glsl"
+  },
+  {
+   "in_terminal_16": true,
+   "key": "synth/testPattern:testPattern",
+   "loops": [
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 3
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "renderNumber",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 3,
+      "lexical_depth": 1,
+      "lexical_product": 3,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 3; i++) {\n        digits[i] = temp % 10;\n        temp /= 10;\n    }",
+     "span": "55:5-58:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": false,
+      "continue": false,
+      "return": true
+     },
+     "bound": {
+      "name": "numDigits",
+      "shape": "id:storage=local",
+      "writable": true
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "renderNumber",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "d",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proved": false,
+     "source_text": "for (int d = 0; d < numDigits; d++) {\n        float digitX = startX + float(d) * (glyphWidth + spacing);\n\n        if (cellUV.x >= digitX && cellUV.x < digitX + glyphWidth) {\n            \n            float localX = (cellUV.x - digitX) / glyphWidth;\n            float localY = (cellUV.y - startY) / glyphHeight;\n\n            \n            int gx = int(localX * 3.0);\n            int gy = int(localY * 5.0);\n\n            \n            int digit = digits[numDigits - 1 - d];\n\n            return sampleGlyph(digit, gx, gy);\n        }\n    }",
+     "span": "61:5-78:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 3,
+    "loop_count": 1,
+    "max_effective_depth": 1,
+    "max_lexical_product": 3,
+    "unproved_loop_count": 1
+   },
+   "source_file": "sources/synth/testPattern/testPattern.glsl"
+  },
+  {
+   "in_terminal_16": false,
+   "key": "synth/gabor:gabor",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 1
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 1,
+     "function": "gaborNoise",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -1
+      },
+      "name": "dy",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 425,
+      "lexical_depth": 1,
+      "lexical_product": 72,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int dy = -1; dy <= 1; dy++) {\n        for (int dx = -1; dx <= 1; dx++) {\n            vec2 neighbor = vec2(float(dx), float(dy));\n            vec2 cellId = cell + neighbor;\n\n            for (int k = 0; k < 8; k++) {\n                if (k >= impulses) break;\n\n                \n                vec3 r1 = prng(vec3(cellId, sd + float(k) * 7.0));\n                vec3 r2 = prng(vec3(sd + float(k) * 13.0, cellId));\n\n                vec2 impulsePos = r1.xy;\n                \n                impulsePos += vec2(sin(t + r2.x * 6.28318530718), cos(t + r2.y * 6.28318530718)) * 0.15;\n\n                vec2 delta = neighbor + impulsePos - frac;\n\n                \n                float angle = mix(baseAngle, r2.z * 6.28318530718, iso);\n                vec2 dir = vec2(cos(angle), sin(angle));\n\n                \n                float weight = r1.z < 0.5 ? -1.0 : 1.0;\n\n                float envelope = exp(-dot(delta, delta) / (2.0 * sigma * sigma));\n                float phase = 6.28318530718 * freq * dot(dir, delta);\n                sum += weight * envelope * cos(phase);\n            }\n        }\n    }",
+     "span": "49:5-79:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 1
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<="
+     },
+     "depth": 2,
+     "function": "gaborNoise",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": -1
+      },
+      "name": "dx",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 3,
+      "entrypoint_charge": 425,
+      "lexical_depth": 2,
+      "lexical_product": 72,
+      "trip_count": 3
+     },
+     "proved": true,
+     "source_text": "for (int dx = -1; dx <= 1; dx++) {\n            vec2 neighbor = vec2(float(dx), float(dy));\n            vec2 cellId = cell + neighbor;\n\n            for (int k = 0; k < 8; k++) {\n                if (k >= impulses) break;\n\n                \n                vec3 r1 = prng(vec3(cellId, sd + float(k) * 7.0));\n                vec3 r2 = prng(vec3(sd + float(k) * 13.0, cellId));\n\n                vec2 impulsePos = r1.xy;\n                \n                impulsePos += vec2(sin(t + r2.x * 6.28318530718), cos(t + r2.y * 6.28318530718)) * 0.15;\n\n                vec2 delta = neighbor + impulsePos - frac;\n\n                \n                float angle = mix(baseAngle, r2.z * 6.28318530718, iso);\n                vec2 dir = vec2(cos(angle), sin(angle));\n\n                \n                float weight = r1.z < 0.5 ? -1.0 : 1.0;\n\n                float envelope = exp(-dot(delta, delta) / (2.0 * sigma * sigma));\n                float phase = 6.28318530718 * freq * dot(dir, delta);\n                sum += weight * envelope * cos(phase);\n            }\n        }",
+     "span": "50:9-78:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 8
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 3,
+     "function": "gaborNoise",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "k",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 4,
+      "entrypoint_charge": 425,
+      "lexical_depth": 3,
+      "lexical_product": 72,
+      "trip_count": 8
+     },
+     "proved": true,
+     "source_text": "for (int k = 0; k < 8; k++) {\n                if (k >= impulses) break;\n\n                \n                vec3 r1 = prng(vec3(cellId, sd + float(k) * 7.0));\n                vec3 r2 = prng(vec3(sd + float(k) * 13.0, cellId));\n\n                vec2 impulsePos = r1.xy;\n                \n                impulsePos += vec2(sin(t + r2.x * 6.28318530718), cos(t + r2.y * 6.28318530718)) * 0.15;\n\n                vec2 delta = neighbor + impulsePos - frac;\n\n                \n                float angle = mix(baseAngle, r2.z * 6.28318530718, iso);\n                vec2 dir = vec2(cos(angle), sin(angle));\n\n                \n                float weight = r1.z < 0.5 ? -1.0 : 1.0;\n\n                float envelope = exp(-dot(delta, delta) / (2.0 * sigma * sigma));\n                float phase = 6.28318530718 * freq * dot(dir, delta);\n                sum += weight * envelope * cos(phase);\n            }",
+     "span": "54:13-77:14",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 5
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "i",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 425,
+      "lexical_depth": 1,
+      "lexical_product": 5,
+      "trip_count": 5
+     },
+     "proved": true,
+     "source_text": "for (int i = 0; i < 5; i++) {\n        if (i >= oct) break;\n        float octFreq = 1.0 + float(i) * 0.5;\n        float octSigma = sigma / (1.0 + float(i) * 0.5);\n        float fi = float(i);\n        value += amplitude * gaborNoise(pOct, octFreq, octSigma, baseAngle, iso, impulses, t + fi * 3.7, seed + fi * 17.0);\n        totalAmp += amplitude;\n        amplitude *= 0.5;\n        pOct *= 2.0;\n    }",
+     "span": "104:5-113:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 425,
+    "loop_count": 4,
+    "max_effective_depth": 4,
+    "max_lexical_product": 72,
+    "unproved_loop_count": 0
+   },
+   "source_file": "sources/synth/gabor/gabor.glsl"
+  },
+  {
+   "in_terminal_16": false,
+   "key": "synth/newton:newton",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 8
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "k",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 8008,
+      "lexical_depth": 1,
+      "lexical_product": 8,
+      "trip_count": 8
+     },
+     "proved": true,
+     "source_text": "for (int k = 0; k < 8; k++) {\n        if (k >= numRoots) break;\n        float angle = TAU * float(k) / float(intDeg);\n        roots[k] = vec2(cos(angle), sin(angle));\n    }",
+     "span": "205:5-209:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 500
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "n",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 8008,
+      "lexical_depth": 1,
+      "lexical_product": 4000,
+      "trip_count": 500
+     },
+     "proved": true,
+     "source_text": "for (int n = 0; n < 500; n++) {\n        if (n >= maxIter) break;\n\n        \n        vec2 pwr = df64_from(1.0);\n        vec2 pwi = df64_from(0.0);\n        for (int j = 0; j < 7; j++) {\n            if (j >= intDeg - 1) break;\n            vec2 tr, ti;\n            df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti);\n            pwr = tr;\n            pwi = ti;\n        }\n\n        \n        vec2 znr, zni;\n        df64_cmul(pwr, pwi, zr_df, zi_df, znr, zni);\n\n        \n        vec2 fzr = df64_sub(znr, df64_from(1.0));\n        vec2 fzi = zni;\n\n        \n        vec2 fpzr = df64_mul_f(pwr, float(intDeg));\n        vec2 fpzi = df64_mul_f(pwi, float(intDeg));\n\n        \n        float fpzr_f = df64_to_float(fpzr);\n        float fpzi_f = df64_to_float(fpzi);\n        if (fpzr_f * fpzr_f + fpzi_f * fpzi_f < 1e-20) break;\n\n        \n        float denom = fpzr_f * fpzr_f + fpzi_f * fpzi_f;\n        float inv_denom = 1.0 / denom;\n        vec2 nr = df64_add(df64_mul(fzr, fpzr), df64_mul(fzi, fpzi));\n        vec2 ni = df64_sub(df64_mul(fzi, fpzr), df64_mul(fzr, fpzi));\n        vec2 dr = df64_mul_f(nr, inv_denom);\n        vec2 di = df64_mul_f(ni, inv_denom);\n\n        \n        zr_df = df64_sub(zr_df, df64_mul_f(dr, effRelax));\n        zi_df = df64_sub(zi_df, df64_mul_f(di, effRelax));\n\n        \n        float zx = df64_to_float(zr_df);\n        float zy = df64_to_float(zi_df);\n        if (zx * zx + zy * zy > bailout) break;\n\n        \n        for (int k = 0; k < 8; k++) {\n            if (k >= numRoots) break;\n            float dx = zx - roots[k].x;\n            float dy = zy - roots[k].y;\n            float d = sqrt(dx * dx + dy * dy);\n            if (d < tolerance) {\n                convergedRoot = k;\n                convergeDist = d;\n                break;\n            }\n        }\n        if (convergedRoot >= 0) break;\n\n        iter += 1.0;\n    }",
+     "span": "221:5-284:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 7
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "j",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 8008,
+      "lexical_depth": 2,
+      "lexical_product": 3500,
+      "trip_count": 7
+     },
+     "proved": true,
+     "source_text": "for (int j = 0; j < 7; j++) {\n            if (j >= intDeg - 1) break;\n            vec2 tr, ti;\n            df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti);\n            pwr = tr;\n            pwi = ti;\n        }",
+     "span": "227:9-233:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 8
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 2,
+     "function": "main",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "k",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 2,
+      "entrypoint_charge": 8008,
+      "lexical_depth": 2,
+      "lexical_product": 4000,
+      "trip_count": 8
+     },
+     "proved": true,
+     "source_text": "for (int k = 0; k < 8; k++) {\n            if (k >= numRoots) break;\n            float dx = zx - roots[k].x;\n            float dy = zy - roots[k].y;\n            float d = sqrt(dx * dx + dy * dy);\n            if (d < tolerance) {\n                convergedRoot = k;\n                convergeDist = d;\n                break;\n            }\n        }",
+     "span": "270:9-280:10",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 8008,
+    "loop_count": 4,
+    "max_effective_depth": 2,
+    "max_lexical_product": 4000,
+    "unproved_loop_count": 0
+   },
+   "source_file": "sources/synth/newton/newton.glsl"
+  },
+  {
+   "in_terminal_16": false,
+   "key": "synth/julia:julia",
+   "loops": [
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 1000
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "iterateSmooth",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "n",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 3000,
+      "lexical_depth": 1,
+      "lexical_product": 1000,
+      "trip_count": 1000
+     },
+     "proved": true,
+     "source_text": "for (int n = 0; n < 1000; n++) {\n        if (n >= maxIter) break;\n\n        vec2 zRe2 = df64_mul(zRe, zRe);\n        vec2 zIm2 = df64_mul(zIm, zIm);\n        vec2 zReIm = df64_mul(zRe, zIm);\n\n        zRe = df64_add(df64_sub(zRe2, zIm2), df64_from(c.x));\n        zIm = df64_add(df64_mul_f(zReIm, 2.0), df64_from(c.y));\n\n        float zMag2 = zRe.x * zRe.x + zIm.x * zIm.x;\n        if (zMag2 > bail2) break;\n        i += 1.0;\n    }",
+     "span": "297:5-310:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    },
+    {
+     "body_contains": {
+      "break": true,
+      "continue": false,
+      "return": false
+     },
+     "bound": {
+      "shape": "int-literal",
+      "value": 1000
+     },
+     "condition": {
+      "kind": "binary",
+      "operator": "<"
+     },
+     "depth": 1,
+     "function": "juliaIterate",
+     "induction": {
+      "declared": true,
+      "init": {
+       "shape": "int-literal",
+       "value": 0
+      },
+      "name": "n",
+      "storage": "local",
+      "type": "int"
+     },
+     "kind": "for",
+     "proof": {
+      "bound_kind": "literal",
+      "effective_depth": 1,
+      "entrypoint_charge": 3000,
+      "lexical_depth": 1,
+      "lexical_product": 1000,
+      "trip_count": 1000
+     },
+     "proved": true,
+     "source_text": "for (int n = 0; n < 1000; n++) {\n        if (n >= maxIter) break;\n\n        \n        vec2 zF = vec2(zRe.x, zIm.x);\n        dz = 2.0 * cmul(zF, dz);\n\n        \n        vec2 zRe2 = df64_mul(zRe, zRe);\n        vec2 zIm2 = df64_mul(zIm, zIm);\n        vec2 zReIm = df64_mul(zRe, zIm);\n\n        zRe = df64_add(df64_sub(zRe2, zIm2), df64_from(c.x));\n        zIm = df64_add(df64_mul_f(zReIm, 2.0), df64_from(c.y));\n\n        \n        float zMag2 = zRe.x * zRe.x + zIm.x * zIm.x;\n        if (zMag2 > bail2) break;\n\n        i += 1.0;\n\n        \n        vec2 zHi = vec2(zRe.x, zIm.x);\n        if (freq > 0.0) {\n            stripeLast = 0.5 * sin(freq * atan(zHi.y, zHi.x)) + 0.5;\n            stripeSum += stripeLast;\n            stripeCount += 1.0;\n        }\n\n        \n        float td;\n        if (trap == 0) {\n            td = length(zHi);\n        } else if (trap == 1) {\n            td = min(abs(zHi.x), abs(zHi.y));\n        } else {\n            td = abs(length(zHi) - 1.0);\n        }\n        trapMin = min(trapMin, td);\n\n        \n        period++;\n        if (period == 20) {\n            period = 0;\n            zSlow = zHi;\n        } else if (distance(zHi, zSlow) < 1e-10) {\n            i = float(maxIter);\n            break;\n        }\n    }",
+     "span": "187:5-236:6",
+     "update": {
+      "kind": "post",
+      "operator": "++"
+     }
+    }
+   ],
+   "program_summary": {
+    "call_graph_acyclic": true,
+    "entrypoint_charge": 3000,
+    "loop_count": 2,
+    "max_effective_depth": 1,
+    "max_lexical_product": 1000,
+    "unproved_loop_count": 0
+   },
+   "source_file": "sources/synth/julia/julia.glsl"
+  }
+ ],
+ "terminal_16_count": 16
+}

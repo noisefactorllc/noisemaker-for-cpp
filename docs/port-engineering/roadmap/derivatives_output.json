@@ -1,0 +1,426 @@
+{
+ "family": "dFdx / dFdy / fwidth",
+ "keys_using_each_builtin_count": {
+  "dFdx": 10,
+  "dFdy": 10,
+  "fwidth": 5
+ },
+ "keys_where_derivative_feeds_a_branch_condition": [],
+ "member_count": 15,
+ "rows": [
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/bulge:bulge",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "74:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "75:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec3"
+   ],
+   "builtins_used": [
+    "fwidth"
+   ],
+   "call_site_count": 1,
+   "key": "filter/celShading:celShadingColor",
+   "sites": [
+    {
+     "argument_type": "vec3",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec3",
+     "span": "84:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "float"
+   ],
+   "builtins_used": [
+    "fwidth"
+   ],
+   "call_site_count": 2,
+   "key": "filter/halftone:halftone",
+   "sites": [
+    {
+     "argument_type": "float",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "halftoneCoverage",
+     "result_type": "float",
+     "span": "87:24"
+    },
+    {
+     "argument_type": "float",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "roundDotCoverage",
+     "result_type": "float",
+     "span": "109:30"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/lens:lens",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "66:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "67:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/lensWarp:lensWarp",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "98:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "99:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/octaveWarp:octaveWarp",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "146:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "147:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/pinch:pinch",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "73:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "74:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/polar:polar",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "61:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "62:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/pondRipples:pondRipples",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "84:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "85:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/spiral:spiral",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "85:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "86:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "float"
+   ],
+   "builtins_used": [
+    "fwidth"
+   ],
+   "call_site_count": 1,
+   "key": "filter/stamp:stThreshold",
+   "sites": [
+    {
+     "argument_type": "float",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "float",
+     "span": "60:20"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec3"
+   ],
+   "builtins_used": [
+    "fwidth"
+   ],
+   "call_site_count": 1,
+   "key": "filter/step:step",
+   "sites": [
+    {
+     "argument_type": "vec3",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec3",
+     "span": "19:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "float"
+   ],
+   "builtins_used": [
+    "fwidth"
+   ],
+   "call_site_count": 1,
+   "key": "filter/stipple:stipple",
+   "sites": [
+    {
+     "argument_type": "float",
+     "builtin": "fwidth",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "float",
+     "span": "112:20"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/tunnel:tunnel",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "80:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "81:19"
+    }
+   ]
+  },
+  {
+   "any_feeds_branch_condition": false,
+   "argument_types_used": [
+    "vec2"
+   ],
+   "builtins_used": [
+    "dFdx",
+    "dFdy"
+   ],
+   "call_site_count": 2,
+   "key": "filter/warp:warp",
+   "sites": [
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdx",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "94:19"
+    },
+    {
+     "argument_type": "vec2",
+     "builtin": "dFdy",
+     "feeds_branch_condition": false,
+     "function": "main",
+     "result_type": "vec2",
+     "span": "95:19"
+    }
+   ]
+  }
+ ],
+ "total_call_sites": 26
+}

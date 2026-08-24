@@ -1,0 +1,50 @@
+
+===== FAIL: check_corpus --strict (exit 2) =====
+usage: python3.14 -m tools.glslcpp.check_corpus [-h] (--check | --report)
+python3.14 -m tools.glslcpp.check_corpus: error: one of the arguments --check --report is required
+
+
+===== FAIL: check_semantics (exit 2) =====
+usage: python3.14 -m tools.glslcpp.check_semantics [-h] (--check | --report)
+python3.14 -m tools.glslcpp.check_semantics: error: one of the arguments --check --report is required
+
+[PASS] generate_typed_slice --check                   generate_typed_slice: typed slice ok (129 programs)
+[PASS] generate_kernels --check                       
+[PASS] oracle task-15 --check                         {"prior":"verified","vectors":38,"output":"docs/port-engineering/task-15-oracles.json","written":false,"oracle_sha256":"e001c89f58ac970206a50dbf0974ce096e6fd71b5a3f2e389e315b0cfb16bdc8"}
+[PASS] oracle task-16 --check                         ok task-16-oracles.json
+[PASS] oracle task-17 --check                         ok task-17-oracles.json
+[PASS] oracle task-18 --check                         ok task-18-oracles.json
+[PASS] oracle task-19 --check                         ok task-19-oracles.json
+[PASS] oracle task-20 --check                         ok task-20-oracles.json
+[PASS] oracle task-21 --check                         ok task-21-oracles.json
+[PASS] oracle task-22 --check                         ok task-22-oracles.json
+[PASS] oracle task-23 --check                         ok task-23-oracles.json and task-23-oracle-report.md
+[PASS] oracle task-24 --check                         ok task-24-oracles.json and task-24-oracle-report.md
+[PASS] oracle task-25 --check                         ok task-25-oracles.json and task-25-oracle-report.md
+[PASS] oracle task-26 --check                         ok task-26-oracles.json and task-26-oracle-report.md
+[PASS] oracle task-27 --check                         ok task-27-oracles.json and task-27-oracle-report.md
+[PASS] oracle task-28 --check                         ok task-28-oracles.json and task-28-oracle-report.md
+[PASS] oracle task-29 --check                         Task29 Focus Blur oracle fixture ok (6 public cases, 8 direct modes)
+
+========== SUMMARY ==========
+check_corpus --strict                          exit=2   FAIL
+check_semantics                                exit=2   FAIL
+generate_typed_slice --check                   exit=0   PASS
+generate_kernels --check                       exit=0   PASS
+oracle task-15 --check                         exit=0   PASS
+oracle task-16 --check                         exit=0   PASS
+oracle task-17 --check                         exit=0   PASS
+oracle task-18 --check                         exit=0   PASS
+oracle task-19 --check                         exit=0   PASS
+oracle task-20 --check                         exit=0   PASS
+oracle task-21 --check                         exit=0   PASS
+oracle task-22 --check                         exit=0   PASS
+oracle task-23 --check                         exit=0   PASS
+oracle task-24 --check                         exit=0   PASS
+oracle task-25 --check                         exit=0   PASS
+oracle task-26 --check                         exit=0   PASS
+oracle task-27 --check                         exit=0   PASS
+oracle task-28 --check                         exit=0   PASS
+oracle task-29 --check                         exit=0   PASS
+=============================
+failures=2

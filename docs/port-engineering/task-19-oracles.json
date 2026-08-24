@@ -1,0 +1,904 @@
+{
+  "schema": "noisemaker-for-cpp.task19-fixed-array-in-parameter.canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+    "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
+    "generator": "task-19-oracle-generator.mjs"
+  },
+  "programs": [
+    {
+      "key": "classicNoisedeck/refract:refract",
+      "source": "sources/classicNoisedeck/refract/refract.glsl",
+      "raw_source_sha256": "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a49cfa2",
+      "normalized_source_sha256": "bff1818ad5db7e637a01d6f10476cebba8ac04d6ffdf467d02508fa23671757e",
+      "defines": {},
+      "binding_signature": [
+        "inputTex:sampler2D@1/S1",
+        "resolution:vec2@2",
+        "tileOffset:vec2@3",
+        "fullResolution:vec2@4",
+        "time:float@5",
+        "mode:int@6",
+        "amount:float@7",
+        "direction:float@8",
+        "blendMode:int@9",
+        "mixAmt:float@10",
+        "wrap:int@11"
+      ],
+      "factory_to_string_sha256": "b404a801dea1ba438da7bad20d7cae059d0aa7f25c76610221ca07546fdfe2f6"
+    }
+  ],
+  "fixture": {
+    "input": {
+      "width": 11,
+      "height": 9,
+      "construction": "top-down 11x9 Float32Array: R=((17*x+31*y+13)%101)/100; G=((7*x+19*y+23)%97)/96; B=((29*x+11*y+5)%89)/88; A=0.25+((3*x+5*y+1)%13)/20; every lane assignment crosses the Float32Array boundary"
+    },
+    "output": {
+      "width": 9,
+      "height": 7,
+      "storage": "top-down Surface Float32Array; lane=(y*width+x)*4"
+    },
+    "fragment_origin": "bottom-left: runPass uses fragCoord=(x+0.5,height-y-0.5)",
+    "sampler_coordinates": "input storage is top-down; texture() follows canonical GLSL bottom-left sampling",
+    "float_bytes": "host little-endian Float32Array bytes; probe words use little-endian Uint32",
+    "context": {
+      "time": 0.375,
+      "frame": 7,
+      "deltaTime": 0.016666666666666666,
+      "seed": 19,
+      "tileOffset": [
+        128,
+        64
+      ],
+      "fullResolution": [
+        1024,
+        768
+      ],
+      "resolution": [
+        9,
+        7
+      ],
+      "displacement_budget": {
+        "max": 0.25,
+        "expression": "256.0 / max(fullResolution.x, fullResolution.y)"
+      }
+    },
+    "array_execution": "mode=1 invokes derivX then derivY; each fully initializes its distinct Number kernel[9], calls convolve once, and convolve fully initializes offset[9] before i=0..8 reads offset[i] once and kernel[i] twice.",
+    "vector_equality_compatibility": {
+      "affected_blend_modes": [
+        2,
+        3,
+        7,
+        15
+      ],
+      "canonical_behavior": "Each generated condition is a PooledFloat32Array of lane comparisons. JavaScript treats that object as truthy, selects the bare true-arm vector, performs no reduce/write into middle, and leaves middle at its zero-filled value.",
+      "required_native_post_transform": "For exactly the four source/key/signature/guard/predicate/arm shapes recorded by this profile, the selected blendMode branch must leave middle unchanged. A scalar Vec equality ternary assignment is forbidden.",
+      "source_predicates": {
+        "2": "(color2 == vec4(0.0)) ? color2 : max(1.0 - ((1.0 - color1) / color2), vec4(0.0))",
+        "3": "(color2 == vec4(1.0)) ? color2 : min(color1 / (1.0 - color2), vec4(1.0))",
+        "7": "(color2 == vec4(1.0)) ? color2 : min(color1 * color1 / (1.0 - color2), vec4(1.0))",
+        "15": "(color1 == vec4(1.0)) ? color1 : min(color2 * color2 / (1.0 - color1), vec4(1.0))"
+      }
+    },
+    "verification": "each case double-renders with fresh F32 input and destination surfaces and requires identical F32 and RGBA8 bytes before hashing"
+  },
+  "cases": [
+    {
+      "name": "mode-1-mirror-difference-mix-under-half",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 13.699999809265137,
+          "f32_bits_le": "0x415b3333"
+        },
+        "direction": {
+          "value": 37.25,
+          "f32_bits_le": "0x42150000"
+        },
+        "blendMode": {
+          "value": 5,
+          "f32_bits_le": "0x40a00000"
+        },
+        "mixAmt": {
+          "value": 23.399999618530273,
+          "f32_bits_le": "0x41bb3333"
+        },
+        "wrap": {
+          "value": 0,
+          "f32_bits_le": "0x00000000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "two-distinct-fully-initialized-kernel9-callers",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-mirror",
+        "blendMode-5-difference",
+        "mixAmt-under-half",
+        "amount-13.7f-floor-map-to-2",
+        "unclamped-displacement-branch"
+      ],
+      "f32_sha256": "d173f4368e000081b9b3921caccfd02790284c025ad5bd69d605f7310a23e2e2",
+      "rgba8_sha256": "9f345b48aafb6d69ec9d7757a161f86a103e92a7a2efdadd5eba5d3b8b7ad8c3",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.6891599893569946,
+            0.5232917070388794,
+            0.28022727370262146,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x3f306cca",
+            "0x3f05f672",
+            "0x3e8f79f3",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.22300000488758087,
+            0.3446666896343231,
+            0.7227272987365723,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3e645a1d",
+            "0x3eb07827",
+            "0x3f3904a8",
+            "0x3eb33333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.7153599858283997,
+            0.4097916781902313,
+            0.3559545576572418,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x3f3721d5",
+            "0x3ed1d037",
+            "0x3eb63fad",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-repeat-overlay-mix-half",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 29.899999618530273,
+          "f32_bits_le": "0x41ef3333"
+        },
+        "direction": {
+          "value": 137.60000610351562,
+          "f32_bits_le": "0x4309999a"
+        },
+        "blendMode": {
+          "value": 13,
+          "f32_bits_le": "0x41500000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-repeat",
+        "blendMode-13-overlay",
+        "mixAmt-exact-half",
+        "amount-29.9f-floor-map-to-5",
+        "clamped-displacement-branch"
+      ],
+      "f32_sha256": "6e02e60356ea964074be3b941e5ef976eeb5dfd4ee12041b8ab5cae484f2dea2",
+      "rgba8_sha256": "e71609cfd1cfba0c3977abceb360939d22638858df33e02b551783f87d0c0fc1",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.5649999976158142,
+            0.4455295503139496,
+            0.03486570343375206,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x3f10a3d7",
+            "0x3ee41c73",
+            "0x3d0ecf57",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.5508000254631042,
+            0.541015625,
+            0.9855372309684753,
+            0.25
+          ],
+          "f32_bits_le": [
+            "0x3f0d013b",
+            "0x3f0a8000",
+            "0x3f7c4c2b",
+            "0x3e800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.9376000165939331,
+            0.6343315839767456,
+            0.7753099203109741,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x3f70068e",
+            "0x3f22638e",
+            "0x3f467ab6",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-clamp-softlight-mix-over-half",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 73.4000015258789,
+          "f32_bits_le": "0x4292cccd"
+        },
+        "direction": {
+          "value": 271.125,
+          "f32_bits_le": "0x43879000"
+        },
+        "blendMode": {
+          "value": 17,
+          "f32_bits_le": "0x41880000"
+        },
+        "mixAmt": {
+          "value": 78.9000015258789,
+          "f32_bits_le": "0x429dcccd"
+        },
+        "wrap": {
+          "value": 2,
+          "f32_bits_le": "0x40000000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-clamp",
+        "blendMode-17-soft-light",
+        "mixAmt-over-half",
+        "amount-73.4f-floor-map-to-14",
+        "clamped-displacement-branch"
+      ],
+      "f32_sha256": "3d38aee57222eb8460953f2a1e86418992f60c220b668b357d63f260346db56b",
+      "rgba8_sha256": "25152ac17ca38d55d15e1c7f02c5cea715f659e9f4d2bc04cffbd58b10d4aa86",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.3330874741077423,
+            0.3557075560092926,
+            0.08276590704917908,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x3eaa8a71",
+            "0x3eb61f4d",
+            "0x3da9812c",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.07947894185781479,
+            0.6919435858726501,
+            0.8916351199150085,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x3da2c5db",
+            "0x3f312337",
+            "0x3f644233",
+            "0x3f59999a"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.6731679439544678,
+            0.7024487257003784,
+            0.6876347661018372,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x3f2c54bc",
+            "0x3f33d3ae",
+            "0x3f3008d5",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-0-mirror-mix-control",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 0,
+          "f32_bits_le": "0x00000000"
+        },
+        "amount": {
+          "value": 43.20000076293945,
+          "f32_bits_le": "0x422ccccd"
+        },
+        "direction": {
+          "value": 19.75,
+          "f32_bits_le": "0x419e0000"
+        },
+        "blendMode": {
+          "value": 10,
+          "f32_bits_le": "0x41200000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 0,
+          "f32_bits_le": "0x00000000"
+        }
+      },
+      "coverage": [
+        "mode-0-no-derivX-or-derivY-call",
+        "wrap-mirror",
+        "blendMode-10-mix",
+        "mixAmt-exact-half",
+        "amount-43.2f-floor-map-to-8",
+        "clamped-displacement-branch"
+      ],
+      "f32_sha256": "3d791dbae4d93b61ab31f06b88105678c751ea3d369be9705661ed3a29879a0e",
+      "rgba8_sha256": "24841a3ec260bb15d549f066207c52a2e82be2fa22743d81feb1995201f28af9",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.4399999976158142,
+            0.4375,
+            0.1818181872367859,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x3ee147ae",
+            "0x3ee00000",
+            "0x3e3a2e8c",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.4649999737739563,
+            0.6614583730697632,
+            0.5170454382896423,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3eee147a",
+            "0x3f295556",
+            "0x3f045d17",
+            "0x3eb33333"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.7649999856948853,
+            0.5989583134651184,
+            0.35227274894714355,
+            0.3499999940395355
+          ],
+          "f32_bits_le": [
+            "0x3f43d70a",
+            "0x3f195555",
+            "0x3eb45d18",
+            "0x3eb33333"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-blendMode-2-truthy-typed-array-noop",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 29.899999618530273,
+          "f32_bits_le": "0x41ef3333"
+        },
+        "direction": {
+          "value": 137.60000610351562,
+          "f32_bits_le": "0x4309999a"
+        },
+        "blendMode": {
+          "value": 2,
+          "f32_bits_le": "0x40000000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-repeat",
+        "source-color2-equals-vec4-zero",
+        "typed-array-object-condition-is-truthy",
+        "middle-remains-zero-filled",
+        "scalarized-Vec-equality-would-diverge",
+        "mixAmt-exact-half-exposes-middle"
+      ],
+      "f32_sha256": "165333c40d4760271f8c318c19ed8efc54b9162ab5eeb615921c2552b645be24",
+      "rgba8_sha256": "13a15bd48e6f739c5ec9e3f08affe0fe2c115418341a3b2e1742d8d3868e03e0",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.25
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-blendMode-3-truthy-typed-array-noop",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 29.899999618530273,
+          "f32_bits_le": "0x41ef3333"
+        },
+        "direction": {
+          "value": 137.60000610351562,
+          "f32_bits_le": "0x4309999a"
+        },
+        "blendMode": {
+          "value": 3,
+          "f32_bits_le": "0x40400000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-repeat",
+        "source-color2-equals-vec4-one",
+        "typed-array-object-condition-is-truthy",
+        "middle-remains-zero-filled",
+        "scalarized-Vec-equality-would-diverge",
+        "mixAmt-exact-half-exposes-middle"
+      ],
+      "f32_sha256": "165333c40d4760271f8c318c19ed8efc54b9162ab5eeb615921c2552b645be24",
+      "rgba8_sha256": "13a15bd48e6f739c5ec9e3f08affe0fe2c115418341a3b2e1742d8d3868e03e0",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.25
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-blendMode-7-truthy-typed-array-noop",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 29.899999618530273,
+          "f32_bits_le": "0x41ef3333"
+        },
+        "direction": {
+          "value": 137.60000610351562,
+          "f32_bits_le": "0x4309999a"
+        },
+        "blendMode": {
+          "value": 7,
+          "f32_bits_le": "0x40e00000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-repeat",
+        "source-color2-equals-vec4-one",
+        "typed-array-object-condition-is-truthy",
+        "middle-remains-zero-filled",
+        "scalarized-Vec-equality-would-diverge",
+        "mixAmt-exact-half-exposes-middle"
+      ],
+      "f32_sha256": "165333c40d4760271f8c318c19ed8efc54b9162ab5eeb615921c2552b645be24",
+      "rgba8_sha256": "13a15bd48e6f739c5ec9e3f08affe0fe2c115418341a3b2e1742d8d3868e03e0",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.25
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "mode-1-blendMode-15-truthy-typed-array-noop",
+      "key": "classicNoisedeck/refract:refract",
+      "uniforms": {
+        "mode": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "amount": {
+          "value": 29.899999618530273,
+          "f32_bits_le": "0x41ef3333"
+        },
+        "direction": {
+          "value": 137.60000610351562,
+          "f32_bits_le": "0x4309999a"
+        },
+        "blendMode": {
+          "value": 15,
+          "f32_bits_le": "0x41700000"
+        },
+        "mixAmt": {
+          "value": 50,
+          "f32_bits_le": "0x42480000"
+        },
+        "wrap": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "mode-1-derivX-then-derivY",
+        "convolve-all-nine-offset-and-kernel-reads",
+        "wrap-repeat",
+        "source-color1-equals-vec4-one",
+        "typed-array-object-condition-is-truthy",
+        "middle-remains-zero-filled",
+        "scalarized-Vec-equality-would-diverge",
+        "mixAmt-exact-half-exposes-middle"
+      ],
+      "f32_sha256": "165333c40d4760271f8c318c19ed8efc54b9162ab5eeb615921c2552b645be24",
+      "rgba8_sha256": "13a15bd48e6f739c5ec9e3f08affe0fe2c115418341a3b2e1742d8d3868e03e0",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.30000001192092896
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e99999a"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.25
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3e800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            0.8500000238418579
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f59999a"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    }
+  ]
+}

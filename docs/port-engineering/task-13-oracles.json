@@ -1,0 +1,968 @@
+{
+  "schema": "noisemaker-task13-canonical-oracles-v1",
+  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "node": "v24.7.0",
+  "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+  "factory_hash_contract": "SHA-256 over exact UTF-8 bytes returned by Function.prototype.toString() for canonicalKernelFactories[key].",
+  "base": {
+    "output": {
+      "width": 9,
+      "height": 7,
+      "top_down": true
+    },
+    "time": 0.375,
+    "seed": 7,
+    "tileOffset": [
+      -7,
+      5
+    ],
+    "fullResolution": [
+      17,
+      13
+    ],
+    "canonical_binding_note": "resolution/aspect are overwritten by createCanonicalBindings; per-variant tileOffset/fullResolution overrides are passed through canonical options."
+  },
+  "sources": {
+    "filter/bloom:brightPass": {
+      "source": "sources/filter/bloom/brightPass.glsl",
+      "raw_sha256": "db9bb2dbe897ee03435cae86aa88a766b7d8e6bc58e61103fa5e66c3c3dbc880",
+      "factory_source_sha256": "a743462868665c5aeb90776e0d4769292018f4e93ab7b6452e23571c3aee2ac8",
+      "pass_index": 0
+    },
+    "filter/bloom:composite": {
+      "source": "sources/filter/bloom/composite.glsl",
+      "raw_sha256": "28e480fad84b7254e9392b8d4d85bc398b62a0e57f94dffac94db655132abbef",
+      "factory_source_sha256": "c785331dac99841e1bf32813bd2702036600eb23da7d3a5eff79df633e345260",
+      "pass_index": 2
+    },
+    "filter/fibers:fibersBlend": {
+      "source": "sources/filter/fibers/fibersBlend.glsl",
+      "raw_sha256": "3c541fbfa45fa98cbfd67c2c7c8a91e4167867a3935681163260733c19cb7575",
+      "factory_source_sha256": "ed94b776d7ed02ba469346a2fdd2ffcf7bf764b52e70bff523447f13dac25a57",
+      "pass_index": 0
+    },
+    "filter/normalize:apply": {
+      "source": "sources/filter/normalize/apply.glsl",
+      "raw_sha256": "c59c0bad843a38c823bd2fc6396d0b9bca1cac7f1fe074aaf5dbc9622522e855",
+      "factory_source_sha256": "4f7886bfdaab15e96025b6ed635324d15d908583127c0ee138e1c9b6d50362d0",
+      "pass_index": 3
+    },
+    "filter/pixelSort:luminance": {
+      "source": "sources/filter/pixelSort/luminance.glsl",
+      "raw_sha256": "da27454ff4cc3fcc40b296c8ea8bd8913a00165b2c001aef3cd9e6bd05db0298",
+      "factory_source_sha256": "bcd29820617f79fea392ff510b2c924886ad6bc848a5cd6e1b9528628c63f09f",
+      "pass_index": 1
+    },
+    "filter/reindex:nmReindexApply": {
+      "source": "sources/filter/reindex/nmReindexApply.glsl",
+      "raw_sha256": "651bb6930d3fe51629fc3a17c88bfa7c7831e78fa18be0ea16d0f3f9d3c5154d",
+      "factory_source_sha256": "70e57b5473d572c270db0453b05c366162f0998289e93d6d6816a8a8ae1abc2e",
+      "pass_index": 2
+    },
+    "filter/scratches:scratchesBlend": {
+      "source": "sources/filter/scratches/scratchesBlend.glsl",
+      "raw_sha256": "db76fc1b477acfa7e9a2d22ca532a9d29ed4034ec695d4f4b75ed8741ce63c63",
+      "factory_source_sha256": "0d731cc78adf32ec44389012d5fc9795f024d94885e744b6e0f064ea6c7ea02b",
+      "pass_index": 0
+    },
+    "filter/strayHair:strayHairBlend": {
+      "source": "sources/filter/strayHair/strayHairBlend.glsl",
+      "raw_sha256": "bacff9ec121ac6e28d377702145eb14cdd8dfa2cbfc4ec9ba89765f658b1345c",
+      "factory_source_sha256": "baeaa10b7fc9b281d5e328c58aa5c50fae338e58a50b69650053b29ebee768dc",
+      "pass_index": 0
+    }
+  },
+  "partial_pass_truth": {
+    "filter/bloom:brightPass": "pass 1 only; bloom graph remains incomplete without unported ntapGather",
+    "filter/bloom:composite": "pass 3 only; requires caller-provided bloomTex",
+    "filter/fibers:fibersBlend": "single blend pass; caller supplies overlayTex",
+    "filter/normalize:apply": "pass 4 only; requires caller-provided 1x1 statsTex",
+    "filter/pixelSort:luminance": "pass 2 only; caller supplies prepared input",
+    "filter/reindex:nmReindexApply": "pass 3 only; requires caller-provided statsTex",
+    "filter/scratches:scratchesBlend": "single blend pass; caller supplies overlayTex",
+    "filter/strayHair:strayHairBlend": "single blend pass; caller supplies overlayTex"
+  },
+  "fixture_contract": {
+    "surface_api": "Surface.fromRgba8 top-down bytes; texelFetch uses integer bottom-left shader rows and clamps to edge.",
+    "byte_formula": "formula: r=(31*x+17*y+13*tag)%256; g=(11*x+47*y+29*tag)%256; b=(67*x+19*y+7*tag)%256; a=(255-23*x-37*y-5*tag)&255.",
+    "texture_fixtures": {
+      "fetch_tag1_5x3": {
+        "kind": "formula",
+        "width": 5,
+        "height": 3,
+        "tag": 1
+      },
+      "fetch_tag23_4x6": {
+        "kind": "formula",
+        "width": 4,
+        "height": 6,
+        "tag": 23
+      },
+      "fetch_tag37_7x2": {
+        "kind": "formula",
+        "width": 7,
+        "height": 2,
+        "tag": 37
+      },
+      "luma_steps_3x3": {
+        "kind": "literal-top-down-rgba8",
+        "width": 3,
+        "height": 3,
+        "bytes": [
+          13,
+          20,
+          30,
+          64,
+          128,
+          128,
+          128,
+          128,
+          240,
+          225,
+          210,
+          192,
+          30,
+          40,
+          50,
+          70,
+          110,
+          120,
+          130,
+          140,
+          220,
+          230,
+          240,
+          200,
+          7,
+          8,
+          9,
+          30,
+          160,
+          150,
+          140,
+          160,
+          250,
+          245,
+          235,
+          220
+        ]
+      },
+      "stats_range_1x1": {
+        "kind": "constant",
+        "width": 1,
+        "height": 1,
+        "rgba": [
+          30,
+          200,
+          71,
+          255
+        ]
+      },
+      "stats_flat_1x1": {
+        "kind": "constant",
+        "width": 1,
+        "height": 1,
+        "rgba": [
+          99,
+          99,
+          71,
+          255
+        ]
+      },
+      "overlay_constant_4x6": {
+        "kind": "constant",
+        "width": 4,
+        "height": 6,
+        "rgba": [
+          238,
+          53,
+          181,
+          179
+        ]
+      }
+    },
+    "probe_layout": {
+      "pixel_indices": [
+        0,
+        31,
+        62
+      ],
+      "lanes": "RGBA little-endian Float32 bit hex; 12 lane probes per variant"
+    },
+    "unreachable_negative_fetch_note": "All eight pinned programs derive texelFetch P from nonnegative gl_FragCoord or post-fract/clamped values. Negative integer P is unreachable through their public bindings; this artifact locks zero and high out-of-range clamping, while negative-P behavior belongs to focused runtime tests."
+  },
+  "known_equivalences": {
+    "filter/strayHair:strayHairBlend": [
+      [
+        "integerSystemA",
+        "integerSystemB"
+      ]
+    ]
+  },
+  "variants": [
+    {
+      "key": "filter/bloom:brightPass",
+      "variant": "softKnee",
+      "coverage": "below/ramp/above threshold paths plus out-of-range high coordinate clamp",
+      "bindings": {
+        "threshold": 0.5,
+        "softKnee": 0.20999999344348907
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "luma_steps_3x3"
+      },
+      "f32_sha256": "637fab112bdd93f09722f42a2bcbe748cb73a1aa104294398fe579cfddf9e7e4",
+      "rgba8_sha256": "f37355d9e280dc7b56db4fb66868e9201c904b687333138c62c3ff5f7bda31ab",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3e808081"
+        ],
+        "31": [
+          "3f70f0f1",
+          "3f61e1e2",
+          "3f52d2d3",
+          "3f40c0c1"
+        ],
+        "62": [
+          "3f7afafb",
+          "3f75f5f6",
+          "3f6bebec",
+          "3f5cdcdd"
+        ]
+      }
+    },
+    {
+      "key": "filter/bloom:brightPass",
+      "variant": "below",
+      "coverage": "below-threshold branch",
+      "bindings": {
+        "threshold": 0.9800000190734863,
+        "softKnee": 0.009999999776482582
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "luma_steps_3x3"
+      },
+      "f32_sha256": "39db1c2790da52b4ec7590014d7f438a3a2b4d4cc6ca5f6ed6c38fb60de27192",
+      "rgba8_sha256": "17b3576fb2405e4d1dee78a343a9d8e473409056c8c1cd0fcb38b9659df20a6a",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3e808081"
+        ],
+        "31": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3f40c0c1"
+        ],
+        "62": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "3f5cdcdd"
+        ]
+      }
+    },
+    {
+      "key": "filter/bloom:brightPass",
+      "variant": "above",
+      "coverage": "above-threshold branch",
+      "bindings": {
+        "threshold": 0.009999999776482582,
+        "softKnee": 0.009999999776482582
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "luma_steps_3x3"
+      },
+      "f32_sha256": "e817cda4b3759b575fdb3778177564544800f2df625f2129ef3709001c6702ed",
+      "rgba8_sha256": "48b6681702181716a45c4a1e76d1c0992208d454fb8825ebe107ac8adee4ccdb",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3da0a0a1",
+          "3df0f0f1",
+          "3e808081"
+        ],
+        "31": [
+          "3f70f0f1",
+          "3f61e1e2",
+          "3f52d2d3",
+          "3f40c0c1"
+        ],
+        "62": [
+          "3f7afafb",
+          "3f75f5f6",
+          "3f6bebec",
+          "3f5cdcdd"
+        ]
+      }
+    },
+    {
+      "key": "filter/bloom:composite",
+      "variant": "zeroIntensity",
+      "coverage": "scene texelFetch and bloomTex route; intensity zero alpha preservation",
+      "bindings": {
+        "intensity": 0,
+        "tint": [
+          0.699999988079071,
+          0.20000000298023224,
+          0.8999999761581421
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "bloomTex": "fetch_tag23_4x6"
+      },
+      "f32_sha256": "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66",
+      "rgba8_sha256": "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/bloom:composite",
+      "variant": "tintedHDR",
+      "coverage": "positive intensity/tint HDR addition and out-of-range clamp",
+      "bindings": {
+        "intensity": 1.7000000476837158,
+        "tint": [
+          0.3100000023841858,
+          0.8299999833106995,
+          0.5199999809265137
+        ]
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "bloomTex": "fetch_tag23_4x6"
+      },
+      "f32_sha256": "88aed7c00ff073094ebb5dd35b7007448ad97e97dabd6310e566cf6fd20711aa",
+      "rgba8_sha256": "60d5ab2cf84570f303bfe8e7dc5d80f81ed1bc21fc4eff0ccc3506fcb650ad5b",
+      "probes": {
+        "0": [
+          "3e0f3412",
+          "3f78ad29",
+          "3f15e8db",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f637a86",
+          "3edc3b77",
+          "3f12dea5",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f904c13",
+          "3fca1ba5",
+          "3f6b9ab5",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/fibers:fibersBlend",
+      "variant": "alpha0",
+      "coverage": "fibers overlayTex route, alpha 0, base alpha retained",
+      "bindings": {
+        "alpha": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66",
+      "rgba8_sha256": "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/fibers:fibersBlend",
+      "variant": "alpha0p53",
+      "coverage": "fibers overlayTex route, alpha 0.53, base alpha retained",
+      "bindings": {
+        "alpha": 0.5299999713897705
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "ab16d60f5002784bf79c7ff1e69e8c4b88189962b491acdd8e1e6eda71f98022",
+      "rgba8_sha256": "a914338ee1630fe92a0530dbd76ea90741b2fa9431f684ccaa1909af64be8996",
+      "probes": {
+        "0": [
+          "3ec22d18",
+          "3e184f8c",
+          "3e900843",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f2f42b5",
+          "3e83a1f4",
+          "3e9f2995",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f44b1ea",
+          "3efa26f8",
+          "3ecf131a",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/fibers:fibersBlend",
+      "variant": "alpha1",
+      "coverage": "fibers overlayTex route, alpha 1, base alpha retained",
+      "bindings": {
+        "alpha": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "2200817335871e52518207a88e870a097b77916b44cea500c8b67f42fdedda6a",
+      "rgba8_sha256": "fdc4b4d6db28e6a43aab5821dae93bc181276e39bd129de2f409f56a725f0e7e",
+      "probes": {
+        "0": [
+          "3f2b9c8e",
+          "3e381b7f",
+          "3f01a5ca",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f50b69d",
+          "3e6cc49d",
+          "3f053cf5",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f5ae2eb",
+          "3eaea297",
+          "3f109ba7",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/scratches:scratchesBlend",
+      "variant": "alpha0",
+      "coverage": "scratches overlayTex route, alpha 0, base alpha retained",
+      "bindings": {
+        "alpha": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66",
+      "rgba8_sha256": "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab",
+      "probes": {
+        "0": [
+          "3d50d0d1",
+          "3de8e8e9",
+          "3ce0e0e1",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3e929293",
+          "3d989899",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3e64e4e5",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/scratches:scratchesBlend",
+      "variant": "alpha0p53",
+      "coverage": "scratches overlayTex route, alpha 0.53, base alpha retained",
+      "bindings": {
+        "alpha": 0.5299999713897705
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "2fc7f66e4d5f3d96f46fe8fe756ff4735ba8795e7864d5b03c1102fa099302ed",
+      "rgba8_sha256": "f1fd830a768fa42239b1aa0e17df1db838eff7271f24c8b3eccadbe87cc30598",
+      "probes": {
+        "0": [
+          "3ebe7bec",
+          "3ebe7bec",
+          "3ebe7bec",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f09898a",
+          "3ebe7bec",
+          "3ebe7bec",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f2babac",
+          "3f27a7a8",
+          "3ebe7bec",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/scratches:scratchesBlend",
+      "variant": "alpha1",
+      "coverage": "scratches overlayTex route, alpha 1, base alpha retained",
+      "bindings": {
+        "alpha": 1
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "8fc2328d92e39ae882af3762ee938ee80665cd53c02e90548f5f4667c5239c2c",
+      "rgba8_sha256": "afc55a6e9e676e7fd9f7a241b72132d6d678841f9326c14d9607615cdf9c1151",
+      "probes": {
+        "0": [
+          "3f33b3b4",
+          "3f33b3b4",
+          "3f33b3b4",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f33b3b4",
+          "3f33b3b4",
+          "3f33b3b4",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f33b3b4",
+          "3f33b3b4",
+          "3f33b3b4",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/normalize:apply",
+      "variant": "range",
+      "coverage": "statsTex 1x1 range normalization and input high-coordinate clamping",
+      "bindings": {},
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag23_4x6",
+        "statsTex": "stats_range_1x1"
+      },
+      "f32_sha256": "656715b86d5874a48375ee902a7ae03645763d0d7fcfffa6052a12bbd8a200c2",
+      "rgba8_sha256": "81c9865d59ee655b83ae4731bbef4176ed494ec0e2b80f664471af99787ed27d",
+      "probes": {
+        "0": [
+          "3d9c9c9d",
+          "3f3c3c3d",
+          "3f454546",
+          "3f0c8c8d"
+        ],
+        "31": [
+          "3f52d2d3",
+          "bcc0c0c0",
+          "3f2babac",
+          "3f7dfdfe"
+        ],
+        "62": [
+          "3f8fcfd0",
+          "3f4e4e4f",
+          "3f80c0c1",
+          "3f0e8e8f"
+        ]
+      }
+    },
+    {
+      "key": "filter/normalize:apply",
+      "variant": "flat",
+      "coverage": "stats range divide-by-zero guard returns source texel",
+      "bindings": {},
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag23_4x6",
+        "statsTex": "stats_flat_1x1"
+      },
+      "f32_sha256": "02bf5200e916b1d1f11dacdfe211ada7f4fd4eb9dbdb002e5dc27e0595c202d6",
+      "rgba8_sha256": "7b6336be201d130d239718d7929093ddb4208cb7da2c57abd59fb0882fea05ad",
+      "probes": {
+        "0": [
+          "3e2cacad",
+          "3f1b9b9c",
+          "3f21a1a2",
+          "3f0c8c8d"
+        ],
+        "31": [
+          "3f2aaaab",
+          "3dd0d0d1",
+          "3f109091",
+          "3f7dfdfe"
+        ],
+        "62": [
+          "3f5dddde",
+          "3f27a7a8",
+          "3f49c9ca",
+          "3f0e8e8f"
+        ]
+      }
+    },
+    {
+      "key": "filter/pixelSort:luminance",
+      "variant": "heterogeneous",
+      "coverage": "bottom-left texelFetch, textureSize normalized x, alpha overwritten to one",
+      "bindings": {},
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "luma_steps_3x3"
+      },
+      "f32_sha256": "e27aaa19da93167411e82c57df61c1d2b88fc1e754653b57a399189410b030b1",
+      "rgba8_sha256": "a812ed4c6e1a3b2ff090835d34580b04ff93e0cd63acc0fa2b1b20861d2464f7",
+      "probes": {
+        "0": [
+          "3e41f0bd",
+          "00000000",
+          "00000000",
+          "3f800000"
+        ],
+        "31": [
+          "3f6aee6d",
+          "40000000",
+          "00000000",
+          "3f800000"
+        ],
+        "62": [
+          "3f78a56e",
+          "40800000",
+          "00000000",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/pixelSort:luminance",
+      "variant": "nonSquareClamp",
+      "coverage": "non-square source and high-coordinate edge clamp",
+      "bindings": {},
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag37_7x2"
+      },
+      "f32_sha256": "f00e254739f44d6444f874d463b499b862690e30fa6aa8de013c43139b4feb7a",
+      "rgba8_sha256": "4fe3ba39772c0af69f6a1a2e5c241d7f477452a97d557be28077783653e8e07d",
+      "probes": {
+        "0": [
+          "3f177e79",
+          "00000000",
+          "00000000",
+          "3f800000"
+        ],
+        "31": [
+          "3eed6c8c",
+          "3f2aaaab",
+          "00000000",
+          "3f800000"
+        ],
+        "62": [
+          "3f38f5f2",
+          "3faaaaab",
+          "00000000",
+          "3f800000"
+        ]
+      }
+    },
+    {
+      "key": "filter/reindex:nmReindexApply",
+      "variant": "rangePositive",
+      "coverage": "statsTex range > epsilon, displacement positive, output bounds return and sampled texelFetch",
+      "bindings": {
+        "uDisplacement": 2.700000047683716
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "statsTex": "stats_range_1x1"
+      },
+      "f32_sha256": "4052d2f2b1baa048e90f1d52ad7fcad9261d66212a3ace983487d55d6f107f32",
+      "rgba8_sha256": "dbfe551db48ea34406dcedb4f581f54ececf6de80b1d63a79aaa140c75ec6d5d",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "31": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "62": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ]
+      }
+    },
+    {
+      "key": "filter/reindex:nmReindexApply",
+      "variant": "rangeFlat",
+      "coverage": "stats range <= epsilon fallback normalized path",
+      "bindings": {
+        "uDisplacement": -1.899999976158142
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "statsTex": "stats_flat_1x1"
+      },
+      "f32_sha256": "73160445a22bebf77b4954a8d59ea2ded6e2f1f84fb788ff4edb98d82073e7ab",
+      "rgba8_sha256": "9b50758c016c30bce226b179d0f2b37c5a4fa88c3fb90e31297d1615e7eb38b6",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "31": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "62": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ]
+      }
+    },
+    {
+      "key": "filter/reindex:nmReindexApply",
+      "variant": "zeroDisplacement",
+      "coverage": "zero displacement sample route",
+      "bindings": {
+        "uDisplacement": 0
+      },
+      "overrides": {},
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "statsTex": "stats_range_1x1"
+      },
+      "f32_sha256": "dc13348216c58428ff1e89861dc3305d755c040b5ed4cf360941a72813456324",
+      "rgba8_sha256": "56919a95415c7c3bc13d35a41a5ce8d606db8040170f2b03ae38c0457e5e9717",
+      "probes": {
+        "0": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "31": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ],
+        "62": [
+          "00000000",
+          "00000000",
+          "00000000",
+          "00000000"
+        ]
+      }
+    },
+    {
+      "key": "filter/strayHair:strayHairBlend",
+      "variant": "integerSystemA",
+      "coverage": "ivec2 tile/full system bindings and renderScale route; source fetches positive/out-of-range clamped coords",
+      "bindings": {
+        "alpha": 0.4699999988079071,
+        "renderScale": 0.7300000190734863
+      },
+      "overrides": {
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "e3378dd37d7bc44eb5d52843d3d0f60a1042343b6c1682484e61a963031d3254",
+      "rgba8_sha256": "f9d6f8ee67e27cbe4b8f2867f30df7ccb6fca490a0d6583b5a961ec3d0def2c3",
+      "probes": {
+        "0": [
+          "3eaf261d",
+          "3e144068",
+          "3e81515f",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f2afd72",
+          "3e8552ee",
+          "3e91767b",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f41dcae",
+          "3f01e577",
+          "3ec496a6",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/strayHair:strayHairBlend",
+      "variant": "integerSystemB",
+      "coverage": "alternate integer system values prove bindings are behaviorally unused in this authored pass",
+      "bindings": {
+        "alpha": 0.4699999988079071,
+        "renderScale": 1.909999966621399
+      },
+      "overrides": {
+        "tileOffset": [
+          19,
+          -11
+        ],
+        "fullResolution": [
+          29,
+          31
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "e3378dd37d7bc44eb5d52843d3d0f60a1042343b6c1682484e61a963031d3254",
+      "rgba8_sha256": "f9d6f8ee67e27cbe4b8f2867f30df7ccb6fca490a0d6583b5a961ec3d0def2c3",
+      "probes": {
+        "0": [
+          "3eaf261d",
+          "3e144068",
+          "3e81515f",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f2afd72",
+          "3e8552ee",
+          "3e91767b",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f41dcae",
+          "3f01e577",
+          "3ec496a6",
+          "3ea8a8a9"
+        ]
+      }
+    },
+    {
+      "key": "filter/strayHair:strayHairBlend",
+      "variant": "alphaOne",
+      "coverage": "overlay alpha multiplication at one",
+      "bindings": {
+        "alpha": 1
+      },
+      "overrides": {
+        "tileOffset": [
+          -7,
+          5
+        ],
+        "fullResolution": [
+          17,
+          13
+        ]
+      },
+      "texture_fixture_ids": {
+        "inputTex": "fetch_tag1_5x3",
+        "overlayTex": "overlay_constant_4x6"
+      },
+      "f32_sha256": "2200817335871e52518207a88e870a097b77916b44cea500c8b67f42fdedda6a",
+      "rgba8_sha256": "fdc4b4d6db28e6a43aab5821dae93bc181276e39bd129de2f409f56a725f0e7e",
+      "probes": {
+        "0": [
+          "3f2b9c8e",
+          "3e381b7f",
+          "3f01a5ca",
+          "3f7afafb"
+        ],
+        "31": [
+          "3f50b69d",
+          "3e6cc49d",
+          "3f053cf5",
+          "3f1e9e9f"
+        ],
+        "62": [
+          "3f5ae2eb",
+          "3eaea297",
+          "3f109ba7",
+          "3ea8a8a9"
+        ]
+      }
+    }
+  ]
+}

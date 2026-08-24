@@ -1,0 +1,572 @@
+{
+  "id": "classicNoisedeckNoise",
+  "key": "classicNoisedeck/noise:noise",
+  "defines": {
+    "COLOR_MODE": 6,
+    "LOOP_OFFSET": 300,
+    "METRIC": 0,
+    "REFRACT_MODE": 2,
+    "NOISE_TYPE": 10
+  },
+  "cases": [
+    {
+      "name": "three-octaves",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "COLOR_MODE": 6,
+        "LOOP_OFFSET": 300,
+        "METRIC": 0,
+        "REFRACT_MODE": 2,
+        "NOISE_TYPE": 10,
+        "seed": 1,
+        "xScale": 75,
+        "yScale": 75,
+        "octaves": 3,
+        "ridges": false,
+        "refractAmt": 0,
+        "kaleido": 1,
+        "loopScale": 75,
+        "speed": 10,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ],
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 25,
+        "hueRotation": 179,
+        "wrap": true
+      },
+      "tile_offset": [
+        3,
+        5
+      ],
+      "full_resolution": [
+        16,
+        13
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "e593f6ae405fd5415b15dab3e300bee0d5daf0fc86fda60fdcbaddc61949f41f",
+        "rgba8_sha256": "a8885b365df225051270dcaa48ecd8625601d391195d8724185811cd051fddba",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.45152512192726135,
+              0.4296462833881378,
+              0.5349928736686707,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ee72e4d",
+              "0x3edbfa99",
+              "0x3f08f54b",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.1477053314447403,
+              0.1534135341644287,
+              0.33154532313346863,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e174011",
+              "0x3e1d1870",
+              "0x3ea9c04f",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.287282258272171,
+              0.31629255414009094,
+              0.3954656422138214,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e9316a9",
+              "0x3ea1f119",
+              "0x3eca7a79",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.32093003392219543,
+              0.21586886048316956,
+              0.633144736289978,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ea450f1",
+              "0x3e5d0cba",
+              "0x3f2215c6",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.09601014852523804,
+              0.09309449046850204,
+              0.16629408299922943,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dc4a0f8",
+              "0x3dbea853",
+              "0x3e2a48ff",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "four-octaves",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "COLOR_MODE": 6,
+        "LOOP_OFFSET": 300,
+        "METRIC": 0,
+        "REFRACT_MODE": 2,
+        "NOISE_TYPE": 10,
+        "seed": 1,
+        "xScale": 75,
+        "yScale": 75,
+        "octaves": 4,
+        "ridges": false,
+        "refractAmt": 0,
+        "kaleido": 1,
+        "loopScale": 75,
+        "speed": 10,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ],
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 25,
+        "hueRotation": 179,
+        "wrap": true
+      },
+      "tile_offset": [
+        3,
+        5
+      ],
+      "full_resolution": [
+        16,
+        13
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "8d8765e1320ea796a2cb9430039659a38ce8aa6b58bbb865b9cb3c070135c581",
+        "rgba8_sha256": "410a34652af4558a366cb91dbf790143ea46ea16483e5ac725befb3f34410eed",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.43017682433128357,
+              0.41104093194007874,
+              0.5213428139686584,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3edc4023",
+              "0x3ed273f5",
+              "0x3f0576b9",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.15116961300373077,
+              0.1666691154241562,
+              0.3585778474807739,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1acc35",
+              "0x3e2aab4f",
+              "0x3eb79784",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.2993341386318207,
+              0.33193767070770264,
+              0.40260621905326843,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e994253",
+              "0x3ea9f3bc",
+              "0x3ece2267",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.2640233337879181,
+              0.19253115355968475,
+              0.6049356460571289,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e872e11",
+              "0x3e4526e3",
+              "0x3f1add10",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.08230677247047424,
+              0.08243360370397568,
+              0.1556333750486374,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3da89074",
+              "0x3da8d2f3",
+              "0x3e1f5e5b",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "six-octaves-saturation-check",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "diagnostic": false,
+      "reach": {
+        "default": true
+      },
+      "uniforms": {
+        "COLOR_MODE": 6,
+        "LOOP_OFFSET": 300,
+        "METRIC": 0,
+        "REFRACT_MODE": 2,
+        "NOISE_TYPE": 10,
+        "seed": 1,
+        "xScale": 75,
+        "yScale": 75,
+        "octaves": 6,
+        "ridges": false,
+        "refractAmt": 0,
+        "kaleido": 1,
+        "loopScale": 75,
+        "speed": 10,
+        "paletteMode": 0,
+        "paletteOffset": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteAmp": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "paletteFreq": [
+          1,
+          1,
+          1
+        ],
+        "palettePhase": [
+          0,
+          0,
+          0
+        ],
+        "cyclePalette": 0,
+        "rotatePalette": 0,
+        "repeatPalette": 1,
+        "hueRange": 25,
+        "hueRotation": 179,
+        "wrap": true
+      },
+      "tile_offset": [
+        3,
+        5
+      ],
+      "full_resolution": [
+        16,
+        13
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "63552decceb85dfe5774f0282fed3ec4e71bbe7bd4163a0fb7cefea1603d5882",
+        "rgba8_sha256": "100f62dbde1621603d4ae57cbe498e612eac3b3dcf8021a8302b5533f643fcfa",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.403527170419693,
+              0.38677501678466797,
+              0.5046356916427612,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ece9b1d",
+              "0x3ec60760",
+              "0x3f012fce",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.15394049882888794,
+              0.17071163654327393,
+              0.35197585821151733,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e1da294",
+              "0x3e2ecf08",
+              "0x3eb4362e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.30778270959854126,
+              0.3377951383590698,
+              0.40938541293144226,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e9d95b2",
+              "0x3eacf37c",
+              "0x3ed19af7",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.2513454556465149,
+              0.19214758276939392,
+              0.5957767367362976,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e80b05a",
+              "0x3e44c256",
+              "0x3f1884d3",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.09541656076908112,
+              0.09847364574670792,
+              0.17668995261192322,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dc369c2",
+              "0x3dc9ac8d",
+              "0x3e34ee36",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "classicNoisedeckNoise-octave-off-by-one",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "default",
+      "anchor": "for (var i = 1; i <= octaves; i++) {",
+      "mutated": "for (var i = 1; i < octaves; i++) {",
+      "description": "Drop the last octave (i<octaves instead of i<=octaves): smallest possible wrong trip count. Verified live to diverge at octaves=3, 4, and 6 -- the geometric weight decay (1/2^i) has not saturated the mutated last octave into float32 invisibility at any of these counts.",
+      "case_results": [
+        {
+          "case": "three-octaves",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "four-octaves",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "six-octaves-saturation-check",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 0,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "classicNoisedeckNoise-octave-swap",
+      "kind": "trip_count_swap",
+      "reach_key": "default",
+      "anchor": "for (var i = 1; i <= octaves; i++) {",
+      "mutated": "for (var i = 1; i <= octaves - 2; i++) {",
+      "description": "Drop the last two octaves: a materially wrong trip count, verified live to diverge at octaves=3, 4, and 6.",
+      "case_results": [
+        {
+          "case": "three-octaves",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "four-octaves",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "six-octaves-saturation-check",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 0,
+        "divergent_non_reaching": 0
+      }
+    }
+  ]
+}

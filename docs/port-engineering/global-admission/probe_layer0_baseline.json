@@ -1,0 +1,102 @@
+[
+ {
+  "baseline_blocker": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+  "key": "classicNoisedeck/bitEffects:bitEffects"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration",
+  "key": "classicNoisedeck/cellNoise:cellNoise"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+  "key": "classicNoisedeck/cellRefract:cellRefract"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration",
+  "key": "classicNoisedeck/colorLab:colorLab"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+  "key": "classicNoisedeck/kaleido:kaleido"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration",
+  "key": "classicNoisedeck/moodscape:moodscape"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration",
+  "key": "classicNoisedeck/shapeMixer:shapeMixer"
+ },
+ {
+  "baseline_blocker": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration",
+  "key": "classicNoisedeck/shapes:shapes"
+ },
+ {
+  "baseline_blocker": "filter/adjust:adjust:62:1: unsupported global declaration",
+  "key": "filter/adjust:adjust"
+ },
+ {
+  "baseline_blocker": "filter/colorspace:colorspace:32:1: unsupported global declaration",
+  "key": "filter/colorspace:colorspace"
+ },
+ {
+  "baseline_blocker": "filter/edge:edge:19:1: unsupported global declaration",
+  "key": "filter/edge:edge"
+ },
+ {
+  "baseline_blocker": "filter/emboss:emboss:19:1: unsupported global declaration",
+  "key": "filter/emboss:emboss"
+ },
+ {
+  "baseline_blocker": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+  "key": "filter/fxaa:fxaa"
+ },
+ {
+  "baseline_blocker": "filter/glyphMap:glyphMap:186:1: unsupported global declaration",
+  "key": "filter/glyphMap:glyphMap"
+ },
+ {
+  "baseline_blocker": "filter/grain:grain:12:1: unsupported global declaration",
+  "key": "filter/grain:grain"
+ },
+ {
+  "baseline_blocker": "filter/historicPalette:historicPalette:26:1: unsupported global declaration",
+  "key": "filter/historicPalette:historicPalette"
+ },
+ {
+  "baseline_blocker": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+  "key": "filter/normalMap:normalMap"
+ },
+ {
+  "baseline_blocker": "filter/osd:osd:24:1: unsupported global declaration",
+  "key": "filter/osd:osd"
+ },
+ {
+  "baseline_blocker": "filter/palette:palette:17:1: unsupported global declaration",
+  "key": "filter/palette:palette"
+ },
+ {
+  "baseline_blocker": "filter/scanlineError:scanlineError:197:1: unsupported global declaration",
+  "key": "filter/scanlineError:scanlineError"
+ },
+ {
+  "baseline_blocker": "filter/snow:snow:7:1: unsupported global declaration",
+  "key": "filter/snow:snow"
+ },
+ {
+  "baseline_blocker": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration",
+  "key": "filter/spookyTicker:spookyTicker"
+ },
+ {
+  "baseline_blocker": "filter/texture:texture:30:1: unsupported global declaration",
+  "key": "filter/texture:texture"
+ },
+ {
+  "baseline_blocker": "filter/wobble:wobble:16:1: unsupported global declaration",
+  "key": "filter/wobble:wobble"
+ },
+ {
+  "baseline_blocker": "synth/shape:shape:31:1: unsupported global declaration",
+  "key": "synth/shape:shape"
+ }
+]

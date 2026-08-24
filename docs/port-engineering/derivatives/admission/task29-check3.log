@@ -1,0 +1,15 @@
+test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m14071[0m, in [35mtest_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation[0m
+    [31mself.assertEqual[0m[1;31m(117, typed.index(FOCUS_BLUR_KEY))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m117 != 132[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 0.038s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

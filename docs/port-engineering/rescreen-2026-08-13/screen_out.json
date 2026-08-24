@@ -1,0 +1,288 @@
+{
+  "remaining": 47,
+  "rows": [
+    {
+      "emitter": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported source global declaration",
+      "key": "classicNoisedeck/bitEffects:bitEffects",
+      "parse": "pass",
+      "validator": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration"
+    },
+    {
+      "emitter": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported source global declaration",
+      "key": "classicNoisedeck/cellRefract:cellRefract",
+      "parse": "pass",
+      "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration"
+    },
+    {
+      "emitter": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+      "key": "classicNoisedeck/colorLab:colorLab",
+      "parse": "pass",
+      "validator": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index"
+    },
+    {
+      "emitter": "classicNoisedeck/effects:effects:31:1: unsupported source global declaration",
+      "key": "classicNoisedeck/effects:effects",
+      "parse": "pass",
+      "validator": "classicNoisedeck/effects:effects:31:1: unsupported global declaration"
+    },
+    {
+      "emitter": "classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof",
+      "key": "classicNoisedeck/fractal:fractal",
+      "parse": "pass",
+      "validator": "classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "classicNoisedeck/glitch:glitch:1:1: unsupported typed type mat4",
+      "key": "classicNoisedeck/glitch:glitch",
+      "parse": "pass",
+      "validator": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4"
+    },
+    {
+      "emitter": "classicNoisedeck/kaleido:kaleido:33:1: unsupported source global declaration",
+      "key": "classicNoisedeck/kaleido:kaleido",
+      "parse": "pass",
+      "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration"
+    },
+    {
+      "emitter": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+      "key": "classicNoisedeck/moodscape:moodscape",
+      "parse": "pass",
+      "validator": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index"
+    },
+    {
+      "emitter": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof",
+      "key": "classicNoisedeck/noise:noise",
+      "parse": "pass",
+      "validator": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect",
+      "key": "classicNoisedeck/shapeMixer:shapeMixer",
+      "parse": "pass",
+      "validator": "classicNoisedeck/shapeMixer:shapeMixer:672:17: unsupported builtin reflect"
+    },
+    {
+      "emitter": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+      "key": "classicNoisedeck/shapes:shapes",
+      "parse": "pass",
+      "validator": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index"
+    },
+    {
+      "emitter": "filter/blur:blurH:33:5: unsupported counted-for program proof",
+      "key": "filter/blur:blurH",
+      "parse": "pass",
+      "validator": "filter/blur:blurH:33:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/blur:blurV:33:5: unsupported counted-for program proof",
+      "key": "filter/blur:blurV",
+      "parse": "pass",
+      "validator": "filter/blur:blurV:33:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/dither:dither:521:5: unsupported counted-for program proof",
+      "key": "filter/dither:dither",
+      "parse": "pass",
+      "validator": "filter/dither:dither:521:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/edge:edge:19:1: unsupported source global declaration",
+      "key": "filter/edge:edge",
+      "parse": "pass",
+      "validator": "filter/edge:edge:19:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/emboss:emboss:19:1: unsupported source global declaration",
+      "key": "filter/emboss:emboss",
+      "parse": "pass",
+      "validator": "filter/emboss:emboss:19:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/fxaa:fxaa:9:1: unsupported source global declaration",
+      "key": "filter/fxaa:fxaa",
+      "parse": "pass",
+      "validator": "filter/fxaa:fxaa:9:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/glyphMap:glyphMap:186:1: unsupported source global declaration",
+      "key": "filter/glyphMap:glyphMap",
+      "parse": "pass",
+      "validator": "filter/glyphMap:glyphMap:186:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/grain:grain:12:1: unsupported source global declaration",
+      "key": "filter/grain:grain",
+      "parse": "pass",
+      "validator": "filter/grain:grain:12:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/grime:grime:38:25: unsupported builtin floatBitsToUint",
+      "key": "filter/grime:grime",
+      "parse": "pass",
+      "validator": "filter/grime:grime:1:1: unsupported varying"
+    },
+    {
+      "emitter": "filter/historicPalette:historicPalette:26:1: unsupported source global declaration",
+      "key": "filter/historicPalette:historicPalette",
+      "parse": "pass",
+      "validator": "filter/historicPalette:historicPalette:26:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof",
+      "key": "filter/lightLeak:lightLeak",
+      "parse": "pass",
+      "validator": "filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/median:median:47:5: unsupported counted-for program proof",
+      "key": "filter/median:median",
+      "parse": "pass",
+      "validator": "filter/median:median:47:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/normalMap:normalMap:4:1: unsupported source global declaration",
+      "key": "filter/normalMap:normalMap",
+      "parse": "pass",
+      "validator": "filter/normalMap:normalMap:4:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/normalize:statsFinal:18:5: unsupported counted-for program proof",
+      "key": "filter/normalize:statsFinal",
+      "parse": "pass",
+      "validator": "filter/normalize:statsFinal:18:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+      "key": "filter/oilPaint:oilFlatten",
+      "parse": "pass",
+      "validator": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil"
+    },
+    {
+      "emitter": "filter/osd:osd:24:1: unsupported source global declaration",
+      "key": "filter/osd:osd",
+      "parse": "pass",
+      "validator": "filter/osd:osd:24:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/palette:palette:17:1: unsupported source global declaration",
+      "key": "filter/palette:palette",
+      "parse": "pass",
+      "validator": "filter/palette:palette:17:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/parallax:parallax:59:9: unsupported counted-for program proof",
+      "key": "filter/parallax:parallax",
+      "parse": "pass",
+      "validator": "filter/parallax:parallax:59:9: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/scanlineError:scanlineError:197:1: unsupported source global declaration",
+      "key": "filter/scanlineError:scanlineError",
+      "parse": "pass",
+      "validator": "filter/scanlineError:scanlineError:197:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/smooth:smoothBlend:17:1: unsupported source global declaration",
+      "key": "filter/smooth:smoothBlend",
+      "parse": "pass",
+      "validator": "filter/smooth:smoothBlend:17:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/snow:snow:7:1: unsupported source global declaration",
+      "key": "filter/snow:snow",
+      "parse": "pass",
+      "validator": "filter/snow:snow:7:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/spookyTicker:spookyTicker:19:1: unsupported source global declaration",
+      "key": "filter/spookyTicker:spookyTicker",
+      "parse": "pass",
+      "validator": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof",
+      "key": "filter/tetraColorArray:tetraColorArray",
+      "parse": "pass",
+      "validator": "filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "filter/texture:texture:30:1: unsupported source global declaration",
+      "key": "filter/texture:texture",
+      "parse": "pass",
+      "validator": "filter/texture:texture:30:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/watercolor:wcSimplify:37:5: only typed assignments are admitted",
+      "key": "filter/watercolor:wcSimplify",
+      "parse": "pass",
+      "validator": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout"
+    },
+    {
+      "emitter": "filter/wobble:wobble:16:1: unsupported source global declaration",
+      "key": "filter/wobble:wobble",
+      "parse": "pass",
+      "validator": "filter/wobble:wobble:16:1: unsupported global declaration"
+    },
+    {
+      "emitter": "filter/wormhole:deposit:6:17: unmapped typed symbol vColor",
+      "key": "filter/wormhole:deposit",
+      "parse": "pass",
+      "validator": "filter/wormhole:deposit:1:1: unsupported varying"
+    },
+    {
+      "emitter": "mixer/distortion:distortion:1:1: unsupported typed type sampler2D",
+      "key": "mixer/distortion:distortion",
+      "parse": "pass",
+      "validator": "mixer/distortion:distortion:91:33: unsupported sampler parameter"
+    },
+    {
+      "emitter": "synth/gabor:gabor:54:13: unsupported counted-for safety charge",
+      "key": "synth/gabor:gabor",
+      "parse": "pass",
+      "validator": "synth/gabor:gabor:54:13: unsupported counted-for safety charge"
+    },
+    {
+      "emitter": "synth/julia:julia:297:5: unsupported counted-for safety charge",
+      "key": "synth/julia:julia",
+      "parse": "pass",
+      "validator": "synth/julia:julia:297:5: unsupported counted-for safety charge"
+    },
+    {
+      "emitter": "synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof",
+      "key": "synth/mandelbrot:mandelbrot",
+      "parse": "pass",
+      "validator": "synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "synth/newton:newton:1:1: unsupported typed type POIData",
+      "key": "synth/newton:newton",
+      "parse": "pass",
+      "validator": "synth/newton:newton:125:1: unsupported struct declaration"
+    },
+    {
+      "emitter": "synth/noise:noise:250:5: unsupported counted-for program proof",
+      "key": "synth/noise:noise",
+      "parse": "pass",
+      "validator": "synth/noise:noise:250:5: unsupported counted-for program proof"
+    },
+    {
+      "emitter": "synth/remap:remap:1:1: unsupported typed type vec4[267]",
+      "key": "synth/remap:remap",
+      "parse": "pass",
+      "validator": "synth/remap:remap:5:1: unsupported uniform block"
+    },
+    {
+      "emitter": "synth/shape:shape:31:1: unsupported source global declaration",
+      "key": "synth/shape:shape",
+      "parse": "pass",
+      "validator": "synth/shape:shape:31:1: unsupported global declaration"
+    },
+    {
+      "emitter": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof",
+      "key": "synth/testPattern:testPattern",
+      "parse": "pass",
+      "validator": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof"
+    }
+  ],
+  "typed_now": 165
+}

@@ -1,0 +1,14 @@
+[ 50%] Built target noisemaker-cpu
+[ 56%] Built target noisemaker-cpu-example-perlin
+[ 59%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_generated_kernels.cpp.o
+tests/test_generated_kernels.cpp:10568:17: error: variable 'entry' with type 'const auto *' has incompatible initializer of type 'std::__wrap_iter<const noisemaker::generated::KernelFactory *>'
+ 10568 |     const auto* entry = std::find_if(
+       |                 ^       ~~~~~~~~~~~~~
+ 10569 |         factories.begin(), factories.end(),
+       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ 10570 |         [&](const noisemaker::generated::KernelFactory& item) { return item.key == key; });
+       |         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make[2]: *** [CMakeFiles/noisemaker-cpu-tests.dir/tests/test_generated_kernels.cpp.o] Error 1
+make[1]: *** [CMakeFiles/noisemaker-cpu-tests.dir/all] Error 2
+make: *** [all] Error 2

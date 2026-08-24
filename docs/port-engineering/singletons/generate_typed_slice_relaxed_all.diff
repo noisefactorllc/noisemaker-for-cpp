@@ -1,0 +1,142 @@
+--- generate_typed_slice.py (unmodified copy)
++++ generate_typed_slice_relaxed_all.py
+@@ -1849,6 +1849,10 @@
+     def location(value) -> str:
+         return f"{typed.key}:{value.span.start_line}:{value.span.start_column}"
+     def reject_type(typ, value) -> None:
++        if typ.display() in ("mat3", "mat4"):
++            # RELAXED PROBE: provisionally admit as a typed type to find the
++            # NEXT blocker behind it. Never used outside this read-only probe.
++            return
+         if typ.kind == "array":
+             expected = proved_array_declarations.get(getattr(value, "symbol_id", None))
+             if (getattr(value, "kind", None) == "declaration" and expected is not None
+@@ -1893,12 +1897,10 @@
+             raise GeneratorError(f"{location(actual)}: malformed counted-for proof")
+         proof = actual.loop_proof
+         if proof is not None:
+-            if (proof.trip_count > 128 or proof.lexical_depth > 3
+-                    or proof.effective_depth > 3 or proof.lexical_product > 4096
+-                    or proof.entrypoint_charge > 4096
+-                    or min(proof.trip_count, proof.lexical_depth, proof.effective_depth,
+-                           proof.lexical_product, proof.entrypoint_charge) < 0):
++            if min(proof.trip_count, proof.lexical_depth, proof.effective_depth,
++                   proof.lexical_product, proof.entrypoint_charge) < 0:
+                 raise GeneratorError(f"{location(actual)}: unsupported counted-for safety charge")
++            # RELAXED PROBE: budget-cap overruns provisionally admitted.
+         for actual_child, expected_child in zip(actual.children, expected.children):
+             audit_loop_proofs(actual_child, expected_child)
+ 
+@@ -2051,29 +2053,7 @@
+         raise GeneratorError(f"{typed.key}: malformed discarded local-counter proof key")
+     if typed.counted_loop_proof != recomputed_program_proof:
+         raise GeneratorError(f"{typed.key}: malformed counted-for program proof")
+-    if not recomputed_program_proof.call_graph_acyclic:
+-        offender = next((function for function in recomputed_functions if function.body), typed)
+-        raise GeneratorError(
+-            f"{location(offender)}: unsupported counted-for program proof")
+-    if (recomputed_program_proof.unproved_loop_count
+-            or recomputed_program_proof.max_effective_depth > 3
+-            or recomputed_program_proof.max_lexical_product > 4096
+-            or recomputed_program_proof.entrypoint_charge > 4096):
+-        # Programs without a loop stay valid after the unconditional call-graph
+-        # check above; only an actual unproved or over-budget loop reaches here.
+-        if recomputed_program_proof.loop_count or recomputed_program_proof.unproved_loop_count:
+-            def first_loop(statements):
+-                for statement in statements:
+-                    if statement.kind in {"for", "while", "dowhile"}:
+-                        return statement
+-                    if (nested := first_loop(statement.children)) is not None:
+-                        return nested
+-                return None
+-
+-            offender = next((candidate for function in recomputed_functions
+-                             if (candidate := first_loop(function.body)) is not None), typed)
+-            raise GeneratorError(
+-                f"{location(offender)}: unsupported counted-for program proof")
++    pass  # RELAXED PROBE: program-proof call-graph/unproved/budget gate provisionally admitted.
+ 
+     admitted_globals: dict[int, object] = {}
+     admitted_literal_ints = {
+@@ -2096,7 +2076,11 @@
+             admitted_globals[declaration.symbol.id] = declaration
+             continue
+         if storage != "const" or declaration.type != FLOAT or declaration.initializer is None:
+-            raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
++            # RELAXED PROBE: treat as provisionally admitted so downstream
++            # blockers become visible. Never used outside this read-only
++            # census-style probe; the real generator is untouched.
++            admitted_globals[declaration.symbol.id] = declaration
++            continue
+ 
+         def global_initializer(value) -> None:
+             if value.type != FLOAT:
+@@ -2155,21 +2139,24 @@
+     if typed.structs:
+         raise GeneratorError(f"{location(typed.structs[0])}: unsupported struct declaration")
+     if typed.uniform_blocks:
+-        raise GeneratorError(f"{location(typed.uniform_blocks[0])}: unsupported uniform block")
+-    if typed.interface_symbols:
++        pass  # RELAXED PROBE: provisionally admitted.
++    if any(sym.type.display() != "vec2" for sym in typed.interface_symbols):
+         raise GeneratorError(f"{location(typed.interface_symbols[0])}: unsupported varying")
+     for declaration in typed.declarations:
+         reject_type(declaration.type, declaration)
+-        if declaration.type.kind == "matrix":
++        if declaration.type.kind == "matrix" and declaration.type.display() not in ("mat3", "mat4"):
+             raise GeneratorError(f"{location(declaration)}: unsupported global matrix declaration")
+         if declaration.symbol.storage not in {"uniform", "output", "const"}:
+-            raise GeneratorError(f"{location(declaration)}: unsupported global declaration")
++            # RELAXED PROBE: treat as provisionally admitted so downstream
++            # blockers become visible. Never used outside this read-only
++            # census-style probe; the real generator is untouched.
++            admitted_globals[declaration.symbol.id] = declaration
++            continue
+     def expression(value, context: str = "rvalue") -> None:
+         if (value.type.kind == "sampler"
+                 and getattr(value.symbol, "storage", None) != "uniform"
+                 and authorized_focus_blur_proof is None):
+-            raise GeneratorError(
+-                f"{location(value)}: unsupported sampler expression")
++            pass  # RELAXED PROBE: provisionally admitted.
+         if any(value is item for item in authorized_rotate_expressions):
+             visited_rotate_expressions.append(value)
+         reject_type(value.type, value)
+@@ -2266,6 +2253,8 @@
+                     raise GeneratorError(
+                         f"{location(value)}: unsupported builtin {value.callee}")
+                 visited_derivative_nodes.append(value)
++            elif value.callee in ("reflect", "any"):
++                pass  # RELAXED PROBE: provisionally admitted.
+             elif value.callee not in _BUILTINS:
+                 raise GeneratorError(f"{location(value)}: unsupported builtin {value.callee}")
+             if value.callee == "mod":
+@@ -2403,9 +2392,9 @@
+         if value.kind == "block": used.add("blocks")
+         elif value.kind == "if": used.add("if")
+         elif value.kind == "for":
+-            if value.loop_proof is None or len(value.expressions) != 2 or len(value.children) != 2:
++            if len(value.expressions) != 2 or len(value.children) != 2:
+                 raise GeneratorError(f"{location(value)}: unsupported typed statement for")
+-            used.add("counted-for-v1")
++            used.add("counted-for-v1")  # RELAXED PROBE: loop_proof match not required.
+             statement(value.children[0], loop_depth)
+             expression(value.expressions[0])
+             statement(value.children[1], loop_depth + 1)
+@@ -2438,14 +2427,11 @@
+                          or function is not authorized_focus_blur_proof.helper
+                          or not any(parameter is item for item in
+                                     authorized_focus_blur_proof.sampler_parameters))):
+-                raise GeneratorError(
+-                    f"{location(parameter)}: unsupported sampler parameter")
++                pass  # RELAXED PROBE: provisionally admitted.
+             if parameter.type.kind == "matrix":
+                 raise GeneratorError(f"{location(parameter)}: unsupported matrix parameter")
+             if parameter.direction != "in":
+-                raise GeneratorError(
+-                    f"{typed.key}:{parameter.span.start_line}:{parameter.span.start_column}: "
+-                    f"unsupported parameter direction {parameter.direction}")
++                pass  # RELAXED PROBE: provisionally admitted.
+         for statement_value in function.body: statement(statement_value)
+     if typed.key == GATHER_SORTED_KEY and gather_sorted_round_profile is None:
+         raise GeneratorError(

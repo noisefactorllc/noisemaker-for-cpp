@@ -1,0 +1,318 @@
+{
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "baseline": {
+    "corpus_count": 212,
+    "typed_count": 127,
+    "public_count": 129,
+    "publicly_unported_count": 83,
+    "typed_ordered_sha256": "ed2b5d24ac3fb80520b2036acfc13c18df294c1583f76fe2957d00a6282fdd72",
+    "public_ordered_sha256": "37e41894bc62b658a3454e13ab60fe814baf2492fa2a74b0f4305e05480a7883",
+    "typed_order_is_sorted": true
+  },
+  "projected": {
+    "typed_count": 128,
+    "public_count": 130,
+    "publicly_unported_count": 82,
+    "typed_ordered_sha256": "30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55",
+    "public_ordered_sha256": "102f5436a5416399f2601879c7d5219706111bc64b93989acbb67d973a01b6c5",
+    "typed_zero_based_position": 67,
+    "typed_neighbors": [
+      "filter/ridge:ridge",
+      "filter/rotate:rot",
+      "filter/scale:scale"
+    ]
+  },
+  "remaining_frontier": {
+    "absent_from_typed_count_including_two_manual_programs": 85,
+    "publicly_unported_count": 83,
+    "emitter_passes": [
+      "filter/invert:inv",
+      "filter/rotate:rot",
+      "synth/solid:solid"
+    ],
+    "validator_first_blocker_histogram": {
+      "pass": 3,
+      "unsupported binary operator ^": 1,
+      "unsupported builtin all": 1,
+      "unsupported builtin any": 1,
+      "unsupported builtin dFdx": 11,
+      "unsupported builtin floatBitsToUint": 1,
+      "unsupported builtin fwidth": 5,
+      "unsupported builtin reflect": 1,
+      "unsupported builtin round": 1,
+      "unsupported builtin tanh": 1,
+      "unsupported counted-for program proof": 19,
+      "unsupported counted-for safety charge": 3,
+      "unsupported global declaration": 30,
+      "unsupported matrix return type": 1,
+      "unsupported parameter direction inout": 1,
+      "unsupported typed expression index": 1,
+      "unsupported typed type mat4": 1,
+      "unsupported uniform block": 1,
+      "unsupported varying": 2
+    },
+    "distinguishing_rows": [
+      {
+        "key": "filter/invert:inv",
+        "validator": "pass",
+        "emitter": "pass"
+      },
+      {
+        "key": "filter/rotate:rot",
+        "validator": "filter/rotate:rot:14:1: unsupported matrix return type",
+        "emitter": "pass"
+      },
+      {
+        "key": "mixer/focusBlur:focusBlur",
+        "validator": "pass",
+        "emitter": "mixer/focusBlur:focusBlur:1:1: unsupported typed type sampler2D"
+      },
+      {
+        "key": "synth/solid:solid",
+        "validator": "pass",
+        "emitter": "pass"
+      }
+    ]
+  },
+  "rotate": {
+    "key": "filter/rotate:rot",
+    "source": "sources/filter/rotate/rot.glsl",
+    "raw_bytes": 1197,
+    "raw_sha256": "c23e8462e8240f25a715fa3eb05e567269c8d410d27943ba346ebccdd0de1f8f",
+    "normalized_bytes": 964,
+    "normalized_sha256": "e0e2b723289b08cbfcd6f1fc0a8481869e674de3cfedc0ec5df6d96f64748bb5",
+    "defines": {},
+    "numeric_contract": "glsl-f32",
+    "function_count": 2,
+    "function_tuple_sha256": "f5b9f47764c12f05a55925aaca0cf99027ef0b78f67d0122df657f068ba23d56",
+    "whole_program_sha256": "3e4312d4c94a8d8b207aa351f8974f417cb5acd63d45a70b1f4a8e606ed2e1b6",
+    "interface_sha256": "bfdeb36f89cb3dd84ec4339564e5d830f0f18c9f011d4b563f3cca45973e28df",
+    "binding_signature": [
+      "inputTex:sampler2D@1/S1",
+      "rotation:float@2",
+      "wrap:int@3",
+      "speed:int@4",
+      "time:float@5",
+      "fragColor:vec4@6/out"
+    ],
+    "resources": {
+      "uniforms": [
+        "inputTex",
+        "rotation",
+        "wrap",
+        "speed",
+        "time"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "outputs": [
+        "fragColor"
+      ],
+      "uses_texture": true,
+      "uses_derivatives": false
+    },
+    "loop_proof": {
+      "loop_count": 0,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 0,
+      "max_lexical_product": 0,
+      "entrypoint_charge": 0,
+      "call_graph_acyclic": true
+    },
+    "functions": [
+      {
+        "id": 9,
+        "name": "main",
+        "return_type": "void",
+        "signature_sha256": "376c8ad924b449a468dbc7277a4ad97d9539a2e42c44eb40cbd54d28e153e8aa",
+        "body_statements": 13,
+        "body_sha256": "0b677d94fa375cae65644c2daedcfb15572e54ecf496b6904d3256a62456fbc4",
+        "span": "20:1-52:2",
+        "parameters": []
+      },
+      {
+        "id": 10,
+        "name": "rotate2D",
+        "return_type": "mat2",
+        "signature_sha256": "a04f91d3f994b30e78f97d04ca5b572c1a94425c25150c6af69345ec8119fd8f",
+        "body_statements": 3,
+        "body_sha256": "f88f6345a607d84afbe28d4859e3afd70f0c75c0c0e51e4de42cc7f1e2051006",
+        "span": "14:1-18:2",
+        "parameters": [
+          [
+            8,
+            "angle",
+            "float",
+            "in",
+            "14:15-14:26"
+          ]
+        ]
+      }
+    ],
+    "matrix_return_function_ids": [
+      10
+    ],
+    "matrix_parameter_ids": [],
+    "matrix_expressions": [
+      {
+        "owner_id": 9,
+        "owner": "main",
+        "path": [
+          8,
+          "e0",
+          0,
+          1,
+          0
+        ],
+        "kind": "call",
+        "span": "35:10-35:40",
+        "sha256": "5328e90c21b68b353d8c9ab9caf2a1f3ba59d9de557d72729978670f851ff1b1",
+        "parent_kind": "binary",
+        "parent_child_index": 0
+      },
+      {
+        "owner_id": 10,
+        "owner": "rotate2D",
+        "path": [
+          2,
+          "e0",
+          0
+        ],
+        "kind": "construct",
+        "span": "17:12-17:29",
+        "sha256": "e663648e5aadc5bbaf20fe171459a9a64e2deb713a46665e63e3a6c08d416796",
+        "parent_kind": null,
+        "parent_child_index": null
+      }
+    ],
+    "constructor": {
+      "owner_id": 10,
+      "path": [
+        2,
+        "e0",
+        0
+      ],
+      "span": "17:12-17:29",
+      "sha256": "e663648e5aadc5bbaf20fe171459a9a64e2deb713a46665e63e3a6c08d416796",
+      "parent_statement_kind": "return",
+      "children": [
+        {
+          "ordinal": 0,
+          "path": [
+            2,
+            "e0",
+            0,
+            0
+          ],
+          "kind": "id",
+          "type": "float",
+          "operator": null,
+          "symbol_id": 17,
+          "child_symbol_id": null,
+          "span": "17:17-17:18",
+          "sha256": "75c1efb26380f681fdb7d200802991dd855d454356d3f0ee1ad70c8bf84b47c3"
+        },
+        {
+          "ordinal": 1,
+          "path": [
+            2,
+            "e0",
+            0,
+            1
+          ],
+          "kind": "unary",
+          "type": "float",
+          "operator": "-",
+          "symbol_id": null,
+          "child_symbol_id": 18,
+          "span": "17:20-17:22",
+          "sha256": "cfc377557bca9165a99aab8e6fcdda7efa668f943a4b47bbfb67b51fa9d390e5"
+        },
+        {
+          "ordinal": 2,
+          "path": [
+            2,
+            "e0",
+            0,
+            2
+          ],
+          "kind": "id",
+          "type": "float",
+          "operator": null,
+          "symbol_id": 18,
+          "child_symbol_id": null,
+          "span": "17:24-17:25",
+          "sha256": "86d88e25ce225b8d3b4c83361b2f88364d67a06c413c8391a998409c97bc949e"
+        },
+        {
+          "ordinal": 3,
+          "path": [
+            2,
+            "e0",
+            0,
+            3
+          ],
+          "kind": "id",
+          "type": "float",
+          "operator": null,
+          "symbol_id": 17,
+          "child_symbol_id": null,
+          "span": "17:27-17:28",
+          "sha256": "93ee2e627a305854a7395d722e32df1d45ff16bbbff524d91455893d4b5bd11d"
+        }
+      ]
+    },
+    "call": {
+      "owner_id": 9,
+      "path": [
+        8,
+        "e0",
+        0,
+        1,
+        0
+      ],
+      "span": "35:10-35:40",
+      "sha256": "5328e90c21b68b353d8c9ab9caf2a1f3ba59d9de557d72729978670f851ff1b1",
+      "signature_id": 10,
+      "argument_sha256": "7f64717ca093bb2c2aee8f6826280dda7416010622ee6fac942d8148852406a0",
+      "parent_kind": "binary",
+      "parent_sha256": "4e166653131410b87db5123dfe23746cd54e3096b4728e7ea22cd908607d766f",
+      "parent_child_index": 0
+    },
+    "matrix_vector_binary": {
+      "path": [
+        8,
+        "e0",
+        0,
+        1
+      ],
+      "span": "35:10-35:45",
+      "sha256": "4e166653131410b87db5123dfe23746cd54e3096b4728e7ea22cd908607d766f",
+      "operator": "*",
+      "children": [
+        "mat2",
+        "vec2"
+      ],
+      "call_is_left_child": true
+    },
+    "profile_tuple_sha256": "2cfd54eca913518997b359a75e179eb45a323bf50c635b8d2d70874a1dfec76c",
+    "profile_tuple_repr": "('rotate-mat2-return-v1', 'filter/rotate:rot', 'c23e8462e8240f25a715fa3eb05e567269c8d410d27943ba346ebccdd0de1f8f', (), 'f5b9f47764c12f05a55925aaca0cf99027ef0b78f67d0122df657f068ba23d56', '3e4312d4c94a8d8b207aa351f8974f417cb5acd63d45a70b1f4a8e606ed2e1b6', 'bfdeb36f89cb3dd84ec4339564e5d830f0f18c9f011d4b563f3cca45973e28df', (10, 'rotate2D', 'a04f91d3f994b30e78f97d04ca5b572c1a94425c25150c6af69345ec8119fd8f', 'f88f6345a607d84afbe28d4859e3afd70f0c75c0c0e51e4de42cc7f1e2051006', '14:1-18:2', 3), ((2, 'e0', 0), '17:12-17:29', 'e663648e5aadc5bbaf20fe171459a9a64e2deb713a46665e63e3a6c08d416796', (('id', 'float', None, 17, None, '17:17-17:18', '75c1efb26380f681fdb7d200802991dd855d454356d3f0ee1ad70c8bf84b47c3'), ('unary', 'float', '-', None, 18, '17:20-17:22', 'cfc377557bca9165a99aab8e6fcdda7efa668f943a4b47bbfb67b51fa9d390e5'), ('id', 'float', None, 18, None, '17:24-17:25', '86d88e25ce225b8d3b4c83361b2f88364d67a06c413c8391a998409c97bc949e'), ('id', 'float', None, 17, None, '17:27-17:28', '93ee2e627a305854a7395d722e32df1d45ff16bbbff524d91455893d4b5bd11d'))), ((8, 'e0', 0, 1, 0), '35:10-35:40', '5328e90c21b68b353d8c9ab9caf2a1f3ba59d9de557d72729978670f851ff1b1', 10, 'binary', 0, '4e166653131410b87db5123dfe23746cd54e3096b4728e7ea22cd908607d766f'), ((8, 'e0', 0, 1), '35:10-35:45', '4e166653131410b87db5123dfe23746cd54e3096b4728e7ea22cd908607d766f', '*', ('mat2', 'vec2')))",
+    "validator": "filter/rotate:rot:14:1: unsupported matrix return type",
+    "emitter": "pass"
+  },
+  "accepted_task27_file_hashes": {
+    "tools/glslcpp/frontend/perlin_scalar_uint_xor_profile.py": "6ef916782a4f76c09fd1eff064f6fe6b589c6371b8687b0b4a99d6e7ea4f671f",
+    "tools/glslcpp/generate_typed_slice.py": "c9e4d84febaaf6e5e767e3014ba7f26de4e268cbe3b6746d099acf86906f1eca",
+    "tools/glslcpp/emit_typed_cpp.py": "2d14dda82e55c45117fa911d6d387be5cb4e1f24ddd5dfe6f17574f5bc752f36",
+    "tools/glslcpp/typed_slice.json": "20c39b7a1d91c203e3a5f9c8ba22e9b061d2a73d62c0b710e56aa9fa3c52a213",
+    "tests/test_typed_generator.py": "5cfbf4c72573887d68a097e3db6fd6cf6a32b74567b6fad2843945e7d92a4f13",
+    "tests/test_generated_kernels.cpp": "8263f5f3da3ed5cedad6a76e9a53d3f0c2fcfe92faec990125006a325d3c75cc",
+    "tests/test_typed_slice.cpp": "55fee138f1477d183cc1e007e89b104cb4b4d126de9b1688844879e73be121d6",
+    "src/typed_generated/typed_slice.cpp": "aa15e469d2283ac4f919a3f61edf85f5046f414674ff3cebdb85e5c06d2327c5",
+    "src/typed_generated/typed_manifest.json": "f25401d49121ad6dcda189730b6e99ca5946fb0fafd2fbac83c637740ea1cd58",
+    "include/noisemaker/generated/catalog.hpp": "b82abfa09c224185a4152d487d290d9b6bc475bb15ae744ddc3550c86ded1da5",
+    "include/noisemaker/glsl_types.hpp": "37e71f566d5b8d5e1abf68fee1b27338898e4afacb116764824274dfda6780d8",
+    "CMakeLists.txt": "bca6b4ab77d26c72449ef8d7a66d5832fdc939ebb35a85211b7684dde62216d5"
+  }
+}

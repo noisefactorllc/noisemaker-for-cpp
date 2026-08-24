@@ -1,0 +1,49 @@
+{
+  "cpp_runtime_file": "include/noisemaker/glsl_runtime.hpp",
+  "js_runtime_file": "../noisemaker-for-cpu/src/csl/glsl-runtime.js",
+  "tanh": {
+    "cpp_hits": [],
+    "js_hits": [
+      "352: tanh: unary(Math.tanh),"
+    ],
+    "conclusion": "absent from C++ runtime entirely; JS is a 1-line Math.tanh unary map"
+  },
+  "mod_vec3_vec4_float": {
+    "cpp_mod_overload_lines": [
+      "16: [[nodiscard]] float mod(double x, double y) noexcept;",
+      "66: template <std::size_t N> requires(N == 2) [[nodiscard]] inline Vec<N,float> mod(const Vec<N,float>& a,const Vec<N,float>& b) { return detail::map_float2(a,b,[](double x,double y){return glsl::mod(x,y);}); }",
+      "67: template <std::size_t N> requires(N == 2) [[nodiscard]] inline Vec<N,float> mod(const Vec<N,float>& a,double b) { return detail::map_float(a,[b](double x){return glsl::mod(x,b);}); }",
+      "68: template <std::size_t N> requires(N == 2) [[nodiscard]] inline Vec<N,float> mod(const FloatExpr<N>& a,const Vec<N,float>& b) { return mod(Vec<N,float>(a),b); }",
+      "69: template <std::size_t N> requires(N == 2) Vec<N,float> mod(const Vec<N,float>&,const FloatExpr<N>&) = delete;",
+      "70: template <std::size_t N> requires(N == 2) Vec<N,float> mod(const FloatExpr<N>&,const FloatExpr<N>&) = delete;",
+      "71: template <std::size_t N> requires(N == 2) [[nodiscard]] inline Vec<N,float> mod(const FloatExpr<N>& a,double b) { return mod(Vec<N,float>(a),b); }"
+    ],
+    "conclusion": "all 5 vector mod() template overloads are constrained `requires(N == 2)`; no N==3/N==4 instantiation exists. Needs relaxing the constraint on the existing templates, not a brand-new function."
+  },
+  "reflect": {
+    "cpp_hits": [
+      "94: template <std::size_t N> [[nodiscard]] inline Vec<N,float> reflect(const Vec<N,float>& incident,const Vec<N,float>& normal) { const double scale=2.0*dot(normal,incident);Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(static_cast<double>(incident[i])-scale*normal[i]);return result; }",
+      "95: template <std::size_t N> [[nodiscard]] inline Vec<N,float> reflect(const FloatExpr<N>& incident,const Vec<N,float>& normal) { return reflect(Vec<N,float>(incident),normal); }",
+      "96: template <std::size_t N> [[nodiscard]] inline Vec<N,float> reflect(const Vec<N,float>& incident,const FloatExpr<N>& normal) { return reflect(incident,Vec<N,float>(normal)); }",
+      "97: template <std::size_t N> [[nodiscard]] inline Vec<N,float> reflect(const FloatExpr<N>& incident,const FloatExpr<N>& normal) { return reflect(Vec<N,float>(incident),Vec<N,float>(normal)); }"
+    ],
+    "js_hits": [
+      "369: reflect: (incident, normal) => subtract(incident, multiply(normal, 2 * dot(normal, incident))),"
+    ],
+    "conclusion": "already implemented GENERICALLY for any N (template<size_t N>, no N==2/3 constraint) -- works for vec3 today with ZERO runtime changes needed. Only the codegen/validator admission gate is missing."
+  },
+  "floatBitsToUint": {
+    "cpp_hits": [],
+    "js_hits": [
+      "411: floatBitsToUint: (value) => {",
+      "415: uintBitsToFloat: (value) => {"
+    ],
+    "conclusion": "absent from C++ runtime entirely; JS aliases a shared Float32Array/Uint32Array buffer. C++ equivalent is a 1-line std::bit_cast<uint32_t>(float)."
+  },
+  "scalar_uint_xor": {
+    "note": "Not a runtime-function question at all: uint32_t ^ uint32_t is a native C++ operator. The existing vector case already emits a glsl::bitwise_xor() helper call; the diagnostic probe in probe_task31.py confirmed emitting a bare `(left ^ right)` C++ expression for the scalar case renders and the emitter reports `pass` once the two admission gates are cleared."
+  },
+  "float9_fixed_nine_runtime": {
+    "note": "No new runtime primitive needed either -- Sharpen/Sobel already prove and emit float[9]/vec2[9] local tables as native_element_type double / glsl::Vec2 arrays via prove_fixed_nine_local_tables(). The gap for Lighting is that prove_fixed_nine_local_tables() hardcodes searching only the function literally named 'main' (tools/glslcpp/frontend/fixed_nine_table_proof.py:93, `mains = [f for f in functions if f.name == 'main' and f.body]`, then indexes main.body[declaration_index] directly), but Lighting's three float[9]/vec2[9] tables (sobel_x, sobel_y, offsets) are declared inside a helper function calculateNormal(), not main. Reuse therefore requires generalizing that hardcoded function-name search, not just adding new profile-dict entries as done for Sharpen->Sobel."
+  }
+}

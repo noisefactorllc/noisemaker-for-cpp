@@ -1,0 +1,199 @@
+{
+  "schema": "noisemaker-for-cpp.task32.ordinal-blast-radius.v1",
+  "method": "Reproduce each governing test's exact exclusion-set filter against the live gen.load_slice() output (not pytest), compute the key's ordinal in that filtered+sorted view today and after inserting the 4 candidate keys (never excluded by any of these named-key exclusion sets, since they don't exist yet), and diff against the hardcoded value written in the test source.",
+  "candidate_keys": [
+    "filter/fxaa:fxaa",
+    "filter/grain:grain",
+    "filter/normalMap:normalMap",
+    "filter/snow:snow"
+  ],
+  "sites": [
+    {
+      "line": 1362,
+      "test": "test_task24_resource_contract_is_mechanical_and_mutation_closed",
+      "key": "filter/pixelSort:gatherSorted",
+      "view": "none (full live spec)",
+      "note": "embedded binder source string 'typed_53::State'; reads the on-disk src/typed_generated/typed_slice.cpp directly, not a fresh regeneration",
+      "hardcoded_value_in_test": 53,
+      "live_actual_ordinal_today": 53,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 56,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 7607,
+      "test": "test_task21_degauss_exclusions_remain_closed",
+      "key": "filter/degauss:degauss",
+      "view": "none (full live spec)",
+      "note": "namespace-string assertion against a fresh full-spec generate_outputs() call (not the 3-key-excluded `keys` list used earlier in the same test for neighbour assertions)",
+      "hardcoded_value_in_test": 22,
+      "live_actual_ordinal_today": 22,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 22,
+      "would_shift_due_to_candidate_insertion": false,
+      "shift_delta_from_live": 0
+    },
+    {
+      "line": 9041,
+      "test": "test_task27ish_lens_prismatic_literal_vec3_census (5-key view)",
+      "key": "classicNoisedeck/lensDistortion:lensDistortion",
+      "view": "5-key {smoothEdge, perlin, rotate:rot, focusBlur, extrude}",
+      "note": "LENS_KEY",
+      "hardcoded_value_in_test": 2,
+      "live_actual_ordinal_today": 2,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 2,
+      "would_shift_due_to_candidate_insertion": false,
+      "shift_delta_from_live": 0
+    },
+    {
+      "line": 9042,
+      "test": "test_task27ish_lens_prismatic_literal_vec3_census (5-key view)",
+      "key": "filter/prismaticAberration:prismaticAberration",
+      "view": "5-key {smoothEdge, perlin, rotate:rot, focusBlur, extrude}",
+      "note": "PRISMATIC_KEY",
+      "hardcoded_value_in_test": 59,
+      "live_actual_ordinal_today": 59,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 62,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 9043,
+      "test": "test_task27ish_lens_prismatic_literal_vec3_census (5-key view, current)",
+      "key": "filter/pixelSort:gatherSorted",
+      "view": "5-key {smoothEdge, perlin, rotate:rot, focusBlur, extrude}",
+      "note": "'current_blocks' -- gatherSorted position AFTER Lens+Prismatic are present",
+      "hardcoded_value_in_test": 52,
+      "live_actual_ordinal_today": 52,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 55,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 9045,
+      "test": "test_task27ish_lens_prismatic_literal_vec3_census (5-key view, prior)",
+      "key": "filter/pixelSort:gatherSorted",
+      "view": "5-key {smoothEdge, perlin, rotate:rot, focusBlur, extrude} MINUS {lensDistortion, prismaticAberration}",
+      "note": "'prior_blocks' -- historical-style subtraction of Lens+Prismatic specifically (frozen point-in-time; safe under later additions by the same logic as task-31's Caustic analysis, included here only for completeness)",
+      "hardcoded_value_in_test": 51,
+      "live_actual_ordinal_today": 51,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 54,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 11299,
+      "test": "test_task26_loader_admits_only_exact_smooth_carrier_and_census",
+      "key": "filter/smooth:smoothEdge",
+      "view": "3-key {rotate:rot, focusBlur, extrude}",
+      "note": "SMOOTH_EDGE_KEY",
+      "hardcoded_value_in_test": 77,
+      "live_actual_ordinal_today": 77,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 80,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 11155,
+      "test": "test_task26_loader_admits_only_exact_smooth_carrier_and_census (duplicate index assertion)",
+      "key": "filter/smooth:smoothEdge",
+      "view": "3-key {rotate:rot, focusBlur, extrude}",
+      "note": "same as above, typed.index() form",
+      "hardcoded_value_in_test": 77,
+      "live_actual_ordinal_today": 77,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 80,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 3
+    },
+    {
+      "line": 12255,
+      "test": "test_task27_generation_is_exact_single_program_delta_from_task26",
+      "key": "synth/perlin:perlin",
+      "view": "3-key {rotate:rot, focusBlur, extrude}",
+      "note": "PERLIN_KEY",
+      "hardcoded_value_in_test": 123,
+      "live_actual_ordinal_today": 124,
+      "already_stale_vs_hardcoded": true,
+      "projected_ordinal_after_4_insertions": 128,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 4
+    },
+    {
+      "line": 13976,
+      "test": "test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation",
+      "key": "mixer/focusBlur:focusBlur",
+      "view": "none (full live spec)",
+      "note": "FOCUS_BLUR_KEY",
+      "hardcoded_value_in_test": 111,
+      "live_actual_ordinal_today": 111,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 115,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 4
+    },
+    {
+      "line": 14054,
+      "test": "test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription",
+      "key": "mixer/focusBlur:focusBlur",
+      "view": "none (full live spec)",
+      "note": "FOCUS_BLUR_KEY, same test family",
+      "hardcoded_value_in_test": 111,
+      "live_actual_ordinal_today": 111,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 115,
+      "would_shift_due_to_candidate_insertion": true,
+      "shift_delta_from_live": 4
+    },
+    {
+      "line": 14649,
+      "test": "test_task30_history_coexistence_and_live_schema_matches_130_program_state",
+      "key": "filter/extrude:extrude",
+      "view": "none (full live spec)",
+      "note": "EXTRUDE_KEY, typed.index() form",
+      "hardcoded_value_in_test": 25,
+      "live_actual_ordinal_today": 25,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 25,
+      "would_shift_due_to_candidate_insertion": false,
+      "shift_delta_from_live": 0
+    },
+    {
+      "line": 14672,
+      "test": "test_task30_history_coexistence_and_live_schema_matches_130_program_state",
+      "key": "filter/extrude:extrude",
+      "view": "none (full live spec)",
+      "note": "EXTRUDE_KEY, embedded namespace-string form, same test",
+      "hardcoded_value_in_test": 25,
+      "live_actual_ordinal_today": 25,
+      "already_stale_vs_hardcoded": false,
+      "projected_ordinal_after_4_insertions": 25,
+      "would_shift_due_to_candidate_insertion": false,
+      "shift_delta_from_live": 0
+    }
+  ],
+  "count_tuple_context_per_view": [
+    {
+      "view": "none (full live spec)",
+      "live_typed_count_today": 131,
+      "projected_typed_count_after_4_insertions": 135
+    },
+    {
+      "view": "3-key {rotate:rot, focusBlur, extrude}",
+      "live_typed_count_today": 128,
+      "projected_typed_count_after_4_insertions": 132
+    },
+    {
+      "view": "5-key {smoothEdge, perlin, rotate:rot, focusBlur, extrude}",
+      "live_typed_count_today": 126,
+      "projected_typed_count_after_4_insertions": 130
+    }
+  ],
+  "caveat": "Several sites are ALREADY stale relative to the live 131-typed tree (short by exactly 1 -- synth/curl:curl, landed by Task 31, is present in typed_slice.json but several of these hardcoded count/hash/ordinal tuples were written before Curl landed and were not updated, because these tests filter by an explicit fixed key-name exclusion list rather than 'everything added after task N'). This is independent of and predates this task's hypothetical 4-program insertion; it is reported as observed evidence, not asserted as a root cause, and nothing was changed to address it (read-only mandate)."
+}

@@ -1,0 +1,820 @@
+{
+  "schema": "noisemaker-for-cpp.task-29-recompute.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "baseline": {
+    "corpus_count": 212,
+    "typed_count": 128,
+    "public_count": 130,
+    "publicly_unported_count": 82,
+    "typed_ordered_sha256": "30f0333cfd995ba1b866fcbd9589507151255204088675bae6575e42d7328c55",
+    "public_ordered_sha256": "102f5436a5416399f2601879c7d5219706111bc64b93989acbb67d973a01b6c5",
+    "typed_order_is_sorted": true
+  },
+  "projected": {
+    "typed_count": 129,
+    "public_count": 131,
+    "publicly_unported_count": 81,
+    "typed_ordered_sha256": "c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9",
+    "public_ordered_sha256": "2325f8d06d182800af90cd1b0b67efe9d3058d3682f0ceb4d3f5168ff4af5e16",
+    "typed_zero_based_position": 110,
+    "typed_neighbors": [
+      "mixer/channelCombine:channelCombine",
+      "mixer/focusBlur:focusBlur",
+      "mixer/mashup:mashup"
+    ]
+  },
+  "remaining_frontier": {
+    "absent_from_typed_count_including_two_manual_programs": 84,
+    "publicly_unported_count": 82,
+    "emitter_passes": [
+      "filter/invert:inv",
+      "synth/solid:solid"
+    ],
+    "validator_first_blocker_histogram": {
+      "pass": 3,
+      "unsupported binary operator ^": 1,
+      "unsupported builtin all": 1,
+      "unsupported builtin any": 1,
+      "unsupported builtin dFdx": 11,
+      "unsupported builtin floatBitsToUint": 1,
+      "unsupported builtin fwidth": 5,
+      "unsupported builtin reflect": 1,
+      "unsupported builtin round": 1,
+      "unsupported builtin tanh": 1,
+      "unsupported counted-for program proof": 19,
+      "unsupported counted-for safety charge": 3,
+      "unsupported global declaration": 30,
+      "unsupported parameter direction inout": 1,
+      "unsupported typed expression index": 1,
+      "unsupported typed type mat4": 1,
+      "unsupported uniform block": 1,
+      "unsupported varying": 2
+    },
+    "distinguishing_rows": [
+      {
+        "key": "filter/invert:inv",
+        "validator": "pass",
+        "emitter": "pass"
+      },
+      {
+        "key": "mixer/focusBlur:focusBlur",
+        "validator": "pass",
+        "emitter": "mixer/focusBlur:focusBlur:1:1: unsupported typed type sampler2D"
+      },
+      {
+        "key": "synth/solid:solid",
+        "validator": "pass",
+        "emitter": "pass"
+      }
+    ]
+  },
+  "focus_blur": {
+    "key": "mixer/focusBlur:focusBlur",
+    "source": "sources/mixer/focusBlur/focusBlur.glsl",
+    "raw_bytes": 2268,
+    "raw_sha256": "dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1",
+    "normalized_bytes": 1685,
+    "normalized_sha256": "8b3cfb07882d0e409f617b2f86b02fa54cd36db213a60881370306306306be9f",
+    "defines": {},
+    "numeric_contract": "glsl-f32",
+    "function_count": 4,
+    "function_tuple_sha256": "95428219c60cd14910f90e572857773e22818bfaf17436f6a249a10b4364c6e3",
+    "whole_program_sha256": "96468ba160d253f7d064c2caccd9db686d772a2af94d13ee836996dc488e037b",
+    "interface_sha256": "3158dcf83a1d13f84a2d8f3d374d464230ff24b1ed812603cc02fbc96e56be96",
+    "binding_signature": [
+      "inputTex:sampler2D@1/S1",
+      "tex:sampler2D@2/S2",
+      "resolution:vec2@3",
+      "tileOffset:vec2@4",
+      "fullResolution:vec2@5",
+      "focalDistance:float@6",
+      "aperture:float@7",
+      "sampleBias:float@8",
+      "depthSource:int@9",
+      "fragColor:vec4@10/out"
+    ],
+    "resources": {
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "focalDistance",
+        "aperture",
+        "sampleBias",
+        "depthSource"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "outputs": [
+        "fragColor"
+      ],
+      "uses_texture": true,
+      "uses_derivatives": false
+    },
+    "loop_proof": {
+      "loop_count": 1,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 64,
+      "entrypoint_charge": 64,
+      "call_graph_acyclic": true
+    },
+    "functions": [
+      {
+        "id": 16,
+        "name": "applyFocusBlur",
+        "return_type": "vec4",
+        "signature_sha256": "35b78a99ce2d7506016ac0645631155b59ee260e50a3776906f88192778c5d79",
+        "body_statements": 7,
+        "body_sha256": "fd9a2496e322b3b035258d1532ac4dd37c79f778a5c53c55a1231cfad24e00bb",
+        "span": "29:1-46:2",
+        "parameters": [
+          [
+            13,
+            "sceneTex",
+            "sampler2D",
+            "in",
+            "29:21-29:39",
+            "09e40c6d31b787f60fd4ad93e2e9edba976fabc24ba24434aeb8581960958a14"
+          ],
+          [
+            14,
+            "depthTex",
+            "sampler2D",
+            "in",
+            "29:41-29:59",
+            "07258bb2b58f1de0ca4cfd81edd11b519bf23efae4a5f19eb277ea0019c72252"
+          ],
+          [
+            15,
+            "uv",
+            "vec2",
+            "in",
+            "29:61-29:68",
+            "f23d8c4ed6bb89cb61f02914aec289b97d297d0dcd891b815d4d2077890f57cd"
+          ]
+        ]
+      },
+      {
+        "id": 17,
+        "name": "computeBlurFactor",
+        "return_type": "float",
+        "signature_sha256": "e78b62a051077a6348e753297835be0ddd9794d21c8d5b2ff88b8bc32e8ec21f",
+        "body_statements": 3,
+        "body_sha256": "f9163a2eef5b3b22bce4cced05c63e7d9bdd5ae9cf498d37fa7c17c23ade370d",
+        "span": "22:1-26:2",
+        "parameters": [
+          [
+            12,
+            "depth",
+            "float",
+            "in",
+            "22:25-22:36",
+            "6d74909f2cf53251738f9186e43df51b1b7359704cefdeb78f045b5c550aecd9"
+          ]
+        ]
+      },
+      {
+        "id": 18,
+        "name": "getLuminosity",
+        "return_type": "float",
+        "signature_sha256": "86ba7d42693e8bfeedbd6b77cfb72f67c6114598b0c61d062e65c46d17cc45fa",
+        "body_statements": 1,
+        "body_sha256": "13fa1f0d9246c2fe435d29379191eb807b78d563fd187470fa1bf2ae9b2ff2ee",
+        "span": "17:1-19:2",
+        "parameters": [
+          [
+            11,
+            "color",
+            "vec3",
+            "in",
+            "17:21-17:31",
+            "2aef077c2f9d6fc283b95bc4801c349d7064f4507cc031b06e326d58082f94f6"
+          ]
+        ]
+      },
+      {
+        "id": 19,
+        "name": "main",
+        "return_type": "void",
+        "signature_sha256": "568c847cb1e954273197581182b7fb70439265be3bf7645a2df4e3c5b4185edf",
+        "body_statements": 6,
+        "body_sha256": "6189e2d9ac81f58c282bc6c8247fb26a31d21bd9890a35274d0b16042c560440",
+        "span": "48:1-66:2",
+        "parameters": []
+      }
+    ],
+    "helper": {
+      "id": 16,
+      "name": "applyFocusBlur",
+      "signature_sha256": "35b78a99ce2d7506016ac0645631155b59ee260e50a3776906f88192778c5d79",
+      "body_sha256": "fd9a2496e322b3b035258d1532ac4dd37c79f778a5c53c55a1231cfad24e00bb",
+      "span": "29:1-46:2",
+      "body_statements": 7,
+      "sampler_parameter_ids": [
+        13,
+        14
+      ],
+      "sampler_parameter_uses": [
+        {
+          "path": [
+            0,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "30:32-30:40",
+          "sha256": "e1faaf1503a69bf30fcc59725e44a685aa08388951202a1374cc60c922733175",
+          "symbol_id": 14,
+          "parent_kind": "builtin",
+          "parent_signature_id": -46,
+          "parent_child_index": 0,
+          "parent_sha256": "af38790d624a4812e73f52a399abec0cef059e3372b9e948482ca8459bc1d2c2"
+        },
+        {
+          "path": [
+            0,
+            "e0",
+            0,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "span": "30:77-30:85",
+          "sha256": "54cb713f1b9d5dd2bbe5f8c4189fb35cf7aad23668e9d9138dfc8ddc53c89e61",
+          "symbol_id": 14,
+          "parent_kind": "builtin",
+          "parent_signature_id": -48,
+          "parent_child_index": 0,
+          "parent_sha256": "9cdd39da62fb15565acfd2ad84e6bd3e6b4f56c0125b93f85580f6b73d3f6b48"
+        },
+        {
+          "path": [
+            5,
+            "s1",
+            "s3",
+            "e0",
+            0,
+            1,
+            0
+          ],
+          "span": "42:26-42:34",
+          "sha256": "7d56c435e0db8a292b3990201095f6337acefa4485f39269dfac0cabb269cc26",
+          "symbol_id": 13,
+          "parent_kind": "builtin",
+          "parent_signature_id": -46,
+          "parent_child_index": 0,
+          "parent_sha256": "aeb1742bc4673aab6f94e67bdf993f701e8280d1d1f633d646fc4403b30eef05"
+        },
+        {
+          "path": [
+            5,
+            "s1",
+            "s3",
+            "e0",
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "span": "42:101-42:109",
+          "sha256": "59f8fe65b17ba149c322d14f76f5ae6379612e034dff9f526d602ca829fbd8b5",
+          "symbol_id": 13,
+          "parent_kind": "builtin",
+          "parent_signature_id": -48,
+          "parent_child_index": 0,
+          "parent_sha256": "05fb7d5f31950126a312078d817dc427b489a612fb47cd4b64e662e7766320f7"
+        }
+      ],
+      "sampler_parameter_assignments": 0,
+      "sampler_parameter_returns": 0,
+      "sampler_parameter_aggregate_uses": 0
+    },
+    "calls": [
+      {
+        "path": [
+          3,
+          "s0",
+          "s0",
+          "e0",
+          0,
+          1
+        ],
+        "span": "57:17-57:50",
+        "sha256": "025a7dce21804b69158b70710ffd975af31a0dc7569313d3a0ed29692722d2c8",
+        "signature_id": 16,
+        "argument_symbol_ids": [
+          2,
+          1,
+          33
+        ],
+        "argument_types": [
+          "sampler2D",
+          "sampler2D",
+          "vec2"
+        ],
+        "argument_hashes": [
+          "5a03db4215473a0c74dce71a1359ad2b6d1f53fe9fa9bd29118c007ba9f9fcbc",
+          "9967055be5eac15e6b51b30d4010565176e6d161e6b088c5d9d02d28317a1a3c",
+          "34f533d9626bf6cd8e949dfb10799763ed437dbdde7d9c2102a1e0d74a3116f5"
+        ],
+        "parent_kind": "assign",
+        "parent_sha256": "04ddf0a5628905033b6f25766b0781f1329667c4fe7923cc311546b567696fcc",
+        "parent_child_index": 1,
+        "expression_parent_chain": [
+          {
+            "path": [
+              3,
+              "s0",
+              "s0",
+              "e0",
+              0
+            ],
+            "kind": "assign",
+            "span": "57:9-57:50",
+            "sha256": "04ddf0a5628905033b6f25766b0781f1329667c4fe7923cc311546b567696fcc",
+            "child_index_from_parent": null
+          }
+        ],
+        "statement_parent_chain": [
+          {
+            "path": [
+              3
+            ],
+            "kind": "if",
+            "span": "56:5-60:6",
+            "sha256": "b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9",
+            "child_index_from_parent": null,
+            "statement_count": 2,
+            "expression_count": 1
+          },
+          {
+            "path": [
+              3,
+              "s0"
+            ],
+            "kind": "block",
+            "span": "56:27-58:6",
+            "sha256": "ec8cbb5d802f2f3079766b21615f56d14815c59bbdc8ab2b34d0b2a0db818ed0",
+            "child_index_from_parent": 0,
+            "statement_count": 1,
+            "expression_count": 0
+          },
+          {
+            "path": [
+              3,
+              "s0",
+              "s0"
+            ],
+            "kind": "expr",
+            "span": "57:9-57:51",
+            "sha256": "1f31366c027aa18b2da8c08065913e486ed50f36e269037e97ea8c4917db1639",
+            "child_index_from_parent": 0,
+            "statement_count": 0,
+            "expression_count": 1
+          }
+        ],
+        "enclosing_if_path": [
+          3
+        ],
+        "enclosing_if_kind": "if",
+        "enclosing_if_span": "56:5-60:6",
+        "enclosing_if_sha256": "b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9",
+        "predicate_path": [
+          3,
+          "e0",
+          0
+        ],
+        "predicate_kind": "binary",
+        "predicate_operator": "==",
+        "predicate_type": "bool",
+        "predicate_span": "56:9-56:25",
+        "predicate_sha256": "150350bdf498d009c67fbc4782ec274f91674f15d0cfaff473744c683bb57774",
+        "predicate_child_symbol_ids": [
+          9,
+          null
+        ],
+        "predicate_child_kinds": [
+          "id",
+          "literal"
+        ],
+        "predicate_child_types": [
+          "int",
+          "int"
+        ],
+        "predicate_child_literals": [
+          null,
+          0
+        ],
+        "predicate_child_hashes": [
+          "1ef38c87a1ddfb650b7bf3c5f5e0626191075a4cbabdda7189f35e36df8616ee",
+          "c2c4bf6aef38f2ed9fdbfea1dede78dbee1add983f6a3cfc593427a67738ab71"
+        ],
+        "branch_ordinal": 0,
+        "branch_slot": "then",
+        "branch_path": [
+          3,
+          "s0"
+        ],
+        "branch_kind": "block",
+        "branch_span": "56:27-58:6",
+        "branch_sha256": "ec8cbb5d802f2f3079766b21615f56d14815c59bbdc8ab2b34d0b2a0db818ed0",
+        "branch_statement_count": 1,
+        "branch_expression_count": 0
+      },
+      {
+        "path": [
+          3,
+          "s1",
+          "s0",
+          "e0",
+          0,
+          1
+        ],
+        "span": "59:17-59:50",
+        "sha256": "de171d5c1c8f406685b0ecd9552474ac936c22b8070953b236b9e828cd57c394",
+        "signature_id": 16,
+        "argument_symbol_ids": [
+          1,
+          2,
+          33
+        ],
+        "argument_types": [
+          "sampler2D",
+          "sampler2D",
+          "vec2"
+        ],
+        "argument_hashes": [
+          "a18ea0caa0fc37376bdc38d38d27ace2355e7782c3469d10c897cd0104aee62f",
+          "57436557c228b1f3ea8f3455e4bb0c56933e3248891e11ad82eb1e39ba3d93e0",
+          "56d9e6c68f56f793903d489913f55b7aa338fc61d07b6be659285ed489286b21"
+        ],
+        "parent_kind": "assign",
+        "parent_sha256": "f7cafb6b9894d0829841b264386ce0a8baf37603a8f23acdfc12da5479c6e9da",
+        "parent_child_index": 1,
+        "expression_parent_chain": [
+          {
+            "path": [
+              3,
+              "s1",
+              "s0",
+              "e0",
+              0
+            ],
+            "kind": "assign",
+            "span": "59:9-59:50",
+            "sha256": "f7cafb6b9894d0829841b264386ce0a8baf37603a8f23acdfc12da5479c6e9da",
+            "child_index_from_parent": null
+          }
+        ],
+        "statement_parent_chain": [
+          {
+            "path": [
+              3
+            ],
+            "kind": "if",
+            "span": "56:5-60:6",
+            "sha256": "b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9",
+            "child_index_from_parent": null,
+            "statement_count": 2,
+            "expression_count": 1
+          },
+          {
+            "path": [
+              3,
+              "s1"
+            ],
+            "kind": "block",
+            "span": "58:12-60:6",
+            "sha256": "d4c4b59d25148207cf5fbc21388751e24e6632136f17d55371597eb173768af1",
+            "child_index_from_parent": 1,
+            "statement_count": 1,
+            "expression_count": 0
+          },
+          {
+            "path": [
+              3,
+              "s1",
+              "s0"
+            ],
+            "kind": "expr",
+            "span": "59:9-59:51",
+            "sha256": "748350e159fe5e0761f747894d3a2dea2532c5e83b9352ff85793335eaa129a0",
+            "child_index_from_parent": 0,
+            "statement_count": 0,
+            "expression_count": 1
+          }
+        ],
+        "enclosing_if_path": [
+          3
+        ],
+        "enclosing_if_kind": "if",
+        "enclosing_if_span": "56:5-60:6",
+        "enclosing_if_sha256": "b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9",
+        "predicate_path": [
+          3,
+          "e0",
+          0
+        ],
+        "predicate_kind": "binary",
+        "predicate_operator": "==",
+        "predicate_type": "bool",
+        "predicate_span": "56:9-56:25",
+        "predicate_sha256": "150350bdf498d009c67fbc4782ec274f91674f15d0cfaff473744c683bb57774",
+        "predicate_child_symbol_ids": [
+          9,
+          null
+        ],
+        "predicate_child_kinds": [
+          "id",
+          "literal"
+        ],
+        "predicate_child_types": [
+          "int",
+          "int"
+        ],
+        "predicate_child_literals": [
+          null,
+          0
+        ],
+        "predicate_child_hashes": [
+          "1ef38c87a1ddfb650b7bf3c5f5e0626191075a4cbabdda7189f35e36df8616ee",
+          "c2c4bf6aef38f2ed9fdbfea1dede78dbee1add983f6a3cfc593427a67738ab71"
+        ],
+        "branch_ordinal": 1,
+        "branch_slot": "else",
+        "branch_path": [
+          3,
+          "s1"
+        ],
+        "branch_kind": "block",
+        "branch_span": "58:12-60:6",
+        "branch_sha256": "d4c4b59d25148207cf5fbc21388751e24e6632136f17d55371597eb173768af1",
+        "branch_statement_count": 1,
+        "branch_expression_count": 0
+      }
+    ],
+    "conditional_call_proof": {
+      "if_path": [
+        3
+      ],
+      "if_kind": "if",
+      "if_span": "56:5-60:6",
+      "if_sha256": "b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9",
+      "predicate_path": [
+        3,
+        "e0",
+        0
+      ],
+      "predicate_kind": "binary",
+      "predicate_type": "bool",
+      "predicate_span": "56:9-56:25",
+      "predicate_sha256": "150350bdf498d009c67fbc4782ec274f91674f15d0cfaff473744c683bb57774",
+      "predicate_operator": "==",
+      "predicate_child_symbol_ids": [
+        9,
+        null
+      ],
+      "predicate_child_kinds": [
+        "id",
+        "literal"
+      ],
+      "predicate_child_types": [
+        "int",
+        "int"
+      ],
+      "predicate_child_literals": [
+        null,
+        0
+      ],
+      "predicate_child_hashes": [
+        "1ef38c87a1ddfb650b7bf3c5f5e0626191075a4cbabdda7189f35e36df8616ee",
+        "c2c4bf6aef38f2ed9fdbfea1dede78dbee1add983f6a3cfc593427a67738ab71"
+      ],
+      "branches": [
+        {
+          "ordinal": 0,
+          "slot": "then",
+          "path": [
+            3,
+            "s0"
+          ],
+          "kind": "block",
+          "span": "56:27-58:6",
+          "sha256": "ec8cbb5d802f2f3079766b21615f56d14815c59bbdc8ab2b34d0b2a0db818ed0",
+          "statement_count": 1,
+          "expression_count": 0,
+          "owned_helper_call_sha256": "025a7dce21804b69158b70710ffd975af31a0dc7569313d3a0ed29692722d2c8",
+          "helper_call_count": 1
+        },
+        {
+          "ordinal": 1,
+          "slot": "else",
+          "path": [
+            3,
+            "s1"
+          ],
+          "kind": "block",
+          "span": "58:12-60:6",
+          "sha256": "d4c4b59d25148207cf5fbc21388751e24e6632136f17d55371597eb173768af1",
+          "statement_count": 1,
+          "expression_count": 0,
+          "owned_helper_call_sha256": "de171d5c1c8f406685b0ecd9552474ac936c22b8070953b236b9e828cd57c394",
+          "helper_call_count": 1
+        }
+      ],
+      "branch_count": 2,
+      "calls_per_branch": [
+        1,
+        1
+      ],
+      "all_helper_calls_owned_by_conditional": true,
+      "dynamic_calls_per_pixel": 1,
+      "dynamic_calls_per_pixel_max": 1,
+      "exactly_one_dynamic_call": true,
+      "mutually_exclusive": true,
+      "mutation_controls": {
+        "predicate_change": "reject predicate object/hash/operator/children",
+        "predicate_reconstruction": "reject forged old predicate object; authenticate candidate-owned object",
+        "branch_swap": "reject slot/path/call ownership and argument-order mismatch",
+        "call_move_outside": "reject absent enclosing-if ancestry",
+        "call_copy_same_branch": "reject branch call cardinality [2,1] or [1,2]",
+        "call_copy_both_executed": "reject any path with dynamic call min/max other than 1/1",
+        "call_swap_between_branches": "reject branch-owned call hash/order tuple"
+      }
+    },
+    "texture_sites": [
+      {
+        "owner_id": 16,
+        "owner": "applyFocusBlur",
+        "path": [
+          0,
+          "e0",
+          0,
+          0
+        ],
+        "span": "30:24-30:91",
+        "sha256": "af38790d624a4812e73f52a399abec0cef059e3372b9e948482ca8459bc1d2c2",
+        "sampler_symbol_id": 14
+      },
+      {
+        "owner_id": 16,
+        "owner": "applyFocusBlur",
+        "path": [
+          5,
+          "s1",
+          "s3",
+          "e0",
+          0,
+          1
+        ],
+        "span": "42:18-42:115",
+        "sha256": "aeb1742bc4673aab6f94e67bdf993f701e8280d1d1f633d646fc4403b30eef05",
+        "sampler_symbol_id": 13
+      },
+      {
+        "owner_id": 19,
+        "owner": "main",
+        "path": [
+          4,
+          "e0",
+          0,
+          1,
+          0,
+          0
+        ],
+        "span": "63:19-63:86",
+        "sha256": "b4a42b659276297270cdf2d467a6e2a9f253d240cc2d30806b12dd1333cca5e7",
+        "sampler_symbol_id": 1
+      },
+      {
+        "owner_id": 19,
+        "owner": "main",
+        "path": [
+          4,
+          "e0",
+          0,
+          1,
+          1,
+          0
+        ],
+        "span": "63:90-63:147",
+        "sha256": "746c018747191098bf1d4685729c87a1cb778020880d05ef4f3a2d6ccb25753e",
+        "sampler_symbol_id": 2
+      }
+    ],
+    "texture_size_sites": [
+      {
+        "owner_id": 16,
+        "owner": "applyFocusBlur",
+        "path": [
+          0,
+          "e0",
+          0,
+          0,
+          1,
+          1,
+          0
+        ],
+        "span": "30:65-30:89",
+        "sha256": "9cdd39da62fb15565acfd2ad84e6bd3e6b4f56c0125b93f85580f6b73d3f6b48",
+        "sampler_symbol_id": 14
+      },
+      {
+        "owner_id": 16,
+        "owner": "applyFocusBlur",
+        "path": [
+          5,
+          "s1",
+          "s3",
+          "e0",
+          0,
+          1,
+          1,
+          1,
+          0
+        ],
+        "span": "42:89-42:113",
+        "sha256": "05fb7d5f31950126a312078d817dc427b489a612fb47cd4b64e662e7766320f7",
+        "sampler_symbol_id": 13
+      },
+      {
+        "owner_id": 19,
+        "owner": "main",
+        "path": [
+          4,
+          "e0",
+          0,
+          1,
+          0,
+          0,
+          1,
+          1,
+          0
+        ],
+        "span": "63:60-63:84",
+        "sha256": "36ad171b1f97d660f178ed039c2524240b87fe7b2ccba347121b53d10e817219",
+        "sampler_symbol_id": 1
+      },
+      {
+        "owner_id": 19,
+        "owner": "main",
+        "path": [
+          4,
+          "e0",
+          0,
+          1,
+          1,
+          0,
+          1,
+          1,
+          0
+        ],
+        "span": "63:126-63:145",
+        "sha256": "ff71a2a2f2fcca9b85e176f39344bd42c169810b3bda3f2d7c5948cf08e3eb44",
+        "sampler_symbol_id": 2
+      }
+    ],
+    "static_texture_site_count": 4,
+    "static_texture_size_site_count": 4,
+    "dynamic_texture_reads_max_path": 67,
+    "read_derivation": "1 depth + 64 scene loop + 2 alpha",
+    "profile_tuple_sha256": "869eafed0199be24c6fcf5a13d39211c1ea0c1227f9ee12b55f5c69196e9780b",
+    "profile_tuple_repr": "('focus-blur-borrowed-sampler-parameters-v1', 'mixer/focusBlur:focusBlur', 'dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1', (), 'glsl-f32', '95428219c60cd14910f90e572857773e22818bfaf17436f6a249a10b4364c6e3', '96468ba160d253f7d064c2caccd9db686d772a2af94d13ee836996dc488e037b', '3158dcf83a1d13f84a2d8f3d374d464230ff24b1ed812603cc02fbc96e56be96', (16, 'applyFocusBlur', '35b78a99ce2d7506016ac0645631155b59ee260e50a3776906f88192778c5d79', 'fd9a2496e322b3b035258d1532ac4dd37c79f778a5c53c55a1231cfad24e00bb', '29:1-46:2', 7, ((13, 'sceneTex', 'sampler2D', 'in', '29:21-29:39', '09e40c6d31b787f60fd4ad93e2e9edba976fabc24ba24434aeb8581960958a14'), (14, 'depthTex', 'sampler2D', 'in', '29:41-29:59', '07258bb2b58f1de0ca4cfd81edd11b519bf23efae4a5f19eb277ea0019c72252'), (15, 'uv', 'vec2', 'in', '29:61-29:68', 'f23d8c4ed6bb89cb61f02914aec289b97d297d0dcd891b815d4d2077890f57cd'))), (((0, 'e0', 0, 0, 0), '30:32-30:40', 'e1faaf1503a69bf30fcc59725e44a685aa08388951202a1374cc60c922733175', 14, 'builtin', -46, 0, 'af38790d624a4812e73f52a399abec0cef059e3372b9e948482ca8459bc1d2c2'), ((0, 'e0', 0, 0, 1, 1, 0, 0), '30:77-30:85', '54cb713f1b9d5dd2bbe5f8c4189fb35cf7aad23668e9d9138dfc8ddc53c89e61', 14, 'builtin', -48, 0, '9cdd39da62fb15565acfd2ad84e6bd3e6b4f56c0125b93f85580f6b73d3f6b48'), ((5, 's1', 's3', 'e0', 0, 1, 0), '42:26-42:34', '7d56c435e0db8a292b3990201095f6337acefa4485f39269dfac0cabb269cc26', 13, 'builtin', -46, 0, 'aeb1742bc4673aab6f94e67bdf993f701e8280d1d1f633d646fc4403b30eef05'), ((5, 's1', 's3', 'e0', 0, 1, 1, 1, 0, 0), '42:101-42:109', '59f8fe65b17ba149c322d14f76f5ae6379612e034dff9f526d602ca829fbd8b5', 13, 'builtin', -48, 0, '05fb7d5f31950126a312078d817dc427b489a612fb47cd4b64e662e7766320f7')), (((3, 's0', 's0', 'e0', 0, 1), '57:17-57:50', '025a7dce21804b69158b70710ffd975af31a0dc7569313d3a0ed29692722d2c8', 16, (2, 1, 33), ('sampler2D', 'sampler2D', 'vec2'), ('5a03db4215473a0c74dce71a1359ad2b6d1f53fe9fa9bd29118c007ba9f9fcbc', '9967055be5eac15e6b51b30d4010565176e6d161e6b088c5d9d02d28317a1a3c', '34f533d9626bf6cd8e949dfb10799763ed437dbdde7d9c2102a1e0d74a3116f5'), 'assign', 1, '04ddf0a5628905033b6f25766b0781f1329667c4fe7923cc311546b567696fcc', (((3, 's0', 's0', 'e0', 0), 'assign', '57:9-57:50', '04ddf0a5628905033b6f25766b0781f1329667c4fe7923cc311546b567696fcc', None),), (((3,), 'if', '56:5-60:6', 'b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9', None, 2, 1), ((3, 's0'), 'block', '56:27-58:6', 'ec8cbb5d802f2f3079766b21615f56d14815c59bbdc8ab2b34d0b2a0db818ed0', 0, 1, 0), ((3, 's0', 's0'), 'expr', '57:9-57:51', '1f31366c027aa18b2da8c08065913e486ed50f36e269037e97ea8c4917db1639', 0, 0, 1)), (3,), 'if', '56:5-60:6', 'b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9', (3, 'e0', 0), 'binary', '==', 'bool', '56:9-56:25', '150350bdf498d009c67fbc4782ec274f91674f15d0cfaff473744c683bb57774', (9, None), ('id', 'literal'), ('int', 'int'), (None, 0), ('1ef38c87a1ddfb650b7bf3c5f5e0626191075a4cbabdda7189f35e36df8616ee', 'c2c4bf6aef38f2ed9fdbfea1dede78dbee1add983f6a3cfc593427a67738ab71'), 0, 'then', (3, 's0'), 'block', '56:27-58:6', 'ec8cbb5d802f2f3079766b21615f56d14815c59bbdc8ab2b34d0b2a0db818ed0', 1, 0), ((3, 's1', 's0', 'e0', 0, 1), '59:17-59:50', 'de171d5c1c8f406685b0ecd9552474ac936c22b8070953b236b9e828cd57c394', 16, (1, 2, 33), ('sampler2D', 'sampler2D', 'vec2'), ('a18ea0caa0fc37376bdc38d38d27ace2355e7782c3469d10c897cd0104aee62f', '57436557c228b1f3ea8f3455e4bb0c56933e3248891e11ad82eb1e39ba3d93e0', '56d9e6c68f56f793903d489913f55b7aa338fc61d07b6be659285ed489286b21'), 'assign', 1, 'f7cafb6b9894d0829841b264386ce0a8baf37603a8f23acdfc12da5479c6e9da', (((3, 's1', 's0', 'e0', 0), 'assign', '59:9-59:50', 'f7cafb6b9894d0829841b264386ce0a8baf37603a8f23acdfc12da5479c6e9da', None),), (((3,), 'if', '56:5-60:6', 'b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9', None, 2, 1), ((3, 's1'), 'block', '58:12-60:6', 'd4c4b59d25148207cf5fbc21388751e24e6632136f17d55371597eb173768af1', 1, 1, 0), ((3, 's1', 's0'), 'expr', '59:9-59:51', '748350e159fe5e0761f747894d3a2dea2532c5e83b9352ff85793335eaa129a0', 0, 0, 1)), (3,), 'if', '56:5-60:6', 'b86152c26ce7379f0fd078d49e74699c76476f3ec34aaee1345506f46a2356c9', (3, 'e0', 0), 'binary', '==', 'bool', '56:9-56:25', '150350bdf498d009c67fbc4782ec274f91674f15d0cfaff473744c683bb57774', (9, None), ('id', 'literal'), ('int', 'int'), (None, 0), ('1ef38c87a1ddfb650b7bf3c5f5e0626191075a4cbabdda7189f35e36df8616ee', 'c2c4bf6aef38f2ed9fdbfea1dede78dbee1add983f6a3cfc593427a67738ab71'), 1, 'else', (3, 's1'), 'block', '58:12-60:6', 'd4c4b59d25148207cf5fbc21388751e24e6632136f17d55371597eb173768af1', 1, 0)), ((16, (0, 'e0', 0, 0), '30:24-30:91', 'af38790d624a4812e73f52a399abec0cef059e3372b9e948482ca8459bc1d2c2', 14), (16, (5, 's1', 's3', 'e0', 0, 1), '42:18-42:115', 'aeb1742bc4673aab6f94e67bdf993f701e8280d1d1f633d646fc4403b30eef05', 13), (19, (4, 'e0', 0, 1, 0, 0), '63:19-63:86', 'b4a42b659276297270cdf2d467a6e2a9f253d240cc2d30806b12dd1333cca5e7', 1), (19, (4, 'e0', 0, 1, 1, 0), '63:90-63:147', '746c018747191098bf1d4685729c87a1cb778020880d05ef4f3a2d6ccb25753e', 2)), ((16, (0, 'e0', 0, 0, 1, 1, 0), '30:65-30:89', '9cdd39da62fb15565acfd2ad84e6bd3e6b4f56c0125b93f85580f6b73d3f6b48', 14), (16, (5, 's1', 's3', 'e0', 0, 1, 1, 1, 0), '42:89-42:113', '05fb7d5f31950126a312078d817dc427b489a612fb47cd4b64e662e7766320f7', 13), (19, (4, 'e0', 0, 1, 0, 0, 1, 1, 0), '63:60-63:84', '36ad171b1f97d660f178ed039c2524240b87fe7b2ccba347121b53d10e817219', 1), (19, (4, 'e0', 0, 1, 1, 0, 1, 1, 0), '63:126-63:145', 'ff71a2a2f2fcca9b85e176f39344bd42c169810b3bda3f2d7c5948cf08e3eb44', 2)), {'loop_count': 1, 'unproved_loop_count': 0, 'max_effective_depth': 1, 'max_lexical_product': 64, 'entrypoint_charge': 64, 'call_graph_acyclic': True})",
+    "validator": "pass",
+    "emitter": "mixer/focusBlur:focusBlur:1:1: unsupported typed type sampler2D",
+    "public_identity": {
+      "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+      "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+      "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+      "canonical_factory_name": "canonicalFactory195",
+      "canonical_factory_to_string_sha256": "fb4c02c763ef42000b13bba3945cf4fd15e177a2ab2827372ce3b96aa3a778ff",
+      "public_is_canonical_identity": true,
+      "adapter_absent": true
+    }
+  },
+  "accepted_task28_file_hashes": {
+    "tools/glslcpp/frontend/rotate_mat2_return_profile.py": "a0ca34a312a0f610c9acb1f6b009ee534f52fc6e1eb1fe1fa2da707e8beba454",
+    "tools/glslcpp/frontend/perlin_scalar_uint_xor_profile.py": "6ef916782a4f76c09fd1eff064f6fe6b589c6371b8687b0b4a99d6e7ea4f671f",
+    "tools/glslcpp/generate_typed_slice.py": "ed1538426717f47a9feea1f58268c2b3a8d7316f5fd581a46e6f237a40c50c56",
+    "tools/glslcpp/emit_typed_cpp.py": "904ac0df016a6128cb5dcce8bc28fbee2ca8a78eb40faba9fa91601effd29b02",
+    "tools/glslcpp/typed_slice.json": "b42a0b0c46daf7959f1b404ce4d0c3a28e81adb60cd9d250384d7e2e1564db73",
+    "tests/test_typed_generator.py": "ee5778035f3002b4d05096b13850a79c2e81ba3ccdc9b1fcece0dc40aa3a50c1",
+    "tests/test_generated_kernels.cpp": "5a8c0ac8447391478d204480bf2999a8d8077e5e3c8af6775b57f5ee91be2d55",
+    "tests/test_typed_slice.cpp": "55fee138f1477d183cc1e007e89b104cb4b4d126de9b1688844879e73be121d6",
+    "src/typed_generated/typed_slice.cpp": "b53e020b990a88d17de7fcaaa29965c1304cad510e2888cdd4e54ca98900763e",
+    "src/typed_generated/typed_manifest.json": "612d35229abf0580932cfaf11785311359afe29f20f1ebef5fb925cc91de044e",
+    "include/noisemaker/generated/catalog.hpp": "372d1f69e1e7db772ddebc05945a714527b22b35f87ca3160bbb8eb85135a4ac",
+    "include/noisemaker/glsl_types.hpp": "37e71f566d5b8d5e1abf68fee1b27338898e4afacb116764824274dfda6780d8",
+    "CMakeLists.txt": "bca6b4ab77d26c72449ef8d7a66d5832fdc939ebb35a85211b7684dde62216d5"
+  }
+}

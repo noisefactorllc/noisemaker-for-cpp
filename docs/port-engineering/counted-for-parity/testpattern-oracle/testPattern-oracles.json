@@ -1,0 +1,2268 @@
+{
+  "schema": "noisemaker-for-cpp.testPattern.pixel-parity.v1",
+  "schema_version": 1,
+  "program_key": "synth/testPattern:testPattern",
+  "effect_key": "synth/testPattern",
+  "runtime_key": "synth/testPattern:testPattern",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "factory": {
+    "name": "canonicalFactory277",
+    "text_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+    "public_direct_identity": true,
+    "canonical_own_key": true,
+    "adapter_own_key": false
+  },
+  "binding_names": [
+    "resolution",
+    "tileOffset",
+    "fullResolution",
+    "gridSize",
+    "pattern"
+  ],
+  "binding_abi": {
+    "resolution": "Vec2",
+    "tileOffset": "Vec2",
+    "fullResolution": "Vec2",
+    "gridSize": "int32",
+    "pattern": "int32"
+  },
+  "source_uniform_abi": {
+    "resolution": "vec2",
+    "tileOffset": "vec2",
+    "fullResolution": "vec2",
+    "gridSize": "int",
+    "pattern": "int"
+  },
+  "input_contract": {
+    "kind": "source-only",
+    "runtime_input_path": "none",
+    "lifetime_claimed": false,
+    "immutability_claimed": false,
+    "reason": "Test Pattern has no sampler or input texture path"
+  },
+  "exactness_contract": {
+    "float32": "raw little-endian uint32 words; signed zero and NaN payloads significant",
+    "rgba8": "complete independent RGBA8 byte arrays",
+    "tolerance": "none",
+    "comparison_order": "dimensions, counts, every float32 word, every RGBA8 byte"
+  },
+  "comparer_self_tests": {
+    "good_equal": true,
+    "dimensions_before_access": true,
+    "short_count": true,
+    "long_count": true,
+    "signed_zero": true,
+    "nan_payload": true,
+    "rgba8_independent": true,
+    "first_mismatch_reported": true
+  },
+  "authority": {
+    "oracle": "live canonical factory from immutable CPU snapshot",
+    "live_checkout_rejected": true,
+    "leaf_symlink_rejected": true,
+    "parent_alias_accepted": true,
+    "import_closure": [
+      {
+        "relative_path": "src/csl/glsl-kernel.js",
+        "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+      },
+      {
+        "relative_path": "src/csl/glsl-runtime.js",
+        "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+      },
+      {
+        "relative_path": "src/csl/runtime.js",
+        "sha256": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"
+      },
+      {
+        "relative_path": "src/effects/adapters/bit-effects.js",
+        "sha256": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7"
+      },
+      {
+        "relative_path": "src/effects/adapters/crt.js",
+        "sha256": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"
+      },
+      {
+        "relative_path": "src/effects/adapters/f32-color.js",
+        "sha256": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"
+      },
+      {
+        "relative_path": "src/effects/adapters/fractal.js",
+        "sha256": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"
+      },
+      {
+        "relative_path": "src/effects/adapters/index.js",
+        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+      },
+      {
+        "relative_path": "src/effects/adapters/julia.js",
+        "sha256": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"
+      },
+      {
+        "relative_path": "src/effects/adapters/median.js",
+        "sha256": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"
+      },
+      {
+        "relative_path": "src/effects/adapters/palette.js",
+        "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/snow.js",
+        "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+      },
+      {
+        "relative_path": "src/effects/catalog.js",
+        "sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"
+      },
+      {
+        "relative_path": "src/effects/definition.js",
+        "sha256": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"
+      },
+      {
+        "relative_path": "src/effects/generated/canonical-adapter-data.js",
+        "sha256": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"
+      },
+      {
+        "relative_path": "src/effects/generated/canonical-kernels.js",
+        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+      },
+      {
+        "relative_path": "src/effects/generated/kernels.js",
+        "sha256": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"
+      },
+      {
+        "relative_path": "src/effects/generated/upstream-snapshot.js",
+        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+      },
+      {
+        "relative_path": "src/effects/registry.js",
+        "sha256": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"
+      },
+      {
+        "relative_path": "src/runtime/pass-runner.js",
+        "sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"
+      },
+      {
+        "relative_path": "src/runtime/sampler.js",
+        "sha256": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"
+      },
+      {
+        "relative_path": "src/runtime/surface.js",
+        "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+      }
+    ]
+  },
+  "provenance": {
+    "source": {
+      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "bytes": 5919,
+      "sha256": "f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20"
+    },
+    "factory": {
+      "relative_path": "src/effects/generated/canonical-kernels.js",
+      "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+    },
+    "cpu_root": "<immutable-cpu-snapshot-root>"
+  },
+  "render_cases": [
+    {
+      "name": "checker-hundreds-digit",
+      "width": 1,
+      "height": 1,
+      "gridSize": 12,
+      "pattern": 0,
+      "tileOffset": [
+        19,
+        27
+      ],
+      "fullResolution": [
+        1000,
+        1000
+      ],
+      "phase": 1,
+      "controls": {
+        "resolution": [
+          1,
+          1
+        ],
+        "tileOffset": [
+          19,
+          27
+        ],
+        "fullResolution": [
+          1000,
+          1000
+        ],
+        "gridSize": 12,
+        "pattern": 0
+      },
+      "output_f32_words_le": [
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "f6bb1294da2f78cd935b01c7656280df5eaa0439e9d97bc03775825a41a508e4",
+      "output_rgba8_bytes": [
+        255,
+        255,
+        255,
+        255
+      ],
+      "output_rgba8_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "checker-single-digit",
+      "width": 1,
+      "height": 1,
+      "gridSize": 3,
+      "pattern": 0,
+      "tileOffset": [
+        499.5,
+        499.5
+      ],
+      "fullResolution": [
+        1000,
+        1000
+      ],
+      "phase": 2,
+      "controls": {
+        "resolution": [
+          1,
+          1
+        ],
+        "tileOffset": [
+          499.5,
+          499.5
+        ],
+        "fullResolution": [
+          1000,
+          1000
+        ],
+        "gridSize": 3,
+        "pattern": 0
+      },
+      "output_f32_words_le": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+      "output_rgba8_bytes": [
+        0,
+        0,
+        0,
+        255
+      ],
+      "output_rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "checker-grid-clamp",
+      "width": 2,
+      "height": 2,
+      "gridSize": 0,
+      "pattern": 0,
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        2,
+        2
+      ],
+      "phase": 3,
+      "controls": {
+        "resolution": [
+          2,
+          2
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          2,
+          2
+        ],
+        "gridSize": 0,
+        "pattern": 0
+      },
+      "output_f32_words_le": [
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "9628e545ed3ac074e5a6cbf542a642b62482fbfca9b4cb3ea4743a1874256e37",
+      "output_rgba8_bytes": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        255
+      ],
+      "output_rgba8_sha256": "5ac6a5945f16500911219129984ba8b387a06f24fe383ce4e81a73294065461b",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "color-bars",
+      "width": 8,
+      "height": 1,
+      "gridSize": 4,
+      "pattern": 1,
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        8,
+        1
+      ],
+      "phase": 4,
+      "controls": {
+        "resolution": [
+          8,
+          1
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          8,
+          1
+        ],
+        "gridSize": 4,
+        "pattern": 1
+      },
+      "output_f32_words_le": [
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "6db8f03150c8a0c7721300683cc43b5eae30cd2a528113f6bf127769c45f3b03",
+      "output_rgba8_bytes": [
+        255,
+        255,
+        255,
+        255,
+        255,
+        255,
+        0,
+        255,
+        0,
+        255,
+        255,
+        255,
+        0,
+        255,
+        0,
+        255,
+        255,
+        0,
+        255,
+        255,
+        255,
+        0,
+        0,
+        255,
+        0,
+        0,
+        255,
+        255,
+        0,
+        0,
+        0,
+        255
+      ],
+      "output_rgba8_sha256": "856c5f8dcc3ef73f3bae698cde3c0aa91d26a35638aae001fcc2ee1b08eaf5e0",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "gradient-nonsquare",
+      "width": 4,
+      "height": 3,
+      "gridSize": 4,
+      "pattern": 2,
+      "tileOffset": [
+        1,
+        0
+      ],
+      "fullResolution": [
+        8,
+        3
+      ],
+      "phase": 5,
+      "controls": {
+        "resolution": [
+          4,
+          3
+        ],
+        "tileOffset": [
+          1,
+          0
+        ],
+        "fullResolution": [
+          8,
+          3
+        ],
+        "gridSize": 4,
+        "pattern": 2
+      },
+      "output_f32_words_le": [
+        "0x3e400000",
+        "0x3e400000",
+        "0x3e400000",
+        "0x3f800000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3f800000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3f800000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f800000",
+        "0x3e400000",
+        "0x3e400000",
+        "0x3e400000",
+        "0x3f800000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3f800000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3f800000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f800000",
+        "0x3e400000",
+        "0x3e400000",
+        "0x3e400000",
+        "0x3f800000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3ea00000",
+        "0x3f800000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3ee00000",
+        "0x3f800000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f100000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "28d6aa59331d654196bd4696252c3e81370e09a8dcac8a2e836e363adc345798",
+      "output_rgba8_bytes": [
+        48,
+        48,
+        48,
+        255,
+        80,
+        80,
+        80,
+        255,
+        112,
+        112,
+        112,
+        255,
+        143,
+        143,
+        143,
+        255,
+        48,
+        48,
+        48,
+        255,
+        80,
+        80,
+        80,
+        255,
+        112,
+        112,
+        112,
+        255,
+        143,
+        143,
+        143,
+        255,
+        48,
+        48,
+        48,
+        255,
+        80,
+        80,
+        80,
+        255,
+        112,
+        112,
+        112,
+        255,
+        143,
+        143,
+        143,
+        255
+      ],
+      "output_rgba8_sha256": "b2e526d8f801cf1a080e4a54eaec499dfb9224e94e2d29c5961c9c1b89a414a2",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "uv-map-tile",
+      "width": 3,
+      "height": 2,
+      "gridSize": 3,
+      "pattern": 3,
+      "tileOffset": [
+        2,
+        1
+      ],
+      "fullResolution": [
+        6,
+        4
+      ],
+      "phase": 6,
+      "controls": {
+        "resolution": [
+          3,
+          2
+        ],
+        "tileOffset": [
+          2,
+          1
+        ],
+        "fullResolution": [
+          6,
+          4
+        ],
+        "gridSize": 3,
+        "pattern": 3
+      },
+      "output_f32_words_le": [
+        "0x3ed55555",
+        "0x3f200000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f155555",
+        "0x3f200000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f400000",
+        "0x3f200000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3ed55555",
+        "0x3ec00000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f155555",
+        "0x3ec00000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f400000",
+        "0x3ec00000",
+        "0x00000000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "462ac905c1671ec6cbbf7ff9817d6e57d88e24793d73a96126b8514e4dec0420",
+      "output_rgba8_bytes": [
+        106,
+        159,
+        0,
+        255,
+        149,
+        159,
+        0,
+        255,
+        191,
+        159,
+        0,
+        255,
+        106,
+        96,
+        0,
+        255,
+        149,
+        96,
+        0,
+        255,
+        191,
+        96,
+        0,
+        255
+      ],
+      "output_rgba8_sha256": "2b2c6c1decfe3f06f0be5e78e77d88a654933406e9214788d87fba15a3f8fe53",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "grid-lines",
+      "width": 5,
+      "height": 4,
+      "gridSize": 3,
+      "pattern": 4,
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        5,
+        4
+      ],
+      "phase": 7,
+      "controls": {
+        "resolution": [
+          5,
+          4
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          5,
+          4
+        ],
+        "gridSize": 3,
+        "pattern": 4
+      },
+      "output_f32_words_le": [
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f70f426",
+        "0x3f70f426",
+        "0x3f70f426",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f800000",
+        "0x3f7e1af4",
+        "0x3f7e1af4",
+        "0x3f7e1af4",
+        "0x3f800000",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f800000",
+        "0x3f7e1af4",
+        "0x3f7e1af4",
+        "0x3f7e1af4",
+        "0x3f800000",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f7fe6a1",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f70f426",
+        "0x3f70f426",
+        "0x3f70f426",
+        "0x3f800000",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f7f3685",
+        "0x3f800000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f79c000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "eb66ad4ac07d220d72032a42d732cf266339da9c8566093c868b8285d4ec033c",
+      "output_rgba8_bytes": [
+        249,
+        249,
+        249,
+        255,
+        254,
+        254,
+        254,
+        255,
+        240,
+        240,
+        240,
+        255,
+        254,
+        254,
+        254,
+        255,
+        249,
+        249,
+        249,
+        255,
+        254,
+        254,
+        254,
+        255,
+        255,
+        255,
+        255,
+        255,
+        253,
+        253,
+        253,
+        255,
+        255,
+        255,
+        255,
+        255,
+        254,
+        254,
+        254,
+        255,
+        254,
+        254,
+        254,
+        255,
+        255,
+        255,
+        255,
+        255,
+        253,
+        253,
+        253,
+        255,
+        255,
+        255,
+        255,
+        255,
+        254,
+        254,
+        254,
+        255,
+        249,
+        249,
+        249,
+        255,
+        254,
+        254,
+        254,
+        255,
+        240,
+        240,
+        240,
+        255,
+        254,
+        254,
+        254,
+        255,
+        249,
+        249,
+        249,
+        255
+      ],
+      "output_rgba8_sha256": "89c7c79931afa67d559f7cf332ab5a65a379ebf5e4fa2d997535c364af2c24a8",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "color-grid",
+      "width": 4,
+      "height": 3,
+      "gridSize": 4,
+      "pattern": 5,
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        4,
+        3
+      ],
+      "phase": 8,
+      "controls": {
+        "resolution": [
+          4,
+          3
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          4,
+          3
+        ],
+        "gridSize": 4,
+        "pattern": 5
+      },
+      "output_f32_words_le": [
+        "0x00000000",
+        "0x3f800000",
+        "0x3eff34a0",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3e539cb0",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3dae5fc0",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3ec0fe38",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3eab3240",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f204c44",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f6aff68",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f4a4d74",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3e956648",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f156648",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x3f60196c",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "a5fe647f7b56090d8fd56ad17be335977cc423f97c6fdba7a60c8d5d300aaf19",
+      "output_rgba8_bytes": [
+        0,
+        255,
+        127,
+        255,
+        255,
+        53,
+        0,
+        255,
+        0,
+        22,
+        255,
+        255,
+        96,
+        255,
+        0,
+        255,
+        255,
+        0,
+        85,
+        255,
+        0,
+        160,
+        255,
+        255,
+        234,
+        255,
+        0,
+        255,
+        202,
+        0,
+        255,
+        255,
+        255,
+        0,
+        0,
+        255,
+        0,
+        74,
+        255,
+        255,
+        149,
+        255,
+        0,
+        255,
+        255,
+        0,
+        223,
+        255
+      ],
+      "output_rgba8_sha256": "e1396e97656f8095d998762f0c08d1f208067de33bad4d4c91ea8dc974bce0a1",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    },
+    {
+      "name": "dot-grid",
+      "width": 5,
+      "height": 5,
+      "gridSize": 4,
+      "pattern": 6,
+      "tileOffset": [
+        0,
+        0
+      ],
+      "fullResolution": [
+        5,
+        5
+      ],
+      "phase": 9,
+      "controls": {
+        "resolution": [
+          5,
+          5
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          5,
+          5
+        ],
+        "gridSize": 4,
+        "pattern": 6
+      },
+      "output_f32_words_le": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x3f800000"
+      ],
+      "output_f32_sha256": "45958e7de2b03e705d949058a74871b720c933b6690af3237dc550276121f3ff",
+      "output_rgba8_bytes": [
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        255,
+        255,
+        255,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255,
+        0,
+        0,
+        0,
+        255
+      ],
+      "output_rgba8_sha256": "eec6872072e956535878ec2c0e3124d23b5ba54a2f7f172e1c2841eeee6b5be4",
+      "alpha": {
+        "f32_word": "0x3f800000",
+        "rgba8_byte": 255
+      },
+      "repeat_identical_float32": true,
+      "repeat_identical_rgba8": true,
+      "repeat_distinct_data_objects": true,
+      "repeat_distinct_backing_buffers": true
+    }
+  ],
+  "mutation_contract": {
+    "behavioral_names": [
+      "digit-extraction-trip-count",
+      "glyph-bit-sample",
+      "checker-grid-clamp",
+      "pattern-bars-dispatch",
+      "bars-upper-clamp",
+      "gradient-axis",
+      "uv-axis",
+      "color-grid-golden-ratio",
+      "dot-grid-threshold"
+    ],
+    "structural_names": [
+      "dead-cpu-float-helper",
+      "source-comment-only"
+    ],
+    "control_group": "all patterns and source-specific branches"
+  },
+  "behavioral_mutation_ledger": [
+    {
+      "name": "digit-extraction-trip-count",
+      "group": "digit",
+      "mechanism": "digit extraction trip-count off-by-one",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "for (var i = 0; i < 3; i++)",
+      "replacement": "for (var i = 0; i < 2; i++)",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "a1057fa61f01858f306ab6dcf5b834e3bdbb903a31c463e4dc6db8339ae2588f",
+      "replacement_sha256": "9c466f62670dd6c0fb92c58f15b924e8110d9b87270a4ee283397ec853cb66ee",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "42320d68ba7bd9937764460c1b059247ae55b15af3a6d131f10b9226bfb8059c",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3,
+          "first_mismatch": 0
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "c7d8bf3ea711e25b5d13e9f7bf42cec7d0ee09a413cffd56c1d105260844fdc9",
+      "witness_cases": [
+        "checker-hundreds-digit"
+      ],
+      "required_witness_results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "glyph-bit-sample",
+      "group": "glyph",
+      "mechanism": "glyph bit sample forced",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "return ((GLYPH[digit] >> bitIndex) & 1) == 1;",
+      "replacement": "return true;",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "0a4914cc9b5eb2a2cafff43a74b98de946f5c5cde5760b633cd87b6949216659",
+      "replacement_sha256": "10e0fa08a73f0cd151617165a96e7df8c8d14ecfc63d6f1f343559f16198939f",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "e933087ec5eff804bd5f77de0cf04588a9afa62948a199e08fe5c2ffdc42ffec",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3,
+          "first_mismatch": 0
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "73a6dd34db18c1d9b0b4fe49070814f83241b434e6a4f6df26dd86b2df453dcf",
+      "witness_cases": [
+        "checker-hundreds-digit"
+      ],
+      "required_witness_results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 3,
+          "changed_rgba8_bytes": 3,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "checker-grid-clamp",
+      "group": "checker",
+      "mechanism": "minimum grid-size clamp",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "function checkerboard (uv) {\n  \tuv = $runtime.copy(uv);\n  \tvar n = max(gridSize, 1);",
+      "replacement": "function checkerboard (uv) {\n  \tuv = $runtime.copy(uv);\n  \tvar n = max(gridSize, 2);",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "79cbacea2c8d1fe3cbedcc756b26b4d16578a7d7dce85a530574893136b4b8e9",
+      "replacement_sha256": "97e03d7af108facfd831680b40a4f6fde2eb95e32ab88344dc6e30d358d046b3",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "3cf0616bf7c56f73239e23b3ff7060176424dd466de8037840b3a462729452ee",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 9,
+          "changed_rgba8_bytes": 9,
+          "first_mismatch": 0
+        },
+        {
+          "case": "color-bars",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "7690b47cc3a6daa6d80eb5cad34ddaf9f4f5eee7ecd740251d5bc5d5ab8bb0aa",
+      "witness_cases": [
+        "checker-grid-clamp"
+      ],
+      "required_witness_results": [
+        {
+          "case": "checker-grid-clamp",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 9,
+          "changed_rgba8_bytes": 9,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "pattern-bars-dispatch",
+      "group": "pattern",
+      "mechanism": "pattern branch dispatch",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "if (pattern == 1)",
+      "replacement": "if (pattern == 9)",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "14900d33a3cc3cfe6177563c778d4b6ddb92bbff17e97fe8e4c6707a2d8d8b58",
+      "replacement_sha256": "17a205440af929e287fe4dc3861923ce3d4cdf41f3ae33fe3c4e0f5439767502",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "e567bb5b2875500f7c7b5473c8b81df692140c6b4d4ef6ea705ad33b339d36a7",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 8,
+          "changed_rgba8_bytes": 8,
+          "first_mismatch": 6
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "70d752901be242540e767a9967e3e49ba01534d75b3b9e56ee582b6467753997",
+      "witness_cases": [
+        "color-bars"
+      ],
+      "required_witness_results": [
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 8,
+          "changed_rgba8_bytes": 8,
+          "first_mismatch": 6
+        }
+      ]
+    },
+    {
+      "name": "bars-upper-clamp",
+      "group": "bars",
+      "mechanism": "SMPTE bar upper clamp",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "clamp(bar, 0, 7)",
+      "replacement": "clamp(bar, 0, 6)",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "72a76b4cb5a241f4a57b8d6453c3a3e4446239c591b8d3152a1ade23a0aa3b90",
+      "replacement_sha256": "cffdb70ad4615a8c0e71f534034cf1e13b9675c44af508be64599eb365d40d4a",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "0c6b9c6ac8bee389ac1c72f85257d26e2d4fa363b8476b2fc110377b76a47824",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 1,
+          "changed_rgba8_bytes": 1,
+          "first_mismatch": 30
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "2b1bbc0f8ac7799d45077ea033917141822e31c03b26cc0dbde5f65ed6a68389",
+      "witness_cases": [
+        "color-bars"
+      ],
+      "required_witness_results": [
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 1,
+          "changed_rgba8_bytes": 1,
+          "first_mismatch": 30
+        }
+      ]
+    },
+    {
+      "name": "gradient-axis",
+      "group": "gradient",
+      "mechanism": "gradient axis",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "globalCoord[0] / fullResolution[0]",
+      "replacement": "globalCoord[1] / fullResolution[1]",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "18df2315091eb491b49874a46ea3846f105c835076d6fcf30fb56e4974aed4ab",
+      "replacement_sha256": "1cac07e96cbeaa5712d57839373b476094154075749c1afafcdac92874b5bb37",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "a7920cbd70384c44c7d9fc8d588786f18fb6a3cd8703920b4f115c79414f1974",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "first_mismatch": 1
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 36,
+          "changed_rgba8_bytes": 36,
+          "first_mismatch": 0
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "first_mismatch": 0
+        },
+        {
+          "case": "grid-lines",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 48,
+          "first_mismatch": 0
+        },
+        {
+          "case": "color-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 22,
+          "changed_rgba8_bytes": 22,
+          "first_mismatch": 0
+        },
+        {
+          "case": "dot-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "first_mismatch": 40
+        }
+      ],
+      "result_sha256": "4c9d0d9907794c0f56c0a5e3e55ad2b054fd3f0e4217bb20e0a241158ec4f819",
+      "witness_cases": [
+        "gradient-nonsquare"
+      ],
+      "required_witness_results": [
+        {
+          "case": "gradient-nonsquare",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 36,
+          "changed_rgba8_bytes": 36,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "uv-axis",
+      "group": "uv",
+      "mechanism": "UV axis swap",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "[globalCoord[0] / fullResolution[0], globalCoord[1] / fullResolution[1]]",
+      "replacement": "[globalCoord[1] / fullResolution[1], globalCoord[0] / fullResolution[0]]",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "648fe4b6a0bdbcd218fab7001f67a7f37524fbcf7b71875a5be0ba3967370bd3",
+      "replacement_sha256": "e1410da2b889b3b91d5b444ef4e428f03dcc14e3d3d7b13f04857f5c4635a71e",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "3827fbd1ec9b3ad502db795d9ef682dc54081a9cc1ef89e46dd049c5e08e1c9f",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "first_mismatch": 1
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 36,
+          "changed_rgba8_bytes": 36,
+          "first_mismatch": 0
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "first_mismatch": 0
+        },
+        {
+          "case": "grid-lines",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": 0
+        },
+        {
+          "case": "color-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 22,
+          "changed_rgba8_bytes": 22,
+          "first_mismatch": 0
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "08ff87ea05cb0e1959a69242493f66d16a27fbc0c0015f5034882b46987db36d",
+      "witness_cases": [
+        "uv-map-tile"
+      ],
+      "required_witness_results": [
+        {
+          "case": "uv-map-tile",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "color-grid-golden-ratio",
+      "group": "color",
+      "mechanism": "cell hue progression",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "0.6180340051651001",
+      "replacement": "0.5",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "65f8e0708d51cd479dc2481a3798d82b630985eddf1e266aba658ffe715affa3",
+      "replacement_sha256": "d2cbad71ff333de67d07ec676e352ab7f38248eb69c942950157220607c55e84",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "5030bbc0bf4a38fe966e404711ac3616106df3dbcc3de64d8afb20a924742cdc",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 23,
+          "changed_rgba8_bytes": 23,
+          "first_mismatch": 0
+        },
+        {
+          "case": "dot-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        }
+      ],
+      "result_sha256": "f1241e4ee9e6649b3530452cd72713a1229cde43283850321e4f5fbe39cbe8e7",
+      "witness_cases": [
+        "color-grid"
+      ],
+      "required_witness_results": [
+        {
+          "case": "color-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 23,
+          "changed_rgba8_bytes": 23,
+          "first_mismatch": 0
+        }
+      ]
+    },
+    {
+      "name": "dot-grid-threshold",
+      "group": "dot",
+      "mechanism": "dot radius threshold",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor": "smoothstep(0.11999999731779099, 0.15000000596046448, dist)",
+      "replacement": "smoothstep(0.5, 0.6000000238418579, dist)",
+      "anchor_occurrence_count": 1,
+      "source_anchor_sha256": "6afb33eda84032aca64633c46e349f73c357a56fc8d9ea1ed2af16af9ea6a181",
+      "replacement_sha256": "00a3de96b5a7d4c27856b1c161ceaad18153433f8c03ef53bc6a385dcc685a18",
+      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+      "mutated_factory_sha256": "85c678351a4a1dfe2b7a3b13e9b971f75a6da02f762011d9924c84596086e6ce",
+      "results": [
+        {
+          "case": "checker-hundreds-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-single-digit",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "checker-grid-clamp",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-bars",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "gradient-nonsquare",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "uv-map-tile",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "grid-lines",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "color-grid",
+          "differs": false,
+          "reason": "equal",
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "first_mismatch": null
+        },
+        {
+          "case": "dot-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 72,
+          "changed_rgba8_bytes": 72,
+          "first_mismatch": 0
+        }
+      ],
+      "result_sha256": "27f94a5dc0e900b6847e243a891ed48daff250accd8e58b018fb1ef8c94055ba",
+      "witness_cases": [
+        "dot-grid"
+      ],
+      "required_witness_results": [
+        {
+          "case": "dot-grid",
+          "differs": true,
+          "reason": "float32",
+          "changed_float32_lanes": 72,
+          "changed_rgba8_bytes": 72,
+          "first_mismatch": 0
+        }
+      ]
+    }
+  ],
+  "structural_mutation_ledger": [
+    {
+      "name": "dead-cpu-float-helper",
+      "anchor": "function cpu_float (value)",
+      "replacement": "function cpu_float_unused (value)",
+      "mechanism": "structural-only dead helper rename",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor_sha256": "fa320fa55eca7b08958ff35a1a73587ab20b1aee88de373bbfa2db326ba5a602",
+      "replacement_sha256": "9f1b8ad2adc324c8514b719fa85358727e039ecaceb1f3312525dd72271b7e81",
+      "no_pixel_witness_claimed": true
+    },
+    {
+      "name": "source-comment-only",
+      "anchor": "Render a number at a position within a cell",
+      "replacement": "Render a number at a position within a cell (authenticated)",
+      "mechanism": "structural-only comment mutation",
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_anchor_sha256": "d050918c5c5b4b61b2b8b02472e0cfc7e66fcdab9a105bf65c85f641666d8aa7",
+      "replacement_sha256": "cd7bbc75a0f111484a78846c1e21fef2d58b859f1e03f9aa0ffe84afc0b98097",
+      "no_pixel_witness_claimed": true
+    }
+  ],
+  "control_group": {
+    "repeatability": {
+      "case": "color-bars",
+      "identical_float32": true,
+      "identical_rgba8": true
+    },
+    "independent_output_storage": {
+      "case": "color-bars",
+      "distinct_data_objects": true,
+      "distinct_backing_buffers": true
+    },
+    "public_direct_identity": true,
+    "canonical_own_key": true,
+    "adapter_own_key": false
+  },
+  "claim_boundaries": {
+    "authority": "immutable CPU snapshot only",
+    "runtime": "exact Float32 and RGBA8 bytes",
+    "input": "source-only kernel; no input lifetime or immutability claim",
+    "structural_mutations": "structure authenticated; no pixel witness claimed"
+  }
+}

@@ -1,0 +1,613 @@
+{
+  "schema": "noisemaker-for-cpp.task18-fixed-grid-counter-store.canonical-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "node": "v24.7.0",
+    "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
+    "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
+    "generator": "task-18-oracle-generator.mjs"
+  },
+  "programs": [
+    {
+      "key": "filter/celShading:celShadingEdges",
+      "source": "sources/filter/celShading/celShadingEdges.glsl",
+      "raw_source_sha256": "9c2848c92bd0f3e2de76fd065ac8fc55086cb7d209ce09ac4ba6488acda4630e",
+      "normalized_source_sha256": "c8e56f507bfa71ac7d43dbe7cc8060695a2e0fc1eb2f1b2bc19e2ed17d55411e",
+      "defines": {},
+      "binding_signature": [
+        "tileOffset:vec2@1",
+        "fullResolution:vec2@2",
+        "colorTex:sampler2D@3/S1",
+        "edgeWidth:float@4",
+        "edgeThreshold:float@5",
+        "renderScale:float@6"
+      ],
+      "factory_to_string_sha256": "62ffbbb0f46ac845179fef5e8d702874bdbeeac527a38abc35896c68dfa1b3d8"
+    },
+    {
+      "key": "filter/outline:outlineSobel",
+      "source": "sources/filter/outline/outlineSobel.glsl",
+      "raw_source_sha256": "cfe848d1605f1ad693fd3ce9e518a4adf4e0f34e3fff6c6ae1ebcaec49949f5d",
+      "normalized_source_sha256": "fa3eb35ad201e4cbf44a0f3e43060652f2cf099a6b2de1c7c4f906c0d30cca5d",
+      "defines": {},
+      "binding_signature": [
+        "tileOffset:vec2@1",
+        "fullResolution:vec2@2",
+        "valueTexture:sampler2D@3/S1",
+        "sobelMetric:float@4",
+        "thickness:float@5",
+        "renderScale:float@6"
+      ],
+      "factory_to_string_sha256": "5e19c5a1f4f2644b0d29981976c70741dcc1af4054a9608375a42e17644047b8"
+    }
+  ],
+  "fixture": {
+    "input": {
+      "width": 7,
+      "height": 5,
+      "construction": "top-down 7x5 Float32Array: R=0.035+(((17*x+31*y+13)%101)/100)*0.22; G=0.02+(((7*x+19*y+23)%97)/96)*0.26; B=0.01+(((29*x+11*y+5)%89)/88)*0.20; A=0.35+((3*x+5*y+1)%13)/20; every lane assignment crosses the Float32Array boundary"
+    },
+    "output": {
+      "width": 9,
+      "height": 7,
+      "storage": "top-down Surface Float32Array; lane=(y*width+x)*4"
+    },
+    "fragment_origin": "bottom-left: runPass uses fragCoord=(x+0.5,height-y-0.5)",
+    "sampler_coordinates": "input storage is top-down; texelFetch follows canonical GLSL bottom-left coordinates",
+    "wrap_coverage": "output 9x7 against input 7x5 and int(2.299999952316284*1)=2 forces both negative and positive wrapCoord residues",
+    "float_bytes": "host little-endian Float32Array bytes; probe words use little-endian Uint32",
+    "context": {
+      "time": 0.375,
+      "frame": 7,
+      "deltaTime": 0.016666666666666666,
+      "seed": 19,
+      "tileOffset": [
+        3,
+        2
+      ],
+      "fullResolution": [
+        12,
+        10
+      ],
+      "renderScale": {
+        "value": 1,
+        "f32_bits_le": "0x3f800000"
+      }
+    },
+    "verification": "each case double-renders with fresh F32 input and destination surfaces and requires identical F32 and RGBA8 bytes before hashing",
+    "zero_size_early_return": {
+      "status": "not executable through public canonical Surface/runPass",
+      "reason": "Surface and createCanonicalBindings require strictly positive width and height, so a zero-sized input cannot be constructed or bound through this API.",
+      "native_requirement": "Add isolated native tests with a zero-width sampler and then a zero-height sampler while invoking a normal positive destination pixel; each must return exactly vec4(0.0), make no fetches, and bypass the samples/idx grid. Do not emulate this with invalid ordinary Surface construction."
+    }
+  },
+  "cases": [
+    {
+      "name": "cel-width-2.3f-threshold-0.18f",
+      "key": "filter/celShading:celShadingEdges",
+      "uniforms": {
+        "edgeWidth": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "edgeThreshold": {
+          "value": 0.18000000715255737,
+          "f32_bits_le": "0x3e3851ec"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "non-default-F32-edgeWidth",
+        "smoothstep-low-interior-high-output-range",
+        "all-nine-counter-filled-luminosity-reads",
+        "negative-and-positive-wrapCoord",
+        "RGB-lane-read"
+      ],
+      "f32_sha256": "d86694f5c5a05c094b1dc9d4302b0b98cbe3044e5ce22587fdf6dd80f77d27a7",
+      "rgba8_sha256": "966ca81461240fb6c35316537f631f3b74b6d0a33a7b538d05ddd12e241347e9",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.5283509492874146,
+            0.5283509492874146,
+            0.5283509492874146,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f074202",
+            "0x3f074202",
+            "0x3f074202",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0.032109588384628296,
+            0.032109588384628296,
+            0.032109588384628296,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3d038558",
+            "0x3d038558",
+            "0x3d038558",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "cel-width-2.3f-threshold-0.6f",
+      "key": "filter/celShading:celShadingEdges",
+      "uniforms": {
+        "edgeWidth": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "edgeThreshold": {
+          "value": 0.6000000238418579,
+          "f32_bits_le": "0x3f19999a"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "second-non-default-F32-threshold",
+        "smoothstep-boundary-contrast",
+        "all-nine-counter-filled-luminosity-reads",
+        "negative-and-positive-wrapCoord"
+      ],
+      "f32_sha256": "048acf6f8feb3be40c9be548bc64eaeadc6de78366a61b778c899eb463575ac0",
+      "rgba8_sha256": "8d0418a7e7b046d582cafcfbbe95b1bf2c05478929a57719ab52a345de1091e5",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "f32_bits_le": [
+            "0x00000000",
+            "0x00000000",
+            "0x00000000",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "outline-metric-1-thickness-2.3f",
+      "key": "filter/outline:outlineSobel",
+      "uniforms": {
+        "sobelMetric": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        },
+        "thickness": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "metric-1",
+        "non-default-F32-thickness",
+        "all-nine-counter-filled-scalar-reads",
+        "negative-and-positive-wrapCoord",
+        "R-lane-read",
+        "distanceMetric-branch"
+      ],
+      "f32_sha256": "2e62cf4918bb2da1def8b146c4e33ef009d6c6ef05f96bf2d0fd2be4e7679a7f",
+      "rgba8_sha256": "a877af8b8229c67295f3c17123cbaa5a540e59e81a3f95af9db601be5b2eca90",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.928723156452179,
+            0.928723156452179,
+            0.928723156452179,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f6dc0cd",
+            "0x3f6dc0cd",
+            "0x3f6dc0cd",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.8944021463394165,
+            0.8944021463394165,
+            0.8944021463394165,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f64f78a",
+            "0x3f64f78a",
+            "0x3f64f78a",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "outline-metric-2-thickness-2.3f",
+      "key": "filter/outline:outlineSobel",
+      "uniforms": {
+        "sobelMetric": {
+          "value": 2,
+          "f32_bits_le": "0x40000000"
+        },
+        "thickness": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "metric-2",
+        "non-default-F32-thickness",
+        "all-nine-counter-filled-scalar-reads",
+        "negative-and-positive-wrapCoord",
+        "R-lane-read",
+        "distanceMetric-branch"
+      ],
+      "f32_sha256": "afac987ef587a22d89ed00f619edb97e29d321fb2cc57667ceea89c0d78744b0",
+      "rgba8_sha256": "e01ac082638be9679283946c758e093c5ea966bc79b8acdf14d8ee1213f084f8",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "outline-metric-3-thickness-2.3f",
+      "key": "filter/outline:outlineSobel",
+      "uniforms": {
+        "sobelMetric": {
+          "value": 3,
+          "f32_bits_le": "0x40400000"
+        },
+        "thickness": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "metric-3",
+        "non-default-F32-thickness",
+        "all-nine-counter-filled-scalar-reads",
+        "negative-and-positive-wrapCoord",
+        "R-lane-read",
+        "distanceMetric-branch"
+      ],
+      "f32_sha256": "33eb93deef5ea41a7f085c4d3e9d8f4d5c3b4353b8490f0b9e0bbd2466c1d1ff",
+      "rgba8_sha256": "8c3a62bd220bf6321d1127ab2cb1823522ffe38e9e07f985af9aceb9e64a253c",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.9063999652862549,
+            0.9063999652862549,
+            0.9063999652862549,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f6809d4",
+            "0x3f6809d4",
+            "0x3f6809d4",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.8712000250816345,
+            0.8712000250816345,
+            0.8712000250816345,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f5f06f7",
+            "0x3f5f06f7",
+            "0x3f5f06f7",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    },
+    {
+      "name": "outline-metric-4-thickness-2.3f",
+      "key": "filter/outline:outlineSobel",
+      "uniforms": {
+        "sobelMetric": {
+          "value": 4,
+          "f32_bits_le": "0x40800000"
+        },
+        "thickness": {
+          "value": 2.299999952316284,
+          "f32_bits_le": "0x40133333"
+        },
+        "renderScale": {
+          "value": 1,
+          "f32_bits_le": "0x3f800000"
+        }
+      },
+      "coverage": [
+        "metric-4",
+        "non-default-F32-thickness",
+        "all-nine-counter-filled-scalar-reads",
+        "negative-and-positive-wrapCoord",
+        "R-lane-read",
+        "octagram-1.4140000343322754-divisor"
+      ],
+      "f32_sha256": "a4293babe12252aa6e0f4c4b50f6242ef4a1060297a40a1da12a549ea9c77047",
+      "rgba8_sha256": "db8a0a072ec1c5e85d8678100929a1ef5ecf5c6ffc88217536354d06f4a11f74",
+      "probes": [
+        {
+          "at": [
+            0,
+            0
+          ],
+          "values": [
+            0.9063999652862549,
+            0.9063999652862549,
+            0.9063999652862549,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f6809d4",
+            "0x3f6809d4",
+            "0x3f6809d4",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            4,
+            3
+          ],
+          "values": [
+            1,
+            1,
+            1,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000",
+            "0x3f800000"
+          ]
+        },
+        {
+          "at": [
+            8,
+            6
+          ],
+          "values": [
+            0.8712000250816345,
+            0.8712000250816345,
+            0.8712000250816345,
+            1
+          ],
+          "f32_bits_le": [
+            "0x3f5f06f7",
+            "0x3f5f06f7",
+            "0x3f5f06f7",
+            "0x3f800000"
+          ]
+        }
+      ],
+      "repeat_identity": {
+        "f32_bytes": true,
+        "rgba8_bytes": true
+      }
+    }
+  ]
+}

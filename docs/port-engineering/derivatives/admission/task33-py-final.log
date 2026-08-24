@@ -1,0 +1,12 @@
+test_task33_all_fifteen_authenticate_and_lower_with_narrow_abi (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_all_fifteen_authenticate_and_lower_with_narrow_abi) ... [32mok[0m
+test_task33_capability_vocabulary_is_identity_scoped_not_widened (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_capability_vocabulary_is_identity_scoped_not_widened) ... [32mok[0m
+test_task33_history_schema_and_vendored_oracle_match_152_program_state (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_history_schema_and_vendored_oracle_match_152_program_state) ... [32mok[0m
+test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_node_level_closure_logic_rejects_past_the_coarse_hash_gate)
+Prove the profile's node-walk/typing logic itself rejects, not ... [32mok[0m
+test_task33_single_axis_structural_mutations_reject_at_all_three_authorities (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_single_axis_structural_mutations_reject_at_all_three_authorities) ... [32mok[0m
+test_task33_validator_and_emitter_authenticate_independently_without_trusting_each_other (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_validator_and_emitter_authenticate_independently_without_trusting_each_other) ... [32mok[0m
+
+----------------------------------------------------------------------
+Ran 6 tests in 35.588s
+
+[32mOK[0m

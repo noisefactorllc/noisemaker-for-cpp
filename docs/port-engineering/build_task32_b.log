@@ -1,0 +1,4 @@
+[ 48%] Built target noisemaker-cpu
+[ 52%] Building CXX object CMakeFiles/noisemaker-cpu-tests.dir/tests/test_generated_kernels.cpp.o
+[ 56%] Linking CXX executable noisemaker-cpu-tests
+[100%] Built target noisemaker-cpu-tests

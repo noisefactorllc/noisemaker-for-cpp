@@ -1,0 +1,942 @@
+[
+  {
+    "key": "classicNoisedeck/bitEffects:bitEffects",
+    "source": "sources/classicNoisedeck/bitEffects/bitEffects.glsl",
+    "defines": {
+      "COLOR_SCHEME": 20,
+      "FORMULA": 0,
+      "INTERP": 0,
+      "MASK_COLOR_SCHEME": 1,
+      "MASK_FORMULA": 10,
+      "MODE": 1
+    },
+    "reachable_bitops": [
+      "&",
+      "<<",
+      ">>",
+      "^",
+      "^=",
+      "|"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      "<<",
+      ">>",
+      "^",
+      "^=",
+      "|"
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/caustic:caustic",
+    "source": "sources/classicNoisedeck/caustic/caustic.glsl",
+    "defines": {
+      "NOISE_TYPE": 10
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/cellNoise:cellNoise",
+    "source": "sources/classicNoisedeck/cellNoise/cellNoise.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/cellRefract:cellRefract",
+    "source": "sources/classicNoisedeck/cellRefract/cellRefract.glsl",
+    "defines": {
+      "KERNEL": 0,
+      "SHAPE": 1
+    },
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/colorLab:colorLab",
+    "source": "sources/classicNoisedeck/colorLab/colorLab.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/effects:effects",
+    "source": "sources/classicNoisedeck/effects/effects.glsl",
+    "defines": {
+      "EFFECT": 0,
+      "FLIP": 0
+    },
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/fractal:fractal",
+    "source": "sources/classicNoisedeck/fractal/fractal.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/glitch:glitch",
+    "source": "sources/classicNoisedeck/glitch/glitch.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/kaleido:kaleido",
+    "source": "sources/classicNoisedeck/kaleido/kaleido.glsl",
+    "defines": {
+      "DIRECTION": 2,
+      "KERNEL": 0,
+      "LOOP_OFFSET": 10,
+      "METRIC": 0
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/moodscape:moodscape",
+    "source": "sources/classicNoisedeck/moodscape/moodscape.glsl",
+    "defines": {
+      "COLOR_MODE": 2,
+      "NOISE_TYPE": 10
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/noise:noise",
+    "source": "sources/classicNoisedeck/noise/noise.glsl",
+    "defines": {
+      "COLOR_MODE": 6,
+      "LOOP_OFFSET": 300,
+      "METRIC": 0,
+      "REFRACT_MODE": 2,
+      "NOISE_TYPE": 10
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/shapeMixer:shapeMixer",
+    "source": "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
+    "defines": {
+      "LOOP_OFFSET": 10
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "classicNoisedeck/shapes:shapes",
+    "source": "sources/classicNoisedeck/shapes/shapes.glsl",
+    "defines": {
+      "LOOP_A_OFFSET": 40,
+      "LOOP_B_OFFSET": 30
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/adjust:adjust",
+    "source": "sources/filter/adjust/adjust.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/blur:blurH",
+    "source": "sources/filter/blur/blurH.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/blur:blurV",
+    "source": "sources/filter/blur/blurV.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/bulge:bulge",
+    "source": "sources/filter/bulge/bulge.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/celShading:celShadingColor",
+    "source": "sources/filter/celShading/celShadingColor.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/colorspace:colorspace",
+    "source": "sources/filter/colorspace/colorspace.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/dither:dither",
+    "source": "sources/filter/dither/dither.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/edge:edge",
+    "source": "sources/filter/edge/edge.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/emboss:emboss",
+    "source": "sources/filter/emboss/emboss.glsl",
+    "defines": {
+      "STYLE": 0
+    },
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/fxaa:fxaa",
+    "source": "sources/filter/fxaa/fxaa.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/glyphMap:glyphMap",
+    "source": "sources/filter/glyphMap/glyphMap.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/grade:creative",
+    "source": "sources/filter/grade/creative.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grade:hslSecondary",
+    "source": "sources/filter/grade/hslSecondary.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grade:lut",
+    "source": "sources/filter/grade/lut.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grade:primary",
+    "source": "sources/filter/grade/primary.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grade:vignette",
+    "source": "sources/filter/grade/vignette.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grade:wheels",
+    "source": "sources/filter/grade/wheels.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/grain:grain",
+    "source": "sources/filter/grain/grain.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^"
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^"
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/grime:grime",
+    "source": "sources/filter/grime/grime.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/halftone:halftone",
+    "source": "sources/filter/halftone/halftone.glsl",
+    "defines": {
+      "MODE": 0,
+      "PATTERN": 0
+    },
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/historicPalette:historicPalette",
+    "source": "sources/filter/historicPalette/historicPalette.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/invert:inv",
+    "source": "sources/filter/invert/inv.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/lens:lens",
+    "source": "sources/filter/lens/lens.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/lensWarp:lensWarp",
+    "source": "sources/filter/lensWarp/lensWarp.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/lightLeak:lightLeak",
+    "source": "sources/filter/lightLeak/lightLeak.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/lighting:lighting",
+    "source": "sources/filter/lighting/lighting.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/median:median",
+    "source": "sources/filter/median/median.glsl",
+    "defines": {
+      "RADIUS": 3
+    },
+    "reachable_bitops": [
+      "&",
+      "<<",
+      ">>",
+      "|"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      "<<",
+      ">>",
+      "|"
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/normalMap:normalMap",
+    "source": "sources/filter/normalMap/normalMap.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/normalize:statsFinal",
+    "source": "sources/filter/normalize/statsFinal.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/octaveWarp:octaveWarp",
+    "source": "sources/filter/octaveWarp/octaveWarp.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/oilPaint:oilFlatten",
+    "source": "sources/filter/oilPaint/oilFlatten.glsl",
+    "defines": {
+      "MODE": 1
+    },
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/osd:osd",
+    "source": "sources/filter/osd/osd.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      ">>",
+      "^"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>",
+      "^"
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/palette:palette",
+    "source": "sources/filter/palette/palette.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/parallax:parallax",
+    "source": "sources/filter/parallax/parallax.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/pinch:pinch",
+    "source": "sources/filter/pinch/pinch.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/polar:polar",
+    "source": "sources/filter/polar/polar.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/pondRipples:pondRipples",
+    "source": "sources/filter/pondRipples/pondRipples.glsl",
+    "defines": {
+      "STYLE": 2,
+      "WRAP": 0
+    },
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/posterize:posterize",
+    "source": "sources/filter/posterize/posterize.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/reindex:nmReindexReduce",
+    "source": "sources/filter/reindex/nmReindexReduce.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/reindex:nmReindexStats",
+    "source": "sources/filter/reindex/nmReindexStats.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/scanlineError:scanlineError",
+    "source": "sources/filter/scanlineError/scanlineError.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/smooth:smoothBlend",
+    "source": "sources/filter/smooth/smoothBlend.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/snow:snow",
+    "source": "sources/filter/snow/snow.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/spiral:spiral",
+    "source": "sources/filter/spiral/spiral.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/spookyTicker:spookyTicker",
+    "source": "sources/filter/spookyTicker/spookyTicker.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      ">>",
+      "^"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>",
+      "^"
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/stamp:stThreshold",
+    "source": "sources/filter/stamp/stThreshold.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/step:step",
+    "source": "sources/filter/step/step.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/stipple:stipple",
+    "source": "sources/filter/stipple/stipple.glsl",
+    "defines": {
+      "MODE": 0
+    },
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/tetraColorArray:tetraColorArray",
+    "source": "sources/filter/tetraColorArray/tetraColorArray.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/texture:texture",
+    "source": "sources/filter/texture/texture.glsl",
+    "defines": {
+      "MODE": 3
+    },
+    "reachable_bitops": [
+      "&",
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/tunnel:tunnel",
+    "source": "sources/filter/tunnel/tunnel.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/warp:warp",
+    "source": "sources/filter/warp/warp.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/watercolor:wcSimplify",
+    "source": "sources/filter/watercolor/wcSimplify.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/waves:waves",
+    "source": "sources/filter/waves/waves.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/wobble:wobble",
+    "source": "sources/filter/wobble/wobble.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "filter/wormhole:deposit",
+    "source": "sources/filter/wormhole/deposit.frag",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "filter/zoomBlur:zoomBlur",
+    "source": "sources/filter/zoomBlur/zoomBlur.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "mixer/distortion:distortion",
+    "source": "sources/mixer/distortion/distortion.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/bitwise:bitwise",
+    "source": "sources/synth/bitwise/bitwise.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      "^",
+      "|",
+      "~"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      "^",
+      "|",
+      "~"
+    ],
+    "note": null
+  },
+  {
+    "key": "synth/gabor:gabor",
+    "source": "sources/synth/gabor/gabor.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      ">>",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "synth/julia:julia",
+    "source": "sources/synth/julia/julia.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/mandelbrot:mandelbrot",
+    "source": "sources/synth/mandelbrot/mandelbrot.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/newton:newton",
+    "source": "sources/synth/newton/newton.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/noise:noise",
+    "source": "sources/synth/noise/noise.glsl",
+    "defines": {
+      "LOOP_OFFSET": 300,
+      "NOISE_TYPE": 10
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "synth/remap:remap",
+    "source": "sources/synth/remap/remap.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/shape:shape",
+    "source": "sources/synth/shape/shape.glsl",
+    "defines": {
+      "LOOP_A_OFFSET": 40,
+      "LOOP_B_OFFSET": 30
+    },
+    "reachable_bitops": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "raw_bitops_anywhere": [
+      ">>",
+      "^",
+      "^="
+    ],
+    "note": null
+  },
+  {
+    "key": "synth/solid:solid",
+    "source": "sources/synth/solid/solid.glsl",
+    "defines": {},
+    "reachable_bitops": [],
+    "raw_bitops_anywhere": [],
+    "note": null
+  },
+  {
+    "key": "synth/testPattern:testPattern",
+    "source": "sources/synth/testPattern/testPattern.glsl",
+    "defines": {},
+    "reachable_bitops": [
+      "&",
+      ">>"
+    ],
+    "raw_bitops_anywhere": [
+      "&",
+      ">>"
+    ],
+    "note": null
+  }
+]

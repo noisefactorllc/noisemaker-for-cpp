@@ -1,0 +1,64 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.public-identities.v1",
+  "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+  "catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+  "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+  "rows": [
+    {
+      "key": "mixer/focusBlur:focusBlur",
+      "canonical_factory_name": "canonicalFactory195",
+      "canonical_factory_to_string_sha256": "fb4c02c763ef42000b13bba3945cf4fd15e177a2ab2827372ce3b96aa3a778ff",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "filter/lighting:lighting",
+      "canonical_factory_name": "canonicalFactory78",
+      "canonical_factory_to_string_sha256": "9c9b70f5738071d64edb39c331ebf39b0075dd215fdae61db23b381a0898f75f",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "classicNoisedeck/caustic:caustic",
+      "canonical_factory_name": "canonicalFactory1",
+      "canonical_factory_to_string_sha256": "27beaa017be557b5960bd072d74247896e596fa0b71b5c331c7795f5732a7488",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "filter/extrude:extrude",
+      "canonical_factory_name": "canonicalFactory51",
+      "canonical_factory_to_string_sha256": "7d5cdd050eaa13282060557e7d6a097ef8300c1b71f31c13d782680eb58d91ef",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "filter/waves:waves",
+      "canonical_factory_name": "canonicalFactory176",
+      "canonical_factory_to_string_sha256": "4a289d05076a7588ced250d307eeaf8d8d0b1628bd5fc907ea71481b02ed2ae5",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "synth/curl:curl",
+      "canonical_factory_name": "canonicalFactory248",
+      "canonical_factory_to_string_sha256": "a5faaca15e28732b3ca3f802c03dc1f906a90134d9ac855eba6bcc4f85596349",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "filter/posterize:posterize",
+      "canonical_factory_name": "canonicalFactory116",
+      "canonical_factory_to_string_sha256": "317e38c428bda5e89258c3bc64cae3fbfb54ffa43e0b02f98b2329f542c546ed",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    },
+    {
+      "key": "filter/watercolor:wcSimplify",
+      "canonical_factory_name": "canonicalFactory175",
+      "canonical_factory_to_string_sha256": "7c60d2d60fa219e93c76863136ee6f4a88bc15a44b05e1efdacd7dac66052d61",
+      "public_is_exact_canonical_object": true,
+      "adapter_factory_name": null
+    }
+  ]
+}

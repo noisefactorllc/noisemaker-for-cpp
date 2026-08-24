@@ -1,0 +1,622 @@
+{
+  "id": "median",
+  "key": "filter/median:median",
+  "defines": {
+    "RADIUS": 3
+  },
+  "ground_truth": "adapter (medianFactory) -- see module header / report for why",
+  "cases": [
+    {
+      "name": "high-variance-8x8",
+      "dimensions": {
+        "width": 8,
+        "height": 8
+      },
+      "diagnostic": false,
+      "reach": {
+        "cap1": true,
+        "cap5": true
+      },
+      "uniforms": {
+        "RADIUS": 3,
+        "threshold": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        8,
+        8
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "5b58355225d6766d0ab960b52990b26a4962d8bcd77d98e4b3200a1d837c8470",
+        "rgba8_sha256": "3fe5bb629ed8575e0e60c917afcee3b58cd7d50a9a66ce911ca57f299a660983",
+        "finite_lanes": 256,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.3564453125,
+              0.669921875,
+              0.4833984375,
+              0.06976744532585144
+            ],
+            "f32_bits_le": [
+              "0x3eb68000",
+              "0x3f2b8000",
+              "0x3ef78000",
+              "0x3d8ee23c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.9208984375,
+              0.5361328125,
+              0.252685546875,
+              0.5348837375640869
+            ],
+            "f32_bits_le": [
+              "0x3f6bc000",
+              "0x3f094000",
+              "0x3e816000",
+              "0x3f08ee24"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              7
+            ],
+            "values": [
+              0.57421875,
+              0.58740234375,
+              0.8681640625,
+              0.5116279125213623
+            ],
+            "f32_bits_le": [
+              "0x3f130000",
+              "0x3f166000",
+              "0x3f5e4000",
+              "0x3f02fa0c"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              7
+            ],
+            "values": [
+              0.158447265625,
+              0.62890625,
+              0.85693359375,
+              0.302325576543808
+            ],
+            "f32_bits_le": [
+              "0x3e224000",
+              "0x3f210000",
+              "0x3f5b6000",
+              "0x3e9aca6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              4
+            ],
+            "values": [
+              0.82177734375,
+              0.38134765625,
+              0.24169921875,
+              0.39534884691238403
+            ],
+            "f32_bits_le": [
+              "0x3f526000",
+              "0x3ec34000",
+              "0x3e778000",
+              "0x3eca6b2a"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "high-variance-6x5",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "diagnostic": false,
+      "reach": {
+        "cap1": true,
+        "cap5": true
+      },
+      "uniforms": {
+        "RADIUS": 3,
+        "threshold": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        5
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "1c5819a2ef40e2e03ab1b67f46e321f3edfdfbf3411c5903692099df23c23c9b",
+        "rgba8_sha256": "a8bb162ff881e79538a9a640fb44e0c724197432c7a7ef8bc1b857f4a2c37b03",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.04949951171875,
+              0.61865234375,
+              0.560546875,
+              0.09302325546741486
+            ],
+            "f32_bits_le": [
+              "0x3d4ac000",
+              "0x3f1e6000",
+              "0x3f0f8000",
+              "0x3dbe82fa"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.158447265625,
+              0.65966796875,
+              0.428466796875,
+              0.23255814611911774
+            ],
+            "f32_bits_le": [
+              "0x3e224000",
+              "0x3f28e000",
+              "0x3edb6000",
+              "0x3e6e23b9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.25732421875,
+              0.59814453125,
+              0.10986328125,
+              0.44186046719551086
+            ],
+            "f32_bits_le": [
+              "0x3e83c000",
+              "0x3f192000",
+              "0x3de10000",
+              "0x3ee23b89"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.83154296875,
+              0.3505859375,
+              0.6484375,
+              0.5813953280448914
+            ],
+            "f32_bits_le": [
+              "0x3f54e000",
+              "0x3eb38000",
+              "0x3f260000",
+              "0x3f14d653"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.25732421875,
+              0.59814453125,
+              0.10986328125,
+              0.41860464215278625
+            ],
+            "f32_bits_le": [
+              "0x3e83c000",
+              "0x3f192000",
+              "0x3de10000",
+              "0x3ed65359"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "high-variance-7x7",
+      "dimensions": {
+        "width": 7,
+        "height": 7
+      },
+      "diagnostic": false,
+      "reach": {
+        "cap1": true,
+        "cap5": true
+      },
+      "uniforms": {
+        "RADIUS": 3,
+        "threshold": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        7,
+        7
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "c37307cb6f8f02e47984cca3d5a13034e5211f5848ac6874f81d5cc7771e10c1",
+        "rgba8_sha256": "5f8a8a5e0e82807d07ef0eb840b9646b44c1ecf24a5ac3b22a784d34f1d9617a",
+        "finite_lanes": 196,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.73291015625,
+              0.226806640625,
+              0.208740234375,
+              0.11627907305955887
+            ],
+            "f32_bits_le": [
+              "0x3f3ba000",
+              "0x3e684000",
+              "0x3e55c000",
+              "0x3dee23b9"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.0693359375,
+              0.47412109375,
+              0.82421875,
+              0.41860464215278625
+            ],
+            "f32_bits_le": [
+              "0x3d8e0000",
+              "0x3ef2c000",
+              "0x3f530000",
+              "0x3ed65359"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0.128662109375,
+              0.814453125,
+              0.098876953125,
+              0.302325576543808
+            ],
+            "f32_bits_le": [
+              "0x3e03c000",
+              "0x3f508000",
+              "0x3dca8000",
+              "0x3e9aca6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              6
+            ],
+            "values": [
+              0.059417724609375,
+              0.58740234375,
+              0.054931640625,
+              0.604651153087616
+            ],
+            "f32_bits_le": [
+              "0x3d736000",
+              "0x3f166000",
+              "0x3d610000",
+              "0x3f1aca6b"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.059417724609375,
+              0.58740234375,
+              0.054931640625,
+              0.6976743936538696
+            ],
+            "f32_bits_le": [
+              "0x3d736000",
+              "0x3f166000",
+              "0x3d610000",
+              "0x3f329aca"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "uniform-color-diagnostic",
+      "dimensions": {
+        "width": 6,
+        "height": 6
+      },
+      "diagnostic": true,
+      "reach": {
+        "cap1": false,
+        "cap5": false
+      },
+      "uniforms": {
+        "RADIUS": 3,
+        "threshold": 0
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        6
+      ],
+      "eligible_for_native_binding": true,
+      "repeat_identity": true,
+      "input_immutable": true,
+      "output": {
+        "f32_sha256": "a102ef145e8a24afb37ec4aa50a8d6bd42e6b02e7c28396c42d5e9a49a92a177",
+        "rgba8_sha256": "6c8276aa9be792c90b09d773c2f5c65e71bc13fa220b377ec9f5698350a7beab",
+        "finite_lanes": 144,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.300048828125,
+              0.5,
+              0.7001953125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e99a000",
+              "0x3f000000",
+              "0x3f334000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.300048828125,
+              0.5,
+              0.7001953125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e99a000",
+              "0x3f000000",
+              "0x3f334000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.300048828125,
+              0.5,
+              0.7001953125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e99a000",
+              "0x3f000000",
+              "0x3f334000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              5
+            ],
+            "values": [
+              0.300048828125,
+              0.5,
+              0.7001953125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e99a000",
+              "0x3f000000",
+              "0x3f334000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.300048828125,
+              0.5,
+              0.7001953125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3e99a000",
+              "0x3f000000",
+              "0x3f334000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "mutations": [
+    {
+      "id": "median-outer-convergence-cap-1",
+      "kind": "trip_count_swap",
+      "reach_key": "cap1",
+      "anchor": "while (left < right) {",
+      "mutated": "for (let __cap = 0; (left < right) && (__cap < 1); __cap++) {",
+      "description": "Cap the outer quickselect convergence loop at 1 pass -- severe, provably-terminating (bounded by a counter, not data) trip-count reduction. Reach-eligible on all three high-variance cases (true convergence depth >10); the uniform-color diagnostic already converges within 1 pass and is expected-zero.",
+      "case_results": [
+        {
+          "case": "high-variance-8x8",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "high-variance-6x5",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "high-variance-7x7",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "uniform-color-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    },
+    {
+      "id": "median-outer-convergence-cap-5",
+      "kind": "trip_count_off_by_one",
+      "reach_key": "cap5",
+      "anchor": "while (left < right) {",
+      "mutated": "for (let __cap = 0; (left < right) && (__cap < 5); __cap++) {",
+      "description": "Cap the outer quickselect convergence loop at 5 passes -- milder than cap-1 but still well under the true convergence depth (>10) for all three high-variance cases; the uniform-color diagnostic is unaffected (converges in 1 pass).",
+      "case_results": [
+        {
+          "case": "high-variance-8x8",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "high-variance-6x5",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "high-variance-7x7",
+          "diagnostic": false,
+          "reaches": true,
+          "diverges": true
+        },
+        {
+          "case": "uniform-color-diagnostic",
+          "diagnostic": true,
+          "reaches": false,
+          "diverges": false
+        }
+      ],
+      "summary": {
+        "reaching_cases": 3,
+        "divergent_reaching": 3,
+        "non_reaching_cases": 1,
+        "divergent_non_reaching": 0
+      }
+    }
+  ],
+  "canonical_factory_defect": {
+    "attempts": [
+      {
+        "width": 4,
+        "height": 4,
+        "threw": false,
+        "message": null
+      },
+      {
+        "width": 5,
+        "height": 5,
+        "threw": true,
+        "message": "Cannot read properties of undefined (reading 'length')"
+      },
+      {
+        "width": 6,
+        "height": 6,
+        "threw": false,
+        "message": null
+      }
+    ],
+    "isolated_repro_note": "canonicalFactory80 crashes on this exact 5x5 patterned input; 4x4 and 6x6 render fine with the identical algorithm shape and identical uniform contract -- data-dependent, not a hermeticity mistake in this generator."
+  },
+  "avoided_mutation": {
+    "anchor": "while (scanLeft <= scanRight) {",
+    "attempted_mutation": "while (scanLeft < scanRight) {",
+    "outcome": "INFINITE LOOP -- verified live, killed after exceeding a 120s wall-clock watchdog on an 8x8 patterned render; a synchronous JS while-loop blocks the event loop so no in-process timer can preempt it",
+    "root_cause": "dropping the `<=` boundary loses the guarantee that scanLeft/scanRight cross by the end of the middle loop; when they instead land exactly on medianIndex, neither outer-loop narrowing branch fires and left/right are unchanged forever",
+    "disposition": "AVOIDED as a mutation site entirely. Both mutations below instead cap the OUTER `while (left < right)` convergence loop with an explicit counter, which provably terminates by construction regardless of data, sidestepping this hazard rather than working around it case-by-case."
+  }
+}

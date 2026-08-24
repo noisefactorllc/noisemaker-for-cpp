@@ -1,0 +1,6 @@
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... [32mok[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 92.814s
+
+[32mOK[0m

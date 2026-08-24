@@ -1,0 +1,3401 @@
+{
+  "schema": "noisemaker-for-cpp.tetra-color-array.pixel-parity-oracle.v1",
+  "program_key": "filter/tetraColorArray:tetraColorArray",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "upstream_revision": "c51037ad9e60850b74490c01a9eecf08c7d28e8c",
+  "provenance": {
+    "node": "v24.7.0",
+    "reference_api": "canonicalKernelFactories[program_key] via bindGlslKernel and createCanonicalBindings",
+    "public_api": "kernelFactories.get(program_key)",
+    "canonical_factory_name": "canonicalFactory158",
+    "canonical_factory_to_string_sha256": "839315b44a68ea9c712dca226754ea55c2283f6ea0ef30d4c79cd831f97036ff",
+    "source_raw_bytes": 9754,
+    "source_sha256": "68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438",
+    "cpu_files": {
+      "canonical_kernels": {
+        "path": "src/effects/generated/canonical-kernels.js",
+        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+      },
+      "public_catalog": {
+        "path": "src/effects/catalog.js",
+        "sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"
+      },
+      "adapter_index": {
+        "path": "src/effects/adapters/index.js",
+        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+      },
+      "upstream_snapshot": {
+        "path": "src/effects/generated/upstream-snapshot.js",
+        "sha256": "8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936"
+      },
+      "glsl_kernel": {
+        "path": "src/csl/glsl-kernel.js",
+        "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+      },
+      "glsl_runtime": {
+        "path": "src/csl/glsl-runtime.js",
+        "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+      },
+      "pass_runner": {
+        "path": "src/runtime/pass-runner.js",
+        "sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"
+      },
+      "surface": {
+        "path": "src/runtime/surface.js",
+        "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+      }
+    }
+  },
+  "metadata_contract": {
+    "parameter": "colorCount",
+    "type": "int",
+    "minimum": 2,
+    "default": 6,
+    "maximum": 8
+  },
+  "fixture": {
+    "input": "13-wide top row of pinned grayscale wrap/transition probes plus asymmetric colored rows; top-down Float32 RGBA",
+    "target_top_row_luminances": [
+      0,
+      0.005,
+      0.03,
+      0.12,
+      0.22,
+      0.34,
+      0.5,
+      0.66,
+      0.78,
+      0.88,
+      0.96,
+      0.995,
+      1
+    ],
+    "fragment_origin": "bottom-left GLSL coordinates over top-down Surface storage",
+    "comparer": "exact Float32 bit comparer with mismatch diagnostics; RGBA8 byte comparer; hashes remain authoritative",
+    "repeated_render_count": 2
+  },
+  "coverage_summary": {
+    "color_modes": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "color_counts": [
+      2,
+      3,
+      4,
+      6,
+      8
+    ],
+    "position_modes": [
+      "auto",
+      "manual"
+    ],
+    "smoothness_zero_cases": 2,
+    "smoothness_nonzero_cases": 6,
+    "wrap_seam_cases": 5,
+    "alpha_values": [
+      0,
+      0.5,
+      0.65,
+      1
+    ]
+  },
+  "cases": [
+    {
+      "name": "count2-rgb-auto-hard-alpha0",
+      "dimensions": {
+        "width": 13,
+        "height": 3
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 0,
+        "colorCount": 2,
+        "positionMode": 0,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0,
+        "alpha": 0,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.14000000059604645,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.28999999165534973,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.4300000071525574,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.5699999928474426,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 0.7099999785423279,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 0.8600000143051147,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 0,
+        "color_count": 2,
+        "position_mode": "auto",
+        "smoothness": 0,
+        "wrap_seam_discriminated": false,
+        "alpha": 0
+      },
+      "input": {
+        "f32_sha256_before": "3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59",
+        "f32_sha256_after": "3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 156,
+          "candidate_lanes": 156,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e47ce0c"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.8292682766914368
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f544aed"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.707317054271698
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f3512bb"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.5121951103210449
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f031f38"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ea2576a"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.3009708821773529,
+              0.11881188303232193,
+              0.42268040776252747,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3e9a18db",
+              "0x3df353a5",
+              "0x3ed86991",
+              "0x3e2ed44b"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59",
+        "rgba8_sha256": "fa791a7ffb1b338671bd88b623129369ae3d851d8ea22010b55460a713f9c40b",
+        "finite_lanes": 156,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e47ce0c"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.8292682766914368
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f544aed"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.707317054271698
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f3512bb"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.5121951103210449
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f031f38"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ea2576a"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.3009708821773529,
+              0.11881188303232193,
+              0.42268040776252747,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3e9a18db",
+              "0x3df353a5",
+              "0x3ed86991",
+              "0x3e2ed44b"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 156,
+          "candidate_lanes": 156,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59",
+        "candidate_rgba8_sha256": "fa791a7ffb1b338671bd88b623129369ae3d851d8ea22010b55460a713f9c40b"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 156,
+          "candidate_lanes": 156,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "3dcff2fb3dd719685b5dace289a83c43e26ce71864629731ba1b16050efa7d59",
+        "candidate_rgba8_sha256": "fa791a7ffb1b338671bd88b623129369ae3d851d8ea22010b55460a713f9c40b"
+      },
+      "discriminating_controls": {
+        "alpha_zero_input_identity": {
+          "exact_f32_bits": true,
+          "reference_lanes": 156,
+          "candidate_lanes": 156,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        }
+      }
+    },
+    {
+      "name": "count2-hsv-manual-wrap-alpha1",
+      "dimensions": {
+        "width": 13,
+        "height": 4
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 1,
+        "colorCount": 2,
+        "positionMode": 1,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0.800000011920929,
+        "alpha": 1,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0.07999999821186066,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.8999999761581421,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 1,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 1,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 1,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 1,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 1,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 1,
+        "color_count": 2,
+        "position_mode": "manual",
+        "smoothness": 0.8,
+        "wrap_seam_discriminated": true,
+        "alpha": 1
+      },
+      "input": {
+        "f32_sha256_before": "85d8d74d4422e6f78ea42a438cfeb5ba604b6d41cc807c9d57ce28cac3ef4440",
+        "f32_sha256_after": "85d8d74d4422e6f78ea42a438cfeb5ba604b6d41cc807c9d57ce28cac3ef4440",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e60c7ce"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.8536585569381714
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f5a895e"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.7317073345184326
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f3b512c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.5365853905677795
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f095da9"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3eaed44b"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.42718446254730225,
+              0.3465346395969391,
+              0.7422680258750916,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x3edab7ec",
+              "0x3eb16cfd",
+              "0x3f3e0547",
+              "0x3e47ce0c"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "21820ad3eeec664df6e39a4811a492ec5df321987d40de9074efdafbdc6c2196",
+        "rgba8_sha256": "5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d",
+        "finite_lanes": 208,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9700000286102295,
+              0.30992990732192993,
+              0.049902237951755524,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x3f7851ec",
+              "0x3e9eaf22",
+              "0x3d4c664a",
+              "0x3e60c7ce"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.9700419306755066,
+              0.31164810061454773,
+              0.049944113940000534,
+              0.8536585569381714
+            ],
+            "f32_bits_le": [
+              "0x3f7854ab",
+              "0x3e9f9057",
+              "0x3d4c9233",
+              "0x3f5a895e"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.9599999785423279,
+              0.04000001773238182,
+              0.17999997735023499,
+              0.7317073345184326
+            ],
+            "f32_bits_le": [
+              "0x3f75c28f",
+              "0x3d23d70f",
+              "0x3e3851ea",
+              "0x3f3b512c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.9709089398384094,
+              0.34720101952552795,
+              0.05081196501851082,
+              0.5365853905677795
+            ],
+            "f32_bits_le": [
+              "0x3f788d7d",
+              "0x3eb1c455",
+              "0x3d502035",
+              "0x3f095da9"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.9800000190734863,
+              0.7199999690055847,
+              0.0599999725818634,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x3f7ae148",
+              "0x3f3851eb",
+              "0x3d75c288",
+              "0x3eaed44b"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.9636707305908203,
+              0.05044225975871086,
+              0.04361212998628616,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x3f76b320",
+              "0x3d4e9c8b",
+              "0x3d32a2a2",
+              "0x3e47ce0c"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "21820ad3eeec664df6e39a4811a492ec5df321987d40de9074efdafbdc6c2196",
+        "candidate_rgba8_sha256": "5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "21820ad3eeec664df6e39a4811a492ec5df321987d40de9074efdafbdc6c2196",
+        "candidate_rgba8_sha256": "5f0ab6f8bdac32ef8a7452e5193123dd89e4844c8d38d0e4899ca6d3c919ab0d"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 208,
+            "candidate_lanes": 208,
+            "mismatched_lanes": 104,
+            "first_mismatch_lane": 1,
+            "max_absolute_difference": 0.1143634244799614
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 52,
+            "first_mismatch_byte": 1
+          },
+          "candidate_f32_sha256": "67ae8b8f3038e4335c0c90ab7cbb155c8fa47ef3e574286c65329d5c1f6fe830",
+          "candidate_rgba8_sha256": "03fe3cfb8e9e9a5e6c3dab28fd599d9e833e458e05493ba5bb8fa503f23abfbe"
+        },
+        "auto_position": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 208,
+            "candidate_lanes": 208,
+            "mismatched_lanes": 111,
+            "first_mismatch_lane": 4,
+            "max_absolute_difference": 0.2582813501358032
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 51,
+            "first_mismatch_byte": 5
+          },
+          "candidate_f32_sha256": "a3381adedb913e684acb3a967c292a9ac8bda1e1ea86e5c534ee3c11bb29cd86",
+          "candidate_rgba8_sha256": "556666b86927cd5a1e430ebe73934e5f473d9b3dd52522ac23fd1a02084455ba"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 208,
+            "candidate_lanes": 208,
+            "mismatched_lanes": 87,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.408351868391037
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 64,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "04e411af492b75ea77b12e4b4520bbaeae94c3af213fda23089e7f08b76d7154",
+          "candidate_rgba8_sha256": "7ed5399be92a5bd13bb13c310da6c73208ed3dce7107999c3460c8da51865469",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 6
+          }
+        }
+      }
+    },
+    {
+      "name": "count3-oklab-auto-smooth-alpha1",
+      "dimensions": {
+        "width": 13,
+        "height": 5
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 2,
+        "colorCount": 3,
+        "positionMode": 0,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0.550000011920929,
+        "alpha": 1,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.14000000059604645,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.28999999165534973,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.4300000071525574,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.5699999928474426,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 0.7099999785423279,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 0.8600000143051147,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 2,
+        "color_count": 3,
+        "position_mode": "auto",
+        "smoothness": 0.55,
+        "wrap_seam_discriminated": true,
+        "alpha": 1
+      },
+      "input": {
+        "f32_sha256_before": "f306e2bbbb8aac6432da7c808bf9e532d37b23b5cc49e4d431a902367e69d826",
+        "f32_sha256_after": "f306e2bbbb8aac6432da7c808bf9e532d37b23b5cc49e4d431a902367e69d826",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e79c190"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e2ed44b"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.7560975551605225
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f418f9c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.5609756112098694
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f0f9c19"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.3658536672592163
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ebb512c"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.553398072719574,
+              0.5742574334144592,
+              0.14432989060878754,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x3f0dab7f",
+              "0x3f130289",
+              "0x3e13cb37",
+              "0x3e60c7ce"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "7f6dd145d388035d887ab8f7354ea5f8ac112308ab2af4cd450acfb9109952f7",
+        "rgba8_sha256": "b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe",
+        "finite_lanes": 260,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7626097798347473,
+              0.5961208939552307,
+              0.22023925185203552,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x3f433a65",
+              "0x3f189b61",
+              "0x3e618666",
+              "0x3e79c190"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.7621513605117798,
+              0.5966441035270691,
+              0.22030481696128845,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3f431c5a",
+              "0x3f18bdab",
+              "0x3e619796",
+              "0x3e2ed44b"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.9599998593330383,
+              0.04000135138630867,
+              0.17999973893165588,
+              0.7560975551605225
+            ],
+            "f32_bits_le": [
+              "0x3f75c28d",
+              "0x3d23d875",
+              "0x3e3851da",
+              "0x3f418f9c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.9799999594688416,
+              0.7200000286102295,
+              0.05999898165464401,
+              0.5609756112098694
+            ],
+            "f32_bits_le": [
+              "0x3f7ae147",
+              "0x3f3851ec",
+              "0x3d75c17e",
+              "0x3f0f9c19"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.11999934166669846,
+              0.8799999952316284,
+              0.2599999010562897,
+              0.3658536672592163
+            ],
+            "f32_bits_le": [
+              "0x3df5c237",
+              "0x3f6147ae",
+              "0x3e851eb5",
+              "0x3ebb512c"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.9799999594688416,
+              0.7200000286102295,
+              0.05999898165464401,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x3f7ae147",
+              "0x3f3851ec",
+              "0x3d75c17e",
+              "0x3e60c7ce"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "7f6dd145d388035d887ab8f7354ea5f8ac112308ab2af4cd450acfb9109952f7",
+        "candidate_rgba8_sha256": "b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "7f6dd145d388035d887ab8f7354ea5f8ac112308ab2af4cd450acfb9109952f7",
+        "candidate_rgba8_sha256": "b093599bf67fbec5910b217f3a5e21b3eb3d45df0675fb81ea366444165f9abe"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 172,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.23446285724639893
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 102,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "f1575ce5d7e19f5eaddc4b4666b0db0bedeadc5da8e91076e138fd20a1bf4f8d",
+          "candidate_rgba8_sha256": "d0677a432b501913b26c7e360b14d6d5105d4007a0c42073e8b1223f8b8d597b"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 111,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.6421520188450813
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 108,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "9faca06310a5cad774cf646f290303ec13a7f75b7e0901f688136bd3086116ab",
+          "candidate_rgba8_sha256": "d81c18e82b901252e2c8052b098211cd73568cd9238fa1723a7152b256bf1f26",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 6
+          }
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 183,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.8600264862179756
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 178,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "c34ff6c6e91511142747d994d2b98cc306b622508ce81b366cf78e6230d845ab",
+          "candidate_rgba8_sha256": "06b9723281e67d4a42f78d2dd2fc4f30e0a5e3150024f49cacec0686763c7f14"
+        }
+      }
+    },
+    {
+      "name": "count4-oklch-manual-smooth-alpha-half",
+      "dimensions": {
+        "width": 13,
+        "height": 6
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 3,
+        "colorCount": 4,
+        "positionMode": 1,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0.6000000238418579,
+        "alpha": 0.5,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.18000000715255737,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.6700000166893005,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 1,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 1,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 1,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 1,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 3,
+        "color_count": 4,
+        "position_mode": "manual",
+        "smoothness": 0.6,
+        "wrap_seam_discriminated": false,
+        "alpha": 0.5
+      },
+      "input": {
+        "f32_sha256_before": "25e64611f28f3409d84a6210fffc21433ddc4f0a84d995d094a2ebdd9089de90",
+        "f32_sha256_after": "25e64611f28f3409d84a6210fffc21433ddc4f0a84d995d094a2ebdd9089de90",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e895da9"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e47ce0c"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.7804877758026123
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f47ce0c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.5853658318519592
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f15da89"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.39024388790130615
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ec7ce0c"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.6796116232872009,
+              0.801980197429657,
+              0.4639175236225128,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x3f2dfb07",
+              "0x3f4d4e93",
+              "0x3eed8699",
+              "0x3e79c190"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "7bfa0f3bb354a40e96ac684b626f9297372099758275fc3b68c8e4b5e15e3497",
+        "rgba8_sha256": "84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204",
+        "finite_lanes": 312,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.47999992966651917,
+              0.020000658929347992,
+              0.08999983966350555,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x3ef5c28d",
+              "0x3ca3d86c",
+              "0x3db851d6",
+              "0x3e895da9"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.5250008702278137,
+              0.6749999523162842,
+              0.9800000190734863,
+              0.19512194395065308
+            ],
+            "f32_bits_le": [
+              "0x3f066675",
+              "0x3f2ccccc",
+              "0x3f7ae148",
+              "0x3e47ce0c"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.5499999523162842,
+              0.42000001668930054,
+              0.0899994969367981,
+              0.7804877758026123
+            ],
+            "f32_bits_le": [
+              "0x3f0ccccc",
+              "0x3ed70a3e",
+              "0x3db851a8",
+              "0x3f47ce0c"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.3099994659423828,
+              0.6899999976158142,
+              0.3799999952316284,
+              0.5853658318519592
+            ],
+            "f32_bits_le": [
+              "0x3e9eb840",
+              "0x3f30a3d7",
+              "0x3ec28f5c",
+              "0x3f15da89"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.4408145248889923,
+              0.6176354885101318,
+              0.9208657741546631,
+              0.39024388790130615
+            ],
+            "f32_bits_le": [
+              "0x3ee1b271",
+              "0x3f1e1d5c",
+              "0x3f6bbddc",
+              "0x3ec7ce0c"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.3998052775859833,
+              0.8409900665283203,
+              0.36195874214172363,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x3eccb347",
+              "0x3f574b20",
+              "0x3eb952a8",
+              "0x3e79c190"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "7bfa0f3bb354a40e96ac684b626f9297372099758275fc3b68c8e4b5e15e3497",
+        "candidate_rgba8_sha256": "84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "7bfa0f3bb354a40e96ac684b626f9297372099758275fc3b68c8e4b5e15e3497",
+        "candidate_rgba8_sha256": "84e3a53f2b74c8e0ad8ceb1eb56dd676dce0e362c5a7b2d178c18e5dcfce2204"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 141,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.11089327931404114
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 45,
+            "first_mismatch_byte": 36
+          },
+          "candidate_f32_sha256": "79075668dd991a0fb1858a2f00ac4361565511a155345ff4e6c233384290bb5b",
+          "candidate_rgba8_sha256": "4bd1a0a8974a252615e8515514e769205fda2f5ee71ba5547800e423c4b7830b"
+        },
+        "auto_position": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 204,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.3545646667480469
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 181,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "9f024a3638290be004d28bf32b0b1ac9339ecd0f0433e530b840ffb56fcb7367",
+          "candidate_rgba8_sha256": "d31a8f0eda1cee7a01aab166f81a23b4678451a331ed8612a1ad0decc1036434"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 63,
+            "first_mismatch_lane": 36,
+            "max_absolute_difference": 0.29548632353544235
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 51,
+            "first_mismatch_byte": 36
+          },
+          "candidate_f32_sha256": "69a93be6c4d66d93b6e0ad2539a6c3b4fb3bf407db03f514ece714f2cf4c8caa",
+          "candidate_rgba8_sha256": "a7b39d32c2167e404f03a9822624d83428b013e95f158763cb787d741ce1b50b",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 0
+          }
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 33,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.48000001907348633
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 33,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "5198aa2d0fb7da44e51a7ea9e80afa0b0e4d7cb3c3a87199f3ff4509100fdefe",
+          "candidate_rgba8_sha256": "37c869f4275e8281d6c8f2fd752a825d836ae3f1da9459267930da1a4da240ab"
+        }
+      }
+    },
+    {
+      "name": "count6-rgb-manual-hard-alpha1",
+      "dimensions": {
+        "width": 13,
+        "height": 4
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 0,
+        "colorCount": 6,
+        "positionMode": 1,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0,
+        "alpha": 1,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.07999999821186066,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.23000000417232513,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.4699999988079071,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.8100000023841858,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 1,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 1,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 0,
+        "color_count": 6,
+        "position_mode": "manual",
+        "smoothness": 0,
+        "wrap_seam_discriminated": false,
+        "alpha": 1
+      },
+      "input": {
+        "f32_sha256_before": "3fdbe6ac340be13f3af606c15341a8f4c4ec66790828532028002dc1ef0ea95b",
+        "f32_sha256_after": "3fdbe6ac340be13f3af606c15341a8f4c4ec66790828532028002dc1ef0ea95b",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3e95da89"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e60c7ce"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.8048780560493469
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f4e0c7d"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.6097561120986938
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f1c18fa"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.4146341383457184
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ed44aed"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.8058252334594727,
+              0.06930693238973618,
+              0.7835051417350769,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x3f4e4a90",
+              "0x3d8df0cb",
+              "0x3f4893cb",
+              "0x3e895da9"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "6ae31270aefed639e9a3d991343814acea31aefef0402195b0176c7e464a560e",
+        "rgba8_sha256": "9cfbaf480e5c6e50bff9b9532e44024e05d456986554ada3b58874c914362e88",
+        "finite_lanes": 208,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.9599999785423279,
+              0.03999999910593033,
+              0.18000000715255737,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x3f75c28f",
+              "0x3d23d70a",
+              "0x3e3851ec",
+              "0x3e95da89"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.07999999821186066,
+              0.8999999761581421,
+              0.8199999928474426,
+              0.2195121943950653
+            ],
+            "f32_bits_le": [
+              "0x3da3d70a",
+              "0x3f666666",
+              "0x3f51eb85",
+              "0x3e60c7ce"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.9800000190734863,
+              0.7200000286102295,
+              0.05999999865889549,
+              0.8048780560493469
+            ],
+            "f32_bits_le": [
+              "0x3f7ae148",
+              "0x3f3851ec",
+              "0x3d75c28f",
+              "0x3f4e0c7d"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.05000000074505806,
+              0.3499999940395355,
+              0.9599999785423279,
+              0.6097561120986938
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3eb33333",
+              "0x3f75c28f",
+              "0x3f1c18fa"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.7400000095367432,
+              0.07999999821186066,
+              0.9399999976158142,
+              0.4146341383457184
+            ],
+            "f32_bits_le": [
+              "0x3f3d70a4",
+              "0x3da3d70a",
+              "0x3f70a3d7",
+              "0x3ed44aed"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.05000000074505806,
+              0.3499999940395355,
+              0.9599999785423279,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x3d4ccccd",
+              "0x3eb33333",
+              "0x3f75c28f",
+              "0x3e895da9"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "6ae31270aefed639e9a3d991343814acea31aefef0402195b0176c7e464a560e",
+        "candidate_rgba8_sha256": "9cfbaf480e5c6e50bff9b9532e44024e05d456986554ada3b58874c914362e88"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 208,
+          "candidate_lanes": 208,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "6ae31270aefed639e9a3d991343814acea31aefef0402195b0176c7e464a560e",
+        "candidate_rgba8_sha256": "9cfbaf480e5c6e50bff9b9532e44024e05d456986554ada3b58874c914362e88"
+      },
+      "discriminating_controls": {
+        "auto_position": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 208,
+            "candidate_lanes": 208,
+            "mismatched_lanes": 87,
+            "first_mismatch_lane": 12,
+            "max_absolute_difference": 0.8600000217556953
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 87,
+            "first_mismatch_byte": 12
+          },
+          "candidate_f32_sha256": "a4094c60c9e44bf6ae547785a9c27e49e0dafc246e91838fa1a6b7cd6d0f5709",
+          "candidate_rgba8_sha256": "e9d033cdd470913e17d07af5d274fcc3ac279fb14d1dc96340728619c4fba554"
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 208,
+            "candidate_lanes": 208,
+            "mismatched_lanes": 9,
+            "first_mismatch_lane": 40,
+            "max_absolute_difference": 0.8199999779462814
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 9,
+            "first_mismatch_byte": 40
+          },
+          "candidate_f32_sha256": "01c1576d24caa1ebedb16d03c4ccbdc124816f5c17c4478fe429137f71fb7fd5",
+          "candidate_rgba8_sha256": "27210f415871a6077dc9a9fbad84321c597b163982f19f4b677cddd2e31be761"
+        }
+      }
+    },
+    {
+      "name": "count6-oklch-auto-wrap-alpha1",
+      "dimensions": {
+        "width": 13,
+        "height": 5
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 3,
+        "colorCount": 6,
+        "positionMode": 0,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0.8999999761581421,
+        "alpha": 1,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.14000000059604645,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.28999999165534973,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.4300000071525574,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.5699999928474426,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 0.7099999785423279,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 0.8600000143051147,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 3,
+        "color_count": 6,
+        "position_mode": "auto",
+        "smoothness": 0.9,
+        "wrap_seam_discriminated": true,
+        "alpha": 1
+      },
+      "input": {
+        "f32_sha256_before": "eb956a3adfdad8f1c47745b369e9f53a75cf22c3dba452d35159253950f4ea6c",
+        "f32_sha256_after": "eb956a3adfdad8f1c47745b369e9f53a75cf22c3dba452d35159253950f4ea6c",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3ea2576a"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e79c190"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.8292682766914368
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f544aed"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.6341463327407837
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f22576a"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.4390243887901306
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ee0c7ce"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.9320388436317444,
+              0.2970297038555145,
+              0.1855670064687729,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x3f6e9a19",
+              "0x3e981447",
+              "0x3e3e0547",
+              "0x3e95da89"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "86af3fa97c866fe0a27ebf45fd4c42be707cdff39c4c794b8599efd4b1602df4",
+        "rgba8_sha256": "faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3",
+        "finite_lanes": 260,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7335315942764282,
+              0.6591988205909729,
+              0,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x3f3bc8ba",
+              "0x3f28c141",
+              "0x00000000",
+              "0x3ea2576a"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.7324944734573364,
+              0.6600144505500793,
+              0,
+              0.24390244483947754
+            ],
+            "f32_bits_le": [
+              "0x3f3b84c2",
+              "0x3f28f6b5",
+              "0x00000000",
+              "0x3e79c190"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.9769507050514221,
+              0.1731264889240265,
+              0.10806388407945633,
+              0.8292682766914368
+            ],
+            "f32_bits_le": [
+              "0x3f7a1971",
+              "0x3e314812",
+              "0x3ddd5099",
+              "0x3f544aed"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0,
+              0.7148910164833069,
+              0.8345252275466919,
+              0.6341463327407837
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3f370319",
+              "0x3f55a372",
+              "0x3f22576a"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0,
+              0.8735660910606384,
+              0.8845386505126953,
+              0.4390243887901306
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3f5fa207",
+              "0x3f627120",
+              "0x3ee0c7ce"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0,
+              0.8268498182296753,
+              0.6104127764701843,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3f53ac6e",
+              "0x3f1c4403",
+              "0x3e95da89"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "86af3fa97c866fe0a27ebf45fd4c42be707cdff39c4c794b8599efd4b1602df4",
+        "candidate_rgba8_sha256": "faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "86af3fa97c866fe0a27ebf45fd4c42be707cdff39c4c794b8599efd4b1602df4",
+        "candidate_rgba8_sha256": "faaa9d3df47b396be35a389966886f5dfee0f1baf5d0c8204089a24b429b82e3"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 191,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.536392331123352
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 185,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "3f7255e12d1c7cd14df3c79ed3c6ae4110239b0d9aa0ddf08786235313af5d43",
+          "candidate_rgba8_sha256": "86eeea63c65a87ffdeb14cd284a323d9d6d0a3246e92efd7b550664745603002"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 189,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.8199999332427979
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 187,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "84033dce7c007a0ba4c6730eb01734dd40a49cbccfe6584a9993585fb33415c0",
+          "candidate_rgba8_sha256": "9544b2dc851a2c93a46936fa977f174009510e719db7b1be7b1abcfe1d4f543f",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 6
+          }
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 180,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.8663504477590322
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 179,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "d1843362ac5c2c6e20fb660f87de23b3e3d26dce7f4d0f1f7f1e489a4bf68e49",
+          "candidate_rgba8_sha256": "12638b57416eaad5f606f2da8a614bbe1ef7bd458b0b9f1b5ce65058677c2eac"
+        }
+      }
+    },
+    {
+      "name": "count8-hsv-auto-wrap-alpha1",
+      "dimensions": {
+        "width": 13,
+        "height": 6
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 1,
+        "colorCount": 8,
+        "positionMode": 0,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 1,
+        "alpha": 1,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.14000000059604645,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.28999999165534973,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.4300000071525574,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.5699999928474426,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 0.7099999785423279,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 0.8600000143051147,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 1
+      },
+      "coverage": {
+        "color_mode": 1,
+        "color_count": 8,
+        "position_mode": "auto",
+        "smoothness": 1,
+        "wrap_seam_discriminated": true,
+        "alpha": 1
+      },
+      "input": {
+        "f32_sha256_before": "efc76fa8b18ac7de37a1e7b6ce2de81c57fd901368e8e9f819d099e931e6200f",
+        "f32_sha256_after": "efc76fa8b18ac7de37a1e7b6ce2de81c57fd901368e8e9f819d099e931e6200f",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3eaed44b"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e895da9"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.8536585569381714
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3f5a895e"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.6585366129875183
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f2895db"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.46341463923454285
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3eed44af"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.0776699036359787,
+              0.5247524976730347,
+              0.5051546096801758,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x3d9f1166",
+              "0x3f06562e",
+              "0x3f0151d0",
+              "0x3ea2576a"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "b8564076387d982b669758eb32157354426136d75960178737a23d7a0be44acd",
+        "rgba8_sha256": "b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164",
+        "finite_lanes": 312,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5199999809265137,
+              0.10833334922790527,
+              0.5101557970046997,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x3f051eb8",
+              "0x3ddddde0",
+              "0x3f029992",
+              "0x3eaed44b"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.5189403891563416,
+              0.10832083225250244,
+              0.5099359154701233,
+              0.26829269528388977
+            ],
+            "f32_bits_le": [
+              "0x3f04d947",
+              "0x3dddd750",
+              "0x3f028b29",
+              "0x3e895da9"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.9687997102737427,
+              0.26071345806121826,
+              0.04870331287384033,
+              0.8536585569381714
+            ],
+            "f32_bits_le": [
+              "0x3f780342",
+              "0x3e857c3c",
+              "0x3d477d20",
+              "0x3f5a895e"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.2582489550113678,
+              0.06514709442853928,
+              0.9500119686126709,
+              0.6585366129875183
+            ],
+            "f32_bits_le": [
+              "0x3e843935",
+              "0x3d856bd7",
+              "0x3f7333fc",
+              "0x3f2895db"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.46823650598526,
+              0.29178744554519653,
+              0.39142856001853943,
+              0.46341463923454285
+            ],
+            "f32_bits_le": [
+              "0x3eefbcb2",
+              "0x3e95652a",
+              "0x3ec86953",
+              "0x3eed44af"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.0751015916466713,
+              0.7876989245414734,
+              0.9330343008041382,
+              0.31707316637039185
+            ],
+            "f32_bits_le": [
+              "0x3d99cedd",
+              "0x3f49a6a3",
+              "0x3f6edb56",
+              "0x3ea2576a"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "b8564076387d982b669758eb32157354426136d75960178737a23d7a0be44acd",
+        "candidate_rgba8_sha256": "b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 312,
+          "candidate_lanes": 312,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "b8564076387d982b669758eb32157354426136d75960178737a23d7a0be44acd",
+        "candidate_rgba8_sha256": "b0a1523f18451dae0757764e66b7db512a4d0dc3e8611aeb57047736fc09b164"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 201,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.3844984173774719
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 172,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "2c84eaa3b94d34c3c9cb71fc70f0eca1da6bc4c34ad19d6443c10e0b34f3ad97",
+          "candidate_rgba8_sha256": "ab80f14d967e5dfcb14690f4dcc906e369532f5ed34140d1da8052d3bb87a678"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 234,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.571113109588623
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 199,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "44448629f8a4c2a31f45ea6fc50071590e940be07d0a11dbc14d9b0efe565dae",
+          "candidate_rgba8_sha256": "30f5fd471efa0b6a36116e416dab5d5606d672d493997639759fabf0dafe11b1",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 6
+          }
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 312,
+            "candidate_lanes": 312,
+            "mismatched_lanes": 234,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.9166420362889767
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 228,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "3043cf6807462540d7a5dd196a6de92a0928d4c412ef5ef4ec7eb361f7e3a451",
+          "candidate_rgba8_sha256": "1fd61cbaf7f90878027cfd9193ab8b2584e07d2b3d9d0d52755aafd9f6ad929b"
+        }
+      }
+    },
+    {
+      "name": "count8-oklab-manual-wrap-alpha065",
+      "dimensions": {
+        "width": 13,
+        "height": 5
+      },
+      "seed": 4242,
+      "time": 0,
+      "uniforms": {
+        "colorMode": 2,
+        "colorCount": 8,
+        "positionMode": 1,
+        "repeat": 1,
+        "offset": 0,
+        "smoothness": 0.5,
+        "alpha": 0.6499999761581421,
+        "rotation": 0,
+        "color0": [
+          0.9599999785423279,
+          0.03999999910593033,
+          0.18000000715255737
+        ],
+        "pos0": 0.05999999865889549,
+        "color1": [
+          0.9800000190734863,
+          0.7200000286102295,
+          0.05999999865889549
+        ],
+        "pos1": 0.14000000059604645,
+        "color2": [
+          0.11999999731779099,
+          0.8799999952316284,
+          0.25999999046325684
+        ],
+        "pos2": 0.25999999046325684,
+        "color3": [
+          0.05000000074505806,
+          0.3499999940395355,
+          0.9599999785423279
+        ],
+        "pos3": 0.38999998569488525,
+        "color4": [
+          0.7400000095367432,
+          0.07999999821186066,
+          0.9399999976158142
+        ],
+        "pos4": 0.550000011920929,
+        "color5": [
+          0.07999999821186066,
+          0.8999999761581421,
+          0.8199999928474426
+        ],
+        "pos5": 0.699999988079071,
+        "color6": [
+          0.9599999785423279,
+          0.9599999785423279,
+          0.8999999761581421
+        ],
+        "pos6": 0.8399999737739563,
+        "color7": [
+          0.03999999910593033,
+          0.029999999329447746,
+          0.07999999821186066
+        ],
+        "pos7": 0.9300000071525574
+      },
+      "coverage": {
+        "color_mode": 2,
+        "color_count": 8,
+        "position_mode": "manual",
+        "smoothness": 0.5,
+        "wrap_seam_discriminated": true,
+        "alpha": 0.65
+      },
+      "input": {
+        "f32_sha256_before": "58d0086620075665083860852cade8508b3c354858d7f13313918b3af80edbe4",
+        "f32_sha256_after": "58d0086620075665083860852cade8508b3c354858d7f13313918b3af80edbe4",
+        "immutable": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              0.3658536672592163
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3ebb512c"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              1,
+              1,
+              1,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x3f800000",
+              "0x3f800000",
+              "0x3f800000",
+              "0x3e95da89"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.11999999731779099,
+              0.11999999731779099,
+              0.11999999731779099,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3df5c28f",
+              "0x3e2ed44b"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.5,
+              0.5,
+              0.5,
+              0.6829268336296082
+            ],
+            "f32_bits_le": [
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f000000",
+              "0x3f2ed44b"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8799999952316284,
+              0.8799999952316284,
+              0.8799999952316284,
+              0.4878048896789551
+            ],
+            "f32_bits_le": [
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3f6147ae",
+              "0x3ef9c190"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.20388349890708923,
+              0.7524752616882324,
+              0.8247422575950623,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x3e50c6d6",
+              "0x3f40a238",
+              "0x3f53224f",
+              "0x3eaed44b"
+            ]
+          }
+        ]
+      },
+      "output": {
+        "f32_sha256": "80ce433ab64d14a0d0caaae7623bb087e8480937004565adeb777465afd0c008",
+        "rgba8_sha256": "185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9",
+        "finite_lanes": 260,
+        "nonfinite_lanes": 0,
+        "discriminating_probes": [
+          {
+            "label": "wrap-low",
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.29936307668685913,
+              0.07091590017080307,
+              0.10198687016963959,
+              0.3658536672592163
+            ],
+            "f32_bits_le": [
+              "0x3e99461e",
+              "0x3d913c5b",
+              "0x3dd0de7e",
+              "0x3ebb512c"
+            ]
+          },
+          {
+            "label": "wrap-high",
+            "at_top_down_xy": [
+              12,
+              0
+            ],
+            "values": [
+              0.6465394496917725,
+              0.42073360085487366,
+              0.45166832208633423,
+              0.2926829159259796
+            ],
+            "f32_bits_le": [
+              "0x3f25839c",
+              "0x3ed76a65",
+              "0x3ee74112",
+              "0x3e95da89"
+            ]
+          },
+          {
+            "label": "transition-low",
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.6789999604225159,
+              0.5099999904632568,
+              0.08099933713674545,
+              0.17073170840740204
+            ],
+            "f32_bits_le": [
+              "0x3f2dd2f1",
+              "0x3f028f5c",
+              "0x3da5e2fb",
+              "0x3e2ed44b"
+            ]
+          },
+          {
+            "label": "transition-middle",
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.656000018119812,
+              0.22700023651123047,
+              0.7859999537467957,
+              0.6829268336296082
+            ],
+            "f32_bits_le": [
+              "0x3f27ef9e",
+              "0x3e6872c0",
+              "0x3f49374b",
+              "0x3f2ed44b"
+            ]
+          },
+          {
+            "label": "transition-high",
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.8054199814796448,
+              0.8043581247329712,
+              0.783336341381073,
+              0.4878048896789551
+            ],
+            "f32_bits_le": [
+              "0x3f4e3001",
+              "0x3f4dea6a",
+              "0x3f4888bb",
+              "0x3ef9c190"
+            ]
+          },
+          {
+            "label": "colored-interior",
+            "at_top_down_xy": [
+              5,
+              2
+            ],
+            "values": [
+              0.5523592233657837,
+              0.31536659598350525,
+              0.8996597528457642,
+              0.3414634168148041
+            ],
+            "f32_bits_le": [
+              "0x3f0d676a",
+              "0x3ea177bb",
+              "0x3f66501a",
+              "0x3eaed44b"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "80ce433ab64d14a0d0caaae7623bb087e8480937004565adeb777465afd0c008",
+        "candidate_rgba8_sha256": "185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9"
+      },
+      "public_catalog_vs_direct_canonical": {
+        "float32": {
+          "exact_f32_bits": true,
+          "reference_lanes": 260,
+          "candidate_lanes": 260,
+          "mismatched_lanes": 0,
+          "first_mismatch_lane": null,
+          "max_absolute_difference": 0
+        },
+        "rgba8": {
+          "exact_rgba8_bytes": true,
+          "mismatched_bytes": 0,
+          "first_mismatch_byte": null
+        },
+        "candidate_f32_sha256": "80ce433ab64d14a0d0caaae7623bb087e8480937004565adeb777465afd0c008",
+        "candidate_rgba8_sha256": "185fcc2dcec8bac35addd0dcc7797a31d6e356ec1ae0fc45f590a0cb015fe9e9"
+      },
+      "discriminating_controls": {
+        "rgb_mode": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 161,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.15096110105514526
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 45,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "bee58cdd2f0ead8a6086819315dae6b3d892971c618850e73ab34c58d80a6e36",
+          "candidate_rgba8_sha256": "4d4667c4797b0755ece2513f88c6340d4d78f6930804ce4a804583cd02d15f7c"
+        },
+        "auto_position": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 135,
+            "first_mismatch_lane": 4,
+            "max_absolute_difference": 0.5586328953504562
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 113,
+            "first_mismatch_byte": 4
+          },
+          "candidate_f32_sha256": "e01a54835fea21026e0e0fa73fcfc239ccdad54105ecdd7a753b3ba160689459",
+          "candidate_rgba8_sha256": "dd15e38bb3c994ffb2cc5fc8e0848d9bc1af17910de3b71934ee50dc64d0ee32"
+        },
+        "zero_smoothness": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 66,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.3246368169784546
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 57,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "977861f483323e49b6cc36db861a2913df3a2c1d7142272b86d4a9c45ff5b007",
+          "candidate_rgba8_sha256": "83f1cf70bbd92258ea3d51b0e973316ac57c5b2eaffa49b21908d3d6b277a9c8",
+          "wrap_seam": {
+            "compared_top_row_wrap_lanes": 8,
+            "mismatched_f32_lanes": 6
+          }
+        },
+        "count_minus_one": {
+          "float32": {
+            "exact_f32_bits": false,
+            "reference_lanes": 260,
+            "candidate_lanes": 260,
+            "mismatched_lanes": 21,
+            "first_mismatch_lane": 0,
+            "max_absolute_difference": 0.6044999957084656
+          },
+          "rgba8": {
+            "exact_rgba8_bytes": false,
+            "mismatched_bytes": 21,
+            "first_mismatch_byte": 0
+          },
+          "candidate_f32_sha256": "33457a275628e429e27c12022360e6d06d778d4f9494debfdd149f0a45f6debd",
+          "candidate_rgba8_sha256": "72a5e515f75d60c01f211363aaba6185d2dcb7097b8d617c8bf7cef43dc5c473"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+test_task24_loader_carries_only_gather_profile_and_generates_one_new_block (tests.test_typed_generator.TypedGeneratorTests.test_task24_loader_carries_only_gather_profile_and_generates_one_new_block) ... ok
+test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry (tests.test_typed_generator.TypedGeneratorTests.test_task24_generation_isolated_to_one_block_manifest_row_and_catalog_entry) ... ok
+test_task23_six_key_counts_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact) ... ok
+test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys) ... FAIL
+test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths (tests.test_typed_generator.TypedGeneratorTests.test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths) ... ok
+test_task21_degauss_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_exclusions_remain_closed) ... ok
+test_task21_degauss_profile_is_exact_and_current_vocabulary (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_profile_is_exact_and_current_vocabulary) ... ok
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... ok
+test_task25_loader_rejects_transitional_task24_no_carrier_slice (tests.test_typed_generator.TypedGeneratorTests.test_task25_loader_rejects_transitional_task24_no_carrier_slice) ... ok
+test_task25_loader_schema_admits_only_the_two_later_lane_carriers (tests.test_typed_generator.TypedGeneratorTests.test_task25_loader_schema_admits_only_the_two_later_lane_carriers) ... ok
+test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact) ... ok
+test_task26_generation_adds_only_smooth_block_manifest_and_catalog (tests.test_typed_generator.TypedGeneratorTests.test_task26_generation_adds_only_smooth_block_manifest_and_catalog) ... ok
+test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census) ... ok
+test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice) ... ok
+
+======================================================================
+FAIL: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "tests/test_typed_generator.py", line 5005, in test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys
+    self.assertEqual(80, len(corpus_keys - public_keys))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 80 != 79
+
+----------------------------------------------------------------------
+Ran 14 tests in 676.007s
+
+FAILED (failures=1)

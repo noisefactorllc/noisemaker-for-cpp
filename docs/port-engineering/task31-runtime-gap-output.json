@@ -1,0 +1,16 @@
+{
+  "floatBitsToUint_absent_from_glsl_runtime_hpp": true,
+  "floatBitsToUint_absent_from_glsl_types_hpp": true,
+  "float_to_uint32_body": "if (!std::isfinite(value) || value == 0.0) return 0U;\n  constexpr double modulus = 4294967296.0;\n  double wrapped = std::fmod(std::trunc(value), modulus);\n  if (wrapped < 0.0) wrapped += modulus;\n  return static_cast<std::uint32_t>(wrapped);",
+  "float_to_uint32_body_found": true,
+  "float_to_uint32_is_conversion_not_bitcast": true,
+  "js_bitsFloat_is_Float32Array": true,
+  "js_bitsUint_is_Uint32Array": true,
+  "js_floatBitsToUint_uses_shared_typed_array_alias": true,
+  "perlin_hash3_body_found": true,
+  "perlin_scalar_xor_emitted_line": "  return (static_cast<double>(float(((glsl::swizzle<0>(q) ^ glsl::swizzle<1>(q)) ^ glsl::swizzle<2>(q)))) / static_cast<double>(static_cast<float>(4294967295.0)));",
+  "perlin_scalar_xor_uses_bare_operator": true,
+  "perlin_vector_xor_uses_helper_call": "  q = glsl::bitwise_xor(q, glsl::shift_right(q, std::uint32_t(16)));",
+  "scalar_and_vector_xor_lower_differently_confirmed": true,
+  "uintBitsToFloat_absent_from_both_headers": true
+}

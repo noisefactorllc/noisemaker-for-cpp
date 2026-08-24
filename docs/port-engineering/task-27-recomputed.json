@@ -1,0 +1,691 @@
+{
+  "synth/perlin:perlin": {
+    "key": "synth/perlin:perlin",
+    "source": "sources/synth/perlin/perlin.glsl",
+    "raw_bytes": 10882,
+    "raw_sha256": "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318",
+    "normalized_bytes": 4875,
+    "normalized_sha256": "88cb30dfb53c75f2d1bf51e9f9b865dca48ffb528e6ff2f77dec224dab309f64",
+    "defines": {
+      "DIMENSIONS": 2
+    },
+    "function_count": 13,
+    "function_tuple_sha256": "3dbb088e9f6a0ae35d25a3ae197008f62bc7932f3a31697f2ce3fdb05c3e1abc",
+    "whole_sha256": "a47c9ae9ef983c68c6c867296aaa33401841e5a089dddf9842630c6453e775bc",
+    "interface_sha256": "b8ff41d2d2259908c8efa422227f27b89469110330908e8eb34410319e878066",
+    "function_profiles": [
+      [
+        45,
+        "domainWarp2D",
+        5,
+        "f9e7c4d7c2c4de06e2a4d5633ec59e23808f335b3e5abcfaf59c962729738aa8",
+        "vec2",
+        [
+          [
+            40,
+            "st",
+            "vec2",
+            "in"
+          ],
+          [
+            41,
+            "timeAngle",
+            "float",
+            "in"
+          ],
+          [
+            42,
+            "iterations",
+            "int",
+            "in"
+          ],
+          [
+            43,
+            "wScale",
+            "float",
+            "in"
+          ],
+          [
+            44,
+            "wIntensity",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        46,
+        "fbm2D",
+        9,
+        "2f890795041283dde89c53ed8334c997e6ebf119bd2236a4983afa6c66fd5310",
+        "float",
+        [
+          [
+            34,
+            "st",
+            "vec2",
+            "in"
+          ],
+          [
+            35,
+            "timeAngle",
+            "float",
+            "in"
+          ],
+          [
+            36,
+            "channelOffset",
+            "float",
+            "in"
+          ],
+          [
+            37,
+            "ridgedMode",
+            "int",
+            "in"
+          ]
+        ]
+      ],
+      [
+        47,
+        "grad3",
+        5,
+        "48162747c5d070e972a2dee3df1ae1c001995236a9648d77b787c2c6e07a435c",
+        "vec3",
+        [
+          [
+            21,
+            "p",
+            "vec3",
+            "in"
+          ]
+        ]
+      ],
+      [
+        48,
+        "grid2D",
+        5,
+        "30fccdaef86baa365b731f9de35bfb9c9f53721ba6d1e5dc68e74cf91b2236f6",
+        "float",
+        [
+          [
+            27,
+            "st",
+            "vec2",
+            "in"
+          ],
+          [
+            28,
+            "cell",
+            "vec2",
+            "in"
+          ],
+          [
+            29,
+            "timeAngle",
+            "float",
+            "in"
+          ],
+          [
+            30,
+            "channelOffset",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        49,
+        "hash3",
+        11,
+        "3c3253eaa535ee944476a6c5d60bcb8e66212482d3e4b5af44db96d0e1dfcc50",
+        "float",
+        [
+          [
+            20,
+            "p",
+            "vec3",
+            "in"
+          ]
+        ]
+      ],
+      [
+        50,
+        "main",
+        18,
+        "0300043e560e175726163684db9147e10b360e877cfea37142d493791497ca51",
+        "void",
+        []
+      ],
+      [
+        51,
+        "noise2D",
+        10,
+        "624b6214bb96258a3265def2175abdc4af936cab91b35f75e01de7e95544305f",
+        "float",
+        [
+          [
+            31,
+            "st",
+            "vec2",
+            "in"
+          ],
+          [
+            32,
+            "timeAngle",
+            "float",
+            "in"
+          ],
+          [
+            33,
+            "channelOffset",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        52,
+        "pcg",
+        9,
+        "fecf48d19ec384fcd8c08744248678a07e036f16432f91be323187705a6677f6",
+        "uvec3",
+        [
+          [
+            18,
+            "v",
+            "uvec3",
+            "in"
+          ]
+        ]
+      ],
+      [
+        53,
+        "prng",
+        4,
+        "ef1579f42f285c649c1a21f6984300aa88c1e7ee95722ea50de966758eb67925",
+        "vec3",
+        [
+          [
+            19,
+            "p",
+            "vec3",
+            "in"
+          ]
+        ]
+      ],
+      [
+        54,
+        "quintic",
+        1,
+        "bfc8ec26a46cd71b306b55a4bd622d84a56c50b07530c023f587a247f0c1c1b0",
+        "float",
+        [
+          [
+            22,
+            "t",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        55,
+        "smoothlerp",
+        1,
+        "c05ef6e0e17d4d3616c4a2e6dc48a82e0f1c935a5bf0862edcd2333680c1e728",
+        "float",
+        [
+          [
+            23,
+            "x",
+            "float",
+            "in"
+          ],
+          [
+            24,
+            "a",
+            "float",
+            "in"
+          ],
+          [
+            25,
+            "b",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        56,
+        "warpNoise2D",
+        1,
+        "fb250833e4a1592e85e756000f446a653ee2bfd83ef5e83590389510c06debcc",
+        "float",
+        [
+          [
+            38,
+            "p",
+            "vec2",
+            "in"
+          ],
+          [
+            39,
+            "timeAngle",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        57,
+        "wrapZ",
+        1,
+        "8a73f25c6994addc3113a379c1ace5bac300cf2d2446b7653d4a4ef468c31edd",
+        "float",
+        [
+          [
+            26,
+            "z",
+            "float",
+            "in"
+          ]
+        ]
+      ]
+    ],
+    "bindings": [
+      "resolution:vec2@1",
+      "tileOffset:vec2@2",
+      "fullResolution:vec2@3",
+      "aspect:float@4",
+      "time:float@5",
+      "scale:float@6",
+      "seed:int@7",
+      "octaves:int@8",
+      "colorMode:int@9",
+      "ridges:int@10",
+      "warpIterations:int@11",
+      "warpScale:float@12",
+      "warpIntensity:float@13",
+      "speed:float@14",
+      "fragColor:vec4@15/out"
+    ],
+    "resources": {
+      "uniforms": [
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "aspect",
+        "time",
+        "scale",
+        "seed",
+        "octaves",
+        "colorMode",
+        "ridges",
+        "warpIterations",
+        "warpScale",
+        "warpIntensity",
+        "speed"
+      ],
+      "samplers": [],
+      "outputs": [
+        "fragColor"
+      ],
+      "uses_texture": false,
+      "uses_derivatives": false
+    },
+    "loop_proof": {
+      "loop_count": 2,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 8,
+      "entrypoint_charge": 28,
+      "call_graph_acyclic": true
+    },
+    "validator": "synth/perlin:perlin:73:18: unsupported binary operator ^",
+    "emitter": "synth/perlin:perlin:73:18: unsupported binary operator ^",
+    "scalar_uint_xor_sites": [
+      {
+        "owner_id": 49,
+        "owner": "hash3",
+        "owner_reachable": false,
+        "path": [
+          10,
+          "e0",
+          0,
+          0,
+          0
+        ],
+        "span": "73:18-73:33",
+        "sha256": "31049e8d38c4a6d26d051659ccd435fb7715906fb861440b7904429f3514495c",
+        "left_sha256": "f51b3a1264df7050a8528a5094da6d16c464978d1cb5c8b680461c9173d195cc",
+        "right_sha256": "5387f564b5e3d096fd99fe10781613d0adab40bc86ebb50a00b79725118f7f08",
+        "parent_kind": "construct",
+        "parent_type": "float",
+        "parent_child_index": 0,
+        "parent_span": "73:12-73:34",
+        "parent_sha256": "98f5cc12b9b7d44fefc28337f7d4a2d605eb455d2b36f39f3e80296114e57e2b"
+      },
+      {
+        "owner_id": 49,
+        "owner": "hash3",
+        "owner_reachable": false,
+        "path": [
+          10,
+          "e0",
+          0,
+          0,
+          0,
+          0
+        ],
+        "span": "73:18-73:27",
+        "sha256": "f51b3a1264df7050a8528a5094da6d16c464978d1cb5c8b680461c9173d195cc",
+        "left_sha256": "7a2954d83ebe2be4dfd2ca31558438ff5423668aa4bb593b349b489b7fc92023",
+        "right_sha256": "d15d2568d9165294874cd3c76406e368a48b31c6834d2949d91f7ac4845a81cc",
+        "parent_kind": "binary",
+        "parent_type": "uint",
+        "parent_child_index": 0,
+        "parent_span": "73:18-73:33",
+        "parent_sha256": "31049e8d38c4a6d26d051659ccd435fb7715906fb861440b7904429f3514495c"
+      }
+    ],
+    "reachable_function_ids": [
+      45,
+      46,
+      48,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56
+    ],
+    "hash3_id": 49,
+    "xor_bypass_later_blocker": null,
+    "xor_bypass_cpp_bytes": 18631,
+    "xor_bypass_cpp_sha256": "583e3b1b74784a4fb1f8e57350b8da7bc1ae4997a2f1a8fee4c98e686c732b7b"
+  },
+  "mixer/focusBlur:focusBlur": {
+    "key": "mixer/focusBlur:focusBlur",
+    "source": "sources/mixer/focusBlur/focusBlur.glsl",
+    "raw_bytes": 2268,
+    "raw_sha256": "dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1",
+    "normalized_bytes": 1685,
+    "normalized_sha256": "8b3cfb07882d0e409f617b2f86b02fa54cd36db213a60881370306306306be9f",
+    "defines": {},
+    "function_count": 4,
+    "function_tuple_sha256": "95428219c60cd14910f90e572857773e22818bfaf17436f6a249a10b4364c6e3",
+    "whole_sha256": "96468ba160d253f7d064c2caccd9db686d772a2af94d13ee836996dc488e037b",
+    "interface_sha256": "3158dcf83a1d13f84a2d8f3d374d464230ff24b1ed812603cc02fbc96e56be96",
+    "function_profiles": [
+      [
+        16,
+        "applyFocusBlur",
+        7,
+        "fd9a2496e322b3b035258d1532ac4dd37c79f778a5c53c55a1231cfad24e00bb",
+        "vec4",
+        [
+          [
+            13,
+            "sceneTex",
+            "sampler2D",
+            "in"
+          ],
+          [
+            14,
+            "depthTex",
+            "sampler2D",
+            "in"
+          ],
+          [
+            15,
+            "uv",
+            "vec2",
+            "in"
+          ]
+        ]
+      ],
+      [
+        17,
+        "computeBlurFactor",
+        3,
+        "f9163a2eef5b3b22bce4cced05c63e7d9bdd5ae9cf498d37fa7c17c23ade370d",
+        "float",
+        [
+          [
+            12,
+            "depth",
+            "float",
+            "in"
+          ]
+        ]
+      ],
+      [
+        18,
+        "getLuminosity",
+        1,
+        "13fa1f0d9246c2fe435d29379191eb807b78d563fd187470fa1bf2ae9b2ff2ee",
+        "float",
+        [
+          [
+            11,
+            "color",
+            "vec3",
+            "in"
+          ]
+        ]
+      ],
+      [
+        19,
+        "main",
+        6,
+        "6189e2d9ac81f58c282bc6c8247fb26a31d21bd9890a35274d0b16042c560440",
+        "void",
+        []
+      ]
+    ],
+    "bindings": [
+      "inputTex:sampler2D@1/S1",
+      "tex:sampler2D@2/S2",
+      "resolution:vec2@3",
+      "tileOffset:vec2@4",
+      "fullResolution:vec2@5",
+      "focalDistance:float@6",
+      "aperture:float@7",
+      "sampleBias:float@8",
+      "depthSource:int@9",
+      "fragColor:vec4@10/out"
+    ],
+    "resources": {
+      "uniforms": [
+        "inputTex",
+        "tex",
+        "resolution",
+        "tileOffset",
+        "fullResolution",
+        "focalDistance",
+        "aperture",
+        "sampleBias",
+        "depthSource"
+      ],
+      "samplers": [
+        "inputTex",
+        "tex"
+      ],
+      "outputs": [
+        "fragColor"
+      ],
+      "uses_texture": true,
+      "uses_derivatives": false
+    },
+    "loop_proof": {
+      "loop_count": 1,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 1,
+      "max_lexical_product": 64,
+      "entrypoint_charge": 64,
+      "call_graph_acyclic": true
+    },
+    "validator": "pass",
+    "emitter": "mixer/focusBlur:focusBlur:1:1: unsupported typed type sampler2D",
+    "apply_focus_blur": {
+      "id": 16,
+      "hash": "fd9a2496e322b3b035258d1532ac4dd37c79f778a5c53c55a1231cfad24e00bb",
+      "parameters": [
+        [
+          13,
+          "sceneTex",
+          "sampler2D",
+          "in",
+          "29:21-29:39"
+        ],
+        [
+          14,
+          "depthTex",
+          "sampler2D",
+          "in",
+          "29:41-29:59"
+        ],
+        [
+          15,
+          "uv",
+          "vec2",
+          "in",
+          "29:61-29:68"
+        ]
+      ],
+      "calls": [
+        {
+          "owner_id": 19,
+          "owner": "main",
+          "path": [
+            3,
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "57:17-57:50",
+          "sha256": "025a7dce21804b69158b70710ffd975af31a0dc7569313d3a0ed29692722d2c8",
+          "argument_symbols": [
+            [
+              2,
+              "tex"
+            ],
+            [
+              1,
+              "inputTex"
+            ],
+            [
+              33,
+              "uv"
+            ]
+          ]
+        },
+        {
+          "owner_id": 19,
+          "owner": "main",
+          "path": [
+            3,
+            "s1",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "59:17-59:50",
+          "sha256": "de171d5c1c8f406685b0ecd9552474ac936c22b8070953b236b9e828cd57c394",
+          "argument_symbols": [
+            [
+              1,
+              "inputTex"
+            ],
+            [
+              2,
+              "tex"
+            ],
+            [
+              33,
+              "uv"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "filter/rotate:rot": {
+    "key": "filter/rotate:rot",
+    "source": "sources/filter/rotate/rot.glsl",
+    "raw_bytes": 1197,
+    "raw_sha256": "c23e8462e8240f25a715fa3eb05e567269c8d410d27943ba346ebccdd0de1f8f",
+    "normalized_bytes": 964,
+    "normalized_sha256": "e0e2b723289b08cbfcd6f1fc0a8481869e674de3cfedc0ec5df6d96f64748bb5",
+    "defines": {},
+    "function_count": 2,
+    "function_tuple_sha256": "f5b9f47764c12f05a55925aaca0cf99027ef0b78f67d0122df657f068ba23d56",
+    "whole_sha256": "3e4312d4c94a8d8b207aa351f8974f417cb5acd63d45a70b1f4a8e606ed2e1b6",
+    "interface_sha256": "bfdeb36f89cb3dd84ec4339564e5d830f0f18c9f011d4b563f3cca45973e28df",
+    "function_profiles": [
+      [
+        9,
+        "main",
+        13,
+        "0b677d94fa375cae65644c2daedcfb15572e54ecf496b6904d3256a62456fbc4",
+        "void",
+        []
+      ],
+      [
+        10,
+        "rotate2D",
+        3,
+        "f88f6345a607d84afbe28d4859e3afd70f0c75c0c0e51e4de42cc7f1e2051006",
+        "mat2",
+        [
+          [
+            8,
+            "angle",
+            "float",
+            "in"
+          ]
+        ]
+      ]
+    ],
+    "bindings": [
+      "inputTex:sampler2D@1/S1",
+      "rotation:float@2",
+      "wrap:int@3",
+      "speed:int@4",
+      "time:float@5",
+      "fragColor:vec4@6/out"
+    ],
+    "resources": {
+      "uniforms": [
+        "inputTex",
+        "rotation",
+        "wrap",
+        "speed",
+        "time"
+      ],
+      "samplers": [
+        "inputTex"
+      ],
+      "outputs": [
+        "fragColor"
+      ],
+      "uses_texture": true,
+      "uses_derivatives": false
+    },
+    "loop_proof": {
+      "loop_count": 0,
+      "unproved_loop_count": 0,
+      "max_effective_depth": 0,
+      "max_lexical_product": 0,
+      "entrypoint_charge": 0,
+      "call_graph_acyclic": true
+    },
+    "validator": "filter/rotate:rot:14:1: unsupported matrix return type",
+    "emitter": "pass"
+  }
+}

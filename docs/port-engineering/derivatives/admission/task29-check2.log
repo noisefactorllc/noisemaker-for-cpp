@@ -1,0 +1,22 @@
+test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m14068[0m, in [35mtest_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"a873c537d3d8ffb872859389812ae7c1e68954c9fcd381334eca4998195f319f",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'a873c537d3d8ffb872859389812ae7c1e68954c9fcd381334eca4998195f319f' != '8211f7fd2986febeffcdcfa8e6e99d745018bda5eebd2f6e4480def37defdada'
+- a873c537d3d8ffb872859389812ae7c1e68954c9fcd381334eca4998195f319f
++ 8211f7fd2986febeffcdcfa8e6e99d745018bda5eebd2f6e4480def37defdada
+[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 0.040s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

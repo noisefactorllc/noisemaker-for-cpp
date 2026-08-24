@@ -1,0 +1,319 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.gate-chain.v2",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "unported_count": 81,
+  "keys_probed": 3,
+  "max_depth": 8,
+  "rows": [
+    {
+      "key": "classicNoisedeck/cellRefract:cellRefract",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:69:5: unsupported typed expression index",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:68:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:69:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:68:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:68:10: unsupported fixed-nine array declaration",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "array_global_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/cellRefract:cellRefract:68:10: unsupported fixed-nine array declaration",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/kaleido:kaleido",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/kaleido:kaleido:33:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/kaleido:kaleido:33:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:546:5: unsupported typed expression index",
+            "emitter": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:546:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:155:21: unsupported builtin floatBitsToUint",
+            "emitter": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:155:21: unsupported builtin floatBitsToUint",
+          "classified_gate": "builtin:floatBitsToUint"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:floatBitsToUint"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:158:10: unsupported binary operator ^",
+            "emitter": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:158:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:floatBitsToUint",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "array_global_admission",
+        "index_expression_admission",
+        "builtin:floatBitsToUint",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/kaleido:kaleido:545:10: unsupported fixed-nine array declaration",
+      "terminal_gate": null
+    },
+    {
+      "key": "synth/shape:shape",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/shape:shape:31:1: unsupported global declaration",
+            "emitter": "synth/shape:shape:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/shape:shape:31:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/shape:shape:31:1: unsupported global declaration",
+            "emitter": "synth/shape:shape:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "synth/shape:shape:31:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/shape:shape:97:10: unsupported binary operator ^",
+            "emitter": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/shape:shape:97:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+      "terminal_gate": null
+    }
+  ]
+}

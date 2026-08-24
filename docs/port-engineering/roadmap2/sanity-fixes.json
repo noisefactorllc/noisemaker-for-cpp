@@ -1,0 +1,1148 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.gate-chain.v2",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "unported_count": 81,
+  "keys_probed": 16,
+  "max_depth": 8,
+  "rows": [
+    {
+      "key": "classicNoisedeck/cellRefract:cellRefract",
+      "final_status": "PROBE_ERROR",
+      "error": "AssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'",
+      "traceback": "Traceback (most recent call last):\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1308, in <module>\n    rows.append(walk_chain(key))\n                ~~~~~~~~~~^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1247, in walk_chain\n    result, pre, post = run_with_patches(typed, entry, active)\n                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1182, in run_with_patches\n    patched_src = _apply_subs(_ORIG_VALIDATE_SRC, v_subs)\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1069, in _apply_subs\n    raise AssertionError(f\"needle not uniquely found (count={count}): {needle[:80]!r}\")\nAssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'\n"
+    },
+    {
+      "key": "classicNoisedeck/kaleido:kaleido",
+      "final_status": "PROBE_ERROR",
+      "error": "AssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'",
+      "traceback": "Traceback (most recent call last):\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1308, in <module>\n    rows.append(walk_chain(key))\n                ~~~~~~~~~~^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1247, in walk_chain\n    result, pre, post = run_with_patches(typed, entry, active)\n                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1182, in run_with_patches\n    patched_src = _apply_subs(_ORIG_VALIDATE_SRC, v_subs)\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1069, in _apply_subs\n    raise AssertionError(f\"needle not uniquely found (count={count}): {needle[:80]!r}\")\nAssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'\n"
+    },
+    {
+      "key": "synth/shape:shape",
+      "final_status": "PROBE_ERROR",
+      "error": "AssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'",
+      "traceback": "Traceback (most recent call last):\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1308, in <module>\n    rows.append(walk_chain(key))\n                ~~~~~~~~~~^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1247, in walk_chain\n    result, pre, post = run_with_patches(typed, entry, active)\n                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1182, in run_with_patches\n    patched_src = _apply_subs(_ORIG_VALIDATE_SRC, v_subs)\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1069, in _apply_subs\n    raise AssertionError(f\"needle not uniquely found (count={count}): {needle[:80]!r}\")\nAssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'\n"
+    },
+    {
+      "key": "classicNoisedeck/effects:effects",
+      "final_status": "PROBE_ERROR",
+      "error": "AssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'",
+      "traceback": "Traceback (most recent call last):\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1308, in <module>\n    rows.append(walk_chain(key))\n                ~~~~~~~~~~^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1247, in walk_chain\n    result, pre, post = run_with_patches(typed, entry, active)\n                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1182, in run_with_patches\n    patched_src = _apply_subs(_ORIG_VALIDATE_SRC, v_subs)\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1069, in _apply_subs\n    raise AssertionError(f\"needle not uniquely found (count={count}): {needle[:80]!r}\")\nAssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'\n"
+    },
+    {
+      "key": "synth/noise:noise",
+      "final_status": "PROBE_ERROR",
+      "error": "AssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'",
+      "traceback": "Traceback (most recent call last):\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1308, in <module>\n    rows.append(walk_chain(key))\n                ~~~~~~~~~~^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1247, in walk_chain\n    result, pre, post = run_with_patches(typed, entry, active)\n                        ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1182, in run_with_patches\n    patched_src = _apply_subs(_ORIG_VALIDATE_SRC, v_subs)\n  File \"/privatedocs/port-engineering/roadmap2/gate_chain_engine.py\", line 1069, in _apply_subs\n    raise AssertionError(f\"needle not uniquely found (count={count}): {needle[:80]!r}\")\nAssertionError: needle not uniquely found (count=0): '            if (value.kind == \"assign\" and value.children\\n                    an'\n"
+    },
+    {
+      "key": "classicNoisedeck/bitEffects:bitEffects",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported global initializer expression binary",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported source const global initializer",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported global initializer expression binary",
+          "classified_gate": "global_admission_shift"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "global_admission_shift",
+        "bitwise_and_admission",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+      "terminal_gate": null
+    },
+    {
+      "key": "synth/bitwise:bitwise",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+            "emitter": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+            "emitter": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+            "emitter": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "scalar_uint_xor_admission",
+        "bitwise_and_admission"
+      ],
+      "terminal_blocker": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/glyphMap:glyphMap",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/glyphMap:glyphMap:186:1: unsupported global declaration",
+            "emitter": "filter/glyphMap:glyphMap:186:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/glyphMap:glyphMap:186:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+            "emitter": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "filter/glyphMap:glyphMap:287:16: unsupported binary operator >>",
+            "emitter": "filter/glyphMap:glyphMap:287:16: unsupported binary operator >>",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/glyphMap:glyphMap:287:16: unsupported binary operator >>",
+          "classified_gate": "uvec_shift_by_vector"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "bitwise_and_admission",
+            "uvec_shift_by_vector"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "e34ffd5b8360c7fe579c4eefea17acc73717c9c4d571e04a210757aaa5aa2a73",
+            "cpp_bytes": 17637
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "bitwise_and_admission",
+        "uvec_shift_by_vector"
+      ]
+    },
+    {
+      "key": "filter/osd:osd",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/osd:osd:24:1: unsupported global declaration",
+            "emitter": "filter/osd:osd:24:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:24:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/osd:osd:24:1: unsupported typed type int[80]",
+            "emitter": "filter/osd:osd:59:16: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:24:1: unsupported typed type int[80]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/osd:osd:59:16: unsupported binary operator ^",
+            "emitter": "filter/osd:osd:59:16: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:59:16: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "filter/osd:osd:98:56: unsupported binary operator &",
+            "emitter": "filter/osd:osd:54:19: unsupported binary operator >>",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:98:56: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "filter/osd:osd:54:19: unsupported binary operator >>",
+            "emitter": "filter/osd:osd:54:19: unsupported binary operator >>",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:54:19: unsupported binary operator >>",
+          "classified_gate": "uvec_shift_by_vector"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission",
+            "uvec_shift_by_vector"
+          ],
+          "result": {
+            "validator": "filter/osd:osd:71:15: unsupported typed expression index",
+            "emitter": "filter/osd:osd:71:15: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/osd:osd:71:15: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission",
+            "uvec_shift_by_vector",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "19c614eedb40ed7b16a45488fb1157a8aa897ccb8419de27b3619ebe27a93a81",
+            "cpp_bytes": 12745
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "array_global_admission",
+        "scalar_uint_xor_admission",
+        "bitwise_and_admission",
+        "uvec_shift_by_vector",
+        "index_expression_admission"
+      ]
+    },
+    {
+      "key": "filter/spookyTicker:spookyTicker",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration",
+            "emitter": "filter/spookyTicker:spookyTicker:19:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:1:1: unsupported varying",
+            "emitter": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:1:1: unsupported varying",
+          "classified_gate": "varying_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "varying_admission"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+            "emitter": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "varying_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+            "emitter": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:48:9: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "varying_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:48:14: unsupported binary operator >>",
+            "emitter": "filter/spookyTicker:spookyTicker:48:14: unsupported binary operator >>",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:48:14: unsupported binary operator >>",
+          "classified_gate": "uvec_shift_by_vector"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "global_admission",
+            "varying_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "uvec_shift_by_vector"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:62:15: unsupported typed expression index",
+            "emitter": "filter/spookyTicker:spookyTicker:62:15: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:62:15: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "global_admission",
+            "varying_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "uvec_shift_by_vector",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/spookyTicker:spookyTicker:63:19: unsupported binary operator &",
+            "emitter": "filter/spookyTicker:spookyTicker:63:19: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/spookyTicker:spookyTicker:63:19: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 7,
+          "active_patches": [
+            "global_admission",
+            "varying_admission",
+            "array_global_admission",
+            "scalar_uint_xor_admission",
+            "uvec_shift_by_vector",
+            "index_expression_admission",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "filter/spookyTicker:spookyTicker:92:34: unmapped typed symbol v_texCoord",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/spookyTicker:spookyTicker:92:34: unmapped typed symbol v_texCoord",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "varying_admission",
+        "array_global_admission",
+        "scalar_uint_xor_admission",
+        "uvec_shift_by_vector",
+        "index_expression_admission",
+        "bitwise_and_admission"
+      ],
+      "terminal_blocker": "filter/spookyTicker:spookyTicker:92:34: unmapped typed symbol v_texCoord",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/dither:dither",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/dither:dither:521:5: unsupported counted-for program proof",
+            "emitter": "filter/dither:dither:521:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/dither:dither:521:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "filter/dither:dither:19:1: unsupported global declaration",
+            "emitter": "filter/dither:dither:19:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/dither:dither:19:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/dither:dither:41:1: unsupported typed type mat4",
+            "emitter": "filter/dither:dither:383:32: unsupported typed type vec3[15]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/dither:dither:41:1: unsupported typed type mat4",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+            "emitter": "filter/dither:dither:383:32: unsupported typed type vec3[15]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "matrix_type_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/dither:dither:521:5: unsupported typed statement for",
+            "emitter": "filter/dither:dither:383:32: unsupported typed type vec3[15]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/dither:dither:521:5: unsupported typed statement for",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "global_admission",
+        "matrix_type_admission",
+        "array_global_admission"
+      ],
+      "terminal_blocker": "filter/dither:dither:521:5: unsupported typed statement for",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/emboss:emboss",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/emboss:emboss:19:1: unsupported global declaration",
+            "emitter": "filter/emboss:emboss:19:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:19:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:28:5: unsupported typed expression index",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:28:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:22: unsupported builtin all",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:110:22: unsupported builtin all",
+          "classified_gate": "builtin:all"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:all"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+          "classified_gate": "bvec_type_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:all",
+            "bvec_type_admission"
+          ],
+          "result": {
+            "validator": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+            "emitter": "filter/emboss:emboss:27:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "PATCH_INSUFFICIENT",
+          "blocker_message": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+          "classified_gate": "bvec_type_admission"
+        }
+      ],
+      "final_status": "PATCH_INSUFFICIENT",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "array_global_admission",
+        "index_expression_admission",
+        "builtin:all",
+        "bvec_type_admission"
+      ],
+      "terminal_blocker": "filter/emboss:emboss:110:26: unsupported typed type bvec2",
+      "terminal_gate": "bvec_type_admission"
+    },
+    {
+      "key": "filter/lighting:lighting",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+            "emitter": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+          "classified_gate": "builtin:reflect"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "builtin:reflect"
+          ],
+          "result": {
+            "validator": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+            "emitter": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "builtin:reflect",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/lighting:lighting:41:5: unsupported typed expression index",
+            "emitter": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/lighting:lighting:41:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "builtin:reflect",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "builtin:reflect",
+        "array_global_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "filter/lighting:lighting:40:11: unsupported fixed-nine array declaration",
+      "terminal_gate": null
+    },
+    {
+      "key": "filter/median:median",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "filter/median:median:47:5: unsupported counted-for program proof",
+            "emitter": "filter/median:median:47:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/median:median:47:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+            "emitter": "filter/median:median:24:12: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "filter/median:median:50:13: unsupported typed expression index",
+            "emitter": "filter/median:median:24:12: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "filter/median:median:50:13: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "filter/median:median:56:13: unsupported typed expression post",
+            "emitter": "filter/median:median:24:12: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "filter/median:median:56:13: unsupported typed expression post",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "array_global_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "filter/median:median:56:13: unsupported typed expression post",
+      "terminal_gate": null
+    },
+    {
+      "key": "synth/remap:remap",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/remap:remap:5:1: unsupported uniform block",
+            "emitter": "synth/remap:remap:1:1: unsupported typed type vec4[267]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/remap:remap:5:1: unsupported uniform block",
+          "classified_gate": "uniform_block_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "uniform_block_admission"
+          ],
+          "result": {
+            "validator": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+            "emitter": "synth/remap:remap:1:1: unsupported typed type vec4[267]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "uniform_block_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "synth/remap:remap:27:12: unsupported typed expression index",
+            "emitter": "synth/remap:remap:27:12: unsupported typed expression index",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/remap:remap:27:12: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "uniform_block_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "8d465c5c7bbfdcb62d0985266984f9c56a36eadb133920af98a2fa1800e77551",
+            "cpp_bytes": 11880
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "uniform_block_admission",
+        "array_global_admission",
+        "index_expression_admission"
+      ]
+    },
+    {
+      "key": "synth/testPattern:testPattern",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof",
+            "emitter": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "synth/testPattern:testPattern:13:1: unsupported global declaration",
+            "emitter": "synth/testPattern:testPattern:13:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/testPattern:testPattern:13:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission"
+          ],
+          "result": {
+            "validator": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+            "emitter": "synth/testPattern:testPattern:110:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "synth/testPattern:testPattern:121:17: unsupported typed expression index",
+            "emitter": "synth/testPattern:testPattern:110:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/testPattern:testPattern:121:17: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "synth/testPattern:testPattern:171:20: unsupported builtin round",
+            "emitter": "synth/testPattern:testPattern:110:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/testPattern:testPattern:171:20: unsupported builtin round",
+          "classified_gate": "builtin:round"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "loop_proof_bypass",
+            "global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:round"
+          ],
+          "result": {
+            "validator": "synth/testPattern:testPattern:61:5: unsupported typed statement for",
+            "emitter": "synth/testPattern:testPattern:110:10: unsupported fixed-nine array declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "synth/testPattern:testPattern:61:5: unsupported typed statement for",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "global_admission",
+        "array_global_admission",
+        "index_expression_admission",
+        "builtin:round"
+      ],
+      "terminal_blocker": "synth/testPattern:testPattern:61:5: unsupported typed statement for",
+      "terminal_gate": null
+    }
+  ]
+}

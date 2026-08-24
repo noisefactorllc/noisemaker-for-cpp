@@ -1,0 +1,598 @@
+{
+ "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+ "generated_against": "live tools/glslcpp tree (2026-08-13), typed_slice.json count 154",
+ "loop_proof_cluster_note": "2 of the census's 20 remaining loop-proof-cluster members (filter/oilPaint:oilFlatten, filter/smooth:smoothBlend) do NOT actually terminate on the loop-proof gate on the CURRENT live tree -- confirmed directly against the real top-level tools/glslcpp (not the probe copy). oilFlatten's real terminal blocker is 'unsupported builtin ceil' at 19:27 (before the loop is ever reached); smoothBlend's is 'unsupported global declaration' at 17:1. Both sit earlier in validate_capabilities' fixed walk order than the loop-proof checks... no wait, loop-proof checks run FIRST architecturally, meaning these two programs' loops themselves now pass the loop-proof audit clean on the live tree (unlike census, which recorded them as loop-proof rejections). Likely explanation: loop_proof.py's ACCEPTED set was widened for the zoomBlur/nmReindexStats landing (2026-08-13, after the census's 20260812T225121Z snapshot), incidentally letting other programs' loops through too. frontier-census.json is accordingly STALE for at least these two programs and should be re-run before being treated as authoritative again for the loop-proof cluster.",
+ "method": "Real parse_program/analyze_program/validate_capabilities/render_typed_cpp, run in-process against a byte-identical `cp -R` copy of tools/glslcpp (verified via `diff -rq`, see probe_tree/). Downstream chains traced by re-running validate_capabilities against copies of generate_typed_slice.py with a targeted, single-purpose provisional admission applied at the exact raise site of one already-known blocker (see build_relaxed_all.py, build_relaxed_variants.py, build_extra_hop_variants.py for every patch, each asserted to match exactly one occurrence in the unmodified source), never at the real tools/glslcpp/generate_typed_slice.py.",
+ "multi_program_adjacent_blockers": {
+  "out_or_inout_parameter_direction": {
+   "count": 3,
+   "detail": {
+    "filter/lightLeak:lightLeak": "out, function voronoiCell:60, 2nd blocker behind loop-proof",
+    "filter/watercolor:wcSimplify": "inout, function sort2:10, terminal blocker (the operator's named target)",
+    "synth/mandelbrot:mandelbrot": "out, functions getPOI/mandelbrot_df64/transformCoords_df64 (df64 double-float emulation helpers), 2nd blocker behind loop-proof; a 3rd blocker (unsupported builtin log) sits behind it"
+   },
+   "gates_programs": [
+    "filter/lightLeak:lightLeak",
+    "filter/watercolor:wcSimplify",
+    "synth/mandelbrot:mandelbrot"
+   ],
+   "method": "Corpus-wide scan of all 58 currently-unported programs (scan_out_texturelod.py), isolating parameter-direction from every other relaxation (generate_typed_slice_relaxed_no_paramdir.py, 12/13 patches, param_direction withheld) so 'unsupported parameter direction' can only surface if it is genuinely the remaining blocker once everything else characterized so far is provisionally admitted."
+  },
+  "textureLod": {
+   "count": 1,
+   "detail": {
+    "filter/parallax:parallax": "2nd (and confirmed FINAL) blocker behind loop-proof, at main:24. Verified clean: once loop-proof + textureLod are both admitted (generate_typed_slice_relaxed_all_plus_texturelod.py), the validator fully passes with no further hop."
+   },
+   "gates_programs": [
+    "filter/parallax:parallax"
+   ],
+   "method": "Same corpus-wide scan; textureLod is never relaxed by any variant, so it surfaces naturally wherever it is the true next construct."
+  }
+ },
+ "other_singletons_found": {
+  "classicNoisedeck/moodscape:moodscape": {
+   "cost": "n/a -- doubly dead, confirms roadmap's exclusion",
+   "downstream_chain": [
+    "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index"
+   ],
+   "note": "Matrix cluster's dead-code exclusion (1 of 3 the roadmap already names). RE-VERIFIED here, one level deeper than the roadmap: not only is the mat3 fwdA declaration itself unreachable, but the SECOND blocker behind it ('unsupported typed expression index' at 137:13, inside rgb2hsv) is ALSO dead -- rgb2hsv is absent from the main()-reachable function set (only hsv2rgb, the reverse conversion, is reachable). Confirmed by function-name reachability rather than by reading the source at that line/column, since GLSL #if-conditional line renumbering during preprocessing makes direct line/column cross-referencing against the raw corpus .glsl unreliable (could not independently confirm the exact token at 137:13 in the ORIGINAL source text; relied on the AST's own reachability data instead, which does not depend on line numbers).",
+   "terminal_blocker": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration"
+  },
+  "classicNoisedeck/shapeMixer:shapeMixer": {
+   "caveat": "chain not walked past refract; could not determine if a further blocker (e.g. matrix indexing, which 6 other matrix-cluster programs hit) also applies to shapeMixer",
+   "cost": "not independently costed in depth; matrix cluster's own readiness is documented as 'not clean' in REMAINING-WORK-ROADMAP.md and this finding does not change that verdict, only corrects which builtin shapeMixer specifically needs",
+   "downstream_chain": [
+    "classicNoisedeck/shapeMixer:shapeMixer:675:17: unsupported builtin refract"
+   ],
+   "mechanism": "mat3 admission (shared, matrix-cluster Slice B) then a NEW refract() node-identity admission (same family as reflect/any/round, zero existing admission path).",
+   "note": "Part of the matrix-dispatch cluster (shares the mat3 'fwdA' declaration mechanism with 5 other programs) but its OWN downstream blocker is unique: refract, not reflect as an earlier roadmap note speculated. CORRECTION to REMAINING-WORK-ROADMAP.md's matrix-census paragraph, which says 'shapeMixer hits reflect' -- direct re-probe on the live tree shows 'unsupported builtin refract' at 675:17, inside blend() (confirmed reachable from main via the same call-graph BFS: 'blend' and 'linear_srgb_from_oklab' (the fwdA/invA consumer) are both in the reachable-function set).",
+   "terminal_blocker": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration"
+  },
+  "filter/grime:grime": {
+   "cost": "cheap-ish per program once the vec2-varying admission itself is built; grime's own downstream (floatBitsToUint at 38:25) still needs its own per-node authorization though.",
+   "downstream_chain": [
+    "filter/grime:grime:38:25: unsupported builtin floatBitsToUint"
+   ],
+   "mechanism": "vec2 varying (v_texCoord-shaped) admission gates 4 programs total (grime + 3 downstream), a smaller but structurally identical situation to the out/textureLod asks.",
+   "note": "Cluster 'Varying admission (v_texCoord): 1 terminal + 3 downstream' in frontier-census.json. grime is the terminal (own row); filter/spookyTicker:spookyTicker, filter/texture:texture, and filter/wobble:wobble each independently need the SAME vec2 varying admission as their own downstream (2nd) blocker, behind an unrelated terminal blocker each (confirmed: all three show 'unsupported varying' as their downstream_after_relax in probe_results.json).",
+   "terminal_blocker": "filter/grime:grime:1:1: unsupported varying"
+  },
+  "filter/invert:inv": {
+   "cost": "free",
+   "note": "Zero-blocker, administrative only (matches roadmap: 'free today'). Confirmed: VALIDATOR-PASS with NO relaxation applied at all.",
+   "terminal_blocker": null
+  },
+  "filter/posterize:posterize": {
+   "cost": "already well-characterized by REMAINING-WORK-ROADMAP.md; not re-costed here",
+   "note": "Cluster 'Builtin admission: round' (count 1). Re-confirmed unchanged on the live tree: round is not relaxed by this pass's patches (deliberately, to avoid touching the real per-node round-authentication machinery), so posterize's terminal blocker is identical before and after. Matches the roadmap's own detailed round/Math.round-semantics finding; not re-derived here.",
+   "terminal_blocker": "filter/posterize:posterize:60:34: unsupported builtin round"
+  },
+  "filter/waves:waves": {
+   "cost": "not independently costed in depth; flagged as a correction to the roadmap's 'any admission unlocks waves' framing -- it does not, alone",
+   "downstream_chain": [
+    "filter/waves:waves:41:13: unsupported typed type bvec2"
+   ],
+   "note": "Cluster 'Builtin admission: any' (count 1), already characterized by the roadmap's 'Next targets' table as needing a new node-identity admission with zero existing path. This pass adds one refinement: 'any' admission alone is NOT sufficient -- once admitted, waves hits a SECOND blocker, 'unsupported typed type bvec2' at 41:13 (the notEqual(tileOffset, vec2(0.0)) intermediate). bvec2 is currently admitted only for one exact authenticated node elsewhere (extrude-bvec2-relational-reduction-v1); waves would need its own.",
+   "terminal_blocker": "filter/waves:waves:41:9: unsupported builtin any"
+  },
+  "filter/wormhole:deposit": {
+   "cost": "already done -- not part of the open singleton tail",
+   "note": "STRUCTURALLY INELIGIBLE for the typed-kernel path (varying vColor, not vec2 -- confirmed unaffected by this pass's vec2-only varying relaxation). NOT an open singleton any more: independently confirmed already resolved via a separate scatter-pass mechanism outside the typed generator entirely -- include/noisemaker/effects/scatter/wormhole.hpp and tests/test_scatter_wormhole.cpp both exist in the live tree, matching REMAINING-WORK-ROADMAP.md's 'PORTED, bit-exact' closeout.",
+   "portable_via_other_door": "scatter-pass adapter (landed)",
+   "portable_via_typed_kernel": false,
+   "terminal_blocker": "filter/wormhole:deposit:1:1: unsupported varying"
+  },
+  "synth/shape:shape": {
+   "cost": "not independently costed in depth here (outside the operator's named 7); flagged as a genuine 2-hop singleton for future triage",
+   "downstream_chain": [
+    "synth/shape:shape:459:5: write to source const global"
+   ],
+   "mechanism": "(1) admit a non-const, non-uniform/output mutable float global; (2) 'write to source const global' at 459:5 -- a SEPARATE guard (distinct from the declaration-admission gate) that fires when code writes to something the generator's source-global-literal machinery has classified as effectively const. Two real gaps, not one.",
+   "note": "Genuinely unique cluster ('Global declaration: non-const mutable global scratch (float)', count 1).",
+   "terminal_blocker": "synth/shape:shape:31:1: unsupported global declaration"
+  },
+  "synth/solid:solid": {
+   "cost": "free",
+   "note": "Zero-blocker, administrative only (matches roadmap: 'free today'). Confirmed: VALIDATOR-PASS with NO relaxation applied at all.",
+   "terminal_blocker": null
+  }
+ },
+ "primary_targets": {
+  "classicNoisedeck/caustic:caustic": {
+   "cost": "cheap -- definitively settled dead, three independent analyses agree",
+   "downstream_chain": [
+    "n/a -- dead code; the 'exact Caustic word hash profile carrier required' check is a structural authentication gate, not a rejected construct, and is unaffected by any construct-level relaxation (confirmed unchanged before/after the 13-patch mega-relax)."
+   ],
+   "mechanism": "authenticate_caustic_word_hash() already implemented per the roadmap; remaining work is slice-row wiring only, to formally authenticate the carrier as dead-but-present.",
+   "portable_via_typed_kernel": true,
+   "reachability_method": "THIRD independent verification (after the two cited in REMAINING-WORK-ROADMAP.md: caustic_word_hash_profile.py's comment and an independent BFS+manual #if trace). This pass's own call-graph BFS from main() at the authorized NOISE_TYPE=10 define confirms `constant`, `constantOffset`, and `randomFromLatticeWithOffset` (which contains the floatBitsToUint/XOR word-hash carrier at lines 218-236) are ABSENT from the reachable-function set. Traced to source: `value()`'s NOISE_TYPE dispatcher (#if/#elif chain) calls `simplexValue` under `#elif NOISE_TYPE == 10`; the ONLY call site for constant/constantOffset sits in the final `#else` branch (NOISE_TYPE 1 or 2), which is not taken. constant/constantOffset/randomFromLatticeWithOffset are defined outside any #if guard so they DO survive preprocessing into the typed IR (which is why validate_capabilities even sees the floatBitsToUint/XOR calls and needs the profile-carrier mechanism at all) -- they are dead by ordinary call-graph unreachability, not preprocessor elimination.",
+   "reachable": false,
+   "terminal_blocker": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required"
+  },
+  "classicNoisedeck/glitch:glitch": {
+   "cost": "moderate -- 3 admission points but all one mechanism family, no surprises beyond what the roadmap already predicted",
+   "downstream_chain": [
+    "1. unsupported typed type mat4 at 76:10 (function bicubic) -- TERMINAL.",
+    "2. [mat4 type admitted] -> unsupported matrix constructor at 76:14 (only the mat2 4-float constructor is supported today).",
+    "3. [+ mat3/mat4 constructors admitted] -> unsupported matrix binary expression (mat*mat / mat*vec4 multiply restricted to mat2*vec2 today).",
+    "4. [+ any mat*mat/mat*vec product admitted] -> VALIDATOR FULLY PASSES, no further hop (verified via generate_typed_slice_relaxed_all_plus_matctor.py).",
+    "EMITTER (unpatched, separate module): still independently rejects mat4 at its own type-check (1:1, 'unsupported typed type mat4') -- confirms emitter widening is required in lockstep, exactly matching the roadmap's already-documented Slice C plan."
+   ],
+   "enclosing_function": "bicubic",
+   "mechanism": "Matrix-dispatch cluster's Slice C: widen mat3-style admission to mat4 (type + 16-float constructor + mat*mat/mat*vec4 product) in BOTH validator and emitter, preserving double-accumulation narrowing (the Curl-tanh-class hazard the roadmap already flags for the chained T*Q*S product). No NEW capability family in the frozen-44 sense -- widens the existing matrix mechanism the same way mat3 already gets node-identity admission for the 5 other matrix-cluster programs.",
+   "portable_via_typed_kernel": true,
+   "reachable": true,
+   "terminal_blocker": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4"
+  },
+  "filter/lighting:lighting": {
+   "cost": "cheap-ish -- one new node-identity admission plus one new profile entry reusing an existing, already-shipped mechanism; no unknown-architecture risk",
+   "downstream_chain": [
+    "1. unsupported builtin reflect at 93:26 (applyReflection) -- TERMINAL.",
+    "2. [reflect admitted] -> unsupported typed type float[9] at 40:11 -- a LOCAL Sobel-X 9-tap convolution kernel (`float sobel_x[9]`) inside calculateNormal."
+   ],
+   "enclosing_function": "applyReflection",
+   "mechanism": "(1) reflect builtin admission via node-identity (same pattern as round/tanh/any -- roadmap already calls this 'likely cheap... but unbuilt'). (2) The float[9] blocker is NOT a new capability: filter/sobel:sobel is ALREADY TYPED using the identical 'fixed-nine' mechanism for its own sobel_x/sobel_y kernels (SOBEL_KEY = 'filter/sobel:sobel' has a landed profile in fixed_nine_table_proof.py). lighting needs its OWN new profile entry in that same, already-battle-tested mechanism class -- bespoke wiring, not new architecture.",
+   "portable_via_typed_kernel": true,
+   "reachable": true,
+   "terminal_blocker": "filter/lighting:lighting:93:26: unsupported builtin reflect"
+  },
+  "filter/watercolor:wcSimplify": {
+   "cost": "moderate -- two real capability gaps, one of them (bare void-call statement lowering) unprecedented in the emitter",
+   "downstream_chain": [
+    "VALIDATOR: passes fully once inout admitted (validate_capabilities has no further objection).",
+    "EMITTER (emit_typed_cpp.py, separate module, unpatched): 'only typed assignments are admitted' at 37:5 -- a previously undocumented second-stage blocker. sort2(...) is called as a bare void-function-call statement 19 times (Devillard opt_med9 compare-exchange network, confirmed node-by-node: all 19 are expr-statements whose single expression is 'call', not 'assign'). The emitter's statement lowering currently has ZERO support for a bare call-statement of any kind, independent of inout."
+   ],
+   "enclosing_function": "sort2",
+   "mechanism": "(1) inout parameter admission in BOTH validate_capabilities and emit_typed_cpp.py; (2) a genuinely new emitter capability: lowering a void user-function call as a bare statement. (2) is not needed by any currently-typed program and not needed by filter/median (which the source comments say shares the same compare-exchange algorithm but implements it without a void helper, avoiding this shape).",
+   "portable_via_typed_kernel": true,
+   "reachable": true,
+   "terminal_blocker": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout"
+  },
+  "mixer/distortion:distortion": {
+   "caveat": "chain not exhaustively walked past hop 4; could not determine whether reflect (hop 5, per census) is genuinely final or whether a 6th blocker exists behind it",
+   "cost": "most expensive of the 7 named targets; CORRECTS the roadmap's framing of distortion as bounded by 2 known downstream blockers -- direct re-probing on the live tree finds at least 4 hops, not 2, before even reaching reflect",
+   "downstream_chain": [
+    "1. unsupported sampler parameter at 91:33 (applyDisplacement) -- TERMINAL.",
+    "2. [sampler-param admitted] -> unsupported sampler expression at 92:29 (using the sampler once it arrives as a parameter).",
+    "3. [+ sampler-expression admitted] -> unsupported builtin dFdx at 102:19 (would be this program's 16th derivative-admission grant; dFdx/dFdy/fwidth are admitted only per-node by derivative-admission-v1, never blanket).",
+    "4. [+ dFdx/dFdy/fwidth admitted regardless of node identity, extra-hop probe] -> unsupported typed type float[9] at 31:11 -- ANOTHER local 9-tap kernel, independent of filter/lighting's.",
+    "5. Not reached in this pass: reflect (recorded downstream by the census's own earlier probe, not independently re-verified past hop 4 here)."
+   ],
+   "enclosing_function": "applyDisplacement",
+   "mechanism": "At least FOUR previously-separate capability families stacked: sampler-as-parameter (+ sampler-as-expression), a NEW float[9] fixed-table profile (own shape, distinct from lighting's and sobel's), a 16th program's worth of derivative-admission wiring, and reflect builtin admission (shared with filter/lighting).",
+   "portable_via_typed_kernel": true,
+   "reachable": true,
+   "terminal_blocker": "mixer/distortion:distortion:91:33: unsupported sampler parameter"
+  },
+  "synth/bitwise:bitwise": {
+   "cost": "cheap",
+   "downstream_chain": [
+    "none found -- sole blocker, confirmed by relaxing every other known construct simultaneously (13-patch mega-relax) with no change"
+   ],
+   "enclosing_function": "bitOp",
+   "mechanism": "New scalar-uint XOR admission (distinct from the existing uint-VECTOR 'uint-vector-bitwise' capability, which only covers uvec2/3/4). No shift operators present (independently re-confirmed: unaffected by mega-relax, matching the prior report's regex-verified zero-shift-operators finding).",
+   "portable_via_typed_kernel": true,
+   "reachable": true,
+   "terminal_blocker": "synth/bitwise:bitwise:34:27: unsupported binary operator ^"
+  },
+  "synth/remap:remap": {
+   "cost": "expensive -- the most architecturally novel of the 7 named targets that still stays inside the typed-kernel path (no new pass needed, unlike wormhole:deposit)",
+   "downstream_chain": [
+    "unsupported typed type vec4[267] at 6:5 -- `layout(std140) uniform RemapUniforms { vec4 data[267]; }`, a packed-record buffer (8 zones x 64 verts + header/control/meta slots) read with RUNTIME-COMPUTED indices (zone and vertex-pair loop counters), not compile-time-literal ones."
+   ],
+   "mechanism": "Two gaps: (1) uniform-block admission itself (singleton, no other program declares one); (2) a genuinely NEW runtime capability -- none of the existing bounded fixed-size-table mechanisms (fixed-nine caps at 9, fixed-grid, fixed-array-parameter, fixed-affine-centers13) supports an array this large with dynamically-computed indices; they all require a whole-program STATIC proof of the exact index pattern. A 267-entry dynamically-indexed uniform array needs a general runtime read primitive, not a per-program proof.",
+   "portable_via_typed_kernel": true,
+   "reachable": "n/a (uniform block, global scope; unconditionally present regardless of control flow) -- but its `data[267]` array is read from main()'s per-pixel zone-walk per the source's own header comment, i.e. clearly live",
+   "terminal_blocker": "synth/remap:remap:5:1: unsupported uniform block"
+  }
+ },
+ "scan_out_texturelod_results": {
+  "classicNoisedeck/bitEffects:bitEffects": {
+   "all_relaxed": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+   "loopproof_only_relaxed": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+   "program_key": "classicNoisedeck/bitEffects:bitEffects",
+   "terminal_unmodified": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration"
+  },
+  "classicNoisedeck/caustic:caustic": {
+   "all_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+   "loopproof_only_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+   "no_paramdir_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+   "program_key": "classicNoisedeck/caustic:caustic",
+   "terminal_unmodified": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required"
+  },
+  "classicNoisedeck/cellNoise:cellNoise": {
+   "all_relaxed": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+   "program_key": "classicNoisedeck/cellNoise:cellNoise",
+   "terminal_unmodified": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration"
+  },
+  "classicNoisedeck/cellRefract:cellRefract": {
+   "all_relaxed": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global",
+   "loopproof_only_relaxed": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global",
+   "program_key": "classicNoisedeck/cellRefract:cellRefract",
+   "terminal_unmodified": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration"
+  },
+  "classicNoisedeck/colorLab:colorLab": {
+   "all_relaxed": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+   "program_key": "classicNoisedeck/colorLab:colorLab",
+   "terminal_unmodified": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration"
+  },
+  "classicNoisedeck/effects:effects": {
+   "all_relaxed": "classicNoisedeck/effects:effects:44:5: write to source const global",
+   "loopproof_only_relaxed": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/effects:effects:44:5: write to source const global",
+   "program_key": "classicNoisedeck/effects:effects",
+   "terminal_unmodified": "classicNoisedeck/effects:effects:31:1: unsupported global declaration"
+  },
+  "classicNoisedeck/fractal:fractal": {
+   "all_relaxed": "classicNoisedeck/fractal:fractal:120:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "classicNoisedeck/fractal:fractal:132:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/fractal:fractal:120:13: unsupported typed expression index",
+   "program_key": "classicNoisedeck/fractal:fractal",
+   "terminal_unmodified": "classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof"
+  },
+  "classicNoisedeck/glitch:glitch": {
+   "all_relaxed": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+   "loopproof_only_relaxed": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4",
+   "no_paramdir_relaxed": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+   "program_key": "classicNoisedeck/glitch:glitch",
+   "terminal_unmodified": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4"
+  },
+  "classicNoisedeck/kaleido:kaleido": {
+   "all_relaxed": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global",
+   "loopproof_only_relaxed": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global",
+   "program_key": "classicNoisedeck/kaleido:kaleido",
+   "terminal_unmodified": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration"
+  },
+  "classicNoisedeck/moodscape:moodscape": {
+   "all_relaxed": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+   "program_key": "classicNoisedeck/moodscape:moodscape",
+   "terminal_unmodified": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration"
+  },
+  "classicNoisedeck/noise:noise": {
+   "all_relaxed": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+   "loopproof_only_relaxed": "classicNoisedeck/noise:noise:484:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+   "program_key": "classicNoisedeck/noise:noise",
+   "terminal_unmodified": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof"
+  },
+  "classicNoisedeck/shapeMixer:shapeMixer": {
+   "all_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:675:17: unsupported builtin refract",
+   "loopproof_only_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:675:17: unsupported builtin refract",
+   "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
+   "terminal_unmodified": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration"
+  },
+  "classicNoisedeck/shapes:shapes": {
+   "all_relaxed": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration",
+   "no_paramdir_relaxed": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+   "program_key": "classicNoisedeck/shapes:shapes",
+   "terminal_unmodified": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration"
+  },
+  "filter/adjust:adjust": {
+   "all_relaxed": "filter/adjust:adjust:78:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "filter/adjust:adjust:62:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/adjust:adjust:78:13: unsupported typed expression index",
+   "program_key": "filter/adjust:adjust",
+   "terminal_unmodified": "filter/adjust:adjust:62:1: unsupported global declaration"
+  },
+  "filter/blur:blurH": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/blur:blurH",
+   "terminal_unmodified": "filter/blur:blurH:33:5: unsupported counted-for program proof"
+  },
+  "filter/blur:blurV": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/blur:blurV",
+   "terminal_unmodified": "filter/blur:blurV:33:5: unsupported counted-for program proof"
+  },
+  "filter/colorspace:colorspace": {
+   "all_relaxed": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+   "loopproof_only_relaxed": "filter/colorspace:colorspace:32:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+   "program_key": "filter/colorspace:colorspace",
+   "terminal_unmodified": "filter/colorspace:colorspace:32:1: unsupported global declaration"
+  },
+  "filter/dither:dither": {
+   "all_relaxed": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+   "loopproof_only_relaxed": "filter/dither:dither:19:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+   "program_key": "filter/dither:dither",
+   "terminal_unmodified": "filter/dither:dither:521:5: unsupported counted-for program proof"
+  },
+  "filter/edge:edge": {
+   "all_relaxed": "filter/edge:edge:73:11: unsupported typed type bvec3",
+   "loopproof_only_relaxed": "filter/edge:edge:19:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/edge:edge:73:11: unsupported typed type bvec3",
+   "program_key": "filter/edge:edge",
+   "terminal_unmodified": "filter/edge:edge:19:1: unsupported global declaration"
+  },
+  "filter/emboss:emboss": {
+   "all_relaxed": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+   "loopproof_only_relaxed": "filter/emboss:emboss:19:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+   "program_key": "filter/emboss:emboss",
+   "terminal_unmodified": "filter/emboss:emboss:19:1: unsupported global declaration"
+  },
+  "filter/fxaa:fxaa": {
+   "all_relaxed": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+   "loopproof_only_relaxed": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+   "program_key": "filter/fxaa:fxaa",
+   "terminal_unmodified": "filter/fxaa:fxaa:9:1: unsupported global declaration"
+  },
+  "filter/glyphMap:glyphMap": {
+   "all_relaxed": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+   "loopproof_only_relaxed": "filter/glyphMap:glyphMap:186:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+   "program_key": "filter/glyphMap:glyphMap",
+   "terminal_unmodified": "filter/glyphMap:glyphMap:186:1: unsupported global declaration"
+  },
+  "filter/grain:grain": {
+   "all_relaxed": "filter/grain:grain:31:21: unsupported builtin round",
+   "loopproof_only_relaxed": "filter/grain:grain:12:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/grain:grain:31:21: unsupported builtin round",
+   "program_key": "filter/grain:grain",
+   "terminal_unmodified": "filter/grain:grain:12:1: unsupported global declaration"
+  },
+  "filter/grime:grime": {
+   "all_relaxed": "filter/grime:grime:38:25: unsupported builtin floatBitsToUint",
+   "loopproof_only_relaxed": "filter/grime:grime:1:1: unsupported varying",
+   "no_paramdir_relaxed": "filter/grime:grime:38:25: unsupported builtin floatBitsToUint",
+   "program_key": "filter/grime:grime",
+   "terminal_unmodified": "filter/grime:grime:1:1: unsupported varying"
+  },
+  "filter/historicPalette:historicPalette": {
+   "all_relaxed": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration",
+   "loopproof_only_relaxed": "filter/historicPalette:historicPalette:26:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration",
+   "program_key": "filter/historicPalette:historicPalette",
+   "terminal_unmodified": "filter/historicPalette:historicPalette:26:1: unsupported global declaration"
+  },
+  "filter/invert:inv": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/invert:inv",
+   "terminal_unmodified": "VALIDATOR-PASS"
+  },
+  "filter/lightLeak:lightLeak": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "filter/lightLeak:lightLeak:5:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/lightLeak:lightLeak:60:50: unsupported parameter direction out",
+   "program_key": "filter/lightLeak:lightLeak",
+   "terminal_unmodified": "filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof"
+  },
+  "filter/lighting:lighting": {
+   "all_relaxed": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+   "loopproof_only_relaxed": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+   "no_paramdir_relaxed": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+   "program_key": "filter/lighting:lighting",
+   "terminal_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect"
+  },
+  "filter/median:median": {
+   "all_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+   "loopproof_only_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+   "no_paramdir_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+   "program_key": "filter/median:median",
+   "terminal_unmodified": "filter/median:median:47:5: unsupported counted-for program proof"
+  },
+  "filter/normalMap:normalMap": {
+   "all_relaxed": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+   "loopproof_only_relaxed": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+   "program_key": "filter/normalMap:normalMap",
+   "terminal_unmodified": "filter/normalMap:normalMap:4:1: unsupported global declaration"
+  },
+  "filter/normalize:statsFinal": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/normalize:statsFinal",
+   "terminal_unmodified": "filter/normalize:statsFinal:18:5: unsupported counted-for program proof"
+  },
+  "filter/oilPaint:oilFlatten": {
+   "all_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+   "loopproof_only_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+   "no_paramdir_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+   "program_key": "filter/oilPaint:oilFlatten",
+   "terminal_unmodified": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil"
+  },
+  "filter/osd:osd": {
+   "all_relaxed": "filter/osd:osd:24:1: unsupported typed type int[80]",
+   "loopproof_only_relaxed": "filter/osd:osd:24:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/osd:osd:24:1: unsupported typed type int[80]",
+   "program_key": "filter/osd:osd",
+   "terminal_unmodified": "filter/osd:osd:24:1: unsupported global declaration"
+  },
+  "filter/palette:palette": {
+   "all_relaxed": "filter/palette:palette:21:1: unsupported struct declaration",
+   "loopproof_only_relaxed": "filter/palette:palette:17:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/palette:palette:21:1: unsupported struct declaration",
+   "program_key": "filter/palette:palette",
+   "terminal_unmodified": "filter/palette:palette:17:1: unsupported global declaration"
+  },
+  "filter/parallax:parallax": {
+   "all_relaxed": "filter/parallax:parallax:24:26: unsupported builtin textureLod",
+   "loopproof_only_relaxed": "filter/parallax:parallax:13:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/parallax:parallax:24:26: unsupported builtin textureLod",
+   "program_key": "filter/parallax:parallax",
+   "terminal_unmodified": "filter/parallax:parallax:59:9: unsupported counted-for program proof"
+  },
+  "filter/posterize:posterize": {
+   "all_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+   "loopproof_only_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+   "no_paramdir_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+   "program_key": "filter/posterize:posterize",
+   "terminal_unmodified": "filter/posterize:posterize:60:34: unsupported builtin round"
+  },
+  "filter/reindex:nmReindexReduce": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "filter/reindex:nmReindexReduce:9:1: unsupported global declaration",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/reindex:nmReindexReduce",
+   "terminal_unmodified": "filter/reindex:nmReindexReduce:32:5: unsupported counted-for program proof"
+  },
+  "filter/scanlineError:scanlineError": {
+   "all_relaxed": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint",
+   "loopproof_only_relaxed": "filter/scanlineError:scanlineError:197:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint",
+   "program_key": "filter/scanlineError:scanlineError",
+   "terminal_unmodified": "filter/scanlineError:scanlineError:197:1: unsupported global declaration"
+  },
+  "filter/smooth:smoothBlend": {
+   "all_relaxed": "filter/smooth:smoothBlend:168:17: unsupported builtin ceil",
+   "loopproof_only_relaxed": "filter/smooth:smoothBlend:17:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/smooth:smoothBlend:168:17: unsupported builtin ceil",
+   "program_key": "filter/smooth:smoothBlend",
+   "terminal_unmodified": "filter/smooth:smoothBlend:17:1: unsupported global declaration"
+  },
+  "filter/snow:snow": {
+   "all_relaxed": "filter/snow:snow:26:21: unsupported builtin round",
+   "loopproof_only_relaxed": "filter/snow:snow:7:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/snow:snow:26:21: unsupported builtin round",
+   "program_key": "filter/snow:snow",
+   "terminal_unmodified": "filter/snow:snow:7:1: unsupported global declaration"
+  },
+  "filter/spookyTicker:spookyTicker": {
+   "all_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+   "loopproof_only_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+   "program_key": "filter/spookyTicker:spookyTicker",
+   "terminal_unmodified": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration"
+  },
+  "filter/tetraColorArray:tetraColorArray": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/tetraColorArray:tetraColorArray",
+   "terminal_unmodified": "filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof"
+  },
+  "filter/texture:texture": {
+   "all_relaxed": "filter/texture:texture:68:14: unsupported binary operator ^",
+   "loopproof_only_relaxed": "filter/texture:texture:30:1: unsupported global declaration",
+   "no_paramdir_relaxed": "filter/texture:texture:68:14: unsupported binary operator ^",
+   "program_key": "filter/texture:texture",
+   "terminal_unmodified": "filter/texture:texture:30:1: unsupported global declaration"
+  },
+  "filter/watercolor:wcSimplify": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout",
+   "no_paramdir_relaxed": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout",
+   "program_key": "filter/watercolor:wcSimplify",
+   "terminal_unmodified": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout"
+  },
+  "filter/waves:waves": {
+   "all_relaxed": "filter/waves:waves:41:13: unsupported typed type bvec2",
+   "loopproof_only_relaxed": "filter/waves:waves:41:9: unsupported builtin any",
+   "no_paramdir_relaxed": "filter/waves:waves:41:13: unsupported typed type bvec2",
+   "program_key": "filter/waves:waves",
+   "terminal_unmodified": "filter/waves:waves:41:9: unsupported builtin any"
+  },
+  "filter/wobble:wobble": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "filter/wobble:wobble:16:1: unsupported global declaration",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "filter/wobble:wobble",
+   "terminal_unmodified": "filter/wobble:wobble:16:1: unsupported global declaration"
+  },
+  "filter/wormhole:deposit": {
+   "all_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+   "loopproof_only_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+   "no_paramdir_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+   "program_key": "filter/wormhole:deposit",
+   "terminal_unmodified": "filter/wormhole:deposit:1:1: unsupported varying"
+  },
+  "mixer/distortion:distortion": {
+   "all_relaxed": "mixer/distortion:distortion:102:19: unsupported builtin dFdx",
+   "loopproof_only_relaxed": "mixer/distortion:distortion:91:33: unsupported sampler parameter",
+   "no_paramdir_relaxed": "mixer/distortion:distortion:102:19: unsupported builtin dFdx",
+   "program_key": "mixer/distortion:distortion",
+   "terminal_unmodified": "mixer/distortion:distortion:91:33: unsupported sampler parameter"
+  },
+  "synth/bitwise:bitwise": {
+   "all_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+   "loopproof_only_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+   "no_paramdir_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+   "program_key": "synth/bitwise:bitwise",
+   "terminal_unmodified": "synth/bitwise:bitwise:34:27: unsupported binary operator ^"
+  },
+  "synth/gabor:gabor": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "synth/gabor:gabor",
+   "terminal_unmodified": "synth/gabor:gabor:54:13: unsupported counted-for safety charge"
+  },
+  "synth/julia:julia": {
+   "all_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+   "loopproof_only_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+   "no_paramdir_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+   "program_key": "synth/julia:julia",
+   "terminal_unmodified": "synth/julia:julia:297:5: unsupported counted-for safety charge"
+  },
+  "synth/mandelbrot:mandelbrot": {
+   "all_relaxed": "synth/mandelbrot:mandelbrot:273:24: unsupported builtin log",
+   "loopproof_only_relaxed": "synth/mandelbrot:mandelbrot:31:1: unsupported global declaration",
+   "no_paramdir_relaxed": "synth/mandelbrot:mandelbrot:116:24: unsupported parameter direction out",
+   "program_key": "synth/mandelbrot:mandelbrot",
+   "terminal_unmodified": "synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof"
+  },
+  "synth/newton:newton": {
+   "all_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+   "loopproof_only_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+   "no_paramdir_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+   "program_key": "synth/newton:newton",
+   "terminal_unmodified": "synth/newton:newton:205:5: unsupported counted-for safety charge"
+  },
+  "synth/noise:noise": {
+   "all_relaxed": "synth/noise:noise:279:5: write to source const global",
+   "loopproof_only_relaxed": "synth/noise:noise:31:1: unsupported global declaration",
+   "no_paramdir_relaxed": "synth/noise:noise:279:5: write to source const global",
+   "program_key": "synth/noise:noise",
+   "terminal_unmodified": "synth/noise:noise:250:5: unsupported counted-for program proof"
+  },
+  "synth/remap:remap": {
+   "all_relaxed": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+   "loopproof_only_relaxed": "synth/remap:remap:5:1: unsupported uniform block",
+   "no_paramdir_relaxed": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+   "program_key": "synth/remap:remap",
+   "terminal_unmodified": "synth/remap:remap:5:1: unsupported uniform block"
+  },
+  "synth/shape:shape": {
+   "all_relaxed": "synth/shape:shape:459:5: write to source const global",
+   "loopproof_only_relaxed": "synth/shape:shape:31:1: unsupported global declaration",
+   "no_paramdir_relaxed": "synth/shape:shape:459:5: write to source const global",
+   "program_key": "synth/shape:shape",
+   "terminal_unmodified": "synth/shape:shape:31:1: unsupported global declaration"
+  },
+  "synth/solid:solid": {
+   "all_relaxed": "VALIDATOR-PASS",
+   "loopproof_only_relaxed": "VALIDATOR-PASS",
+   "no_paramdir_relaxed": "VALIDATOR-PASS",
+   "program_key": "synth/solid:solid",
+   "terminal_unmodified": "VALIDATOR-PASS"
+  },
+  "synth/testPattern:testPattern": {
+   "all_relaxed": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+   "loopproof_only_relaxed": "synth/testPattern:testPattern:13:1: unsupported global declaration",
+   "no_paramdir_relaxed": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+   "program_key": "synth/testPattern:testPattern",
+   "terminal_unmodified": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof"
+  }
+ },
+ "schema": "noisemaker-for-cpp.singleton-triage.v1"
+}

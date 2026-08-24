@@ -1,0 +1,620 @@
+{
+ "budgets": {
+  "per_loop_safety_charge": {
+   "effective_depth_max": 3,
+   "entrypoint_charge_max": 4096,
+   "lexical_depth_max": 3,
+   "lexical_product_max": 4096,
+   "trip_count_max": 128
+  },
+  "program_level": {
+   "entrypoint_charge_max": 4096,
+   "max_effective_depth_max": 3,
+   "max_lexical_product_max": 4096,
+   "unproved_loop_count_max": 0
+  }
+ },
+ "dominant_reason_distribution": {
+  "over budget: depth": 1,
+  "over budget: entrypoint_charge": 1,
+  "over budget: per-loop safety-charge only (program aggregate is fine)": 1,
+  "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)": 18,
+  "unproved: while/dowhile loop (mechanism only proves canonical for-loops)": 1
+ },
+ "family": "unsupported counted-for program proof / safety charge",
+ "member_count": 22,
+ "rows": [
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "classicNoisedeck/effects:effects",
+   "loop_count": 3,
+   "max_effective_depth": 2,
+   "max_lexical_product": 48,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "zoomBlur",
+     "kind": "for",
+     "span": "531:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 3,
+   "key": "classicNoisedeck/fractal:fractal",
+   "loop_count": 1,
+   "max_effective_depth": 1,
+   "max_lexical_product": 3,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=3 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 3,
+   "unproved_loops": [
+    {
+     "function": "julia",
+     "kind": "for",
+     "span": "261:5"
+    },
+    {
+     "function": "mandelbrot",
+     "kind": "for",
+     "span": "301:5"
+    },
+    {
+     "function": "newton",
+     "kind": "for",
+     "span": "220:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "classicNoisedeck/noise:noise",
+   "loop_count": 2,
+   "max_effective_depth": 1,
+   "max_lexical_product": 3,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "multires",
+     "kind": "for",
+     "span": "533:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/blur:blurH",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/blur:blurV",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 30,
+   "key": "filter/dither:dither",
+   "loop_count": 3,
+   "max_effective_depth": 1,
+   "max_lexical_product": 15,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=3 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 3,
+   "unproved_loops": [
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "span": "521:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "span": "526:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "span": "533:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/lightLeak:lightLeak",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "voronoiCell",
+     "kind": "for",
+     "span": "65:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: while/dowhile loop (mechanism only proves canonical for-loops)",
+   "entrypoint_charge": 56,
+   "key": "filter/median:median",
+   "loop_count": 2,
+   "max_effective_depth": 2,
+   "max_lexical_product": 49,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=4 (kinds=['while'])"
+   ],
+   "unproved_loop_count": 4,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "while",
+     "span": "63:5"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "span": "68:9"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "span": "69:13"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "span": "70:13"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/normalize:statsFinal",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=2 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 2,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "18:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "19:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/oilPaint:oilFlatten",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=2 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 2,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "33:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/parallax:parallax",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "59:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/reindex:nmReindexReduce",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=2 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 2,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "32:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/reindex:nmReindexStats",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=2 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 2,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "72:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "75:9"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 90,
+   "key": "filter/smooth:smoothBlend",
+   "loop_count": 3,
+   "max_effective_depth": 2,
+   "max_lexical_product": 81,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "searchEdge",
+     "kind": "for",
+     "span": "102:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/tetraColorArray:tetraColorArray",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "sampleColorArray",
+     "kind": "for",
+     "span": "243:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "filter/zoomBlur:zoomBlur",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "span": "43:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "over budget: depth",
+   "entrypoint_charge": 425,
+   "key": "synth/gabor:gabor",
+   "loop_count": 4,
+   "max_effective_depth": 4,
+   "max_lexical_product": 72,
+   "per_loop_over_budget": [
+    {
+     "bound_kind": "literal",
+     "effective_depth": 4,
+     "entrypoint_charge": 425,
+     "function": "gaborNoise",
+     "lexical_depth": 3,
+     "lexical_product": 72,
+     "over_budget": [
+      "effective_depth=4>3"
+     ],
+     "span": "54:13",
+     "trip_count": 8
+    }
+   ],
+   "program_level_reasons": [
+    "max_effective_depth=4>3"
+   ],
+   "unproved_loop_count": 0,
+   "unproved_loops": []
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "over budget: per-loop safety-charge only (program aggregate is fine)",
+   "entrypoint_charge": 3000,
+   "key": "synth/julia:julia",
+   "loop_count": 2,
+   "max_effective_depth": 1,
+   "max_lexical_product": 1000,
+   "per_loop_over_budget": [
+    {
+     "bound_kind": "literal",
+     "effective_depth": 1,
+     "entrypoint_charge": 3000,
+     "function": "iterateSmooth",
+     "lexical_depth": 1,
+     "lexical_product": 1000,
+     "over_budget": [
+      "trip_count=1000>128"
+     ],
+     "span": "297:5",
+     "trip_count": 1000
+    },
+    {
+     "bound_kind": "literal",
+     "effective_depth": 1,
+     "entrypoint_charge": 3000,
+     "function": "juliaIterate",
+     "lexical_depth": 1,
+     "lexical_product": 1000,
+     "over_budget": [
+      "trip_count=1000>128"
+     ],
+     "span": "187:5",
+     "trip_count": 1000
+    }
+   ],
+   "program_level_reasons": [],
+   "unproved_loop_count": 0,
+   "unproved_loops": []
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "synth/mandelbrot:mandelbrot",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "mandelbrot_df64",
+     "kind": "for",
+     "span": "226:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "over budget: entrypoint_charge",
+   "entrypoint_charge": 8008,
+   "key": "synth/newton:newton",
+   "loop_count": 4,
+   "max_effective_depth": 2,
+   "max_lexical_product": 4000,
+   "per_loop_over_budget": [
+    {
+     "bound_kind": "literal",
+     "effective_depth": 1,
+     "entrypoint_charge": 8008,
+     "function": "main",
+     "lexical_depth": 1,
+     "lexical_product": 8,
+     "over_budget": [
+      "entrypoint_charge=8008>4096"
+     ],
+     "span": "205:5",
+     "trip_count": 8
+    },
+    {
+     "bound_kind": "literal",
+     "effective_depth": 1,
+     "entrypoint_charge": 8008,
+     "function": "main",
+     "lexical_depth": 1,
+     "lexical_product": 4000,
+     "over_budget": [
+      "trip_count=500>128",
+      "entrypoint_charge=8008>4096"
+     ],
+     "span": "221:5",
+     "trip_count": 500
+    },
+    {
+     "bound_kind": "literal",
+     "effective_depth": 2,
+     "entrypoint_charge": 8008,
+     "function": "main",
+     "lexical_depth": 2,
+     "lexical_product": 3500,
+     "over_budget": [
+      "entrypoint_charge=8008>4096"
+     ],
+     "span": "227:9",
+     "trip_count": 7
+    },
+    {
+     "bound_kind": "literal",
+     "effective_depth": 2,
+     "entrypoint_charge": 8008,
+     "function": "main",
+     "lexical_depth": 2,
+     "lexical_product": 4000,
+     "over_budget": [
+      "entrypoint_charge=8008>4096"
+     ],
+     "span": "270:9",
+     "trip_count": 8
+    }
+   ],
+   "program_level_reasons": [
+    "entrypoint_charge=8008>4096"
+   ],
+   "unproved_loop_count": 0,
+   "unproved_loops": []
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 0,
+   "key": "synth/noise:noise",
+   "loop_count": 0,
+   "max_effective_depth": 0,
+   "max_lexical_product": 0,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "multires",
+     "kind": "for",
+     "span": "250:5"
+    }
+   ]
+  },
+  {
+   "call_graph_acyclic": true,
+   "dominant_reason": "unproved: non-canonical for-loop shape (bound not literal/local-const/reverb-clamp, or body has return, etc.)",
+   "entrypoint_charge": 3,
+   "key": "synth/testPattern:testPattern",
+   "loop_count": 1,
+   "max_effective_depth": 1,
+   "max_lexical_product": 3,
+   "per_loop_over_budget": [],
+   "program_level_reasons": [
+    "unproved_loop_count=1 (kinds=['for'])"
+   ],
+   "unproved_loop_count": 1,
+   "unproved_loops": [
+    {
+     "function": "renderNumber",
+     "kind": "for",
+     "span": "61:5"
+    }
+   ]
+  }
+ ]
+}

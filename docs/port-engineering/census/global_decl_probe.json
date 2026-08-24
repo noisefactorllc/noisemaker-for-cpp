@@ -1,0 +1,252 @@
+[
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/bitEffects:bitEffects",
+  "loc": "129:1",
+  "offending_symbol": "BIT_COUNT",
+  "storage": "const",
+  "type_display": "int",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/cellNoise:cellNoise",
+  "loc": "137:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": false,
+  "key": "classicNoisedeck/cellRefract:cellRefract",
+  "loc": "32:1",
+  "offending_symbol": "emboss",
+  "storage": "global",
+  "type_display": "float[9]",
+  "type_kind": "array"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "loc": "191:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": false,
+  "key": "classicNoisedeck/kaleido:kaleido",
+  "loc": "33:1",
+  "offending_symbol": "emboss",
+  "storage": "global",
+  "type_display": "float[9]",
+  "type_kind": "array"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/moodscape:moodscape",
+  "loc": "149:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/shapeMixer:shapeMixer",
+  "loc": "128:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "classicNoisedeck/shapes:shapes",
+  "loc": "588:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/adjust:adjust",
+  "loc": "62:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/colorspace:colorspace",
+  "loc": "32:1",
+  "offending_symbol": "fwdA",
+  "storage": "const",
+  "type_display": "mat3",
+  "type_kind": "matrix"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/edge:edge",
+  "loc": "19:1",
+  "offending_symbol": "LUMA",
+  "storage": "const",
+  "type_display": "vec3",
+  "type_kind": "vector"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/emboss:emboss",
+  "loc": "19:1",
+  "offending_symbol": "LUMA",
+  "storage": "const",
+  "type_display": "vec3",
+  "type_kind": "vector"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/fxaa:fxaa",
+  "loc": "9:1",
+  "offending_symbol": "CHANNEL_COUNT",
+  "storage": "const",
+  "type_display": "uint",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/glyphMap:glyphMap",
+  "loc": "186:1",
+  "offending_symbol": "GLYPH_COUNT",
+  "storage": "const",
+  "type_display": "int",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/grain:grain",
+  "loc": "12:1",
+  "offending_symbol": "CHANNEL_COUNT",
+  "storage": "const",
+  "type_display": "uint",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/historicPalette:historicPalette",
+  "loc": "26:1",
+  "offending_symbol": "PALETTE_COUNT",
+  "storage": "const",
+  "type_display": "int",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/normalMap:normalMap",
+  "loc": "4:1",
+  "offending_symbol": "CHANNEL_COUNT",
+  "storage": "const",
+  "type_display": "uint",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/osd:osd",
+  "loc": "24:1",
+  "offending_symbol": "GLYPHS",
+  "storage": "const",
+  "type_display": "int[80]",
+  "type_kind": "array"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/palette:palette",
+  "loc": "17:1",
+  "offending_symbol": "MODE_RGB",
+  "storage": "const",
+  "type_display": "int",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/scanlineError:scanlineError",
+  "loc": "197:1",
+  "offending_symbol": "BASE_SEED_LINE",
+  "storage": "const",
+  "type_display": "vec3",
+  "type_kind": "vector"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/snow:snow",
+  "loc": "7:1",
+  "offending_symbol": "CHANNEL_COUNT",
+  "storage": "const",
+  "type_display": "uint",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/spookyTicker:spookyTicker",
+  "loc": "19:1",
+  "offending_symbol": "GLYPHS",
+  "storage": "const",
+  "type_display": "int[80]",
+  "type_kind": "array"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/texture:texture",
+  "loc": "30:1",
+  "offending_symbol": "Z_LOOP",
+  "storage": "const",
+  "type_display": "int",
+  "type_kind": "scalar"
+ },
+ {
+  "array_length": null,
+  "has_initializer": true,
+  "key": "filter/wobble:wobble",
+  "loc": "16:1",
+  "offending_symbol": "X_NOISE_SEED",
+  "storage": "const",
+  "type_display": "vec3",
+  "type_kind": "vector"
+ },
+ {
+  "array_length": null,
+  "has_initializer": false,
+  "key": "synth/shape:shape",
+  "loc": "31:1",
+  "offending_symbol": "aspectRatio",
+  "storage": "global",
+  "type_display": "float",
+  "type_kind": "scalar"
+ }
+]

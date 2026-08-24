@@ -1,0 +1,4593 @@
+{
+  "schema": "noisemaker-for-cpp.mandelbrot.pixel-parity.v1",
+  "schema_version": 1,
+  "program_key": "synth/mandelbrot:mandelbrot",
+  "effect_key": "synth/mandelbrot",
+  "runtime_key": "synth/mandelbrot:mandelbrot",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "factory": {
+    "name": "canonicalFactory252",
+    "text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+    "public_factory_is_canonical_identity": true,
+    "adapter_own_key": false
+  },
+  "runtime_binding_names": [
+    "resolution",
+    "tileOffset",
+    "fullResolution",
+    "time",
+    "poi",
+    "outputMode",
+    "iterations",
+    "centerHiX",
+    "centerHiY",
+    "centerLoX",
+    "centerLoY",
+    "zoomSpeed",
+    "zoomDepth",
+    "invert",
+    "stripeFreq",
+    "trapShape",
+    "lightAngle",
+    "rotation"
+  ],
+  "runtime_binding_abi": {
+    "resolution": "Vec2",
+    "tileOffset": "Vec2",
+    "fullResolution": "Vec2",
+    "time": "number",
+    "poi": "int32",
+    "outputMode": "int32",
+    "iterations": "int32",
+    "centerHiX": "number",
+    "centerHiY": "number",
+    "centerLoX": "number",
+    "centerLoY": "number",
+    "zoomSpeed": "number",
+    "zoomDepth": "number",
+    "invert": "number",
+    "stripeFreq": "number",
+    "trapShape": "int32",
+    "lightAngle": "number",
+    "rotation": "number"
+  },
+  "canonical_binding_contract": {
+    "names": [
+      "resolution",
+      "tileOffset",
+      "fullResolution",
+      "time",
+      "poi",
+      "outputMode",
+      "iterations",
+      "centerHiX",
+      "centerHiY",
+      "centerLoX",
+      "centerLoY",
+      "zoomSpeed",
+      "zoomDepth",
+      "invert",
+      "stripeFreq",
+      "trapShape",
+      "lightAngle",
+      "rotation"
+    ],
+    "abi": {
+      "resolution": "Vec2",
+      "tileOffset": "Vec2",
+      "fullResolution": "Vec2",
+      "time": "number",
+      "poi": "int32",
+      "outputMode": "int32",
+      "iterations": "int32",
+      "centerHiX": "number",
+      "centerHiY": "number",
+      "centerLoX": "number",
+      "centerLoY": "number",
+      "zoomSpeed": "number",
+      "zoomDepth": "number",
+      "invert": "number",
+      "stripeFreq": "number",
+      "trapShape": "int32",
+      "lightAngle": "number",
+      "rotation": "number"
+    }
+  },
+  "exactness_contract": {
+    "float32": "raw little-endian uint32 words; signed zero and NaN payloads significant",
+    "rgba8": "complete independently captured RGBA8 bytes",
+    "tolerance": "none",
+    "dimensions": "checked before lane access",
+    "comparison": "dimensions, counts, every uint32 word, every RGBA8 byte"
+  },
+  "comparer_self_tests": {
+    "dimensions_before_access": true,
+    "first_mismatch_reported": true,
+    "raw_words_and_rgba8_independent": true,
+    "cases": {
+      "good": true,
+      "dimensions": true,
+      "short": true,
+      "long": true,
+      "rgba8_count": true,
+      "rgba8_mismatch": true,
+      "signed_zero": true,
+      "nan_payload": true
+    }
+  },
+  "provenance": {
+    "source": {
+      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
+    },
+    "cpu_snapshot": {
+      "argument": "<immutable-cpu-snapshot-root>",
+      "immutable_snapshot": true,
+      "realpath_containment_checked": true,
+      "live_checkout_rejected": true,
+      "import_closure": [
+        {
+          "relative_path": "src/csl/glsl-kernel.js",
+          "sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"
+        },
+        {
+          "relative_path": "src/csl/glsl-runtime.js",
+          "sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"
+        },
+        {
+          "relative_path": "src/csl/runtime.js",
+          "sha256": "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"
+        },
+        {
+          "relative_path": "src/effects/adapters/bit-effects.js",
+          "sha256": "5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7"
+        },
+        {
+          "relative_path": "src/effects/adapters/crt.js",
+          "sha256": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"
+        },
+        {
+          "relative_path": "src/effects/adapters/f32-color.js",
+          "sha256": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"
+        },
+        {
+          "relative_path": "src/effects/adapters/fractal.js",
+          "sha256": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"
+        },
+        {
+          "relative_path": "src/effects/adapters/index.js",
+          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        },
+        {
+          "relative_path": "src/effects/adapters/julia.js",
+          "sha256": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"
+        },
+        {
+          "relative_path": "src/effects/adapters/median.js",
+          "sha256": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"
+        },
+        {
+          "relative_path": "src/effects/adapters/palette.js",
+          "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path": "src/effects/adapters/snow.js",
+          "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+        },
+        {
+          "relative_path": "src/effects/catalog.js",
+          "sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"
+        },
+        {
+          "relative_path": "src/effects/definition.js",
+          "sha256": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"
+        },
+        {
+          "relative_path": "src/effects/generated/canonical-adapter-data.js",
+          "sha256": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"
+        },
+        {
+          "relative_path": "src/effects/generated/canonical-kernels.js",
+          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        },
+        {
+          "relative_path": "src/effects/generated/kernels.js",
+          "sha256": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"
+        },
+        {
+          "relative_path": "src/effects/generated/upstream-snapshot.js",
+          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        },
+        {
+          "relative_path": "src/effects/registry.js",
+          "sha256": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"
+        },
+        {
+          "relative_path": "src/runtime/pass-runner.js",
+          "sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"
+        },
+        {
+          "relative_path": "src/runtime/sampler.js",
+          "sha256": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"
+        },
+        {
+          "relative_path": "src/runtime/surface.js",
+          "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+        }
+      ]
+    },
+    "generator": {
+      "relative_path": "docs/port-engineering/mandelbrot-parity/mandelbrot_oracle_generator.mjs",
+      "sha256": "c7cf8f6cd49441430b93963c43c7a9889556c2d4a9befff417e38390d80ad2a5"
+    },
+    "materializer": {
+      "relative_path": "tools/glslcpp/generate_mandelbrot_native_oracle_include.py"
+    }
+  },
+  "render_cases": [
+    {
+      "name": "manual-smooth",
+      "width": 5,
+      "height": 4,
+      "time": 0.25,
+      "poi": 0,
+      "outputMode": 0,
+      "iterations": 80,
+      "centerHiX": -0.75,
+      "centerHiY": 0,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 0,
+      "zoomDepth": 1,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 0,
+      "lightAngle": 30,
+      "rotation": 0,
+      "tileX": 0,
+      "tileY": 0,
+      "salt": 1,
+      "input": {
+        "width": 5,
+        "height": 4,
+        "f32_words_le": [
+          "0x3d800000",
+          "0x3d638e39",
+          "0x3d3a2e8c",
+          "0x3f800000",
+          "0x3e800000",
+          "0x3ee38e39",
+          "0x3f0ba2e9",
+          "0x3f800000",
+          "0x3ee00000",
+          "0x3f555555",
+          "0x00000000",
+          "0x3f800000",
+          "0x3f200000",
+          "0x3e2aaaab",
+          "0x3f000000",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3f0e38e4",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3e2aaaab",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f0e38e4",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3f71c71c",
+          "0x3f1745d1",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3e8e38e4",
+          "0x3d3a2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x3f2aaaab",
+          "0x3f0ba2e9",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3e8e38e4",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3f600000",
+          "0x3f2aaaab",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x3e0ba2e9",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3ec71c72",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3f471c72",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3ec71c72",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3f471c72",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3de38e39",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f000000",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3f638e39",
+          "0x3f2e8ba3",
+          "0x3f800000"
+        ],
+        "f32_sha256": "04ec1b2e75cba0252250ddb7c2015a6866b7b62c6073d4fbf00edda49a77a1cb"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3edc08e7",
+          "0x3edc08e7",
+          "0x3edc08e7",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3edc08e7",
+          "0x3edc08e7",
+          "0x3edc08e7",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000"
+        ],
+        "f32_sha256": "63d76c8aa22aea13332ab7a9ab688944ceb9b01ddc4381c664671d1ccaac1015",
+        "rgba8_bytes": [
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          110,
+          110,
+          110,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          110,
+          110,
+          110,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255
+        ],
+        "rgba8_sha256": "f47640ce4328c839d223d25a193bd3aad4bb86953a7405cc9f69d7484e6d9a90"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          5,
+          4
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          5,
+          4
+        ],
+        "time": 0.25,
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 80,
+        "centerHiX": -0.75,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 1,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 30,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "manual-distance-tile",
+      "width": 4,
+      "height": 5,
+      "time": 0.75,
+      "poi": 0,
+      "outputMode": 1,
+      "iterations": 120,
+      "centerHiX": -0.743643887,
+      "centerHiY": 0.131825904,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 0,
+      "zoomDepth": 4,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 0,
+      "lightAngle": 60,
+      "rotation": 12,
+      "tileX": 0.5,
+      "tileY": -0.25,
+      "salt": 2,
+      "input": {
+        "width": 4,
+        "height": 5,
+        "f32_words_le": [
+          "0x3e000000",
+          "0x3de38e39",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3f000000",
+          "0x3f1745d1",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f638e39",
+          "0x3d3a2e8c",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3e638e39",
+          "0x3f0ba2e9",
+          "0x3f800000",
+          "0x3ee00000",
+          "0x3e638e39",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x3f200000",
+          "0x3f1c71c7",
+          "0x3e0ba2e9",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3f800000",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3eaaaaab",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3eaaaaab",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3f38e38e",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x3d638e39",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3e800000",
+          "0x3ee38e39",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x00000000",
+          "0x3ee38e39",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3f555555",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3e2aaaab",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f0e38e4",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3f0e38e4",
+          "0x3eba2e8c",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f71c71c",
+          "0x3f5d1746",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3e8e38e4",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x3f600000",
+          "0x3f2aaaab",
+          "0x3f51745d",
+          "0x3f800000"
+        ],
+        "f32_sha256": "e0f86664cee61f34fcde6f54e7f5409e68d9383f86fbdd328df64321f537f05c"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x38c7fc04",
+          "0x38c7fc04",
+          "0x38c7fc04",
+          "0x3f800000",
+          "0x3b46255d",
+          "0x3b46255d",
+          "0x3b46255d",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3aa9be9e",
+          "0x3aa9be9e",
+          "0x3aa9be9e",
+          "0x3f800000",
+          "0x3b9654b8",
+          "0x3b9654b8",
+          "0x3b9654b8",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3b935761",
+          "0x3b935761",
+          "0x3b935761",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3b1359b5",
+          "0x3b1359b5",
+          "0x3b1359b5",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x39ec2484",
+          "0x39ec2484",
+          "0x39ec2484",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x38562d98",
+          "0x38562d98",
+          "0x38562d98",
+          "0x3f800000",
+          "0x3b56702f",
+          "0x3b56702f",
+          "0x3b56702f",
+          "0x3f800000",
+          "0x3c93801c",
+          "0x3c93801c",
+          "0x3c93801c",
+          "0x3f800000",
+          "0x3b9a4786",
+          "0x3b9a4786",
+          "0x3b9a4786",
+          "0x3f800000"
+        ],
+        "f32_sha256": "7765bf622b1410f46b3ddf491364b80b6a79e2a2549ee86f0d577c4a2b5256e9",
+        "rgba8_bytes": [
+          0,
+          0,
+          0,
+          255,
+          1,
+          1,
+          1,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          1,
+          1,
+          1,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          1,
+          1,
+          1,
+          255,
+          0,
+          0,
+          0,
+          255,
+          1,
+          1,
+          1,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          1,
+          1,
+          1,
+          255,
+          5,
+          5,
+          5,
+          255,
+          1,
+          1,
+          1,
+          255
+        ],
+        "rgba8_sha256": "42963dc8c9f4322ef3585242ec8b2e5a6a9454fd38ac6588f4d5ce0737d570f1"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          4,
+          5
+        ],
+        "tileOffset": [
+          0.5,
+          -0.25
+        ],
+        "fullResolution": [
+          4,
+          5
+        ],
+        "time": 0.75,
+        "poi": 0,
+        "outputMode": 1,
+        "iterations": 120,
+        "centerHiX": -0.743643887,
+        "centerHiY": 0.131825904,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 4,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 60,
+        "rotation": 12
+      }
+    },
+    {
+      "name": "poi-stripe",
+      "width": 6,
+      "height": 3,
+      "time": 1.5,
+      "poi": 2,
+      "outputMode": 2,
+      "iterations": 90,
+      "centerHiX": 0,
+      "centerHiY": 0,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 0,
+      "zoomDepth": 3,
+      "invert": 1,
+      "stripeFreq": 2.75,
+      "trapShape": 1,
+      "lightAngle": 120,
+      "rotation": 0,
+      "tileX": 0,
+      "tileY": 0,
+      "salt": 3,
+      "input": {
+        "width": 6,
+        "height": 3,
+        "f32_words_le": [
+          "0x3e400000",
+          "0x3e2aaaab",
+          "0x3e0ba2e9",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3f0e38e4",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f71c71c",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3e8e38e4",
+          "0x3f1745d1",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3f2aaaab",
+          "0x3d3a2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x00000000",
+          "0x3f0ba2e9",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3e8e38e4",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3f2aaaab",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3f600000",
+          "0x00000000",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x00000000",
+          "0x3ec71c72",
+          "0x3e0ba2e9",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3f471c72",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3de38e39",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3ec71c72",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f471c72",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3de38e39",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3f000000",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f638e39",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3e638e39",
+          "0x3f2e8ba3",
+          "0x3f800000"
+        ],
+        "f32_sha256": "696e64435afb893bf92064201a0a8317209ec4e05cc93d73931087777bc23847"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x3ee51650",
+          "0x3ee51650",
+          "0x3ee51650",
+          "0x3f800000",
+          "0x3ede5118",
+          "0x3ede5118",
+          "0x3ede5118",
+          "0x3f800000",
+          "0x3ed62866",
+          "0x3ed62866",
+          "0x3ed62866",
+          "0x3f800000",
+          "0x3efd8902",
+          "0x3efd8902",
+          "0x3efd8902",
+          "0x3f800000",
+          "0x3ef7542c",
+          "0x3ef7542c",
+          "0x3ef7542c",
+          "0x3f800000",
+          "0x3ef1d540",
+          "0x3ef1d540",
+          "0x3ef1d540",
+          "0x3f800000",
+          "0x3ede31e4",
+          "0x3ede31e4",
+          "0x3ede31e4",
+          "0x3f800000",
+          "0x3ed95f86",
+          "0x3ed95f86",
+          "0x3ed95f86",
+          "0x3f800000",
+          "0x3ed56a76",
+          "0x3ed56a76",
+          "0x3ed56a76",
+          "0x3f800000",
+          "0x3efcf4ac",
+          "0x3efcf4ac",
+          "0x3efcf4ac",
+          "0x3f800000",
+          "0x3ef68484",
+          "0x3ef68484",
+          "0x3ef68484",
+          "0x3f800000",
+          "0x3ef01882",
+          "0x3ef01882",
+          "0x3ef01882",
+          "0x3f800000",
+          "0x3eeeaef6",
+          "0x3eeeaef6",
+          "0x3eeeaef6",
+          "0x3f800000",
+          "0x3eea6858",
+          "0x3eea6858",
+          "0x3eea6858",
+          "0x3f800000",
+          "0x3ee5e1ec",
+          "0x3ee5e1ec",
+          "0x3ee5e1ec",
+          "0x3f800000",
+          "0x3efeec90",
+          "0x3efeec90",
+          "0x3efeec90",
+          "0x3f800000",
+          "0x3efcc1b6",
+          "0x3efcc1b6",
+          "0x3efcc1b6",
+          "0x3f800000",
+          "0x3efa70fc",
+          "0x3efa70fc",
+          "0x3efa70fc",
+          "0x3f800000"
+        ],
+        "f32_sha256": "b3adf77f708bdedb7a3d57d9515927db7fcb4353c507998a6e09e1333049e022",
+        "rgba8_bytes": [
+          114,
+          114,
+          114,
+          255,
+          111,
+          111,
+          111,
+          255,
+          107,
+          107,
+          107,
+          255,
+          126,
+          126,
+          126,
+          255,
+          123,
+          123,
+          123,
+          255,
+          120,
+          120,
+          120,
+          255,
+          111,
+          111,
+          111,
+          255,
+          108,
+          108,
+          108,
+          255,
+          106,
+          106,
+          106,
+          255,
+          126,
+          126,
+          126,
+          255,
+          123,
+          123,
+          123,
+          255,
+          120,
+          120,
+          120,
+          255,
+          119,
+          119,
+          119,
+          255,
+          117,
+          117,
+          117,
+          255,
+          114,
+          114,
+          114,
+          255,
+          127,
+          127,
+          127,
+          255,
+          126,
+          126,
+          126,
+          255,
+          125,
+          125,
+          125,
+          255
+        ],
+        "rgba8_sha256": "e238c3217d6976fae7eaaa1fb175ec9037e22c43ae31a56d19179bd290a5f8ac"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          6,
+          3
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          6,
+          3
+        ],
+        "time": 1.5,
+        "poi": 2,
+        "outputMode": 2,
+        "iterations": 90,
+        "centerHiX": 0,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 3,
+        "invert": 1,
+        "stripeFreq": 2.75,
+        "trapShape": 1,
+        "lightAngle": 120,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "poi-trap",
+      "width": 5,
+      "height": 5,
+      "time": 2,
+      "poi": 7,
+      "outputMode": 3,
+      "iterations": 150,
+      "centerHiX": 0,
+      "centerHiY": 0,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 1.25,
+      "zoomDepth": 8,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 2,
+      "lightAngle": 210,
+      "rotation": 0,
+      "tileX": -0.375,
+      "tileY": 0.625,
+      "salt": 4,
+      "input": {
+        "width": 5,
+        "height": 5,
+        "f32_words_le": [
+          "0x3e800000",
+          "0x3e638e39",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3ee00000",
+          "0x3f1c71c7",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x3f200000",
+          "0x3f800000",
+          "0x3e0ba2e9",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3eaaaaab",
+          "0x3f22e8ba",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f38e38e",
+          "0x3dba2e8c",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3eaaaaab",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3f38e38e",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3d638e39",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x3ee38e39",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3e800000",
+          "0x3f555555",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x3f600000",
+          "0x3ee38e39",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x00000000",
+          "0x3f555555",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3e2aaaab",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3f0e38e4",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f71c71c",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3f0e38e4",
+          "0x3f68ba2f",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3f71c71c",
+          "0x3eba2e8c",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3e8e38e4",
+          "0x3f5d1746",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3f2aaaab",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x3f600000",
+          "0x00000000",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3ee00000",
+          "0x3f2aaaab",
+          "0x3ee8ba2f",
+          "0x3f800000",
+          "0x3f200000",
+          "0x00000000",
+          "0x3f745d17",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3ec71c72",
+          "0x3ed1745d",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f471c72",
+          "0x3f68ba2f",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3de38e39",
+          "0x3eba2e8c",
+          "0x3f800000"
+        ],
+        "f32_sha256": "ac3df82128d83e2e89260464cfbb004457912bb155a5eb972f74717e3907c7e5"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000"
+        ],
+        "f32_sha256": "2173d5ef284d8e03867fa476c6cdc4c7ca81948e5244655b7f920b9bbbb84f39",
+        "rgba8_bytes": [
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255
+        ],
+        "rgba8_sha256": "7efb4ab7603eea21de958ddfbafc97719d99c62e2c1a63ea1153bfea396dc8a1"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          5,
+          5
+        ],
+        "tileOffset": [
+          -0.375,
+          0.625
+        ],
+        "fullResolution": [
+          5,
+          5
+        ],
+        "time": 2,
+        "poi": 7,
+        "outputMode": 3,
+        "iterations": 150,
+        "centerHiX": 0,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 1.25,
+        "zoomDepth": 8,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 2,
+        "lightAngle": 210,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "manual-normal",
+      "width": 4,
+      "height": 4,
+      "time": 3.25,
+      "poi": 0,
+      "outputMode": 4,
+      "iterations": 64,
+      "centerHiX": -1.4,
+      "centerHiY": 0.01,
+      "centerLoX": 2e-8,
+      "centerLoY": -3e-8,
+      "zoomSpeed": 0,
+      "zoomDepth": 2,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 0,
+      "lightAngle": 300,
+      "rotation": -18,
+      "tileX": 0,
+      "tileY": 0,
+      "salt": 5,
+      "input": {
+        "width": 4,
+        "height": 4,
+        "f32_words_le": [
+          "0x3ea00000",
+          "0x3e8e38e4",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f2aaaab",
+          "0x3f3a2e8c",
+          "0x3f800000",
+          "0x3f300000",
+          "0x00000000",
+          "0x3e3a2e8c",
+          "0x3f800000",
+          "0x3f600000",
+          "0x3ec71c72",
+          "0x3f2e8ba3",
+          "0x3f800000",
+          "0x3f200000",
+          "0x3ec71c72",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3f471c72",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3de38e39",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3f000000",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3f000000",
+          "0x3eba2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x3f638e39",
+          "0x3f5d1746",
+          "0x3f800000",
+          "0x3e800000",
+          "0x3e638e39",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x3ee00000",
+          "0x3f1c71c7",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3f1c71c7",
+          "0x3f745d17",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3f800000",
+          "0x3ed1745d",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3eaaaaab",
+          "0x3f68ba2f",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3f38e38e",
+          "0x3eba2e8c",
+          "0x3f800000"
+        ],
+        "f32_sha256": "0cf32eaaf33b72ee8475938c52a05f7a3b757296f4532fb63743948faf9fec50"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x3f0aa209",
+          "0x3f0aa209",
+          "0x3f0aa209",
+          "0x3f800000",
+          "0x3f1785fe",
+          "0x3f1785fe",
+          "0x3f1785fe",
+          "0x3f800000",
+          "0x3f3977ba",
+          "0x3f3977ba",
+          "0x3f3977ba",
+          "0x3f800000",
+          "0x3f23fc52",
+          "0x3f23fc52",
+          "0x3f23fc52",
+          "0x3f800000",
+          "0x3f08730e",
+          "0x3f08730e",
+          "0x3f08730e",
+          "0x3f800000",
+          "0x3f01bf5f",
+          "0x3f01bf5f",
+          "0x3f01bf5f",
+          "0x3f800000",
+          "0x3f0f2e60",
+          "0x3f0f2e60",
+          "0x3f0f2e60",
+          "0x3f800000",
+          "0x3f144f1b",
+          "0x3f144f1b",
+          "0x3f144f1b",
+          "0x3f800000",
+          "0x3e079800",
+          "0x3e079800",
+          "0x3e079800",
+          "0x3f800000",
+          "0x3f2ecfae",
+          "0x3f2ecfae",
+          "0x3f2ecfae",
+          "0x3f800000",
+          "0x3f1c75aa",
+          "0x3f1c75aa",
+          "0x3f1c75aa",
+          "0x3f800000",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f800000",
+          "0x3f689ad0",
+          "0x3f689ad0",
+          "0x3f689ad0",
+          "0x3f800000",
+          "0x3f14db35",
+          "0x3f14db35",
+          "0x3f14db35",
+          "0x3f800000",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f800000",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f12ce6d",
+          "0x3f800000"
+        ],
+        "f32_sha256": "1f933fef19afb0a74a19f92bba5201668f5d963c4e6a616af62e8a7cb6607f00",
+        "rgba8_bytes": [
+          138,
+          138,
+          138,
+          255,
+          151,
+          151,
+          151,
+          255,
+          185,
+          185,
+          185,
+          255,
+          163,
+          163,
+          163,
+          255,
+          136,
+          136,
+          136,
+          255,
+          129,
+          129,
+          129,
+          255,
+          143,
+          143,
+          143,
+          255,
+          148,
+          148,
+          148,
+          255,
+          34,
+          34,
+          34,
+          255,
+          174,
+          174,
+          174,
+          255,
+          156,
+          156,
+          156,
+          255,
+          146,
+          146,
+          146,
+          255,
+          232,
+          232,
+          232,
+          255,
+          148,
+          148,
+          148,
+          255,
+          146,
+          146,
+          146,
+          255,
+          146,
+          146,
+          146,
+          255
+        ],
+        "rgba8_sha256": "0724f9d8da7ece0ec031cf4d361e0ae6d186bbddaa157646893155fb5274c98c"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          4,
+          4
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          4,
+          4
+        ],
+        "time": 3.25,
+        "poi": 0,
+        "outputMode": 4,
+        "iterations": 64,
+        "centerHiX": -1.4,
+        "centerHiY": 0.01,
+        "centerLoX": 2e-8,
+        "centerLoY": -3e-8,
+        "zoomSpeed": 0,
+        "zoomDepth": 2,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 300,
+        "rotation": -18
+      }
+    },
+    {
+      "name": "manual-trap-escape",
+      "width": 4,
+      "height": 3,
+      "time": 0.5,
+      "poi": 0,
+      "outputMode": 3,
+      "iterations": 64,
+      "centerHiX": 0.3,
+      "centerHiY": 0.4,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 0,
+      "zoomDepth": 1,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 0,
+      "lightAngle": 45,
+      "rotation": 0,
+      "tileX": 0,
+      "tileY": 0,
+      "salt": 7,
+      "input": {
+        "width": 4,
+        "height": 3,
+        "f32_words_le": [
+          "0x3ee00000",
+          "0x3ec71c72",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x3f200000",
+          "0x3f471c72",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3f500000",
+          "0x3de38e39",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f000000",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3f000000",
+          "0x3f68ba2f",
+          "0x3f800000",
+          "0x3f700000",
+          "0x3f638e39",
+          "0x3eba2e8c",
+          "0x3f800000",
+          "0x3d800000",
+          "0x3e638e39",
+          "0x3f5d1746",
+          "0x3f800000",
+          "0x3e800000",
+          "0x3f1c71c7",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x00000000",
+          "0x3f1c71c7",
+          "0x3ee8ba2f",
+          "0x3f800000",
+          "0x3e400000",
+          "0x3f800000",
+          "0x3f745d17",
+          "0x3f800000",
+          "0x3ec00000",
+          "0x3eaaaaab",
+          "0x3ed1745d",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f38e38e",
+          "0x3f68ba2f",
+          "0x3f800000"
+        ],
+        "f32_sha256": "106b2b284c9c64c5a8ba8949f4fe3bdeb452542031fbfc2d2d58fd9b592be8f8"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3f58a09e",
+          "0x3f58a09e",
+          "0x3f58a09e",
+          "0x3f800000",
+          "0x3f2d9e21",
+          "0x3f2d9e21",
+          "0x3f2d9e21",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3f63d079",
+          "0x3f63d079",
+          "0x3f63d079",
+          "0x3f800000",
+          "0x3f354b95",
+          "0x3f354b95",
+          "0x3f354b95",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3f4a918c",
+          "0x3f4a918c",
+          "0x3f4a918c",
+          "0x3f800000"
+        ],
+        "f32_sha256": "529589181505d7d42c9147b008266ca033ebcac754cb4eb33bebb9c539b98255",
+        "rgba8_bytes": [
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          216,
+          216,
+          216,
+          255,
+          173,
+          173,
+          173,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          227,
+          227,
+          227,
+          255,
+          181,
+          181,
+          181,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          202,
+          202,
+          202,
+          255
+        ],
+        "rgba8_sha256": "b98539fa64c1e9d23b83cc1fab19824625de3e9f9505cb4f23e94736ba8b236c"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          4,
+          3
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          4,
+          3
+        ],
+        "time": 0.5,
+        "poi": 0,
+        "outputMode": 3,
+        "iterations": 64,
+        "centerHiX": 0.3,
+        "centerHiY": 0.4,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 1,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 45,
+        "rotation": 0
+      }
+    },
+    {
+      "name": "period-bulb-control",
+      "width": 3,
+      "height": 3,
+      "time": 0,
+      "poi": 0,
+      "outputMode": 0,
+      "iterations": 32,
+      "centerHiX": 0,
+      "centerHiY": 0,
+      "centerLoX": 0,
+      "centerLoY": 0,
+      "zoomSpeed": 0,
+      "zoomDepth": 0,
+      "invert": 0,
+      "stripeFreq": 0,
+      "trapShape": 0,
+      "lightAngle": 0,
+      "rotation": 0,
+      "tileX": 0,
+      "tileY": 0,
+      "salt": 6,
+      "input": {
+        "width": 3,
+        "height": 3,
+        "f32_words_le": [
+          "0x3ec00000",
+          "0x3eaaaaab",
+          "0x3e8ba2e9",
+          "0x3f800000",
+          "0x3f100000",
+          "0x3f38e38e",
+          "0x3f45d174",
+          "0x3f800000",
+          "0x3f400000",
+          "0x3d638e39",
+          "0x3e68ba2f",
+          "0x3f800000",
+          "0x3f300000",
+          "0x3ee38e39",
+          "0x3f5d1746",
+          "0x3f800000",
+          "0x3f600000",
+          "0x3f555555",
+          "0x3ea2e8ba",
+          "0x3f800000",
+          "0x00000000",
+          "0x3e2aaaab",
+          "0x3f51745d",
+          "0x3f800000",
+          "0x3f800000",
+          "0x3f0e38e4",
+          "0x3ed1745d",
+          "0x3f800000",
+          "0x3e000000",
+          "0x3f71c71c",
+          "0x3f68ba2f",
+          "0x3f800000",
+          "0x3ea00000",
+          "0x3e8e38e4",
+          "0x3eba2e8c",
+          "0x3f800000"
+        ],
+        "f32_sha256": "066e1e51950144111002465f8d5ef97174c7e3d18e227cedcb9bdc73f20a6660"
+      },
+      "expected": {
+        "f32_words_le": [
+          "0x3dc4718c",
+          "0x3dc4718c",
+          "0x3dc4718c",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3d582c88",
+          "0x3d582c88",
+          "0x3d582c88",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3d8dbe0a",
+          "0x3d8dbe0a",
+          "0x3d8dbe0a",
+          "0x3f800000",
+          "0x3dc4718c",
+          "0x3dc4718c",
+          "0x3dc4718c",
+          "0x3f800000",
+          "0x00000000",
+          "0x00000000",
+          "0x00000000",
+          "0x3f800000",
+          "0x3d582c88",
+          "0x3d582c88",
+          "0x3d582c88",
+          "0x3f800000"
+        ],
+        "f32_sha256": "e6b521f9cbe9443de9704b81e4afe6fb0e7898c52eb5722e164a4a47fb81f374",
+        "rgba8_bytes": [
+          24,
+          24,
+          24,
+          255,
+          0,
+          0,
+          0,
+          255,
+          13,
+          13,
+          13,
+          255,
+          0,
+          0,
+          0,
+          255,
+          0,
+          0,
+          0,
+          255,
+          18,
+          18,
+          18,
+          255,
+          24,
+          24,
+          24,
+          255,
+          0,
+          0,
+          0,
+          255,
+          13,
+          13,
+          13,
+          255
+        ],
+        "rgba8_sha256": "225f2c4c14b74ad2793dbb9ac5a0605565ecc977fb1ef6dc24badf4e06d8c575"
+      },
+      "input_immutable_exact_bits": true,
+      "bindings": {
+        "resolution": [
+          3,
+          3
+        ],
+        "tileOffset": [
+          0,
+          0
+        ],
+        "fullResolution": [
+          3,
+          3
+        ],
+        "time": 0,
+        "poi": 0,
+        "outputMode": 0,
+        "iterations": 32,
+        "centerHiX": 0,
+        "centerHiY": 0,
+        "centerLoX": 0,
+        "centerLoY": 0,
+        "zoomSpeed": 0,
+        "zoomDepth": 0,
+        "invert": 0,
+        "stripeFreq": 0,
+        "trapShape": 0,
+        "lightAngle": 0,
+        "rotation": 0
+      }
+    }
+  ],
+  "source_mutation_contract": {
+    "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+    "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+    "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+    "execution": "each exact anchor/replacement is applied to canonical factory text and the mutated factory is executed through bindCanonicalKernel/runPass"
+  },
+  "mutation_anchor_cardinality": {
+    "total": 21,
+    "by_group": {
+      "cross-lane-assignment": 1,
+      "df64-carrier": 2,
+      "out-materialization": 10,
+      "iteration-loop": 2,
+      "log-sites": 3,
+      "normal-three-sample": 3
+    },
+    "anchors": {
+      "cross-lane-dz-assignment": 1,
+      "df64-new-zr-carrier": 1,
+      "df64-whole-vector-carrier": 1,
+      "out-smoothIter": 1,
+      "out-rawIter-cardioid": 1,
+      "out-z-final": 1,
+      "out-dz-final": 1,
+      "out-stripeAcc": 1,
+      "out-trapMin": 1,
+      "out-getPOI-cX": 1,
+      "out-getPOI-cY": 1,
+      "out-transform-re": 2,
+      "out-transform-im": 2,
+      "max-iter-constant": 1,
+      "runtime-loop-bound": 1,
+      "log-magnitude": 1,
+      "log-normalization": 1,
+      "log-distance-magnitude": 1,
+      "normal-h0": 1,
+      "normal-hx": 1,
+      "normal-hy": 1
+    }
+  },
+  "mutation_ledger": [
+    {
+      "name": "cross-lane-dz-assignment",
+      "group": "cross-lane-assignment",
+      "mechanism": "replace canonical sequential dz lane writes with an unaliased whole-vector copy",
+      "anchor": "(dz[0] = 2 * (zx * dz[0] - zy * dz[1]) + 1, dz[1] = 2 * (zx * dz[1] + zy * dz[0]), dz);",
+      "replacement": "(dz = new $runtime.PooledFloat32Array([2 * (zx * dz[0] - zy * dz[1]) + 1, 2 * (zx * dz[1] + zy * dz[0])]), dz);",
+      "independent": true,
+      "source_anchor": "(dz[0] = 2 * (zx * dz[0] - zy * dz[1]) + 1, dz[1] = 2 * (zx * dz[1] + zy * dz[0]), dz);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "6098eca936e8451b3ccc971485cb67c5982d76f0f2d47f5694464bb6a1450d25",
+      "anchor_sha256": "25bc8c6865ed8e654db94ab1455baa24a578a080109e35b2ca21a303ec2093b3",
+      "replacement_sha256": "0ccca8f5a0023d7a97b8c74202c303e8cd664c9961a71816e64e9c0e9193c54c",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 33,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x3c21cc39"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 0,
+            "actual": 3
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3e67b1c2"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 58
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "8000d527674f8c0c761571f6e91e054df261499687ea8beeb0b8dfc7d99818e2",
+      "witness_cases": [
+        "manual-distance-tile",
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "df64-new-zr-carrier",
+      "group": "df64-carrier",
+      "mechanism": "replace the whole-vector new_zr carrier expression",
+      "anchor": "var new_zr = df64_add(df64_sub(zr2, zi2), c_re);",
+      "replacement": "var new_zr = df64_add(df64_sub(zi2, zr2), c_re);",
+      "independent": true,
+      "source_anchor": "var new_zr = df64_add(df64_sub(zr2, zi2), c_re);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "cead81a62a1752e1f2458901daa7d958d9b1310357ff9f721d817277a9d19106",
+      "anchor_sha256": "24efb4cee16e7d59898550f807497d89e64de649e96a5dbd33910736275cf293",
+      "replacement_sha256": "f4e4ef70027ac37462548d50b2528148c755e79aa9641012db7c1a93aeade445",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x3d018f69"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 8
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 60,
+          "changed_rgba8_bytes": 60,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 0,
+            "actual": 255
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 255
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": true,
+          "changed_float32_lanes": 75,
+          "changed_rgba8_bytes": 75,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x00000000",
+            "actual": "0x3f6090f5"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 0,
+            "actual": 224
+          }
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 9,
+          "changed_rgba8_bytes": 9,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x3f343c94"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 180
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 21,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3dcbe5d3"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 25
+          }
+        }
+      ],
+      "result_sha256": "39275360b95fec92a10bb4260b15407ca08e620d3d335b57fe0a9a445f048efb",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ],
+      "control_cases": []
+    },
+    {
+      "name": "df64-whole-vector-carrier",
+      "group": "df64-carrier",
+      "mechanism": "replace the whole-vector new_zi carrier scale",
+      "anchor": "var new_zi = df64_add(df64_mul_f(zri, 2), c_im);",
+      "replacement": "var new_zi = df64_add(df64_mul_f(zri, 1), c_im);",
+      "independent": true,
+      "source_anchor": "var new_zi = df64_add(df64_mul_f(zri, 2), c_im);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "b16da853fe964882f9f98bd96b7794aab021764c58cfb1565f03a600bd67eeab",
+      "anchor_sha256": "caabf69b2f78b353d10e386c9faf1ac72a486c2a6a666bc6c1942bfcc54e51c1",
+      "replacement_sha256": "fb08aee75eb62fca54939f97f526cdbf109e5a8106079000f92379e8807bcb7d",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 51,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3efc9c62"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 126
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 0
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3f4cab89"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 204
+          }
+        }
+      ],
+      "result_sha256": "6fc5a1337755951f50113e1817bd74632af3850cb4df29b9d69c8eace212e336",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-trap"
+      ]
+    },
+    {
+      "name": "out-smoothIter",
+      "group": "out-materialization",
+      "mechanism": "mutate scalar smoothIter out assignment",
+      "anchor": "smoothIter = i + 1 - nu;",
+      "replacement": "smoothIter = i;",
+      "independent": true,
+      "source_anchor": "smoothIter = i + 1 - nu;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "1033dd65e839d184b621462311117ecd086d85354419ec5dbc3f62e8b627dad8",
+      "anchor_sha256": "b9fa39d738ba0cade041f6a6a40f824b417201f4ab6b09900b06bff09a8936ed",
+      "replacement_sha256": "6633b4b02a3126cce6edb7713ba152f5efdea1d65841d5665dd4a65655772031",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x3eeccccd"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 118
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 51,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3ed7b2a0"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 107
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3e400000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 48
+          }
+        }
+      ],
+      "result_sha256": "4cc23a128d8e035890211a8c0c4655938d99d986703cb8f3c845447438f361dd",
+      "witness_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "manual-distance-tile",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "out-rawIter-cardioid",
+      "group": "out-materialization",
+      "mechanism": "mutate scalar rawIter cardioid out assignment",
+      "anchor": "rawIter = (maxIter);",
+      "replacement": "rawIter = 0;",
+      "independent": true,
+      "source_anchor": "rawIter = (maxIter);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "6f054322691488758a6a08b595afcd498d0b48c57f266868c8443bfe1758f49b",
+      "anchor_sha256": "9f54a05e1156b4f1b26071b56c4489741d53f774343ea381c78f7ae38dec164b",
+      "replacement_sha256": "9a0bfe228439df6b43f003c90661ed6dbd4bdc0585b24dd7bf8d54c62aacbb79",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 48,
+          "changed_rgba8_bytes": 48,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x00000000",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 0,
+            "actual": 255
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 12,
+            "expected": "0x00000000",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 12,
+            "expected": 0,
+            "actual": 255
+          }
+        }
+      ],
+      "result_sha256": "db102b1d735ac26a9f40deeabbc434ac021f123c3e38d12fb64e189873d0f361",
+      "witness_cases": [
+        "manual-smooth",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "out-z-final",
+      "group": "out-materialization",
+      "mechanism": "mutate vec2 z_final out assignment",
+      "anchor": "(z_final[0] = fx, z_final[1] = fy, z_final);",
+      "replacement": "(z_final[0] = 0, z_final[1] = 0, z_final);",
+      "independent": true,
+      "source_anchor": "(z_final[0] = fx, z_final[1] = fy, z_final);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "9ca6dea91f913e948a21e6933cc257fee3415dbeec571c62e42637d8f14add2c",
+      "anchor_sha256": "704b1c09e8eca33ea8432aecbae2243dc739bcbf8d12533e1a68eb91c1e7fb6f",
+      "replacement_sha256": "725517ca0bffd6f01176621d7ef2bc964254a371c6a39d0d8c136b15136f951e",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x3eeccccd"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 118
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x7fc00000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 51,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3ed7b2a0"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 107
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x7fc00000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3e400000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 48
+          }
+        }
+      ],
+      "result_sha256": "8172571a2f1c808a787dd112baf5b36168c02cdff337786055b0d5c304a36081",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-trap",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "out-dz-final",
+      "group": "out-materialization",
+      "mechanism": "mutate vec2 dz_final out assignment",
+      "anchor": "(dz_final[0] = dz[0], dz_final[1] = dz[1], dz_final);",
+      "replacement": "(dz_final[0] = 0, dz_final[1] = 0, dz_final);",
+      "independent": true,
+      "source_anchor": "(dz_final[0] = dz[0], dz_final[1] = dz[1], dz_final);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "1bec1d0ec1944a38787b0f8506730dd80de1ea31be7446f7c4016a4994edf64c",
+      "anchor_sha256": "10e79ca0816e5e000354234314c7d85282db56d09b8f0c51d5e0db8a45196db7",
+      "replacement_sha256": "1f8d2eb44e7137095bd687077a57be8179b89e018f93bd28573c7848a31f9388",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "3266407003a457b5527e1d83c41b5c93b278204a6ddc095ad4f6b60749ae1daf",
+      "witness_cases": [
+        "manual-distance-tile",
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "out-stripeAcc",
+      "group": "out-materialization",
+      "mechanism": "mutate scalar stripeAcc out assignment",
+      "anchor": "stripeAcc = stripe;",
+      "replacement": "stripeAcc = 0;",
+      "independent": true,
+      "source_anchor": "stripeAcc = stripe;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "e1b592d4d38d7393a719235af7328bfc211a3d85df4b7c9c6fe80a3577cecd14",
+      "anchor_sha256": "33f9940dff82a4a7478d049f50bcd35db6bd52a640c09a8cd6ea3b09a108ab9b",
+      "replacement_sha256": "62654d058571c25464286c8ace520a0341ba6a3ea0da5b8d4537d8407d3ca1ad",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f000000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 128
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "bf203f187b3e4dd10213dc7d6356a826094134516784d7ea08d5ad83122a2ab4",
+      "witness_cases": [
+        "poi-stripe"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "out-trapMin",
+      "group": "out-materialization",
+      "mechanism": "mutate scalar trapMin out assignment",
+      "anchor": "trapMin = trap;",
+      "replacement": "trapMin = 0;",
+      "independent": true,
+      "source_anchor": "trapMin = trap;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "c88cb72d0c35da1ec55296369422309cbe5ed4485d234253cc58077c1c73b072",
+      "anchor_sha256": "32164534b1fbec800e3fcd2f78a33531fed7656148060cff88cc67ae8e76632c",
+      "replacement_sha256": "fbdd072cf420a49e90ae6f831d5ca4c05bee4213949932ece4fa22332d77f62d",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 255
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "a816de1b86200b879a86c0670c242a7b19eb0fd2cba7ff89303bfce06015d812",
+      "witness_cases": [
+        "manual-trap-escape"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-normal",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "out-getPOI-cX",
+      "group": "out-materialization",
+      "mechanism": "mutate getPOI cX owner materialization at the main call site",
+      "anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
+      "replacement": "[_local_cX_df_1, cY_df] = [new $runtime.PooledFloat32Array([0, 0]), cY_df]",
+      "independent": true,
+      "source_anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "43ce413743895c2061ad7dc8635a989c27bc7dd047819d8a3633390703f733d8",
+      "anchor_sha256": "219199e2df71c33786551074a9276c22ec0063d2f4492f9c2467c46a2b35c384",
+      "replacement_sha256": "44cdf0adc9582b0b47679cce0ae026f122a040bc03f75ab9c8b3ea55293f4ddf",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 255
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 0
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "8c190368e4a8938877a42bed23d8f192432e57c7b146e924a2deef8010fba087",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape"
+      ],
+      "control_cases": [
+        "poi-trap",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "out-getPOI-cY",
+      "group": "out-materialization",
+      "mechanism": "mutate getPOI cY owner materialization at the main call site",
+      "anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
+      "replacement": "[_local_cX_df_1, cY_df] = [_local_cX_df_1, new $runtime.PooledFloat32Array([0, 0])]",
+      "independent": true,
+      "source_anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "177438618a139533ecc9226c56a041e4dca749bb8bcf41a84e1c1b01afd4b1f6",
+      "anchor_sha256": "219199e2df71c33786551074a9276c22ec0063d2f4492f9c2467c46a2b35c384",
+      "replacement_sha256": "5009675eaca5cd1162523d86ef5e77928f9b01679b13bd1698e2781d440cc116",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 48,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3edcd888"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 110
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 45,
+          "changed_rgba8_bytes": 45,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f2bd08c"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 171
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 18,
+          "changed_rgba8_bytes": 18,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 0
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "0c233fcf6f0100776133b35f3a8c7a0995625d4a6d475261400e101a601ee42b",
+      "witness_cases": [
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "poi-trap",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "out-transform-re",
+      "group": "out-materialization",
+      "mechanism": "mutate transformCoords re owner materialization",
+      "anchor": "[re_df, im_df] = transformCoords_df64.__out__",
+      "replacement": "[re_df, im_df] = [new $runtime.PooledFloat32Array([0, 0]), im_df]",
+      "expectedCount": 2,
+      "independent": true,
+      "source_anchor": "[re_df, im_df] = transformCoords_df64.__out__",
+      "anchor_occurrence_count": 2,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "3188bf2d2a7c2573643a75e171a7ca23d6fb9b021d4cff47d8e5232c2138bc27",
+      "anchor_sha256": "0f3335ee76a8e80dbe309070431261bd55cd053b1ed72b6abdc85b60c56a0c76",
+      "replacement_sha256": "c8ebb2ecb862a056d0c84587c3ef2540a81e2aef896d69ed1f9dda49d0420819",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 255
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 0
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 0
+          }
+        }
+      ],
+      "result_sha256": "accf8dbcbc74455efa04bd492d95c27191908c7ae491dc7a9a7928985fce1d85",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-trap"
+      ]
+    },
+    {
+      "name": "out-transform-im",
+      "group": "out-materialization",
+      "mechanism": "mutate transformCoords im owner materialization",
+      "anchor": "[re_df, im_df] = transformCoords_df64.__out__",
+      "replacement": "[re_df, im_df] = [re_df, new $runtime.PooledFloat32Array([0, 0])]",
+      "expectedCount": 2,
+      "independent": true,
+      "source_anchor": "[re_df, im_df] = transformCoords_df64.__out__",
+      "anchor_occurrence_count": 2,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "3218d0360d38abce1934062aa09ee4ad3f0198ff788406c4fdeddb37ec0d1722",
+      "anchor_sha256": "0f3335ee76a8e80dbe309070431261bd55cd053b1ed72b6abdc85b60c56a0c76",
+      "replacement_sha256": "7e25ddb5e6ed6e121b6864b9d6fe5d85e1a648812bda38f2b8a30fc1362f3e1d",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f000000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 128
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 27,
+          "changed_rgba8_bytes": 27,
+          "float32_witness": {
+            "index": 4,
+            "expected": "0x00000000",
+            "actual": "0x3f5eeeef"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 0,
+            "actual": 222
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 12,
+          "changed_rgba8_bytes": 12,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 0
+          }
+        }
+      ],
+      "result_sha256": "4561b6a7f9b322808d2f1e10eda25e3767bfc8fa05191ccdf43dd31a920b8e1d",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-trap"
+      ]
+    },
+    {
+      "name": "max-iter-constant",
+      "group": "iteration-loop",
+      "mechanism": "mutate MAX_ITER constant",
+      "anchor": "var MAX_ITER = 500;",
+      "replacement": "var MAX_ITER = 1;",
+      "independent": true,
+      "source_anchor": "var MAX_ITER = 500;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "c8a2d1a4479446ee7cc95cae3266fdb536a1a584c6be36a1f656f670992d5367",
+      "anchor_sha256": "4359c35a72a1e1d5919fec755cfcec25d168a5392cd98fc52b42a2de28ed3087",
+      "replacement_sha256": "3d17437b3823cb08d66eb097a24fa73b6365c484ed78ee832cac8bee07c8f769",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 1,
+            "actual": 0
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 54,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3f800000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 255
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 39,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f12ce6d"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 146
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3f58a09e",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 216,
+            "actual": 0
+          }
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 0
+          }
+        }
+      ],
+      "result_sha256": "accf8dbcbc74455efa04bd492d95c27191908c7ae491dc7a9a7928985fce1d85",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "manual-normal",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-trap"
+      ]
+    },
+    {
+      "name": "runtime-loop-bound",
+      "group": "iteration-loop",
+      "mechanism": "mutate runtime maxIter loop break bound",
+      "anchor": "n >= maxIter)",
+      "replacement": "n >= (maxIter - 1))",
+      "independent": true,
+      "source_anchor": "n >= maxIter)",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "6768a7a10f27d82562a3e9c56623d2d8b74b6d432e900438b3eb1f487c405329",
+      "anchor_sha256": "e828e7a879c36440536bfad173157bf73985476aaf58d0872772e710936c099e",
+      "replacement_sha256": "34f2d0b4eb2cef9b1a124be6a4e21bb5bcc76d9f6aeaff747805270f639f6460",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 28,
+            "expected": "0x00000000",
+            "actual": "0x3f7ccccd"
+          },
+          "rgba8_witness": {
+            "index": 28,
+            "expected": 0,
+            "actual": 252
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 27,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x00000000",
+            "actual": "0x7fc00000"
+          },
+          "rgba8_witness": {
+            "index": 44,
+            "expected": 0,
+            "actual": 2
+          }
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": true,
+          "changed_float32_lanes": 75,
+          "changed_rgba8_bytes": 75,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x00000000",
+            "actual": "0x3f7d2de0"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 0,
+            "actual": 252
+          }
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 21,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 12,
+            "expected": "0x3f23fc52",
+            "actual": "0x00000000"
+          },
+          "rgba8_witness": {
+            "index": 12,
+            "expected": 163,
+            "actual": 0
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 4,
+            "expected": "0x00000000",
+            "actual": "0x3f84bdcf"
+          },
+          "rgba8_witness": {
+            "index": 4,
+            "expected": 0,
+            "actual": 255
+          }
+        }
+      ],
+      "result_sha256": "42ec22e4ddd36a79f7e3948d752d26c8cbed3bca71e69a3a2a9219130b97913b",
+      "witness_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-trap",
+        "manual-normal",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "poi-stripe",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "log-magnitude",
+      "group": "log-sites",
+      "mechanism": "mutate first log magnitude site",
+      "anchor": "var log_zn = log(mag2) * 0.5;",
+      "replacement": "var log_zn = log(mag2) * 0.25;",
+      "independent": true,
+      "source_anchor": "var log_zn = log(mag2) * 0.5;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "5cacdfb674a2f0a53afe052fd601ba57b3d7d7bcb714c91e444d9374b889156b",
+      "anchor_sha256": "f86c75929699353bf56b34a90d6afadc19868b2db0b00f79236ae72091caa26b",
+      "replacement_sha256": "8e19d810663972a4226e27d889dab51e02bf82eb3b5f8bdaa02025e0cd63c2f8",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x3ee26f4e"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 113
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": {
+            "index": 12,
+            "expected": "0x3efd8902",
+            "actual": "0x3efd8900"
+          },
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3e0238c6"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 32
+          }
+        }
+      ],
+      "result_sha256": "cf18a50b54c8632d3e0dadce0e788d6f23ac145223971a54cd5af30e13be6466",
+      "witness_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "manual-distance-tile",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "log-normalization",
+      "group": "log-sites",
+      "mechanism": "mutate second nested log normalization site",
+      "anchor": "(log(log_zn / LOG2)) / LOG2;",
+      "replacement": "(log(log_zn / LOG2)) / (LOG2 * 2);",
+      "independent": true,
+      "source_anchor": "(log(log_zn / LOG2)) / LOG2;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "9b544634e26db5db99cda6a48f009aa3ac5f57966ab7cde80f619dee472a7d15",
+      "anchor_sha256": "3e3253b2d30d3fd0693f823e55ac15d038caf28a941270c681765f262d4972a8",
+      "replacement_sha256": "4af6a7146d2988557638fae0785e86b91ba94a4114c5827f3ba0ece1bd526929",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": true,
+          "changed_float32_lanes": 6,
+          "changed_rgba8_bytes": 6,
+          "float32_witness": {
+            "index": 8,
+            "expected": "0x3edc08e7",
+            "actual": "0x3ee79e0d"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 110,
+            "actual": 115
+          }
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": true,
+          "changed_float32_lanes": 54,
+          "changed_rgba8_bytes": 48,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3ee51650",
+            "actual": "0x3ede6478"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 114,
+            "actual": 111
+          }
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": true,
+          "changed_float32_lanes": 15,
+          "changed_rgba8_bytes": 15,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3dc4718c",
+            "actual": "0x3e211c63"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 24,
+            "actual": 40
+          }
+        }
+      ],
+      "result_sha256": "a67f2ef1e0da74ea88f003f44e5726c1fb26f0612376194b16847a0edd5390c5",
+      "witness_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "period-bulb-control"
+      ],
+      "control_cases": [
+        "manual-distance-tile",
+        "poi-trap",
+        "manual-normal",
+        "manual-trap-escape"
+      ]
+    },
+    {
+      "name": "log-distance-magnitude",
+      "group": "log-sites",
+      "mechanism": "mutate outputDistance log(mag) site",
+      "anchor": "var dist = (2 * mag) * log(mag) / dmag;",
+      "replacement": "var dist = (2 * mag) * log(mag * 2) / dmag;",
+      "independent": true,
+      "source_anchor": "var dist = (2 * mag) * log(mag) / dmag;",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "55e654e4e6da35105f9ddbe9545b5bda59e7a2b3280dd7a767eae01345f16879",
+      "anchor_sha256": "2bf2f9ad8e6fa6f321200e704dc477da585cd0dde272c8abff2c38b9c602ef92",
+      "replacement_sha256": "36128d3e96de4c3bfa2d576abc50ed76945ce991c2ddd498dc66391f7a4ea042",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x38c7fc04",
+            "actual": "0x38d17db1"
+          },
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 21,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f0a495b"
+          },
+          "rgba8_witness": {
+            "index": 8,
+            "expected": 185,
+            "actual": 186
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "761082553dd02053966e6f7cf033366ff7b727544cdeaacc228cb949281e6ed1",
+      "witness_cases": [
+        "manual-distance-tile",
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "normal-h0",
+      "group": "normal-three-sample",
+      "mechanism": "mutate normal h0 sample coordinate",
+      "anchor": "var h0 = computeValueAt_df64(fragCoord, cX_df, cY_df, z_zoom, rot, maxIter);",
+      "replacement": "var h0 = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0] + 1, fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "independent": true,
+      "source_anchor": "var h0 = computeValueAt_df64(fragCoord, cX_df, cY_df, z_zoom, rot, maxIter);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "95c5ea0bbef10b1907f987f0c6db38fbf3d878bf1f13f95a7d7c1cd7e965b793",
+      "anchor_sha256": "2418a74145e066291d030fe3a6c559e4f208cd7e32a5b997174fb1b9126caef0",
+      "replacement_sha256": "57f12bc7a4eb9d46f8f7eb12726891991fdef04e773da450512578e8d0b9c7cc",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 30,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f0fa7e5"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 143
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "deac0c6f52667cad1f9d82d24abfed31802fe04b97de706736427e67f3a3f32c",
+      "witness_cases": [
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "normal-hx",
+      "group": "normal-three-sample",
+      "mechanism": "mutate normal hx sample coordinate",
+      "anchor": "var hx = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0] + 1, fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "replacement": "var hx = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0], fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "independent": true,
+      "source_anchor": "var hx = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0] + 1, fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "12d77bac5821955d3e577e741c05bac3998b4b261389f20f971c3e0a7a9c504c",
+      "anchor_sha256": "80e421c088ecd4842742af9ba99397538e1d0676c5262bf91817a82614bd1d20",
+      "replacement_sha256": "4cbec78390afb72543f28215603e466deb97df761a2d92a2067a98df4842b99c",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 33,
+          "changed_rgba8_bytes": 30,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f04d513"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 132
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "ab197584677136675686eace71fc2d5d62ca330aaf9dd7b8909d7662e93a9f0e",
+      "witness_cases": [
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    },
+    {
+      "name": "normal-hy",
+      "group": "normal-three-sample",
+      "mechanism": "mutate normal hy sample coordinate",
+      "anchor": "var hy = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0], fragCoord[1] + 1]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "replacement": "var hy = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0], fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "independent": true,
+      "source_anchor": "var hy = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0], fragCoord[1] + 1]), cX_df, cY_df, z_zoom, rot, maxIter);",
+      "anchor_occurrence_count": 1,
+      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
+      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+      "mutated_factory_text_sha256": "67da6fcc71d4a499992826be85817aad4c962951e22a5535c3d2c8608a1b3b8a",
+      "anchor_sha256": "7967833bf0174b43827b9f8e6239f6227e7af5df00f5f54f88f72aca7e24715c",
+      "replacement_sha256": "6fe57f1a12055c4005d116aaadb88e7e8e4f2ca11c6d673fc481e38b9f8469f3",
+      "results": [
+        {
+          "case": "manual-smooth",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-distance-tile",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-stripe",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "poi-trap",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "manual-normal",
+          "differs": true,
+          "changed_float32_lanes": 39,
+          "changed_rgba8_bytes": 36,
+          "float32_witness": {
+            "index": 0,
+            "expected": "0x3f0aa209",
+            "actual": "0x3f189971"
+          },
+          "rgba8_witness": {
+            "index": 0,
+            "expected": 138,
+            "actual": 152
+          }
+        },
+        {
+          "case": "manual-trap-escape",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        },
+        {
+          "case": "period-bulb-control",
+          "differs": false,
+          "changed_float32_lanes": 0,
+          "changed_rgba8_bytes": 0,
+          "float32_witness": null,
+          "rgba8_witness": null
+        }
+      ],
+      "result_sha256": "dfcd6758d3a71499f5378cdfee4ff83603ffd53df5597ce90aedf179a3c6edca",
+      "witness_cases": [
+        "manual-normal"
+      ],
+      "control_cases": [
+        "manual-smooth",
+        "manual-distance-tile",
+        "poi-stripe",
+        "poi-trap",
+        "manual-trap-escape",
+        "period-bulb-control"
+      ]
+    }
+  ],
+  "control_group": {
+    "repeatability": {
+      "case": "manual-smooth",
+      "identical_float32": true,
+      "identical_rgba8": true
+    },
+    "input_immutability": {
+      "case": "manual-smooth",
+      "unchanged": true
+    },
+    "independent_output_storage": {
+      "case": "manual-distance-tile",
+      "distinct_data_objects": true
+    },
+    "public_direct_identity": true
+  },
+  "cross_lane_assignment_profile": {
+    "status": "authenticated",
+    "contract": "whole-vector destination lanes are emitted as source-order sequential writes only for this exact key",
+    "source_bound": "mandelbrot source and canonical factory pins",
+    "anchor": "(dz[0] = 2 * (zx * dz[0] - zy * dz[1]) + 1, dz[1] = 2 * (zx * dz[1] + zy * dz[0]), dz);",
+    "replacement": "(dz = new $runtime.PooledFloat32Array([2 * (zx * dz[0] - zy * dz[1]) + 1, 2 * (zx * dz[1] + zy * dz[0])]), dz);",
+    "mutated_factory_text_sha256": "6098eca936e8451b3ccc971485cb67c5982d76f0f2d47f5694464bb6a1450d25"
+  },
+  "claim_boundaries": {
+    "absolute_paths": "stable placeholders only",
+    "authority": "unmodified public canonicalFactory252 from immutable snapshot; no local reimplementation or C++ output participates",
+    "adapter": "no adapter owns this key",
+    "mutations": "source/factory anchor replacements are executed authority mutations, not uniform perturbations"
+  }
+}

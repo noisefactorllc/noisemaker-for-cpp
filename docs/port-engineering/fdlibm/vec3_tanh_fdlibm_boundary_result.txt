@@ -1,0 +1,1 @@
+N=689942 mismatches=0

@@ -1,0 +1,300 @@
+{
+ "family": "unsupported counted-for program proof -- for-loop shape mismatch detail",
+ "reason_bucket_distribution": {
+  "induction variable is not int (is float)": 2,
+  "initializer is not a single int declaration": 1,
+  "loop body contains a return statement": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (FS_ERR_W)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MARCH_STEPS)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MAX_ITER)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MAX_TILE_DIM)": 2,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (POINT_COUNT)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (TILE_SIZE)": 2,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='local' (iterScaled)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='local' (numDigits)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (count)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (oct)": 1,
+  "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (octaves)": 1,
+  "loop bound is not a literal or an id (kind='swizzle')": 2,
+  "loop bound reads a uniform (runtime-variable trip count)": 1,
+  "start value is not an integer literal": 6,
+  "while/dowhile (never provable)": 4
+ },
+ "rows": [
+  {
+   "key": "classicNoisedeck/effects:effects",
+   "loops": [
+    {
+     "function": "zoomBlur",
+     "kind": "for",
+     "reason": "induction variable is not int (is float)",
+     "span": "531:5"
+    }
+   ]
+  },
+  {
+   "key": "classicNoisedeck/fractal:fractal",
+   "loops": [
+    {
+     "function": "julia",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='local' (iterScaled)",
+     "span": "261:5"
+    },
+    {
+     "function": "mandelbrot",
+     "kind": "for",
+     "reason": "initializer is not a single int declaration",
+     "span": "301:5"
+    },
+    {
+     "function": "newton",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='uniform' (iterations)",
+     "span": "220:5"
+    }
+   ]
+  },
+  {
+   "key": "classicNoisedeck/noise:noise",
+   "loops": [
+    {
+     "function": "multires",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (octaves)",
+     "span": "533:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/blur:blurH",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/blur:blurV",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "33:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/dither:dither",
+   "loops": [
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (FS_ERR_W)",
+     "span": "521:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "526:5"
+    },
+    {
+     "function": "errorDiffusion",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "533:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/lightLeak:lightLeak",
+   "loops": [
+    {
+     "function": "voronoiCell",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (POINT_COUNT)",
+     "span": "65:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/median:median",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "while",
+     "reason": "while loop -- mechanism only ever proves 'for' loops",
+     "span": "63:5"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "reason": "while loop -- mechanism only ever proves 'for' loops",
+     "span": "68:9"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "reason": "while loop -- mechanism only ever proves 'for' loops",
+     "span": "69:13"
+    },
+    {
+     "function": "main",
+     "kind": "while",
+     "reason": "while loop -- mechanism only ever proves 'for' loops",
+     "span": "70:13"
+    }
+   ]
+  },
+  {
+   "key": "filter/normalize:statsFinal",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or an id (kind='swizzle')",
+     "span": "18:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or an id (kind='swizzle')",
+     "span": "19:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/oilPaint:oilFlatten",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "33:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "start value is not an integer literal",
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/parallax:parallax",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MARCH_STEPS)",
+     "span": "59:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/reindex:nmReindexReduce",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MAX_TILE_DIM)",
+     "span": "32:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MAX_TILE_DIM)",
+     "span": "34:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/reindex:nmReindexStats",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (TILE_SIZE)",
+     "span": "72:5"
+    },
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (TILE_SIZE)",
+     "span": "75:9"
+    }
+   ]
+  },
+  {
+   "key": "filter/smooth:smoothBlend",
+   "loops": [
+    {
+     "function": "searchEdge",
+     "kind": "for",
+     "reason": "loop body contains a return statement",
+     "span": "102:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/tetraColorArray:tetraColorArray",
+   "loops": [
+    {
+     "function": "sampleColorArray",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (count)",
+     "span": "243:5"
+    }
+   ]
+  },
+  {
+   "key": "filter/zoomBlur:zoomBlur",
+   "loops": [
+    {
+     "function": "main",
+     "kind": "for",
+     "reason": "induction variable is not int (is float)",
+     "span": "43:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/mandelbrot:mandelbrot",
+   "loops": [
+    {
+     "function": "mandelbrot_df64",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='const' (MAX_ITER)",
+     "span": "226:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/noise:noise",
+   "loops": [
+    {
+     "function": "multires",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='parameter' (oct)",
+     "span": "250:5"
+    }
+   ]
+  },
+  {
+   "key": "synth/testPattern:testPattern",
+   "loops": [
+    {
+     "function": "renderNumber",
+     "kind": "for",
+     "reason": "loop bound is not a literal or already-proved local const -- it's an id read of storage='local' (numDigits)",
+     "span": "61:5"
+    }
+   ]
+  }
+ ]
+}

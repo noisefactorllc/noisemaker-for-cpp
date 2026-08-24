@@ -1,0 +1,46 @@
+// ---------------------------------------------------------------------------
+// Screen-space derivatives (dFdx / dFdy / fwidth)
+//
+// Mirrors `GlslRuntime.#derivative` and `GlslRuntime.wrapDerivatives` in
+// noisemaker-for-cpu/src/csl/glsl-runtime.js:448-546. The reference keeps a
+// per-invocation ordinal (`derivativeIndex`, reset by `beginPixel`) and runs
+// the whole kernel body four extra times per 2x2 quad in 'record' mode to
+// capture each derivative call's *input*, then once more in 'replay' mode to
+// produce the real output from the differenced inputs.
+//
+// Narrowing is deliberately asymmetric, exactly as the reference is:
+//   * scalars  - `derivativeRecords[i] = value` stores a raw JS Number, so the
+//                difference is taken in double and narrowed once on the way
+//                out (`F32(selected)`, line 461).
+//   * vectors  - `Array.from(value)` of a Float32Array is already float32, and
+//                `x`/`y`/`footprint` are themselves Float32Array, so each
+//                component is narrowed at every store (lines 524-531) and the
+//                replay copy (`out.set`) narrows nothing further.
+// ---------------------------------------------------------------------------
+enum class DerivativeMode { Approximate, Record, Replay };
+enum class DerivativeKind { X, Y, Width };
+
+// One recorded derivative-call input. `lanes == 0` denotes the scalar case.
+struct DerivativeRecord {
+  std::size_t lanes = 0;
+  double scalar = 0.0;
+  float vector[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+};
+
+// The differenced result for one ordinal, shaped like the record it came from.
+struct DerivativeValue {
+  std::size_t lanes = 0;
+  double scalar_x = 0.0;
+  double scalar_y = 0.0;
+  double scalar_width = 0.0;
+  float vector_x[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+  float vector_y[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+  float vector_width[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+};
+
+struct DerivativeState {
+  DerivativeMode mode = DerivativeMode::Approximate;
+  std::size_t index = 0;
+  std::vector<DerivativeRecord> records;
+  std::vector<DerivativeValue> values;
+};

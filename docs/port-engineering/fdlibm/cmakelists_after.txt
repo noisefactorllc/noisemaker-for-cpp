@@ -1,0 +1,63 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(noisemaker-for-cpp LANGUAGES CXX)
+
+find_package(ZLIB REQUIRED)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+add_library(noisemaker-cpu
+  src/surface.cpp
+  src/numeric.cpp
+  src/fdlibm.cpp
+  src/sampler.cpp
+  src/texture_format.cpp
+  src/png.cpp
+  src/glsl_runtime.cpp
+  src/kernel.cpp
+  src/pass_runner.cpp
+  src/generated/synth_solid.cpp
+  src/generated/filter_invert.cpp
+  src/typed_generated/typed_slice.cpp
+)
+target_include_directories(noisemaker-cpu PUBLIC include)
+target_link_libraries(noisemaker-cpu PRIVATE ZLIB::ZLIB)
+target_compile_options(noisemaker-cpu PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+# Task-5's immutable proof artifact intentionally retains one unused context
+# parameter and helper. Keep it byte-identical while strict AppleClang warnings
+# apply to every other translation unit, including the new typed slice.
+set_source_files_properties(src/generated/synth_solid.cpp PROPERTIES
+  COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wno-unused-parameter;-Wno-unused-function>"
+)
+
+add_executable(noisemaker-cpu-tests
+  tests/test_main.cpp
+  tests/test_surface.cpp
+  tests/test_numeric.cpp
+  tests/test_sampler.cpp
+  tests/test_texture_format.cpp
+  tests/test_png.cpp
+  tests/test_glsl_types.cpp
+  tests/test_glsl_runtime.cpp
+  tests/test_kernel.cpp
+  tests/test_pass_runner.cpp
+  tests/test_generated_kernels.cpp
+  tests/test_typed_slice.cpp
+)
+target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
+target_compile_options(noisemaker-cpu-tests PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+add_executable(noisemaker-cpu-example-perlin examples/perlin.cpp)
+target_link_libraries(noisemaker-cpu-example-perlin PRIVATE noisemaker-cpu)
+target_compile_options(noisemaker-cpu-example-perlin PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+enable_testing()
+add_test(NAME noisemaker-cpu-tests COMMAND noisemaker-cpu-tests)

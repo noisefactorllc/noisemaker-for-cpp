@@ -1,0 +1,7 @@
+    {{0x00000000U,0x00000000U}, {0x00000000U,0x00000000U}, {true,true}, true, true, {false,false}},
+    {{0x3f800000U,0x40000000U}, {0x3f800000U,0x40000000U}, {true,true}, true, true, {false,false}},
+    {{0x3f800000U,0x40000000U}, {0x3f800000U,0x40400000U}, {true,true}, true, true, {false,true}},
+    {{0x3f800000U,0x40000000U}, {0x40000000U,0x40000000U}, {true,true}, true, true, {true,false}},
+    {{0x80000000U,0x00000000U}, {0x00000000U,0x00000000U}, {true,true}, true, true, {false,false}},
+    {{0xbf800000U,0x40a00000U}, {0xbf800000U,0x40800000U}, {true,false}, false, true, {false,false}},
+    {{0x4b800000U,0x4b800000U}, {0x4b800000U,0x4b800000U}, {true,true}, true, true, {false,false}},

@@ -1,0 +1,3996 @@
+{
+  "schema": "noisemaker-for-cpp.loopproof.oracle-b.eight-program-loop-trip-count-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "glsl_kernel_sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
+    "glsl_runtime_sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
+    "pass_runner_sha256": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
+    "surface_sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "fractal_adapter_source_sha256": "67266ec1ade502d9ddf7032cff0f905162faf898c1dbfcafc4ba191e2ca8e4ac",
+    "median_adapter_source_sha256": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
+    "node": "v24.7.0"
+  },
+  "programs": {
+    "nmReindexReduce": {
+      "id": "nmReindexReduce",
+      "key": "filter/reindex:nmReindexReduce",
+      "defines": {},
+      "cases": [
+        {
+          "name": "min-in-last-row-y-axis",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": true,
+            "swap": true
+          },
+          "uniforms": {},
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "aba4a26bd07150e813092447c22842b805caf48b601fc14e2b7d78f3c0318818",
+            "rgba8_sha256": "7b2b1ebcff4ad47dbcddedf847400fa4f275ec464c04a83e0fb9aaf598d587c2",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.009999999776482582,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c23d70a",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.009999999776482582,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c23d70a",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.009999999776482582,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c23d70a",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.009999999776482582,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c23d70a",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.009999999776482582,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3c23d70a",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "max-in-last-col-x-axis",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": true,
+            "swap": true
+          },
+          "uniforms": {},
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "76ff8389e43ed497886395a40197497466a1869b61ac5f6a3428eb4951f47552",
+            "rgba8_sha256": "b4126f0d1d1f1cec8044c18052d68f0d92e50e61b043743e07259b986631450b",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.05000000074505806,
+                  0.949999988079071,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d4ccccd",
+                  "0x3f733333",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.05000000074505806,
+                  0.949999988079071,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d4ccccd",
+                  "0x3f733333",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.05000000074505806,
+                  0.949999988079071,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d4ccccd",
+                  "0x3f733333",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.05000000074505806,
+                  0.949999988079071,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d4ccccd",
+                  "0x3f733333",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.05000000074505806,
+                  0.949999988079071,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3d4ccccd",
+                  "0x3f733333",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "small-3x3-grid-multi-tile-drop",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": false,
+            "swap": true
+          },
+          "uniforms": {},
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "2efa59f25fac42a86e77c79dc477dc8de911a4574f130b79a5744f85ccf099cf",
+            "rgba8_sha256": "5bcefff1e97b1e178efd3060e3884e27b5a4251b23a74f414ea1d564513cfbcf",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.019999999552965164,
+                  0.9200000166893005,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ca3d70a",
+                  "0x3f6b851f",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.019999999552965164,
+                  0.9200000166893005,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ca3d70a",
+                  "0x3f6b851f",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.019999999552965164,
+                  0.9200000166893005,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ca3d70a",
+                  "0x3f6b851f",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.019999999552965164,
+                  0.9200000166893005,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ca3d70a",
+                  "0x3f6b851f",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.019999999552965164,
+                  0.9200000166893005,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ca3d70a",
+                  "0x3f6b851f",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "single-tile-diagnostic",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": true,
+          "reach": {
+            "offByOne": false,
+            "swap": false
+          },
+          "uniforms": {},
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "10e63f3b52a7d9a59f6dba89e9321eeb730bbe5a375659da9ef644cea68def24",
+            "rgba8_sha256": "49c73167083c210a75983a553f1d0780bd3e2623f1e05a6329828009f72f65a8",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10000000149011612,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcccccd",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10000000149011612,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcccccd",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10000000149011612,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcccccd",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10000000149011612,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcccccd",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.10000000149011612,
+                  0.8999999761581421,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dcccccd",
+                  "0x3f666666",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "nmReindexReduce-tile-cap-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "offByOne",
+          "anchor": "var MAX_TILE_DIM = 512;",
+          "mutated": "var MAX_TILE_DIM = 4;",
+          "description": "Shrink the shared tile-scan cap from 512 to 4: drops tile row/col index 4 from BOTH nested loops (they share one symbol). Reach-eligible exactly when a case's tileCount.x or tileCount.y exceeds 4.",
+          "case_results": [
+            {
+              "case": "min-in-last-row-y-axis",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "max-in-last-col-x-axis",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "small-3x3-grid-multi-tile-drop",
+              "diagnostic": false,
+              "reaches": false,
+              "diverges": false
+            },
+            {
+              "case": "single-tile-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 2,
+            "divergent_reaching": 2,
+            "non_reaching_cases": 2,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "nmReindexReduce-tile-cap-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "swap",
+          "anchor": "var MAX_TILE_DIM = 512;",
+          "mutated": "var MAX_TILE_DIM = 1;",
+          "description": "Shrink the shared tile-scan cap to 1: a materially wrong trip count, visiting only tile (0,0) regardless of true tileCount. Reach-eligible whenever a case's tileCount.x or tileCount.y exceeds 1.",
+          "case_results": [
+            {
+              "case": "min-in-last-row-y-axis",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "max-in-last-col-x-axis",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "small-3x3-grid-multi-tile-drop",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "single-tile-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    },
+    "mandelbrot": {
+      "id": "mandelbrot",
+      "key": "synth/mandelbrot:mandelbrot",
+      "defines": {},
+      "cases": [
+        {
+          "name": "never-escapes-real-axis-boundary",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": true,
+            "swap": true
+          },
+          "uniforms": {
+            "poi": 0,
+            "outputMode": 0,
+            "iterations": 500,
+            "centerHiX": -1.256,
+            "centerHiY": 0,
+            "centerLoX": 0,
+            "centerLoY": 0,
+            "zoomSpeed": 0,
+            "zoomDepth": 0,
+            "invert": 0,
+            "stripeFreq": 0,
+            "trapShape": 0,
+            "lightAngle": 0,
+            "rotation": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+            "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "moderate-escape-273-seahorse-tip",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": false,
+            "swap": true
+          },
+          "uniforms": {
+            "poi": 0,
+            "outputMode": 0,
+            "iterations": 500,
+            "centerHiX": -0.74543,
+            "centerHiY": 0.11301,
+            "centerLoX": 0,
+            "centerLoY": 0,
+            "zoomSpeed": 0,
+            "zoomDepth": 0,
+            "invert": 0,
+            "stripeFreq": 0,
+            "trapShape": 0,
+            "lightAngle": 0,
+            "rotation": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "04b6da77619e432e300deeb26ece9ec2649b51eeebd14fbf4b14606ac2b06495",
+            "rgba8_sha256": "1325e312c1ed19752f5ae7a463e3f6ca3df90c7fc2779645144add0fb53a0431",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  0.5465710163116455,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f0bec14",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "slow-escape-112-seahorse-alt",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "offByOne": false,
+            "swap": true
+          },
+          "uniforms": {
+            "poi": 0,
+            "outputMode": 0,
+            "iterations": 500,
+            "centerHiX": -0.7269,
+            "centerHiY": 0.1889,
+            "centerLoX": 0,
+            "centerLoY": 0,
+            "zoomSpeed": 0,
+            "zoomDepth": 0,
+            "invert": 0,
+            "stripeFreq": 0,
+            "trapShape": 0,
+            "lightAngle": 0,
+            "rotation": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "ae1ea09d439ef8dd7cdc3da120dd6d8af216527e0e2873f3dd583624504403c4",
+            "rgba8_sha256": "7019c7a9cbef5ceaf857d55042fca17bd8b2a2785268d2b0d7034910d3f2dbaf",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  0.22460207343101501,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3e65fe16",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "cardioid-early-out-diagnostic",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": true,
+          "reach": {
+            "offByOne": false,
+            "swap": false
+          },
+          "uniforms": {
+            "poi": 0,
+            "outputMode": 0,
+            "iterations": 500,
+            "centerHiX": 0,
+            "centerHiY": 0,
+            "centerLoX": 0,
+            "centerLoY": 0,
+            "zoomSpeed": 0,
+            "zoomDepth": 0,
+            "invert": 0,
+            "stripeFreq": 0,
+            "trapShape": 0,
+            "lightAngle": 0,
+            "rotation": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+            "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "fast-escape-far-outside-diagnostic",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": true,
+          "reach": {
+            "offByOne": false,
+            "swap": false
+          },
+          "uniforms": {
+            "poi": 0,
+            "outputMode": 0,
+            "iterations": 500,
+            "centerHiX": 2.5,
+            "centerHiY": 2.5,
+            "centerLoX": 0,
+            "centerLoY": 0,
+            "zoomSpeed": 0,
+            "zoomDepth": 0,
+            "invert": 0,
+            "stripeFreq": 0,
+            "trapShape": 0,
+            "lightAngle": 0,
+            "rotation": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "965fab9464705b2c88b44ecf84a0a9fa477a871f5227bf4395d7ca9ba76b04f1",
+            "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  0.00005692213017027825,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x386ebfac",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "mandelbrot-max-iter-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "offByOne",
+          "anchor": "for (var n = 0; n < MAX_ITER; n++) {",
+          "mutated": "for (var n = 0; n < 499; n++) {",
+          "description": "Drop the static cap from 500 to 499 -- the smallest possible wrong trip count. Only the never-escapes case (true rawIter=500) reaches a cap this close to the real bound.",
+          "case_results": [
+            {
+              "case": "never-escapes-real-axis-boundary",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "moderate-escape-273-seahorse-tip",
+              "diagnostic": false,
+              "reaches": false,
+              "diverges": false
+            },
+            {
+              "case": "slow-escape-112-seahorse-alt",
+              "diagnostic": false,
+              "reaches": false,
+              "diverges": false
+            },
+            {
+              "case": "cardioid-early-out-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            },
+            {
+              "case": "fast-escape-far-outside-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 1,
+            "divergent_reaching": 1,
+            "non_reaching_cases": 4,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "mandelbrot-max-iter-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "swap",
+          "anchor": "for (var n = 0; n < MAX_ITER; n++) {",
+          "mutated": "for (var n = 0; n < 80; n++) {",
+          "description": "Shrink the static cap to 80 -- a materially wrong trip count. Reach-eligible for all three non-diagnostic cases (true iteration counts 500/273/112, all exceeding 80).",
+          "case_results": [
+            {
+              "case": "never-escapes-real-axis-boundary",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "moderate-escape-273-seahorse-tip",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "slow-escape-112-seahorse-alt",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "cardioid-early-out-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            },
+            {
+              "case": "fast-escape-far-outside-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 2,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    },
+    "median": {
+      "id": "median",
+      "key": "filter/median:median",
+      "defines": {
+        "RADIUS": 3
+      },
+      "ground_truth": "adapter (medianFactory) -- see module header / report for why",
+      "cases": [
+        {
+          "name": "high-variance-8x8",
+          "dimensions": {
+            "width": 8,
+            "height": 8
+          },
+          "diagnostic": false,
+          "reach": {
+            "cap1": true,
+            "cap5": true
+          },
+          "uniforms": {
+            "RADIUS": 3,
+            "threshold": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            8,
+            8
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "5b58355225d6766d0ab960b52990b26a4962d8bcd77d98e4b3200a1d837c8470",
+            "rgba8_sha256": "3fe5bb629ed8575e0e60c917afcee3b58cd7d50a9a66ce911ca57f299a660983",
+            "finite_lanes": 256,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.3564453125,
+                  0.669921875,
+                  0.4833984375,
+                  0.06976744532585144
+                ],
+                "f32_bits_le": [
+                  "0x3eb68000",
+                  "0x3f2b8000",
+                  "0x3ef78000",
+                  "0x3d8ee23c"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  7,
+                  0
+                ],
+                "values": [
+                  0.9208984375,
+                  0.5361328125,
+                  0.252685546875,
+                  0.5348837375640869
+                ],
+                "f32_bits_le": [
+                  "0x3f6bc000",
+                  "0x3f094000",
+                  "0x3e816000",
+                  "0x3f08ee24"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  7
+                ],
+                "values": [
+                  0.57421875,
+                  0.58740234375,
+                  0.8681640625,
+                  0.5116279125213623
+                ],
+                "f32_bits_le": [
+                  "0x3f130000",
+                  "0x3f166000",
+                  "0x3f5e4000",
+                  "0x3f02fa0c"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  7,
+                  7
+                ],
+                "values": [
+                  0.158447265625,
+                  0.62890625,
+                  0.85693359375,
+                  0.302325576543808
+                ],
+                "f32_bits_le": [
+                  "0x3e224000",
+                  "0x3f210000",
+                  "0x3f5b6000",
+                  "0x3e9aca6b"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  4,
+                  4
+                ],
+                "values": [
+                  0.82177734375,
+                  0.38134765625,
+                  0.24169921875,
+                  0.39534884691238403
+                ],
+                "f32_bits_le": [
+                  "0x3f526000",
+                  "0x3ec34000",
+                  "0x3e778000",
+                  "0x3eca6b2a"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "high-variance-6x5",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "cap1": true,
+            "cap5": true
+          },
+          "uniforms": {
+            "RADIUS": 3,
+            "threshold": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            6,
+            5
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "1c5819a2ef40e2e03ab1b67f46e321f3edfdfbf3411c5903692099df23c23c9b",
+            "rgba8_sha256": "a8bb162ff881e79538a9a640fb44e0c724197432c7a7ef8bc1b857f4a2c37b03",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.04949951171875,
+                  0.61865234375,
+                  0.560546875,
+                  0.09302325546741486
+                ],
+                "f32_bits_le": [
+                  "0x3d4ac000",
+                  "0x3f1e6000",
+                  "0x3f0f8000",
+                  "0x3dbe82fa"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.158447265625,
+                  0.65966796875,
+                  0.428466796875,
+                  0.23255814611911774
+                ],
+                "f32_bits_le": [
+                  "0x3e224000",
+                  "0x3f28e000",
+                  "0x3edb6000",
+                  "0x3e6e23b9"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.25732421875,
+                  0.59814453125,
+                  0.10986328125,
+                  0.44186046719551086
+                ],
+                "f32_bits_le": [
+                  "0x3e83c000",
+                  "0x3f192000",
+                  "0x3de10000",
+                  "0x3ee23b89"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.83154296875,
+                  0.3505859375,
+                  0.6484375,
+                  0.5813953280448914
+                ],
+                "f32_bits_le": [
+                  "0x3f54e000",
+                  "0x3eb38000",
+                  "0x3f260000",
+                  "0x3f14d653"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.25732421875,
+                  0.59814453125,
+                  0.10986328125,
+                  0.41860464215278625
+                ],
+                "f32_bits_le": [
+                  "0x3e83c000",
+                  "0x3f192000",
+                  "0x3de10000",
+                  "0x3ed65359"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "high-variance-7x7",
+          "dimensions": {
+            "width": 7,
+            "height": 7
+          },
+          "diagnostic": false,
+          "reach": {
+            "cap1": true,
+            "cap5": true
+          },
+          "uniforms": {
+            "RADIUS": 3,
+            "threshold": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            7,
+            7
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "c37307cb6f8f02e47984cca3d5a13034e5211f5848ac6874f81d5cc7771e10c1",
+            "rgba8_sha256": "5f8a8a5e0e82807d07ef0eb840b9646b44c1ecf24a5ac3b22a784d34f1d9617a",
+            "finite_lanes": 196,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.73291015625,
+                  0.226806640625,
+                  0.208740234375,
+                  0.11627907305955887
+                ],
+                "f32_bits_le": [
+                  "0x3f3ba000",
+                  "0x3e684000",
+                  "0x3e55c000",
+                  "0x3dee23b9"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  6,
+                  0
+                ],
+                "values": [
+                  0.0693359375,
+                  0.47412109375,
+                  0.82421875,
+                  0.41860464215278625
+                ],
+                "f32_bits_le": [
+                  "0x3d8e0000",
+                  "0x3ef2c000",
+                  "0x3f530000",
+                  "0x3ed65359"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  6
+                ],
+                "values": [
+                  0.128662109375,
+                  0.814453125,
+                  0.098876953125,
+                  0.302325576543808
+                ],
+                "f32_bits_le": [
+                  "0x3e03c000",
+                  "0x3f508000",
+                  "0x3dca8000",
+                  "0x3e9aca6b"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  6,
+                  6
+                ],
+                "values": [
+                  0.059417724609375,
+                  0.58740234375,
+                  0.054931640625,
+                  0.604651153087616
+                ],
+                "f32_bits_le": [
+                  "0x3d736000",
+                  "0x3f166000",
+                  "0x3d610000",
+                  "0x3f1aca6b"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  3
+                ],
+                "values": [
+                  0.059417724609375,
+                  0.58740234375,
+                  0.054931640625,
+                  0.6976743936538696
+                ],
+                "f32_bits_le": [
+                  "0x3d736000",
+                  "0x3f166000",
+                  "0x3d610000",
+                  "0x3f329aca"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "uniform-color-diagnostic",
+          "dimensions": {
+            "width": 6,
+            "height": 6
+          },
+          "diagnostic": true,
+          "reach": {
+            "cap1": false,
+            "cap5": false
+          },
+          "uniforms": {
+            "RADIUS": 3,
+            "threshold": 0
+          },
+          "tile_offset": [
+            0,
+            0
+          ],
+          "full_resolution": [
+            6,
+            6
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "a102ef145e8a24afb37ec4aa50a8d6bd42e6b02e7c28396c42d5e9a49a92a177",
+            "rgba8_sha256": "6c8276aa9be792c90b09d773c2f5c65e71bc13fa220b377ec9f5698350a7beab",
+            "finite_lanes": 144,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.300048828125,
+                  0.5,
+                  0.7001953125,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e99a000",
+                  "0x3f000000",
+                  "0x3f334000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.300048828125,
+                  0.5,
+                  0.7001953125,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e99a000",
+                  "0x3f000000",
+                  "0x3f334000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  5
+                ],
+                "values": [
+                  0.300048828125,
+                  0.5,
+                  0.7001953125,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e99a000",
+                  "0x3f000000",
+                  "0x3f334000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  5
+                ],
+                "values": [
+                  0.300048828125,
+                  0.5,
+                  0.7001953125,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e99a000",
+                  "0x3f000000",
+                  "0x3f334000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  3
+                ],
+                "values": [
+                  0.300048828125,
+                  0.5,
+                  0.7001953125,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e99a000",
+                  "0x3f000000",
+                  "0x3f334000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "median-outer-convergence-cap-1",
+          "kind": "trip_count_swap",
+          "reach_key": "cap1",
+          "anchor": "while (left < right) {",
+          "mutated": "for (let __cap = 0; (left < right) && (__cap < 1); __cap++) {",
+          "description": "Cap the outer quickselect convergence loop at 1 pass -- severe, provably-terminating (bounded by a counter, not data) trip-count reduction. Reach-eligible on all three high-variance cases (true convergence depth >10); the uniform-color diagnostic already converges within 1 pass and is expected-zero.",
+          "case_results": [
+            {
+              "case": "high-variance-8x8",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "high-variance-6x5",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "high-variance-7x7",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "uniform-color-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "median-outer-convergence-cap-5",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "cap5",
+          "anchor": "while (left < right) {",
+          "mutated": "for (let __cap = 0; (left < right) && (__cap < 5); __cap++) {",
+          "description": "Cap the outer quickselect convergence loop at 5 passes -- milder than cap-1 but still well under the true convergence depth (>10) for all three high-variance cases; the uniform-color diagnostic is unaffected (converges in 1 pass).",
+          "case_results": [
+            {
+              "case": "high-variance-8x8",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "high-variance-6x5",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "high-variance-7x7",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "uniform-color-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        }
+      ],
+      "canonical_factory_defect": {
+        "attempts": [
+          {
+            "width": 4,
+            "height": 4,
+            "threw": false,
+            "message": null
+          },
+          {
+            "width": 5,
+            "height": 5,
+            "threw": true,
+            "message": "Cannot read properties of undefined (reading 'length')"
+          },
+          {
+            "width": 6,
+            "height": 6,
+            "threw": false,
+            "message": null
+          }
+        ],
+        "isolated_repro_note": "canonicalFactory80 crashes on this exact 5x5 patterned input; 4x4 and 6x6 render fine with the identical algorithm shape and identical uniform contract -- data-dependent, not a hermeticity mistake in this generator."
+      },
+      "avoided_mutation": {
+        "anchor": "while (scanLeft <= scanRight) {",
+        "attempted_mutation": "while (scanLeft < scanRight) {",
+        "outcome": "INFINITE LOOP -- verified live, killed after exceeding a 120s wall-clock watchdog on an 8x8 patterned render; a synchronous JS while-loop blocks the event loop so no in-process timer can preempt it",
+        "root_cause": "dropping the `<=` boundary loses the guarantee that scanLeft/scanRight cross by the end of the middle loop; when they instead land exactly on medianIndex, neither outer-loop narrowing branch fires and left/right are unchanged forever",
+        "disposition": "AVOIDED as a mutation site entirely. Both mutations below instead cap the OUTER `while (left < right)` convergence loop with an explicit counter, which provably terminates by construction regardless of data, sidestepping this hazard rather than working around it case-by-case."
+      }
+    },
+    "classicNoisedeckNoise": {
+      "id": "classicNoisedeckNoise",
+      "key": "classicNoisedeck/noise:noise",
+      "defines": {
+        "COLOR_MODE": 6,
+        "LOOP_OFFSET": 300,
+        "METRIC": 0,
+        "REFRACT_MODE": 2,
+        "NOISE_TYPE": 10
+      },
+      "cases": [
+        {
+          "name": "three-octaves",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "COLOR_MODE": 6,
+            "LOOP_OFFSET": 300,
+            "METRIC": 0,
+            "REFRACT_MODE": 2,
+            "NOISE_TYPE": 10,
+            "seed": 1,
+            "xScale": 75,
+            "yScale": 75,
+            "octaves": 3,
+            "ridges": false,
+            "refractAmt": 0,
+            "kaleido": 1,
+            "loopScale": 75,
+            "speed": 10,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ],
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 25,
+            "hueRotation": 179,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "e593f6ae405fd5415b15dab3e300bee0d5daf0fc86fda60fdcbaddc61949f41f",
+            "rgba8_sha256": "a8885b365df225051270dcaa48ecd8625601d391195d8724185811cd051fddba",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.45152512192726135,
+                  0.4296462833881378,
+                  0.5349928736686707,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ee72e4d",
+                  "0x3edbfa99",
+                  "0x3f08f54b",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.1477053314447403,
+                  0.1534135341644287,
+                  0.33154532313346863,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e174011",
+                  "0x3e1d1870",
+                  "0x3ea9c04f",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.287282258272171,
+                  0.31629255414009094,
+                  0.3954656422138214,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e9316a9",
+                  "0x3ea1f119",
+                  "0x3eca7a79",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.32093003392219543,
+                  0.21586886048316956,
+                  0.633144736289978,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ea450f1",
+                  "0x3e5d0cba",
+                  "0x3f2215c6",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.09601014852523804,
+                  0.09309449046850204,
+                  0.16629408299922943,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dc4a0f8",
+                  "0x3dbea853",
+                  "0x3e2a48ff",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "four-octaves",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "COLOR_MODE": 6,
+            "LOOP_OFFSET": 300,
+            "METRIC": 0,
+            "REFRACT_MODE": 2,
+            "NOISE_TYPE": 10,
+            "seed": 1,
+            "xScale": 75,
+            "yScale": 75,
+            "octaves": 4,
+            "ridges": false,
+            "refractAmt": 0,
+            "kaleido": 1,
+            "loopScale": 75,
+            "speed": 10,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ],
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 25,
+            "hueRotation": 179,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "8d8765e1320ea796a2cb9430039659a38ce8aa6b58bbb865b9cb3c070135c581",
+            "rgba8_sha256": "410a34652af4558a366cb91dbf790143ea46ea16483e5ac725befb3f34410eed",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.43017682433128357,
+                  0.41104093194007874,
+                  0.5213428139686584,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3edc4023",
+                  "0x3ed273f5",
+                  "0x3f0576b9",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.15116961300373077,
+                  0.1666691154241562,
+                  0.3585778474807739,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e1acc35",
+                  "0x3e2aab4f",
+                  "0x3eb79784",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.2993341386318207,
+                  0.33193767070770264,
+                  0.40260621905326843,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e994253",
+                  "0x3ea9f3bc",
+                  "0x3ece2267",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.2640233337879181,
+                  0.19253115355968475,
+                  0.6049356460571289,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e872e11",
+                  "0x3e4526e3",
+                  "0x3f1add10",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.08230677247047424,
+                  0.08243360370397568,
+                  0.1556333750486374,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3da89074",
+                  "0x3da8d2f3",
+                  "0x3e1f5e5b",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "six-octaves-saturation-check",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "COLOR_MODE": 6,
+            "LOOP_OFFSET": 300,
+            "METRIC": 0,
+            "REFRACT_MODE": 2,
+            "NOISE_TYPE": 10,
+            "seed": 1,
+            "xScale": 75,
+            "yScale": 75,
+            "octaves": 6,
+            "ridges": false,
+            "refractAmt": 0,
+            "kaleido": 1,
+            "loopScale": 75,
+            "speed": 10,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ],
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 25,
+            "hueRotation": 179,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "63552decceb85dfe5774f0282fed3ec4e71bbe7bd4163a0fb7cefea1603d5882",
+            "rgba8_sha256": "100f62dbde1621603d4ae57cbe498e612eac3b3dcf8021a8302b5533f643fcfa",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.403527170419693,
+                  0.38677501678466797,
+                  0.5046356916427612,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ece9b1d",
+                  "0x3ec60760",
+                  "0x3f012fce",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.15394049882888794,
+                  0.17071163654327393,
+                  0.35197585821151733,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e1da294",
+                  "0x3e2ecf08",
+                  "0x3eb4362e",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.30778270959854126,
+                  0.3377951383590698,
+                  0.40938541293144226,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e9d95b2",
+                  "0x3eacf37c",
+                  "0x3ed19af7",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.2513454556465149,
+                  0.19214758276939392,
+                  0.5957767367362976,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e80b05a",
+                  "0x3e44c256",
+                  "0x3f1884d3",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.09541656076908112,
+                  0.09847364574670792,
+                  0.17668995261192322,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3dc369c2",
+                  "0x3dc9ac8d",
+                  "0x3e34ee36",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "classicNoisedeckNoise-octave-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "default",
+          "anchor": "for (var i = 1; i <= octaves; i++) {",
+          "mutated": "for (var i = 1; i < octaves; i++) {",
+          "description": "Drop the last octave (i<octaves instead of i<=octaves): smallest possible wrong trip count. Verified live to diverge at octaves=3, 4, and 6 -- the geometric weight decay (1/2^i) has not saturated the mutated last octave into float32 invisibility at any of these counts.",
+          "case_results": [
+            {
+              "case": "three-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "four-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "six-octaves-saturation-check",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "classicNoisedeckNoise-octave-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "default",
+          "anchor": "for (var i = 1; i <= octaves; i++) {",
+          "mutated": "for (var i = 1; i <= octaves - 2; i++) {",
+          "description": "Drop the last two octaves: a materially wrong trip count, verified live to diverge at octaves=3, 4, and 6.",
+          "case_results": [
+            {
+              "case": "three-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "four-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "six-octaves-saturation-check",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    },
+    "synthNoise": {
+      "id": "synthNoise",
+      "key": "synth/noise:noise",
+      "defines": {
+        "LOOP_OFFSET": 300,
+        "NOISE_TYPE": 10
+      },
+      "cases": [
+        {
+          "name": "three-octaves",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "LOOP_OFFSET": 300,
+            "NOISE_TYPE": 10,
+            "scaleX": 75,
+            "scaleY": 75,
+            "octaves": 3,
+            "ridges": false,
+            "loopScale": 75,
+            "speed": 10,
+            "colorMode": 0,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "118b29ffb7adcfa1b85df61ef0c7d262e191e5c8dcef118e8cd40a8dbd491497",
+            "rgba8_sha256": "777b9a1e2d2b53a11f1c2cb57839821205fe0c5a3698de7e10d1f5087d814860",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.47911861538887024,
+                  0.47911861538887024,
+                  0.47911861538887024,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ef54f09",
+                  "0x3ef54f09",
+                  "0x3ef54f09",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.5077998638153076,
+                  0.5077998638153076,
+                  0.5077998638153076,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f01ff2c",
+                  "0x3f01ff2c",
+                  "0x3f01ff2c",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.31151288747787476,
+                  0.31151288747787476,
+                  0.31151288747787476,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3e9f7e9e",
+                  "0x3e9f7e9e",
+                  "0x3e9f7e9e",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.6038956046104431,
+                  0.6038956046104431,
+                  0.6038956046104431,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f1a98e7",
+                  "0x3f1a98e7",
+                  "0x3f1a98e7",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.32201752066612244,
+                  0.32201752066612244,
+                  0.32201752066612244,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ea4df7b",
+                  "0x3ea4df7b",
+                  "0x3ea4df7b",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "four-octaves",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "LOOP_OFFSET": 300,
+            "NOISE_TYPE": 10,
+            "scaleX": 75,
+            "scaleY": 75,
+            "octaves": 4,
+            "ridges": false,
+            "loopScale": 75,
+            "speed": 10,
+            "colorMode": 0,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "3a1b04cf5c4ef49c83175fe0361d913d58332d6b0f8570c73e22a46075ee872e",
+            "rgba8_sha256": "6586a8b0d160221598fc672a0afbe0206173d0deb37d27262ecf39309ddf9f5f",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.4972216784954071,
+                  0.4972216784954071,
+                  0.4972216784954071,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3efe93d7",
+                  "0x3efe93d7",
+                  "0x3efe93d7",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.5234068632125854,
+                  0.5234068632125854,
+                  0.5234068632125854,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f05fdfe",
+                  "0x3f05fdfe",
+                  "0x3f05fdfe",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.3206809163093567,
+                  0.3206809163093567,
+                  0.3206809163093567,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ea4304a",
+                  "0x3ea4304a",
+                  "0x3ea4304a",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.6200170516967773,
+                  0.6200170516967773,
+                  0.6200170516967773,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f1eb970",
+                  "0x3f1eb970",
+                  "0x3f1eb970",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.3469109535217285,
+                  0.3469109535217285,
+                  0.3469109535217285,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3eb19e50",
+                  "0x3eb19e50",
+                  "0x3eb19e50",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "six-octaves-saturation-check",
+          "dimensions": {
+            "width": 6,
+            "height": 5
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "LOOP_OFFSET": 300,
+            "NOISE_TYPE": 10,
+            "scaleX": 75,
+            "scaleY": 75,
+            "octaves": 6,
+            "ridges": false,
+            "loopScale": 75,
+            "speed": 10,
+            "colorMode": 0,
+            "wrap": true
+          },
+          "tile_offset": [
+            3,
+            5
+          ],
+          "full_resolution": [
+            16,
+            13
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "39cde4f5e8ede7b8e9789875c08a0400d1048952840b6e83322291607993580a",
+            "rgba8_sha256": "84e04443fe73e691d455b0fb5e43bc3872775590651a4dfd51c10cb71b324075",
+            "finite_lanes": 120,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.48020654916763306,
+                  0.48020654916763306,
+                  0.48020654916763306,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ef5dda2",
+                  "0x3ef5dda2",
+                  "0x3ef5dda2",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  0
+                ],
+                "values": [
+                  0.50401371717453,
+                  0.50401371717453,
+                  0.50401371717453,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f01070b",
+                  "0x3f01070b",
+                  "0x3f01070b",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  4
+                ],
+                "values": [
+                  0.32625219225883484,
+                  0.32625219225883484,
+                  0.32625219225883484,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3ea70a87",
+                  "0x3ea70a87",
+                  "0x3ea70a87",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  5,
+                  4
+                ],
+                "values": [
+                  0.5962351560592651,
+                  0.5962351560592651,
+                  0.5962351560592651,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f18a2de",
+                  "0x3f18a2de",
+                  "0x3f18a2de",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  3,
+                  2
+                ],
+                "values": [
+                  0.3525157570838928,
+                  0.3525157570838928,
+                  0.3525157570838928,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3eb47cf2",
+                  "0x3eb47cf2",
+                  "0x3eb47cf2",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "synthNoise-octave-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "default",
+          "anchor": "for (var i = 1; i <= oct; i++) {",
+          "mutated": "for (var i = 1; i < oct; i++) {",
+          "description": "Drop the last octave. Verified live to diverge at octaves=3, 4, and 6.",
+          "case_results": [
+            {
+              "case": "three-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "four-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "six-octaves-saturation-check",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "synthNoise-octave-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "default",
+          "anchor": "for (var i = 1; i <= oct; i++) {",
+          "mutated": "for (var i = 1; i <= oct - 2; i++) {",
+          "description": "Drop the last two octaves. Verified live to diverge at octaves=3, 4, and 6.",
+          "case_results": [
+            {
+              "case": "three-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "four-octaves",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "six-octaves-saturation-check",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            }
+          ],
+          "summary": {
+            "reaching_cases": 3,
+            "divergent_reaching": 3,
+            "non_reaching_cases": 0,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    },
+    "testPattern": {
+      "id": "testPattern",
+      "key": "synth/testPattern:testPattern",
+      "defines": {},
+      "cases": [
+        {
+          "name": "hundreds-digit-glyph-hit",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "gridSize": 12,
+            "pattern": 0
+          },
+          "tile_offset": [
+            18.25,
+            27
+          ],
+          "full_resolution": [
+            1000,
+            1000
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "f6bb1294da2f78cd935b01c7656280df5eaa0439e9d97bc03775825a41a508e4",
+            "rgba8_sha256": "ad95131bc0b799c0b1af477fb14fcf26a6a9f76079e48bf090acb7e8367bfd0e",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  1,
+                  1,
+                  1,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "single-digit-diagnostic",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": true,
+          "reach": {
+            "default": false
+          },
+          "uniforms": {
+            "gridSize": 3,
+            "pattern": 0
+          },
+          "tile_offset": [
+            499.5,
+            499.5
+          ],
+          "full_resolution": [
+            1000,
+            1000
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+            "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "testPattern-digit-extraction-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "default",
+          "anchor": "for (var i = 0; i < 3; i++) {",
+          "mutated": "for (var i = 0; i < 2; i++) {",
+          "description": "Drop the hundreds-digit extraction (i<2 instead of i<3): digits[2] stays at its zero-initialized value. Verified live to flip the hundreds-digit-glyph-hit pixel from background to glyph-black.",
+          "case_results": [
+            {
+              "case": "hundreds-digit-glyph-hit",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "single-digit-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 1,
+            "divergent_reaching": 1,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "testPattern-digit-extraction-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "default",
+          "anchor": "for (var i = 0; i < 3; i++) {",
+          "mutated": "for (var i = 0; i < 1; i++) {",
+          "description": "Drop both the tens- and hundreds-digit extraction (i<1): a materially wrong trip count. Verified live to diverge identically to the off-by-one mutation at this probe point (both leave digits[2]=0).",
+          "case_results": [
+            {
+              "case": "hundreds-digit-glyph-hit",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "single-digit-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 1,
+            "divergent_reaching": 1,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    },
+    "fractal": {
+      "id": "fractal",
+      "key": "classicNoisedeck/fractal:fractal",
+      "defines": {},
+      "ground_truth": "adapter (fractalFactory) -- see module header / report for why",
+      "cases": [
+        {
+          "name": "julia-never-escapes-z0a",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "type": 0,
+            "symmetry": 0,
+            "zoomAmt": 0,
+            "rotation": 0,
+            "speed": 0,
+            "offsetX": -70,
+            "offsetY": 27.015,
+            "centerX": 0,
+            "centerY": 0,
+            "mode": 0,
+            "iterations": 50,
+            "colorMode": 0,
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 100,
+            "levels": 0,
+            "bgColor": [
+              0,
+              0,
+              0
+            ],
+            "bgAlpha": 100,
+            "cutoff": 0,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ]
+          },
+          "tile_offset": [
+            0.05,
+            0.05
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "b73ab93e458d122fcbef866d3aafabc19c63a4080254c905da0b4a85bfc81c31",
+            "rgba8_sha256": "61efa6ca5470d6378165ddc49c1eed995195761293bc903c0308c213bb20e248",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "julia-never-escapes-z0b",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": false,
+          "reach": {
+            "default": true
+          },
+          "uniforms": {
+            "type": 0,
+            "symmetry": 0,
+            "zoomAmt": 0,
+            "rotation": 0,
+            "speed": 0,
+            "offsetX": -70,
+            "offsetY": 27.015,
+            "centerX": 0,
+            "centerY": 0,
+            "mode": 0,
+            "iterations": 50,
+            "colorMode": 0,
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 100,
+            "levels": 0,
+            "bgColor": [
+              0,
+              0,
+              0
+            ],
+            "bgAlpha": 100,
+            "cutoff": 0,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ]
+          },
+          "tile_offset": [
+            -0.1,
+            0.05
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "b73ab93e458d122fcbef866d3aafabc19c63a4080254c905da0b4a85bfc81c31",
+            "rgba8_sha256": "61efa6ca5470d6378165ddc49c1eed995195761293bc903c0308c213bb20e248",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  0.9900000095367432,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f7d70a4",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "julia-fast-escape-diagnostic",
+          "dimensions": {
+            "width": 1,
+            "height": 1
+          },
+          "diagnostic": true,
+          "reach": {
+            "default": false
+          },
+          "uniforms": {
+            "type": 0,
+            "symmetry": 0,
+            "zoomAmt": 0,
+            "rotation": 0,
+            "speed": 0,
+            "offsetX": -70,
+            "offsetY": 27.015,
+            "centerX": 0,
+            "centerY": 0,
+            "mode": 0,
+            "iterations": 50,
+            "colorMode": 0,
+            "cyclePalette": 0,
+            "rotatePalette": 0,
+            "repeatPalette": 1,
+            "hueRange": 100,
+            "levels": 0,
+            "bgColor": [
+              0,
+              0,
+              0
+            ],
+            "bgAlpha": 100,
+            "cutoff": 0,
+            "paletteMode": 0,
+            "paletteOffset": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteAmp": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "paletteFreq": [
+              1,
+              1,
+              1
+            ],
+            "palettePhase": [
+              0,
+              0,
+              0
+            ]
+          },
+          "tile_offset": [
+            1,
+            1
+          ],
+          "full_resolution": [
+            1,
+            1
+          ],
+          "eligible_for_native_binding": true,
+          "repeat_identity": true,
+          "input_immutable": true,
+          "output": {
+            "f32_sha256": "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e",
+            "rgba8_sha256": "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332",
+            "finite_lanes": 4,
+            "nonfinite_lanes": 0,
+            "probes": [
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              },
+              {
+                "at_top_down_xy": [
+                  0,
+                  0
+                ],
+                "values": [
+                  0,
+                  0,
+                  0,
+                  1
+                ],
+                "f32_bits_le": [
+                  "0x00000000",
+                  "0x00000000",
+                  "0x00000000",
+                  "0x3f800000"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "mutations": [
+        {
+          "id": "fractal-julia-count-off-by-one",
+          "kind": "trip_count_off_by_one",
+          "reach_key": "default",
+          "anchor": "for (let index = 0; index < count; index += 1) {",
+          "mutated": "for (let index = 0; index < count - 1; index += 1) {",
+          "description": "Drop the last julia() iteration (count-1 instead of count, count=iterations*2=100). Reach-eligible on both never-escapes cases (true escape >> 100, verified via a double-precision calibration probe restricted to this generator's case-design step -- the actual proof renders through the real fractalFactory).",
+          "case_results": [
+            {
+              "case": "julia-never-escapes-z0a",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "julia-never-escapes-z0b",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "julia-fast-escape-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 2,
+            "divergent_reaching": 2,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        },
+        {
+          "id": "fractal-julia-count-swap",
+          "kind": "trip_count_swap",
+          "reach_key": "default",
+          "anchor": "for (let index = 0; index < count; index += 1) {",
+          "mutated": "for (let index = 0; index < count - 40; index += 1) {",
+          "description": "Drop the last 40 julia() iterations (count-40=60): a materially wrong trip count. Same reach-eligibility as the off-by-one mutation.",
+          "case_results": [
+            {
+              "case": "julia-never-escapes-z0a",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "julia-never-escapes-z0b",
+              "diagnostic": false,
+              "reaches": true,
+              "diverges": true
+            },
+            {
+              "case": "julia-fast-escape-diagnostic",
+              "diagnostic": true,
+              "reaches": false,
+              "diverges": false
+            }
+          ],
+          "summary": {
+            "reaching_cases": 2,
+            "divergent_reaching": 2,
+            "non_reaching_cases": 1,
+            "divergent_non_reaching": 0
+          }
+        }
+      ]
+    }
+  },
+  "effects": {
+    "id": "effects",
+    "key": "classicNoisedeck/effects:effects",
+    "status": "UNCOVERABLE",
+    "reason": "UNRENDERABLE-AS-DISCRIMINATING, not merely non-discriminating -- verified live, not assumed. `EFFECT` genuinely IS bound as a runtime uniform (`var EFFECT = $bindings[\"EFFECT\"];`, matching the defines-bound-as-uniforms lesson -- it is NOT preprocessor-eliminated, unlike a first, wrong hypothesis this generator formed and then disproved by grepping the compiled JS text for `function convolve`/`function bloom`/`function zoomBlur`, all of which ARE present). Every loop in this program (convolve()'s 3x3 kernel-tap loop, bloom()'s -4..4 nested loop, zoomBlur()'s 0..40 loop) lives exclusively inside functions reachable ONLY through `main()`'s `if (EFFECT != 0) { if (effectAmt != 0) { ... } }` gate -- and `generate_typed_slice._defaults()` authorizes EFFECT=0 for this program (confirmed live, not assumed). At EFFECT=0 that whole block is skipped at RUNTIME on every invocation, so none of its loops ever execute. Verified live, not merely inferred from reading the source: a textual off-by-one mutation on convolve()'s tap loop (`for (var i = 0; i < 9; i++)` -> `for (var i = 0; i < 0; i++)`) produces ZERO divergence across four different `effectAmt` values (0, 5, 10, 20) at the authorized EFFECT=0 -- and the IDENTICAL mutation produces NONZERO divergence at an UNAUTHORIZED EFFECT=1, proving the loop and the mutation are both real and working, just genuinely unreachable at the one define value this task's reachability rule (only build cases reachable from main() at the authorized defines) permits. No case can be built for this program without violating that rule.",
+    "evidence": {
+      "factory_name": "canonicalFactory7",
+      "public_is_canonical": true,
+      "adapter_override_present": false,
+      "effect_bound_as_runtime_uniform": true,
+      "authorized_defines": {
+        "EFFECT": 0,
+        "FLIP": 0
+      },
+      "mutation_anchor": "for (var i = 0; i < 9; i++) {",
+      "mutation_description": "convolve() 3x3 tap loop: i<9 -> i<0 (never executes)",
+      "at_authorized_default": [
+        {
+          "effectAmt": 0,
+          "EFFECT": 0,
+          "diverges": false
+        },
+        {
+          "effectAmt": 5,
+          "EFFECT": 0,
+          "diverges": false
+        },
+        {
+          "effectAmt": 10,
+          "EFFECT": 0,
+          "diverges": false
+        },
+        {
+          "effectAmt": 20,
+          "EFFECT": 0,
+          "diverges": false
+        }
+      ],
+      "at_unauthorized_control": {
+        "effectAmt": 10,
+        "EFFECT": 1,
+        "diverges": true
+      }
+    }
+  },
+  "eligibility_summary": {
+    "programs_covered": 7,
+    "programs_blocked": 1,
+    "total_cases": 24,
+    "eligible_cases": 18,
+    "diagnostic_cases": 6,
+    "total_mutations": 14
+  }
+}

@@ -1,0 +1,12 @@
+test_task29_analyzer_produced_sampler_and_call_shape_alternatives_reject_every_boundary (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_analyzer_produced_sampler_and_call_shape_alternatives_reject_every_boundary) ... [32mok[0m
+test_task29_complete_call_ancestry_move_copy_swap_and_predicate_controls_reject (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_complete_call_ancestry_move_copy_swap_and_predicate_controls_reject) ... [32mok[0m
+test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_cpp_tables_switch_helpers_and_witnesses_are_exact_frozen_transcription) ... [32mok[0m
+test_task29_exact_profile_owns_complete_candidate_ancestry_and_emits_narrow_abi (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_exact_profile_owns_complete_candidate_ancestry_and_emits_narrow_abi) ... [32mok[0m
+test_task29_exhaustive_single_axis_protected_coordinate_negative_closure (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_exhaustive_single_axis_protected_coordinate_negative_closure) ... [32mok[0m
+test_task29_full_carrier_caller_numeric_defines_and_coexistence_matrix (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_full_carrier_caller_numeric_defines_and_coexistence_matrix) ... [32mok[0m
+test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation (tests.test_typed_generator.Task29FocusBlurBorrowedSamplerTests.test_task29_schema_counts_hashes_and_real_task28_reconstruction_isolation) ... [32mok[0m
+
+----------------------------------------------------------------------
+Ran 7 tests in 84.652s
+
+[32mOK[0m

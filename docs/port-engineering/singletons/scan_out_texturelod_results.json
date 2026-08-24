@@ -1,0 +1,408 @@
+{
+ "classicNoisedeck/bitEffects:bitEffects": {
+  "all_relaxed": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+  "loopproof_only_relaxed": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+  "program_key": "classicNoisedeck/bitEffects:bitEffects",
+  "terminal_unmodified": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration"
+ },
+ "classicNoisedeck/caustic:caustic": {
+  "all_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+  "loopproof_only_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+  "no_paramdir_relaxed": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required",
+  "program_key": "classicNoisedeck/caustic:caustic",
+  "terminal_unmodified": "classicNoisedeck/caustic:caustic: exact Caustic word hash profile carrier required"
+ },
+ "classicNoisedeck/cellNoise:cellNoise": {
+  "all_relaxed": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/cellNoise:cellNoise:125:13: unsupported typed expression index",
+  "program_key": "classicNoisedeck/cellNoise:cellNoise",
+  "terminal_unmodified": "classicNoisedeck/cellNoise:cellNoise:137:1: unsupported global declaration"
+ },
+ "classicNoisedeck/cellRefract:cellRefract": {
+  "all_relaxed": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global",
+  "loopproof_only_relaxed": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/cellRefract:cellRefract:41:2: write to source const global",
+  "program_key": "classicNoisedeck/cellRefract:cellRefract",
+  "terminal_unmodified": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration"
+ },
+ "classicNoisedeck/colorLab:colorLab": {
+  "all_relaxed": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/colorLab:colorLab:167:13: unsupported typed expression index",
+  "program_key": "classicNoisedeck/colorLab:colorLab",
+  "terminal_unmodified": "classicNoisedeck/colorLab:colorLab:191:1: unsupported global declaration"
+ },
+ "classicNoisedeck/effects:effects": {
+  "all_relaxed": "classicNoisedeck/effects:effects:44:5: write to source const global",
+  "loopproof_only_relaxed": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/effects:effects:44:5: write to source const global",
+  "program_key": "classicNoisedeck/effects:effects",
+  "terminal_unmodified": "classicNoisedeck/effects:effects:31:1: unsupported global declaration"
+ },
+ "classicNoisedeck/fractal:fractal": {
+  "all_relaxed": "classicNoisedeck/fractal:fractal:120:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "classicNoisedeck/fractal:fractal:132:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/fractal:fractal:120:13: unsupported typed expression index",
+  "program_key": "classicNoisedeck/fractal:fractal",
+  "terminal_unmodified": "classicNoisedeck/fractal:fractal:261:5: unsupported counted-for program proof"
+ },
+ "classicNoisedeck/glitch:glitch": {
+  "all_relaxed": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+  "loopproof_only_relaxed": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4",
+  "no_paramdir_relaxed": "classicNoisedeck/glitch:glitch:76:14: unsupported matrix constructor",
+  "program_key": "classicNoisedeck/glitch:glitch",
+  "terminal_unmodified": "classicNoisedeck/glitch:glitch:76:10: unsupported typed type mat4"
+ },
+ "classicNoisedeck/kaleido:kaleido": {
+  "all_relaxed": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global",
+  "loopproof_only_relaxed": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/kaleido:kaleido:42:2: write to source const global",
+  "program_key": "classicNoisedeck/kaleido:kaleido",
+  "terminal_unmodified": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration"
+ },
+ "classicNoisedeck/moodscape:moodscape": {
+  "all_relaxed": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/moodscape:moodscape:137:13: unsupported typed expression index",
+  "program_key": "classicNoisedeck/moodscape:moodscape",
+  "terminal_unmodified": "classicNoisedeck/moodscape:moodscape:149:1: unsupported global declaration"
+ },
+ "classicNoisedeck/noise:noise": {
+  "all_relaxed": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+  "loopproof_only_relaxed": "classicNoisedeck/noise:noise:484:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/noise:noise:121:21: unsupported builtin floatBitsToUint",
+  "program_key": "classicNoisedeck/noise:noise",
+  "terminal_unmodified": "classicNoisedeck/noise:noise:459:5: unsupported counted-for program proof"
+ },
+ "classicNoisedeck/shapeMixer:shapeMixer": {
+  "all_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:675:17: unsupported builtin refract",
+  "loopproof_only_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/shapeMixer:shapeMixer:675:17: unsupported builtin refract",
+  "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
+  "terminal_unmodified": "classicNoisedeck/shapeMixer:shapeMixer:128:1: unsupported global declaration"
+ },
+ "classicNoisedeck/shapes:shapes": {
+  "all_relaxed": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration",
+  "no_paramdir_relaxed": "classicNoisedeck/shapes:shapes:576:13: unsupported typed expression index",
+  "program_key": "classicNoisedeck/shapes:shapes",
+  "terminal_unmodified": "classicNoisedeck/shapes:shapes:588:1: unsupported global declaration"
+ },
+ "filter/adjust:adjust": {
+  "all_relaxed": "filter/adjust:adjust:78:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "filter/adjust:adjust:62:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/adjust:adjust:78:13: unsupported typed expression index",
+  "program_key": "filter/adjust:adjust",
+  "terminal_unmodified": "filter/adjust:adjust:62:1: unsupported global declaration"
+ },
+ "filter/blur:blurH": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/blur:blurH",
+  "terminal_unmodified": "filter/blur:blurH:33:5: unsupported counted-for program proof"
+ },
+ "filter/blur:blurV": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/blur:blurV",
+  "terminal_unmodified": "filter/blur:blurV:33:5: unsupported counted-for program proof"
+ },
+ "filter/colorspace:colorspace": {
+  "all_relaxed": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+  "loopproof_only_relaxed": "filter/colorspace:colorspace:32:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/colorspace:colorspace:48:13: unsupported typed expression index",
+  "program_key": "filter/colorspace:colorspace",
+  "terminal_unmodified": "filter/colorspace:colorspace:32:1: unsupported global declaration"
+ },
+ "filter/dither:dither": {
+  "all_relaxed": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+  "loopproof_only_relaxed": "filter/dither:dither:19:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/dither:dither:239:1: unsupported typed type vec3[4]",
+  "program_key": "filter/dither:dither",
+  "terminal_unmodified": "filter/dither:dither:521:5: unsupported counted-for program proof"
+ },
+ "filter/edge:edge": {
+  "all_relaxed": "filter/edge:edge:73:11: unsupported typed type bvec3",
+  "loopproof_only_relaxed": "filter/edge:edge:19:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/edge:edge:73:11: unsupported typed type bvec3",
+  "program_key": "filter/edge:edge",
+  "terminal_unmodified": "filter/edge:edge:19:1: unsupported global declaration"
+ },
+ "filter/emboss:emboss": {
+  "all_relaxed": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+  "loopproof_only_relaxed": "filter/emboss:emboss:19:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/emboss:emboss:27:11: unsupported typed type float[9]",
+  "program_key": "filter/emboss:emboss",
+  "terminal_unmodified": "filter/emboss:emboss:19:1: unsupported global declaration"
+ },
+ "filter/fxaa:fxaa": {
+  "all_relaxed": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+  "loopproof_only_relaxed": "filter/fxaa:fxaa:9:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/fxaa:fxaa:22:21: unsupported builtin round",
+  "program_key": "filter/fxaa:fxaa",
+  "terminal_unmodified": "filter/fxaa:fxaa:9:1: unsupported global declaration"
+ },
+ "filter/glyphMap:glyphMap": {
+  "all_relaxed": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+  "loopproof_only_relaxed": "filter/glyphMap:glyphMap:186:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/glyphMap:glyphMap:287:16: unsupported binary operator &",
+  "program_key": "filter/glyphMap:glyphMap",
+  "terminal_unmodified": "filter/glyphMap:glyphMap:186:1: unsupported global declaration"
+ },
+ "filter/grain:grain": {
+  "all_relaxed": "filter/grain:grain:31:21: unsupported builtin round",
+  "loopproof_only_relaxed": "filter/grain:grain:12:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/grain:grain:31:21: unsupported builtin round",
+  "program_key": "filter/grain:grain",
+  "terminal_unmodified": "filter/grain:grain:12:1: unsupported global declaration"
+ },
+ "filter/grime:grime": {
+  "all_relaxed": "filter/grime:grime:38:25: unsupported builtin floatBitsToUint",
+  "loopproof_only_relaxed": "filter/grime:grime:1:1: unsupported varying",
+  "no_paramdir_relaxed": "filter/grime:grime:38:25: unsupported builtin floatBitsToUint",
+  "program_key": "filter/grime:grime",
+  "terminal_unmodified": "filter/grime:grime:1:1: unsupported varying"
+ },
+ "filter/historicPalette:historicPalette": {
+  "all_relaxed": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration",
+  "loopproof_only_relaxed": "filter/historicPalette:historicPalette:26:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/historicPalette:historicPalette:18:1: unsupported struct declaration",
+  "program_key": "filter/historicPalette:historicPalette",
+  "terminal_unmodified": "filter/historicPalette:historicPalette:26:1: unsupported global declaration"
+ },
+ "filter/invert:inv": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/invert:inv",
+  "terminal_unmodified": "VALIDATOR-PASS"
+ },
+ "filter/lightLeak:lightLeak": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "filter/lightLeak:lightLeak:5:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/lightLeak:lightLeak:60:50: unsupported parameter direction out",
+  "program_key": "filter/lightLeak:lightLeak",
+  "terminal_unmodified": "filter/lightLeak:lightLeak:65:5: unsupported counted-for program proof"
+ },
+ "filter/lighting:lighting": {
+  "all_relaxed": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+  "loopproof_only_relaxed": "filter/lighting:lighting:93:26: unsupported builtin reflect",
+  "no_paramdir_relaxed": "filter/lighting:lighting:40:11: unsupported typed type float[9]",
+  "program_key": "filter/lighting:lighting",
+  "terminal_unmodified": "filter/lighting:lighting:93:26: unsupported builtin reflect"
+ },
+ "filter/median:median": {
+  "all_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+  "loopproof_only_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+  "no_paramdir_relaxed": "filter/median:median:40:11: unsupported typed type uvec2[49]",
+  "program_key": "filter/median:median",
+  "terminal_unmodified": "filter/median:median:47:5: unsupported counted-for program proof"
+ },
+ "filter/normalMap:normalMap": {
+  "all_relaxed": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+  "loopproof_only_relaxed": "filter/normalMap:normalMap:4:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/normalMap:normalMap:15:1: unsupported typed type ivec2[9]",
+  "program_key": "filter/normalMap:normalMap",
+  "terminal_unmodified": "filter/normalMap:normalMap:4:1: unsupported global declaration"
+ },
+ "filter/normalize:statsFinal": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/normalize:statsFinal",
+  "terminal_unmodified": "filter/normalize:statsFinal:18:5: unsupported counted-for program proof"
+ },
+ "filter/oilPaint:oilFlatten": {
+  "all_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+  "loopproof_only_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+  "no_paramdir_relaxed": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil",
+  "program_key": "filter/oilPaint:oilFlatten",
+  "terminal_unmodified": "filter/oilPaint:oilFlatten:19:27: unsupported builtin ceil"
+ },
+ "filter/osd:osd": {
+  "all_relaxed": "filter/osd:osd:24:1: unsupported typed type int[80]",
+  "loopproof_only_relaxed": "filter/osd:osd:24:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/osd:osd:24:1: unsupported typed type int[80]",
+  "program_key": "filter/osd:osd",
+  "terminal_unmodified": "filter/osd:osd:24:1: unsupported global declaration"
+ },
+ "filter/palette:palette": {
+  "all_relaxed": "filter/palette:palette:21:1: unsupported struct declaration",
+  "loopproof_only_relaxed": "filter/palette:palette:17:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/palette:palette:21:1: unsupported struct declaration",
+  "program_key": "filter/palette:palette",
+  "terminal_unmodified": "filter/palette:palette:17:1: unsupported global declaration"
+ },
+ "filter/parallax:parallax": {
+  "all_relaxed": "filter/parallax:parallax:24:26: unsupported builtin textureLod",
+  "loopproof_only_relaxed": "filter/parallax:parallax:13:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/parallax:parallax:24:26: unsupported builtin textureLod",
+  "program_key": "filter/parallax:parallax",
+  "terminal_unmodified": "filter/parallax:parallax:59:9: unsupported counted-for program proof"
+ },
+ "filter/posterize:posterize": {
+  "all_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+  "loopproof_only_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+  "no_paramdir_relaxed": "filter/posterize:posterize:60:34: unsupported builtin round",
+  "program_key": "filter/posterize:posterize",
+  "terminal_unmodified": "filter/posterize:posterize:60:34: unsupported builtin round"
+ },
+ "filter/reindex:nmReindexReduce": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "filter/reindex:nmReindexReduce:9:1: unsupported global declaration",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/reindex:nmReindexReduce",
+  "terminal_unmodified": "filter/reindex:nmReindexReduce:32:5: unsupported counted-for program proof"
+ },
+ "filter/scanlineError:scanlineError": {
+  "all_relaxed": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint",
+  "loopproof_only_relaxed": "filter/scanlineError:scanlineError:197:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/scanlineError:scanlineError:234:24: unsupported builtin floatBitsToUint",
+  "program_key": "filter/scanlineError:scanlineError",
+  "terminal_unmodified": "filter/scanlineError:scanlineError:197:1: unsupported global declaration"
+ },
+ "filter/smooth:smoothBlend": {
+  "all_relaxed": "filter/smooth:smoothBlend:168:17: unsupported builtin ceil",
+  "loopproof_only_relaxed": "filter/smooth:smoothBlend:17:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/smooth:smoothBlend:168:17: unsupported builtin ceil",
+  "program_key": "filter/smooth:smoothBlend",
+  "terminal_unmodified": "filter/smooth:smoothBlend:17:1: unsupported global declaration"
+ },
+ "filter/snow:snow": {
+  "all_relaxed": "filter/snow:snow:26:21: unsupported builtin round",
+  "loopproof_only_relaxed": "filter/snow:snow:7:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/snow:snow:26:21: unsupported builtin round",
+  "program_key": "filter/snow:snow",
+  "terminal_unmodified": "filter/snow:snow:7:1: unsupported global declaration"
+ },
+ "filter/spookyTicker:spookyTicker": {
+  "all_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+  "loopproof_only_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/spookyTicker:spookyTicker:19:1: unsupported typed type int[80]",
+  "program_key": "filter/spookyTicker:spookyTicker",
+  "terminal_unmodified": "filter/spookyTicker:spookyTicker:19:1: unsupported global declaration"
+ },
+ "filter/tetraColorArray:tetraColorArray": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/tetraColorArray:tetraColorArray",
+  "terminal_unmodified": "filter/tetraColorArray:tetraColorArray:243:5: unsupported counted-for program proof"
+ },
+ "filter/texture:texture": {
+  "all_relaxed": "filter/texture:texture:68:14: unsupported binary operator ^",
+  "loopproof_only_relaxed": "filter/texture:texture:30:1: unsupported global declaration",
+  "no_paramdir_relaxed": "filter/texture:texture:68:14: unsupported binary operator ^",
+  "program_key": "filter/texture:texture",
+  "terminal_unmodified": "filter/texture:texture:30:1: unsupported global declaration"
+ },
+ "filter/watercolor:wcSimplify": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout",
+  "no_paramdir_relaxed": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout",
+  "program_key": "filter/watercolor:wcSimplify",
+  "terminal_unmodified": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout"
+ },
+ "filter/waves:waves": {
+  "all_relaxed": "filter/waves:waves:41:13: unsupported typed type bvec2",
+  "loopproof_only_relaxed": "filter/waves:waves:41:9: unsupported builtin any",
+  "no_paramdir_relaxed": "filter/waves:waves:41:13: unsupported typed type bvec2",
+  "program_key": "filter/waves:waves",
+  "terminal_unmodified": "filter/waves:waves:41:9: unsupported builtin any"
+ },
+ "filter/wobble:wobble": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "filter/wobble:wobble:16:1: unsupported global declaration",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "filter/wobble:wobble",
+  "terminal_unmodified": "filter/wobble:wobble:16:1: unsupported global declaration"
+ },
+ "filter/wormhole:deposit": {
+  "all_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+  "loopproof_only_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+  "no_paramdir_relaxed": "filter/wormhole:deposit:1:1: unsupported varying",
+  "program_key": "filter/wormhole:deposit",
+  "terminal_unmodified": "filter/wormhole:deposit:1:1: unsupported varying"
+ },
+ "mixer/distortion:distortion": {
+  "all_relaxed": "mixer/distortion:distortion:102:19: unsupported builtin dFdx",
+  "loopproof_only_relaxed": "mixer/distortion:distortion:91:33: unsupported sampler parameter",
+  "no_paramdir_relaxed": "mixer/distortion:distortion:102:19: unsupported builtin dFdx",
+  "program_key": "mixer/distortion:distortion",
+  "terminal_unmodified": "mixer/distortion:distortion:91:33: unsupported sampler parameter"
+ },
+ "synth/bitwise:bitwise": {
+  "all_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+  "loopproof_only_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+  "no_paramdir_relaxed": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+  "program_key": "synth/bitwise:bitwise",
+  "terminal_unmodified": "synth/bitwise:bitwise:34:27: unsupported binary operator ^"
+ },
+ "synth/gabor:gabor": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "synth/gabor:gabor",
+  "terminal_unmodified": "synth/gabor:gabor:54:13: unsupported counted-for safety charge"
+ },
+ "synth/julia:julia": {
+  "all_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+  "loopproof_only_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+  "no_paramdir_relaxed": "synth/julia:julia:161:1: unsupported struct declaration",
+  "program_key": "synth/julia:julia",
+  "terminal_unmodified": "synth/julia:julia:297:5: unsupported counted-for safety charge"
+ },
+ "synth/mandelbrot:mandelbrot": {
+  "all_relaxed": "synth/mandelbrot:mandelbrot:273:24: unsupported builtin log",
+  "loopproof_only_relaxed": "synth/mandelbrot:mandelbrot:31:1: unsupported global declaration",
+  "no_paramdir_relaxed": "synth/mandelbrot:mandelbrot:116:24: unsupported parameter direction out",
+  "program_key": "synth/mandelbrot:mandelbrot",
+  "terminal_unmodified": "synth/mandelbrot:mandelbrot:226:5: unsupported counted-for program proof"
+ },
+ "synth/newton:newton": {
+  "all_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+  "loopproof_only_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+  "no_paramdir_relaxed": "synth/newton:newton:125:1: unsupported struct declaration",
+  "program_key": "synth/newton:newton",
+  "terminal_unmodified": "synth/newton:newton:205:5: unsupported counted-for safety charge"
+ },
+ "synth/noise:noise": {
+  "all_relaxed": "synth/noise:noise:279:5: write to source const global",
+  "loopproof_only_relaxed": "synth/noise:noise:31:1: unsupported global declaration",
+  "no_paramdir_relaxed": "synth/noise:noise:279:5: write to source const global",
+  "program_key": "synth/noise:noise",
+  "terminal_unmodified": "synth/noise:noise:250:5: unsupported counted-for program proof"
+ },
+ "synth/remap:remap": {
+  "all_relaxed": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+  "loopproof_only_relaxed": "synth/remap:remap:5:1: unsupported uniform block",
+  "no_paramdir_relaxed": "synth/remap:remap:6:5: unsupported typed type vec4[267]",
+  "program_key": "synth/remap:remap",
+  "terminal_unmodified": "synth/remap:remap:5:1: unsupported uniform block"
+ },
+ "synth/shape:shape": {
+  "all_relaxed": "synth/shape:shape:459:5: write to source const global",
+  "loopproof_only_relaxed": "synth/shape:shape:31:1: unsupported global declaration",
+  "no_paramdir_relaxed": "synth/shape:shape:459:5: write to source const global",
+  "program_key": "synth/shape:shape",
+  "terminal_unmodified": "synth/shape:shape:31:1: unsupported global declaration"
+ },
+ "synth/solid:solid": {
+  "all_relaxed": "VALIDATOR-PASS",
+  "loopproof_only_relaxed": "VALIDATOR-PASS",
+  "no_paramdir_relaxed": "VALIDATOR-PASS",
+  "program_key": "synth/solid:solid",
+  "terminal_unmodified": "VALIDATOR-PASS"
+ },
+ "synth/testPattern:testPattern": {
+  "all_relaxed": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+  "loopproof_only_relaxed": "synth/testPattern:testPattern:13:1: unsupported global declaration",
+  "no_paramdir_relaxed": "synth/testPattern:testPattern:13:1: unsupported typed type int[10]",
+  "program_key": "synth/testPattern:testPattern",
+  "terminal_unmodified": "synth/testPattern:testPattern:55:5: unsupported counted-for program proof"
+ }
+}

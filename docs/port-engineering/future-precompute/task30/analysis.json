@@ -1,0 +1,4645 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.task30.analysis.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "baseline": {
+    "typed_count": 129,
+    "public_count": 131,
+    "publicly_unported_count": 81,
+    "typed_ordered_sha256": "c2561c5937ba5f11f5d2e86d729ff90b617aff738cb4de53dbf3cd8b76dbbff9",
+    "public_ordered_sha256": "2325f8d06d182800af90cd1b0b67efe9d3058d3682f0ceb4d3f5168ff4af5e16"
+  },
+  "projected_extrude": {
+    "typed_count": 130,
+    "public_count": 132,
+    "publicly_unported_count": 80,
+    "typed_ordered_sha256": "d31014f538686245f09fefe57ffccf9f2b8d36bdcaf65b0ae423be7476ab5904",
+    "public_ordered_sha256": "4fe573b21a782a784b7fcacacaa276a03a395a1b8c92e83149971b8a19831056",
+    "ordinal": 25,
+    "neighbors": [
+      "filter/directionalBlur:directionalBlur",
+      "filter/extrude:extrude",
+      "filter/fibers:fibersBlend"
+    ]
+  },
+  "remaining": {
+    "absent_from_typed_including_manual": 83,
+    "publicly_unported_count": 81,
+    "validator_histogram": {
+      "pass": 2,
+      "unsupported binary operator ^": 1,
+      "unsupported builtin all": 1,
+      "unsupported builtin any": 1,
+      "unsupported builtin dFdx": 10,
+      "unsupported builtin floatBitsToUint": 1,
+      "unsupported builtin fwidth": 5,
+      "unsupported builtin reflect": 1,
+      "unsupported builtin round": 1,
+      "unsupported builtin tanh": 1,
+      "unsupported counted-for program proof": 19,
+      "unsupported counted-for safety charge": 3,
+      "unsupported global declaration": 30,
+      "unsupported parameter direction inout": 1,
+      "unsupported sampler parameter": 1,
+      "unsupported typed expression index": 1,
+      "unsupported typed type mat4": 1,
+      "unsupported uniform block": 1,
+      "unsupported varying": 2
+    },
+    "pass_rows": [
+      {
+        "key": "filter/invert:inv",
+        "validator": "pass",
+        "emitter": "pass",
+        "rendered_cpp": {
+          "bytes": 2089,
+          "sha256": "f271c0832525e79e6453214534a3787ba3b65ed76704ce76fe66114abc9afb25"
+        }
+      },
+      {
+        "key": "synth/solid:solid",
+        "validator": "pass",
+        "emitter": "pass",
+        "rendered_cpp": {
+          "bytes": 1557,
+          "sha256": "8c5ca0aa2430a65c1197e82efcfce7d41823a06090fe3cd3225010617ebec76a"
+        }
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "key": "filter/extrude:extrude",
+      "source": "sources/filter/extrude/extrude.glsl",
+      "raw_bytes": 16945,
+      "raw_sha256": "3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29",
+      "normalized_bytes": 5020,
+      "normalized_sha256": "823698d954e1f2f890414a22e6792ca0ca87484ee21d9043cd3c1a347fd7a4ac",
+      "defines": {
+        "DEPTH_SOURCE": 0,
+        "EXTRUDE_TYPE": 0
+      },
+      "function_count": 9,
+      "function_tuple_sha256": "cb662c33d7dda0b59a63de9d9ff5e5672e18e137ad43f18f2aa1855cf29e4bb0",
+      "whole_program_sha256": "1e02d72c7b5c61d49462310fbbcd9f1816d0440f8716bdaaace7c2396ceb36e3",
+      "interface_sha256": "0e8079c94619fc0e8ad85b401a1bd51211f504c933fa963dbf9c7cdbfaec9fe7",
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "size",
+          "depth",
+          "solidFront"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "loop_proof": {
+        "loop_count": 3,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 3,
+        "max_lexical_product": 9,
+        "entrypoint_charge": 90,
+        "call_graph_acyclic": true
+      },
+      "parameters": [
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "id": 21,
+          "name": "p",
+          "type": "vec2",
+          "direction": "in",
+          "span": "73:18-73:24"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "id": 22,
+          "name": "a",
+          "type": "vec2",
+          "direction": "in",
+          "span": "73:26-73:32"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "id": 23,
+          "name": "b",
+          "type": "vec2",
+          "direction": "in",
+          "span": "73:34-73:40"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "id": 24,
+          "name": "c",
+          "type": "vec2",
+          "direction": "in",
+          "span": "73:42-73:48"
+        },
+        {
+          "owner": "cellAvgColor3x3",
+          "owner_id": 32,
+          "id": 18,
+          "name": "centerPx",
+          "type": "vec2",
+          "direction": "in",
+          "span": "53:22-53:35"
+        },
+        {
+          "owner": "cellHeight",
+          "owner_id": 33,
+          "id": 19,
+          "name": "cellC",
+          "type": "vec2",
+          "direction": "in",
+          "span": "65:18-65:28"
+        },
+        {
+          "owner": "cellHeight",
+          "owner_id": 33,
+          "id": 20,
+          "name": "cellIdxF",
+          "type": "vec2",
+          "direction": "in",
+          "span": "65:30-65:43"
+        },
+        {
+          "owner": "hash12",
+          "owner_id": 34,
+          "id": 15,
+          "name": "p",
+          "type": "vec2",
+          "direction": "in",
+          "span": "37:14-37:20"
+        },
+        {
+          "owner": "lum",
+          "owner_id": 35,
+          "id": 16,
+          "name": "c",
+          "type": "vec3",
+          "direction": "in",
+          "span": "43:11-43:17"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "id": 25,
+          "name": "P",
+          "type": "vec2",
+          "direction": "in",
+          "span": "95:19-95:25"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "id": 26,
+          "name": "cellC",
+          "type": "vec2",
+          "direction": "in",
+          "span": "95:27-95:37"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "id": 27,
+          "name": "apex",
+          "type": "vec2",
+          "direction": "in",
+          "span": "95:39-95:48"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "id": 28,
+          "name": "halfCell",
+          "type": "vec2",
+          "direction": "in",
+          "span": "95:50-95:63"
+        },
+        {
+          "owner": "sideShade",
+          "owner_id": 38,
+          "id": 29,
+          "name": "P",
+          "type": "vec2",
+          "direction": "in",
+          "span": "118:17-118:23"
+        },
+        {
+          "owner": "sideShade",
+          "owner_id": 38,
+          "id": 30,
+          "name": "cellC",
+          "type": "vec2",
+          "direction": "in",
+          "span": "118:25-118:35"
+        },
+        {
+          "owner": "toSampleUV",
+          "owner_id": 39,
+          "id": 17,
+          "name": "globalPixelPos",
+          "type": "vec2",
+          "direction": "in",
+          "span": "47:17-47:36"
+        }
+      ],
+      "builtins": [
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            3,
+            "e0",
+            0,
+            0
+          ],
+          "span": "77:17-77:28",
+          "sha256": "f6878940ac1acbb3edef63db6dee7141d0d34388b09cc6c4e5906be7438a903e",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            4,
+            "e0",
+            0,
+            0
+          ],
+          "span": "78:17-78:28",
+          "sha256": "e62152a2878ca8387ab604fd4db9ed7e44f290d3d237eef688b1e840df766deb",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "79:17-79:28",
+          "sha256": "24463e513886ebd6b1baa425b1da07e4d7d91ec6ad435447ae94086a87214021",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            6,
+            "e0",
+            0,
+            0
+          ],
+          "span": "80:17-80:28",
+          "sha256": "ec11bd3985ba3310124a6fb9ff239199ae2232bdfbe2db76a84cf2b63d20c51c",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            7,
+            "e0",
+            0,
+            0
+          ],
+          "span": "81:17-81:28",
+          "sha256": "6545c9fda4724908b201e1974dadfce550b11bd229295c1d655a59bddb93f681",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "baryWeights",
+          "owner_id": 31,
+          "path": [
+            9,
+            "e0",
+            0,
+            0
+          ],
+          "span": "83:9-83:19",
+          "sha256": "782dc328c78634f4726ed82c1c7387ded6e0388fc6c096922ec563abc8121e7b",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "cellAvgColor3x3",
+          "owner_id": 32,
+          "path": [
+            2,
+            "s1",
+            "s0",
+            "s1",
+            "s1",
+            "e0",
+            0,
+            1
+          ],
+          "span": "59:20-59:52",
+          "sha256": "95ba89d2315565526a2b044dcda8d5a20df43f55daf1717184c5d1e55591483b",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "hash12",
+          "owner_id": 34,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "38:15-38:42",
+          "sha256": "74ccf7768186d9504368abf6def3629f6ad5779a652e851fb4c4fd4efb4b3be7",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fract"
+        },
+        {
+          "owner": "hash12",
+          "owner_id": 34,
+          "path": [
+            1,
+            "e0",
+            0,
+            1
+          ],
+          "span": "39:11-39:34",
+          "sha256": "ad2cf4bf486536c6b4d18a24e9769a14850769714f28d6728847be17a5ac0026",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "hash12",
+          "owner_id": 34,
+          "path": [
+            2,
+            "e0",
+            0
+          ],
+          "span": "40:12-40:39",
+          "sha256": "1fc4d54e22413c52c92d693ae75adf24bceb6619675ca1a0592fa5b1d138660b",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "fract"
+        },
+        {
+          "owner": "lum",
+          "owner_id": 35,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "43:28-43:64",
+          "sha256": "ee4ff938ffaf7889f07511611e30cb4df0e996fbb5c6cf2b9969cd2084e7c989",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            4,
+            "e0",
+            0,
+            0
+          ],
+          "span": "133:26-133:42",
+          "sha256": "71304c0abb3d19aa964dbc610ac2680a979e3d6eeaf39417e9cbdb66e4fdf1d4",
+          "result_type": "float",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "length"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s0",
+            "e0",
+            0,
+            0
+          ],
+          "span": "144:19-144:53",
+          "sha256": "2a1021da7f841fe4045b51817faf5b706d286d8aadc4abeb4e627248f10cd213",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float"
+          ],
+          "callee": "min"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s2",
+            "e0",
+            0,
+            0
+          ],
+          "span": "148:25-148:62",
+          "sha256": "eb4f312aaf401588f95925363f6c6faddf09629168d03f8fc12f570b2896feee",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s8",
+            "e0",
+            0,
+            0
+          ],
+          "span": "159:23-159:72",
+          "sha256": "38eea107e78da89e0f6dd529d77520ccbea907e980df5e0bbc1f01099e8c4efb",
+          "result_type": "bool",
+          "argument_types": [
+            "bvec2"
+          ],
+          "callee": "all"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s8",
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "159:27-159:71",
+          "sha256": "3048bc23943a393e84d677ebdf15bfc97a942a43635bb8dd95227a594a1ad9e1",
+          "result_type": "bvec2",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "lessThanEqual"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s8",
+            "e0",
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "159:41-159:60",
+          "sha256": "22eda3c5c2624d95d3086837ce97e60ce6e021d0b7df110b6d8e810e7eb38b2b",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s9",
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "160:37-160:81",
+          "sha256": "51877b40b69819a50d527eef19e642e612a9027fcdb58698e707c0818825b2bf",
+          "result_type": "bool",
+          "argument_types": [
+            "bvec2"
+          ],
+          "callee": "all"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s9",
+            "e0",
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "160:41-160:80",
+          "sha256": "546f5c52a1a44cc20b6dda2b3fd66a38e8b6bc2f68adc2287fcfc8843d771e04",
+          "result_type": "bvec2",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "lessThanEqual"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s9",
+            "e0",
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "span": "160:55-160:69",
+          "sha256": "c44a75f30c85e2d6dab1a20d1c9f3d4b1d75fc34270101ade1683b6ac6ba0586",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s0",
+            "s0",
+            "e0",
+            0,
+            0,
+            1,
+            0,
+            0
+          ],
+          "span": "181:35-181:64",
+          "sha256": "9bf2bbc8e8d72f4ea0a39ae18bc55ed2db1dbf495f1bb7dd3e81074e0689de45",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s1",
+            "s0",
+            "s0",
+            "s0",
+            "s1",
+            "s1",
+            "e0",
+            0,
+            1
+          ],
+          "span": "189:28-189:67",
+          "sha256": "959c9cb691406401ae8d1c639e962b88ce89afbb4788a36eb068f0bece76c6e2",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "sideShade",
+          "owner_id": 38,
+          "path": [
+            2,
+            "e0",
+            0,
+            0
+          ],
+          "span": "121:9-121:17",
+          "sha256": "73be1d107f7f64d8923c69a4be87be726304c5340a2c38cc951ee11b089763bf",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "sideShade",
+          "owner_id": 38,
+          "path": [
+            2,
+            "e0",
+            0,
+            1
+          ],
+          "span": "121:20-121:29",
+          "sha256": "e6d76086b3cea250251752715dbac8ac9634b90853765ba1fb4ba051e4369b58",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "toSampleUV",
+          "owner_id": 39,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "48:12-48:71",
+          "sha256": "85709ed9f04b385c0b54760c61170c143df75e6afef46bee666285c0f8e9dac4",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float"
+          ],
+          "callee": "clamp"
+        }
+      ],
+      "calls": [
+        {
+          "owner": "cellAvgColor3x3",
+          "owner_id": 32,
+          "path": [
+            2,
+            "s1",
+            "s0",
+            "s1",
+            "s1",
+            "e0",
+            0,
+            1,
+            1
+          ],
+          "span": "59:38-59:51",
+          "sha256": "431c8b38b26199ca389e2dd4c92cef6386315b11ce4dab2a33fb1ca8a52bb1ed",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "toSampleUV"
+        },
+        {
+          "owner": "cellHeight",
+          "owner_id": 33,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "66:12-66:43",
+          "sha256": "ea16e7c19f163b45c0c1cd5c9b221a863fafce314b48e1b8c2d079c4fe193f7c",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "lum"
+        },
+        {
+          "owner": "cellHeight",
+          "owner_id": 33,
+          "path": [
+            0,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "66:16-66:38",
+          "sha256": "d0fac28dd3efecafd27f7d7baf7bb8f5ec3608a1518cc3fba05c3db78d780f29",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "cellAvgColor3x3"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            12,
+            "s1",
+            "s4",
+            "e0",
+            0,
+            0
+          ],
+          "span": "151:19-151:46",
+          "sha256": "b46aa7a2db5ef43db1cadff795ed253b58cc3a5f18d9adea53a8238eb206a9c6",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "cellHeight"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s0",
+            "s1",
+            "e0",
+            0,
+            1
+          ],
+          "span": "182:20-182:42",
+          "sha256": "b5bb1d6d5beec5f5f71948f131dad7efc284b8e4f75b064c38caa6986f16741f",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "cellAvgColor3x3"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s1",
+            "s0",
+            "s0",
+            "s0",
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "186:28-186:57",
+          "sha256": "1e7a0f1686b4b1cb2e1aaa58e38a625f88d5f8179dda0292507c8eb4cc7dca76",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "cellAvgColor3x3"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s1",
+            "s0",
+            "s0",
+            "s0",
+            "s1",
+            "s1",
+            "e0",
+            0,
+            1,
+            1
+          ],
+          "span": "189:46-189:66",
+          "sha256": "15c02a639ae1ebb2d6aa109281d97198ee2c79f041abebf1504cb1aea3a60094",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "toSampleUV"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s1",
+            "s0",
+            "s1",
+            "s0",
+            "e0",
+            0,
+            0
+          ],
+          "span": "192:27-192:53",
+          "sha256": "a0507b58b16c557dc50fe67eb7bc9c93314942dac8894f41bf9fd2001391cc48",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "sideShade"
+        },
+        {
+          "owner": "main",
+          "owner_id": 36,
+          "path": [
+            14,
+            "s1",
+            "s0",
+            "s1",
+            "s1",
+            "e0",
+            0,
+            0
+          ],
+          "span": "193:30-193:59",
+          "sha256": "ae769665a14c5c58b7a4c15aa48f0250620d330083cc166cacf58f173698f8f6",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "cellAvgColor3x3"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "path": [
+            8,
+            "e0",
+            0,
+            0
+          ],
+          "span": "105:15-105:45",
+          "sha256": "3d26dcbb3719a4f3e6873e0e84353a1b00501dbc6efb1f519ff03dced3b8dc7d",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "vec2",
+            "vec2",
+            "vec2"
+          ],
+          "callee": "baryWeights"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "path": [
+            10,
+            "e0",
+            0,
+            1
+          ],
+          "span": "107:10-107:40",
+          "sha256": "a19c405d0ad117d113740fae492be62cceb15b5e5cd4065ff9cbd657257a7197",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "vec2",
+            "vec2",
+            "vec2"
+          ],
+          "callee": "baryWeights"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "path": [
+            12,
+            "e0",
+            0,
+            1
+          ],
+          "span": "109:10-109:40",
+          "sha256": "dcb26c7bd96cc1d1a4b3d685fc28e945a1e52ff33fd0ed51643ff6c0445f62c8",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "vec2",
+            "vec2",
+            "vec2"
+          ],
+          "callee": "baryWeights"
+        },
+        {
+          "owner": "pyramidTriHit",
+          "owner_id": 37,
+          "path": [
+            14,
+            "e0",
+            0,
+            1
+          ],
+          "span": "111:10-111:40",
+          "sha256": "5a4abbf82b728aecc02d77ca733c55138e6442fa076dc63fbe75ffe7c1f38238",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "vec2",
+            "vec2",
+            "vec2"
+          ],
+          "callee": "baryWeights"
+        }
+      ],
+      "scalar_xor_sites": [],
+      "initial_probe": {
+        "validator": "filter/extrude:extrude:159:23: unsupported builtin all",
+        "emitter": "filter/extrude:extrude:159:27: unsupported builtin lessThanEqual",
+        "rendered_cpp": null
+      },
+      "closure_projection": {
+        "validator": "filter/extrude:extrude:159:27: unsupported typed type bvec2",
+        "emitter": "pass",
+        "rendered_cpp": {
+          "bytes": 14330,
+          "sha256": "27e05cfa714eeba2d0e15429792f53d490a2a8283e76bb73a2484135c5b29c08"
+        }
+      }
+    },
+    {
+      "key": "filter/watercolor:wcSimplify",
+      "source": "sources/filter/watercolor/wcSimplify.glsl",
+      "raw_bytes": 2233,
+      "raw_sha256": "81e668d554920b70353a2cccaaa414f1ad4eebd83bd1d7100ca05f44a11f8b5c",
+      "normalized_bytes": 1433,
+      "normalized_sha256": "883c8412fc9ba83b6e01132a8b5d348956f4ce75f9e4ab9ae342d9782aff3c5c",
+      "defines": {},
+      "function_count": 2,
+      "function_tuple_sha256": "f1a9e7fa0c90c11b0ecdee2ecbabf7cb90796f5e07233ea9bd85b92a9a7c885a",
+      "whole_program_sha256": "9f43ebbc6042db7d30f336106215ce8842140f27ca3c46061f9394de216af2fb",
+      "interface_sha256": "12b0afcf3e6495444935f28b81ff083c9730b0d0cd8b6b66d46a927d577cf97d",
+      "resources": {
+        "uniforms": [
+          "inputTex",
+          "resolution",
+          "detail"
+        ],
+        "samplers": [
+          "inputTex"
+        ],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": true,
+        "uses_derivatives": false
+      },
+      "loop_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "parameters": [
+        {
+          "owner": "sort2",
+          "owner_id": 8,
+          "id": 5,
+          "name": "a",
+          "type": "vec3",
+          "direction": "inout",
+          "span": "10:12-10:24"
+        },
+        {
+          "owner": "sort2",
+          "owner_id": 8,
+          "id": 6,
+          "name": "b",
+          "type": "vec3",
+          "direction": "inout",
+          "span": "10:26-10:38"
+        }
+      ],
+      "builtins": [
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "19:20-19:68",
+          "sha256": "8b1242e69a69dc297581f5c54d866385003f5cd0d730842d776530152f312588",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "mix"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            0,
+            "e0",
+            0,
+            0,
+            2,
+            0
+          ],
+          "span": "19:34-19:59",
+          "sha256": "8a9f15c9817898194f82000e0868561fd21e3b6bda5c2ee7ced4d052454c76ea",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "clamp"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            3,
+            "e0",
+            0,
+            0
+          ],
+          "span": "23:15-23:63",
+          "sha256": "8b2caac46c4ad362230e0d411e8b6a5a0ad479b14228c9c1b94de4c89d69ee44",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            4,
+            "e0",
+            0,
+            0
+          ],
+          "span": "24:15-24:58",
+          "sha256": "52be9d00be0a36071c3b810bc0104db3e5a0e361688b99f54f61967b440f44e8",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "25:15-25:62",
+          "sha256": "4d67053eaa37fa039c5c468e535ae3e94cb1b955f6810a6c652d1df87191b435",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            6,
+            "e0",
+            0,
+            0
+          ],
+          "span": "26:15-26:58",
+          "sha256": "903ed8ec4baba9a396b655826449ae4bbbc5145b121ed3b5ba7a4a6bdbf3d180",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            7,
+            "e0",
+            0,
+            0
+          ],
+          "span": "27:15-27:36",
+          "sha256": "a4802ef52654f5e6acfe98e44e26fb1d9d0be56978bf42346207b2fdb3e3d4ac",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            8,
+            "e0",
+            0,
+            0
+          ],
+          "span": "28:15-28:57",
+          "sha256": "bfecf6c3ea10d010c4160c7eada563c7725d4db757f215bb3c5fd5c38b4aa51c",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            9,
+            "e0",
+            0,
+            0
+          ],
+          "span": "29:15-29:62",
+          "sha256": "c950647386f34c7e811b75d08f712b408a7b2da5720efdc0d7d74e4f13c7ef11",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            10,
+            "e0",
+            0,
+            0
+          ],
+          "span": "30:15-30:57",
+          "sha256": "c449879dc1c27bc3e5e058a0487a7d6090e8613905a0024447d1e692e5bdea40",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            11,
+            "e0",
+            0,
+            0
+          ],
+          "span": "31:15-31:61",
+          "sha256": "0dac26679c90244e04e8f4dc90696e7ceff740e1cf987b1aee7b4f38dc002a10",
+          "result_type": "vec4",
+          "argument_types": [
+            "sampler2D",
+            "vec2"
+          ],
+          "callee": "texture"
+        },
+        {
+          "owner": "sort2",
+          "owner_id": 8,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "11:15-11:24",
+          "sha256": "b0a5f28d35c32e97106a6e4d5a33a928bd844d7659d923fae38fa7f996eb8930",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "min"
+        },
+        {
+          "owner": "sort2",
+          "owner_id": 8,
+          "path": [
+            1,
+            "e0",
+            0,
+            0
+          ],
+          "span": "12:15-12:24",
+          "sha256": "9c51e49e1bab5c9ecc7571b566868917a6a8e101bcbf22c7f2fa252d1f81b01e",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "max"
+        }
+      ],
+      "calls": [
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            21,
+            "e0",
+            0
+          ],
+          "span": "37:5-37:18",
+          "sha256": "229de33fb9b579ff1b96f0a050123a07aa764a2394bd3b568875f0d92b9c0a8b",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            22,
+            "e0",
+            0
+          ],
+          "span": "37:20-37:33",
+          "sha256": "e8413d8aa6d20079c72c6932d103fa8bb0c1faa34700af0c14fdc29ed26654f7",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            23,
+            "e0",
+            0
+          ],
+          "span": "37:35-37:48",
+          "sha256": "f1c1fde2437ee4e7166601a67f1f7cf9e6efebd5b778c7858170639091843066",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            24,
+            "e0",
+            0
+          ],
+          "span": "38:5-38:18",
+          "sha256": "da39c7479b799c503fc8cac9da831159d379285aeac9415582aad9ec1774e4fb",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            25,
+            "e0",
+            0
+          ],
+          "span": "38:20-38:33",
+          "sha256": "bb4fac524bf77e605fa750dd91c4e42431cad84f17aec0e2b04d69bba3d9de89",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            26,
+            "e0",
+            0
+          ],
+          "span": "38:35-38:48",
+          "sha256": "a94cf10cab4a218ff2d2ca189c3f28769ad5eea2df3aa386d67b030e7faa1319",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            27,
+            "e0",
+            0
+          ],
+          "span": "39:5-39:18",
+          "sha256": "859721ebf035bedb0fd218fd824a82632e4bcbcf124ab470ace03bee4469e343",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            28,
+            "e0",
+            0
+          ],
+          "span": "39:20-39:33",
+          "sha256": "1af11d10c999d573bce5bfe7896b4f6f4349f4c139dc5c1d5011e7d50b9132f9",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            29,
+            "e0",
+            0
+          ],
+          "span": "39:35-39:48",
+          "sha256": "08567a2a9bde08cd79fb2abc4e22b1e381e5e82c67a205a838c2fe1b6cbb5e30",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            30,
+            "e0",
+            0
+          ],
+          "span": "40:5-40:18",
+          "sha256": "15ab2cba1d55b2f30298186d79508f748104e23e6310d688f71e948e19785f4d",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            31,
+            "e0",
+            0
+          ],
+          "span": "40:20-40:33",
+          "sha256": "6750a459e8f8df19cc24c24b1353f58deab40a536581e4391cfd9eedbae7eb99",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            32,
+            "e0",
+            0
+          ],
+          "span": "40:35-40:48",
+          "sha256": "da8e05933f8694bc61e4f325b6c2a8e8dcc6130de3bec301bc3b8adbd4ca5eee",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            33,
+            "e0",
+            0
+          ],
+          "span": "41:5-41:18",
+          "sha256": "617807aa1817ac61c3fb6e6afbe2291dcb071efbef1c28f20211d3905c71fe4d",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            34,
+            "e0",
+            0
+          ],
+          "span": "41:20-41:33",
+          "sha256": "02e686919800c0d18715920d96f4bdfb70dbb4954883bf0bf476ae8d09d81a4d",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            35,
+            "e0",
+            0
+          ],
+          "span": "41:35-41:48",
+          "sha256": "a2e5d95a93204850980a980be623276d19e62c4d0b6f6cc819f79b6f4901387e",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            36,
+            "e0",
+            0
+          ],
+          "span": "42:5-42:18",
+          "sha256": "02731c8cb4f8d3c4120272d648e47a6e0d1c1bbb31b7f2107e703ec2f3eaeb70",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            37,
+            "e0",
+            0
+          ],
+          "span": "42:20-42:33",
+          "sha256": "efade36ac4934eda201766ddcf48dff75095c2176c9509cb3bc4f90d9bd011e2",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            38,
+            "e0",
+            0
+          ],
+          "span": "42:35-42:48",
+          "sha256": "1e0c4228bfee8548edb6a9d57e3da5be292e5c4d981741394f23e283b2385074",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        },
+        {
+          "owner": "main",
+          "owner_id": 7,
+          "path": [
+            39,
+            "e0",
+            0
+          ],
+          "span": "43:5-43:18",
+          "sha256": "4d6b55fb93a61c9f67afd3dc125f2c9c21b02b9e970f97bc8b8e833963185271",
+          "result_type": "void",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "sort2"
+        }
+      ],
+      "scalar_xor_sites": [],
+      "initial_probe": {
+        "validator": "filter/watercolor:wcSimplify:10:12: unsupported parameter direction inout",
+        "emitter": "filter/watercolor:wcSimplify:37:5: only typed assignments are admitted",
+        "rendered_cpp": null
+      }
+    },
+    {
+      "key": "synth/curl:curl",
+      "source": "sources/synth/curl/curl.glsl",
+      "raw_bytes": 7290,
+      "raw_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
+      "normalized_bytes": 4673,
+      "normalized_sha256": "405774c12a29bff814b92ffbe2cc5f3b267367aa40832befc59b509573be91e9",
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "function_count": 7,
+      "function_tuple_sha256": "06632686b2a2a1938389722409a109a71b6fb66fb2e1afd9b459e4fedb8b16fe",
+      "whole_program_sha256": "a7c44947e08fdf478857d1f9c400cd5072df99a14ae4d63aebcbd6d1fc1d9374",
+      "interface_sha256": "0ff5180a4e2bbbf81e9a2705e99a155d9e9c378fbcbe5729eaa43a941c0227ae",
+      "resources": {
+        "uniforms": [
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "time",
+          "scale",
+          "seed",
+          "speed",
+          "intensity"
+        ],
+        "samplers": [],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": false,
+        "uses_derivatives": false
+      },
+      "loop_proof": {
+        "loop_count": 1,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 1,
+        "max_lexical_product": 1,
+        "entrypoint_charge": 12,
+        "call_graph_acyclic": true
+      },
+      "parameters": [
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "id": 15,
+          "name": "p",
+          "type": "vec3",
+          "direction": "in",
+          "span": "137:18-137:24"
+        },
+        {
+          "owner": "fbmSimplex3D",
+          "owner_id": 17,
+          "id": 14,
+          "name": "p",
+          "type": "vec3",
+          "direction": "in",
+          "span": "114:20-114:26"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 19,
+          "id": 10,
+          "name": "x",
+          "type": "vec3",
+          "direction": "in",
+          "span": "31:14-31:20"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 20,
+          "id": 11,
+          "name": "x",
+          "type": "vec4",
+          "direction": "in",
+          "span": "34:14-34:20"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "id": 13,
+          "name": "v",
+          "type": "vec3",
+          "direction": "in",
+          "span": "43:17-43:23"
+        },
+        {
+          "owner": "taylorInvSqrt",
+          "owner_id": 22,
+          "id": 12,
+          "name": "r",
+          "type": "vec4",
+          "direction": "in",
+          "span": "38:20-38:26"
+        }
+      ],
+      "builtins": [
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "142:16-142:35",
+          "sha256": "20b6673e2d45e9f491706f00849fe9ad7c72ef56d268b4c15a73a09f352f36f5",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "sin"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            2,
+            "e0",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "143:16-143:35",
+          "sha256": "a3f3ca1aa5d63b7d5a1ae212b68c868419e546ada0b1e41d4111caddc38c637f",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "cos"
+        },
+        {
+          "owner": "main",
+          "owner_id": 18,
+          "path": [
+            6,
+            "e0",
+            0,
+            1,
+            0,
+            0
+          ],
+          "span": "196:12-196:34",
+          "sha256": "bc83ca6fd3369ed6ac8321eb38db83a78569233a404563f491eb95736c27c09a",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "tanh"
+        },
+        {
+          "owner": "main",
+          "owner_id": 18,
+          "path": [
+            9,
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1,
+            1
+          ],
+          "span": "204:23-204:45",
+          "sha256": "72dc919ed6535b7c572082f8ac03479d1543f036b1da23279bbd330ffdce062d",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 19,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "32:12-32:47",
+          "sha256": "9e296505e841a30c1211828e3bc255acf00250f53572c992fc948c4a953eb208",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "float"
+          ],
+          "callee": "mod"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 20,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "35:12-35:47",
+          "sha256": "e0063fe65cbef6674dbb68fe752ddb24dfa7f419c15816227d24d24c8b3de39d",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4",
+            "float"
+          ],
+          "callee": "mod"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            3,
+            "e0",
+            0,
+            0
+          ],
+          "span": "51:14-51:38",
+          "sha256": "af2f8f2d7b663a1a02a3ff978d15be25f9f1f54f682ca378801556bfa55598a9",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            3,
+            "e0",
+            0,
+            0,
+            0,
+            1
+          ],
+          "span": "51:24-51:37",
+          "sha256": "c9c2836c4cfe670d3b7b31d34e119d64d2285d249178fcdf86558c6fd161c956",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            4,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "52:23-52:36",
+          "sha256": "707022ece23eac8b527d5ad27829aaa791a2d0db48ca367919aeca9b54837a57",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "55:14-55:34",
+          "sha256": "4226197c85fbd3270e7ebd874f2be04b63129588ec9ebc391bc045300a0f9001",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "step"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            7,
+            "e0",
+            0,
+            0
+          ],
+          "span": "57:15-57:32",
+          "sha256": "507584f62b5ef906a45dbf7abec138b811498efe93e8298f64a6fe119f55e49f",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "min"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            8,
+            "e0",
+            0,
+            0
+          ],
+          "span": "58:15-58:32",
+          "sha256": "497787db80fb1f673bbb1b0992e00881242382a30e344139c633a0612f8a3f5a",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "max"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            12,
+            "e0",
+            0,
+            1
+          ],
+          "span": "65:9-65:22",
+          "sha256": "5e8842bf171ffb0d63398609deaad1e1c6171bafed84b10e83f5967b337bc466",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "float"
+          ],
+          "callee": "mod"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            16,
+            "e0",
+            0,
+            0,
+            1,
+            1
+          ],
+          "span": "75:25-75:47",
+          "sha256": "763d82712688a805710a4be748fcd23d3f912154d671b2220f5f7598b8032222",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            17,
+            "e0",
+            0,
+            0
+          ],
+          "span": "77:15-77:30",
+          "sha256": "5c8e92c78388f63682845c180b4d65fe56630b49e96775c5588459fcc9a2006d",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            18,
+            "e0",
+            0,
+            0
+          ],
+          "span": "78:15-78:34",
+          "sha256": "a74b08ff6efd45e8d64cd8ea6e4296dc10eae0033377bf9148db0bbec6055fe4",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            21,
+            "e0",
+            0,
+            0,
+            0,
+            1
+          ],
+          "span": "82:20-82:26",
+          "sha256": "803e8eaf5c818125b2c51bb656e6837bdbfc3b7c69fde98e0c59a9366efc827c",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            21,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "82:29-82:35",
+          "sha256": "7c75596b711cc3146c56e51f7b4aaba6b91c3d5f1572c3ee3db15a8576352f5a",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            24,
+            "e0",
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "87:15-87:24",
+          "sha256": "91513d616c50c1eed173b38dc46651f5fa35d1ba5c420fd319777517adfac2c9",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            25,
+            "e0",
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "88:15-88:24",
+          "sha256": "58b59183bb84ae0e05cb5b745e4654e3f6a1a6d80a15089e521d637ad3b9d090",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            26,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "89:16-89:34",
+          "sha256": "3d0ba37b1e8e4fabfaf488455d0b9b033d830b64e1ae3656fe3a1a952e91f852",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4",
+            "vec4"
+          ],
+          "callee": "step"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            33,
+            "e0",
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "100:36-100:47",
+          "sha256": "ee65c8ac85ae92316a77f457ed61baca4afa2fd01261f2dccf1f2fb8a84d254f",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            33,
+            "e0",
+            0,
+            0,
+            0,
+            1
+          ],
+          "span": "100:49-100:60",
+          "sha256": "d310c4cad50a4336e17e0a29c80f538279114faafe0c6c8202e227f35a705800",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            33,
+            "e0",
+            0,
+            0,
+            0,
+            2
+          ],
+          "span": "100:62-100:73",
+          "sha256": "49ac343fac60d16fec6271d1b841d13f5624041adc5621943149bfa1bc0b1fc0",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            33,
+            "e0",
+            0,
+            0,
+            0,
+            3
+          ],
+          "span": "100:75-100:86",
+          "sha256": "10925041528cb887b26993f5b105a9b9920dbe952f27b15ef665beb8b475445a",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            38,
+            "e0",
+            0,
+            0
+          ],
+          "span": "107:14-107:86",
+          "sha256": "a2f2e9a90ca8ed0b54cb12ca34c8c400592f359a7b15845d9c675dc3d4a58d70",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4",
+            "float"
+          ],
+          "callee": "max"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            38,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "107:29-107:40",
+          "sha256": "e77c19f15d23c9140f707dd376552939cb74b4a304febe3aee1c94854f6f2fc3",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            38,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            1
+          ],
+          "span": "107:42-107:53",
+          "sha256": "38496cbf544392c65616f9f67209782f51ccef2eb0b62ffe050c446e6587ac17",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            38,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            2
+          ],
+          "span": "107:55-107:66",
+          "sha256": "5365b3bb3083ad94697503791434c929f82108c4d3b22bd40b6ccd614c511b81",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            38,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            3
+          ],
+          "span": "107:68-107:79",
+          "sha256": "2ca9bdb344e879106f0564dd7c540f6bec4208538e1c3da9583fa26940769f7d",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            40,
+            "e0",
+            0,
+            1
+          ],
+          "span": "109:19-109:87",
+          "sha256": "206baa40474a5b5448147860e5734fb8bc2a9c6b20864234c5270664a189d646",
+          "result_type": "float",
+          "argument_types": [
+            "vec4",
+            "vec4"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            40,
+            "e0",
+            0,
+            1,
+            1,
+            0
+          ],
+          "span": "109:35-109:46",
+          "sha256": "e6829b347cc4679c58d95bc0268d6915e72a3c29a686329d69a738a09406dfe2",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            40,
+            "e0",
+            0,
+            1,
+            1,
+            1
+          ],
+          "span": "109:48-109:59",
+          "sha256": "f02ac414eb4b71e6190cca27e0dbbe64f12d0a9786c82d40551fbec3146d3732",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            40,
+            "e0",
+            0,
+            1,
+            1,
+            2
+          ],
+          "span": "109:61-109:72",
+          "sha256": "943c65d28915f1c91f859d1c1287392b811ad328d1dd928e21c342c14b8372a7",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            40,
+            "e0",
+            0,
+            1,
+            1,
+            3
+          ],
+          "span": "109:74-109:85",
+          "sha256": "531af54e81c4faf0ae5071a4799af02ebaffda106aaec7ef44e528c2e7c6c577",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        }
+      ],
+      "calls": [
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            6,
+            "e0",
+            0,
+            0
+          ],
+          "span": "150:19-150:66",
+          "sha256": "ff83a7a52737896863df81ddef9149eb4c3303383b2b96f78fc6b5c9118a2a27",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            7,
+            "e0",
+            0,
+            0
+          ],
+          "span": "151:19-151:66",
+          "sha256": "1278058679b7ed6725a088d407e0c4c17c1b8b017874e148ea155afdedfd1be5",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            8,
+            "e0",
+            0,
+            0
+          ],
+          "span": "152:19-152:66",
+          "sha256": "d015e904d04931ffde689ac4bbae0bdcbbdac95e16adde17aa2cdd2054af059d",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            9,
+            "e0",
+            0,
+            0
+          ],
+          "span": "153:19-153:66",
+          "sha256": "6e4ba4b500acf0de8e477ccd1b781b125bee7320667848ee97c079eb83a4cb17",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            10,
+            "e0",
+            0,
+            0
+          ],
+          "span": "156:19-156:66",
+          "sha256": "e21ef42414ab44224fb8649c5879e15592a8b5ff5b914852fc9eba154d49589d",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            11,
+            "e0",
+            0,
+            0
+          ],
+          "span": "157:19-157:66",
+          "sha256": "1ac7ce7fafb2f56578f7b13523a78181a8c88bff0329d12e9a4d06a35cfea0f0",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            12,
+            "e0",
+            0,
+            0
+          ],
+          "span": "158:19-158:66",
+          "sha256": "9d05f3d917e65a2395faac1715eb2de81359b2424853cc85bdb8b8229616c1f7",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            13,
+            "e0",
+            0,
+            0
+          ],
+          "span": "159:19-159:66",
+          "sha256": "8fab57e8590d666e668d894b4e09678c4677bc695afa141e6112a6287623aca4",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            14,
+            "e0",
+            0,
+            0
+          ],
+          "span": "162:19-162:66",
+          "sha256": "232452d2f1e676cfec1738d6f5f2ac87b1575a34b11f25d62cb6321be596d5bb",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            15,
+            "e0",
+            0,
+            0
+          ],
+          "span": "163:19-163:66",
+          "sha256": "65f2957b4beafc9428745bcec789ed01e8d00083e73d17b055364b27b7271c09",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            16,
+            "e0",
+            0,
+            0
+          ],
+          "span": "164:19-164:66",
+          "sha256": "b47f20b8cd071293de8ec317ce756ae745969b2c1815f29c7231473f23c6295e",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "curlNoise3D",
+          "owner_id": 16,
+          "path": [
+            17,
+            "e0",
+            0,
+            0
+          ],
+          "span": "165:19-165:66",
+          "sha256": "37e31576d444eb769702c604929e989ab0cf9ef02d775393b47d6116d9d2fbd6",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fbmSimplex3D"
+        },
+        {
+          "owner": "fbmSimplex3D",
+          "owner_id": 17,
+          "path": [
+            4,
+            "s1",
+            "s0",
+            "e0",
+            0,
+            0
+          ],
+          "span": "121:19-121:38",
+          "sha256": "02e422392d9c11839661dea23479026a21ea0c4245ef34d32e314451160c3ef5",
+          "result_type": "float",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "simplex3D"
+        },
+        {
+          "owner": "main",
+          "owner_id": 18,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "193:17-193:31",
+          "sha256": "aca995744272cb60d7df79bfa47316945ccad0100fc82e99aaa522f2cd1e6c3f",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "curlNoise3D"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            13,
+            "e0",
+            0,
+            0
+          ],
+          "span": "66:14-69:44",
+          "sha256": "9d31229c87892de7a98f680d750b18df8c4eaa374a5ef4a5e536e1352f937816",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "permute"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            13,
+            "e0",
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "66:22-68:44",
+          "sha256": "88850cd2d6cf632155396f89de2acfe016b55690e6415c84f1a74e014ead0a26",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "permute"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            13,
+            "e0",
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "66:30-67:42",
+          "sha256": "194e3a5dd51d4e8db0625fb6d10623ec7324e9328b9741f9316418a130a82898",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "permute"
+        },
+        {
+          "owner": "simplex3D",
+          "owner_id": 21,
+          "path": [
+            33,
+            "e0",
+            0,
+            0
+          ],
+          "span": "100:17-100:88",
+          "sha256": "5286966f001ac5fe1be4dd7727996e45e23f69ec6265100dbafb48bc34c7a795",
+          "result_type": "vec4",
+          "argument_types": [
+            "vec4"
+          ],
+          "callee": "taylorInvSqrt"
+        }
+      ],
+      "scalar_xor_sites": [],
+      "initial_probe": {
+        "validator": "synth/curl:curl:196:12: unsupported builtin tanh",
+        "emitter": "synth/curl:curl:32:12: unsupported builtin mod overload",
+        "rendered_cpp": null
+      },
+      "first_gate_projection": {
+        "validator": "synth/curl:curl:32:12: unsupported builtin mod overload",
+        "emitter": "synth/curl:curl:32:12: unsupported builtin mod overload",
+        "rendered_cpp": null
+      }
+    },
+    {
+      "key": "classicNoisedeck/caustic:caustic",
+      "source": "sources/classicNoisedeck/caustic/caustic.glsl",
+      "raw_bytes": 15645,
+      "raw_sha256": "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d",
+      "normalized_bytes": 7999,
+      "normalized_sha256": "b4a45216e62c5facade77e64925075e736ee3ed0eb7b1798bc777ba1bb714b83",
+      "defines": {
+        "NOISE_TYPE": 10
+      },
+      "function_count": 22,
+      "function_tuple_sha256": "43a0063cf16ebea820084302df1d6c59594485b559267597ad30ac3cddc659a3",
+      "whole_program_sha256": "b0ffb30caee0d301f54d42892a6e70619fd4cf1e4c19d5fc3f399b3bfc598624",
+      "interface_sha256": "094c31b573c08cfdf9e3c76e766c4b4ca96a2df12d6a1629f18b141624464b50",
+      "resources": {
+        "uniforms": [
+          "time",
+          "seed",
+          "wrap",
+          "resolution",
+          "tileOffset",
+          "fullResolution",
+          "noiseScale",
+          "speed",
+          "hueRotation",
+          "hueRange",
+          "intensity"
+        ],
+        "samplers": [],
+        "outputs": [
+          "fragColor"
+        ],
+        "uses_texture": false,
+        "uses_derivatives": false
+      },
+      "loop_proof": {
+        "loop_count": 0,
+        "unproved_loop_count": 0,
+        "max_effective_depth": 0,
+        "max_lexical_product": 0,
+        "entrypoint_charge": 0,
+        "call_graph_acyclic": true
+      },
+      "parameters": [
+        {
+          "owner": "blendBicubic",
+          "owner_id": 75,
+          "id": 55,
+          "name": "p0",
+          "type": "float",
+          "direction": "in",
+          "span": "240:20-240:28"
+        },
+        {
+          "owner": "blendBicubic",
+          "owner_id": 75,
+          "id": 56,
+          "name": "p1",
+          "type": "float",
+          "direction": "in",
+          "span": "240:30-240:38"
+        },
+        {
+          "owner": "blendBicubic",
+          "owner_id": 75,
+          "id": 57,
+          "name": "p2",
+          "type": "float",
+          "direction": "in",
+          "span": "240:40-240:48"
+        },
+        {
+          "owner": "blendBicubic",
+          "owner_id": 75,
+          "id": 58,
+          "name": "p3",
+          "type": "float",
+          "direction": "in",
+          "span": "240:50-240:58"
+        },
+        {
+          "owner": "blendBicubic",
+          "owner_id": 75,
+          "id": 59,
+          "name": "t",
+          "type": "float",
+          "direction": "in",
+          "span": "240:60-240:67"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "id": 65,
+          "name": "a",
+          "type": "float",
+          "direction": "in",
+          "span": "257:27-257:34"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "id": 66,
+          "name": "b",
+          "type": "float",
+          "direction": "in",
+          "span": "257:36-257:43"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "id": 67,
+          "name": "amount",
+          "type": "float",
+          "direction": "in",
+          "span": "257:45-257:57"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "id": 68,
+          "name": "nType",
+          "type": "int",
+          "direction": "in",
+          "span": "257:59-257:68"
+        },
+        {
+          "owner": "brightnessContrast",
+          "owner_id": 77,
+          "id": 20,
+          "name": "color",
+          "type": "vec3",
+          "direction": "in",
+          "span": "55:25-55:35"
+        },
+        {
+          "owner": "catmullRom3",
+          "owner_id": 78,
+          "id": 51,
+          "name": "p0",
+          "type": "float",
+          "direction": "in",
+          "span": "229:19-229:27"
+        },
+        {
+          "owner": "catmullRom3",
+          "owner_id": 78,
+          "id": 52,
+          "name": "p1",
+          "type": "float",
+          "direction": "in",
+          "span": "229:29-229:37"
+        },
+        {
+          "owner": "catmullRom3",
+          "owner_id": 78,
+          "id": 53,
+          "name": "p2",
+          "type": "float",
+          "direction": "in",
+          "span": "229:39-229:47"
+        },
+        {
+          "owner": "catmullRom3",
+          "owner_id": 78,
+          "id": 54,
+          "name": "t",
+          "type": "float",
+          "direction": "in",
+          "span": "229:49-229:56"
+        },
+        {
+          "owner": "catmullRom4",
+          "owner_id": 79,
+          "id": 60,
+          "name": "p0",
+          "type": "float",
+          "direction": "in",
+          "span": "252:19-252:27"
+        },
+        {
+          "owner": "catmullRom4",
+          "owner_id": 79,
+          "id": 61,
+          "name": "p1",
+          "type": "float",
+          "direction": "in",
+          "span": "252:29-252:37"
+        },
+        {
+          "owner": "catmullRom4",
+          "owner_id": 79,
+          "id": 62,
+          "name": "p2",
+          "type": "float",
+          "direction": "in",
+          "span": "252:39-252:47"
+        },
+        {
+          "owner": "catmullRom4",
+          "owner_id": 79,
+          "id": 63,
+          "name": "p3",
+          "type": "float",
+          "direction": "in",
+          "span": "252:49-252:57"
+        },
+        {
+          "owner": "catmullRom4",
+          "owner_id": 79,
+          "id": 64,
+          "name": "t",
+          "type": "float",
+          "direction": "in",
+          "span": "252:59-252:66"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "id": 38,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "210:16-210:23"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "id": 39,
+          "name": "xFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "210:25-210:36"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "id": 40,
+          "name": "yFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "210:38-210:49"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "id": 41,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "210:51-210:58"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "id": 42,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "216:22-216:29"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "id": 43,
+          "name": "xFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "216:31-216:42"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "id": 44,
+          "name": "yFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "216:44-216:55"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "id": 45,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "216:57-216:64"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "id": 46,
+          "name": "offset",
+          "type": "ivec2",
+          "direction": "in",
+          "span": "216:66-216:78"
+        },
+        {
+          "owner": "hsv2rgb",
+          "owner_id": 82,
+          "id": 21,
+          "name": "hsv",
+          "type": "vec3",
+          "direction": "in",
+          "span": "68:14-68:22"
+        },
+        {
+          "owner": "map",
+          "owner_id": 84,
+          "id": 13,
+          "name": "value",
+          "type": "float",
+          "direction": "in",
+          "span": "27:11-27:22"
+        },
+        {
+          "owner": "map",
+          "owner_id": 84,
+          "id": 14,
+          "name": "inMin",
+          "type": "float",
+          "direction": "in",
+          "span": "27:24-27:35"
+        },
+        {
+          "owner": "map",
+          "owner_id": 84,
+          "id": 15,
+          "name": "inMax",
+          "type": "float",
+          "direction": "in",
+          "span": "27:37-27:48"
+        },
+        {
+          "owner": "map",
+          "owner_id": 84,
+          "id": 16,
+          "name": "outMin",
+          "type": "float",
+          "direction": "in",
+          "span": "27:50-27:62"
+        },
+        {
+          "owner": "map",
+          "owner_id": 84,
+          "id": 17,
+          "name": "outMax",
+          "type": "float",
+          "direction": "in",
+          "span": "27:64-27:76"
+        },
+        {
+          "owner": "mod289",
+          "owner_id": 85,
+          "id": 24,
+          "name": "x",
+          "type": "vec2",
+          "direction": "in",
+          "span": "107:13-107:19"
+        },
+        {
+          "owner": "mod289",
+          "owner_id": 86,
+          "id": 23,
+          "name": "x",
+          "type": "vec3",
+          "direction": "in",
+          "span": "103:13-103:19"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "id": 73,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "271:12-271:19"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "id": 74,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "271:21-271:28"
+        },
+        {
+          "owner": "pcg",
+          "owner_id": 88,
+          "id": 18,
+          "name": "v",
+          "type": "uvec3",
+          "direction": "in",
+          "span": "32:11-32:18"
+        },
+        {
+          "owner": "periodicFunction",
+          "owner_id": 89,
+          "id": 22,
+          "name": "p",
+          "type": "float",
+          "direction": "in",
+          "span": "98:24-98:31"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 90,
+          "id": 25,
+          "name": "x",
+          "type": "vec3",
+          "direction": "in",
+          "span": "111:14-111:20"
+        },
+        {
+          "owner": "positiveModulo",
+          "owner_id": 91,
+          "id": 31,
+          "name": "value",
+          "type": "int",
+          "direction": "in",
+          "span": "155:20-155:29"
+        },
+        {
+          "owner": "positiveModulo",
+          "owner_id": 91,
+          "id": 32,
+          "name": "modulus",
+          "type": "int",
+          "direction": "in",
+          "span": "155:31-155:42"
+        },
+        {
+          "owner": "prng",
+          "owner_id": 92,
+          "id": 19,
+          "name": "p",
+          "type": "vec3",
+          "direction": "in",
+          "span": "48:12-48:18"
+        },
+        {
+          "owner": "quadratic3",
+          "owner_id": 93,
+          "id": 47,
+          "name": "p0",
+          "type": "float",
+          "direction": "in",
+          "span": "222:18-222:26"
+        },
+        {
+          "owner": "quadratic3",
+          "owner_id": 93,
+          "id": 48,
+          "name": "p1",
+          "type": "float",
+          "direction": "in",
+          "span": "222:28-222:36"
+        },
+        {
+          "owner": "quadratic3",
+          "owner_id": 93,
+          "id": 49,
+          "name": "p2",
+          "type": "float",
+          "direction": "in",
+          "span": "222:38-222:46"
+        },
+        {
+          "owner": "quadratic3",
+          "owner_id": 93,
+          "id": 50,
+          "name": "t",
+          "type": "float",
+          "direction": "in",
+          "span": "222:48-222:55"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "id": 33,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "164:34-164:41"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "id": 34,
+          "name": "xFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "164:43-164:54"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "id": 35,
+          "name": "yFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "164:56-164:67"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "id": 36,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "164:69-164:76"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "id": 37,
+          "name": "offset",
+          "type": "ivec2",
+          "direction": "in",
+          "span": "164:78-164:90"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "id": 26,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "115:20-115:27"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "id": 27,
+          "name": "xFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "115:29-115:40"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "id": 28,
+          "name": "yFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "115:42-115:53"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "id": 29,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "115:55-115:62"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "id": 30,
+          "name": "blend",
+          "type": "float",
+          "direction": "in",
+          "span": "115:64-115:75"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "id": 69,
+          "name": "st",
+          "type": "vec2",
+          "direction": "in",
+          "span": "266:13-266:20"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "id": 70,
+          "name": "xFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "266:22-266:33"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "id": 71,
+          "name": "yFreq",
+          "type": "float",
+          "direction": "in",
+          "span": "266:35-266:46"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "id": 72,
+          "name": "s",
+          "type": "float",
+          "direction": "in",
+          "span": "266:48-266:55"
+        }
+      ],
+      "builtins": [
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "path": [
+            0,
+            "s0",
+            "s0",
+            "e0",
+            0
+          ],
+          "span": "259:16-259:33",
+          "sha256": "75461a71f3738d0fa78d6fbb7bb052c22b0fdd4d405230898fe785532e1a1147",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "mix"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "path": [
+            1,
+            "e0",
+            0
+          ],
+          "span": "261:12-261:51",
+          "sha256": "574aaf4812fee5705bdf1c95a77618db36ddeb6df13aed60de85d1c285d6f4eb",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "mix"
+        },
+        {
+          "owner": "blendLinearOrCosine",
+          "owner_id": 76,
+          "path": [
+            1,
+            "e0",
+            0,
+            2
+          ],
+          "span": "261:22-261:50",
+          "sha256": "d2d0e1d9dcba6a55ff7ef1382bc11de7e223492084ffce1f63e9a2655da5fdb0",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "smoothstep"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "212:62-212:72",
+          "sha256": "96793bd5d1a5efe9cd3e1830a97a7b01abbcd60556227ac40dc033508ad7a7a1",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "218:62-218:72",
+          "sha256": "cb00eaf811c8eed870ec723a6fab8e8715361798011c4d06c7eb6fb03daf766f",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "hsv2rgb",
+          "owner_id": 82,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "69:15-69:27",
+          "sha256": "3494a00850e2711c07c1c4bfa6036d52aebd68556a07491e9935195de5edff03",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "fract"
+        },
+        {
+          "owner": "hsv2rgb",
+          "owner_id": 82,
+          "path": [
+            4,
+            "e0",
+            0,
+            0,
+            1,
+            1
+          ],
+          "span": "74:26-74:54",
+          "sha256": "2736643ab2b4dd201b6744b5831ccfc3d1a99680531271b118e217eec3e1ecd3",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "hsv2rgb",
+          "owner_id": 82,
+          "path": [
+            4,
+            "e0",
+            0,
+            0,
+            1,
+            1,
+            0,
+            0
+          ],
+          "span": "74:30-74:47",
+          "sha256": "dfaa2b771763c1038786de138bf268de7ae53866db99299e86b8dc05ddade3d4",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float"
+          ],
+          "callee": "mod"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            6,
+            "e0",
+            0,
+            0
+          ],
+          "span": "305:17-305:88",
+          "sha256": "ba348b6ee684b663f8efb5562c011dff7a2116b31bde591b3563608284fcf8af",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "min"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            7,
+            "e0",
+            0,
+            0
+          ],
+          "span": "306:18-306:89",
+          "sha256": "428d15f1bce50230af3e8b6bb29380886ae9f8bc539619c0b600ef64b3c51871",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "min"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            8,
+            "e0",
+            0,
+            1,
+            0
+          ],
+          "span": "308:36-308:57",
+          "sha256": "1e6446cd8497e0e9c503745f1e787a75aa692988869805edd95e0fac32fd2cb6",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "vec3",
+            "float"
+          ],
+          "callee": "mix"
+        },
+        {
+          "owner": "mod289",
+          "owner_id": 85,
+          "path": [
+            0,
+            "e0",
+            0,
+            1,
+            0
+          ],
+          "span": "108:16-108:40",
+          "sha256": "ab7dc956c579206084f652db9d1d17ebdde0194028ff28ae21a278cdf407f1b4",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "mod289",
+          "owner_id": 86,
+          "path": [
+            0,
+            "e0",
+            0,
+            1,
+            0
+          ],
+          "span": "104:16-104:40",
+          "sha256": "0edd6f6ca78fbfacbef576fcf1e902abbdfec33b035371091998715f84da2af9",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            6,
+            "e0",
+            0,
+            1,
+            1
+          ],
+          "span": "288:21-288:45",
+          "sha256": "576b1bd1bf07282b98da2ea2b66e66bad79e288e5409d1dad4f0a0524a16fd13",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "periodicFunction",
+          "owner_id": 89,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "99:16-99:38",
+          "sha256": "3b2a4851c367110677453c41e32d68e4b38e5e197f99bd1d58833eee58efd81c",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "sin"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            1,
+            "e0",
+            0,
+            0
+          ],
+          "span": "166:22-166:36",
+          "sha256": "3e88c046ff0568496bfd02dbb84532691eb1becb521571b9e3d8877fd1391b23",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            4,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "170:23-170:31",
+          "sha256": "54968a0978b821e18bf362448895b7e8319a157dd5d1d72ac4248410d5f8edcc",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "171:22-171:30",
+          "sha256": "814a72b71d55646a9ef585fdf4c3e04dddd8a454fc44053ca573e9a7642df2d3",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "fract"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            7,
+            "e0",
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "174:37-174:53",
+          "sha256": "62c97b734f7d73539088b03fa248374e726bb9ec1716a4b6ff2231b937d1b954",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            13,
+            "e0",
+            0,
+            0
+          ],
+          "span": "192:21-192:46",
+          "sha256": "e6b86baf243b38741b4870acfe990ce3b353f18948d38773cc853ab11ce3b6a4",
+          "result_type": "uint",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "floatBitsToUint"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            3,
+            "e0",
+            0,
+            0
+          ],
+          "span": "121:15-121:41",
+          "sha256": "9f77f97fb09d58a7941ef0b0283d935e9d81395ebb83f452ae8cdabfae083570",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            3,
+            "e0",
+            0,
+            0,
+            0,
+            1
+          ],
+          "span": "121:26-121:39",
+          "sha256": "1a421ce32c7d1b27ee6b6b1a391ce0973f6020b2314b486c6f91273b69a95c3f",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            4,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "122:26-122:38",
+          "sha256": "922e3eb15a62a8c7863ecbfce5ade49de0ba176fea676abf33a752515a29e448",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            11,
+            "e0",
+            0,
+            0
+          ],
+          "span": "133:14-133:86",
+          "sha256": "b53ba6e0a42dac10d3c972bbf84d38ae7998b0a426499a134715bc436194b039",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3",
+            "float"
+          ],
+          "callee": "max"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            11,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            0
+          ],
+          "span": "133:29-133:39",
+          "sha256": "096ff9314279fb1743e921f4e4fbfca3f2a529ec2eb496c497c5efb483b07853",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            11,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            1
+          ],
+          "span": "133:41-133:59",
+          "sha256": "fab88d81d457a5e14cf9584ec6768607f387d92c6be1af99034c76d189bf5dc0",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            11,
+            "e0",
+            0,
+            0,
+            0,
+            1,
+            2
+          ],
+          "span": "133:61-133:79",
+          "sha256": "1078dca9ec1e79756f82af775df7ff3fd7ab64e4ed92fb7c48f826047efdb3b6",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "vec2"
+          ],
+          "callee": "dot"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            14,
+            "e0",
+            0,
+            0,
+            0,
+            1
+          ],
+          "span": "137:20-137:36",
+          "sha256": "3007747b066e760a1262476dd33607fd8c741c845ec69bb22a04bc622f5d358c",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "fract"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            15,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "138:14-138:20",
+          "sha256": "c42e275bdf41c4f94de52c5748d08b1e0bade82b8b0624b8b24cda16e75e03e6",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "abs"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            16,
+            "e0",
+            0,
+            0
+          ],
+          "span": "139:15-139:29",
+          "sha256": "b5f14ece77811d9dee6d9c482348f8c5ac245d025ffcb901065cdb993c0e8fd8",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "floor"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            22,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "148:23-148:32",
+          "sha256": "8710647c3251b4de8209451d5411b4f646af331d59448a733b7b6a70bf137b9d",
+          "result_type": "float",
+          "argument_types": [
+            "vec3",
+            "vec3"
+          ],
+          "callee": "dot"
+        }
+      ],
+      "calls": [
+        {
+          "owner": "brightnessContrast",
+          "owner_id": 77,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "56:20-56:60",
+          "sha256": "fe9c71306ce58bbc987bd9f042df91947c88c01a06631e9373ca5c6eecb39de5",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "brightnessContrast",
+          "owner_id": 77,
+          "path": [
+            2,
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "59:16-59:53",
+          "sha256": "e1ade1de854caed584033aad1b5dcc0e0c932d5986cc15b958efed0adce607cd",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "brightnessContrast",
+          "owner_id": 77,
+          "path": [
+            2,
+            "s1",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "61:16-61:52",
+          "sha256": "73b0dccab2f826d9b1f22485502a75b1851d22fe7ba945beedb42015556d51a0",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "211:17-211:78",
+          "sha256": "2ca9bd88be778ec3046c2c974780f98ccf1e2cf0e43118880f67233da93047d2",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float",
+            "ivec2"
+          ],
+          "callee": "randomFromLatticeWithOffset"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "212:24-212:55",
+          "sha256": "465f47bc2ea1528270b2183c52f39a737582720b52a8ef4d026efdf76ec917fb",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "periodicFunction"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "212:58-212:96",
+          "sha256": "3613a604f98315a50fc141666df34189e469a89cc7bd54fc04de873016cef2da",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "constant",
+          "owner_id": 80,
+          "path": [
+            2,
+            "e0",
+            0
+          ],
+          "span": "213:12-213:49",
+          "sha256": "b4b90e0183f666e580b7ff5bde63303f4775f7b01ad60f5ffb8083bdbe1627bd",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "periodicFunction"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "path": [
+            0,
+            "e0",
+            0,
+            0
+          ],
+          "span": "217:17-217:73",
+          "sha256": "f69fb4a5313567b70a40e498967c501fee1913e988f197e29c68718840648203",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float",
+            "ivec2"
+          ],
+          "callee": "randomFromLatticeWithOffset"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "218:24-218:55",
+          "sha256": "6702d6370c41dfb6b9f15bea15e3e7f1f104234c85bbb42b5e73bcd55e089617",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "periodicFunction"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "path": [
+            1,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "218:58-218:96",
+          "sha256": "b0236f66092259d7ae84661715191463b45e7c89dfe4baf2137620c074462932",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "constantOffset",
+          "owner_id": 81,
+          "path": [
+            2,
+            "e0",
+            0
+          ],
+          "span": "219:12-219:49",
+          "sha256": "fda29d845045992e6eda3b0136fb2f0d8b3f6fbea1cf000808f986bd8ef40a86",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "periodicFunction"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            4,
+            "e0",
+            0,
+            0
+          ],
+          "span": "301:22-301:44",
+          "sha256": "a66f452ad523f0901373e928614d70e968e4eb1477ac956b9f3e537a5212fa70",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "float"
+          ],
+          "callee": "noise"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            5,
+            "e0",
+            0,
+            0
+          ],
+          "span": "302:23-302:52",
+          "sha256": "ccb162204fcb27c89e2a312b973adabb388d6b765f4d71d5643d0b3c4d0b018b",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec2",
+            "float"
+          ],
+          "callee": "noise"
+        },
+        {
+          "owner": "main",
+          "owner_id": 83,
+          "path": [
+            8,
+            "e0",
+            0,
+            1
+          ],
+          "span": "308:17-308:58",
+          "sha256": "d5f8117f7270eace3290da6a03ea0538b00b9dac9492585d754c87a6396d95a2",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "brightnessContrast"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            1,
+            "e0",
+            0,
+            1
+          ],
+          "span": "273:12-273:49",
+          "sha256": "c09f7669ab65219e212e45622f0c735877d3fa93ff8dbbdc1cd7209f46e10b5b",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            2,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "276:9-276:39",
+          "sha256": "d56b86ed32389d8c36dd822755dd300e4c3f6039638f33576252cf020964734b",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "value"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            2,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "277:9-277:40",
+          "sha256": "f1c2058b7739bfa0684d932cff87b9cc6af05d0bead649ee02f5ef78a91767e3",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "value"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            2,
+            "e0",
+            0,
+            0,
+            2
+          ],
+          "span": "278:9-278:40",
+          "sha256": "fd06d4f6d1f6fe60ea4cb037d7c6d68bc83004e57ee2b59f3290cdafde1c7405",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "value"
+        },
+        {
+          "owner": "noise",
+          "owner_id": 87,
+          "path": [
+            7,
+            "e0",
+            0,
+            1
+          ],
+          "span": "290:13-290:27",
+          "sha256": "0d371f6d701b5f6667a7a01b7214eded863f8b886cb14b952bc3b3d1a97fc68c",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "hsv2rgb"
+        },
+        {
+          "owner": "periodicFunction",
+          "owner_id": 89,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "99:12-99:60",
+          "sha256": "7efcb32e37333581cff6f2492d97db82c8fc83b2ad2fc8ee0c423bd11da9b3b8",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "permute",
+          "owner_id": 90,
+          "path": [
+            0,
+            "e0",
+            0
+          ],
+          "span": "112:12-112:36",
+          "sha256": "38231095fb6bb14ba4c110eb27affd34d595bf6f6e0a7f254f76d0c6dbfffcfb",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "mod289"
+        },
+        {
+          "owner": "prng",
+          "owner_id": 92,
+          "path": [
+            3,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "52:17-52:30",
+          "sha256": "398c50598f0df2b32c112aa29ec6c7a1b763b1c96a99a1edd581ee2a4a87c55b",
+          "result_type": "uvec3",
+          "argument_types": [
+            "uvec3"
+          ],
+          "callee": "pcg"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            9,
+            "s0",
+            "s2",
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "182:18-182:46",
+          "sha256": "097cd6101ff61078fa361ee6361b44ac4b21ff9baa10095f11d73cc55b08cad8",
+          "result_type": "int",
+          "argument_types": [
+            "int",
+            "int"
+          ],
+          "callee": "positiveModulo"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            9,
+            "s0",
+            "s3",
+            "s0",
+            "s0",
+            "e0",
+            0,
+            1
+          ],
+          "span": "185:18-185:46",
+          "sha256": "0abaa2724a42c98a2e49aa1519afcd5318781ab8508ec9df4d7ffd01d225358d",
+          "result_type": "int",
+          "argument_types": [
+            "int",
+            "int"
+          ],
+          "callee": "positiveModulo"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            16,
+            "e0",
+            0,
+            0
+          ],
+          "span": "201:23-201:33",
+          "sha256": "c30e0bb27f7f7b7e4c739dff2ad34323bf88aff406b2c3e963613a1e6f50a9b6",
+          "result_type": "uvec3",
+          "argument_types": [
+            "uvec3"
+          ],
+          "callee": "pcg"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            9,
+            "e0",
+            0,
+            1
+          ],
+          "span": "129:9-129:18",
+          "sha256": "26ee639d4e5fdb11c39e49913adc159cd6dcb202172a821769be49af9e09999c",
+          "result_type": "vec2",
+          "argument_types": [
+            "vec2"
+          ],
+          "callee": "mod289"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            10,
+            "e0",
+            0,
+            0
+          ],
+          "span": "130:14-131:35",
+          "sha256": "54a6b4eb933361416e78ae9cc3dd185d80d57a971ada1d3435dd720d8fc35981",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "permute"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            10,
+            "e0",
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "130:23-130:60",
+          "sha256": "f60599a63bacb6486c15057b400fe134c83175874c7f20a36eb3667bb4ad8cfa",
+          "result_type": "vec3",
+          "argument_types": [
+            "vec3"
+          ],
+          "callee": "permute"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            23,
+            "e0",
+            0
+          ],
+          "span": "150:12-150:65",
+          "sha256": "67ee98da57fbd0d5ea31a48d30cb29bd7d5d5c59d9338569d66d712bb19bae14",
+          "result_type": "float",
+          "argument_types": [
+            "float"
+          ],
+          "callee": "periodicFunction"
+        },
+        {
+          "owner": "simplexValue",
+          "owner_id": 95,
+          "path": [
+            23,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "150:29-150:56",
+          "sha256": "f08b2b3177f7df4a9b8ee33d6ca63d1ff65781a943e13b1be42ab08ab581f466",
+          "result_type": "float",
+          "argument_types": [
+            "float",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "map"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "path": [
+            0,
+            "e0",
+            0,
+            0,
+            0,
+            0
+          ],
+          "span": "267:26-267:72",
+          "sha256": "126d8c09937e224e61757d40f80d70b432cf53beabd9f7d28677c89ed5eabf66",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "simplexValue"
+        },
+        {
+          "owner": "value",
+          "owner_id": 96,
+          "path": [
+            1,
+            "e0",
+            0
+          ],
+          "span": "268:12-268:59",
+          "sha256": "7320f834d1fbbe7dba1fb08a7817c9b69b1dd1871732057cf9175677a2cd42c5",
+          "result_type": "float",
+          "argument_types": [
+            "vec2",
+            "float",
+            "float",
+            "float",
+            "float"
+          ],
+          "callee": "simplexValue"
+        }
+      ],
+      "scalar_xor_sites": [
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            14,
+            "e0",
+            0,
+            0,
+            0
+          ],
+          "span": "195:10-195:46",
+          "sha256": "0ec45e30c890d1177375332f93564f8d12d8bd47805393740503edd290617445",
+          "result_type": "uint",
+          "argument_types": [
+            "uint",
+            "uint"
+          ],
+          "operator": "^"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            14,
+            "e0",
+            0,
+            0,
+            1
+          ],
+          "span": "196:10-196:46",
+          "sha256": "7f98e820b388d74eb98c8296f798d778d63d6bdb8d67e68f9bfae73f74e56e4e",
+          "result_type": "uint",
+          "argument_types": [
+            "uint",
+            "uint"
+          ],
+          "operator": "^"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            14,
+            "e0",
+            0,
+            0,
+            2
+          ],
+          "span": "197:10-197:47",
+          "sha256": "791b232712de5fe1a3babde2e00799603fbb523421973f9b20888f12e978b8ee",
+          "result_type": "uint",
+          "argument_types": [
+            "uint",
+            "uint"
+          ],
+          "operator": "^"
+        },
+        {
+          "owner": "randomFromLatticeWithOffset",
+          "owner_id": 94,
+          "path": [
+            15,
+            "e0",
+            0,
+            0
+          ],
+          "span": "200:19-200:57",
+          "sha256": "19cb0f8682e5464615145fbdc6b6fbd43c277f10c36d14dcfbc38f6e5fb10da1",
+          "result_type": "uvec3",
+          "argument_types": [
+            "uvec3",
+            "uvec3"
+          ],
+          "operator": "^"
+        }
+      ],
+      "initial_probe": {
+        "validator": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+        "emitter": "classicNoisedeck/caustic:caustic:192:21: unsupported builtin floatBitsToUint",
+        "rendered_cpp": null
+      },
+      "first_gate_projection": {
+        "validator": "classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^",
+        "emitter": "classicNoisedeck/caustic:caustic:195:10: unsupported binary operator ^",
+        "rendered_cpp": null
+      }
+    }
+  ]
+}

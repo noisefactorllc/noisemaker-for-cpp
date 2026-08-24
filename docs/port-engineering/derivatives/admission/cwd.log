@@ -1,0 +1,15 @@
+test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m6025[0m, in [35mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[0m
+    [31mself.assertIn[0m[1;31m("typed slice ok (137 programs)", output)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'typed slice ok (137 programs)' not found in 'generate_typed_slice: typed slice ok (152 programs)\n'[0m
+
+----------------------------------------------------------------------
+Ran 1 test in 59.937s
+
+[1;31mFAILED[0m ([1;31mfailures=1[0m)

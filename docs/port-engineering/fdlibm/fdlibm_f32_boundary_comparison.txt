@@ -1,0 +1,19 @@
+=== fdlibm vs V8 at f32 (TARGETED f32-boundary sweep) ===
+N = 689942
+
+tanh   compared=689942  exact=689942  divergent=0  (0.000000%)  maxULP@f32=0
+exp    compared=689942  exact=689942  divergent=0  (0.000000%)  maxULP@f32=0
+expm1  compared=689942  exact=689942  divergent=0  (0.000000%)  maxULP@f32=0
+sin    compared=689942  exact=689942  divergent=0  (0.000000%)  maxULP@f32=0
+cos    compared=689942  exact=689938  divergent=4  (0.000580%)  maxULP@f32=1
+
+=== full divergent-case listing (all, not just worst) ===
+tanh: none
+exp: none
+expm1: none
+sin: none
+cos: 4 divergent case(s)
+  x=-39.01722792242526 (bits c04382348649b280)  V8_f32=3e800000  cand_f32=3e7fffff  ulp@f32=1
+  x=39.01722792242526 (bits 404382348649b280)  V8_f32=3e800000  cand_f32=3e7fffff  ulp@f32=1
+  x=-33.51032158667199 (bits c040c15237be997a)  V8_f32=beffffff  cand_f32=befffffe  ulp@f32=1
+  x=33.51032158667199 (bits 4040c15237be997a)  V8_f32=beffffff  cand_f32=befffffe  ulp@f32=1

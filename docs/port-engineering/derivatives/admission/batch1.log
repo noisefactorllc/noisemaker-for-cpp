@@ -1,0 +1,50 @@
+test_task21_degauss_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_exclusions_remain_closed) ... [31mFAIL[0m
+test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed) ... [31mFAIL[0m
+test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census) ... [31mFAIL[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task21_degauss_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task21_degauss_exclusions_remain_closed)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m7645[0m, in [35mtest_task21_degauss_exclusions_remain_closed[0m
+    [31mself.assertEqual[0m[1;31m(1, degauss.count("namespace typed_22 {"))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m1 != 0[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task22_crt_exclusions_remain_closed (tests.test_typed_generator.TypedGeneratorTests.test_task22_crt_exclusions_remain_closed)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m8786[0m, in [35mtest_task22_crt_exclusions_remain_closed[0m
+    [31mself.assertEqual[0m[1;31m((116, 118, 94, 212),[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31m(len(task22_keys), len(task22_public),[0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                      [1;31mlen(task22_unported), len(manifest["programs"])))[0m
+                      [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: (116, 118, 94, 212) != (131, 133, 79, 212)
+
+First differing element 0:
+116
+131
+
+- (116, 118, 94, 212)
+?    -   ^^   -
+
++ (131, 133, 79, 212)
+?   +    ^^  +
+[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m11220[0m, in [35mtest_task26_loader_admits_only_exact_smooth_carrier_and_census[0m
+    [31mself.assertEqual[0m[1;31m(77, typed.index(SMOOTH_EDGE_KEY))[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m77 != 86[0m
+
+----------------------------------------------------------------------
+Ran 3 tests in 95.623s
+
+[1;31mFAILED[0m ([1;31mfailures=3[0m)

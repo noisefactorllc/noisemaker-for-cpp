@@ -1,0 +1,248 @@
+test_task32_authenticates_frozen_index_expression_sites_for_six_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_index_expression_sites_for_six_programs) ... [32mok[0m
+test_task32_authenticates_frozen_luma_weights_for_five_programs (tests.test_typed_generator.Task32GradeClusterTests.test_task32_authenticates_frozen_luma_weights_for_five_programs) ... [32mok[0m
+test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) ... 
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:creative') ... [31mERROR[0m
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:hslSecondary') ... [31mERROR[0m
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:lut') ... [31mERROR[0m
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:primary') ... [31mERROR[0m
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:vignette') ... [31mERROR[0m
+  test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:wheels') ... [31mERROR[0m
+test_task32_emitted_primary_shows_narrow_global_and_index_lowering (tests.test_typed_generator.Task32GradeClusterTests.test_task32_emitted_primary_shows_narrow_global_and_index_lowering) ... [32mok[0m
+test_task32_hslsecondary_luma_weights_is_structurally_validated_only (tests.test_typed_generator.Task32GradeClusterTests.test_task32_hslsecondary_luma_weights_is_structurally_validated_only)
+Disclosure: `hslSecondary`'s LUMA_WEIGHTS type-checks (admission ... [32mok[0m
+test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_index_expression_node_level_logic_rejects_past_the_coarse_hash_gate)
+The single-axis rejection above is absorbed by the coarse ... [32mok[0m
+test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate (tests.test_typed_generator.Task32GradeClusterTests.test_task32_luma_weights_node_level_logic_rejects_past_the_coarse_hash_gate)
+Sibling of the index-track coarse-gate-bypass test above, for the ... [32mok[0m
+test_task32_no_history_collision_and_fresh_capability_and_type_tuples (tests.test_typed_generator.Task32GradeClusterTests.test_task32_no_history_collision_and_fresh_capability_and_type_tuples) ... [32mok[0m
+test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31 (tests.test_typed_generator.Task32GradeClusterTests.test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31)
+Removing all six grade keys from the live typed list must ... [31mERROR[0m
+test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks (tests.test_typed_generator.Task32GradeClusterTests.test_task32_rejects_wrong_profile_hash_and_foreign_key_for_both_tracks) ... [32mok[0m
+test_task32_validator_and_emitter_require_both_profiles_where_expected (tests.test_typed_generator.Task32GradeClusterTests.test_task32_validator_and_emitter_require_both_profiles_where_expected) ... [32mok[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:creative')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:creative:34:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:hslSecondary')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2301[0m, in [35mexpression[0m
+    [31mexpression[0m[1;31m(value.children[0], "lvalue")[0m
+    [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:hslSecondary:96:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:lut')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:lut:29:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:primary')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:primary:41:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:vignette')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:vignette:34:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries (tests.test_typed_generator.Task32GradeClusterTests.test_task32_capability_vocabulary_stays_frozen_at_forty_four_entries) (key='filter/grade:wheels')[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m15936[0m, in [35mtest_task32_capability_vocabulary_stays_frozen_at_forty_four_entries[0m
+    [31mgenerate_typed_slice.validate_capabilities[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31mtyped, generate_typed_slice.APPROVED_CAPABILITIES,[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31msource_hash=source_hash, **kwargs)[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:wheels:33:13: unsupported typed expression index[0m
+
+======================================================================
+[31mERROR[0m[1;31m: test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31 (tests.test_typed_generator.Task32GradeClusterTests.test_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31)
+Removing all six grade keys from the live typed list must[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m16259[0m, in [35mtest_task32_ordinal_blast_radius_removing_six_grade_keys_reconstructs_task31[0m
+    current = generate_typed_slice.generate_outputs(REPOSITORY)
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2653[0m, in [35mgenerate_outputs[0m
+    [31mvalidate_capabilities[0m[1;31m(typed, tuple(slice_spec["capabilities"]),[0m
+    [31m~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                          [1;31msource_hash=source_hash,[0m
+                          [1;31m^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    ...<13 lines>...
+                          [1;31mgrade_luma_weights_profile=grade_luma_weights_profile,[0m
+                          [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                          [1;31mgrade_index_expression_profile=grade_index_expression_profile)[0m
+                          [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2377[0m, in [35mvalidate_capabilities[0m
+    for statement_value in function.body: [31mstatement[0m[1;31m(statement_value)[0m
+                                          [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2339[0m, in [35mstatement[0m
+    [31mstatement[0m[1;31m(value.children[1], loop_depth + 1)[0m
+    [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2353[0m, in [35mstatement[0m
+    for child in value.children: [31mstatement[0m[1;31m(child, loop_depth)[0m
+                                 [31m~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2352[0m, in [35mstatement[0m
+    for expression_value in value.expressions: [31mexpression[0m[1;31m(expression_value)[0m
+                                               [31m~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2304[0m, in [35mexpression[0m
+    for child in value.children: [31mexpression[0m[1;31m(child)[0m
+                                 [31m~~~~~~~~~~[0m[1;31m^^^^^^^[0m
+  File [35m"tools/glslcpp/generate_typed_slice.py"[0m, line [35m2278[0m, in [35mexpression[0m
+    raise GeneratorError(f"{location(value)}: unsupported typed expression index")
+[1;35mtools.glslcpp.parser.GeneratorError[0m: [35mfilter/grade:creative:34:13: unsupported typed expression index[0m
+
+----------------------------------------------------------------------
+Ran 11 tests in 73.206s
+
+[1;31mFAILED[0m ([1;31merrors=7[0m)

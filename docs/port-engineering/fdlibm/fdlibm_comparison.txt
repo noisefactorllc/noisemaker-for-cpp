@@ -1,0 +1,20 @@
+=== fdlibm port vs V8 ===
+N = 403636
+
+tanh   compared=403636  exact=403605  divergent=31  (0.0077%)  maxULP=3
+       worst: x=0.506210184 (bits 3fe032dfb325d41c)  node=3fdde31de0ac8989  cand=3fdde31de0ac8986  ulp=3
+exp    compared=403636  exact=403534  divergent=102  (0.0253%)  maxULP=1
+       worst: x=-0.346573590279971 (bits bfd62e42fefa39d1)  node=3fe6a09e667f3bd8  cand=3fe6a09e667f3bd7  ulp=1
+expm1  compared=403636  exact=403495  divergent=141  (0.0349%)  maxULP=1
+       worst: x=0.3465735902799703 (bits 3fd62e42fefa39c5)  node=3fda827999fceef6  cand=3fda827999fceef7  ulp=1
+sin    compared=403636  exact=402046  divergent=1590  (0.3939%)  maxULP=1
+       worst: x=0.785398006439209 (bits 3fe921fb00000000)  node=3fe6a09e2ae9667d  cand=3fe6a09e2ae9667e  ulp=1
+cos    compared=403636  exact=402450  divergent=1186  (0.2938%)  maxULP=1
+       worst: x=1.0397207708399103 (bits 3ff0a2b23f3bab51)  node=3fe034edcb9b3c9f  cand=3fe034edcb9b3ca0  ulp=1
+log    compared=403636  exact=394528  divergent=9108  (2.2565%)  maxULP=1
+       worst: x=-7.760000000000001e-7 (bits beaa09ca0bdadd3a)  node=c02c2362d2166e98  cand=c02c2362d2166e97  ulp=1
+atan   compared=403636  exact=397941  divergent=5695  (1.4109%)  maxULP=1
+       worst: x=2.421875 (bits 4003600000000000)  node=3ff2de11cfc645f5  cand=3ff2de11cfc645f4  ulp=1
+sqrt   compared=403636  exact=403636  divergent=0  (0.0000%)  maxULP=0
+pow    compared=403636  exact=403470  divergent=166  (0.0411%)  maxULP=1
+       worst: x=-9.305e-7 (bits beaf38ef23a8957a)  node=3d6e76b4a10e8c76  cand=3d6e76b4a10e8c75  ulp=1

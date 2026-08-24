@@ -1,0 +1,84 @@
+{
+ "caveat": "Admitting the NAME does not imply the C++ runtime has real derivative semantics; see docstring.",
+ "emitter_next_distribution": {
+  "pass": 15
+ },
+ "family": "dFdx / dFdy / fwidth -- second order (builtin-name admission only)",
+ "rows": [
+  {
+   "emitter_next": "pass",
+   "key": "filter/bulge:bulge",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/celShading:celShadingColor",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/halftone:halftone",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/lens:lens",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/lensWarp:lensWarp",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/octaveWarp:octaveWarp",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/pinch:pinch",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/polar:polar",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/pondRipples:pondRipples",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/spiral:spiral",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/stamp:stThreshold",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/step:step",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/stipple:stipple",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/tunnel:tunnel",
+   "validator_next": "pass"
+  },
+  {
+   "emitter_next": "pass",
+   "key": "filter/warp:warp",
+   "validator_next": "pass"
+  }
+ ]
+}

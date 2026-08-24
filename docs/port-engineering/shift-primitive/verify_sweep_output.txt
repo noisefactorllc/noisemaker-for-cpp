@@ -1,0 +1,27 @@
+rows read from sweep_oracle.csv: 3206592
+
+== shift_right_arithmetic(int32_t)  [THE PRIMITIVE] ==
+  N compared:  3206592
+  N exact:     3206592
+  N divergent: 0
+
+== shift_right_arithmetic(uint32_t) [overload] ==
+  N compared:  3206592
+  N exact:     3206592
+  N divergent: 0
+
+== naive `value >> masked` on int32_t [toolchain check] ==
+  N compared:  3206592
+  N exact:     3206592
+  N divergent: 0
+
+== uint32_t logical >> [corroborates >>> mapping] ==
+  N compared:  3206592
+  N exact:     3206592
+  N divergent: 0
+
+== shift_left [bonus primitive] ==
+  N compared:  3206592
+  N exact:     3206592
+  N divergent: 0
+

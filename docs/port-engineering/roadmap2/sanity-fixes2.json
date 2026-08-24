@@ -1,0 +1,786 @@
+{
+  "schema": "noisemaker-for-cpp.roadmap2.gate-chain.v2",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "unported_count": 81,
+  "keys_probed": 7,
+  "max_depth": 8,
+  "rows": [
+    {
+      "key": "classicNoisedeck/cellRefract:cellRefract",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:32:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/cellRefract:cellRefract:69:5: unsupported typed expression index",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:69:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "PATCH_INSUFFICIENT",
+          "blocker_message": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        }
+      ],
+      "final_status": "PATCH_INSUFFICIENT",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "array_global_admission",
+        "index_expression_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/cellRefract:cellRefract:66:29: unsupported typed type float[9]",
+      "terminal_gate": "array_global_admission"
+    },
+    {
+      "key": "classicNoisedeck/kaleido:kaleido",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/kaleido:kaleido:33:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/kaleido:kaleido:33:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:33:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:33:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:546:5: unsupported typed expression index",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:546:5: unsupported typed expression index",
+          "classified_gate": "index_expression_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:155:21: unsupported builtin floatBitsToUint",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:155:21: unsupported builtin floatBitsToUint",
+          "classified_gate": "builtin:floatBitsToUint"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:floatBitsToUint"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/kaleido:kaleido:158:10: unsupported binary operator ^",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:158:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "mutable_global_admission",
+            "array_global_admission",
+            "index_expression_admission",
+            "builtin:floatBitsToUint",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "PATCH_INSUFFICIENT",
+          "blocker_message": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        }
+      ],
+      "final_status": "PATCH_INSUFFICIENT",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "array_global_admission",
+        "index_expression_admission",
+        "builtin:floatBitsToUint",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/kaleido:kaleido:543:24: unsupported typed type float[9]",
+      "terminal_gate": "array_global_admission"
+    },
+    {
+      "key": "synth/shape:shape",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/shape:shape:31:1: unsupported global declaration",
+            "emitter": "synth/shape:shape:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/shape:shape:31:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/shape:shape:31:1: unsupported global declaration",
+            "emitter": "synth/shape:shape:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "synth/shape:shape:31:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/shape:shape:97:10: unsupported binary operator ^",
+            "emitter": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/shape:shape:97:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "mutable_global_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "mutable_global_admission",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "synth/shape:shape:407:41: unmapped typed symbol aspectRatio",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/effects:effects",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+            "emitter": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:503:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/effects:effects:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/effects:effects:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:31:1: unsupported typed type float[9]",
+            "emitter": "classicNoisedeck/effects:effects:234:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:31:1: unsupported typed type float[9]",
+          "classified_gate": "array_global_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "array_global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:395:10: unsupported typed type mat4",
+            "emitter": "classicNoisedeck/effects:effects:234:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/effects:effects:395:10: unsupported typed type mat4",
+          "classified_gate": "matrix_type_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "array_global_admission",
+            "matrix_type_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+            "emitter": "classicNoisedeck/effects:effects:234:24: unsupported typed type float[9]",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "mutable_global_admission",
+        "array_global_admission",
+        "matrix_type_admission"
+      ],
+      "terminal_blocker": "classicNoisedeck/effects:effects:395:14: unsupported matrix constructor",
+      "terminal_gate": null
+    },
+    {
+      "key": "synth/noise:noise",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/noise:noise:250:5: unsupported counted-for program proof",
+            "emitter": "synth/noise:noise:250:5: unsupported counted-for program proof",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/noise:noise:250:5: unsupported counted-for program proof",
+          "classified_gate": "loop_proof_bypass"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "loop_proof_bypass"
+          ],
+          "result": {
+            "validator": "synth/noise:noise:31:1: unsupported global declaration",
+            "emitter": "synth/noise:noise:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/noise:noise:31:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/noise:noise:31:1: unsupported global declaration",
+            "emitter": "synth/noise:noise:31:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "ESCALATED",
+          "blocker_message": "synth/noise:noise:31:1: unsupported global declaration",
+          "classified_gate": "global_admission",
+          "escalated_to": "mutable_global_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission"
+          ],
+          "result": {
+            "validator": "synth/noise:noise:94:21: unsupported builtin floatBitsToUint",
+            "emitter": "synth/noise:noise:94:21: unsupported builtin floatBitsToUint",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/noise:noise:94:21: unsupported builtin floatBitsToUint",
+          "classified_gate": "builtin:floatBitsToUint"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "builtin:floatBitsToUint"
+          ],
+          "result": {
+            "validator": "synth/noise:noise:97:10: unsupported binary operator ^",
+            "emitter": "synth/noise:noise:97:10: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/noise:noise:97:10: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "loop_proof_bypass",
+            "mutable_global_admission",
+            "builtin:floatBitsToUint",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "synth/noise:noise:250:5: unsupported typed statement for",
+            "emitter": "synth/noise:noise:220:10: unmapped typed symbol globalCoord",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "NO_GENERIC_PATCH",
+          "blocker_message": "synth/noise:noise:250:5: unsupported typed statement for",
+          "classified_gate": null
+        }
+      ],
+      "final_status": "NO_GENERIC_PATCH",
+      "restored_all": true,
+      "gates_needed": [
+        "loop_proof_bypass",
+        "mutable_global_admission",
+        "builtin:floatBitsToUint",
+        "scalar_uint_xor_admission"
+      ],
+      "terminal_blocker": "synth/noise:noise:250:5: unsupported typed statement for",
+      "terminal_gate": null
+    },
+    {
+      "key": "classicNoisedeck/bitEffects:bitEffects",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported source global declaration",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:129:1: unsupported global declaration",
+          "classified_gate": "global_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "global_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported global initializer expression binary",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported source const global initializer",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:130:19: unsupported global initializer expression binary",
+          "classified_gate": "global_admission_shift"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:141:13: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:145:13: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission",
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:137:13: unsupported binary operator |",
+          "classified_gate": "bitwise_or_admission"
+        },
+        {
+          "depth": 5,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission",
+            "scalar_uint_xor_admission",
+            "bitwise_or_admission"
+          ],
+          "result": {
+            "validator": "classicNoisedeck/bitEffects:bitEffects:95:21: unsupported builtin floatBitsToUint",
+            "emitter": "classicNoisedeck/bitEffects:bitEffects:95:21: unsupported builtin floatBitsToUint",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "classicNoisedeck/bitEffects:bitEffects:95:21: unsupported builtin floatBitsToUint",
+          "classified_gate": "builtin:floatBitsToUint"
+        },
+        {
+          "depth": 6,
+          "active_patches": [
+            "global_admission",
+            "global_admission_shift",
+            "bitwise_and_admission",
+            "scalar_uint_xor_admission",
+            "bitwise_or_admission",
+            "builtin:floatBitsToUint"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "7adec73c31f4baf2695c05ad8108e36412fca846c9025e0233b1d3b3c57a9d18",
+            "cpp_bytes": 31999
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "global_admission",
+        "global_admission_shift",
+        "bitwise_and_admission",
+        "scalar_uint_xor_admission",
+        "bitwise_or_admission",
+        "builtin:floatBitsToUint"
+      ]
+    },
+    {
+      "key": "synth/bitwise:bitwise",
+      "chain": [
+        {
+          "depth": 0,
+          "active_patches": [],
+          "result": {
+            "validator": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+            "emitter": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:34:27: unsupported binary operator ^",
+          "classified_gate": "scalar_uint_xor_admission"
+        },
+        {
+          "depth": 1,
+          "active_patches": [
+            "scalar_uint_xor_admission"
+          ],
+          "result": {
+            "validator": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+            "emitter": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:35:27: unsupported binary operator &",
+          "classified_gate": "bitwise_and_admission"
+        },
+        {
+          "depth": 2,
+          "active_patches": [
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission"
+          ],
+          "result": {
+            "validator": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+            "emitter": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:36:27: unsupported binary operator |",
+          "classified_gate": "bitwise_or_admission"
+        },
+        {
+          "depth": 3,
+          "active_patches": [
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission",
+            "bitwise_or_admission"
+          ],
+          "result": {
+            "validator": "synth/bitwise:bitwise:37:27: unsupported unary operator ~",
+            "emitter": "synth/bitwise:bitwise:37:27: unsupported unary operator ~",
+            "cpp_sha256": null,
+            "cpp_bytes": null
+          },
+          "restored": true,
+          "status": "BLOCKED",
+          "blocker_message": "synth/bitwise:bitwise:37:27: unsupported unary operator ~",
+          "classified_gate": "unary_bitwise_not_admission"
+        },
+        {
+          "depth": 4,
+          "active_patches": [
+            "scalar_uint_xor_admission",
+            "bitwise_and_admission",
+            "bitwise_or_admission",
+            "unary_bitwise_not_admission"
+          ],
+          "result": {
+            "validator": "pass",
+            "emitter": "pass",
+            "cpp_sha256": "8ce76d3f58a4ee66aa25ba6b8b2c4331e195593b8b66822aeaef74a4ead9d21c",
+            "cpp_bytes": 8217
+          },
+          "restored": true,
+          "status": "PASS"
+        }
+      ],
+      "final_status": "PASS",
+      "restored_all": true,
+      "gates_needed": [
+        "scalar_uint_xor_admission",
+        "bitwise_and_admission",
+        "bitwise_or_admission",
+        "unary_bitwise_not_admission"
+      ]
+    }
+  ]
+}

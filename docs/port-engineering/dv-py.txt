@@ -1,0 +1,113 @@
+[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[31mF[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m[32m.[0m
+======================================================================
+[31mFAIL[0m[1;31m: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m4956[0m, in [35mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m
+    [31mself.assertEqual[0m[1;31m(sorted([*existing, *task15, "filter/pixelSort:computeRank",[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                             [1;31m"filter/sharpen:sharpen", "filter/sobel:sobel",[0m
+                             [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    ...<12 lines>...
+                             [1;31m"filter/grade:vignette", "filter/grade:wheels"]),[0m
+                             [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+                     [1;31m[entry["program_key"] for entry in slice_spec["programs"]])[0m
+                     [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mLists differ: ['cla[291 chars]lter/celShading:celShadingBlend', 'filter/celS[3529 chars]ide'] != ['cla[291 chars]lter/bulge:bulge', 'filter/celShading:celShadi[3916 chars]ide']
+
+First differing element 9:
+'filter/celShading:celShadingBlend'
+'filter/bulge:bulge'
+
+Second list contains 15 additional elements.
+First extra element 137:
+'mixer/split:split'
+
+Diff is 4719 characters long. Set self.maxDiff to None to see it.[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths (test_typed_generator.TypedGeneratorTests.test_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m6563[0m, in [35mtest_committed_manifest_has_one_hundred_twenty_nine_typed_outputs_without_absolute_paths[0m
+    [31mself.assertEqual[0m[1;31m({[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^[0m
+        [1;31m"filter/extrude:extrude": ([0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    ...<18 lines>...
+        [1;31m"synth/perlin:perlin": ("default-only", {"DIMENSIONS": 2}),[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+    [1;31m}, defined)[0m
+    [1;31m^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m{'fil[76 chars]}), 'synth/curl:curl': ('default-only', {'OCTA[1000 chars] 2})} != {'fil[76 chars]}), 'filter/halftone:halftone': ('default-only[1207 chars] 2})}
+Diff is 1455 characters long. Set self.maxDiff to None to see it.[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task23_six_key_counts_positions_and_generated_isolation_are_exact (test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m2339[0m, in [35mtest_task23_six_key_counts_positions_and_generated_isolation_are_exact[0m
+    [31mself.assertEqual[0m[1;31m([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^[0m
+        [1;31m"9db3013a6b0f78d0b95fcb6713c54ace95e82d1545e796e7a380add23c009f0b",[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mhashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'9db3013a6b0f78d0b95fcb6713c54ace95e82d1545e796e7a380add23c009f0b' != '0fa9f33f67cf7c608503fdb1497bc2ab517c78532d208f9d341761573c8ce8f0'
+- 9db3013a6b0f78d0b95fcb6713c54ace95e82d1545e796e7a380add23c009f0b
++ 0fa9f33f67cf7c608503fdb1497bc2ab517c78532d208f9d341761573c8ce8f0
+[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task24_loader_carries_only_gather_profile_and_generates_one_new_block (test_typed_generator.TypedGeneratorTests.test_task24_loader_carries_only_gather_profile_and_generates_one_new_block)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m586[0m, in [35mtest_task24_loader_carries_only_gather_profile_and_generates_one_new_block[0m
+    [31mself.assertEqual[0m[1;31m(51, next(index for index, item in enumerate([0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+        [1;31mspec["programs"]) if item["program_key"] == GATHER_SORTED_KEY))[0m
+        [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m51 != 58[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact (test_typed_generator.TypedGeneratorTests.test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m9013[0m, in [35mtest_task25_slice_counts_lists_positions_and_generated_isolation_are_exact[0m
+    [31mself.assertEqual[0m[1;31m(expected_typed, typed)[0m
+    [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35mTuples differ: ('cla[291 chars]lter/celShading:celShadingBlend', 'filter/celS[3237 chars]ide') != ('cla[291 chars]lter/bulge:bulge', 'filter/celShading:celShadi[3624 chars]ide')
+
+First differing element 9:
+'filter/celShading:celShadingBlend'
+'filter/bulge:bulge'
+
+Second tuple contains 15 additional elements.
+First extra element 125:
+'mixer/shadow:shadow'
+
+Diff is 4391 characters long. Set self.maxDiff to None to see it.[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_task26_generation_adds_only_smooth_block_manifest_and_catalog (test_typed_generator.TypedGeneratorTests.test_task26_generation_adds_only_smooth_block_manifest_and_catalog)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m11368[0m, in [35mtest_task26_generation_adds_only_smooth_block_manifest_and_catalog[0m
+    [31mself.assertIn[0m[1;31m("namespace typed_77 {", smooth)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'namespace typed_77 {' not found in '// Typed IR program: filter/smooth:smoothEdge\n// Source SHA-256: b18be207f35a2bf3bcbdb19eb87018fac241856359d6094362f468fa048b5265\nnamespace typed_86 {\nstruct State final : KernelState {\n  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, std::int32_t smoothType_value, double threshold_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), smoothType(smoothType_value), threshold(threshold_value) {}\n  glsl::Vec2 tileOffset;\n  glsl::Vec2 fullResolution;\n  const Surface* inputTex;\n  std::int32_t smoothType;\n  double threshold;\n};\n\n[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {\n  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {\n  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);\n  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);\n}\n[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {\n  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));\n}\n\n[[nodiscard]] double luminance([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 rgb) noexcept;\n\n[[nodiscard]] double luminance([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 rgb) noexcept {\n  const glsl::Vec3 LUMA_WEIGHTS = glsl::FloatExpr<3>(static_cast<float>(0.299), static_cast<float>(0.587), static_cast<float>(0.114));\n  return glsl::dot(rgb, LUMA_WEIGHTS);\n}\n\nvoid pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {\n  const auto& state = static_cast<const State&>(kernel_base);\n  (void)state;\n  (void)context;\n  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);\n  [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.inputTex);\n  [[maybe_unused]] glsl::IVec2 coord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));\n  if (state.smoothType == std::int32_t(0)) {\n    output = glsl::Vec4(fetch_texel(*state.inputTex, coord));\n    return;\n  }\n  [[maybe_unused]] glsl::IVec2 maxCoord = (texSize - std::int32_t(1));\n  [[maybe_unused]] double L = luminance(state, context, glsl::swizzle<0, 1, 2>(fetch_texel(*state.inputTex, coord)));\n  [[maybe_unused]] double Ln = luminance(state, context, glsl::swizzle<0, 1, 2>(fetch_texel(*state.inputTex, glsl::clamp((coord + glsl::IVec2(std::int32_t(0), (-std::int32_t(1)))), glsl::IVec2(std::int32_t(0)), maxCoord))));\n  [[maybe_unused]] double Ls = luminance(state, context, glsl::swizzle<0, 1, 2>(fetch_texel(*state.inputTex, glsl::clamp((coord + glsl::IVec2(std::int32_t(0), std::int32_t(1))), glsl::IVec2(std::int32_t(0)), maxCoord))));\n  [[maybe_unused]] double Lw = luminance(state, context, glsl::swizzle<0, 1, 2>(fetch_texel(*state.inputTex, glsl::clamp((coord + glsl::IVec2((-std::int32_t(1)), std::int32_t(0))), glsl::IVec2(std::int32_t(0)), maxCoord))));\n  [[maybe_unused]] double Le = luminance(state, context, glsl::swizzle<0, 1, 2>(fetch_texel(*state.inputTex, glsl::clamp((coord + glsl::IVec2(std::int32_t(1), std::int32_t(0))), glsl::IVec2(std::int32_t(0)), maxCoord))));\n  [[maybe_unused]] double edgeH = glsl::step(state.threshold, glsl::component_max(glsl::abs((static_cast<double>(L) - static_cast<double>(Ln))), glsl::abs((static_cast<double>(L) - static_cast<double>(Ls)))));\n  [[maybe_unused]] double edgeV = glsl::step(state.threshold, glsl::component_max(glsl::abs((static_cast<double>(L) - static_cast<double>(Lw))), glsl::abs((static_cast<double>(L) - static_cast<double>(Le)))));\n  output = glsl::Vec4(glsl::FloatExpr<4>(edgeH, edgeV, static_cast<float>(0.0), static_cast<float>(1.0)));\n}\n}  // namespace typed_86\n\nBoundKernel bind_filter_smooth_smoothEdge(const glsl::Bindings& bindings) {\n  const auto state = std::make_shared<typed_86::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("smoothType"), bindings.get_number("threshold"));\n  (void)bindings;\n  return BoundKernel(state, &typed_86::pixel);\n}\n\n'[0m
+
+======================================================================
+[31mFAIL[0m[1;31m: test_typed_generation_is_cwd_independent_and_matches_committed_slice (test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice)[0m
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File [35m"tests/test_typed_generator.py"[0m, line [35m6025[0m, in [35mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[0m
+    [31mself.assertIn[0m[1;31m("typed slice ok (137 programs)", output)[0m
+    [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1;35mAssertionError[0m: [35m'typed slice ok (137 programs)' not found in 'generate_typed_slice: typed slice ok (152 programs)\n'[0m
+
+----------------------------------------------------------------------
+Ran 218 tests in 1050.479s
+
+[1;31mFAILED[0m ([1;31mfailures=7[0m)
+EXIT=1

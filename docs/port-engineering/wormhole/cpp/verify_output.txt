@@ -1,0 +1,15 @@
+schema: noisemaker-for-cpp.wormhole.deposit-scatter-oracle.v1
+corpus_revision: a024dc3a960cc44af454abc7aebce50456c194e6
+wrap_function_rows: 18 wrapRepeat + 18 wrapMirror rows, 0 mismatch(es)
+oklab_lightness_rows: 12 rows, 0 mismatch(es)
+
+--- Per-wrap-mode comparison (0=mirror, 1=repeat, 2=clamp, other=repeat-branch) ---
+wrap=0: cases=19 compared=11796 exact=11796 max_abs_diff=0
+wrap=1: cases=22 compared=12200 exact=12200 max_abs_diff=0
+wrap=2: cases=20 compared=12136 exact=12136 max_abs_diff=0
+wrap=7: cases=1 compared=96 exact=96 max_abs_diff=0
+
+--- Overall ---
+cases=62 compared=36228 exact=36228 max_abs_diff=0
+
+RESULT: ALL BIT-EXACT

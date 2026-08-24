@@ -1,0 +1,2139 @@
+{
+  "schema": "noisemaker-for-cpp.future-precompute.task31.curl-tanh-mod-closure-oracles.v1",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "provenance": {
+    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
+    "adapter_index_sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "source_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
+    "canonical_factory_name": "canonicalFactory248",
+    "canonical_factory_to_string_sha256": "a5faaca15e28732b3ca3f802c03dc1f906a90134d9ac855eba6bcc4f85596349",
+    "node": "v24.7.0",
+    "public_identity": true,
+    "adapter_absent": true
+  },
+  "program": {
+    "key": "synth/curl:curl",
+    "defines": {
+      "OCTAVES": 1,
+      "OUTPUT_MODE": 3,
+      "RIDGES": true
+    },
+    "profile_candidate": "curl-tanh-vec3-mod-vecN-float-v1",
+    "source_raw_bytes": 7290,
+    "source_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
+    "closure_sites": {
+      "tanh_vec3_main": {
+        "ast_id": 18,
+        "corpus_location": "196:12",
+        "reachable_from_main": true,
+        "full_render_discriminates_naive_mutation": true,
+        "js_site": "main() cpu_vector_assignment_0 (3 scalar tanh() calls forming one vec3 node)"
+      },
+      "mod_vec4_permute": {
+        "ast_id": 20,
+        "corpus_location": "35:12",
+        "reachable_from_main": true,
+        "full_render_discriminates_naive_mutation": false,
+        "structural_invariant": "quadratic-dominance (34x^2+10x >= 0 for all integer x)",
+        "js_site": "permute_vec4()"
+      },
+      "mod_vec3_simplex3D": {
+        "ast_id": 21,
+        "corpus_location": "65:9",
+        "reachable_from_main": true,
+        "full_render_discriminates_naive_mutation": false,
+        "structural_invariant": "period-289-absorption (downstream permute(x) periodic mod 289 for integer x)",
+        "js_site": "simplex3D() `mod(i, 289).reduce(...)`"
+      },
+      "mod_vec3_permute_dead": {
+        "ast_id": 19,
+        "corpus_location": "32:12",
+        "reachable_from_main": false,
+        "full_render_discriminates_naive_mutation": false,
+        "structural_invariant": "n/a -- unreachable, function never called",
+        "js_site": "permute() (vec3 overload) -- never called; simplex3D only calls permute_vec4()"
+      }
+    },
+    "corpus_line_offset_note": "corpus id:line:col numbers are offset by exactly -10 lines from this raw curl.glsl (all four sites) due to preprocessor stripping of the header comment/#ifndef guard block (lines 1-23 raw vs. 13 effective) before AST parsing; verified by direct anchor match against the raw source and the pinned public factory text."
+  },
+  "fixture": {
+    "full_render": "no input texture (curl has no sampler uniforms); uniforms + defines only",
+    "fragment_origin": "bottom-left runPass coordinates"
+  },
+  "eligible_render_cases": [
+    {
+      "name": "default-seed0-time0",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 0,
+        "scale": 10,
+        "seed": 0,
+        "speed": 50,
+        "intensity": 1
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        6,
+        5
+      ],
+      "output": {
+        "f32_sha256": "38fb7d9ac469347a5d53b1d065550cec64923b8f8ed9792bd62d11773c95bb55",
+        "rgba8_sha256": "74304e9ef0601a4886a053299a16246b57113f1584f451109fc4dbcc95a33da9",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7400228977203369,
+              0.7095207571983337,
+              0.6357405185699463,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f3d7224",
+              "0x3f35a327",
+              "0x3f22bfe4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.8683412075042725,
+              0.3912785053253174,
+              0.7343675494194031,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f5e4b9c",
+              "0x3ec855a8",
+              "0x3f3bff83",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.4307180643081665,
+              0.9729719161987305,
+              0.4773310422897339,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3edc8714",
+              "0x3f7914b0",
+              "0x3ef464bc",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.7587558627128601,
+              0.7604113817214966,
+              0.46394819021224976,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f423dd3",
+              "0x3f42aa52",
+              "0x3eed8a9e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.639208197593689,
+              0.7483075261116028,
+              0.941536545753479,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f23a326",
+              "0x3f3f9115",
+              "0x3f71088a",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "seed7-tiled-midtime",
+      "dimensions": {
+        "width": 5,
+        "height": 6
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 3.5,
+        "scale": 15,
+        "seed": 7,
+        "speed": 80,
+        "intensity": 2.5
+      },
+      "tile_offset": [
+        3,
+        2
+      ],
+      "full_resolution": [
+        13,
+        11
+      ],
+      "output": {
+        "f32_sha256": "e6f49b49ebee9b4bec0631e7209f2daf70a207a8f8a659044a40f7db8388c92f",
+        "rgba8_sha256": "0b0aeb879b6461fa23d192882dcce8a4d484821d6f638a6d2868911ec95cc81a",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.04636669158935547,
+              0.8966857194900513,
+              0.8291230201721191,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d3deb00",
+              "0x3f658d32",
+              "0x3f544168",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              0
+            ],
+            "values": [
+              0.770988404750824,
+              0.569603443145752,
+              0.2241339087486267,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f455f7f",
+              "0x3f11d188",
+              "0x3e65835c",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              5
+            ],
+            "values": [
+              0.7534345388412476,
+              0.3093123435974121,
+              0.750565767288208,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f40e116",
+              "0x3e9e5e30",
+              "0x3f402514",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              5
+            ],
+            "values": [
+              0.942557692527771,
+              0.30958449840545654,
+              0.4676547050476074,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f714b76",
+              "0x3e9e81dc",
+              "0x3eef7070",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              3
+            ],
+            "values": [
+              0.38716673851013184,
+              0.12525415420532227,
+              0.7513046264648438,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ec63ab8",
+              "0x3e0042a0",
+              "0x3f405580",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "negative-seed-drives-negative-mod-operands",
+      "dimensions": {
+        "width": 8,
+        "height": 3
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 12,
+        "scale": 0,
+        "seed": -13,
+        "speed": 0,
+        "intensity": 0.75
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        8,
+        3
+      ],
+      "output": {
+        "f32_sha256": "6325f2198d92d04b02b6ff0b5f8102709f280c176d4a008dc5d0ddafa2c183d0",
+        "rgba8_sha256": "ff92d82a215c70ea490077f882e342d3ba92cc9ffec70a69d4c59d527228230b",
+        "finite_lanes": 96,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.5769515037536621,
+              0.6962201595306396,
+              0.5234904289245605,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f13b318",
+              "0x3f323b7c",
+              "0x3f060378",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              0
+            ],
+            "values": [
+              0.6208333969116211,
+              0.979799747467041,
+              0.8762689232826233,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f1eeef0",
+              "0x3f7ad428",
+              "0x3f605329",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              2
+            ],
+            "values": [
+              0.9864213466644287,
+              0.696797251701355,
+              0.9080477952957153,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7c861c",
+              "0x3f32614e",
+              "0x3f6875d2",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              7,
+              2
+            ],
+            "values": [
+              0.9237780570983887,
+              0.9279313087463379,
+              0.9992111325263977,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f6c7cb8",
+              "0x3f6d8ce8",
+              "0x3f7fcc4d",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              4,
+              1
+            ],
+            "values": [
+              0.8075052499771118,
+              0.515133261680603,
+              0.604827880859375,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f4eb8aa",
+              "0x3f03dfc6",
+              "0x3f1ad600",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "negative-intensity-flips-tanh-sign",
+      "dimensions": {
+        "width": 4,
+        "height": 4
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 100.25,
+        "scale": 20.9,
+        "seed": 99,
+        "speed": 200,
+        "intensity": -4
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        4,
+        4
+      ],
+      "output": {
+        "f32_sha256": "311e9b9662461dac97a4b9f5a167707913aec4120bb63b8b590376128b237fcd",
+        "rgba8_sha256": "df8c2c90ccf93aff72894448dbe5292ece5fd24f3f2ce21fb68f4e23a4001e8b",
+        "finite_lanes": 64,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.03775930404663086,
+              0.00023055076599121094,
+              0.051670610904693604,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d1aa980",
+              "0x3971c000",
+              "0x3d53a490",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              0
+            ],
+            "values": [
+              0.00920557975769043,
+              0.0002529621124267578,
+              0.030492305755615234,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3c16d300",
+              "0x3984a000",
+              "0x3cf9cb00",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              3
+            ],
+            "values": [
+              0.10406279563903809,
+              0.0006248950958251953,
+              0.16565662622451782,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3dd51ee0",
+              "0x3a23d000",
+              "0x3e29a1e4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0.026152372360229492,
+              0.0004525184631347656,
+              0.09689837694168091,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3cd63d80",
+              "0x39ed4000",
+              "0x3dc672a8",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              2,
+              2
+            ],
+            "values": [
+              0.025465011596679688,
+              0.0003370046615600586,
+              0.0740211009979248,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3cd09c00",
+              "0x39b0b000",
+              "0x3d979860",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "large-seed-negative-scale-negative-speed",
+      "dimensions": {
+        "width": 7,
+        "height": 7
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 0.001,
+        "scale": -5,
+        "seed": 1000000,
+        "speed": -30,
+        "intensity": 50
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        7,
+        7
+      ],
+      "output": {
+        "f32_sha256": "aa573876f73366853d5898cb9a7e97f920dbae298f41f4ba0811d75b44e3991a",
+        "rgba8_sha256": "38983169f7e627250c60981b9fcfec851a56521e1679eceae2c3ae657b0c2fff",
+        "finite_lanes": 196,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0,
+              0,
+              0.000015139579772949219,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x377e0000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              0
+            ],
+            "values": [
+              0.07129156589508057,
+              0,
+              0.00000762939453125,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3d920150",
+              "0x00000000",
+              "0x37000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              6
+            ],
+            "values": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              6,
+              6
+            ],
+            "values": [
+              0,
+              0,
+              0.000008046627044677734,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x00000000",
+              "0x37070000",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              3
+            ],
+            "values": [
+              0,
+              0.25057268142700195,
+              0,
+              1
+            ],
+            "f32_bits_le": [
+              "0x00000000",
+              "0x3e804b10",
+              "0x00000000",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "two-pi-time-near-identity-intensity",
+      "dimensions": {
+        "width": 10,
+        "height": 2
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": true,
+      "uniforms": {
+        "time": 6.2831853,
+        "scale": 10.999999,
+        "seed": 0,
+        "speed": 1,
+        "intensity": 0.001
+      },
+      "tile_offset": [
+        0,
+        0
+      ],
+      "full_resolution": [
+        10,
+        2
+      ],
+      "output": {
+        "f32_sha256": "7a006260356fcf49ebcc27ca9069f37cfa7ee935d0d94e5d3ea2c9649befe95d",
+        "rgba8_sha256": "6d92a8ea911d0d96dad7f2d76f2647e8b612e645140157668298db20a9412d4b",
+        "finite_lanes": 80,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.999437689781189,
+              0.999428391456604,
+              0.9994093179702759,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7fdb26",
+              "0x3f7fda8a",
+              "0x3f7fd94a",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              0
+            ],
+            "values": [
+              0.9996508359909058,
+              0.999826192855835,
+              0.9994308948516846,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7fe91e",
+              "0x3f7ff49c",
+              "0x3f7fdab4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              1
+            ],
+            "values": [
+              0.9999366998672485,
+              0.9995855689048767,
+              0.9998778104782104,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7ffbda",
+              "0x3f7fe4d7",
+              "0x3f7ff7fe",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              9,
+              1
+            ],
+            "values": [
+              0.9997692108154297,
+              0.9995397329330444,
+              0.9999954700469971,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7ff0e0",
+              "0x3f7fe1d6",
+              "0x3f7fffb4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              1
+            ],
+            "values": [
+              0.9991453289985657,
+              0.9996929168701172,
+              0.9996874332427979,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7fc7fd",
+              "0x3f7febe0",
+              "0x3f7feb84",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    }
+  ],
+  "ineligible_render_cases": [
+    {
+      "name": "octaves-2-diverges-loop-unroll",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "OCTAVES": 2,
+        "OUTPUT_MODE": 3,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"OCTAVES\":2,\"OUTPUT_MODE\":3,\"RIDGES\":true} != authorized {\"OCTAVES\":1,\"OUTPUT_MODE\":3,\"RIDGES\":true} -- a genuinely different compiled program (loop unroll / output-channel branch / ridge fold) whose C++-side counterpart does not exist under this task",
+      "uniforms": {
+        "time": 0,
+        "scale": 10,
+        "seed": 0,
+        "speed": 50,
+        "intensity": 1
+      },
+      "output": {
+        "f32_sha256": "119d8853b24e70d19d8cab6094e568edd53a98e805882e1661ba9bd3e06cb024",
+        "rgba8_sha256": "5672e0c406c2ca6aec20e878de6c93c9031bf6b7ee1be756e8886d74b1cd070d",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.8108774423599243,
+              0.5678448677062988,
+              0.98235023021698,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f4f95aa",
+              "0x3f115e48",
+              "0x3f7b7b4e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.887028157711029,
+              0.5964492559432983,
+              0.8801864385604858,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f631447",
+              "0x3f18b0e6",
+              "0x3f6153e6",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.8947893977165222,
+              0.7301025390625,
+              0.8060081601142883,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f6510eb",
+              "0x3f3ae800",
+              "0x3f4e568d",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.8705112934112549,
+              0.7467861175537109,
+              0.922282338142395,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f5ed9d4",
+              "0x3f3f2d60",
+              "0x3f6c1ab2",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.9889545440673828,
+              0.9776102304458618,
+              0.7624114751815796,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f7d2c20",
+              "0x3f7a44aa",
+              "0x3f432d66",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "output-mode-0-flowx-channel",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 0,
+        "RIDGES": true
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"OCTAVES\":1,\"OUTPUT_MODE\":0,\"RIDGES\":true} != authorized {\"OCTAVES\":1,\"OUTPUT_MODE\":3,\"RIDGES\":true} -- a genuinely different compiled program (loop unroll / output-channel branch / ridge fold) whose C++-side counterpart does not exist under this task",
+      "uniforms": {
+        "time": 0,
+        "scale": 10,
+        "seed": 0,
+        "speed": 50,
+        "intensity": 1
+      },
+      "output": {
+        "f32_sha256": "c449eec20237293e0ef773a6a5dddaa91ed2911730088261a3f777d0ddc21c53",
+        "rgba8_sha256": "75743cf9ea7014f780b0c3a35be985483de6977356270bc40ba0bcbc4503e68f",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.7400228977203369,
+              0.7400228977203369,
+              0.7400228977203369,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f3d7224",
+              "0x3f3d7224",
+              "0x3f3d7224",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.8683412075042725,
+              0.8683412075042725,
+              0.8683412075042725,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f5e4b9c",
+              "0x3f5e4b9c",
+              "0x3f5e4b9c",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.4307180643081665,
+              0.4307180643081665,
+              0.4307180643081665,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3edc8714",
+              "0x3edc8714",
+              "0x3edc8714",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.7587558627128601,
+              0.7587558627128601,
+              0.7587558627128601,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f423dd3",
+              "0x3f423dd3",
+              "0x3f423dd3",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.639208197593689,
+              0.639208197593689,
+              0.639208197593689,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f23a326",
+              "0x3f23a326",
+              "0x3f23a326",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    },
+    {
+      "name": "ridges-false-no-fold",
+      "dimensions": {
+        "width": 6,
+        "height": 5
+      },
+      "defines": {
+        "OCTAVES": 1,
+        "OUTPUT_MODE": 3,
+        "RIDGES": false
+      },
+      "eligible_for_native_binding": false,
+      "ineligibility_reason": "defines {\"OCTAVES\":1,\"OUTPUT_MODE\":3,\"RIDGES\":false} != authorized {\"OCTAVES\":1,\"OUTPUT_MODE\":3,\"RIDGES\":true} -- a genuinely different compiled program (loop unroll / output-channel branch / ridge fold) whose C++-side counterpart does not exist under this task",
+      "uniforms": {
+        "time": 0,
+        "scale": 10,
+        "seed": 0,
+        "speed": 50,
+        "intensity": 1
+      },
+      "output": {
+        "f32_sha256": "b7d0ad4f8cca9f6e9e93ecb4ddc6dc8ec8359de7ba03a05cb3c1b330ed7a15f4",
+        "rgba8_sha256": "44b2df1bc3b612c0df74207a6a9a4903ee1207ad68a00c6063690360e84c01a7",
+        "finite_lanes": 120,
+        "nonfinite_lanes": 0,
+        "probes": [
+          {
+            "at_top_down_xy": [
+              0,
+              0
+            ],
+            "values": [
+              0.37001144886016846,
+              0.35476037859916687,
+              0.31787025928497314,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ebd7224",
+              "0x3eb5a327",
+              "0x3ea2bfe4",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              0
+            ],
+            "values": [
+              0.43417060375213623,
+              0.8043607473373413,
+              0.36718377470970154,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ede4b9c",
+              "0x3f4dea96",
+              "0x3ebbff83",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              0,
+              4
+            ],
+            "values": [
+              0.7846409678459167,
+              0.5135140419006348,
+              0.7613344788551331,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3f48de3b",
+              "0x3f0375a8",
+              "0x3f42e6d1",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              5,
+              4
+            ],
+            "values": [
+              0.37937793135643005,
+              0.6197943091392517,
+              0.23197409510612488,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ec23dd3",
+              "0x3f1eaad7",
+              "0x3e6d8a9e",
+              "0x3f800000"
+            ]
+          },
+          {
+            "at_top_down_xy": [
+              3,
+              2
+            ],
+            "values": [
+              0.3196040987968445,
+              0.3741537630558014,
+              0.5292317271232605,
+              1
+            ],
+            "f32_bits_le": [
+              "0x3ea3a326",
+              "0x3ebf9115",
+              "0x3f077bbb",
+              "0x3f800000"
+            ]
+          }
+        ]
+      },
+      "repeat_identity": true
+    }
+  ],
+  "public_factory_mutations": [
+    {
+      "id": "tanh-vec3-identity-passthrough",
+      "site": "tanh_vec3_main",
+      "hazard": "saturating-vs-unsaturated-compression",
+      "reachable": true,
+      "expected": "nonzero",
+      "expected_reason": "tanh is a nonlinear saturating compression; removing it changes the final color at essentially every pixel where curl*intensity != 0.",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": true
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": true
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": true
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": true
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": true
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": true
+        }
+      ]
+    },
+    {
+      "id": "mod-vec4-permute-naive-fmod",
+      "site": "mod_vec4_permute",
+      "hazard": "floor-mod-vs-truncating-fmod",
+      "reachable": true,
+      "expected": "zero-structural-invariant",
+      "expected_reason": "every operand at this site is an exact integer, and 34x^2+10x >= 0 for all integers x (quadratic dominance) -- GLSL floor-mod and naive trunc-mod/fmod are identical for non-negative dividends, so this site's rounding rule is provably irrelevant to the final image. See the module header proof.",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": false
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": false
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": false
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": false
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": false
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": false
+        }
+      ]
+    },
+    {
+      "id": "mod-vec3-simplex3D-naive-fmod",
+      "site": "mod_vec3_simplex3D",
+      "hazard": "floor-mod-vs-truncating-fmod",
+      "reachable": true,
+      "expected": "zero-structural-invariant",
+      "expected_reason": "downstream permute(x) is exactly periodic mod 289 for integer x (34(x+289)^2+10(x+289) - (34x^2+10x) is an exact multiple of 289 whenever x is an integer), and naive fmod vs GLSL mod at this site differ by at most one exact multiple of 289 -- permute's own internal mod-289 silently absorbs that difference. See the module header proof.",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": false
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": false
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": false
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": false
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": false
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": false
+        }
+      ]
+    },
+    {
+      "id": "mod-vec3-permute-dead-naive-fmod",
+      "site": "mod_vec3_permute_dead",
+      "hazard": "floor-mod-vs-truncating-fmod",
+      "reachable": false,
+      "expected": "zero-dead-code",
+      "expected_reason": "this is the vec3 overload of permute(); simplex3D only ever calls permute_vec4(). The function is never invoked at all, at any define map, so mutating its body cannot affect any render regardless of the (also structurally-invariant) quadratic-dominance property it shares with mod-vec4-permute.",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": false
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": false
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": false
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": false
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": false
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": false
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": false
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": false
+        }
+      ]
+    }
+  ],
+  "reachability_proof_mutations": [
+    {
+      "id": "mod-vec4-permute-wrong-divisor",
+      "site": "mod_vec4_permute",
+      "hazard": "wrong-divisor-reachability-probe",
+      "purpose": "supplementary -- proves the site is live/executed/influences output; NOT one of the four brief-specified mutations",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": true
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": true
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": true
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": true
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": true
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": true
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": true
+        }
+      ]
+    },
+    {
+      "id": "mod-vec3-simplex3D-wrong-divisor",
+      "site": "mod_vec3_simplex3D",
+      "hazard": "wrong-divisor-reachability-probe",
+      "purpose": "supplementary -- proves the site is live/executed/influences output; NOT one of the four brief-specified mutations",
+      "eligible_case_results": [
+        {
+          "case": "default-seed0-time0",
+          "diverges": true
+        },
+        {
+          "case": "seed7-tiled-midtime",
+          "diverges": true
+        },
+        {
+          "case": "negative-seed-drives-negative-mod-operands",
+          "diverges": true
+        },
+        {
+          "case": "negative-intensity-flips-tanh-sign",
+          "diverges": true
+        },
+        {
+          "case": "large-seed-negative-scale-negative-speed",
+          "diverges": true
+        },
+        {
+          "case": "two-pi-time-near-identity-intensity",
+          "diverges": true
+        }
+      ],
+      "ineligible_diagnostic_case_results": [
+        {
+          "case": "octaves-2-diverges-loop-unroll",
+          "defines": {
+            "OCTAVES": 2,
+            "OUTPUT_MODE": 3,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "output-mode-0-flowx-channel",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 0,
+            "RIDGES": true
+          },
+          "diverges": true
+        },
+        {
+          "case": "ridges-false-no-fold",
+          "defines": {
+            "OCTAVES": 1,
+            "OUTPUT_MODE": 3,
+            "RIDGES": false
+          },
+          "diverges": true
+        }
+      ]
+    }
+  ],
+  "direct_tanh_rows": [
+    {
+      "input": [
+        0,
+        0,
+        0
+      ],
+      "input_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "result": [
+        0,
+        0,
+        0
+      ],
+      "result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ]
+    },
+    {
+      "input": [
+        0,
+        0,
+        0
+      ],
+      "input_bits": [
+        "0x80000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "result": [
+        0,
+        0,
+        0
+      ],
+      "result_bits": [
+        "0x80000000",
+        "0x00000000",
+        "0x00000000"
+      ]
+    },
+    {
+      "input": [
+        1,
+        -1,
+        0.5
+      ],
+      "input_bits": [
+        "0x3f800000",
+        "0xbf800000",
+        "0x3f000000"
+      ],
+      "result": [
+        0.7615941762924194,
+        -0.7615941762924194,
+        0.46211716532707214
+      ],
+      "result_bits": [
+        "0x3f42f7d6",
+        "0xbf42f7d6",
+        "0x3eec9a9f"
+      ]
+    },
+    {
+      "input": [
+        -1,
+        1,
+        -0.5
+      ],
+      "input_bits": [
+        "0xbf800000",
+        "0x3f800000",
+        "0xbf000000"
+      ],
+      "result": [
+        -0.7615941762924194,
+        0.7615941762924194,
+        -0.46211716532707214
+      ],
+      "result_bits": [
+        "0xbf42f7d6",
+        "0x3f42f7d6",
+        "0xbeec9a9f"
+      ]
+    },
+    {
+      "input": [
+        3.4028234663852886e+38,
+        -3.4028234663852886e+38,
+        0
+      ],
+      "input_bits": [
+        "0x7f7fffff",
+        "0xff7fffff",
+        "0x00000000"
+      ],
+      "result": [
+        1,
+        -1,
+        0
+      ],
+      "result_bits": [
+        "0x3f800000",
+        "0xbf800000",
+        "0x00000000"
+      ]
+    },
+    {
+      "input": [
+        -3.4028234663852886e+38,
+        3.4028234663852886e+38,
+        3.4028234663852886e+38
+      ],
+      "input_bits": [
+        "0xff7fffff",
+        "0x7f7fffff",
+        "0x7f7fffff"
+      ],
+      "result": [
+        -1,
+        1,
+        1
+      ],
+      "result_bits": [
+        "0xbf800000",
+        "0x3f800000",
+        "0x3f800000"
+      ]
+    },
+    {
+      "input": [
+        1.401298464324817e-45,
+        -1.401298464324817e-45,
+        0
+      ],
+      "input_bits": [
+        "0x00000001",
+        "0x80000001",
+        "0x00000000"
+      ],
+      "result": [
+        1.401298464324817e-45,
+        -1.401298464324817e-45,
+        0
+      ],
+      "result_bits": [
+        "0x00000001",
+        "0x80000001",
+        "0x00000000"
+      ]
+    },
+    {
+      "input": [
+        20,
+        -20,
+        0.00009999999747378752
+      ],
+      "input_bits": [
+        "0x41a00000",
+        "0xc1a00000",
+        "0x38d1b717"
+      ],
+      "result": [
+        1,
+        -1,
+        0.00009999999747378752
+      ],
+      "result_bits": [
+        "0x3f800000",
+        "0xbf800000",
+        "0x38d1b717"
+      ]
+    },
+    {
+      "input": [
+        3.141590118408203,
+        -3.141590118408203,
+        2.718280076980591
+      ],
+      "input_bits": [
+        "0x40490fd0",
+        "0xc0490fd0",
+        "0x402df84d"
+      ],
+      "result": [
+        0.996272087097168,
+        -0.996272087097168,
+        0.9913288950920105
+      ],
+      "result_bits": [
+        "0x3f7f0bb0",
+        "0xbf7f0bb0",
+        "0x3f7dc7bb"
+      ]
+    },
+    {
+      "input": [
+        1.000000013351432e-10,
+        -1.000000013351432e-10,
+        0
+      ],
+      "input_bits": [
+        "0x2edbe6ff",
+        "0xaedbe6ff",
+        "0x00000000"
+      ],
+      "result": [
+        1.000000013351432e-10,
+        -1.000000013351432e-10,
+        0
+      ],
+      "result_bits": [
+        "0x2edbe6ff",
+        "0xaedbe6ff",
+        "0x00000000"
+      ]
+    }
+  ],
+  "direct_mod_rows": [
+    {
+      "x": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "x_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "naive_fmod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "naive_fmod_result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "diverges_from_naive_fmod": false
+    },
+    {
+      "x": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "x_bits": [
+        "0x80000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "naive_fmod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "naive_fmod_result_bits": [
+        "0x80000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "diverges_from_naive_fmod": true
+    },
+    {
+      "x": [
+        289,
+        -289,
+        578,
+        -578
+      ],
+      "x_bits": [
+        "0x43908000",
+        "0xc3908000",
+        "0x44108000",
+        "0xc4108000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "naive_fmod_result": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "naive_fmod_result_bits": [
+        "0x00000000",
+        "0x80000000",
+        "0x00000000",
+        "0x80000000"
+      ],
+      "diverges_from_naive_fmod": true
+    },
+    {
+      "x": [
+        -1,
+        -0.5,
+        -289,
+        -289
+      ],
+      "x_bits": [
+        "0xbf800000",
+        "0xbf000000",
+        "0xc3908000",
+        "0xc3908000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        288,
+        288.5,
+        0,
+        0
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x43900000",
+        "0x43904000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "naive_fmod_result": [
+        -1,
+        -0.5,
+        0,
+        0
+      ],
+      "naive_fmod_result_bits": [
+        "0xbf800000",
+        "0xbf000000",
+        "0x80000000",
+        "0x80000000"
+      ],
+      "diverges_from_naive_fmod": true
+    },
+    {
+      "x": [
+        1,
+        0.5,
+        289,
+        289
+      ],
+      "x_bits": [
+        "0x3f800000",
+        "0x3f000000",
+        "0x43908000",
+        "0x43908000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        1,
+        0.5,
+        0,
+        0
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x3f800000",
+        "0x3f000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "naive_fmod_result": [
+        1,
+        0.5,
+        0,
+        0
+      ],
+      "naive_fmod_result_bits": [
+        "0x3f800000",
+        "0x3f000000",
+        "0x00000000",
+        "0x00000000"
+      ],
+      "diverges_from_naive_fmod": false
+    },
+    {
+      "x": [
+        -59500,
+        59500,
+        -1,
+        1
+      ],
+      "x_bits": [
+        "0xc7686c00",
+        "0x47686c00",
+        "0xbf800000",
+        "0x3f800000"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        34,
+        255,
+        288,
+        1
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x42080000",
+        "0x437f0000",
+        "0x43900000",
+        "0x3f800000"
+      ],
+      "naive_fmod_result": [
+        -255,
+        255,
+        -1,
+        1
+      ],
+      "naive_fmod_result_bits": [
+        "0xc37f0000",
+        "0x437f0000",
+        "0xbf800000",
+        "0x3f800000"
+      ],
+      "diverges_from_naive_fmod": true
+    },
+    {
+      "x": [
+        3.4028234663852886e+38,
+        -3.4028234663852886e+38,
+        1.401298464324817e-45,
+        -1.401298464324817e-45
+      ],
+      "x_bits": [
+        "0x7f7fffff",
+        "0xff7fffff",
+        "0x00000001",
+        "0x80000001"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        0,
+        0,
+        1.401298464324817e-45,
+        289
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x00000000",
+        "0x00000000",
+        "0x00000001",
+        "0x43908000"
+      ],
+      "naive_fmod_result": [
+        187,
+        -187,
+        1.401298464324817e-45,
+        -1.401298464324817e-45
+      ],
+      "naive_fmod_result_bits": [
+        "0x433b0000",
+        "0xc33b0000",
+        "0x00000001",
+        "0x80000001"
+      ],
+      "diverges_from_naive_fmod": true
+    },
+    {
+      "x": [
+        -100000000,
+        100000000,
+        -0.12710000574588776,
+        0.12710000574588776
+      ],
+      "x_bits": [
+        "0xccbebc20",
+        "0x4cbebc20",
+        "0xbe022681",
+        "0x3e022681"
+      ],
+      "y": 289,
+      "y_bits": "0x43908000",
+      "real_glsl_mod_result": [
+        69,
+        220,
+        288.8728942871094,
+        0.12710000574588776
+      ],
+      "real_glsl_mod_result_bits": [
+        "0x428a0000",
+        "0x435c0000",
+        "0x43906fbb",
+        "0x3e022681"
+      ],
+      "naive_fmod_result": [
+        -220,
+        220,
+        -0.12710000574588776,
+        0.12710000574588776
+      ],
+      "naive_fmod_result_bits": [
+        "0xc35c0000",
+        "0x435c0000",
+        "0xbe022681",
+        "0x3e022681"
+      ],
+      "diverges_from_naive_fmod": true
+    }
+  ],
+  "eligibility_summary": {
+    "total_cases": 9,
+    "eligible_cases": 6,
+    "ineligible_cases": 3
+  },
+  "negative_closure": {
+    "any_other_define_map": "reject",
+    "generic_tanh_or_mod_capability": "forbidden",
+    "any_mod_or_tanh_site_outside_the_four_authenticated_nodes": "reject",
+    "dead_permute_vec3_overload_treated_as_reachable": "forbidden -- must be reported as expected-dead, not hidden",
+    "naive_fmod_zero_divergence_at_reachable_mod_sites_treated_as_disproof_of_reachability": "forbidden -- proven structural invariant, not a coverage gap; see module header"
+  },
+  "risks_and_rejected_designs": [
+    {
+      "id": "brief-full-render-discrimination-expectation-corrected",
+      "severity": "flag-for-operator-signoff",
+      "description": "The design brief expected all 3 reachable sites to discriminate via full-render mutation, unlike the one dead site. Empirically (40-trial randomized stress sweep, seed in [-1e6,1e6]) and algebraically (see module header), the two reachable mod(vecN,float) sites are structurally IMMUNE to a naive-fmod full-render mutation -- for two distinct, independently-verified reasons (quadratic dominance at permute_vec4, period-289 absorption at simplex3D). Both sites are proven live via a supplementary wrong-divisor mutation (40/40 divergent). Direct component-level invocation of the real runtime mod() (direct_mod_rows) is therefore the authoritative surface for this hazard, not full-render diffing."
+    }
+  ]
+}
