@@ -2159,6 +2159,29 @@ def _source_entries(repository: pathlib.Path, slice_spec: dict[str, Any]) -> lis
     return result
 
 
+def _typed_abi(typed) -> dict[str, Any]:
+    """Serialize the interface consumed by ``render_typed_cpp``.
+
+    This is intentionally produced in the same loop that validates and emits
+    the typed program. Downstream admission code must consume this record
+    rather than re-derive an ABI from source text or generated C++.
+    """
+    declarations = {item.symbol.name: item for item in typed.declarations}
+    uniforms = []
+    for name in typed.resources.uniforms:
+        declaration = declarations.get(name)
+        if declaration is None:
+            raise GeneratorError(f"{typed.key}: typed ABI declaration missing for {name}")
+        uniforms.append({"name": name, "type": declaration.type.display()})
+    return {
+        "uniforms": uniforms,
+        "samplers": list(typed.resources.samplers),
+        "outputs": list(typed.resources.outputs),
+        "uses_texture": bool(typed.resources.uses_texture),
+        "uses_derivatives": bool(typed.resources.uses_derivatives),
+    }
+
+
 def _defaults(repository: pathlib.Path, key: str) -> dict:
     root = check_corpus._corpus_root(repository)
     metadata = check_corpus._load_json(root / "metadata.json", "metadata")
@@ -8774,6 +8797,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             "numeric_literal_contract": literal_contract,
             "output": "typed_slice.cpp", "program_key": key,
             "source": entry["source"], "source_sha256": source_hash,
+            "typed_abi": _typed_abi(typed),
         }
         if dynamic_noise:
             manifest_program["runtime_define_profile"] = NOISE_RUNTIME_DEFINE_PROFILE

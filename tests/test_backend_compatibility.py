@@ -6,21 +6,22 @@ import json
 import os
 import pathlib
 import subprocess
-import tempfile
 import unittest
 
 from tools.dsl import generate_backend_compatibility as generator
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CPU_ROOT = pathlib.Path("/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu")
-SHADER_GIT = pathlib.Path("/Users/aayars/platform/noisemaker")
+CPU_ROOT = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT", ""))
+SHADER_GIT = pathlib.Path(os.environ.get("NOISEMAKER_SHADER_GIT", ""))
 MANIFEST = ROOT / "src/effects/generated/backend_compatibility.json"
 
 
 class BackendCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not CPU_ROOT.is_dir() or not SHADER_GIT.is_dir():
+            raise unittest.SkipTest("set NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT for authority tests")
         cls.document = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
@@ -40,10 +41,14 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual(["filter/text:text"], document["counts"]["incompatible_keys"])
 
     def test_manifest_is_deterministic_and_checkable(self) -> None:
-        expected = json.dumps(self.document, indent=2, sort_keys=True).encode() + b"\n"
-        self.assertEqual(expected, MANIFEST.read_bytes())
+        first = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
+        second = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
+        first_bytes = json.dumps(first, indent=2, sort_keys=True).encode() + b"\n"
+        second_bytes = json.dumps(second, indent=2, sort_keys=True).encode() + b"\n"
+        self.assertEqual(first_bytes, second_bytes)
+        self.assertEqual(first_bytes, MANIFEST.read_bytes())
         generator.check(cpu_root=CPU_ROOT, shader_git=SHADER_GIT, repository=ROOT)
-        first = hashlib.sha256(expected).hexdigest()
+        first = hashlib.sha256(first_bytes).hexdigest()
         second = hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
         self.assertEqual(first, second)
 
@@ -61,7 +66,13 @@ class BackendCompatibilityTests(unittest.TestCase):
         forged = copy.deepcopy(self.document)
         mutate(forged)
         with self.assertRaises(generator.CompatibilityError):
-            generator.validate_document(forged)
+            generator.validate_document(
+                forged,
+                expected_source_hashes={
+                    row["program_key"]: row["new_raw_sha256"]
+                    for row in self.document["canonical_programs"]
+                } | {self.document["scatter"]["program_key"]: self.document["scatter"]["new_raw_sha256"]},
+            )
 
     def test_forged_duplicate_program_fails_closed(self) -> None:
         self._assert_fails_closed(
@@ -83,7 +94,44 @@ class BackendCompatibilityTests(unittest.TestCase):
 
     def test_source_drift_fails_closed(self) -> None:
         self._assert_fails_closed(
-            lambda document: document["canonical_programs"][0].update(new_raw_sha256="source-drift"))
+            lambda document: document["canonical_programs"][0].update(new_raw_sha256="0" * 64))
+
+    def test_draw_mode_and_dimensionality_fail_closed(self) -> None:
+        self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(draw_mode="points"))
+        self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(dimensionality="volume"))
+
+    def test_unknown_status_reason_and_reference_key_fail_closed(self) -> None:
+        self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(status="maybe"))
+        self._assert_fails_closed(lambda document: document["reference_passes"][0]["reasons"].append("not-structured"))
+        self._assert_fails_closed(lambda document: document["reference_passes"][0].update(program_key="forged:key"))
+
+    def test_output_names_routes_and_scatter_hash_fail_closed(self) -> None:
+        self._assert_fails_closed(lambda document: document["canonical_programs"][0]["outputs"][0].update(physical_name="forged"))
+        self._assert_fails_closed(lambda document: document["canonical_programs"][0]["outputs"][0].update(logical_route="forged"))
+        self._assert_fails_closed(lambda document: document["scatter"].update(new_raw_sha256="forged"))
+
+    def test_typed_manifest_requires_complete_authenticated_rows(self) -> None:
+        corpus_root = generator.check_corpus._corpus_root(ROOT)
+        entries = generator.check_corpus._validate_manifest(
+            generator.check_corpus._load_json(corpus_root / "manifest.json", "manifest"))
+        corpus_keys = {item["program_key"] for item in entries}
+        typed_path = ROOT / "src/typed_generated/typed_manifest.json"
+        typed = json.loads(typed_path.read_text(encoding="utf-8"))
+        typed["programs"].pop()
+        with self.assertRaises(generator.CompatibilityError):
+            generator._typed_manifest(ROOT, typed, corpus_keys)
+        typed = json.loads(typed_path.read_text(encoding="utf-8"))
+        typed["programs"].append(copy.deepcopy(typed["programs"][0]))
+        with self.assertRaises(generator.CompatibilityError):
+            generator._typed_manifest(ROOT, typed, corpus_keys)
+
+    def test_shader_repository_is_not_mutated(self) -> None:
+        before = subprocess.run(["git", "-C", str(SHADER_GIT), "status", "--porcelain"],
+                                check=True, text=True, capture_output=True).stdout
+        generator._authority(CPU_ROOT, SHADER_GIT)
+        after = subprocess.run(["git", "-C", str(SHADER_GIT), "status", "--porcelain"],
+                               check=True, text=True, capture_output=True).stdout
+        self.assertEqual(before, after)
 
 
 if __name__ == "__main__":

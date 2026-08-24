@@ -124,6 +124,7 @@
       "source": "sources/classicNoisedeck/bitEffects/bitEffects.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8f356b8ee94ca2b24c42612d6672340aed73765aa37bcd076ce3730b7728f11e",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -337,6 +338,7 @@
       "source": "sources/classicNoisedeck/caustic/caustic.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3e98bf1e43078e5b42d17f73f37d58d764789eb086868a862ae6ee137f9e5e51",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -539,6 +541,7 @@
       "source": "sources/classicNoisedeck/cellNoise/cellNoise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -825,6 +828,7 @@
       "source": "sources/classicNoisedeck/cellRefract/cellRefract.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e0df92eda5c1e7338dcbb054ef7e08d5697ccb3db9fbb79449d87a951dc173d8",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -1058,6 +1062,7 @@
       "source": "sources/classicNoisedeck/coalesce/coalesce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5442b956df178a4854c2111a99dfee821ea40b4287b5032db81e1277cf76f8c2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -1253,6 +1258,7 @@
       "source": "sources/classicNoisedeck/colorLab/colorLab.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c0382753b33ff19abf120ffa898dedafc7732a77daaf70d954ee8d1635d7429a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -1542,6 +1548,7 @@
       "source": "sources/classicNoisedeck/composite/composite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d0429b0fb6bec601654e551cd99c4f82a9bcd35d7298b0b2f7e2b90ea44bac0d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -1723,6 +1730,7 @@
       "source": "sources/classicNoisedeck/effects/effects.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "196f7fd2e8efc1fe546f1d200caef086311d6b889937062185059a4647774eb0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -1922,6 +1930,7 @@
       "source": "sources/classicNoisedeck/fractal/fractal.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -2250,6 +2259,7 @@
       "source": "sources/classicNoisedeck/glitch/glitch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "18c825ca788a34601c37fe9b92bcdfac459b161152daec55180079e970d4f403",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -2473,6 +2483,7 @@
       "source": "sources/classicNoisedeck/kaleido/kaleido.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "56be169c4101a109d3b370d8ac2f3aad91aa6030d3fd0e660017e1ba257c0da9",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -2668,6 +2679,7 @@
       "source": "sources/classicNoisedeck/lensDistortion/lensDistortion.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "b2e660a89fff9c62dad6d083e7a81302e10af981db4fcfb9849e00c91c47e5f7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -2923,6 +2935,7 @@
       "source": "sources/classicNoisedeck/moodscape/moodscape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f870f37d82b3406b5cce4f2248fcb362084688bee6aa18ffcf960bad8ca0ed",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -3129,6 +3142,7 @@
       "source": "sources/classicNoisedeck/noise/noise.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "49092c171718e69eb5e4e7f48a561004ea01bc94eaa4f76b9b90cf446e1c505a",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -3424,6 +3438,7 @@
       "source": "sources/classicNoisedeck/refract/refract.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "59ff19cdf6bf811af7e3d29e10f74471670cac20921aa53c0f1466e5ce8a57eb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -3627,6 +3642,7 @@
       "source": "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -3868,6 +3884,7 @@
       "source": "sources/classicNoisedeck/shapes/shapes.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -4121,6 +4138,7 @@
       "source": "sources/classicNoisedeck/splat/splat.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -4379,6 +4397,7 @@
       "source": "sources/filter/adjust/adjust.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7daf8c804ed6bb78918a6834966466805ec75113b69686c8c8c58808e76edb9d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -4560,6 +4579,7 @@
       "source": "sources/filter/bc/bc.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6d60f2efae772f867fcac7513045104827009305500cae4df64e64bb62e38ff7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -4713,6 +4733,7 @@
       "source": "sources/filter/bloom/brightPass.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "a52289ba6193e3b3fbc140bc21ea20987559801f806d5b5a873d796e0d24cab7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -4874,6 +4895,7 @@
       "source": "sources/filter/bloom/composite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "476e5e91eb39c246048c3c37fb91f93f6a8f87b1273e14f2861e57be524c38d5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5027,6 +5049,7 @@
       "source": "sources/filter/bloom/ntapGather.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7875bfa98187b7b5037decd08db576a15679aeeb5046d40eaa68c8411e2deabe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5187,6 +5210,7 @@
       "source": "sources/filter/blur/blurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1279eef07efade7c8a0c2fd351ca2edd18f7fbee6b37e8eb6fc6c71a09cb511b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5340,6 +5364,7 @@
       "source": "sources/filter/blur/blurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9a88bd63399bde71aecfa895e3d4a8b3826ca73a1be87b9ef7a540695d96ffd2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5493,6 +5518,7 @@
       "source": "sources/filter/bulge/bulge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5690,6 +5716,7 @@
       "source": "sources/filter/celShading/celShadingBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "19afed36f9f53d3f5bad1da4b288e82e5502cccc8123fecdd89e85f33aa8c0d3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -5843,6 +5870,7 @@
       "source": "sources/filter/celShading/celShadingColor.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fe30bebf98cc6c50221d1cd08cda782f07a7068354d553a7bc831a2f7be49ab0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6017,6 +6045,7 @@
       "source": "sources/filter/celShading/celShadingEdges.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "cf89a4c730c0579bdfb7e16c9e513fe79818cf063cd560cd6053c24d5f3da96f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6177,6 +6206,7 @@
       "source": "sources/filter/channel/channel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5477acaf1995a3bc7469ed5e4564a7243abeafba6c197dcc2bef5b1efa41472b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6337,6 +6367,7 @@
       "source": "sources/filter/chroma/chroma.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "affc750b134e4094cbb06993891b1d9f39ccd8600713a67f374f8ad9aa947bac",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6497,6 +6528,7 @@
       "source": "sources/filter/chromaticAberration/chromaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8f47a370a9306f3d73cc7a0b4ddf059be002adc5268f80ba5cc599b79aa8c1d1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6657,6 +6689,7 @@
       "source": "sources/filter/chrome/chBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6796,6 +6829,7 @@
       "source": "sources/filter/chrome/chBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -6943,6 +6977,7 @@
       "source": "sources/filter/chrome/chMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ee53de6686b254688ae4d740bdcf45601904fed86e5b191372bcb3888cf9dcc2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7093,6 +7128,7 @@
       "source": "sources/filter/clouds/clouds.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ef5cfa24759ecc24a2d0f5e4e466c41bbf41596ae41370e5fd61acd7692705ae",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7260,6 +7296,7 @@
       "source": "sources/filter/colorReplace/colorReplace.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e5a1ee5cb8e18ff6e72797d0822583c297b1ee702a85f28cdd9f877ef898f664",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7448,6 +7485,7 @@
       "source": "sources/filter/colorspace/colorspace.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ebae52af1e222aaa5eaf3f5ff9401208a0a33372c61d113e217d4781d642f7e2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7594,6 +7632,7 @@
       "source": "sources/filter/corrupt/corrupt.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8d36a9aa9e47ec91370ee7defa9215740fc2a47450f97f7eb6cbd42bd584c781",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7817,6 +7856,7 @@
       "source": "sources/filter/craquelure/craquelure.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7fc3ff4fa7b1adbaaa5221daace8d0da612abba607598dce210e36cfee8ed7c0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -7988,6 +8028,7 @@
       "source": "sources/filter/crt/crt.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7012188e08a1a4bde10defbd0aadcbe8b96ce67ec3b61cc83814c035947cf41d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -8174,6 +8215,7 @@
       "source": "sources/filter/degauss/degauss.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "32c076a4fe52629870c61ed97631507b7f113d409f2b0162569ed99b79e754fb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -8355,6 +8397,7 @@
       "source": "sources/filter/deriv/deriv.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e2f0e259531f5ef7eae5ac146ee0bb211a5e2d0827f74433926d0ef2e2b92c8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -8508,6 +8551,7 @@
       "source": "sources/filter/directionalBlur/directionalBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "08afd3e0114746da89f90ac3a4023221888d6ca7416f729a43e1ef861815c551",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -8654,6 +8698,7 @@
       "source": "sources/filter/dither/dither.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ab1aa380d6ea3f8e03048ffad08dc7670a7011fde57e8b84ead00ac6983f5cf8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -8849,6 +8894,7 @@
       "source": "sources/filter/edge/edge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "944d7ece6271039284bdf8888d095dad890ba0f1b305fc48c39dfbc87e1c1ae6",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -9051,6 +9097,7 @@
       "source": "sources/filter/emboss/emboss.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5749c16f34a360b1f99eaa648d329164c024f9e38d1d366771e912a9fbc0184e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -9225,6 +9272,7 @@
       "source": "sources/filter/extrude/extrude.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4df64b18e1bb899a94b0e242b21b9d16d8613779b7d05fe51789d54ad0c3440e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -9402,6 +9450,7 @@
       "source": "sources/filter/fibers/fibersBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ffa49c50441485cf8311f3a1e5bf01bcc078233f73e4bf4f787f3e2a1706c3b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -9534,6 +9583,7 @@
       "source": "sources/filter/flipMirror/flipMirror.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "355e9586117c0cd2f7735c37b9c8b778de6c21b3ccb3ae89d645a75b16bb8087",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -9680,6 +9730,7 @@
       "source": "sources/filter/fxaa/fxaa.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f97abe0ff1e04e30c6058c379f63f5980e046c54071bcf14bd36cb54a68e8327",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -9851,6 +9902,7 @@
       "source": "sources/filter/glowingEdge/glowingEdge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eb24a55fe63c6ab643c1dc43d75a652f82f28c276740e48a2f2f11949c3dda03",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10018,6 +10070,7 @@
       "source": "sources/filter/glyphMap/glyphMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "46b5505882a4537505428bebcff3787f535df40965283e9078a1f6ad819aecf6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10185,6 +10238,7 @@
       "source": "sources/filter/grade/creative.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1fb225eccf8ceef960308d602f4d7d5c3e80d56c4467a51efe2433201c1842e5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10359,6 +10413,7 @@
       "source": "sources/filter/grade/hslSecondary.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e6580a374dc9038e16c59c101124c732b486f85344fac734196fe3e02dc5aa03",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10575,6 +10630,7 @@
       "source": "sources/filter/grade/lut.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "34ca25b4b530e5774f335c22ed2b932890d0f8d37d773f86cf50aac9a31fa48d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10728,6 +10784,7 @@
       "source": "sources/filter/grade/primary.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7c28a38eef15c404a6545186ff8b62ce0700cce97137b2d059ce87fe76442d4b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -10951,6 +11008,7 @@
       "source": "sources/filter/grade/vignette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "da75c97140b411f6cfa42ca7098ee99c153c55b9f6d77b7731a1c4f9b742cc9e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -11125,6 +11183,7 @@
       "source": "sources/filter/grade/wheels.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "507ccf8e3f0df9c9bbe191fbffc6b9baf0338a8bbf911316651a9bb44531da14",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -11295,6 +11354,7 @@
       "source": "sources/filter/grain/grain.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c9e83271dc9605821d2f6399191a636be8cd0482129b9e77f0740c7e1ed983e5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -11472,6 +11532,7 @@
       "source": "sources/filter/grime/grime.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "92feb3d96fd0f8342dfa6212a9e78162717ab60faa56e9030dee85fb0e0c75fb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -11632,6 +11693,7 @@
       "source": "sources/filter/halftone/halftone.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ee29192c4e5e0a4cae1bf976f3f392421c428a424ea3abf3a50afcd866ca11c7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -11848,6 +11910,7 @@
       "source": "sources/filter/hatch/hatch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2b23853d55900ba8bdc09297a0d111f53f6482d29fe40a8a861be076067c904b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12029,6 +12092,7 @@
       "source": "sources/filter/highPass/hpBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12168,6 +12232,7 @@
       "source": "sources/filter/highPass/hpBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12315,6 +12380,7 @@
       "source": "sources/filter/highPass/hpCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "de107ac1f89d0d2d0b88fd1d30c81b0c7354875ccf8068f653a7302433876b9a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12454,6 +12520,7 @@
       "source": "sources/filter/historicPalette/historicPalette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "012bad80c635c96856c5bbc7100190af55829c27fc350d31f899c005c11aace3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12642,6 +12709,7 @@
       "source": "sources/filter/hs/hs.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7ab6d8ec198193820647bcc09d3d9bd818614d845b0b953ea5dc3931968d2e1f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -12746,7 +12814,7 @@
       "effect_id": "filter/invert",
       "factory": {
         "canonical": "bind_filter_invert_inv",
-        "legacy_public": "bind_filter_invert",
+        "legacy_public": "bind_filter_invert_inv",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
       },
@@ -12802,6 +12870,7 @@
       "source": "sources/filter/invert/inv.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0362d48525f911ea260b33c194d0020536a0ca7ae774dd52cb85917a9a4f1f9a",
       "uniforms": [
         {
           "cpp_type": "std::int32_t",
@@ -12934,6 +13003,7 @@
       "source": "sources/filter/lens/lens.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e140e54bf05785c601f856e7bf8aba7460fe30f22087af19ba5bc1ebf7aa10bd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -13094,6 +13164,7 @@
       "source": "sources/filter/lensFlare/lensFlare.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2df869e1060cef437ce6a2ea8d142b863186eed4350c8658c1ede5bb48a00d29",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -13270,6 +13341,7 @@
       "source": "sources/filter/lensWarp/lensWarp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "483335be32ed483651c733bcdfa7044bd0c9291acd22aae2727f6b9b6b0461f5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -13449,6 +13521,7 @@
       "source": "sources/filter/lightLeak/lightLeak.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -13638,6 +13711,7 @@
       "source": "sources/filter/lighting/lighting.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -13861,6 +13935,7 @@
       "source": "sources/filter/lowPoly/lowPoly.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14056,6 +14131,7 @@
       "source": "sources/filter/median/median.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -14188,6 +14264,7 @@
       "source": "sources/filter/morphology/morphA.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14334,6 +14411,7 @@
       "source": "sources/filter/morphology/morphB.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14480,6 +14558,7 @@
       "source": "sources/filter/mosaicTiles/mosaicTiles.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "192ddcb0d8eec39b4fe7bf72dcbae905f188551257766ff9c3c8cfd8e5e4a526",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14668,6 +14747,7 @@
       "source": "sources/filter/normalMap/normalMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "79d72798c02b3022e9d2f388208d03b47d807fd91cf6f71210dffbbc2a3b72ea",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14829,6 +14909,7 @@
       "source": "sources/filter/normalize/apply.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4abf6e34aa8461b42bd250bcc171d080584394bb4f9b0997aceee5ac5a7cc2f2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -14968,6 +15049,7 @@
       "source": "sources/filter/normalize/reduce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -15107,6 +15189,7 @@
       "source": "sources/filter/normalize/reduceMinmax.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -15246,6 +15329,7 @@
       "source": "sources/filter/normalize/statsFinal.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -15377,6 +15461,7 @@
       "source": "sources/filter/octaveWarp/octaveWarp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0d95d64f31c041b15d2996f116b5a2f54fc1d9c7b57ff4050c403f57bff4e534",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -15581,6 +15666,7 @@
       "source": "sources/filter/oilPaint/oilFlatten.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1b8c07653b8bcdae99a3701b8fad383ba88cbecbcc0e230deaf5c6d5ab7732eb",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -15726,6 +15812,7 @@
       "source": "sources/filter/oilPaint/oilPost.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5a9736708534194d7bb0dfcfe208d6c91861bab3367e509a55e4a5948fb46e2a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -15898,6 +15985,7 @@
       "source": "sources/filter/osd/osd.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "92dcfb1387cd8323d61de29cecbf6e6eed398c0eb537502adedd3fcb39c75d46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16094,6 +16182,7 @@
       "source": "sources/filter/outline/outlineBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d2702adcf3cbc830e52f10e31c9fc044c05ec69d6cb4eda699a8cbc483d48649",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16240,6 +16329,7 @@
       "source": "sources/filter/outline/outlineSobel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ff3daf7dfbf2353f8077d720320a126118c667ea0c39860ee6eb9607bcf47d5b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16400,6 +16490,7 @@
       "source": "sources/filter/outline/outlineValueMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16539,6 +16630,7 @@
       "source": "sources/filter/palette/palette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f332747709eda3d6b5c037252f36f5b4b545066a7017fdde1b4757e639f8d9bf",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16728,6 +16820,7 @@
       "source": "sources/filter/parallax/parallax.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "24ef65412e636d9b910b8d771c681a13de03d3b55f0b46651ce5922a4ab8a3cc",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -16881,6 +16974,7 @@
       "source": "sources/filter/patchwork/patchwork.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "60c6a906d1a9c22bd6bd483bdd77acabe838e5e00500e62ef53c0799f62e42f1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17048,6 +17142,7 @@
       "source": "sources/filter/photocopy/pcBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17187,6 +17282,7 @@
       "source": "sources/filter/photocopy/pcBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17334,6 +17430,7 @@
       "source": "sources/filter/photocopy/pcCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "74ebd805e2a07a1a67bef5aa6e973d2b0083f96664eec54f4abda25ff53aa8dd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17487,6 +17584,7 @@
       "source": "sources/filter/pinch/pinch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17668,6 +17766,7 @@
       "source": "sources/filter/pixelSort/computeRank.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1f09da4a4689c52d21f8642305ff512fb8cdccf3c1738cbaf1d2edf53341cbbf",
       "uniforms": []
     },
     {
@@ -17806,6 +17905,7 @@
       "source": "sources/filter/pixelSort/finalize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c1bfc8eb4ce5d4b686662c672b50d3b0c9c5db62c4381aa1dcaa7c491a46f325",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -17966,6 +18066,7 @@
       "source": "sources/filter/pixelSort/findBrightest.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1f09da4a4689c52d21f8642305ff512fb8cdccf3c1738cbaf1d2edf53341cbbf",
       "uniforms": []
     },
     {
@@ -18106,6 +18207,7 @@
       "source": "sources/filter/pixelSort/gatherSorted.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9912f99589377d2fc0c941e6a450ab4b9730b317010d14cc3de9311379e951a7",
       "uniforms": []
     },
     {
@@ -18230,6 +18332,7 @@
       "source": "sources/filter/pixelSort/luminance.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -18359,6 +18462,7 @@
       "source": "sources/filter/pixelSort/prepare.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "084299f6b059222f5bdcdd2673a192f0701c7a52677bf45f84f912275d934e7b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -18519,6 +18623,7 @@
       "source": "sources/filter/pixels/pixels.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "61e7f06e38f8ee2e7dc1dab5e2350607dad18fb17f51e912a854514523f72e45",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -18665,6 +18770,7 @@
       "source": "sources/filter/plasticWrap/pwBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -18804,6 +18910,7 @@
       "source": "sources/filter/plasticWrap/pwBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -18951,6 +19058,7 @@
       "source": "sources/filter/plasticWrap/pwSpec.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6998b3efc762ae3b871f1e1ec77f838f729397f7e91e8c0ca9899d333a5f6a69",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19104,6 +19212,7 @@
       "source": "sources/filter/polar/polar.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "56647d262427b6448667b30161baa143da2c67a8a2d52ee502117f45a11c99fa",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19292,6 +19401,7 @@
       "source": "sources/filter/pondRipples/pondRipples.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6e6e6fa197f698b5e601d1bce6bf974e545ee32bd1480a32cc0f7a9e50189752",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19473,6 +19583,7 @@
       "source": "sources/filter/posterize/posterize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "730faa01844175d07ffa477a938871df946cfb9bb54f7ad9580132700e958e16",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19633,6 +19744,7 @@
       "source": "sources/filter/prismaticAberration/prismaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "69ea3ff9ce91371a26517fb67d861ac94d17c1c226a6ae082512dc3d6bab7ad3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19838,6 +19950,7 @@
       "source": "sources/filter/reindex/nmReindexApply.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -19991,6 +20104,7 @@
       "source": "sources/filter/reindex/nmReindexReduce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "103dee63fe2c41d98a8c339a4420ad16c1c964a38dcad44c4fc00d54aafbf821",
       "uniforms": []
     },
     {
@@ -20115,6 +20229,7 @@
       "source": "sources/filter/reindex/nmReindexStats.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -20239,6 +20354,7 @@
       "source": "sources/filter/relief/rlBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -20378,6 +20494,7 @@
       "source": "sources/filter/relief/rlBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -20525,6 +20642,7 @@
       "source": "sources/filter/relief/rlShade.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "34d7c17b582ed92256fc62e88243670bbf42187d0da1a28177cd2e356008ef0a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -20706,6 +20824,7 @@
       "source": "sources/filter/repeat/repeat.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "644804c52eea38592eec40b59a167f7edbb2a9e987266f18f086e83353871b4c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -20899,6 +21018,7 @@
       "source": "sources/filter/reverb/reverb.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "050e5a35c8684ac5f5862b58328265bb6bc8ef816fd7bacd779542eed3074f24",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -21068,6 +21188,7 @@
       "source": "sources/filter/ridge/ridge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "89ebcb3e45b668adfa8ffa6cf96e11538c54e3a586b2b1efd3a1a764828fbe7c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -21214,6 +21335,7 @@
       "source": "sources/filter/rotate/rot.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ccd9298e265cf2afdcca146854161a954b7cf17199e7566b7eee3d0e8a53a729",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -21367,6 +21489,7 @@
       "source": "sources/filter/scale/scale.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fa208855ec2b06fc945fee254c0eeef1f20a3400717b0aa3dbe10a6c584f0e4c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -21562,6 +21685,7 @@
       "source": "sources/filter/scanlineError/scanlineError.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6618ed02bcbabd96882232cae9031ac9955a06a616286c0d150a5f3ba577b263",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -21750,6 +21874,7 @@
       "source": "sources/filter/scatter/scatterJitter.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ea28c45919ac9edc4647a20e55d83bb70c701e71106d4e0c605535c1a936516f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -21903,6 +22028,7 @@
       "source": "sources/filter/scatter/scatterSmooth.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -22052,6 +22178,7 @@
       "source": "sources/filter/scratches/scratchesBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ffa49c50441485cf8311f3a1e5bf01bcc078233f73e4bf4f787f3e2a1706c3b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -22184,6 +22311,7 @@
       "source": "sources/filter/scroll/scroll.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6a8f41fa867ebe1458d6db0a6285947c27c39f52438926910d5c5ec2a5de28fe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -22379,6 +22507,7 @@
       "source": "sources/filter/seamless/seamless.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c4d2cae63eea15092314ca72efe927c1d44d11dfdbf7c696b929a31b717fcf7d",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -22525,6 +22654,7 @@
       "source": "sources/filter/sharpen/sharpen.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e2f0e259531f5ef7eae5ac146ee0bb211a5e2d0827f74433926d0ef2e2b92c8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -22680,6 +22810,7 @@
       "source": "sources/filter/simpleAberration/chromaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "60a2473671b2f16b06730ea4f66797d0200f1eb81f677dd7824d530f789b0a64",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -22836,6 +22967,7 @@
       "source": "sources/filter/sine/sine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ddf5d975ec2e2ff1495de54fff5eb5deb2456b22366e9b9262d05fd21530cb0b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -22989,6 +23121,7 @@
       "source": "sources/filter/skew/skew.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e3baf9d248873268f554f0fb88b728449bff8bb6a35df993696b90ec0f8f9725",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -23164,6 +23297,7 @@
       "source": "sources/filter/smooth/smoothBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8582b0bc188ad8e387880d697d02c9647e170c656593be9662271891b1d5470f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -23345,6 +23479,7 @@
       "source": "sources/filter/smooth/smoothEdge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "da2dd86e7df1bd77ee2f26ee45867930946e0caa004fa3c773aa409fe728cc98",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -23498,6 +23633,7 @@
       "source": "sources/filter/smoothstep/smoothstep.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "887533e03fd77097e82e74884951774d5defb7b68d8fd7bea01279ede0cbabbe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -23655,6 +23791,7 @@
       "source": "sources/filter/snow/snow.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e5f9c87084dd08a7f0ea74aee11ab146f4e0abc0b2c62856e9ab2c666425256c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -23829,6 +23966,7 @@
       "source": "sources/filter/sobel/sobel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "37aa3ab631d8927c893a7dc131fe1f681f69f236232d0096a0cac45a9025959b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -23994,6 +24132,7 @@
       "source": "sources/filter/spatter/spatter.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9003d47dcb7c1837fc56e3b4ed6b88721ff783939e4ee6ff0c6eb97f292dd1b0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -24175,6 +24314,7 @@
       "source": "sources/filter/spinBlur/spinBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6193f0c28dcb7aebd0e68a81ec2835c2e0de7f0793fd7b3d46bf27b1bded75f1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -24342,6 +24482,7 @@
       "source": "sources/filter/spiral/spiral.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bc4792c26e379f0afeef25085c982e087e429462843811e23d68b4c26e49d374",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -24542,6 +24683,7 @@
       "source": "sources/filter/spookyTicker/spookyTicker.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "71ef8f115886745bd81b8e7d6fcf8e0f3990582f398bb55bfd5a41e0827aa53b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -24709,6 +24851,7 @@
       "source": "sources/filter/stamp/stBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -24848,6 +24991,7 @@
       "source": "sources/filter/stamp/stBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -24995,6 +25139,7 @@
       "source": "sources/filter/stamp/stThreshold.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f99d0ecefdda66332bdac797437c3923bd15e8f3eacb53d7caee168ba2636757",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -25162,6 +25307,7 @@
       "source": "sources/filter/step/step.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bfa9d48c282b207d1282ff7014173c79c0b6279d0d15b3dcc0ffcef3f2ebbb7e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -25315,6 +25461,7 @@
       "source": "sources/filter/stipple/stipple.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "534c92f17be4741d25dc7723fde0a00231abe3c17476d78c3a85d48f34312c34",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -25499,6 +25646,7 @@
       "source": "sources/filter/strayHair/strayHairBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3d4ab5484087d3585aca123c2f5f9b91754f7e9177a283e8a098bef877128451",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -25662,6 +25810,7 @@
       "source": "sources/filter/strokes/stkPost.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1b613a945f44b1ea690c4b7e59cc2fe6348f27a233d0b9fa53bc7b177bddce08",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -25805,6 +25954,7 @@
       "source": "sources/filter/strokes/stkSmear.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c26d34b4d04ba989487fca96fb3543d8ee654086e3099e67ec00046ee22a0d29",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -25965,6 +26115,7 @@
       "source": "sources/filter/tetraColorArray/tetraColorArray.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8a892de8a6a44a74db1a88360640bc3831a5f1e969acaedfe1d371f201e827e4",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -26279,6 +26430,7 @@
       "source": "sources/filter/tetraCosine/tetraCosine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d7735e970a509d973b52341f45b19637479f9ab49fb15e50f217ae95b1f9758d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -26560,6 +26712,7 @@
       "source": "sources/filter/text/text.glsl",
       "source_classification": "incompatible",
       "status": "incompatible",
+      "typed_abi_sha256": "f6349e7ce3af11e6949421258d2425fc3b23fdbc75b371588f3e07525e04e4f3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -26726,6 +26879,7 @@
       "source": "sources/filter/texture/texture.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e0dbde58a958bd24197867d43615a65523598905935dea4428a1d586272a5c08",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -26907,6 +27061,7 @@
       "source": "sources/filter/threshold/thresh.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "507232d772cafe1055475b8241c6f11ca697f75a4c67437c2d625258ec4ce5d9",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27060,6 +27215,7 @@
       "source": "sources/filter/tile/tile.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "982f1ccf1b34d872a3b37a70d4712545e26151b6e9e462b18859cd69b960ffdb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27248,6 +27404,7 @@
       "source": "sources/filter/tint/colorize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c67fc34d4c16731258c2001398a8dd0962ebaa1bbd5072e556f93c0bd43f23bb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27408,6 +27565,7 @@
       "source": "sources/filter/translate/translate.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6f7c876ec12dd7a6990f65bec11ea544053bfbc227dd40f154c36e31cad09079",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27568,6 +27726,7 @@
       "source": "sources/filter/tunnel/tunnel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e784b1ddeadca33e02843425c1ed965d5949b2548d0786535e8d779f393e7e46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27763,6 +27922,7 @@
       "source": "sources/filter/unsharpMask/usmBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -27902,6 +28062,7 @@
       "source": "sources/filter/unsharpMask/usmBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28049,6 +28210,7 @@
       "source": "sources/filter/unsharpMask/usmCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c2f6e2881e8fa44bdd20a22c87a07ccbad42920982677f859e5bd53747f02661",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28197,6 +28359,7 @@
       "source": "sources/filter/vaseline/upsample.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f4516bef827fb352404a03842d0c018166683a1cff7d9872f102c7e89deaee60",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28357,6 +28520,7 @@
       "source": "sources/filter/vignette/vignette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ef1abdb561ad2773ae20f5b2708b906a8c225bc386cd6a1aff6dbc97f063d8ed",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28510,6 +28674,7 @@
       "source": "sources/filter/warp/warp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "02470f680fed9e6fe8c9fa1a799903dd4e53937e4341ed018cb5b7553fdb4e0b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28713,6 +28878,7 @@
       "source": "sources/filter/watercolor/wcComposite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5f0ac7d47906973b06af601ad122e551ed877431e8a05096778b5ac73a00cca2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28866,6 +29032,7 @@
       "source": "sources/filter/watercolor/wcSeed.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "201fe41cf7cc53bd60a793b580cef02524c70a446a38fd400a3699ec2a0109b6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -28998,6 +29165,7 @@
       "source": "sources/filter/watercolor/wcSimplify.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -29137,6 +29305,7 @@
       "source": "sources/filter/waves/waves.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3a78bd7d965fbb77fe00a4c0b2d19b9081a71ae404df67c437d8cd8e02afee6c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -29332,6 +29501,7 @@
       "source": "sources/filter/wind/wind.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "b01a55457d8e33d7cb77ed84595fbe8658ac14c3d7235a19f9dd38e1dad8b725",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -29497,6 +29667,7 @@
       "source": "sources/filter/wobble/wobble.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2fc15c75c70f097ef50e76964c377ad4c9cab64a8b9373dc5e34b9dc8179fcce",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -29660,6 +29831,7 @@
       "source": "sources/filter/wormhole/blend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99413f0a013f79c99f431c7353e0e53ac343f678e7e737a741a3a781ac029675",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -29803,6 +29975,7 @@
       "source": "sources/filter/wormhole/clear.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4f0c6ee034ecc8eec56c973c334d551dcef74a8a6652966d3e1071d6b237e6b7",
       "uniforms": []
     },
     {
@@ -29927,6 +30100,7 @@
       "source": "sources/filter/zoomBlur/zoomBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a7500d0a36468781c5530d88c751a60e7126f104b9284720d1bc5922a07dc7a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30084,6 +30258,7 @@
       "source": "sources/mixer/alphaMask/alphaMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1d5c30ce8cac4ce21e56b17c1b477c711cd713b2b9a47468892543d9c8407aa1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30254,6 +30429,7 @@
       "source": "sources/mixer/applyMode/applyMode.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "086c01f408f97912a971cb0f0da4e2a1d8aee30c7de23b394c60b94e9dd27139",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30424,6 +30600,7 @@
       "source": "sources/mixer/blendMode/blendMode.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "086c01f408f97912a971cb0f0da4e2a1d8aee30c7de23b394c60b94e9dd27139",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30592,6 +30769,7 @@
       "source": "sources/mixer/cellSplit/cellSplit.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d3cefe5bc14eb6088f0be6f8ebc68e74890dec40efe7213a7cf51c265d521d1d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30798,6 +30976,7 @@
       "source": "sources/mixer/centerMask/centerMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "cd7932548ad571a19cca5bd75953063274304cb7a85071cf853f64eb63cfb994",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -30988,6 +31167,7 @@
       "source": "sources/mixer/channelCombine/channelCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99aa09f742d928d269f743753d872f35e3ad2ef586141e313f6f6fa91a4f3271",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -31163,6 +31343,7 @@
       "source": "sources/mixer/distortion/distortion.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "448a820ee914901cf858d72a8e70040ebb463475b3c538e46c914eb6cc99ab80",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -31366,6 +31547,7 @@
       "source": "sources/mixer/focusBlur/focusBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8319e094c6fa21d6e610a5f3aa56f71693aaceeb48b38cb3a6223bdc1c007a6b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -31604,6 +31786,7 @@
       "source": "sources/mixer/mashup/mashup.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "30966dc730d95b93be71ed94ca59490566ae49aae9cef157615350a222861fd2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -31814,6 +31997,7 @@
       "source": "sources/mixer/patternMix/patternMix.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "01869d1ec348045ebc69ed67425eb9faef922dba79f309eabd648157106ec91c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -32010,6 +32194,7 @@
       "source": "sources/mixer/shadow/shadow.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "353f246286dd20d2a2bb2a1a167099d83485dedcaa291e62bc1d5200fc99d83d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -32234,6 +32419,7 @@
       "source": "sources/mixer/shapeMask/shapeMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "75f9483099ecb7e914deaa8c1923b1feceacc2376e7ac432cf79a3dbb6944b9d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -32451,6 +32637,7 @@
       "source": "sources/mixer/split/split.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c51bb7362103c2b7c0451aa19680c752a3a10a501cfabbd58b8d67afb022fb93",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -32647,6 +32834,7 @@
       "source": "sources/mixer/thresholdMix/thresholdMix.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bc84545998f9b2c09e35bddfe0351be7df605fc5d281ab684e6537f51fdb56c2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -32878,6 +33066,7 @@
       "source": "sources/mixer/uvRemap/uvRemap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5c0bc8cb43e1175372ad8503606e022aa089439cbf6f9f8f360089bc53aadbf8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -33049,6 +33238,7 @@
       "source": "sources/synth/bitwise/bitwise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2162ae1cb06f361aa88e91d435e9dc4f4ce207f08e93ff4dc579987064b868ca",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -33272,6 +33462,7 @@
       "source": "sources/synth/cell/cell.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6a61608d7ddf0c96bd77e06a730dc1d7d0cf352d2d1a5aa535657a86a4d3a2d8",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -33471,6 +33662,7 @@
       "source": "sources/synth/curl/curl.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "798917783cfd880d0ecc11447f9f0aba48b438358515a65f59ec9a412bcb8e8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -33642,6 +33834,7 @@
       "source": "sources/synth/gabor/gabor.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e9c1d22f4c2ac8c2c72fe595130a56b7b4fb81e3d7433eab6dc8be44b658b88c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -33841,6 +34034,7 @@
       "source": "sources/synth/gradient/gradient.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e49ea0cadc23009e3633af3b0a1bf259cbe6b3d91cb30cc32b42923c92575900",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -34054,6 +34248,7 @@
       "source": "sources/synth/julia/julia.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ef898fd02c7f283ee34ff3bde8bc4c43f09285cbc1814a02ce84991cfe614d8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -34316,6 +34511,7 @@
       "source": "sources/synth/mandala/mandala.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "07143e555cad95c4535ac43053fa117f35dc3785e789787eca60424a021da821",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -34578,6 +34774,7 @@
       "source": "sources/synth/mandelbrot/mandelbrot.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "80cc453eedd1d7a44c2fb6c4216a1060451a02dc492b2b8428a4e080c7436774",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -34829,6 +35026,7 @@
       "source": "sources/synth/media/mediaInput.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d89ab75302e1cf27a19f336e45521dd315cd56daff9c0de8b92a0de437f5bb88",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -35028,6 +35226,7 @@
       "source": "sources/synth/modPattern/modPattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ce60049aedbfa2e2e297bdc3305c22f56e73904a09d4fbd649b4658d0782d5a3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -35262,6 +35461,7 @@
       "source": "sources/synth/newton/newton.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "98294f18e45b30d074d840649faafc51c0d6a7c6f4598e1948ad7c1b4af391bb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -35531,7 +35731,22 @@
       "source": "sources/synth/noise/noise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bd103a0728bd15a92c33f83494db717aad7fe565a03abb406a59bbd3b5763d91",
       "uniforms": [
+        {
+          "cpp_type": "std::int32_t",
+          "name": "NOISE_TYPE",
+          "source": "pass_derived",
+          "source_name": "typed_compile_define",
+          "type": "int"
+        },
+        {
+          "cpp_type": "std::int32_t",
+          "name": "LOOP_OFFSET",
+          "source": "pass_derived",
+          "source_name": "typed_compile_define",
+          "type": "int"
+        },
         {
           "cpp_type": "float",
           "name": "time",
@@ -35737,6 +35952,7 @@
       "source": "sources/synth/osc2d/osc2d.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ec41f49ef9c557f09098ea61ae6ac820edf70bab0c92beb9be80070e8dfb8a75",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -35922,6 +36138,7 @@
       "source": "sources/synth/pattern/pattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -36142,6 +36359,7 @@
       "source": "sources/synth/perlin/perlin.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "73be9fbfb9dd7baa65e8fc7f506c4dfbd72c3f5659b507374a1b92acb3aeb00c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -36355,6 +36573,7 @@
       "source": "sources/synth/polygon/shape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -36620,6 +36839,7 @@
       "source": "sources/synth/remap/remap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "a1b31a4ecb6ffa7ba3bb952c67a2a5b48514bd9e0be26fb5ef4eda9cf2f6cc94",
       "uniforms": [
         {
           "cpp_type": "vec4[267]",
@@ -36756,6 +36976,7 @@
       "source": "sources/synth/sacredGeometry/sacredGeometry.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -36990,6 +37211,7 @@
       "source": "sources/synth/shape/shape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3c09c2bd90e980371877a4df8ba5e58da7ec268c969fcfa5dbfcbc2935c7e72c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -37127,7 +37349,7 @@
       "effect_id": "synth/solid",
       "factory": {
         "canonical": "bind_synth_solid_solid",
-        "legacy_public": "bind_synth_solid",
+        "legacy_public": "bind_synth_solid_solid",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
       },
@@ -37175,6 +37397,7 @@
       "source": "sources/synth/solid/solid.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec3",
@@ -37314,6 +37537,7 @@
       "source": "sources/synth/subdivide/subdivide.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fe7665c4789c16ef2c6ee017cd87bb29d69019dc727d823e8474b4d2850db5da",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -37527,6 +37751,7 @@
       "source": "sources/synth/testPattern/testPattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "731bb6af687dd07500ff366f32f6a6f51aa2afcdccdcee4198f9f794847712d2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -37699,6 +37924,7 @@
       "source": "sources/classicNoisedeck/bitEffects/bitEffects.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8f356b8ee94ca2b24c42612d6672340aed73765aa37bcd076ce3730b7728f11e",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -37912,6 +38138,7 @@
       "source": "sources/classicNoisedeck/caustic/caustic.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3e98bf1e43078e5b42d17f73f37d58d764789eb086868a862ae6ee137f9e5e51",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -38114,6 +38341,7 @@
       "source": "sources/classicNoisedeck/cellNoise/cellNoise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -38400,6 +38628,7 @@
       "source": "sources/classicNoisedeck/cellRefract/cellRefract.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e0df92eda5c1e7338dcbb054ef7e08d5697ccb3db9fbb79449d87a951dc173d8",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -38633,6 +38862,7 @@
       "source": "sources/classicNoisedeck/coalesce/coalesce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5442b956df178a4854c2111a99dfee821ea40b4287b5032db81e1277cf76f8c2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -38828,6 +39058,7 @@
       "source": "sources/classicNoisedeck/colorLab/colorLab.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c0382753b33ff19abf120ffa898dedafc7732a77daaf70d954ee8d1635d7429a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -39117,6 +39348,7 @@
       "source": "sources/classicNoisedeck/composite/composite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d0429b0fb6bec601654e551cd99c4f82a9bcd35d7298b0b2f7e2b90ea44bac0d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -39298,6 +39530,7 @@
       "source": "sources/classicNoisedeck/effects/effects.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "196f7fd2e8efc1fe546f1d200caef086311d6b889937062185059a4647774eb0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -39497,6 +39730,7 @@
       "source": "sources/classicNoisedeck/fractal/fractal.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -39825,6 +40059,7 @@
       "source": "sources/classicNoisedeck/glitch/glitch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "18c825ca788a34601c37fe9b92bcdfac459b161152daec55180079e970d4f403",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -40048,6 +40283,7 @@
       "source": "sources/classicNoisedeck/kaleido/kaleido.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "56be169c4101a109d3b370d8ac2f3aad91aa6030d3fd0e660017e1ba257c0da9",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -40243,6 +40479,7 @@
       "source": "sources/classicNoisedeck/lensDistortion/lensDistortion.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "b2e660a89fff9c62dad6d083e7a81302e10af981db4fcfb9849e00c91c47e5f7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -40498,6 +40735,7 @@
       "source": "sources/classicNoisedeck/moodscape/moodscape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f870f37d82b3406b5cce4f2248fcb362084688bee6aa18ffcf960bad8ca0ed",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -40704,6 +40942,7 @@
       "source": "sources/classicNoisedeck/noise/noise.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "49092c171718e69eb5e4e7f48a561004ea01bc94eaa4f76b9b90cf446e1c505a",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -40999,6 +41238,7 @@
       "source": "sources/classicNoisedeck/refract/refract.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "59ff19cdf6bf811af7e3d29e10f74471670cac20921aa53c0f1466e5ce8a57eb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -41202,6 +41442,7 @@
       "source": "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -41443,6 +41684,7 @@
       "source": "sources/classicNoisedeck/shapes/shapes.glsl",
       "source_classification": "semantic_exact",
       "status": "compatible",
+      "typed_abi_sha256": "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -41696,6 +41938,7 @@
       "source": "sources/classicNoisedeck/splat/splat.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -41954,6 +42197,7 @@
       "source": "sources/filter/adjust/adjust.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7daf8c804ed6bb78918a6834966466805ec75113b69686c8c8c58808e76edb9d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42135,6 +42379,7 @@
       "source": "sources/filter/bc/bc.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6d60f2efae772f867fcac7513045104827009305500cae4df64e64bb62e38ff7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42288,6 +42533,7 @@
       "source": "sources/filter/bloom/brightPass.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "a52289ba6193e3b3fbc140bc21ea20987559801f806d5b5a873d796e0d24cab7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42449,6 +42695,7 @@
       "source": "sources/filter/bloom/composite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "476e5e91eb39c246048c3c37fb91f93f6a8f87b1273e14f2861e57be524c38d5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42602,6 +42849,7 @@
       "source": "sources/filter/bloom/ntapGather.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7875bfa98187b7b5037decd08db576a15679aeeb5046d40eaa68c8411e2deabe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42762,6 +43010,7 @@
       "source": "sources/filter/blur/blurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1279eef07efade7c8a0c2fd351ca2edd18f7fbee6b37e8eb6fc6c71a09cb511b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -42915,6 +43164,7 @@
       "source": "sources/filter/blur/blurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9a88bd63399bde71aecfa895e3d4a8b3826ca73a1be87b9ef7a540695d96ffd2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43068,6 +43318,7 @@
       "source": "sources/filter/bulge/bulge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43265,6 +43516,7 @@
       "source": "sources/filter/celShading/celShadingBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "19afed36f9f53d3f5bad1da4b288e82e5502cccc8123fecdd89e85f33aa8c0d3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43418,6 +43670,7 @@
       "source": "sources/filter/celShading/celShadingColor.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fe30bebf98cc6c50221d1cd08cda782f07a7068354d553a7bc831a2f7be49ab0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43592,6 +43845,7 @@
       "source": "sources/filter/celShading/celShadingEdges.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "cf89a4c730c0579bdfb7e16c9e513fe79818cf063cd560cd6053c24d5f3da96f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43752,6 +44006,7 @@
       "source": "sources/filter/channel/channel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5477acaf1995a3bc7469ed5e4564a7243abeafba6c197dcc2bef5b1efa41472b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -43912,6 +44167,7 @@
       "source": "sources/filter/chroma/chroma.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "affc750b134e4094cbb06993891b1d9f39ccd8600713a67f374f8ad9aa947bac",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44072,6 +44328,7 @@
       "source": "sources/filter/chromaticAberration/chromaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8f47a370a9306f3d73cc7a0b4ddf059be002adc5268f80ba5cc599b79aa8c1d1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44232,6 +44489,7 @@
       "source": "sources/filter/chrome/chBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44371,6 +44629,7 @@
       "source": "sources/filter/chrome/chBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44518,6 +44777,7 @@
       "source": "sources/filter/chrome/chMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ee53de6686b254688ae4d740bdcf45601904fed86e5b191372bcb3888cf9dcc2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44668,6 +44928,7 @@
       "source": "sources/filter/clouds/clouds.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ef5cfa24759ecc24a2d0f5e4e466c41bbf41596ae41370e5fd61acd7692705ae",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -44835,6 +45096,7 @@
       "source": "sources/filter/colorReplace/colorReplace.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e5a1ee5cb8e18ff6e72797d0822583c297b1ee702a85f28cdd9f877ef898f664",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45023,6 +45285,7 @@
       "source": "sources/filter/colorspace/colorspace.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ebae52af1e222aaa5eaf3f5ff9401208a0a33372c61d113e217d4781d642f7e2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45169,6 +45432,7 @@
       "source": "sources/filter/corrupt/corrupt.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8d36a9aa9e47ec91370ee7defa9215740fc2a47450f97f7eb6cbd42bd584c781",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45392,6 +45656,7 @@
       "source": "sources/filter/craquelure/craquelure.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7fc3ff4fa7b1adbaaa5221daace8d0da612abba607598dce210e36cfee8ed7c0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45563,6 +45828,7 @@
       "source": "sources/filter/crt/crt.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7012188e08a1a4bde10defbd0aadcbe8b96ce67ec3b61cc83814c035947cf41d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45749,6 +46015,7 @@
       "source": "sources/filter/degauss/degauss.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "32c076a4fe52629870c61ed97631507b7f113d409f2b0162569ed99b79e754fb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -45930,6 +46197,7 @@
       "source": "sources/filter/deriv/deriv.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e2f0e259531f5ef7eae5ac146ee0bb211a5e2d0827f74433926d0ef2e2b92c8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -46083,6 +46351,7 @@
       "source": "sources/filter/directionalBlur/directionalBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "08afd3e0114746da89f90ac3a4023221888d6ca7416f729a43e1ef861815c551",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -46229,6 +46498,7 @@
       "source": "sources/filter/dither/dither.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ab1aa380d6ea3f8e03048ffad08dc7670a7011fde57e8b84ead00ac6983f5cf8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -46424,6 +46694,7 @@
       "source": "sources/filter/edge/edge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "944d7ece6271039284bdf8888d095dad890ba0f1b305fc48c39dfbc87e1c1ae6",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -46626,6 +46897,7 @@
       "source": "sources/filter/emboss/emboss.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5749c16f34a360b1f99eaa648d329164c024f9e38d1d366771e912a9fbc0184e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -46800,6 +47072,7 @@
       "source": "sources/filter/extrude/extrude.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4df64b18e1bb899a94b0e242b21b9d16d8613779b7d05fe51789d54ad0c3440e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -46977,6 +47250,7 @@
       "source": "sources/filter/fibers/fibersBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ffa49c50441485cf8311f3a1e5bf01bcc078233f73e4bf4f787f3e2a1706c3b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -47109,6 +47383,7 @@
       "source": "sources/filter/flipMirror/flipMirror.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "355e9586117c0cd2f7735c37b9c8b778de6c21b3ccb3ae89d645a75b16bb8087",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -47255,6 +47530,7 @@
       "source": "sources/filter/fxaa/fxaa.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f97abe0ff1e04e30c6058c379f63f5980e046c54071bcf14bd36cb54a68e8327",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -47426,6 +47702,7 @@
       "source": "sources/filter/glowingEdge/glowingEdge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eb24a55fe63c6ab643c1dc43d75a652f82f28c276740e48a2f2f11949c3dda03",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -47593,6 +47870,7 @@
       "source": "sources/filter/glyphMap/glyphMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "46b5505882a4537505428bebcff3787f535df40965283e9078a1f6ad819aecf6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -47760,6 +48038,7 @@
       "source": "sources/filter/grade/creative.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1fb225eccf8ceef960308d602f4d7d5c3e80d56c4467a51efe2433201c1842e5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -47934,6 +48213,7 @@
       "source": "sources/filter/grade/hslSecondary.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e6580a374dc9038e16c59c101124c732b486f85344fac734196fe3e02dc5aa03",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -48150,6 +48430,7 @@
       "source": "sources/filter/grade/lut.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "34ca25b4b530e5774f335c22ed2b932890d0f8d37d773f86cf50aac9a31fa48d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -48303,6 +48584,7 @@
       "source": "sources/filter/grade/primary.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7c28a38eef15c404a6545186ff8b62ce0700cce97137b2d059ce87fe76442d4b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -48526,6 +48808,7 @@
       "source": "sources/filter/grade/vignette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "da75c97140b411f6cfa42ca7098ee99c153c55b9f6d77b7731a1c4f9b742cc9e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -48700,6 +48983,7 @@
       "source": "sources/filter/grade/wheels.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "507ccf8e3f0df9c9bbe191fbffc6b9baf0338a8bbf911316651a9bb44531da14",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -48870,6 +49154,7 @@
       "source": "sources/filter/grain/grain.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c9e83271dc9605821d2f6399191a636be8cd0482129b9e77f0740c7e1ed983e5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49047,6 +49332,7 @@
       "source": "sources/filter/grime/grime.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "92feb3d96fd0f8342dfa6212a9e78162717ab60faa56e9030dee85fb0e0c75fb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49207,6 +49493,7 @@
       "source": "sources/filter/halftone/halftone.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ee29192c4e5e0a4cae1bf976f3f392421c428a424ea3abf3a50afcd866ca11c7",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49423,6 +49710,7 @@
       "source": "sources/filter/hatch/hatch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2b23853d55900ba8bdc09297a0d111f53f6482d29fe40a8a861be076067c904b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49604,6 +49892,7 @@
       "source": "sources/filter/highPass/hpBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49743,6 +50032,7 @@
       "source": "sources/filter/highPass/hpBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -49890,6 +50180,7 @@
       "source": "sources/filter/highPass/hpCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "de107ac1f89d0d2d0b88fd1d30c81b0c7354875ccf8068f653a7302433876b9a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -50029,6 +50320,7 @@
       "source": "sources/filter/historicPalette/historicPalette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "012bad80c635c96856c5bbc7100190af55829c27fc350d31f899c005c11aace3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -50217,6 +50509,7 @@
       "source": "sources/filter/hs/hs.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "7ab6d8ec198193820647bcc09d3d9bd818614d845b0b953ea5dc3931968d2e1f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -50321,7 +50614,7 @@
       "effect_id": "filter/invert",
       "factory": {
         "canonical": "bind_filter_invert_inv",
-        "legacy_public": "bind_filter_invert",
+        "legacy_public": "bind_filter_invert_inv",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
       },
@@ -50377,6 +50670,7 @@
       "source": "sources/filter/invert/inv.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0362d48525f911ea260b33c194d0020536a0ca7ae774dd52cb85917a9a4f1f9a",
       "uniforms": [
         {
           "cpp_type": "std::int32_t",
@@ -50509,6 +50803,7 @@
       "source": "sources/filter/lens/lens.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e140e54bf05785c601f856e7bf8aba7460fe30f22087af19ba5bc1ebf7aa10bd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -50669,6 +50964,7 @@
       "source": "sources/filter/lensFlare/lensFlare.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2df869e1060cef437ce6a2ea8d142b863186eed4350c8658c1ede5bb48a00d29",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -50845,6 +51141,7 @@
       "source": "sources/filter/lensWarp/lensWarp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "483335be32ed483651c733bcdfa7044bd0c9291acd22aae2727f6b9b6b0461f5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -51024,6 +51321,7 @@
       "source": "sources/filter/lightLeak/lightLeak.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -51213,6 +51511,7 @@
       "source": "sources/filter/lighting/lighting.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -51436,6 +51735,7 @@
       "source": "sources/filter/lowPoly/lowPoly.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -51631,6 +51931,7 @@
       "source": "sources/filter/median/median.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -51763,6 +52064,7 @@
       "source": "sources/filter/morphology/morphA.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -51909,6 +52211,7 @@
       "source": "sources/filter/morphology/morphB.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52055,6 +52358,7 @@
       "source": "sources/filter/mosaicTiles/mosaicTiles.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "192ddcb0d8eec39b4fe7bf72dcbae905f188551257766ff9c3c8cfd8e5e4a526",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52243,6 +52547,7 @@
       "source": "sources/filter/normalMap/normalMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "79d72798c02b3022e9d2f388208d03b47d807fd91cf6f71210dffbbc2a3b72ea",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52404,6 +52709,7 @@
       "source": "sources/filter/normalize/apply.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4abf6e34aa8461b42bd250bcc171d080584394bb4f9b0997aceee5ac5a7cc2f2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52543,6 +52849,7 @@
       "source": "sources/filter/normalize/reduce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52682,6 +52989,7 @@
       "source": "sources/filter/normalize/reduceMinmax.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -52821,6 +53129,7 @@
       "source": "sources/filter/normalize/statsFinal.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -52952,6 +53261,7 @@
       "source": "sources/filter/octaveWarp/octaveWarp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0d95d64f31c041b15d2996f116b5a2f54fc1d9c7b57ff4050c403f57bff4e534",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -53156,6 +53466,7 @@
       "source": "sources/filter/oilPaint/oilFlatten.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1b8c07653b8bcdae99a3701b8fad383ba88cbecbcc0e230deaf5c6d5ab7732eb",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -53301,6 +53612,7 @@
       "source": "sources/filter/oilPaint/oilPost.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5a9736708534194d7bb0dfcfe208d6c91861bab3367e509a55e4a5948fb46e2a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -53473,6 +53785,7 @@
       "source": "sources/filter/osd/osd.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "92dcfb1387cd8323d61de29cecbf6e6eed398c0eb537502adedd3fcb39c75d46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -53669,6 +53982,7 @@
       "source": "sources/filter/outline/outlineBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d2702adcf3cbc830e52f10e31c9fc044c05ec69d6cb4eda699a8cbc483d48649",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -53815,6 +54129,7 @@
       "source": "sources/filter/outline/outlineSobel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ff3daf7dfbf2353f8077d720320a126118c667ea0c39860ee6eb9607bcf47d5b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -53975,6 +54290,7 @@
       "source": "sources/filter/outline/outlineValueMap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54114,6 +54430,7 @@
       "source": "sources/filter/palette/palette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f332747709eda3d6b5c037252f36f5b4b545066a7017fdde1b4757e639f8d9bf",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54303,6 +54620,7 @@
       "source": "sources/filter/parallax/parallax.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "24ef65412e636d9b910b8d771c681a13de03d3b55f0b46651ce5922a4ab8a3cc",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54456,6 +54774,7 @@
       "source": "sources/filter/patchwork/patchwork.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "60c6a906d1a9c22bd6bd483bdd77acabe838e5e00500e62ef53c0799f62e42f1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54623,6 +54942,7 @@
       "source": "sources/filter/photocopy/pcBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54762,6 +55082,7 @@
       "source": "sources/filter/photocopy/pcBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -54909,6 +55230,7 @@
       "source": "sources/filter/photocopy/pcCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "74ebd805e2a07a1a67bef5aa6e973d2b0083f96664eec54f4abda25ff53aa8dd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -55062,6 +55384,7 @@
       "source": "sources/filter/pinch/pinch.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -55243,6 +55566,7 @@
       "source": "sources/filter/pixelSort/computeRank.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1f09da4a4689c52d21f8642305ff512fb8cdccf3c1738cbaf1d2edf53341cbbf",
       "uniforms": []
     },
     {
@@ -55381,6 +55705,7 @@
       "source": "sources/filter/pixelSort/finalize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c1bfc8eb4ce5d4b686662c672b50d3b0c9c5db62c4381aa1dcaa7c491a46f325",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -55541,6 +55866,7 @@
       "source": "sources/filter/pixelSort/findBrightest.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1f09da4a4689c52d21f8642305ff512fb8cdccf3c1738cbaf1d2edf53341cbbf",
       "uniforms": []
     },
     {
@@ -55681,6 +56007,7 @@
       "source": "sources/filter/pixelSort/gatherSorted.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9912f99589377d2fc0c941e6a450ab4b9730b317010d14cc3de9311379e951a7",
       "uniforms": []
     },
     {
@@ -55805,6 +56132,7 @@
       "source": "sources/filter/pixelSort/luminance.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -55934,6 +56262,7 @@
       "source": "sources/filter/pixelSort/prepare.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "084299f6b059222f5bdcdd2673a192f0701c7a52677bf45f84f912275d934e7b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56094,6 +56423,7 @@
       "source": "sources/filter/pixels/pixels.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "61e7f06e38f8ee2e7dc1dab5e2350607dad18fb17f51e912a854514523f72e45",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56240,6 +56570,7 @@
       "source": "sources/filter/plasticWrap/pwBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56379,6 +56710,7 @@
       "source": "sources/filter/plasticWrap/pwBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56526,6 +56858,7 @@
       "source": "sources/filter/plasticWrap/pwSpec.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6998b3efc762ae3b871f1e1ec77f838f729397f7e91e8c0ca9899d333a5f6a69",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56679,6 +57012,7 @@
       "source": "sources/filter/polar/polar.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "56647d262427b6448667b30161baa143da2c67a8a2d52ee502117f45a11c99fa",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -56867,6 +57201,7 @@
       "source": "sources/filter/pondRipples/pondRipples.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6e6e6fa197f698b5e601d1bce6bf974e545ee32bd1480a32cc0f7a9e50189752",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -57048,6 +57383,7 @@
       "source": "sources/filter/posterize/posterize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "730faa01844175d07ffa477a938871df946cfb9bb54f7ad9580132700e958e16",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -57208,6 +57544,7 @@
       "source": "sources/filter/prismaticAberration/prismaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "69ea3ff9ce91371a26517fb67d861ac94d17c1c226a6ae082512dc3d6bab7ad3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -57413,6 +57750,7 @@
       "source": "sources/filter/reindex/nmReindexApply.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -57566,6 +57904,7 @@
       "source": "sources/filter/reindex/nmReindexReduce.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "103dee63fe2c41d98a8c339a4420ad16c1c964a38dcad44c4fc00d54aafbf821",
       "uniforms": []
     },
     {
@@ -57690,6 +58029,7 @@
       "source": "sources/filter/reindex/nmReindexStats.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908",
       "uniforms": []
     },
     {
@@ -57814,6 +58154,7 @@
       "source": "sources/filter/relief/rlBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -57953,6 +58294,7 @@
       "source": "sources/filter/relief/rlBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -58100,6 +58442,7 @@
       "source": "sources/filter/relief/rlShade.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "34d7c17b582ed92256fc62e88243670bbf42187d0da1a28177cd2e356008ef0a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -58281,6 +58624,7 @@
       "source": "sources/filter/repeat/repeat.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "644804c52eea38592eec40b59a167f7edbb2a9e987266f18f086e83353871b4c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -58474,6 +58818,7 @@
       "source": "sources/filter/reverb/reverb.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "050e5a35c8684ac5f5862b58328265bb6bc8ef816fd7bacd779542eed3074f24",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -58643,6 +58988,7 @@
       "source": "sources/filter/ridge/ridge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "89ebcb3e45b668adfa8ffa6cf96e11538c54e3a586b2b1efd3a1a764828fbe7c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -58789,6 +59135,7 @@
       "source": "sources/filter/rotate/rot.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ccd9298e265cf2afdcca146854161a954b7cf17199e7566b7eee3d0e8a53a729",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -58942,6 +59289,7 @@
       "source": "sources/filter/scale/scale.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fa208855ec2b06fc945fee254c0eeef1f20a3400717b0aa3dbe10a6c584f0e4c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -59137,6 +59485,7 @@
       "source": "sources/filter/scanlineError/scanlineError.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6618ed02bcbabd96882232cae9031ac9955a06a616286c0d150a5f3ba577b263",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -59325,6 +59674,7 @@
       "source": "sources/filter/scatter/scatterJitter.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ea28c45919ac9edc4647a20e55d83bb70c701e71106d4e0c605535c1a936516f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -59478,6 +59828,7 @@
       "source": "sources/filter/scatter/scatterSmooth.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -59627,6 +59978,7 @@
       "source": "sources/filter/scratches/scratchesBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ffa49c50441485cf8311f3a1e5bf01bcc078233f73e4bf4f787f3e2a1706c3b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -59759,6 +60111,7 @@
       "source": "sources/filter/scroll/scroll.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6a8f41fa867ebe1458d6db0a6285947c27c39f52438926910d5c5ec2a5de28fe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -59954,6 +60307,7 @@
       "source": "sources/filter/seamless/seamless.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c4d2cae63eea15092314ca72efe927c1d44d11dfdbf7c696b929a31b717fcf7d",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -60100,6 +60454,7 @@
       "source": "sources/filter/sharpen/sharpen.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e2f0e259531f5ef7eae5ac146ee0bb211a5e2d0827f74433926d0ef2e2b92c8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -60255,6 +60610,7 @@
       "source": "sources/filter/simpleAberration/chromaticAberration.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "60a2473671b2f16b06730ea4f66797d0200f1eb81f677dd7824d530f789b0a64",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -60411,6 +60767,7 @@
       "source": "sources/filter/sine/sine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ddf5d975ec2e2ff1495de54fff5eb5deb2456b22366e9b9262d05fd21530cb0b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -60564,6 +60921,7 @@
       "source": "sources/filter/skew/skew.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e3baf9d248873268f554f0fb88b728449bff8bb6a35df993696b90ec0f8f9725",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -60739,6 +61097,7 @@
       "source": "sources/filter/smooth/smoothBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8582b0bc188ad8e387880d697d02c9647e170c656593be9662271891b1d5470f",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -60920,6 +61279,7 @@
       "source": "sources/filter/smooth/smoothEdge.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "da2dd86e7df1bd77ee2f26ee45867930946e0caa004fa3c773aa409fe728cc98",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61073,6 +61433,7 @@
       "source": "sources/filter/smoothstep/smoothstep.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "887533e03fd77097e82e74884951774d5defb7b68d8fd7bea01279ede0cbabbe",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61230,6 +61591,7 @@
       "source": "sources/filter/snow/snow.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e5f9c87084dd08a7f0ea74aee11ab146f4e0abc0b2c62856e9ab2c666425256c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61404,6 +61766,7 @@
       "source": "sources/filter/sobel/sobel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "37aa3ab631d8927c893a7dc131fe1f681f69f236232d0096a0cac45a9025959b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61569,6 +61932,7 @@
       "source": "sources/filter/spatter/spatter.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "9003d47dcb7c1837fc56e3b4ed6b88721ff783939e4ee6ff0c6eb97f292dd1b0",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61750,6 +62114,7 @@
       "source": "sources/filter/spinBlur/spinBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6193f0c28dcb7aebd0e68a81ec2835c2e0de7f0793fd7b3d46bf27b1bded75f1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -61917,6 +62282,7 @@
       "source": "sources/filter/spiral/spiral.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bc4792c26e379f0afeef25085c982e087e429462843811e23d68b4c26e49d374",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -62117,6 +62483,7 @@
       "source": "sources/filter/spookyTicker/spookyTicker.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "71ef8f115886745bd81b8e7d6fcf8e0f3990582f398bb55bfd5a41e0827aa53b",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -62284,6 +62651,7 @@
       "source": "sources/filter/stamp/stBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -62423,6 +62791,7 @@
       "source": "sources/filter/stamp/stBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -62570,6 +62939,7 @@
       "source": "sources/filter/stamp/stThreshold.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f99d0ecefdda66332bdac797437c3923bd15e8f3eacb53d7caee168ba2636757",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -62737,6 +63107,7 @@
       "source": "sources/filter/step/step.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bfa9d48c282b207d1282ff7014173c79c0b6279d0d15b3dcc0ffcef3f2ebbb7e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -62890,6 +63261,7 @@
       "source": "sources/filter/stipple/stipple.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "534c92f17be4741d25dc7723fde0a00231abe3c17476d78c3a85d48f34312c34",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -63074,6 +63446,7 @@
       "source": "sources/filter/strayHair/strayHairBlend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3d4ab5484087d3585aca123c2f5f9b91754f7e9177a283e8a098bef877128451",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -63237,6 +63610,7 @@
       "source": "sources/filter/strokes/stkPost.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1b613a945f44b1ea690c4b7e59cc2fe6348f27a233d0b9fa53bc7b177bddce08",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -63380,6 +63754,7 @@
       "source": "sources/filter/strokes/stkSmear.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c26d34b4d04ba989487fca96fb3543d8ee654086e3099e67ec00046ee22a0d29",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -63540,6 +63915,7 @@
       "source": "sources/filter/tetraColorArray/tetraColorArray.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8a892de8a6a44a74db1a88360640bc3831a5f1e969acaedfe1d371f201e827e4",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -63854,6 +64230,7 @@
       "source": "sources/filter/tetraCosine/tetraCosine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d7735e970a509d973b52341f45b19637479f9ab49fb15e50f217ae95b1f9758d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -64135,6 +64512,7 @@
       "source": "sources/filter/text/text.glsl",
       "source_classification": "incompatible",
       "status": "incompatible",
+      "typed_abi_sha256": "f6349e7ce3af11e6949421258d2425fc3b23fdbc75b371588f3e07525e04e4f3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -64301,6 +64679,7 @@
       "source": "sources/filter/texture/texture.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e0dbde58a958bd24197867d43615a65523598905935dea4428a1d586272a5c08",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -64482,6 +64861,7 @@
       "source": "sources/filter/threshold/thresh.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "507232d772cafe1055475b8241c6f11ca697f75a4c67437c2d625258ec4ce5d9",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -64635,6 +65015,7 @@
       "source": "sources/filter/tile/tile.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "982f1ccf1b34d872a3b37a70d4712545e26151b6e9e462b18859cd69b960ffdb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -64823,6 +65204,7 @@
       "source": "sources/filter/tint/colorize.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c67fc34d4c16731258c2001398a8dd0962ebaa1bbd5072e556f93c0bd43f23bb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -64983,6 +65365,7 @@
       "source": "sources/filter/translate/translate.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6f7c876ec12dd7a6990f65bec11ea544053bfbc227dd40f154c36e31cad09079",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65143,6 +65526,7 @@
       "source": "sources/filter/tunnel/tunnel.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e784b1ddeadca33e02843425c1ed965d5949b2548d0786535e8d779f393e7e46",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65338,6 +65722,7 @@
       "source": "sources/filter/unsharpMask/usmBlurH.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65477,6 +65862,7 @@
       "source": "sources/filter/unsharpMask/usmBlurV.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65624,6 +66010,7 @@
       "source": "sources/filter/unsharpMask/usmCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c2f6e2881e8fa44bdd20a22c87a07ccbad42920982677f859e5bd53747f02661",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65772,6 +66159,7 @@
       "source": "sources/filter/vaseline/upsample.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "f4516bef827fb352404a03842d0c018166683a1cff7d9872f102c7e89deaee60",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -65932,6 +66320,7 @@
       "source": "sources/filter/vignette/vignette.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ef1abdb561ad2773ae20f5b2708b906a8c225bc386cd6a1aff6dbc97f063d8ed",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66085,6 +66474,7 @@
       "source": "sources/filter/warp/warp.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "02470f680fed9e6fe8c9fa1a799903dd4e53937e4341ed018cb5b7553fdb4e0b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66288,6 +66678,7 @@
       "source": "sources/filter/watercolor/wcComposite.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5f0ac7d47906973b06af601ad122e551ed877431e8a05096778b5ac73a00cca2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66441,6 +66832,7 @@
       "source": "sources/filter/watercolor/wcSeed.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "201fe41cf7cc53bd60a793b580cef02524c70a446a38fd400a3699ec2a0109b6",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66573,6 +66965,7 @@
       "source": "sources/filter/watercolor/wcSimplify.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66712,6 +67105,7 @@
       "source": "sources/filter/waves/waves.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3a78bd7d965fbb77fe00a4c0b2d19b9081a71ae404df67c437d8cd8e02afee6c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -66907,6 +67301,7 @@
       "source": "sources/filter/wind/wind.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "b01a55457d8e33d7cb77ed84595fbe8658ac14c3d7235a19f9dd38e1dad8b725",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -67072,6 +67467,7 @@
       "source": "sources/filter/wobble/wobble.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2fc15c75c70f097ef50e76964c377ad4c9cab64a8b9373dc5e34b9dc8179fcce",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -67235,6 +67631,7 @@
       "source": "sources/filter/wormhole/blend.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99413f0a013f79c99f431c7353e0e53ac343f678e7e737a741a3a781ac029675",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -67378,6 +67775,7 @@
       "source": "sources/filter/wormhole/clear.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4f0c6ee034ecc8eec56c973c334d551dcef74a8a6652966d3e1071d6b237e6b7",
       "uniforms": []
     },
     {
@@ -67502,6 +67900,7 @@
       "source": "sources/filter/zoomBlur/zoomBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "4a7500d0a36468781c5530d88c751a60e7126f104b9284720d1bc5922a07dc7a",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -67659,6 +68058,7 @@
       "source": "sources/mixer/alphaMask/alphaMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "1d5c30ce8cac4ce21e56b17c1b477c711cd713b2b9a47468892543d9c8407aa1",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -67829,6 +68229,7 @@
       "source": "sources/mixer/applyMode/applyMode.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "086c01f408f97912a971cb0f0da4e2a1d8aee30c7de23b394c60b94e9dd27139",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -67999,6 +68400,7 @@
       "source": "sources/mixer/blendMode/blendMode.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "086c01f408f97912a971cb0f0da4e2a1d8aee30c7de23b394c60b94e9dd27139",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -68167,6 +68569,7 @@
       "source": "sources/mixer/cellSplit/cellSplit.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d3cefe5bc14eb6088f0be6f8ebc68e74890dec40efe7213a7cf51c265d521d1d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -68373,6 +68776,7 @@
       "source": "sources/mixer/centerMask/centerMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "cd7932548ad571a19cca5bd75953063274304cb7a85071cf853f64eb63cfb994",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -68563,6 +68967,7 @@
       "source": "sources/mixer/channelCombine/channelCombine.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "99aa09f742d928d269f743753d872f35e3ad2ef586141e313f6f6fa91a4f3271",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -68738,6 +69143,7 @@
       "source": "sources/mixer/distortion/distortion.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "448a820ee914901cf858d72a8e70040ebb463475b3c538e46c914eb6cc99ab80",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -68941,6 +69347,7 @@
       "source": "sources/mixer/focusBlur/focusBlur.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "8319e094c6fa21d6e610a5f3aa56f71693aaceeb48b38cb3a6223bdc1c007a6b",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -69179,6 +69586,7 @@
       "source": "sources/mixer/mashup/mashup.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "30966dc730d95b93be71ed94ca59490566ae49aae9cef157615350a222861fd2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -69389,6 +69797,7 @@
       "source": "sources/mixer/patternMix/patternMix.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "01869d1ec348045ebc69ed67425eb9faef922dba79f309eabd648157106ec91c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -69585,6 +69994,7 @@
       "source": "sources/mixer/shadow/shadow.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "353f246286dd20d2a2bb2a1a167099d83485dedcaa291e62bc1d5200fc99d83d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -69809,6 +70219,7 @@
       "source": "sources/mixer/shapeMask/shapeMask.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "75f9483099ecb7e914deaa8c1923b1feceacc2376e7ac432cf79a3dbb6944b9d",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -70026,6 +70437,7 @@
       "source": "sources/mixer/split/split.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "c51bb7362103c2b7c0451aa19680c752a3a10a501cfabbd58b8d67afb022fb93",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -70222,6 +70634,7 @@
       "source": "sources/mixer/thresholdMix/thresholdMix.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bc84545998f9b2c09e35bddfe0351be7df605fc5d281ab684e6537f51fdb56c2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -70453,6 +70866,7 @@
       "source": "sources/mixer/uvRemap/uvRemap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "5c0bc8cb43e1175372ad8503606e022aa089439cbf6f9f8f360089bc53aadbf8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -70624,6 +71038,7 @@
       "source": "sources/synth/bitwise/bitwise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2162ae1cb06f361aa88e91d435e9dc4f4ce207f08e93ff4dc579987064b868ca",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -70847,6 +71262,7 @@
       "source": "sources/synth/cell/cell.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "6a61608d7ddf0c96bd77e06a730dc1d7d0cf352d2d1a5aa535657a86a4d3a2d8",
       "uniforms": [
         {
           "cpp_type": "float",
@@ -71046,6 +71462,7 @@
       "source": "sources/synth/curl/curl.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "798917783cfd880d0ecc11447f9f0aba48b438358515a65f59ec9a412bcb8e8c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -71217,6 +71634,7 @@
       "source": "sources/synth/gabor/gabor.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e9c1d22f4c2ac8c2c72fe595130a56b7b4fb81e3d7433eab6dc8be44b658b88c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -71416,6 +71834,7 @@
       "source": "sources/synth/gradient/gradient.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "e49ea0cadc23009e3633af3b0a1bf259cbe6b3d91cb30cc32b42923c92575900",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -71629,6 +72048,7 @@
       "source": "sources/synth/julia/julia.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "2ef898fd02c7f283ee34ff3bde8bc4c43f09285cbc1814a02ce84991cfe614d8",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -71891,6 +72311,7 @@
       "source": "sources/synth/mandala/mandala.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "07143e555cad95c4535ac43053fa117f35dc3785e789787eca60424a021da821",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -72153,6 +72574,7 @@
       "source": "sources/synth/mandelbrot/mandelbrot.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "80cc453eedd1d7a44c2fb6c4216a1060451a02dc492b2b8428a4e080c7436774",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -72404,6 +72826,7 @@
       "source": "sources/synth/media/mediaInput.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d89ab75302e1cf27a19f336e45521dd315cd56daff9c0de8b92a0de437f5bb88",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -72603,6 +73026,7 @@
       "source": "sources/synth/modPattern/modPattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ce60049aedbfa2e2e297bdc3305c22f56e73904a09d4fbd649b4658d0782d5a3",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -72837,6 +73261,7 @@
       "source": "sources/synth/newton/newton.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "98294f18e45b30d074d840649faafc51c0d6a7c6f4598e1948ad7c1b4af391bb",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -73106,7 +73531,22 @@
       "source": "sources/synth/noise/noise.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "bd103a0728bd15a92c33f83494db717aad7fe565a03abb406a59bbd3b5763d91",
       "uniforms": [
+        {
+          "cpp_type": "std::int32_t",
+          "name": "NOISE_TYPE",
+          "source": "pass_derived",
+          "source_name": "typed_compile_define",
+          "type": "int"
+        },
+        {
+          "cpp_type": "std::int32_t",
+          "name": "LOOP_OFFSET",
+          "source": "pass_derived",
+          "source_name": "typed_compile_define",
+          "type": "int"
+        },
         {
           "cpp_type": "float",
           "name": "time",
@@ -73312,6 +73752,7 @@
       "source": "sources/synth/osc2d/osc2d.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "ec41f49ef9c557f09098ea61ae6ac820edf70bab0c92beb9be80070e8dfb8a75",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -73497,6 +73938,7 @@
       "source": "sources/synth/pattern/pattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -73717,6 +74159,7 @@
       "source": "sources/synth/perlin/perlin.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "73be9fbfb9dd7baa65e8fc7f506c4dfbd72c3f5659b507374a1b92acb3aeb00c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -73930,6 +74373,7 @@
       "source": "sources/synth/polygon/shape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -74195,6 +74639,7 @@
       "source": "sources/synth/remap/remap.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "a1b31a4ecb6ffa7ba3bb952c67a2a5b48514bd9e0be26fb5ef4eda9cf2f6cc94",
       "uniforms": [
         {
           "cpp_type": "vec4[267]",
@@ -74331,6 +74776,7 @@
       "source": "sources/synth/sacredGeometry/sacredGeometry.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -74565,6 +75011,7 @@
       "source": "sources/synth/shape/shape.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "3c09c2bd90e980371877a4df8ba5e58da7ec268c969fcfa5dbfcbc2935c7e72c",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -74702,7 +75149,7 @@
       "effect_id": "synth/solid",
       "factory": {
         "canonical": "bind_synth_solid_solid",
-        "legacy_public": "bind_synth_solid",
+        "legacy_public": "bind_synth_solid_solid",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
       },
@@ -74750,6 +75197,7 @@
       "source": "sources/synth/solid/solid.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec3",
@@ -74889,6 +75337,7 @@
       "source": "sources/synth/subdivide/subdivide.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "fe7665c4789c16ef2c6ee017cd87bb29d69019dc727d823e8474b4d2850db5da",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -75102,6 +75551,7 @@
       "source": "sources/synth/testPattern/testPattern.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "731bb6af687dd07500ff366f32f6a6f51aa2afcdccdcee4198f9f794847712d2",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec2",
@@ -75206,6 +75656,16 @@
       "effect_id": "filter/invert",
       "factory": {
         "canonical": "bind_filter_invert_inv",
+        "legacy": {
+          "binding_abi_sha256": "04b3926a135bfc198f50f160abc6947f427ebfa07a0f94ffe911635f27247ab8",
+          "canonical_name": "bind_filter_invert_inv",
+          "implementation_identity": "source-hash-bound",
+          "name": "bind_filter_invert",
+          "output_abi_sha256": "3f34c1c27117b0016e2674851c5723ac214febba132ce2dd6c8e48b12cb831cb",
+          "path": "src/generated/filter_invert.cpp",
+          "source_program_sha256": "18cea484b4d9ab8cbd3db2189777400d7adfeea1c3798dc9ef0e3112d46f6e99",
+          "source_sha256": "06dd8cf0dacb86fb4ae11ebc822fd8103f648bc98d8272bc526c4507b2d4f1b7"
+        },
         "legacy_public": "bind_filter_invert",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
@@ -75262,6 +75722,7 @@
       "source": "sources/filter/invert/inv.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "0362d48525f911ea260b33c194d0020536a0ca7ae774dd52cb85917a9a4f1f9a",
       "uniforms": [
         {
           "cpp_type": "std::int32_t",
@@ -75336,6 +75797,16 @@
       "effect_id": "synth/solid",
       "factory": {
         "canonical": "bind_synth_solid_solid",
+        "legacy": {
+          "binding_abi_sha256": "7b7808ed84c9560a8a9c772513d057426f28a95cf17b5210c8f9bb10cd43f4e2",
+          "canonical_name": "bind_synth_solid_solid",
+          "implementation_identity": "source-hash-bound",
+          "name": "bind_synth_solid",
+          "output_abi_sha256": "3f34c1c27117b0016e2674851c5723ac214febba132ce2dd6c8e48b12cb831cb",
+          "path": "src/generated/synth_solid.cpp",
+          "source_program_sha256": "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c",
+          "source_sha256": "4a88533b90ce71268461f2d6fc2ad71025deb830e403c878b424b7b0ef822363"
+        },
         "legacy_public": "bind_synth_solid",
         "typed_manifest_output": "typed_slice.cpp",
         "typed_manifest_output_sha256": "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"
@@ -75384,6 +75855,7 @@
       "source": "sources/synth/solid/solid.glsl",
       "source_classification": "raw_exact",
       "status": "compatible",
+      "typed_abi_sha256": "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e",
       "uniforms": [
         {
           "cpp_type": "glsl::Vec3",
@@ -75401,6 +75873,303 @@
         }
       ]
     }
+  ],
+  "reference_key_closure": [
+    "classicNoisedeck/bitEffects:bitEffects",
+    "classicNoisedeck/caustic:caustic",
+    "classicNoisedeck/cellNoise:cellNoise",
+    "classicNoisedeck/cellRefract:cellRefract",
+    "classicNoisedeck/coalesce:coalesce",
+    "classicNoisedeck/colorLab:colorLab",
+    "classicNoisedeck/composite:composite",
+    "classicNoisedeck/effects:effects",
+    "classicNoisedeck/fractal:fractal",
+    "classicNoisedeck/glitch:glitch",
+    "classicNoisedeck/kaleido:kaleido",
+    "classicNoisedeck/lensDistortion:lensDistortion",
+    "classicNoisedeck/moodscape:moodscape",
+    "classicNoisedeck/noise3d:noise3d",
+    "classicNoisedeck/noise:noise",
+    "classicNoisedeck/refract:refract",
+    "classicNoisedeck/shapeMixer:shapeMixer",
+    "classicNoisedeck/shapes3d:shapes3d",
+    "classicNoisedeck/shapes:shapes",
+    "classicNoisedeck/splat:splat",
+    "filter/adjust:adjust",
+    "filter/bc:bc",
+    "filter/bloom:brightPass",
+    "filter/bloom:composite",
+    "filter/bloom:ntapGather",
+    "filter/blur:blurH",
+    "filter/blur:blurV",
+    "filter/bulge:bulge",
+    "filter/celShading:celShadingBlend",
+    "filter/celShading:celShadingColor",
+    "filter/celShading:celShadingEdges",
+    "filter/channel:channel",
+    "filter/chroma:chroma",
+    "filter/chromaticAberration:chromaticAberration",
+    "filter/chrome:chBlurH",
+    "filter/chrome:chBlurV",
+    "filter/chrome:chMap",
+    "filter/clouds:clouds",
+    "filter/colorReplace:colorReplace",
+    "filter/colorspace:colorspace",
+    "filter/convolutionFeedback:cfBlend",
+    "filter/convolutionFeedback:cfBlur",
+    "filter/convolutionFeedback:cfSharpen",
+    "filter/corrupt:corrupt",
+    "filter/craquelure:craquelure",
+    "filter/crt:crt",
+    "filter/degauss:degauss",
+    "filter/deriv:deriv",
+    "filter/directionalBlur:directionalBlur",
+    "filter/dither:dither",
+    "filter/edge:edge",
+    "filter/emboss:emboss",
+    "filter/extrude:extrude",
+    "filter/feedback:copy",
+    "filter/feedback:feedback",
+    "filter/fibers:fibersBlend",
+    "filter/flipMirror:flipMirror",
+    "filter/fxaa:fxaa",
+    "filter/glowingEdge:glowingEdge",
+    "filter/glyphMap:glyphMap",
+    "filter/grade:creative",
+    "filter/grade:hslSecondary",
+    "filter/grade:lut",
+    "filter/grade:primary",
+    "filter/grade:vignette",
+    "filter/grade:wheels",
+    "filter/grain:grain",
+    "filter/grime:grime",
+    "filter/halftone:halftone",
+    "filter/hatch:hatch",
+    "filter/highPass:hpBlurH",
+    "filter/highPass:hpBlurV",
+    "filter/highPass:hpCombine",
+    "filter/historicPalette:historicPalette",
+    "filter/hs:hs",
+    "filter/invert:inv",
+    "filter/lens:lens",
+    "filter/lensFlare:lensFlare",
+    "filter/lensWarp:lensWarp",
+    "filter/lightLeak:lightLeak",
+    "filter/lighting:lighting",
+    "filter/lowPoly:lowPoly",
+    "filter/median:median",
+    "filter/morphology:morphA",
+    "filter/morphology:morphB",
+    "filter/mosaicTiles:mosaicTiles",
+    "filter/motionBlur:copy",
+    "filter/motionBlur:motionBlur",
+    "filter/normalMap:normalMap",
+    "filter/normalize:apply",
+    "filter/normalize:reduce",
+    "filter/normalize:reduceMinmax",
+    "filter/normalize:statsFinal",
+    "filter/octaveWarp:octaveWarp",
+    "filter/oilPaint:oilFlatten",
+    "filter/oilPaint:oilPost",
+    "filter/osd:osd",
+    "filter/outline:outlineBlend",
+    "filter/outline:outlineSobel",
+    "filter/outline:outlineValueMap",
+    "filter/palette:palette",
+    "filter/parallax:parallax",
+    "filter/patchwork:patchwork",
+    "filter/photocopy:pcBlurH",
+    "filter/photocopy:pcBlurV",
+    "filter/photocopy:pcCombine",
+    "filter/pinch:pinch",
+    "filter/pixelSort:computeRank",
+    "filter/pixelSort:finalize",
+    "filter/pixelSort:findBrightest",
+    "filter/pixelSort:gatherSorted",
+    "filter/pixelSort:luminance",
+    "filter/pixelSort:prepare",
+    "filter/pixels:pixels",
+    "filter/plasticWrap:pwBlurH",
+    "filter/plasticWrap:pwBlurV",
+    "filter/plasticWrap:pwSpec",
+    "filter/polar:polar",
+    "filter/pondRipples:pondRipples",
+    "filter/posterize:posterize",
+    "filter/prismaticAberration:prismaticAberration",
+    "filter/reindex:nmReindexApply",
+    "filter/reindex:nmReindexReduce",
+    "filter/reindex:nmReindexStats",
+    "filter/relief:rlBlurH",
+    "filter/relief:rlBlurV",
+    "filter/relief:rlShade",
+    "filter/repeat:repeat",
+    "filter/reverb:reverb",
+    "filter/ridge:ridge",
+    "filter/rotate:rot",
+    "filter/scale:scale",
+    "filter/scanlineError:scanlineError",
+    "filter/scatter:scatterJitter",
+    "filter/scatter:scatterSmooth",
+    "filter/scratches:scratchesBlend",
+    "filter/scroll:scroll",
+    "filter/seamless:seamless",
+    "filter/sharpen:sharpen",
+    "filter/simpleAberration:chromaticAberration",
+    "filter/sine:sine",
+    "filter/skew:skew",
+    "filter/smooth:smoothBlend",
+    "filter/smooth:smoothEdge",
+    "filter/smoothstep:smoothstep",
+    "filter/snow:snow",
+    "filter/sobel:sobel",
+    "filter/spatter:spatter",
+    "filter/spinBlur:spinBlur",
+    "filter/spiral:spiral",
+    "filter/spookyTicker:spookyTicker",
+    "filter/stamp:stBlurH",
+    "filter/stamp:stBlurV",
+    "filter/stamp:stThreshold",
+    "filter/step:step",
+    "filter/stipple:stipple",
+    "filter/strayHair:strayHairBlend",
+    "filter/strokes:stkPost",
+    "filter/strokes:stkSmear",
+    "filter/temporalAberration:delayShift",
+    "filter/temporalAberration:temporalAberration",
+    "filter/tetraColorArray:tetraColorArray",
+    "filter/tetraCosine:tetraCosine",
+    "filter/text:text",
+    "filter/texture:texture",
+    "filter/threshold:thresh",
+    "filter/tile:tile",
+    "filter/tint:colorize",
+    "filter/translate:translate",
+    "filter/tunnel:tunnel",
+    "filter/unsharpMask:usmBlurH",
+    "filter/unsharpMask:usmBlurV",
+    "filter/unsharpMask:usmCombine",
+    "filter/vaseline:upsample",
+    "filter/vignette:vignette",
+    "filter/warp:warp",
+    "filter/watercolor:wcComposite",
+    "filter/watercolor:wcSeed",
+    "filter/watercolor:wcSimplify",
+    "filter/waves:waves",
+    "filter/wind:wind",
+    "filter/wobble:wobble",
+    "filter/wormhole:blend",
+    "filter/wormhole:clear",
+    "filter/wormhole:deposit",
+    "filter/zoomBlur:zoomBlur",
+    "filter3d/flow3d:agent",
+    "filter3d/flow3d:blend",
+    "filter3d/flow3d:copy",
+    "filter3d/flow3d:deposit",
+    "filter3d/flow3d:diffuse",
+    "filter3d/palette3d:palette3d",
+    "mixer/alphaMask:alphaMask",
+    "mixer/applyMode:applyMode",
+    "mixer/blendMode:blendMode",
+    "mixer/cellSplit:cellSplit",
+    "mixer/centerMask:centerMask",
+    "mixer/channelCombine:channelCombine",
+    "mixer/distortion:distortion",
+    "mixer/focusBlur:focusBlur",
+    "mixer/mashup:mashup",
+    "mixer/patternMix:patternMix",
+    "mixer/shadow:shadow",
+    "mixer/shapeMask:shapeMask",
+    "mixer/split:split",
+    "mixer/thresholdMix:thresholdMix",
+    "mixer/uvRemap:uvRemap",
+    "points/attractor:agent",
+    "points/attractor:passthrough",
+    "points/buddhabrot:agent",
+    "points/buddhabrot:passthrough",
+    "points/buddhabrot:zWrite",
+    "points/dla:agent",
+    "points/dla:copyGrid",
+    "points/dla:depositGrid",
+    "points/dla:initGrid",
+    "points/dla:passthrough",
+    "points/flock:agent",
+    "points/flock:passthrough",
+    "points/flow:agent",
+    "points/flow:passthrough",
+    "points/hydraulic:agent",
+    "points/hydraulic:passthrough",
+    "points/lenia:agentField",
+    "points/lenia:clear",
+    "points/lenia:convolve",
+    "points/lenia:deposit",
+    "points/lenia:passthrough",
+    "points/life:agent",
+    "points/life:matrix",
+    "points/life:passthrough",
+    "points/physarum:agent",
+    "points/physarum:deposit",
+    "points/physarum:diffuse",
+    "points/physarum:passthrough",
+    "points/physical:agent",
+    "points/physical:passthrough",
+    "render/loopBegin:loopBegin",
+    "render/loopEnd:copy",
+    "render/pointsBillboardRender:blend",
+    "render/pointsBillboardRender:copy",
+    "render/pointsBillboardRender:deposit",
+    "render/pointsBillboardRender:diffuse",
+    "render/pointsEmit:init",
+    "render/pointsEmit:passthrough",
+    "render/pointsRender:blend",
+    "render/pointsRender:copy",
+    "render/pointsRender:deposit",
+    "render/pointsRender:diffuse",
+    "render/render3d:render3d",
+    "render/renderCubemap3d:renderCubemap3d",
+    "render/renderCubemapSurface:renderCubemapSurface",
+    "render/renderLit3d:renderLit3d",
+    "synth/bitwise:bitwise",
+    "synth/cell:cell",
+    "synth/cellularAutomata:ca",
+    "synth/cellularAutomata:caFb",
+    "synth/curl:curl",
+    "synth/gabor:gabor",
+    "synth/gradient:gradient",
+    "synth/julia:julia",
+    "synth/mandala:mandala",
+    "synth/mandelbrot:mandelbrot",
+    "synth/media:mediaInput",
+    "synth/mnca:mnca",
+    "synth/mnca:mncaFb",
+    "synth/modPattern:modPattern",
+    "synth/navierStokes:ns",
+    "synth/navierStokes:nsAdvect",
+    "synth/navierStokes:nsDivergence",
+    "synth/navierStokes:nsGradient",
+    "synth/navierStokes:nsPressure",
+    "synth/navierStokes:nsSmooth",
+    "synth/navierStokes:nsSplat",
+    "synth/newton:newton",
+    "synth/noise:noise",
+    "synth/osc2d:osc2d",
+    "synth/pattern:pattern",
+    "synth/perlin:perlin",
+    "synth/polygon:shape",
+    "synth/reactionDiffusion:rd",
+    "synth/reactionDiffusion:rdFb",
+    "synth/remap:remap",
+    "synth/sacredGeometry:sacredGeometry",
+    "synth/shape:shape",
+    "synth/solid:solid",
+    "synth/subdivide:subdivide",
+    "synth/testPattern:testPattern",
+    "synth3d/cell3d:precompute",
+    "synth3d/cellularAutomata3d:simulate",
+    "synth3d/flythrough3d:precompute",
+    "synth3d/fractal3d:precompute",
+    "synth3d/noise3d:precompute",
+    "synth3d/reactionDiffusion3d:simulate",
+    "synth3d/shape3d:precompute"
   ],
   "reference_passes": [
     {
@@ -78321,16 +79090,63 @@
   ],
   "scatter": {
     "adapter": "noisemaker::scatter::wormhole::adapter",
+    "binding_abi": {
+      "samplers": [],
+      "uniforms": [
+        {
+          "cpp_type": "double",
+          "name": "kink",
+          "source": "effect_parameter"
+        },
+        {
+          "cpp_type": "double",
+          "name": "stride",
+          "source": "effect_parameter"
+        },
+        {
+          "cpp_type": "double",
+          "name": "rotation",
+          "source": "effect_parameter"
+        },
+        {
+          "cpp_type": "double",
+          "name": "wrap",
+          "source": "effect_parameter"
+        }
+      ]
+    },
     "blend": true,
     "count": "input",
     "destination_mutation": "in_place_accumulate",
+    "dimensionality": "image",
     "draw_mode": "points",
     "input_texture": "inputTex",
+    "new_raw_sha256": "156401729b935381b38732d8e84ebdbbe185734e642972fa45533c5ce51a083d",
+    "old_raw_sha256": "156401729b935381b38732d8e84ebdbbe185734e642972fa45533c5ce51a083d",
+    "output_abi": {
+      "canonical_slots": [
+        0
+      ],
+      "cardinality": 1,
+      "extent": {
+        "format": "rgba8unorm",
+        "height": "screen",
+        "width": "screen"
+      },
+      "logical_routes": [
+        "wormhole_accum"
+      ],
+      "physical_names": [
+        "fragColor"
+      ],
+      "single_output_canonical": true
+    },
     "output_route": "wormhole_accum",
     "program_key": "filter/wormhole:deposit",
     "reasons": [],
     "registry": "noisemaker::scatter::resolve_scatter_adapter",
-    "source_sha256": "156401729b935381b38732d8e84ebdbbe185734e642972fa45533c5ce51a083d",
+    "source": "sources/filter/wormhole/deposit.frag",
+    "source_classification": "raw_exact",
     "status": "registered",
     "uniforms": [
       {

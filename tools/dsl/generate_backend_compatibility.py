@@ -55,7 +55,9 @@ PASS_DERIVED_BINDINGS = {
     "centerLoX": "canonical_center_low_x_default",
     "centerLoY": "canonical_center_low_y_default",
     "data": "remap_uniform_data",
+    "LOOP_OFFSET": "typed_compile_define",
     "motion": "canonical_motion_default",
+    "NOISE_TYPE": "typed_compile_define",
     "size": "canonical_size_default",
     "splatSource": "canonical_splat_source_default",
     "speed": "canonical_speed_default",
@@ -266,12 +268,15 @@ def _cpp_type(display: str) -> str:
     return display
 
 
-def _typed_manifest(repository: pathlib.Path) -> dict[str, dict[str, Any]]:
+def _typed_manifest(repository: pathlib.Path, generated: dict[str, Any], corpus_keys: set[str]) -> dict[str, dict[str, Any]]:
     path = repository / "src/typed_generated/typed_manifest.json"
     try:
         document = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as error:
         raise CompatibilityError(f"invalid typed manifest: {error}") from error
+    generated_programs = generated.get("programs")
+    if document != generated:
+        raise CompatibilityError("typed manifest is not the authenticated emitter output")
     programs = document.get("programs")
     if not isinstance(programs, list):
         raise CompatibilityError("typed manifest programs missing")
@@ -280,8 +285,36 @@ def _typed_manifest(repository: pathlib.Path) -> dict[str, dict[str, Any]]:
         key = item.get("program_key")
         if not isinstance(key, str) or key in result:
             raise CompatibilityError("typed manifest duplicate/malformed key")
+        if not isinstance(item.get("source_sha256"), str) or not _SHA256.fullmatch(item["source_sha256"]):
+            raise CompatibilityError(f"{key}: typed manifest source hash missing")
+        if not isinstance(item.get("output_sha256"), str) or not _SHA256.fullmatch(item["output_sha256"]):
+            raise CompatibilityError(f"{key}: typed manifest output hash missing")
+        if not isinstance(item.get("factory"), str) or not item.get("typed_abi"):
+            raise CompatibilityError(f"{key}: typed manifest emitter ABI missing")
         result[key] = item
+    expected = corpus_keys - {SCATTER_KEY}
+    if set(result) != expected:
+        raise CompatibilityError("typed manifest/corpus closure mismatch")
     return result
+
+
+def _authenticated_typed_manifest(repository: pathlib.Path) -> dict[str, Any]:
+    try:
+        generated = generate_typed_slice.generate_outputs(repository)
+        manifest_bytes = generated["src/typed_generated/typed_manifest.json"]
+        slice_bytes = generated["src/typed_generated/typed_slice.cpp"]
+    except Exception as error:
+        raise CompatibilityError(f"typed emitter authentication failed: {error}") from error
+    manifest_path = repository / "src/typed_generated/typed_manifest.json"
+    slice_path = repository / "src/typed_generated/typed_slice.cpp"
+    if manifest_path.read_bytes() != manifest_bytes:
+        raise CompatibilityError("typed manifest drift from authenticated emitter")
+    if slice_path.read_bytes() != slice_bytes:
+        raise CompatibilityError("typed_slice.cpp drift from authenticated emitter")
+    try:
+        return json.loads(manifest_bytes)
+    except json.JSONDecodeError as error:
+        raise CompatibilityError(f"authenticated typed manifest is invalid: {error}") from error
 
 
 def _pass_index(effect: dict[str, Any], key: str) -> dict[str, Any]:
@@ -305,7 +338,7 @@ def _extent(effect: dict[str, Any], current_pass: dict[str, Any], route: str) ->
     return {"width": "screen", "height": "screen", "format": "rgba8unorm"}
 
 
-def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed: Any) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_record: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     params = effect.get("params", {})
     aliases = effect.get("paramAliases", {})
     # The CPU definition's public parameter name and shader uniform name are
@@ -325,14 +358,21 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed: An
     uniforms: list[dict[str, Any]] = []
     samplers: list[dict[str, Any]] = []
     unresolved: list[dict[str, Any]] = []
-    declarations = {item.symbol.name: item for item in typed.declarations}
-    for name in typed.resources.uniforms:
-        declaration = declarations.get(name)
-        if declaration is None:
-            unresolved.append({"name": name, "reason": "missing typed declaration"})
+    typed_abi = typed_record.get("typed_abi")
+    if not isinstance(typed_abi, dict):
+        raise CompatibilityError(f"{typed_record.get('program_key')}: typed emitter ABI missing")
+    typed_uniforms = typed_abi.get("uniforms")
+    typed_samplers = typed_abi.get("samplers")
+    if not isinstance(typed_uniforms, list) or not isinstance(typed_samplers, list):
+        raise CompatibilityError(f"{typed_record.get('program_key')}: malformed typed emitter ABI")
+    sampler_names = set(typed_samplers)
+    for declaration in typed_uniforms:
+        name = declaration.get("name") if isinstance(declaration, dict) else None
+        typ = declaration.get("type") if isinstance(declaration, dict) else None
+        if not isinstance(name, str) or not isinstance(typ, str):
+            unresolved.append({"name": name, "reason": "malformed typed declaration"})
             continue
-        typ = declaration.type.display()
-        if name in typed.resources.samplers:
+        if name in sampler_names:
             source = "resource" if name in input_map else ("external_texture" if effect.get("externalTexture") else None)
             item = {"name": name, "type": "sampler2D", "cpp_type": "const Surface&", "source": source,
                     "resource": input_map.get(name)}
@@ -381,6 +421,10 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
     old_typed: Any = None
     new_typed: Any = None
     typed_record = typed_rows.get(key)
+    if typed_record is None:
+        raise CompatibilityError(f"{key}: missing authenticated typed emitter row")
+    if typed_record.get("source_sha256") != _sha(old):
+        raise CompatibilityError(f"{key}: typed manifest source hash mismatch")
     try:
         old_typed = _typed(old_text, key, defines)
         old_ir = _typed_hash(old_typed)
@@ -393,21 +437,21 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
             new_ir = _typed_hash(new_typed)
         except Exception:
             new_ir = None
-        if new_token == old_token and new_ir == old_ir:
+        if new_typed is not None and new_token == old_token and new_ir == old_ir:
             classification = "semantic_exact"
         else:
             classification = "incompatible"
     if classification == "semantic_exact":
         transform = "semantic-comment-only-v1"
     elif classification == "raw_exact":
-        transform = (typed_record or {}).get("compatibility_transform", "none")
+        transform = typed_record.get("compatibility_transform", "none")
     else:
         transform = "none"
-    abi, uniforms, samplers = _binding_abi(effect, current_pass, old_typed)
-    physical_outputs = list(old_typed.resources.outputs)
+    abi, uniforms, samplers = _binding_abi(effect, current_pass, typed_record)
+    typed_abi = typed_record["typed_abi"]
+    physical_outputs = list(typed_abi["outputs"])
     logical_outputs = list(current_pass.get("outputs", {}).values())
-    if len(logical_outputs) != len(physical_outputs):
-        logical_outputs = logical_outputs[:len(physical_outputs)]
+    output_mismatch = len(logical_outputs) != len(physical_outputs)
     outputs = [{"slot": index, "physical_name": physical, "logical_route": logical_outputs[index] if index < len(logical_outputs) else None,
                 "cpp_type": "glsl::Vec4"} for index, physical in enumerate(physical_outputs)]
     reasons: list[dict[str, str]] = []
@@ -415,6 +459,8 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         reasons.append({"code": "source_incompatible", "detail": "pinned source is not raw- or dual-semantic-equivalent"})
     if abi["unresolved"]:
         reasons.extend({"code": "unclassified_binding", "detail": item["name"]} for item in abi["unresolved"])
+    if output_mismatch:
+        reasons.append({"code": "output_abi_mismatch", "detail": f"physical={len(physical_outputs)} logical={len(logical_outputs)}"})
     draw_mode = current_pass.get("drawMode", "fragment")
     if draw_mode not in SUPPORTED_DRAW_MODES:
         reasons.append({"code": "unsupported_draw_mode", "detail": str(draw_mode)})
@@ -423,10 +469,7 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
     if effect.get("domain", "image") != "image":
         reasons.append({"code": "unsupported_dimensionality", "detail": str(effect.get("domain"))})
     status = "compatible" if not reasons else "incompatible"
-    factory = (typed_record or {}).get("factory")
-    legacy = None
-    if key == "filter/invert:inv": legacy = "bind_filter_invert"
-    if key == "synth/solid:solid": legacy = "bind_synth_solid"
+    factory = typed_record.get("factory")
     extent = _extent(effect, current_pass, logical_outputs[0] if logical_outputs else "outputTex")
     return {
         "program_key": key, "effect_id": entry["effect_id"], "program": entry["program"],
@@ -434,19 +477,21 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         "new_raw_sha256": _sha(new), "new_raw_bytes": len(new),
         "source_classification": classification,
         "semantic": {"old_token_sha256": old_token, "new_token_sha256": new_token,
-                      "old_typed_ir_sha256": old_ir, "new_typed_ir_sha256": new_ir or old_ir},
+                      "old_typed_ir_sha256": old_ir,
+                      "new_typed_ir_sha256": old_ir if classification == "raw_exact" else new_ir},
         "compatibility_transform": transform,
         "uniforms": uniforms, "samplers": samplers,
         "outputs": outputs,
         "output_abi": {"cardinality": len(outputs), "logical_routes": logical_outputs,
                        "physical_names": physical_outputs, "canonical_slots": list(range(len(outputs)),),
                        "extent": extent, "single_output_canonical": len(outputs) == 1},
-        "derivative_use": bool(old_typed.resources.uses_derivatives),
+        "derivative_use": bool(typed_abi["uses_derivatives"]),
         "draw_mode": draw_mode, "dimensionality": effect.get("domain", "image"),
-        "factory": {"canonical": factory, "legacy_public": legacy or factory,
-                     "typed_manifest_output": (typed_record or {}).get("output"),
-                     "typed_manifest_output_sha256": (typed_record or {}).get("output_sha256")},
-        "capabilities": list((typed_record or {}).get("capabilities", [])),
+        "factory": {"canonical": factory, "legacy_public": factory,
+                     "typed_manifest_output": typed_record.get("output"),
+                     "typed_manifest_output_sha256": typed_record.get("output_sha256")},
+        "typed_abi_sha256": _sha(_encoded(typed_abi)),
+        "capabilities": list(typed_record.get("capabilities", [])),
         "status": status, "reasons": reasons,
         "authority_pass": {"name": current_pass.get("name"), "inputs": current_pass.get("inputs", {}),
                             "outputs": current_pass.get("outputs", {}), "uniforms": current_pass.get("uniforms", {}),
@@ -460,6 +505,63 @@ def _shader_path(entry: dict[str, Any]) -> str:
     return pathlib.PurePosixPath("shaders", "effects", *parts[:2], "glsl", parts[-1]).as_posix()
 
 
+def _scatter_source_entry(entry: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
+    classification = "raw_exact" if old == new else "incompatible"
+    return {
+        "program_key": entry["program_key"], "effect_id": entry["effect_id"],
+        "program": entry["program"], "source": entry["source"],
+        "old_raw_sha256": _sha(old), "old_raw_bytes": len(old),
+        "new_raw_sha256": _sha(new), "new_raw_bytes": len(new),
+        "source_classification": classification,
+        "semantic": None, "compatibility_transform": "none",
+        "uniforms": [], "samplers": [],
+        "outputs": [{"slot": 0, "physical_name": "fragColor",
+                      "logical_route": "wormhole_accum", "cpp_type": "glsl::Vec4"}],
+        "output_abi": {"cardinality": 1, "logical_routes": ["wormhole_accum"],
+                       "physical_names": ["fragColor"], "canonical_slots": [0],
+                       "extent": {"width": "screen", "height": "screen", "format": "rgba8unorm"},
+                       "single_output_canonical": True},
+        "derivative_use": False, "draw_mode": "points", "dimensionality": "image",
+        "factory": {"canonical": None, "legacy_public": None,
+                     "typed_manifest_output": None, "typed_manifest_output_sha256": None},
+        "capabilities": [], "status": "registered", "reasons": [],
+        "authority_pass": {},
+    }
+
+
+def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Discover and authenticate legacy direct factories from their source."""
+    result: dict[str, dict[str, Any]] = {}
+    directory = repository / "src/generated"
+    if directory.is_symlink() or not directory.is_dir():
+        raise CompatibilityError("legacy generated factory directory missing")
+    for path in sorted(directory.glob("*.cpp")):
+        text = path.read_text(encoding="utf-8")
+        program_match = re.search(r"^// Program: ([^\n]+)$", text, re.MULTILINE)
+        source_match = re.search(r"^// Source SHA-256: ([0-9a-f]{64})$", text, re.MULTILINE)
+        factory_match = re.search(r"\bBoundKernel (bind_[A-Za-z0-9_]+)\(const glsl::Bindings&", text)
+        if not (program_match and source_match and factory_match):
+            continue
+        key = program_match.group(1)
+        if key not in rows:
+            raise CompatibilityError(f"legacy factory has no canonical row: {key}")
+        if key in result:
+            raise CompatibilityError(f"duplicate legacy factory metadata: {key}")
+        row = rows[key]
+        if source_match.group(1) != row["old_raw_sha256"]:
+            raise CompatibilityError(f"legacy factory source drift: {key}")
+        result[key] = {
+            "name": factory_match.group(1), "path": path.relative_to(repository).as_posix(),
+            "source_sha256": _sha(path.read_bytes()),
+            "source_program_sha256": source_match.group(1),
+            "canonical_name": row["factory"]["canonical"],
+            "implementation_identity": "source-hash-bound",
+            "binding_abi_sha256": _sha(_encoded({"uniforms": row["uniforms"], "samplers": row["samplers"]})),
+            "output_abi_sha256": _sha(_encoded(row["output_abi"])),
+        }
+    return result
+
+
 def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pathlib.Path = ROOT) -> dict[str, Any]:
     cpu_root = cpu_root.resolve(); shader_git = shader_git.resolve(); repository = repository.resolve()
     authority = _authority(cpu_root, shader_git)
@@ -467,7 +569,9 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     corpus_root = check_corpus._corpus_root(repository)
     manifest = check_corpus._load_json(corpus_root / "manifest.json", "manifest")
     entries = check_corpus._validate_manifest(manifest)
-    typed_rows = _typed_manifest(repository)
+    corpus_keys = {item["program_key"] for item in entries}
+    authenticated_typed = _authenticated_typed_manifest(repository)
+    typed_rows = _typed_manifest(repository, authenticated_typed, corpus_keys)
     metadata = check_corpus._load_json(corpus_root / "metadata.json", "metadata")
     defines_by_key = {
         key: check_semantics._metadata_defaults(metadata, key)
@@ -484,18 +588,26 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         current_pass = _pass_index(effect, key)
         old = (corpus_root / entry["source"]).read_bytes()
         new = _git_blob(shader_git, UPSTREAM_REVISION, _shader_path(entry))
-        source_rows.append(_program_entry(repository, typed_rows, defines_by_key.get(key, {}), effect, entry, old, new))
+        if key == SCATTER_KEY:
+            source_rows.append(_scatter_source_entry(entry, old, new))
+        else:
+            source_rows.append(_program_entry(repository, typed_rows, defines_by_key.get(key, {}), effect, entry, old, new))
     by_key = {item["program_key"]: item for item in source_rows}
     if len(by_key) != 212 or SCATTER_KEY not in by_key:
         raise CompatibilityError("corpus source closure cardinality drift")
     fragment_unique = [item for item in source_rows if item["program_key"] != SCATTER_KEY]
     if len(fragment_unique) != 211:
         raise CompatibilityError("fragment unique census drift")
-    duplicate_keys = ["filter/invert:inv", "synth/solid:solid"]
+    legacy_factories = _legacy_factories(repository, by_key)
+    duplicate_keys = sorted(legacy_factories)
+    if duplicate_keys != ["filter/invert:inv", "synth/solid:solid"]:
+        raise CompatibilityError("legacy factory census drift")
     fragment_rows = list(fragment_unique)
     for key in duplicate_keys:
-        duplicate = dict(by_key[key]); duplicate["row_kind"] = "legacy_duplicate"
-        duplicate["factory"] = dict(duplicate["factory"]); duplicate["factory"]["canonical"] = by_key[key]["factory"]["canonical"]
+        duplicate = json.loads(json.dumps(by_key[key]))
+        duplicate["row_kind"] = "legacy_duplicate"
+        duplicate["factory"]["legacy_public"] = legacy_factories[key]["name"]
+        duplicate["factory"]["legacy"] = legacy_factories[key]
         fragment_rows.append(duplicate)
     for item in fragment_rows:
         item.setdefault("row_kind", "canonical")
@@ -527,8 +639,14 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         "input_texture": "inputTex", "destination_mutation": "in_place_accumulate",
         "uniforms": [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
                      for name in ("kink", "stride", "rotation", "wrap")],
+        "binding_abi": {"uniforms": [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
+                                       for name in ("kink", "stride", "rotation", "wrap")],
+                        "samplers": []},
         "output_route": "wormhole_accum", "blend": True,
-        "source_sha256": scatter["new_raw_sha256"], "reasons": [],
+        "source": scatter["source"], "old_raw_sha256": scatter["old_raw_sha256"],
+        "new_raw_sha256": scatter["new_raw_sha256"], "source_classification": scatter["source_classification"],
+        "output_abi": scatter["output_abi"], "dimensionality": scatter["dimensionality"],
+        "reasons": [],
     }
     classifications = Counter(item["source_classification"] for item in source_rows)
     incompatible_keys = sorted(item["program_key"] for item in source_rows if item["source_classification"] == "incompatible")
@@ -548,9 +666,12 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         "fragments": fragment_rows,
         "canonical_programs": sorted(fragment_unique, key=lambda item: item["program_key"]),
         "reference_passes": reference_passes,
+        "reference_key_closure": sorted(seen_pass_keys),
         "scatter": scatter_contract,
     }
-    validate_document(document)
+    validate_document(document, expected_source_hashes={
+        item["program_key"]: item["new_raw_sha256"] for item in source_rows
+    })
     return document
 
 
@@ -565,7 +686,7 @@ _BINDING_SOURCES = frozenset({
 })
 
 
-def validate_document(document: dict[str, Any]) -> None:
+def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None) -> None:
     """Validate persisted admission evidence, failing closed on edits."""
     if document.get("schema") != "noisemaker-cpp.backend-compatibility.v1":
         raise CompatibilityError("backend compatibility schema mismatch")
@@ -584,25 +705,113 @@ def validate_document(document: dict[str, Any]) -> None:
         raise CompatibilityError("forged or duplicate canonical program key")
     if scatter.get("program_key") != SCATTER_KEY or scatter.get("status") != "registered":
         raise CompatibilityError("scatter registration missing or forged")
-    if len(references) != 305 or any(not isinstance(item.get("status"), str) for item in references):
+    if len(references) != 305 or any(not isinstance(item, dict) for item in references):
         raise CompatibilityError("reference pass status closure drift")
+    allowed_statuses = {"compatible", "incompatible", "missing", "scatter"}
+    reference_keys = document.get("reference_key_closure")
+    if not isinstance(reference_keys, list) or len(reference_keys) != 295 \
+            or sorted(set(reference_keys)) != sorted(reference_keys):
+        raise CompatibilityError("reference key closure missing or forged")
+    if {item.get("program_key") for item in references} != set(reference_keys):
+        raise CompatibilityError("reference key membership drift")
+    for item in references:
+        if item.get("status") not in allowed_statuses or not isinstance(item.get("program_key"), str):
+            raise CompatibilityError("unknown reference pass status or key")
+        if not isinstance(item.get("reasons"), list):
+            raise CompatibilityError("reference pass reasons malformed")
+        for reason in item["reasons"]:
+            if not isinstance(reason, dict) or not isinstance(reason.get("code"), str) \
+                    or not isinstance(reason.get("detail"), str):
+                raise CompatibilityError("reference pass reason malformed")
+    fragment_keys = [item.get("program_key") for item in fragments]
+    if set(fragment_keys) != set(canonical_keys) or len(fragment_keys) != 213:
+        raise CompatibilityError("fragment row closure drift")
+    if any(not isinstance(item, dict) or item.get("program_key") not in set(canonical_keys)
+           or item.get("row_kind") not in {"canonical", "legacy_duplicate"}
+           for item in fragments):
+        raise CompatibilityError("fragment row contents malformed")
+    duplicate_fragment_keys = sorted(item.get("program_key") for item in fragments
+                                     if item.get("row_kind") == "legacy_duplicate")
+    if duplicate_fragment_keys != sorted(counts.get("duplicate_fragment_keys", [])) \
+            or sorted(counts.get("duplicate_fragment_keys", [])) != ["filter/invert:inv", "synth/solid:solid"]:
+        raise CompatibilityError("legacy duplicate row evidence drift")
     for row in canonical:
-        if not isinstance(row, dict) or not _SHA256.fullmatch(str(row.get("old_raw_sha256", ""))) \
+        if not isinstance(row, dict) or row.get("status") not in {"compatible", "incompatible"} \
+                or not isinstance(row.get("source"), str) \
+                or not _SHA256.fullmatch(str(row.get("old_raw_sha256", ""))) \
                 or not _SHA256.fullmatch(str(row.get("new_raw_sha256", ""))):
             raise CompatibilityError("source hash drift or malformed source row")
+        if not row["source"].startswith("sources/") or ".." in pathlib.PurePosixPath(row["source"]).parts:
+            raise CompatibilityError("source path escapes authenticated corpus")
+        if expected_source_hashes is not None and row["new_raw_sha256"] != expected_source_hashes.get(row["program_key"]):
+            raise CompatibilityError("source object drift")
+        semantic = row.get("semantic")
+        if not isinstance(semantic, dict) or not _SHA256.fullmatch(str(semantic.get("old_token_sha256", ""))) \
+                or not _SHA256.fullmatch(str(semantic.get("old_typed_ir_sha256", ""))):
+            raise CompatibilityError("semantic evidence malformed")
+        if row.get("source_classification") == "semantic_exact":
+            if not _SHA256.fullmatch(str(semantic.get("new_token_sha256", ""))) \
+                    or not _SHA256.fullmatch(str(semantic.get("new_typed_ir_sha256", ""))) \
+                    or semantic["new_token_sha256"] != semantic["old_token_sha256"] \
+                    or semantic["new_typed_ir_sha256"] != semantic["old_typed_ir_sha256"]:
+                raise CompatibilityError("semantic equality evidence incomplete")
         reasons = row.get("reasons")
         if not isinstance(reasons, list) or (row.get("status") == "compatible" and reasons) \
                 or (row.get("status") != "compatible" and not reasons):
             raise CompatibilityError("status/reason admission mismatch")
-        for binding in [*row.get("uniforms", []), *row.get("samplers", [])]:
+        if any(not isinstance(reason, dict) or not isinstance(reason.get("code"), str)
+               or not isinstance(reason.get("detail"), str) for reason in reasons):
+            raise CompatibilityError("fragment reason malformed")
+        if not isinstance(row.get("uniforms"), list) or not isinstance(row.get("samplers"), list):
+            raise CompatibilityError("binding ABI malformed")
+        if row.get("draw_mode") not in SUPPORTED_DRAW_MODES or row.get("dimensionality") != "image":
+            raise CompatibilityError("unsupported draw mode or dimensionality")
+        for binding in [*row["uniforms"], *row["samplers"]]:
             if not isinstance(binding, dict) or binding.get("source") not in _BINDING_SOURCES:
                 raise CompatibilityError("unclassified binding in ABI")
         output_abi = row.get("output_abi")
         outputs = row.get("outputs")
         if not isinstance(output_abi, dict) or not isinstance(outputs, list) \
                 or output_abi.get("cardinality") != len(outputs) \
-                or output_abi.get("canonical_slots") != list(range(len(outputs))):
+                or output_abi.get("canonical_slots") != list(range(len(outputs))) \
+                or output_abi.get("physical_names") != [item.get("physical_name") for item in outputs] \
+                or output_abi.get("logical_routes") != [item.get("logical_route") for item in outputs]:
             raise CompatibilityError("output ABI mismatch")
+        extent = output_abi.get("extent")
+        if not isinstance(extent, dict) or set(extent) != {"width", "height", "format"}:
+            raise CompatibilityError("output extent ABI malformed")
+        factory = row.get("factory")
+        if not isinstance(factory, dict) or not isinstance(factory.get("canonical"), str) \
+                or not _SHA256.fullmatch(str(factory.get("typed_manifest_output_sha256", ""))):
+            raise CompatibilityError("factory authentication missing")
+        if not _SHA256.fullmatch(str(row.get("typed_abi_sha256", ""))):
+            raise CompatibilityError("typed emitter ABI evidence missing")
+    for row in fragments:
+        if row.get("row_kind") != "legacy_duplicate":
+            continue
+        factory = row.get("factory")
+        legacy = factory.get("legacy") if isinstance(factory, dict) else None
+        if not isinstance(legacy, dict) or legacy.get("implementation_identity") != "source-hash-bound" \
+                or legacy.get("canonical_name") != factory.get("canonical") \
+                or legacy.get("binding_abi_sha256") != _sha(_encoded({"uniforms": row["uniforms"], "samplers": row["samplers"]})) \
+                or legacy.get("output_abi_sha256") != _sha(_encoded(row["output_abi"])):
+            raise CompatibilityError("legacy factory equivalence evidence missing")
+    if not isinstance(scatter.get("source"), str) or not scatter["source"].startswith("sources/") \
+            or ".." in pathlib.PurePosixPath(scatter["source"]).parts \
+            or not _SHA256.fullmatch(str(scatter.get("old_raw_sha256", ""))) \
+            or not _SHA256.fullmatch(str(scatter.get("new_raw_sha256", ""))) \
+            or scatter.get("source_classification") not in {"raw_exact", "semantic_exact", "incompatible"} \
+            or not isinstance(scatter.get("binding_abi"), dict) \
+            or not isinstance(scatter.get("output_abi"), dict):
+        raise CompatibilityError("scatter evidence bundle incomplete")
+    if expected_source_hashes is not None and scatter["new_raw_sha256"] != expected_source_hashes.get(SCATTER_KEY):
+        raise CompatibilityError("scatter source object drift")
+    scatter_output = scatter["output_abi"]
+    if scatter_output.get("cardinality") != 1 \
+            or scatter_output.get("physical_names") != ["fragColor"] \
+            or scatter_output.get("logical_routes") != ["wormhole_accum"] \
+            or scatter_output.get("canonical_slots") != [0]:
+        raise CompatibilityError("scatter output ABI mismatch")
     expected_counts = {
         "fragment_rows": len(fragments), "unique_fragment_keys": len(canonical),
         "reference_passes": len(references),
