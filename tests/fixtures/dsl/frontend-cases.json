@@ -15,5 +15,15 @@
   {"name":"unterminated-string","source":"\"astral 😀"},
   {"name":"newline-string","source":"\"line\ntext"},
   {"name":"unterminated-block","source":"o0 /* astral 😀"},
+  {"name":"parse-program-order","parse":true,"source":"search synth, filter, render; let x = noise(scale: 7); x(seed: 2).posterize(levels: 5).write(o0); render(o0);"},
+  {"name":"parse-precedence-unary-parentheses","parse":true,"source":"search synth\nsolid(vec3(-1 + 2 * (3 - -4), 5, 6)).write(o0)\nrender(o0)"},
+  {"name":"parse-arrays-colors-bools","parse":true,"source":"search synth\nsolid([true, #123, #12345678, \"x\"]).write(o0)\nrender(o0)"},
+  {"name":"parse-qualified-id","parse":true,"source":"search synth\nsolid(mode: palette.primary.dark).write(o0)\nrender(o0)"},
+  {"name":"parse-read-named","parse":true,"source":"search synth\nsolid(read(surface: o0)).write(o1)\nrender(o1)"},
+  {"name":"parse-read-invalid-name","parse":true,"source":"search synth\nsolid(read(foo: o0))"},
+  {"name":"parse-mixed-args","parse":true,"source":"search synth\nnoise(4, seed: 2)"},
+  {"name":"parse-duplicate-render","parse":true,"source":"search synth\nrender(o0); render(o1)"},
+  {"name":"parse-invalid-surface","parse":true,"source":"search synth\nsolid().write(o9)"},
+  {"name":"parse-astral-location","parse":true,"source":"search synth\n// 😀\nsolid(color: #f80).write(o0)\nrender(o0)"},
   {"name":"empty","source":""}
 ]

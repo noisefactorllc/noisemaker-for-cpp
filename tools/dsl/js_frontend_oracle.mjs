@@ -21,6 +21,7 @@ const fixturesPath = argument('--fixtures')
 const outputPath = argument('--output')
 const checkPath = argument('--check')
 const EXPECTED_MODULE_SHA256 = new Map([
+  ['src/dsl/parser.js', '260798bbcb5ae4e1409a726f6f0225b262cd5c586703b810d39892195e505518'],
   ['src/dsl/tokenize.js', '83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2'],
   ['src/dsl/error.js', 'fdc8a674431666d48a8094e3c7021120df3767226c870e7bb9eb88aa25abde93']
 ])
@@ -60,14 +61,16 @@ function authenticateModule(modulePath, expectedKey) {
     authenticateModule(importedPath, importedKey)
   }
 }
+// Authenticate the lexer first to retain the established forged-module/symlink diagnostics;
+// then authenticate the parser and its complete recursive closure before importing either.
 authenticateModule(tokenizePath, 'src/dsl/tokenize.js')
+const parserPath = path.join(realRoot, 'src', 'dsl', 'parser.js')
+if (!fs.existsSync(parserPath)) usage(`validated CPU root lacks ${path.relative(realRoot, parserPath)} (sha256-authenticated closure required)`)
+authenticateModule(parserPath, 'src/dsl/parser.js')
 const fixtures = JSON.parse(fs.readFileSync(fixturesPath, 'utf8'))
 if (!Array.isArray(fixtures)) usage('fixtures must be an array')
-const { tokenizeDsl } = await import(pathToFileURL(tokenizePath).href)
+const { parseDsl } = await import(pathToFileURL(parserPath).href)
 
-function jsonString(value) {
-  return JSON.stringify(value)
-}
 function taggedNumber(value) {
   if (Number.isNaN(value)) return 'number:NaN'
   if (value === Infinity) return 'number:+Infinity'
@@ -100,8 +103,47 @@ function canonicalToken(token) {
   result.index = token.index
   return result
 }
+function canonicalLocation(value) {
+  return { sourceName: value.sourceName, line: value.line, column: value.column, index: value.index }
+}
+function canonicalValue(value) {
+  if (typeof value === 'number') return { kind: 'number', value: taggedNumber(value) }
+  if (typeof value === 'string') return { kind: 'string', value }
+  if (typeof value === 'boolean') return { kind: 'boolean', value }
+  if (Array.isArray(value)) return value.map(canonicalValue)
+  if (value && typeof value === 'object') {
+    if (value.kind === 'DslProgram') return canonicalProgram(value)
+    if (value.kind === 'Binding') return { kind: 'Binding', name: value.name, value: canonicalValue(value.value), loc: canonicalLocation(value.loc) }
+    if (value.kind === 'Chain') return { kind: 'Chain', calls: value.calls.map(canonicalValue), loc: canonicalLocation(value.loc) }
+    if (value.kind === 'Call') return {
+      kind: 'Call', name: value.name,
+      args: value.args.map((arg) => ({ name: arg.name, value: canonicalValue(arg.value), loc: canonicalLocation(arg.loc) })),
+      argMode: value.argMode, loc: canonicalLocation(value.loc)
+    }
+    if (value.kind === 'surface') return { kind: 'surface', name: value.name, loc: canonicalLocation(value.loc) }
+    if (value.kind === 'vector') return { kind: 'vector', width: value.width, values: value.values.map(canonicalValue), loc: canonicalLocation(value.loc) }
+    if (value.kind === 'identifier') return { kind: 'identifier', name: value.name, loc: canonicalLocation(value.loc) }
+    if (value.kind === 'unary') return { kind: 'unary', operator: value.operator, argument: canonicalValue(value.argument), loc: canonicalLocation(value.loc) }
+    if (value.kind === 'binary') return { kind: 'binary', operator: value.operator, left: canonicalValue(value.left), right: canonicalValue(value.right), loc: canonicalLocation(value.loc) }
+  }
+  return value
+}
+function canonicalProgram(program) {
+  return {
+    kind: 'DslProgram', search: program.search,
+    bindings: program.bindings.map(canonicalValue),
+    chains: program.chains.map(canonicalValue),
+    render: program.render ? { kind: 'surface', name: program.render.name, loc: canonicalLocation(program.render.loc) } : null,
+    loc: canonicalLocation(program.loc)
+  }
+}
 function canonicalCase(entry) {
   try {
+    if (entry.parse) {
+      return { name: entry.name, ast: canonicalProgram(parseDsl(entry.source, { sourceName: entry.sourceName ?? entry.name })) }
+    }
+    // Keep the lexer corpus stable while allowing parser cases in the same file.
+    const { tokenizeDsl } = awaitTokenize()
     return { name: entry.name, tokens: tokenizeDsl(entry.source, { sourceName: entry.sourceName ?? entry.name }).map(canonicalToken) }
   } catch (error) {
     const sourceName = error.sourceName ?? entry.sourceName ?? entry.name
@@ -120,6 +162,10 @@ function canonicalCase(entry) {
     }
   }
 }
+function awaitTokenize() {
+  return tokenizeModule
+}
+const tokenizeModule = await import(pathToFileURL(path.join(realRoot, 'src', 'dsl', 'tokenize.js')).href)
 const text = fixtures.map(canonicalCase).map((entry) => JSON.stringify(entry)).join('\n') + '\n'
 if (checkPath) {
   const expected = fs.readFileSync(checkPath, 'utf8')

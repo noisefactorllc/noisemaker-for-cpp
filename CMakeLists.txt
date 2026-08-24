@@ -31,6 +31,7 @@ add_library(noisemaker-cpu
   src/effects/generated/effect_catalog.cpp
   src/dsl/error.cpp
   src/dsl/lexer.cpp
+  src/dsl/parser.cpp
 )
 target_include_directories(noisemaker-cpu PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -69,6 +70,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_scatter_wormhole.cpp
   tests/test_effect_catalog.cpp
   tests/test_dsl_lexer.cpp
+  tests/test_dsl_parser.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE
@@ -85,6 +87,13 @@ add_executable(noisemaker-dsl-frontend-oracle tests/test_dsl_lexer.cpp)
 target_compile_definitions(noisemaker-dsl-frontend-oracle PRIVATE NOISEMAKER_DSL_ORACLE_MAIN)
 target_link_libraries(noisemaker-dsl-frontend-oracle PRIVATE noisemaker-cpu)
 target_compile_options(noisemaker-dsl-frontend-oracle PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+add_executable(noisemaker-dsl-parser-oracle tests/test_dsl_parser.cpp)
+target_compile_definitions(noisemaker-dsl-parser-oracle PRIVATE NOISEMAKER_DSL_PARSER_ORACLE_MAIN)
+target_link_libraries(noisemaker-dsl-parser-oracle PRIVATE noisemaker-cpu)
+target_compile_options(noisemaker-dsl-parser-oracle PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 

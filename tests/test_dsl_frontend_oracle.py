@@ -41,6 +41,18 @@ def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.
     raise AssertionError("NOISEMAKER_DSL_CPP_ORACLE is unset and no documented external C++ oracle exists")
 
 
+def resolve_parser_oracle() -> pathlib.Path:
+    configured = os.environ.get("NOISEMAKER_DSL_PARSER_ORACLE")
+    candidates = [
+        pathlib.Path(configured) if configured else pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-parser-oracle"),
+        pathlib.Path("/private/tmp/noisemaker-cpp-task4-build/noisemaker-dsl-parser-oracle"),
+    ]
+    for candidate in candidates:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    raise AssertionError("NOISEMAKER_DSL_PARSER_ORACLE is unset and no documented external C++ parser oracle exists")
+
+
 class DslFrontendOracleTest(unittest.TestCase):
     def test_checked_stream_matches_authoritative_node_oracle_and_cpp(self) -> None:
         cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
@@ -55,6 +67,7 @@ class DslFrontendOracleTest(unittest.TestCase):
         node = shutil_which("node")
         self.assertIsNotNone(node, "node is required for the authority oracle")
         cpp = resolve_cpp_oracle()
+        parser_cpp = resolve_parser_oracle()
 
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-oracle-") as temporary:
             generated = pathlib.Path(temporary) / "expected.txt"
@@ -67,8 +80,9 @@ class DslFrontendOracleTest(unittest.TestCase):
             fixtures = json.loads(FIXTURES.read_text(encoding="utf-8"))
             cpp_records = []
             for fixture in fixtures:
+                oracle = parser_cpp if fixture.get("parse") else cpp
                 result = subprocess.run(
-                    [str(cpp), "--name", fixture["name"], "--source", fixture["source"], "--source-name", fixture.get("sourceName", fixture["name"])],
+                    [str(oracle), "--name", fixture["name"], "--source", fixture["source"], "--source-name", fixture.get("sourceName", fixture["name"])],
                     check=True,
                     capture_output=True,
                     text=True,
@@ -98,6 +112,28 @@ class DslFrontendOracleTest(unittest.TestCase):
             self.assertNotEqual(forged.returncode, 0)
             self.assertIn("sha256", forged.stderr)
             self.assertFalse(marker.exists(), "forged authority was imported before authentication")
+
+            parser_root = pathlib.Path(os.path.realpath(temporary)) / "parser-forge-root"
+            parser_tokenize = parser_root / "src/dsl/tokenize.js"
+            parser_path = parser_root / "src/dsl/parser.js"
+            parser_tokenize.parent.mkdir(parents=True)
+            shutil.copy2(authority_root / "src/dsl/tokenize.js", parser_tokenize)
+            shutil.copy2(authority_root / "src/dsl/error.js", parser_root / "src/dsl/error.js")
+            parser_marker = parser_root / "parser-imported"
+            parser_path.write_text(
+                "import fs from 'node:fs'\n"
+                f"fs.writeFileSync({json.dumps(str(parser_marker))}, 'imported')\n"
+                "export function parseDsl() { return {} }\n",
+                encoding="utf-8",
+            )
+            parser_result = subprocess.run(
+                [node, str(ORACLE_JS), "--cpu-root", str(parser_root), "--fixtures", str(FIXTURES)],
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(parser_result.returncode, 0)
+            self.assertIn("sha256", parser_result.stderr)
+            self.assertFalse(parser_marker.exists(), "forged parser was imported before authentication")
 
             real_root = pathlib.Path(os.path.realpath(temporary)) / "real-root"
             real_module = real_root / "src/dsl/tokenize.js"
