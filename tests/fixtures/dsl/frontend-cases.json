@@ -1,0 +1,18 @@
+[
+  {"name":"surface-and-punctuation","source":"search filter, render; let x = blur(o0, amount: 1.25); render(o1);"},
+  {"name":"comments-and-whitespace","source":" \t\r\n// astral 😀 before newline\n/* block 😀 comment */ o0 // tail\n"},
+  {"name":"numbers","source":"0 1 1.  .5 1e2 1E-2 1e 1e+ 1e-"},
+  {"name":"special-numbers","source":"1e999 -1e999 -0"},
+  {"name":"strings-and-escapes","source":"\"plain 😀 text\" \"line\\n tab\\t quote\\\" slash\\\\ other\\q\""},
+  {"name":"colors","source":"#123 #123456 #12345678"},
+  {"name":"identifiers-and-keywords","source":"search let render true false foo o0 o7 o99 _x x9"},
+  {"name":"operators","source":"+ - * / ( ) [ ] , . : = ;"},
+  {"name":"astral-before-token","source":"😀 o0"},
+  {"name":"astral-before-eof","source":"o0 😀"},
+  {"name":"unexpected-character","source":"😀 @"},
+  {"name":"bad-color","source":"#12"},
+  {"name":"unterminated-string","source":"\"astral 😀"},
+  {"name":"newline-string","source":"\"line\ntext"},
+  {"name":"unterminated-block","source":"o0 /* astral 😀"},
+  {"name":"empty","source":""}
+]
