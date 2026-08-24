@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shutil
 import struct
 import sys
@@ -2179,6 +2180,29 @@ def _typed_abi(typed) -> dict[str, Any]:
         "outputs": list(typed.resources.outputs),
         "uses_texture": bool(typed.resources.uses_texture),
         "uses_derivatives": bool(typed.resources.uses_derivatives),
+    }
+
+
+def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    if key != BIT_EFFECTS_KEY:
+        return {"kind": "typed_emitter", "factory": emitted,
+                "source": "src/typed_generated/typed_slice.cpp"}
+    source_path = repository / "src/effects/bit_effects.cpp"
+    source = source_path.read_text(encoding="utf-8")
+    calls = []
+    for match in re.finditer(r"b\.get<([^>]+)>\(\"([^\"]+)\"\)|b\.get_number\(\"([^\"]+)\"\)", source):
+        cpp_type, typed_name, number_name = match.groups()
+        calls.append({"name": typed_name or number_name,
+                      "cpp_type": cpp_type or "double", "source": "custom_adapter"})
+    if len(calls) != 20:
+        raise GeneratorError(f"{key}: custom factory binding ABI census drift")
+    return {
+        "kind": "custom_adapter", "factory": "noisemaker::effects::bind_bit_effects",
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha256(source_path.read_bytes()),
+        "binding_abi": {"uniforms": calls, "samplers": []},
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
     }
 
 
@@ -8786,6 +8810,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                                mandelbrot_sequential_dz_assignment_profile),
                                            log_admission_profile=log_admission_profile))
         except TypedEmissionError as error: raise GeneratorError(str(error)) from error
+        factory_route = _factory_route(repository, key)
         manifest_program = {
             "capabilities": slice_spec["capabilities"],
             "define_contract": (
@@ -8793,7 +8818,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 else ("default-only" if declared_defines else "none")),
             "compatibility_transform": compatibility_transform or "none",
             "defines": declared_defines,
-            "factory": "bind_" + key.replace("/", "_").replace(":", "_"),
+            "factory": factory_route["factory"],
+            "emitted_factory": factory_route.get("emitted_factory", factory_route["factory"]),
+            "factory_route": factory_route,
             "numeric_literal_contract": literal_contract,
             "output": "typed_slice.cpp", "program_key": key,
             "source": entry["source"], "source_sha256": source_hash,
@@ -8973,7 +9000,10 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 "  throw std::invalid_argument(\"unknown generated kernel key\");", "}", "", "}  // namespace noisemaker::generated", ""])
     cpp_bytes = "\n".join(cpp).encode("utf-8")
     output_hash = _sha256(cpp_bytes)
-    for entry in manifest_programs: entry["output_sha256"] = output_hash
+    for entry in manifest_programs:
+        entry["output_sha256"] = output_hash
+        if entry["factory_route"]["kind"] == "typed_emitter":
+            entry["factory_route"]["source_sha256"] = output_hash
     manifest = {"emitter": EMITTER, "programs": manifest_programs, "revision": slice_spec["revision"], "schema": SCHEMA,
                 "typed_slice_sha256": output_hash}
     return {str(_TYPED_DIRECTORY / "typed_manifest.json"): (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8"),

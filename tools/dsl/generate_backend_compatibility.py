@@ -289,7 +289,8 @@ def _typed_manifest(repository: pathlib.Path, generated: dict[str, Any], corpus_
             raise CompatibilityError(f"{key}: typed manifest source hash missing")
         if not isinstance(item.get("output_sha256"), str) or not _SHA256.fullmatch(item["output_sha256"]):
             raise CompatibilityError(f"{key}: typed manifest output hash missing")
-        if not isinstance(item.get("factory"), str) or not item.get("typed_abi"):
+        if not isinstance(item.get("factory"), str) or not item.get("typed_abi") \
+                or not isinstance(item.get("factory_route"), dict):
             raise CompatibilityError(f"{key}: typed manifest emitter ABI missing")
         result[key] = item
     expected = corpus_keys - {SCATTER_KEY}
@@ -489,7 +490,9 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         "draw_mode": draw_mode, "dimensionality": effect.get("domain", "image"),
         "factory": {"canonical": factory, "legacy_public": factory,
                      "typed_manifest_output": typed_record.get("output"),
-                     "typed_manifest_output_sha256": typed_record.get("output_sha256")},
+                     "typed_manifest_output_sha256": typed_record.get("output_sha256"),
+                     "emitted_factory": typed_record.get("emitted_factory"),
+                     "route": typed_record.get("factory_route")},
         "typed_abi_sha256": _sha(_encoded(typed_abi)),
         "capabilities": list(typed_record.get("capabilities", [])),
         "status": status, "reasons": reasons,
@@ -671,7 +674,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     }
     validate_document(document, expected_source_hashes={
         item["program_key"]: item["new_raw_sha256"] for item in source_rows
-    })
+    }, repository=repository)
     return document
 
 
@@ -686,7 +689,8 @@ _BINDING_SOURCES = frozenset({
 })
 
 
-def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None) -> None:
+def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None,
+                      repository: pathlib.Path = ROOT) -> None:
     """Validate persisted admission evidence, failing closed on edits."""
     if document.get("schema") != "noisemaker-cpp.backend-compatibility.v1":
         raise CompatibilityError("backend compatibility schema mismatch")
@@ -723,6 +727,18 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             if not isinstance(reason, dict) or not isinstance(reason.get("code"), str) \
                     or not isinstance(reason.get("detail"), str):
                 raise CompatibilityError("reference pass reason malformed")
+        key = item["program_key"]
+        if key in canonical_keys:
+            expected_status = next(row["status"] for row in canonical if row["program_key"] == key)
+            expected_reasons = next(row["reasons"] for row in canonical if row["program_key"] == key)
+        elif key == SCATTER_KEY:
+            expected_status = "scatter"
+            expected_reasons = [{"code": "explicit_scatter_adapter", "detail": SCATTER_KEY}]
+        else:
+            expected_status = "missing"
+            expected_reasons = [{"code": "missing_backend_program", "detail": key}]
+        if item["status"] != expected_status or item["reasons"] != expected_reasons:
+            raise CompatibilityError("reference pass status/reason is not recomputed closure")
     fragment_keys = [item.get("program_key") for item in fragments]
     if set(fragment_keys) != set(canonical_keys) or len(fragment_keys) != 213:
         raise CompatibilityError("fragment row closure drift")
@@ -784,6 +800,18 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         if not isinstance(factory, dict) or not isinstance(factory.get("canonical"), str) \
                 or not _SHA256.fullmatch(str(factory.get("typed_manifest_output_sha256", ""))):
             raise CompatibilityError("factory authentication missing")
+        route = factory.get("route")
+        if not isinstance(route, dict) or route.get("factory") != factory.get("canonical") \
+                or route.get("kind") not in {"typed_emitter", "custom_adapter"} \
+                or not isinstance(route.get("source"), str) \
+                or not _SHA256.fullmatch(str(route.get("source_sha256", ""))):
+            raise CompatibilityError("factory route authentication missing")
+        route_path = repository / route["source"]
+        if route_path.is_symlink() or not route_path.is_file() or _sha(route_path.read_bytes()) != route["source_sha256"]:
+            raise CompatibilityError("factory implementation source drift")
+        if route["kind"] == "custom_adapter":
+            if not isinstance(route.get("binding_abi"), dict) or route.get("output_abi") != {"cardinality": 1, "cpp_type": "glsl::Vec4"}:
+                raise CompatibilityError("custom factory ABI evidence missing")
         if not _SHA256.fullmatch(str(row.get("typed_abi_sha256", ""))):
             raise CompatibilityError("typed emitter ABI evidence missing")
     for row in fragments:
@@ -812,6 +840,17 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             or scatter_output.get("logical_routes") != ["wormhole_accum"] \
             or scatter_output.get("canonical_slots") != [0]:
         raise CompatibilityError("scatter output ABI mismatch")
+    expected_scatter_bindings = [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
+                                 for name in ("kink", "stride", "rotation", "wrap")]
+    if scatter.get("adapter") != "noisemaker::scatter::wormhole::adapter" \
+            or scatter.get("registry") != "noisemaker::scatter::resolve_scatter_adapter" \
+            or scatter.get("draw_mode") != "points" or scatter.get("dimensionality") != "image" \
+            or scatter.get("count") != "input" or scatter.get("input_texture") != "inputTex" \
+            or scatter.get("destination_mutation") != "in_place_accumulate" \
+            or scatter.get("blend") is not True \
+            or scatter.get("binding_abi") != {"uniforms": expected_scatter_bindings, "samplers": []} \
+            or scatter.get("uniforms") != expected_scatter_bindings:
+        raise CompatibilityError("scatter adapter contract forged")
     expected_counts = {
         "fragment_rows": len(fragments), "unique_fragment_keys": len(canonical),
         "reference_passes": len(references),

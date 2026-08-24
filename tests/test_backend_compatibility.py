@@ -12,8 +12,12 @@ from tools.dsl import generate_backend_compatibility as generator
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CPU_ROOT = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT", ""))
-SHADER_GIT = pathlib.Path(os.environ.get("NOISEMAKER_SHADER_GIT", ""))
+CPU_ENV = os.environ.get("NOISEMAKER_CPU_ROOT")
+SHADER_ENV = os.environ.get("NOISEMAKER_SHADER_GIT")
+if not CPU_ENV or not SHADER_ENV:
+    raise RuntimeError("NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT are required")
+CPU_ROOT = pathlib.Path(CPU_ENV)
+SHADER_GIT = pathlib.Path(SHADER_ENV)
 MANIFEST = ROOT / "src/effects/generated/backend_compatibility.json"
 
 
@@ -21,7 +25,7 @@ class BackendCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         if not CPU_ROOT.is_dir() or not SHADER_GIT.is_dir():
-            raise unittest.SkipTest("set NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT for authority tests")
+            raise RuntimeError("authority paths must name existing directories")
         cls.document = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
@@ -39,6 +43,10 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual(205, document["counts"]["raw_exact"])
         self.assertEqual(6, document["counts"]["semantic_exact"])
         self.assertEqual(["filter/text:text"], document["counts"]["incompatible_keys"])
+        bit = next(row for row in document["canonical_programs"]
+                   if row["program_key"] == "classicNoisedeck/bitEffects:bitEffects")
+        self.assertEqual("noisemaker::effects::bind_bit_effects", bit["factory"]["canonical"])
+        self.assertEqual("custom_adapter", bit["factory"]["route"]["kind"])
 
     def test_manifest_is_deterministic_and_checkable(self) -> None:
         first = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
@@ -128,7 +136,7 @@ class BackendCompatibilityTests(unittest.TestCase):
     def test_shader_repository_is_not_mutated(self) -> None:
         before = subprocess.run(["git", "-C", str(SHADER_GIT), "status", "--porcelain"],
                                 check=True, text=True, capture_output=True).stdout
-        generator._authority(CPU_ROOT, SHADER_GIT)
+        generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
         after = subprocess.run(["git", "-C", str(SHADER_GIT), "status", "--porcelain"],
                                check=True, text=True, capture_output=True).stdout
         self.assertEqual(before, after)
