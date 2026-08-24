@@ -4,6 +4,7 @@ build-*/
 .pytest_cache/
 __pycache__/
 *.py[cod]
+.superpowers/sdd/
 .idea/
 .vscode/
 *.swp
