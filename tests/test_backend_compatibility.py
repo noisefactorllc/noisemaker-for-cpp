@@ -27,6 +27,11 @@ class BackendCompatibilityTests(unittest.TestCase):
         if not CPU_ROOT.is_dir() or not SHADER_GIT.is_dir():
             raise RuntimeError("authority paths must name existing directories")
         cls.document = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
+        typed = json.loads((ROOT / "src/typed_generated/typed_manifest.json").read_text(encoding="utf-8"))
+        typed_rows = {item["program_key"]: item for item in typed["programs"]}
+        rows = {row["program_key"]: row for row in cls.document["canonical_programs"]}
+        rows[cls.document["scatter"]["program_key"]] = cls.document["scatter"]
+        cls.factory_evidence = generator._factory_evidence(ROOT, typed_rows, rows)
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
         document = self.document
@@ -80,6 +85,7 @@ class BackendCompatibilityTests(unittest.TestCase):
                     row["program_key"]: row["new_raw_sha256"]
                     for row in self.document["canonical_programs"]
                 } | {self.document["scatter"]["program_key"]: self.document["scatter"]["new_raw_sha256"]},
+                factory_evidence=self.factory_evidence,
             )
 
     def test_forged_duplicate_program_fails_closed(self) -> None:
@@ -117,6 +123,30 @@ class BackendCompatibilityTests(unittest.TestCase):
         self._assert_fails_closed(lambda document: document["canonical_programs"][0]["outputs"][0].update(physical_name="forged"))
         self._assert_fails_closed(lambda document: document["canonical_programs"][0]["outputs"][0].update(logical_route="forged"))
         self._assert_fails_closed(lambda document: document["scatter"].update(new_raw_sha256="forged"))
+
+    def test_legacy_factory_evidence_is_independently_authenticated(self) -> None:
+        for field in ("path", "source_sha256", "source_program_sha256", "body_sha256",
+                      "binding_abi_sha256", "output_abi_sha256"):
+            def forge(document, field=field):
+                duplicate = next(row for row in document["fragments"]
+                                 if row.get("row_kind") == "legacy_duplicate")
+                duplicate["factory"]["legacy"][field] = "forged" if field in {"path", "source_program_sha256"} else "0" * 64
+            self._assert_fails_closed(forge)
+
+    def test_selected_custom_factory_evidence_is_independently_authenticated(self) -> None:
+        for mutate in (
+            lambda route: route.update(factory="forged::factory"),
+            lambda route: route.update(emitted_factory="forged::emitter"),
+            lambda route: route.update(source="src/forged.cpp"),
+            lambda route: route.update(source_sha256="0" * 64),
+            lambda route: route["binding_abi"]["uniforms"][0].update(cpp_type="forged"),
+            lambda route: route["output_abi"].update(cpp_type="forged"),
+        ):
+            def forge(document, mutate=mutate):
+                row = next(item for item in document["canonical_programs"]
+                           if item["program_key"] == "classicNoisedeck/bitEffects:bitEffects")
+                mutate(row["factory"]["route"])
+            self._assert_fails_closed(forge)
 
     def test_typed_manifest_requires_complete_authenticated_rows(self) -> None:
         corpus_root = generator.check_corpus._corpus_root(ROOT)

@@ -532,8 +532,55 @@ def _scatter_source_entry(entry: dict[str, Any], old: bytes, new: bytes) -> dict
     }
 
 
+def _normalized_binding_abi(uniforms: list[dict[str, Any]], samplers: list[dict[str, Any]]) -> dict[str, Any]:
+    def normalize(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        return sorted(
+            [{"name": item["name"], "cpp_type": item["cpp_type"], "source": item["source"]}
+             for item in items],
+            key=lambda item: (item["name"], item["cpp_type"], item["source"]),
+        )
+    return {"uniforms": normalize(uniforms), "samplers": normalize(samplers)}
+
+
+def _legacy_factory_body(text: str, name: str) -> str:
+    match = re.search(
+        rf"(BoundKernel\s+{re.escape(name)}\s*\([^)]*\)\s*\{{.*?\n\}})", text, re.DOTALL)
+    if match is None:
+        raise CompatibilityError(f"legacy factory body missing: {name}")
+    return match.group(1)
+
+
+def _legacy_factory_abi(text: str, body: str, key: str) -> tuple[dict[str, Any], dict[str, Any]]:
+    uniforms: list[dict[str, Any]] = []
+    samplers: list[dict[str, Any]] = []
+    for match in re.finditer(r"(?:bindings|b)\.texture\(\"([^\"]+)\"\)", body):
+        samplers.append({"name": match.group(1), "cpp_type": "const Surface&", "source": "resource"})
+    for match in re.finditer(r"(?:bindings|b)\.get_or<([^>]+)>\(\"([^\"]+)\"", body):
+        uniforms.append({"name": match.group(2), "cpp_type": match.group(1), "source": "effect_parameter"})
+    for match in re.finditer(r"(?:bindings|b)\.get<([^>]+)>\(\"([^\"]+)\"\)", body):
+        uniforms.append({"name": match.group(2), "cpp_type": match.group(1), "source": "effect_parameter"})
+    for match in re.finditer(r"(?:bindings|b)\.get_number\(\"([^\"]+)\"\)", body):
+        uniforms.append({"name": match.group(1), "cpp_type": "double", "source": "effect_parameter"})
+    if not uniforms and not samplers:
+        raise CompatibilityError(f"{key}: legacy factory binding ABI is empty")
+    if not re.search(r"\b(?:glsl::)?Vec4&\s+\w+", text):
+        raise CompatibilityError(f"{key}: legacy factory output ABI is missing")
+    binding_abi = _normalized_binding_abi(uniforms, samplers)
+    output_abi = {"cardinality": 1, "cpp_type": "glsl::Vec4"}
+    return binding_abi, output_abi
+
+
+def _canonical_factory_abi(row: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    binding_abi = _normalized_binding_abi(row["uniforms"], row["samplers"])
+    output_abi = {
+        "cardinality": row["output_abi"].get("cardinality"),
+        "cpp_type": "glsl::Vec4" if row["output_abi"].get("cardinality") == 1 else None,
+    }
+    return binding_abi, output_abi
+
+
 def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    """Discover and authenticate legacy direct factories from their source."""
+    """Discover and authenticate legacy factories from independently parsed source."""
     result: dict[str, dict[str, Any]] = {}
     directory = repository / "src/generated"
     if directory.is_symlink() or not directory.is_dir():
@@ -553,16 +600,76 @@ def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]])
         row = rows[key]
         if source_match.group(1) != row["old_raw_sha256"]:
             raise CompatibilityError(f"legacy factory source drift: {key}")
+        body = _legacy_factory_body(text, factory_match.group(1))
+        binding_abi, output_abi = _legacy_factory_abi(text, body, key)
+        expected_binding, expected_output = _canonical_factory_abi(row)
+        if binding_abi != expected_binding or output_abi != expected_output:
+            raise CompatibilityError(f"legacy factory ABI mismatch: {key}")
         result[key] = {
             "name": factory_match.group(1), "path": path.relative_to(repository).as_posix(),
             "source_sha256": _sha(path.read_bytes()),
             "source_program_sha256": source_match.group(1),
             "canonical_name": row["factory"]["canonical"],
-            "implementation_identity": "source-hash-bound",
-            "binding_abi_sha256": _sha(_encoded({"uniforms": row["uniforms"], "samplers": row["samplers"]})),
-            "output_abi_sha256": _sha(_encoded(row["output_abi"])),
+            "implementation_identity": "source-body-bound",
+            "body_sha256": _sha(body.encode()),
+            "binding_abi": binding_abi,
+            "binding_abi_sha256": _sha(_encoded(binding_abi)),
+            "output_abi": output_abi,
+            "output_abi_sha256": _sha(_encoded(output_abi)),
         }
     return result
+
+
+def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    if key != "classicNoisedeck/bitEffects:bitEffects":
+        raise CompatibilityError(f"unknown custom factory route: {key}")
+    source_path = repository / "src/effects/bit_effects.cpp"
+    if source_path.is_symlink() or not source_path.is_file():
+        raise CompatibilityError("custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    calls = []
+    for match in re.finditer(r"b\.get<([^>]+)>\(\"([^\"]+)\"\)|b\.get_number\(\"([^\"]+)\"\)", source):
+        cpp_type, typed_name, number_name = match.groups()
+        calls.append({"name": typed_name or number_name,
+                      "cpp_type": cpp_type or "double", "source": "custom_adapter"})
+    if len(calls) != 20:
+        raise CompatibilityError(f"{key}: custom factory binding ABI census drift")
+    if not re.search(r"BoundKernel\s+bind_bit_effects\s*\([^)]*\)", source) \
+            or not re.search(r"\bVec4&\s+\w+", source):
+        raise CompatibilityError(f"{key}: custom factory identity/output ABI missing")
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": "noisemaker::effects::bind_bit_effects",
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha(source_path.read_bytes()),
+        "binding_abi": {"uniforms": calls, "samplers": []},
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
+def _factory_evidence(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any]],
+                     rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    selected: dict[str, dict[str, Any]] = {}
+    for key in sorted(rows):
+        if key == SCATTER_KEY:
+            continue
+        typed = typed_rows.get(key)
+        if not isinstance(typed, dict) or not isinstance(typed.get("factory_route"), dict):
+            raise CompatibilityError(f"{key}: selected factory evidence missing")
+        route = typed["factory_route"]
+        if route.get("kind") == "custom_adapter":
+            expected_route = _custom_factory_route(repository, key)
+            if route != expected_route:
+                raise CompatibilityError(f"{key}: typed custom factory route drift")
+        elif route.get("kind") == "typed_emitter":
+            source = repository / str(route.get("source", ""))
+            if source.is_symlink() or not source.is_file() or _sha(source.read_bytes()) != route.get("source_sha256"):
+                raise CompatibilityError(f"{key}: typed factory source drift")
+        else:
+            raise CompatibilityError(f"{key}: unknown selected factory route")
+        selected[key] = {"canonical": typed.get("factory"),
+                         "emitted_factory": typed.get("emitted_factory"), "route": route}
+    return {"selected": selected, "legacy": _legacy_factories(repository, rows)}
 
 
 def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pathlib.Path = ROOT) -> dict[str, Any]:
@@ -601,7 +708,8 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     fragment_unique = [item for item in source_rows if item["program_key"] != SCATTER_KEY]
     if len(fragment_unique) != 211:
         raise CompatibilityError("fragment unique census drift")
-    legacy_factories = _legacy_factories(repository, by_key)
+    factory_evidence = _factory_evidence(repository, typed_rows, by_key)
+    legacy_factories = factory_evidence["legacy"]
     duplicate_keys = sorted(legacy_factories)
     if duplicate_keys != ["filter/invert:inv", "synth/solid:solid"]:
         raise CompatibilityError("legacy factory census drift")
@@ -674,7 +782,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     }
     validate_document(document, expected_source_hashes={
         item["program_key"]: item["new_raw_sha256"] for item in source_rows
-    }, repository=repository)
+    }, repository=repository, factory_evidence=factory_evidence)
     return document
 
 
@@ -690,7 +798,8 @@ _BINDING_SOURCES = frozenset({
 
 
 def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None,
-                      repository: pathlib.Path = ROOT) -> None:
+                      repository: pathlib.Path = ROOT,
+                      factory_evidence: dict[str, Any] | None = None) -> None:
     """Validate persisted admission evidence, failing closed on edits."""
     if document.get("schema") != "noisemaker-cpp.backend-compatibility.v1":
         raise CompatibilityError("backend compatibility schema mismatch")
@@ -751,6 +860,18 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
     if duplicate_fragment_keys != sorted(counts.get("duplicate_fragment_keys", [])) \
             or sorted(counts.get("duplicate_fragment_keys", [])) != ["filter/invert:inv", "synth/solid:solid"]:
         raise CompatibilityError("legacy duplicate row evidence drift")
+    if factory_evidence is None:
+        typed_manifest = _authenticated_typed_manifest(repository)
+        typed_programs = typed_manifest.get("programs")
+        if not isinstance(typed_programs, list):
+            raise CompatibilityError("authenticated typed factory evidence missing")
+        typed_rows = {item.get("program_key"): item for item in typed_programs if isinstance(item, dict)}
+        factory_evidence = _factory_evidence(
+            repository, typed_rows, {row.get("program_key"): row for row in canonical})
+    selected_evidence = factory_evidence.get("selected") if isinstance(factory_evidence, dict) else None
+    legacy_evidence = factory_evidence.get("legacy") if isinstance(factory_evidence, dict) else None
+    if not isinstance(selected_evidence, dict) or not isinstance(legacy_evidence, dict):
+        raise CompatibilityError("authenticated factory evidence missing")
     for row in canonical:
         if not isinstance(row, dict) or row.get("status") not in {"compatible", "incompatible"} \
                 or not isinstance(row.get("source"), str) \
@@ -809,9 +930,12 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         route_path = repository / route["source"]
         if route_path.is_symlink() or not route_path.is_file() or _sha(route_path.read_bytes()) != route["source_sha256"]:
             raise CompatibilityError("factory implementation source drift")
-        if route["kind"] == "custom_adapter":
-            if not isinstance(route.get("binding_abi"), dict) or route.get("output_abi") != {"cardinality": 1, "cpp_type": "glsl::Vec4"}:
-                raise CompatibilityError("custom factory ABI evidence missing")
+        expected_factory = selected_evidence.get(row["program_key"])
+        if not isinstance(expected_factory, dict) \
+                or factory.get("canonical") != expected_factory.get("canonical") \
+                or factory.get("emitted_factory") != expected_factory.get("emitted_factory") \
+                or route != expected_factory.get("route"):
+            raise CompatibilityError("selected factory evidence drift")
         if not _SHA256.fullmatch(str(row.get("typed_abi_sha256", ""))):
             raise CompatibilityError("typed emitter ABI evidence missing")
     for row in fragments:
@@ -819,10 +943,10 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             continue
         factory = row.get("factory")
         legacy = factory.get("legacy") if isinstance(factory, dict) else None
-        if not isinstance(legacy, dict) or legacy.get("implementation_identity") != "source-hash-bound" \
-                or legacy.get("canonical_name") != factory.get("canonical") \
-                or legacy.get("binding_abi_sha256") != _sha(_encoded({"uniforms": row["uniforms"], "samplers": row["samplers"]})) \
-                or legacy.get("output_abi_sha256") != _sha(_encoded(row["output_abi"])):
+        expected_legacy = legacy_evidence.get(row.get("program_key"))
+        if not isinstance(legacy, dict) or not isinstance(expected_legacy, dict) \
+                or legacy != expected_legacy \
+                or legacy.get("canonical_name") != factory.get("canonical"):
             raise CompatibilityError("legacy factory equivalence evidence missing")
     if not isinstance(scatter.get("source"), str) or not scatter["source"].startswith("sources/") \
             or ".." in pathlib.PurePosixPath(scatter["source"]).parts \

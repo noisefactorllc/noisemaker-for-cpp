@@ -78832,11 +78832,32 @@
         "canonical": "bind_filter_invert_inv",
         "emitted_factory": "bind_filter_invert_inv",
         "legacy": {
-          "binding_abi_sha256": "04b3926a135bfc198f50f160abc6947f427ebfa07a0f94ffe911635f27247ab8",
+          "binding_abi": {
+            "samplers": [
+              {
+                "cpp_type": "const Surface&",
+                "name": "inputTex",
+                "source": "resource"
+              }
+            ],
+            "uniforms": [
+              {
+                "cpp_type": "std::int32_t",
+                "name": "mode",
+                "source": "effect_parameter"
+              }
+            ]
+          },
+          "binding_abi_sha256": "66c65330063bab1c7a7f8c1b421e6a04fc48ec85fdb5fd4ef579d7882dcdd013",
+          "body_sha256": "f06ad7a4c91d2d19914f3bd099b2d75b94cae89b7091c5ff35420b2cf3cf9456",
           "canonical_name": "bind_filter_invert_inv",
-          "implementation_identity": "source-hash-bound",
+          "implementation_identity": "source-body-bound",
           "name": "bind_filter_invert",
-          "output_abi_sha256": "3f34c1c27117b0016e2674851c5723ac214febba132ce2dd6c8e48b12cb831cb",
+          "output_abi": {
+            "cardinality": 1,
+            "cpp_type": "glsl::Vec4"
+          },
+          "output_abi_sha256": "2ae8c213d7a4abac0ec7e3e05c834c819c68c2de72a632aa0a14c9389ee63cd9",
           "path": "src/generated/filter_invert.cpp",
           "source_program_sha256": "18cea484b4d9ab8cbd3db2189777400d7adfeea1c3798dc9ef0e3112d46f6e99",
           "source_sha256": "06dd8cf0dacb86fb4ae11ebc822fd8103f648bc98d8272bc526c4507b2d4f1b7"
@@ -78980,11 +79001,31 @@
         "canonical": "bind_synth_solid_solid",
         "emitted_factory": "bind_synth_solid_solid",
         "legacy": {
-          "binding_abi_sha256": "7b7808ed84c9560a8a9c772513d057426f28a95cf17b5210c8f9bb10cd43f4e2",
+          "binding_abi": {
+            "samplers": [],
+            "uniforms": [
+              {
+                "cpp_type": "float",
+                "name": "alpha",
+                "source": "effect_parameter"
+              },
+              {
+                "cpp_type": "glsl::Vec3",
+                "name": "color",
+                "source": "effect_parameter"
+              }
+            ]
+          },
+          "binding_abi_sha256": "5f7998a2bba56b4eb83f15dcd4e14bd4abc1a37fe66bca110b945edfc6252e67",
+          "body_sha256": "dca660c7c1c4facd865765302fbfe7527db35281ad31fb2445abb7733c19bd8b",
           "canonical_name": "bind_synth_solid_solid",
-          "implementation_identity": "source-hash-bound",
+          "implementation_identity": "source-body-bound",
           "name": "bind_synth_solid",
-          "output_abi_sha256": "3f34c1c27117b0016e2674851c5723ac214febba132ce2dd6c8e48b12cb831cb",
+          "output_abi": {
+            "cardinality": 1,
+            "cpp_type": "glsl::Vec4"
+          },
+          "output_abi_sha256": "2ae8c213d7a4abac0ec7e3e05c834c819c68c2de72a632aa0a14c9389ee63cd9",
           "path": "src/generated/synth_solid.cpp",
           "source_program_sha256": "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c",
           "source_sha256": "4a88533b90ce71268461f2d6fc2ad71025deb830e403c878b424b7b0ef822363"
