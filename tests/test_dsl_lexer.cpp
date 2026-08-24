@@ -3,8 +3,11 @@
 #include "test_harness.hpp"
 
 #include <cmath>
+#include <charconv>
 #include <cstdlib>
+#include <limits>
 #include <iostream>
+#include <iterator>
 #include <sstream>
 #include <string>
 
@@ -78,6 +81,23 @@ TEST(dsl_lexer_handles_malformed_utf8_without_undefined_behavior) {
   REQUIRE(false);
 }
 
+TEST(dsl_error_copy_and_move_own_all_diagnostic_fields) {
+  DslError copied = [&] {
+    DslError original("bad", "owned", 2, 3, 4, 5);
+    return original;
+  }();
+  REQUIRE(copied.sourceName == "owned" && copied.source_name == "owned");
+  REQUIRE(copied.line == 2 && copied.column == 3 && copied.index == 4 && copied.byte_index == 5);
+  REQUIRE(copied.what() == std::string("owned:2:3: bad"));
+  DslError moved = std::move(copied);
+  REQUIRE(moved.sourceName == "owned" && moved.source_name == "owned");
+  REQUIRE(moved.what() == std::string("owned:2:3: bad"));
+  DslError assigned("other", "other", 1, 1);
+  assigned = moved;
+  REQUIRE(assigned.sourceName == "owned" && assigned.source_name == "owned");
+  REQUIRE(assigned.what() == std::string("owned:2:3: bad"));
+}
+
 #ifdef NOISEMAKER_DSL_ORACLE_MAIN
 namespace {
 std::string json_escape(const std::string& value) {
@@ -95,13 +115,51 @@ std::string json_escape(const std::string& value) {
   out << '"';
   return out.str();
 }
-std::string number_tag(double value) {
+std::string js_number_string(double value) {
   if (std::isnan(value)) return "number:NaN";
   if (std::isinf(value)) return value > 0 ? "number:+Infinity" : "number:-Infinity";
   if (std::signbit(value) && value == 0) return "number:-0";
-  std::ostringstream out;
-  out << "number:" << value;
-  return out.str();
+  std::string text;
+  for (int precision = 1; precision <= std::numeric_limits<double>::max_digits10; ++precision) {
+    char candidate_buffer[128]{};
+    const auto converted = std::to_chars(std::begin(candidate_buffer), std::end(candidate_buffer), value,
+                                         std::chars_format::general, precision);
+    if (converted.ec != std::errc{}) continue;
+    const std::string candidate(candidate_buffer, converted.ptr);
+    char* end = nullptr;
+    const double round_trip = std::strtod(candidate.c_str(), &end);
+    if (end != candidate.c_str() && *end == '\0' && round_trip == value) {
+      text = candidate;
+      break;
+    }
+  }
+  if (text.empty()) throw std::runtime_error("failed to serialize finite number");
+  bool negative = false;
+  if (!text.empty() && text.front() == '-') { negative = true; text.erase(text.begin()); }
+  int exponent = 0;
+  const auto e = text.find_first_of("eE");
+  if (e != std::string::npos) {
+    exponent = std::stoi(text.substr(e + 1));
+    text.erase(e);
+  }
+  const auto dot = text.find('.');
+  const int before_dot = dot == std::string::npos ? static_cast<int>(text.size()) : static_cast<int>(dot);
+  if (dot != std::string::npos) text.erase(dot, 1);
+  const int decimal_position = before_dot + exponent;
+  const int scientific_exponent = decimal_position - 1;
+  std::string result;
+  if (scientific_exponent >= -6 && scientific_exponent < 21) {
+    if (decimal_position <= 0) result = "0." + std::string(static_cast<std::size_t>(-decimal_position), '0') + text;
+    else if (decimal_position >= static_cast<int>(text.size())) result = text + std::string(static_cast<std::size_t>(decimal_position - text.size()), '0');
+    else result = text.substr(0, static_cast<std::size_t>(decimal_position)) + "." + text.substr(static_cast<std::size_t>(decimal_position));
+  } else {
+    result.push_back(text.front());
+    if (text.size() > 1) result += "." + text.substr(1);
+    result += "e";
+    if (scientific_exponent >= 0) result += "+";
+    result += std::to_string(scientific_exponent);
+  }
+  return std::string(negative ? "number:-" : "number:") + result;
 }
 std::string record(const std::string& name, const std::string& source, const std::string& source_name) {
   std::ostringstream out;
@@ -114,7 +172,7 @@ std::string record(const std::string& name, const std::string& source, const std
       const auto& token = tokens[i];
       out << "{\"type\":" << json_escape(noisemaker::dsl::token_type_name(token.type))
           << ",\"lexeme\":" << json_escape(token.lexeme);
-      if (std::holds_alternative<double>(token.value)) out << ",\"value\":" << json_escape(number_tag(std::get<double>(token.value)));
+      if (std::holds_alternative<double>(token.value)) out << ",\"value\":" << json_escape(js_number_string(std::get<double>(token.value)));
       else if (std::holds_alternative<std::string>(token.value)) out << ",\"value\":" << json_escape(std::get<std::string>(token.value));
       out << ",\"sourceName\":" << json_escape(token.sourceName)
           << ",\"line\":" << token.line << ",\"column\":" << token.column << ",\"index\":" << token.index << '}';

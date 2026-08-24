@@ -9,17 +9,36 @@ from __future__ import annotations
 import json
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests/fixtures/dsl/frontend-cases.json"
 EXPECTED = ROOT / "tests/oracles/dsl_frontend_expected.txt"
 ORACLE_JS = ROOT / "tools/dsl/js_frontend_oracle.mjs"
-DEFAULT_CPP = pathlib.Path(os.environ.get("NOISEMAKER_DSL_CPP_ORACLE", ""))
+CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
+
+
+def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.Path:
+    configured = os.environ.get("NOISEMAKER_DSL_CPP_ORACLE")
+    if configured is not None and configured != "":
+        candidate = pathlib.Path(configured)
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+        raise AssertionError(f"NOISEMAKER_DSL_CPP_ORACLE is not an executable file: {candidate}")
+    search = candidates if candidates is not None else [
+        pathlib.Path("/private/tmp/noisemaker-cpp-task3-build/noisemaker-dsl-frontend-oracle"),
+        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-frontend-oracle"),
+    ]
+    for candidate in search:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    raise AssertionError("NOISEMAKER_DSL_CPP_ORACLE is unset and no documented external C++ oracle exists")
 
 
 class DslFrontendOracleTest(unittest.TestCase):
@@ -29,17 +48,13 @@ class DslFrontendOracleTest(unittest.TestCase):
             self.fail("NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
         cpu_root = pathlib.Path(cpu_root_value)
         self.assertTrue(cpu_root.is_absolute(), "NOISEMAKER_CPU_ROOT must be absolute")
-        self.assertTrue((cpu_root / "src/dsl/tokenize.js").is_file())
+        self.assertEqual(cpu_root, pathlib.Path(os.path.realpath(cpu_root)), "NOISEMAKER_CPU_ROOT must be a real path")
+        tokenize_path = cpu_root / "src/dsl/tokenize.js"
+        self.assertTrue(tokenize_path.is_file())
+        self.assertEqual(hash_file(tokenize_path), CPU_TOKENIZE_SHA256)
         node = shutil_which("node")
         self.assertIsNotNone(node, "node is required for the authority oracle")
-        cpp = DEFAULT_CPP
-        if not cpp:
-            candidates = [
-                pathlib.Path("/private/tmp/noisemaker-cpp-task3-build/noisemaker-dsl-frontend-oracle"),
-                pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-frontend-oracle"),
-            ]
-            cpp = next((candidate for candidate in candidates if candidate.is_file()), pathlib.Path())
-        self.assertTrue(cpp.is_file(), "set NOISEMAKER_DSL_CPP_ORACLE to the built C++ oracle")
+        cpp = resolve_cpp_oracle()
 
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-oracle-") as temporary:
             generated = pathlib.Path(temporary) / "expected.txt"
@@ -60,6 +75,58 @@ class DslFrontendOracleTest(unittest.TestCase):
                 )
                 cpp_records.append(result.stdout)
             self.assertEqual("".join(cpp_records), EXPECTED.read_text(encoding="utf-8"))
+
+    def test_authority_rejects_forged_module_wrong_hash_and_symlinks(self) -> None:
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        authority_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
+        self.assertTrue(authority_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
+        authority_root = pathlib.Path(authority_root_value)
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-authority-") as temporary:
+            root = pathlib.Path(os.path.realpath(temporary)) / "root"
+            module = root / "src/dsl/tokenize.js"
+            module.parent.mkdir(parents=True)
+            marker = root / "imported"
+            module.write_text(
+                "import fs from 'node:fs'\n"
+                f"fs.writeFileSync({json.dumps(str(marker))}, 'imported')\n"
+                "export function tokenizeDsl() { return [] }\n",
+                encoding="utf-8",
+            )
+            args = [node, str(ORACLE_JS), "--cpu-root", str(root), "--fixtures", str(FIXTURES)]
+            forged = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(forged.returncode, 0)
+            self.assertIn("sha256", forged.stderr)
+            self.assertFalse(marker.exists(), "forged authority was imported before authentication")
+
+            real_root = pathlib.Path(os.path.realpath(temporary)) / "real-root"
+            real_module = real_root / "src/dsl/tokenize.js"
+            real_module.parent.mkdir(parents=True)
+            shutil.copy2(authority_root / "src/dsl/tokenize.js", real_module)
+            symlink_root = pathlib.Path(temporary) / "symlink-root"
+            symlink_root.symlink_to(real_root, target_is_directory=True)
+            root_result = subprocess.run([*args[:2], "--cpu-root", str(symlink_root), "--fixtures", str(FIXTURES)], capture_output=True, text=True)
+            self.assertNotEqual(root_result.returncode, 0)
+            self.assertIn("symlink", root_result.stderr)
+
+            module.unlink()
+            module.symlink_to(real_module)
+            module_result = subprocess.run(args, capture_output=True, text=True)
+            self.assertNotEqual(module_result.returncode, 0)
+            self.assertIn("symlink", module_result.stderr)
+
+    def test_cpp_oracle_fallback_rejects_missing_env_clearly(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-no-oracle-") as temporary:
+            with mock.patch.dict(os.environ, {}, clear=False):
+                os.environ.pop("NOISEMAKER_DSL_CPP_ORACLE", None)
+                with self.assertRaisesRegex(AssertionError, "no documented external C\\+\\+ oracle"):
+                    resolve_cpp_oracle([pathlib.Path(temporary) / "missing"])
+
+
+def hash_file(path: pathlib.Path) -> str:
+    import hashlib
+
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def shutil_which(command: str) -> str | None:

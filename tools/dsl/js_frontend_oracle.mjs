@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import fs from 'node:fs'
+import crypto from 'node:crypto'
 import path from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
@@ -19,10 +20,26 @@ const cpuRoot = argument('--cpu-root')
 const fixturesPath = argument('--fixtures')
 const outputPath = argument('--output')
 const checkPath = argument('--check')
+const EXPECTED_TOKENIZE_SHA256 = '83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2'
 if (!cpuRoot || !fixturesPath || !path.isAbsolute(cpuRoot)) usage('explicit absolute --cpu-root is required')
-if (!fs.existsSync(cpuRoot) || !fs.statSync(cpuRoot).isDirectory()) usage('CPU root is not a directory')
-const tokenizePath = path.join(cpuRoot, 'src', 'dsl', 'tokenize.js')
-if (!fs.existsSync(tokenizePath)) usage(`validated CPU root lacks ${path.relative(cpuRoot, tokenizePath)}`)
+const requestedRoot = path.resolve(cpuRoot)
+if (!fs.existsSync(requestedRoot)) usage('CPU root is not a directory')
+const rootStat = fs.lstatSync(requestedRoot)
+if (rootStat.isSymbolicLink()) usage('CPU root must be a real path, not a symlink')
+if (!rootStat.isDirectory()) usage('CPU root is not a directory')
+const realRoot = fs.realpathSync(requestedRoot)
+if (realRoot !== requestedRoot) usage('CPU root must be a real path, not a symlink')
+const tokenizePath = path.join(realRoot, 'src', 'dsl', 'tokenize.js')
+if (!fs.existsSync(tokenizePath)) usage(`validated CPU root lacks ${path.relative(realRoot, tokenizePath)}`)
+const moduleStat = fs.lstatSync(tokenizePath)
+if (moduleStat.isSymbolicLink()) usage('CPU tokenizer module must not be a symlink')
+if (!moduleStat.isFile()) usage('CPU tokenizer module must be a regular file')
+const realTokenizePath = fs.realpathSync(tokenizePath)
+if (realTokenizePath !== tokenizePath) usage('CPU tokenizer module must not be a symlink')
+const relativeModule = path.relative(realRoot, realTokenizePath)
+if (relativeModule.startsWith('..' + path.sep) || path.isAbsolute(relativeModule)) usage('CPU tokenizer module escapes the CPU root')
+const moduleSha256 = crypto.createHash('sha256').update(fs.readFileSync(realTokenizePath)).digest('hex')
+if (moduleSha256 !== EXPECTED_TOKENIZE_SHA256) usage(`CPU tokenizer authority sha256 mismatch: ${moduleSha256}`)
 const fixtures = JSON.parse(fs.readFileSync(fixturesPath, 'utf8'))
 if (!Array.isArray(fixtures)) usage('fixtures must be an array')
 const { tokenizeDsl } = await import(pathToFileURL(tokenizePath).href)

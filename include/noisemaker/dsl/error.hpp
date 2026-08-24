@@ -28,12 +28,12 @@ class DslError final : public std::runtime_error {
   // These names mirror the JavaScript authority and make diagnostics easy to
   // consume from C++ clients. The snake_case aliases are retained as the
   // idiomatic C++ spelling.
-  const std::string sourceName;
-  const std::string& source_name;
-  const std::size_t line;
-  const std::size_t column;
-  const std::size_t index;
-  const std::size_t byte_index;
+  std::string sourceName;
+  std::string source_name;
+  std::size_t line;
+  std::size_t column;
+  std::size_t index;
+  std::size_t byte_index;
 
  private:
   SourceLocation location_;

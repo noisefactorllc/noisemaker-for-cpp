@@ -8,7 +8,7 @@ DslError::DslError(std::string message, SourceLocation location)
     : std::runtime_error(location.source_name + ":" + std::to_string(location.line) + ":" +
                          std::to_string(location.column) + ": " + message),
       sourceName(location.source_name),
-      source_name(sourceName),
+      source_name(location.source_name),
       line(location.line),
       column(location.column),
       index(location.index),

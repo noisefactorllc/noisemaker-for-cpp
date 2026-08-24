@@ -2,6 +2,7 @@
   {"name":"surface-and-punctuation","source":"search filter, render; let x = blur(o0, amount: 1.25); render(o1);"},
   {"name":"comments-and-whitespace","source":" \t\r\n// astral 😀 before newline\n/* block 😀 comment */ o0 // tail\n"},
   {"name":"numbers","source":"0 1 1.  .5 1e2 1E-2 1e 1e+ 1e-"},
+  {"name":"number-format-boundaries","source":"1e-7 1e-6 1e20 1e21 -1e-6 -1e-7 1.2345678901234567 1000000000000000100 2.2250738585072014e-308"},
   {"name":"special-numbers","source":"1e999 -1e999 -0"},
   {"name":"strings-and-escapes","source":"\"plain 😀 text\" \"line\\n tab\\t quote\\\" slash\\\\ other\\q\""},
   {"name":"colors","source":"#123 #123456 #12345678"},
