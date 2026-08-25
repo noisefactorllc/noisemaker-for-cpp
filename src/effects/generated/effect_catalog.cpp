@@ -3722,7 +3722,7 @@ static EffectDefinition make_effect_22() {
     t.name = "_brightTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -3731,7 +3731,7 @@ static EffectDefinition make_effect_22() {
     t.name = "_bloomTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -3807,7 +3807,7 @@ static EffectDefinition make_effect_23() {
     t.name = "_blurTemp";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -4023,7 +4023,7 @@ static EffectDefinition make_effect_25() {
     t.name = "celShadingColorTex";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -4032,7 +4032,7 @@ static EffectDefinition make_effect_25() {
     t.name = "celShadingEdgeTex";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -4280,7 +4280,7 @@ static EffectDefinition make_effect_29() {
     t.name = "_chBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -4289,7 +4289,7 @@ static EffectDefinition make_effect_29() {
     t.name = "_chBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -4610,7 +4610,7 @@ static EffectDefinition make_effect_33() {
     t.name = "_cfSharpened";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -4619,7 +4619,7 @@ static EffectDefinition make_effect_33() {
     t.name = "_cfBlurred";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -5615,7 +5615,7 @@ static EffectDefinition make_effect_44() {
     t.name = "_selfTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -5692,7 +5692,7 @@ static EffectDefinition make_effect_45() {
     t.name = "overlayTex";
     t.width = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
     t.height = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
-    t.format = "rgba8";
+    t.format = std::string("rgba8");
     t.raw = {{"width", Value::string_value("screen")}, {"height", Value::string_value("screen")}, {"format", Value::string_value("rgba8")}};
     e.textures.push_back(std::move(t));
   }
@@ -6354,7 +6354,7 @@ static EffectDefinition make_effect_50() {
     t.name = "_primaryTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -6363,7 +6363,7 @@ static EffectDefinition make_effect_50() {
     t.name = "_creativeTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -6372,7 +6372,7 @@ static EffectDefinition make_effect_50() {
     t.name = "_wheelsTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -6381,7 +6381,7 @@ static EffectDefinition make_effect_50() {
     t.name = "_hslTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -6390,7 +6390,7 @@ static EffectDefinition make_effect_50() {
     t.name = "_lutTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16float";
+    t.format = std::string("rgba16float");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16float")}};
     e.textures.push_back(std::move(t));
   }
@@ -6821,7 +6821,7 @@ static EffectDefinition make_effect_55() {
     t.name = "_hpBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -6830,7 +6830,7 @@ static EffectDefinition make_effect_55() {
     t.name = "_hpBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -7660,7 +7660,7 @@ static EffectDefinition make_effect_66() {
     t.name = "_morphTmp";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -7843,7 +7843,7 @@ static EffectDefinition make_effect_68() {
     t.name = "_selfTex";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -7912,7 +7912,7 @@ static EffectDefinition make_effect_70() {
     t.name = "reduce1";
     t.width = DimensionExpression{DimensionKind::screen_division, "6.25%", std::string(), 0.0, 0.0, 1, Value::string_value("6.25%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "6.25%", std::string(), 0.0, 0.0, 1, Value::string_value("6.25%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("6.25%")}, {"height", Value::string_value("6.25%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -7921,7 +7921,7 @@ static EffectDefinition make_effect_70() {
     t.name = "reduce2";
     t.width = DimensionExpression{DimensionKind::screen_division, "0.4%", std::string(), 0.0, 0.0, 1, Value::string_value("0.4%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "0.4%", std::string(), 0.0, 0.0, 1, Value::string_value("0.4%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("0.4%")}, {"height", Value::string_value("0.4%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -7930,7 +7930,7 @@ static EffectDefinition make_effect_70() {
     t.name = "stats";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 1.0, 0.0, 1, Value::number_value(1.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 1.0, 0.0, 1, Value::number_value(1.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(1.0)}, {"height", Value::number_value(1.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8146,7 +8146,7 @@ static EffectDefinition make_effect_72() {
     t.name = "_paintTmp";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -8290,7 +8290,7 @@ static EffectDefinition make_effect_74() {
     t.name = "outlineValueMap";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8299,7 +8299,7 @@ static EffectDefinition make_effect_74() {
     t.name = "outlineEdges";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8581,7 +8581,7 @@ static EffectDefinition make_effect_78() {
     t.name = "_pcBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -8590,7 +8590,7 @@ static EffectDefinition make_effect_78() {
     t.name = "_pcBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -8759,7 +8759,7 @@ static EffectDefinition make_effect_80() {
     t.name = "prepared";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8768,7 +8768,7 @@ static EffectDefinition make_effect_80() {
     t.name = "luminance";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8777,7 +8777,7 @@ static EffectDefinition make_effect_80() {
     t.name = "brightest";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8786,7 +8786,7 @@ static EffectDefinition make_effect_80() {
     t.name = "rank";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8795,7 +8795,7 @@ static EffectDefinition make_effect_80() {
     t.name = "sorted";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -8956,7 +8956,7 @@ static EffectDefinition make_effect_82() {
     t.name = "_pwBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -8965,7 +8965,7 @@ static EffectDefinition make_effect_82() {
     t.name = "_pwBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -9348,7 +9348,7 @@ static EffectDefinition make_effect_87() {
     t.name = "statsTiles";
     t.width = DimensionExpression{DimensionKind::unknown, std::string(), std::string(), 0.0, 0.0, 1, Value::null()};
     t.height = DimensionExpression{DimensionKind::unknown, std::string(), std::string(), 0.0, 0.0, 1, Value::null()};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -9357,7 +9357,7 @@ static EffectDefinition make_effect_87() {
     t.name = "global_stats";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 1.0, 0.0, 1, Value::number_value(1.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 1.0, 0.0, 1, Value::number_value(1.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(1.0)}, {"height", Value::number_value(1.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -9493,7 +9493,7 @@ static EffectDefinition make_effect_88() {
     t.name = "_rlBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -9502,7 +9502,7 @@ static EffectDefinition make_effect_88() {
     t.name = "_rlBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -10002,7 +10002,7 @@ static EffectDefinition make_effect_95() {
     t.name = "_scatterTmp";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -10078,7 +10078,7 @@ static EffectDefinition make_effect_96() {
     t.name = "overlayTex";
     t.width = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
     t.height = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
-    t.format = "rgba8";
+    t.format = std::string("rgba8");
     t.raw = {{"width", Value::string_value("screen")}, {"height", Value::string_value("screen")}, {"format", Value::string_value("rgba8")}};
     e.textures.push_back(std::move(t));
   }
@@ -10498,7 +10498,7 @@ static EffectDefinition make_effect_103() {
     t.name = "_smoothEdges";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11028,7 +11028,7 @@ static EffectDefinition make_effect_111() {
     t.name = "_stBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11037,7 +11037,7 @@ static EffectDefinition make_effect_111() {
     t.name = "_stBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11255,7 +11255,7 @@ static EffectDefinition make_effect_114() {
     t.name = "overlayTex";
     t.width = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
     t.height = DimensionExpression{DimensionKind::screen, "screen", std::string(), 0.0, 0.0, 1, Value::string_value("screen")};
-    t.format = "rgba8";
+    t.format = std::string("rgba8");
     t.raw = {{"width", Value::string_value("screen")}, {"height", Value::string_value("screen")}, {"format", Value::string_value("rgba8")}};
     e.textures.push_back(std::move(t));
   }
@@ -11344,7 +11344,7 @@ static EffectDefinition make_effect_115() {
     t.name = "_stkTmp";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11433,7 +11433,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h1";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11442,7 +11442,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h2";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11451,7 +11451,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h3";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11460,7 +11460,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h4";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11469,7 +11469,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h5";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11478,7 +11478,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h6";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11487,7 +11487,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h7";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -11496,7 +11496,7 @@ static EffectDefinition make_effect_116() {
     t.name = "_h8";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -12692,7 +12692,7 @@ static EffectDefinition make_effect_126() {
     t.name = "_usmBlurH";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -12701,7 +12701,7 @@ static EffectDefinition make_effect_126() {
     t.name = "_usmBlur";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba8unorm";
+    t.format = std::string("rgba8unorm");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba8unorm")}};
     e.textures.push_back(std::move(t));
   }
@@ -12959,7 +12959,7 @@ static EffectDefinition make_effect_130() {
     t.name = "global_wc_state";
     t.width = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
     t.height = DimensionExpression{DimensionKind::input, "input", std::string(), 0.0, 0.0, 1, Value::string_value("input")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("input")}, {"height", Value::string_value("input")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13281,7 +13281,7 @@ static EffectDefinition make_effect_134() {
     t.name = "wormhole_accum";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13302,7 +13302,7 @@ static EffectDefinition make_effect_134() {
     p.outputs = {{"fragColor", "wormhole_accum"}};
     p.uniforms = {{"kink", Value::string_value("kink")}, {"stride", Value::string_value("stride")}, {"rotation", Value::string_value("rotation")}, {"wrap", Value::string_value("wrap")}};
     p.count = Value::string_value("input");
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"inputTex", Value::string_value("inputTex")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("wormhole_accum")}})}, {"uniforms", Value::object_value({{"kink", Value::string_value("kink")}, {"stride", Value::string_value("stride")}, {"rotation", Value::string_value("rotation")}, {"wrap", Value::string_value("wrap")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("points")}, {"count", Value::string_value("input")}};
     e.passes.push_back(std::move(p));
@@ -13483,7 +13483,7 @@ static EffectDefinition make_effect_136() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13492,7 +13492,7 @@ static EffectDefinition make_effect_136() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13501,7 +13501,7 @@ static EffectDefinition make_effect_136() {
     t.name = "global_flow3d_state1";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(512.0)}, {"height", Value::number_value(512.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13510,7 +13510,7 @@ static EffectDefinition make_effect_136() {
     t.name = "global_flow3d_state2";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(512.0)}, {"height", Value::number_value(512.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13519,7 +13519,7 @@ static EffectDefinition make_effect_136() {
     t.name = "global_flow3d_state3";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 512.0, 0.0, 1, Value::number_value(512.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(512.0)}, {"height", Value::number_value(512.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13528,7 +13528,7 @@ static EffectDefinition make_effect_136() {
     t.name = "global_flow3d_trail";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13537,7 +13537,7 @@ static EffectDefinition make_effect_136() {
     t.name = "global_flow3d_blended";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -13582,7 +13582,7 @@ static EffectDefinition make_effect_136() {
     p.uniforms = {{"density", Value::string_value("density")}, {"volumeSize", Value::string_value("volumeSize")}};
     p.count = Value::number_value(262144.0);
     p.viewport = Value::object_value({{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}, {"inputOverride", Value::string_value("inputTex3d")}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}, {"inputOverride", Value::string_value("inputTex3d")}})}});
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"stateTex1", Value::string_value("global_flow3d_state1")}, {"stateTex2", Value::string_value("global_flow3d_state2")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_flow3d_trail")}})}, {"uniforms", Value::object_value({{"density", Value::string_value("density")}, {"volumeSize", Value::string_value("volumeSize")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("points")}, {"count", Value::number_value(262144.0)}, {"viewport", Value::object_value({{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}, {"inputOverride", Value::string_value("inputTex3d")}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}, {"inputOverride", Value::string_value("inputTex3d")}})}})}};
     e.passes.push_back(std::move(p));
@@ -13686,7 +13686,7 @@ static EffectDefinition make_effect_137() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -15302,7 +15302,7 @@ static EffectDefinition make_effect_154() {
     t.name = "global_zState";
     t.width = DimensionExpression{DimensionKind::parameter_default, "stateSize", "", 0.0, 512.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"paramDefault", Value::number_value(512.0)}})};
     t.height = DimensionExpression{DimensionKind::parameter_default, "stateSize", "", 0.0, 512.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"paramDefault", Value::number_value(512.0)}})};
-    t.format = "rgba32float";
+    t.format = std::string("rgba32float");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("stateSize")}, {"paramDefault", Value::number_value(512.0)}})}, {"height", Value::object_value({{"param", Value::string_value("stateSize")}, {"paramDefault", Value::number_value(512.0)}})}, {"format", Value::string_value("rgba32float")}};
     e.textures.push_back(std::move(t));
   }
@@ -15457,7 +15457,7 @@ static EffectDefinition make_effect_155() {
     t.name = "global_dla_grid";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -15499,7 +15499,7 @@ static EffectDefinition make_effect_155() {
     p.outputs = {{"fragColor", "global_dla_grid"}};
     p.uniforms = {{"deposit", Value::string_value("deposit")}};
     p.count = Value::string_value("input");
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::factors, false, {"one", "one"}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("depositGrid")}, {"program", Value::string_value("depositGrid")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}, {"velTex", Value::string_value("global_vel")}, {"rgbaTex", Value::string_value("global_rgba")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_dla_grid")}})}, {"uniforms", Value::object_value({{"deposit", Value::string_value("deposit")}})}, {"blend", Value::array_value({Value::string_value("one"), Value::string_value("one")})}, {"drawMode", Value::string_value("points")}, {"count", Value::string_value("input")}};
     e.passes.push_back(std::move(p));
@@ -16012,7 +16012,7 @@ static EffectDefinition make_effect_159() {
     t.name = "global_lenia_density";
     t.width = DimensionExpression{DimensionKind::screen_division, "50%", std::string(), 0.0, 0.0, 1, Value::string_value("50%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "50%", std::string(), 0.0, 0.0, 1, Value::string_value("50%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("50%")}, {"height", Value::string_value("50%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16021,7 +16021,7 @@ static EffectDefinition make_effect_159() {
     t.name = "global_lenia_field";
     t.width = DimensionExpression{DimensionKind::screen_division, "50%", std::string(), 0.0, 0.0, 1, Value::string_value("50%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "50%", std::string(), 0.0, 0.0, 1, Value::string_value("50%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("50%")}, {"height", Value::string_value("50%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16042,7 +16042,7 @@ static EffectDefinition make_effect_159() {
     p.outputs = {{"fragColor", "global_lenia_density"}};
     p.uniforms = {{"depositAmount", Value::string_value("depositAmount")}};
     p.count = Value::string_value("input");
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_lenia_density")}})}, {"uniforms", Value::object_value({{"depositAmount", Value::string_value("depositAmount")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("points")}, {"count", Value::string_value("input")}};
     e.passes.push_back(std::move(p));
@@ -16238,7 +16238,7 @@ static EffectDefinition make_effect_160() {
     t.name = "global_life_data";
     t.width = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
     t.height = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"height", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16247,7 +16247,7 @@ static EffectDefinition make_effect_160() {
     t.name = "forceMatrix";
     t.width = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 8.0, 0.0, 1, Value::number_value(8.0)};
     t.height = DimensionExpression{DimensionKind::literal, std::string(), std::string(), 8.0, 0.0, 1, Value::number_value(8.0)};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::number_value(8.0)}, {"height", Value::number_value(8.0)}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16403,7 +16403,7 @@ static EffectDefinition make_effect_161() {
     t.name = "global_physarum_pheromone";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16445,7 +16445,7 @@ static EffectDefinition make_effect_161() {
     p.outputs = {{"fragColor", "global_physarum_pheromone"}};
     p.uniforms = {{"deposit", Value::string_value("deposit")}};
     p.count = Value::string_value("input");
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}, {"rgbaTex", Value::string_value("global_rgba")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_physarum_pheromone")}})}, {"uniforms", Value::object_value({{"deposit", Value::string_value("deposit")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("points")}, {"count", Value::string_value("input")}};
     e.passes.push_back(std::move(p));
@@ -16908,7 +16908,7 @@ static EffectDefinition make_effect_165() {
     t.name = "global_billboard_trail";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -16940,7 +16940,7 @@ static EffectDefinition make_effect_165() {
     p.uniforms = {{"shapeMode", Value::string_value("shapeMode")}, {"depositOpacity", Value::string_value("depositOpacity")}, {"density", Value::string_value("density")}, {"pointSize", Value::string_value("pointSize")}, {"sizeVariation", Value::string_value("sizeVariation")}, {"rotationVar", Value::string_value("rotationVar")}, {"seed", Value::string_value("seed")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}};
     p.count = Value::string_value("input");
     p.conditions = Value::object_value({{"runIf", Value::array_value({Value::object_value({{"uniform", Value::string_value("blendMode")}, {"equals", Value::number_value(0.0)}})})}});
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("billboards");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}, {"rgbaTex", Value::string_value("global_rgba")}, {"spriteTex", Value::string_value("tex")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_billboard_trail")}})}, {"uniforms", Value::object_value({{"shapeMode", Value::string_value("shapeMode")}, {"depositOpacity", Value::string_value("depositOpacity")}, {"density", Value::string_value("density")}, {"pointSize", Value::string_value("pointSize")}, {"sizeVariation", Value::string_value("sizeVariation")}, {"rotationVar", Value::string_value("rotationVar")}, {"seed", Value::string_value("seed")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("billboards")}, {"count", Value::string_value("input")}, {"conditions", Value::object_value({{"runIf", Value::array_value({Value::object_value({{"uniform", Value::string_value("blendMode")}, {"equals", Value::number_value(0.0)}})})}})}};
     e.passes.push_back(std::move(p));
@@ -16954,7 +16954,7 @@ static EffectDefinition make_effect_165() {
     p.uniforms = {{"shapeMode", Value::string_value("shapeMode")}, {"depositOpacity", Value::string_value("depositOpacity")}, {"density", Value::string_value("density")}, {"pointSize", Value::string_value("pointSize")}, {"sizeVariation", Value::string_value("sizeVariation")}, {"rotationVar", Value::string_value("rotationVar")}, {"seed", Value::string_value("seed")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}};
     p.count = Value::string_value("input");
     p.conditions = Value::object_value({{"runIf", Value::array_value({Value::object_value({{"uniform", Value::string_value("blendMode")}, {"equals", Value::number_value(1.0)}})})}});
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::factors, false, {"ONE", "ONE_MINUS_SRC_ALPHA"}};
     p.draw_mode = std::string("billboards");
     p.raw = {{"name", Value::string_value("deposit_alpha")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}, {"rgbaTex", Value::string_value("global_rgba")}, {"spriteTex", Value::string_value("tex")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_billboard_trail")}})}, {"uniforms", Value::object_value({{"shapeMode", Value::string_value("shapeMode")}, {"depositOpacity", Value::string_value("depositOpacity")}, {"density", Value::string_value("density")}, {"pointSize", Value::string_value("pointSize")}, {"sizeVariation", Value::string_value("sizeVariation")}, {"rotationVar", Value::string_value("rotationVar")}, {"seed", Value::string_value("seed")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}})}, {"blend", Value::array_value({Value::string_value("ONE"), Value::string_value("ONE_MINUS_SRC_ALPHA")})}, {"drawMode", Value::string_value("billboards")}, {"count", Value::string_value("input")}, {"conditions", Value::object_value({{"runIf", Value::array_value({Value::object_value({{"uniform", Value::string_value("blendMode")}, {"equals", Value::number_value(1.0)}})})}})}};
     e.passes.push_back(std::move(p));
@@ -17055,7 +17055,7 @@ static EffectDefinition make_effect_166() {
     t.name = "global_xyz";
     t.width = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
     t.height = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
-    t.format = "rgba32f";
+    t.format = std::string("rgba32f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"height", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"format", Value::string_value("rgba32f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17064,7 +17064,7 @@ static EffectDefinition make_effect_166() {
     t.name = "global_vel";
     t.width = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
     t.height = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
-    t.format = "rgba32f";
+    t.format = std::string("rgba32f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"height", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"format", Value::string_value("rgba32f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17073,7 +17073,7 @@ static EffectDefinition make_effect_166() {
     t.name = "global_rgba";
     t.width = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
     t.height = DimensionExpression{DimensionKind::parameter, "stateSize", "", 0.0, 256.0, 1, Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})};
-    t.format = "rgba8";
+    t.format = std::string("rgba8");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"height", Value::object_value({{"param", Value::string_value("stateSize")}, {"default", Value::number_value(256.0)}})}, {"format", Value::string_value("rgba8")}};
     e.textures.push_back(std::move(t));
   }
@@ -17253,7 +17253,7 @@ static EffectDefinition make_effect_167() {
     t.name = "global_points_trail";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17284,7 +17284,7 @@ static EffectDefinition make_effect_167() {
     p.outputs = {{"fragColor", "global_points_trail"}};
     p.uniforms = {{"density", Value::string_value("density")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}};
     p.count = Value::string_value("input");
-    p.blend = true;
+    p.blend = BlendDefinition{BlendKind::boolean, true, {}};
     p.draw_mode = std::string("points");
     p.raw = {{"name", Value::string_value("deposit")}, {"program", Value::string_value("deposit")}, {"inputs", Value::object_value({{"xyzTex", Value::string_value("global_xyz")}, {"rgbaTex", Value::string_value("global_rgba")}})}, {"outputs", Value::object_value({{"fragColor", Value::string_value("global_points_trail")}})}, {"uniforms", Value::object_value({{"density", Value::string_value("density")}, {"viewMode", Value::string_value("viewMode")}, {"rotateX", Value::string_value("rotateX")}, {"rotateY", Value::string_value("rotateY")}, {"rotateZ", Value::string_value("rotateZ")}, {"viewScale", Value::string_value("viewScale")}, {"posX", Value::string_value("posX")}, {"posY", Value::string_value("posY")}})}, {"blend", Value::boolean_value(true)}, {"drawMode", Value::string_value("points")}, {"count", Value::string_value("input")}};
     e.passes.push_back(std::move(p));
@@ -17390,9 +17390,9 @@ static EffectDefinition make_effect_168() {
   {
     TextureDefinition t;
     t.name = "screenGeoBuffer";
-    t.width = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.height = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.format = "rgba16f";
+    t.width = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.height = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("resolution")}, {"height", Value::string_value("resolution")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17496,9 +17496,9 @@ static EffectDefinition make_effect_169() {
   {
     TextureDefinition t;
     t.name = "screenGeoBuffer";
-    t.width = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.height = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.format = "rgba16f";
+    t.width = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.height = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("resolution")}, {"height", Value::string_value("resolution")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17605,9 +17605,9 @@ static EffectDefinition make_effect_170() {
   {
     TextureDefinition t;
     t.name = "screenGeoBuffer";
-    t.width = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.height = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.format = "rgba16f";
+    t.width = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.height = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("resolution")}, {"height", Value::string_value("resolution")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -17816,9 +17816,9 @@ static EffectDefinition make_effect_171() {
   {
     TextureDefinition t;
     t.name = "screenGeoBuffer";
-    t.width = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.height = DimensionExpression{DimensionKind::unknown, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
-    t.format = "rgba16f";
+    t.width = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.height = DimensionExpression{DimensionKind::resolution, "resolution", std::string(), 0.0, 0.0, 1, Value::string_value("resolution")};
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::string_value("resolution")}, {"height", Value::string_value("resolution")}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -18196,7 +18196,6 @@ static EffectDefinition make_effect_174() {
     t.name = "global_ca_state";
     t.width = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 32.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 32.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(32.0)}})};
-    t.format = "";
     t.raw = {{"width", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(32.0)}})}};
     e.textures.push_back(std::move(t));
   }
@@ -19488,7 +19487,6 @@ static EffectDefinition make_effect_182() {
     t.name = "global_mnca_state";
     t.width = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 8.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})};
     t.height = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 8.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})};
-    t.format = "";
     t.raw = {{"width", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})}, {"height", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})}};
     e.textures.push_back(std::move(t));
   }
@@ -19839,7 +19837,7 @@ static EffectDefinition make_effect_184() {
     t.name = "global_ns_velocity";
     t.width = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 4.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})};
     t.height = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 4.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})}, {"height", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -19848,7 +19846,7 @@ static EffectDefinition make_effect_184() {
     t.name = "global_ns_pressure";
     t.width = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 4.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})};
     t.height = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 4.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})}, {"height", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(4.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -19857,7 +19855,6 @@ static EffectDefinition make_effect_184() {
     t.name = "global_ns_smoothed";
     t.width = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
     t.height = DimensionExpression{DimensionKind::screen_division, "100%", std::string(), 0.0, 0.0, 1, Value::string_value("100%")};
-    t.format = "";
     t.raw = {{"width", Value::string_value("100%")}, {"height", Value::string_value("100%")}};
     e.textures.push_back(std::move(t));
   }
@@ -20928,7 +20925,6 @@ static EffectDefinition make_effect_191() {
     t.name = "global_rd_state";
     t.width = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 8.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})};
     t.height = DimensionExpression{DimensionKind::screen_division, "zoom", "", 0.0, 8.0, 1, Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})};
-    t.format = "";
     t.raw = {{"width", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})}, {"height", Value::object_value({{"screenDivide", Value::string_value("zoom")}, {"default", Value::number_value(8.0)}})}};
     e.textures.push_back(std::move(t));
   }
@@ -24140,7 +24136,7 @@ static EffectDefinition make_effect_198() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24149,7 +24145,7 @@ static EffectDefinition make_effect_198() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24308,7 +24304,7 @@ static EffectDefinition make_effect_199() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24317,7 +24313,7 @@ static EffectDefinition make_effect_199() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24326,7 +24322,7 @@ static EffectDefinition make_effect_199() {
     t.name = "global_ca_state";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24451,7 +24447,7 @@ static EffectDefinition make_effect_200() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24460,7 +24456,7 @@ static EffectDefinition make_effect_200() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24594,7 +24590,7 @@ static EffectDefinition make_effect_201() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24603,7 +24599,7 @@ static EffectDefinition make_effect_201() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24715,7 +24711,7 @@ static EffectDefinition make_effect_202() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24724,7 +24720,7 @@ static EffectDefinition make_effect_202() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24906,7 +24902,7 @@ static EffectDefinition make_effect_203() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24915,7 +24911,7 @@ static EffectDefinition make_effect_203() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -24924,7 +24920,7 @@ static EffectDefinition make_effect_203() {
     t.name = "global_rd_state";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 32.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 1024.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(32.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(1024.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -25049,7 +25045,7 @@ static EffectDefinition make_effect_204() {
     t.name = "volumeCache";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -25058,7 +25054,7 @@ static EffectDefinition make_effect_204() {
     t.name = "geoBuffer";
     t.width = DimensionExpression{DimensionKind::parameter, "volumeSize", "", 0.0, 64.0, 1, Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})};
     t.height = DimensionExpression{DimensionKind::power, "volumeSize", "", 0.0, 4096.0, 2, Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})};
-    t.format = "rgba16f";
+    t.format = std::string("rgba16f");
     t.raw = {{"width", Value::object_value({{"param", Value::string_value("volumeSize")}, {"default", Value::number_value(64.0)}})}, {"height", Value::object_value({{"param", Value::string_value("volumeSize")}, {"power", Value::number_value(2.0)}, {"default", Value::number_value(4096.0)}})}, {"format", Value::string_value("rgba16f")}};
     e.textures.push_back(std::move(t));
   }
@@ -25096,7 +25092,7 @@ const EffectCatalog& effect_catalog() {
     c.provenance.cpu_revision = "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7";
     c.provenance.source_lock_sha256 = "66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4";
     c.provenance.upstream_revision = "117a236679d1db3ab8f0e278230ece277b57564c";
-    c.provenance.generated_payload_sha256 = "bcd1fdb126a231632865f1a3f2448c9fcb528a5457d58947f4c474af6622e93d";
+    c.provenance.generated_payload_sha256 = "a214893a7c696073791fdb5eeae351ab7cd4638cf988cb446b9b70c43306b116";
     c.provenance.normalized_record_stream_sha256 = "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996";
     c.provenance.first_effect_id = "classicNoisedeck/bitEffects";
     c.provenance.last_effect_id = "synth3d/shape3d";

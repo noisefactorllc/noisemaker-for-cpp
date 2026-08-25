@@ -18,7 +18,70 @@ TEST(effect_catalog_retains_dynamic_dimensions_and_formats) {
   REQUIRE(effect != nullptr);
   REQUIRE(!effect->textures.empty());
   REQUIRE(effect->textures.front().width.kind == noisemaker::effects::DimensionKind::input);
-  REQUIRE(effect->textures.front().format == "rgba16float");
+  REQUIRE(effect->textures.front().format.has_value());
+  REQUIRE(effect->textures.front().format.value() == "rgba16float");
+}
+
+TEST(effect_catalog_retains_resolution_dimensions_and_absent_formats) {
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  for (const char* id : {"render/render3d", "render/renderCubemap3d",
+                         "render/renderCubemapSurface", "render/renderLit3d"}) {
+    const auto* effect = catalog.find(id);
+    REQUIRE(effect != nullptr);
+    REQUIRE(effect->textures.size() == 1);
+    REQUIRE(effect->textures.front().name == "screenGeoBuffer");
+    REQUIRE(effect->textures.front().width.kind == noisemaker::effects::DimensionKind::resolution);
+    REQUIRE(effect->textures.front().height.kind == noisemaker::effects::DimensionKind::resolution);
+  }
+
+  const auto* cellular = catalog.find("synth/cellularAutomata");
+  REQUIRE(cellular != nullptr);
+  REQUIRE(cellular->textures.size() == 1);
+  REQUIRE(!cellular->textures.front().format.has_value());
+  bool cellular_raw_format = false;
+  for (const auto& field : cellular->textures.front().raw) cellular_raw_format |= field.first == "format";
+  REQUIRE(!cellular_raw_format);
+  const auto* bloom = catalog.find("filter/bloom");
+  REQUIRE(bloom != nullptr);
+  REQUIRE(!bloom->textures.empty());
+  bool bloom_raw_format = false;
+  for (const auto& field : bloom->textures.front().raw) bloom_raw_format |= field.first == "format";
+  REQUIRE(bloom_raw_format);
+}
+
+TEST(effect_catalog_retains_closed_blend_forms) {
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  const auto pass_named = [](const auto* effect, const char* name) {
+    for (const auto& pass : effect->passes) {
+      if (pass.name == name) return &pass;
+    }
+    return static_cast<const noisemaker::effects::PassDefinition*>(nullptr);
+  };
+  const auto* dla = catalog.find("points/dla");
+  REQUIRE(dla != nullptr);
+  const auto* dla_deposit = pass_named(dla, "depositGrid");
+  REQUIRE(dla_deposit != nullptr);
+  REQUIRE(dla_deposit->blend.has_value());
+  REQUIRE(dla_deposit->blend->kind == noisemaker::effects::BlendKind::factors);
+  REQUIRE(dla_deposit->blend->factors[0] == "one");
+  REQUIRE(dla_deposit->blend->factors[1] == "one");
+
+  const auto* billboard = catalog.find("render/pointsBillboardRender");
+  REQUIRE(billboard != nullptr);
+  const auto* alpha = pass_named(billboard, "deposit_alpha");
+  REQUIRE(alpha != nullptr);
+  REQUIRE(alpha->blend.has_value());
+  REQUIRE(alpha->blend->kind == noisemaker::effects::BlendKind::factors);
+  REQUIRE(alpha->blend->factors[0] == "ONE");
+  REQUIRE(alpha->blend->factors[1] == "ONE_MINUS_SRC_ALPHA");
+
+  const auto* boolean = catalog.find("filter/wormhole");
+  REQUIRE(boolean != nullptr);
+  const auto* deposit = pass_named(boolean, "deposit");
+  REQUIRE(deposit != nullptr);
+  REQUIRE(deposit->blend.has_value());
+  REQUIRE(deposit->blend->kind == noisemaker::effects::BlendKind::boolean);
+  REQUIRE(deposit->blend->enabled);
 }
 
 TEST(effect_catalog_retains_blur_order_and_external_texture) {
@@ -52,5 +115,5 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "bcd1fdb126a231632865f1a3f2448c9fcb528a5457d58947f4c474af6622e93d");
+  REQUIRE(provenance.generated_payload_sha256 == "a214893a7c696073791fdb5eeae351ab7cd4638cf988cb446b9b70c43306b116");
 }

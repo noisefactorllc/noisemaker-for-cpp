@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <optional>
@@ -27,7 +28,7 @@ struct Value {
   static Value object_value(std::vector<std::pair<std::string, Value>> value) { Value result; result.kind = ValueKind::object; result.object = std::move(value); return result; }
 };
 
-enum class DimensionKind { input, screen, literal, parameter, parameter_default, power, screen_division, unknown };
+enum class DimensionKind { input, screen, literal, parameter, parameter_default, power, screen_division, resolution, unknown };
 
 struct DimensionExpression {
   DimensionKind kind = DimensionKind::unknown;
@@ -61,8 +62,16 @@ struct TextureDefinition {
   std::string name;
   DimensionExpression width;
   DimensionExpression height;
-  std::string format;
+  std::optional<std::string> format;
   std::vector<std::pair<std::string, Value>> raw;
+};
+
+enum class BlendKind { boolean, factors };
+
+struct BlendDefinition {
+  BlendKind kind = BlendKind::boolean;
+  bool enabled = false;
+  std::array<std::string, 2> factors{};
 };
 
 struct PassDefinition {
@@ -75,7 +84,7 @@ struct PassDefinition {
   std::optional<Value> repeat;
   std::optional<Value> conditions;
   std::optional<Value> viewport;
-  std::optional<bool> blend;
+  std::optional<BlendDefinition> blend;
   std::optional<std::string> draw_mode;
   std::optional<Value> draw_buffers;
   std::vector<std::pair<std::string, Value>> raw;

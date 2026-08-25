@@ -54,6 +54,61 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
                 list(document["records"][0]),
             )
 
+    def test_typed_schema_preserves_polymorphic_catalog_fields(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="catalog-schema-census-") as td:
+            output = pathlib.Path(td) / "catalog.json"
+            subprocess.run(
+                ["node", str(EXPORTER), "--cpu-root", str(CPU), "--output", str(output)],
+                cwd=ROOT, check=True,
+            )
+            records = load_export(output)
+
+        passes = [current_pass for effect in records for current_pass in effect["passes"]]
+        blends = [current_pass["blend"] for current_pass in passes if "blend" in current_pass]
+        self.assertEqual(8, len(blends))
+        self.assertEqual(6, sum(isinstance(value, bool) for value in blends))
+        self.assertEqual(2, sum(isinstance(value, list) for value in blends))
+        self.assertEqual(
+            [["one", "one"], ["ONE", "ONE_MINUS_SRC_ALPHA"]],
+            [value for value in blends if isinstance(value, list)],
+        )
+
+        textures = [texture for effect in records for texture in effect["textures"].values()]
+        resolution_textures = [
+            texture for texture in textures
+            if texture.get("width") == "resolution" or texture.get("height") == "resolution"
+        ]
+        self.assertEqual(4, len(resolution_textures))
+        self.assertEqual(8, sum(
+            dimension == "resolution"
+            for texture in resolution_textures
+            for dimension in (texture.get("width"), texture.get("height"))
+        ))
+        self.assertEqual(4, sum("format" not in texture for texture in textures))
+        self.assertEqual(100, sum("format" in texture for texture in textures))
+        self.assertEqual(
+            0,
+            sum("outputTex" in effect for effect in records),
+            "outputTex is a pass route only, never an invented effect field",
+        )
+
+        source = GENERATOR.read_text(encoding="utf-8")
+        self.assertIn("BlendDefinition", source)
+        self.assertIn("DimensionKind::resolution", source)
+        self.assertIn("if \"format\" in texture", source)
+        self.assertNotIn("str(texture.get('format', ''))", source)
+        self.assertNotIn("p.blend = {'true' if current_pass['blend'] else 'false'}", source)
+
+    def test_generator_rejects_malformed_polymorphic_metadata(self) -> None:
+        with self.assertRaises(CatalogError):
+            generator._blend(["one"])
+        with self.assertRaises(CatalogError):
+            generator._blend(["one", 1])
+        with self.assertRaises(CatalogError):
+            generator._blend({"enabled": True})
+        with self.assertRaises(CatalogError):
+            generator._texture_format(3, "effect.texture")
+
     def test_generation_is_deterministic_and_derives_status_counts(self) -> None:
         with tempfile.TemporaryDirectory(prefix="catalog-generate-") as td:
             out = pathlib.Path(td)

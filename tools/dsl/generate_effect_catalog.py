@@ -260,6 +260,23 @@ def _cpp_optional_string(value: Any) -> str:
     return f"std::string({_cpp_string(value)})"
 
 
+def _texture_format(value: Any, context: str = "texture.format") -> str:
+    if not isinstance(value, str):
+        raise CatalogError(f"{context} must be a string when present")
+    return value
+
+
+def _blend(value: Any, context: str = "pass.blend") -> str:
+    if isinstance(value, bool):
+        return f"BlendDefinition{{BlendKind::boolean, {'true' if value else 'false'}, {{}}}}"
+    if isinstance(value, list) and len(value) == 2 and all(isinstance(factor, str) for factor in value):
+        return (
+            "BlendDefinition{BlendKind::factors, false, "
+            f"{{{_cpp_string(value[0])}, {_cpp_string(value[1])}}}}}"
+        )
+    raise CatalogError(f"{context} must be a boolean or an ordered two-string factor array")
+
+
 def _dimension(value: Any) -> str:
     raw = cpp_value(value)
     if isinstance(value, str):
@@ -267,6 +284,8 @@ def _dimension(value: Any) -> str:
             kind = "DimensionKind::input"
         elif value == "screen":
             kind = "DimensionKind::screen"
+        elif value == "resolution":
+            kind = "DimensionKind::resolution"
         elif value.endswith("%"):
             kind = "DimensionKind::screen_division"
         else:
@@ -333,7 +352,10 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
         lines.append(f"    p.raw = {_raw_pairs(parameter)};")
         lines += ["    e.parameters.push_back(std::move(p));", "  }"]
     for name, texture in (effect.get("textures") or {}).items():
-        lines += ["  {", "    TextureDefinition t;", f"    t.name = {_cpp_string(name)};", f"    t.width = {_dimension(texture.get('width'))};", f"    t.height = {_dimension(texture.get('height'))};", f"    t.format = {_cpp_string(str(texture.get('format', ''))) };"]
+        lines += ["  {", "    TextureDefinition t;", f"    t.name = {_cpp_string(name)};", f"    t.width = {_dimension(texture.get('width'))};", f"    t.height = {_dimension(texture.get('height'))};"]
+        if "format" in texture:
+            format_value = _texture_format(texture["format"], f"{effect.get('id', '<effect>')}.{name}.format")
+            lines.append(f"    t.format = {_cpp_optional_string(format_value)};")
         lines.append(f"    t.raw = {_raw_pairs(texture)};")
         lines += ["    e.textures.push_back(std::move(t));", "  }"]
     for current_pass in effect.get("passes", []):
@@ -344,7 +366,9 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
         if "uniforms" in current_pass: lines.append(f"    p.uniforms = {_raw_pairs(current_pass['uniforms'])};")
         for key in ("count", "repeat", "conditions", "viewport", "drawBuffers"):
             if key in current_pass: lines.append(f"    p.{ {'drawBuffers':'draw_buffers'}.get(key,key) } = {cpp_value(current_pass[key])};")
-        if "blend" in current_pass: lines.append(f"    p.blend = {'true' if current_pass['blend'] else 'false'};")
+        if "blend" in current_pass:
+            blend_context = f"{effect.get('id', '<effect>')}.{current_pass.get('name', '<pass>')}.blend"
+            lines.append(f"    p.blend = {_blend(current_pass['blend'], blend_context)};")
         if "drawMode" in current_pass: lines.append(f"    p.draw_mode = {_cpp_optional_string(current_pass['drawMode'])};")
         lines.append(f"    p.raw = {_raw_pairs(current_pass)};")
         lines += ["    e.passes.push_back(std::move(p));", "  }"]
