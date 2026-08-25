@@ -3,6 +3,8 @@
 #include "noisemaker/dsl/error.hpp"
 
 #include <cstddef>
+#include <array>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -57,6 +59,36 @@ struct CompatibilityBinding {
   std::string cpp_type;
 };
 
+struct AuthorityPassMetadata {
+  std::vector<std::pair<std::string, std::string>> inputs;
+  std::vector<std::pair<std::string, std::string>> outputs;
+  std::vector<std::pair<std::string, PlanValue>> uniforms;
+  std::string blend_kind;
+  bool blend = false;
+  std::array<std::string, 2> blend_factors{};
+  std::optional<PlanValue> repeat;
+};
+
+struct ScatterOutput {
+  std::size_t slot = 0;
+  std::string physical_name;
+  std::string logical_route;
+  std::string cpp_type;
+};
+
+struct ScatterContract {
+  std::string adapter;
+  std::string registry;
+  std::string draw_mode;
+  std::string dimensionality;
+  std::string count;
+  std::string input_texture;
+  std::string destination_mutation;
+  bool blend = false;
+  std::vector<CompatibilityBinding> uniforms;
+  std::vector<ScatterOutput> outputs;
+};
+
 struct PassAdmission {
   PassIdentity identity;
   AvailabilityStatus status = AvailabilityStatus::missing;
@@ -70,17 +102,26 @@ struct PassAdmission {
   std::vector<CompatibilityBinding> samplers;
   std::vector<CompatibilityBinding> uniforms;
   std::vector<CompatibilityBinding> outputs;
+  AuthorityPassMetadata authority_pass;
+  std::optional<ScatterContract> scatter;
 };
 
 struct PlanProvenance {
   std::string kind;
   std::string schema;
+  std::string backend_schema;
+  std::string corpus_revision;
   std::string generated_payload_sha256;
   std::string normalized_record_stream_sha256;
   std::string authority_lock;
   std::string cpu_revision;
   std::string source_lock_sha256;
+  std::string cpu_package_sha256;
+  std::string cpu_package_lock_sha256;
+  std::string cpu_source_lock_sha256;
   std::string upstream_revision;
+  std::string upstream_package_sha256;
+  std::string upstream_package_lock_sha256;
   std::string upstream_tree;
   std::string compatibility_sha256;
   struct Counts {

@@ -22,6 +22,8 @@ const outputPath = argument('--output')
 const checkPath = argument('--check')
 const compilerMode = args.includes('--compiler')
 
+if (args.includes('--update')) usage('--update is unsupported; use --output with a new path and review it')
+
 if (compilerMode) {
   await runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath })
   process.exit(0)
@@ -185,6 +187,8 @@ else process.stdout.write(text)
 
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
+  const FIXTURE_SHA256 = '2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6'
+  const EXPECTED_STREAM_SHA256 = '98bb63e7fd20c713c7abac076ba36f9cc8a397874febdd97bdb96bd7b63a8041'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
@@ -199,7 +203,13 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090']
   ])
   const customExpected = new Map([...expected].filter(([key]) => !key.endsWith('upstream-snapshot.js')))
-  const fixtures = JSON.parse(fs.readFileSync(fixturesPath, 'utf8'))
+  const fixtureBytes = fs.readFileSync(fixturesPath)
+  if (crypto.createHash('sha256').update(fixtureBytes).digest('hex') !== FIXTURE_SHA256) fail('compiler fixture corpus sha256 mismatch')
+  if (checkPath) {
+    const expectedBytes = fs.readFileSync(checkPath)
+    if (crypto.createHash('sha256').update(expectedBytes).digest('hex') !== EXPECTED_STREAM_SHA256) fail('compiler expected stream sha256 mismatch')
+  }
+  const fixtures = JSON.parse(fixtureBytes.toString('utf8'))
   if (!Array.isArray(fixtures)) fail('fixtures must be an array')
   function keyOf(file) {
     const relative = path.relative(root, file)
@@ -239,7 +249,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   if (snapshot) {
     const compatibilityBytes = fs.readFileSync(compatibilityPath)
     const compatibilityHash = crypto.createHash('sha256').update(compatibilityBytes).digest('hex')
-    if (compatibilityHash !== '1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c') fail('compatibility manifest sha256 mismatch')
+    if (compatibilityHash !== 'd4c3c924c012128a5442a886927bed296958d493ae027dd0b1e97e0a1837ba7b') fail('compatibility manifest sha256 mismatch')
     compatibility = JSON.parse(compatibilityBytes)
   }
   function customDefinitions() {
@@ -296,7 +306,17 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     const status = row?.status === 'registered' ? 'scatter' : (row?.status ?? 'compatible')
     const reasons = row?.reasons ?? []
     if (status === 'scatter' && reasons.length === 0) reasons.push({ code: 'explicit_scatter_adapter', detail: key })
-    return { index, name: pass.name, programKey: key, status, reasons }
+    const blend = pass.blend
+    const authorityPass = {
+      inputs: { ...(pass.inputs ?? {}) }, outputs: { ...(pass.outputs ?? {}) }, uniforms: Object.fromEntries(Object.entries(pass.uniforms ?? {}).map(([name, value]) => [name, tagged(value)])),
+      blendKind: Array.isArray(blend) ? 'factors' : (typeof blend === 'boolean' ? 'boolean' : 'none'),
+      blend: Array.isArray(blend) ? true : (blend === true),
+      blendFactors: Array.isArray(blend) ? [...blend] : ['', ''],
+      repeat: pass.repeat == null ? null : tagged(pass.repeat)
+    }
+    const result = { index, name: pass.name, programKey: key, status, reasons, authorityPass }
+    if (status === 'scatter') result.scatter = { adapter: 'noisemaker::scatter::wormhole::adapter', registry: 'noisemaker::scatter::resolve_scatter_adapter', drawMode: 'points', dimensionality: 'image', count: 'input', inputTexture: 'inputTex', destinationMutation: 'in_place_accumulate', blend: true, uniforms: [{ name: 'kink', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'stride', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'rotation', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'wrap', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }], outputs: [{ slot: 0, physicalName: 'fragColor', logicalRoute: 'wormhole_accum', cppType: 'glsl::Vec4' }] }
+    return result
   }
   function indexFor(source, line, column) {
     let currentLine = 1, currentColumn = 1, index = 0
@@ -329,8 +349,8 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
       const provenance = fixture.registryMode === 'catalog_records'
-        ? { kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', generatedPayloadSha256: 'c657378b1f21081acf4eb4a1cbbad9c6261b2010f2e42ef17e038b3e1a971f8d', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', compatibilitySha256: '1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
-        : { kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', upstreamRevision: '', upstreamTree: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
+        ? { kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: 'a024dc3a960cc44af454abc7aebce50456c194e6', generatedPayloadSha256: '00c0358e5efa2e9ecb7e23cab43f39ba0218b8064c4bb29c0108faa67c424f17', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: 'd4c3c924c012128a5442a886927bed296958d493ae027dd0b1e97e0a1837ba7b', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
+        : { kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
       return { name: fixture.name, plan: { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance } }
     } catch (error) {
       const sourceName = error.sourceName ?? fixture.sourceName ?? fixture.name, line = error.line ?? 1, column = error.column ?? 1

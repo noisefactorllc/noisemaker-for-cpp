@@ -21,6 +21,7 @@ noisemaker::effects::EffectDefinition effect(std::string name, std::string kind 
   noisemaker::effects::PassDefinition pass;
   pass.name = "main";
   pass.program = result.function;
+  pass.outputs = {{"color", "outputTex"}};
   result.passes.push_back(std::move(pass));
   return result;
 }
@@ -195,6 +196,24 @@ std::string oracle_status(noisemaker::graph::AvailabilityStatus status) {
   return "missing";
 }
 
+std::string oracle_string_pairs(const std::vector<std::pair<std::string, std::string>>& values) {
+  std::string result = "{";
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    if (index) result += ',';
+    result += oracle_escape(values[index].first) + ":" + oracle_escape(values[index].second);
+  }
+  return result + "}";
+}
+
+std::string oracle_value_pairs(const std::vector<std::pair<std::string, noisemaker::graph::PlanValue>>& values) {
+  std::string result = "{";
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    if (index) result += ',';
+    result += oracle_escape(values[index].first) + ":" + oracle_value(values[index].second);
+  }
+  return result + "}";
+}
+
 std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) {
   std::string result = "{\"index\":" + std::to_string(admission.identity.index) + ",\"name\":" + oracle_escape(admission.identity.name) +
                        ",\"programKey\":" + oracle_escape(admission.identity.program_key) + ",\"status\":" + oracle_escape(oracle_status(admission.status)) + ",\"reasons\":[";
@@ -202,7 +221,24 @@ std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) 
     if (index) result += ',';
     result += "{\"code\":" + oracle_escape(admission.reasons[index].code) + ",\"detail\":" + oracle_escape(admission.reasons[index].detail) + "}";
   }
-  return result + "]}";
+  result += "],\"authorityPass\":{\"inputs\":" + oracle_string_pairs(admission.authority_pass.inputs) + ",\"outputs\":" + oracle_string_pairs(admission.authority_pass.outputs) + ",\"uniforms\":" + oracle_value_pairs(admission.authority_pass.uniforms) + ",\"blendKind\":" + oracle_escape(admission.authority_pass.blend_kind) + ",\"blend\":" + (admission.authority_pass.blend ? "true" : "false") + ",\"blendFactors\":[" + oracle_escape(admission.authority_pass.blend_factors[0]) + "," + oracle_escape(admission.authority_pass.blend_factors[1]) + "],\"repeat\":" + (admission.authority_pass.repeat.has_value() ? oracle_value(*admission.authority_pass.repeat) : "null") + "}";
+  if (admission.scatter.has_value()) {
+    const auto& scatter = *admission.scatter;
+    result += ",\"scatter\":{\"adapter\":" + oracle_escape(scatter.adapter) + ",\"registry\":" + oracle_escape(scatter.registry) + ",\"drawMode\":" + oracle_escape(scatter.draw_mode) + ",\"dimensionality\":" + oracle_escape(scatter.dimensionality) + ",\"count\":" + oracle_escape(scatter.count) + ",\"inputTexture\":" + oracle_escape(scatter.input_texture) + ",\"destinationMutation\":" + oracle_escape(scatter.destination_mutation) + ",\"blend\":" + (scatter.blend ? "true" : "false") + ",\"uniforms\":[";
+    for (std::size_t index = 0; index < scatter.uniforms.size(); ++index) {
+      if (index) result += ',';
+      const auto& uniform = scatter.uniforms[index];
+      result += "{\"name\":" + oracle_escape(uniform.name) + ",\"type\":" + oracle_escape(uniform.type) + ",\"cppType\":" + oracle_escape(uniform.cpp_type) + ",\"source\":" + oracle_escape(uniform.source) + ",\"sourceName\":" + oracle_escape(uniform.source_name) + ",\"resource\":" + oracle_escape(uniform.resource) + "}";
+    }
+    result += "],\"outputs\":[";
+    for (std::size_t index = 0; index < scatter.outputs.size(); ++index) {
+      if (index) result += ',';
+      const auto& output = scatter.outputs[index];
+      result += "{\"slot\":" + std::to_string(output.slot) + ",\"physicalName\":" + oracle_escape(output.physical_name) + ",\"logicalRoute\":" + oracle_escape(output.logical_route) + ",\"cppType\":" + oracle_escape(output.cpp_type) + "}";
+    }
+    result += "]}";
+  }
+  return result + "}";
 }
 
 std::string oracle_surface(const noisemaker::graph::SurfaceReference& surface) {
@@ -232,7 +268,7 @@ noisemaker::effects::EffectDefinition oracle_effect(std::string name, std::strin
   noisemaker::effects::EffectDefinition result;
   result.name_space = "fixture"; result.function = std::move(name); result.id = result.name_space + "/" + result.function;
   result.kind = std::move(kind); result.domain = std::move(domain);
-  noisemaker::effects::PassDefinition pass; pass.name = "main"; pass.program = result.function; result.passes.push_back(std::move(pass));
+  noisemaker::effects::PassDefinition pass; pass.name = "main"; pass.program = result.function; pass.outputs = {{"color", "outputTex"}}; result.passes.push_back(std::move(pass));
   return result;
 }
 
@@ -296,7 +332,7 @@ int main(int argc, char** argv) {
     output += "],\"renderSurface\":" + oracle_surface(plan.render_surface) + ",\"requireExecutable\":" + (require_executable ? "true" : "false") + ",\"executable\":" + (plan.executable ? "true" : "false") + ",\"availability\":[";
     for (std::size_t index = 0; index < plan.availability.size(); ++index) { if (index) output += ','; output += oracle_admission(plan.availability[index]); }
     const auto& p = plan.provenance;
-    output += "],\"provenance\":{\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
+    output += "],\"provenance\":{\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"backendSchema\":" + oracle_escape(p.backend_schema) + ",\"corpusRevision\":" + oracle_escape(p.corpus_revision) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"cpuPackageSha256\":" + oracle_escape(p.cpu_package_sha256) + ",\"cpuPackageLockSha256\":" + oracle_escape(p.cpu_package_lock_sha256) + ",\"cpuSourceLockSha256\":" + oracle_escape(p.cpu_source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"upstreamPackageSha256\":" + oracle_escape(p.upstream_package_sha256) + ",\"upstreamPackageLockSha256\":" + oracle_escape(p.upstream_package_lock_sha256) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
     std::cout << output;
   } catch (const noisemaker::dsl::DslError& error) {
     std::cout << ",\"error\":{\"name\":\"DslError\",\"message\":" << oracle_escape(error.what()) << ",\"sourceName\":" << oracle_escape(error.sourceName) << ",\"line\":" << error.line << ",\"column\":" << error.column << ",\"index\":" << error.index << '}';

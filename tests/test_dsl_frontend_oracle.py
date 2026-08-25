@@ -24,6 +24,8 @@ ORACLE_JS = ROOT / "tools/dsl/js_frontend_oracle.mjs"
 COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
 COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
 COMPILER_ORACLE_JS = ORACLE_JS
+COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
+COMPILER_EXPECTED_SHA256 = "98bb63e7fd20c713c7abac076ba36f9cc8a397874febdd97bdb96bd7b63a8041"
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
 
 
@@ -97,13 +99,15 @@ class DslFrontendOracleTest(unittest.TestCase):
         node = shutil_which("node")
         self.assertIsNotNone(node)
         cpp = resolve_compiler_oracle()
+        self.assertEqual(hash_file(COMPILER_FIXTURES), COMPILER_FIXTURES_SHA256)
+        self.assertEqual(hash_file(COMPILER_EXPECTED), COMPILER_EXPECTED_SHA256)
         fixtures = json.loads(COMPILER_FIXTURES.read_text(encoding="utf-8"))
         expected = COMPILER_EXPECTED.read_text(encoding="utf-8")
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-oracle-") as temporary:
             first = pathlib.Path(temporary) / "first.txt"
             second = pathlib.Path(temporary) / "second.txt"
             for output in (first, second):
-                subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES), "--output", str(output)], check=True)
+                subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES), "--output", str(output), "--check", str(COMPILER_EXPECTED)], check=True)
             self.assertEqual(first.read_text(encoding="utf-8"), expected)
             self.assertEqual(second.read_text(encoding="utf-8"), expected)
             self.assertEqual(hash_file(first), hash_file(second))
@@ -115,6 +119,39 @@ class DslFrontendOracleTest(unittest.TestCase):
                 result = subprocess.run(args, check=True, capture_output=True, text=True)
                 cpp_records.append(result.stdout)
             self.assertEqual("".join(cpp_records), expected)
+
+    def test_compiler_oracle_rejects_mutated_fixture_even_with_updated_inner_hashes(self) -> None:
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-fixture-forge-") as temporary:
+            forged = pathlib.Path(temporary) / "compiler-cases.json"
+            records = json.loads(COMPILER_FIXTURES.read_text(encoding="utf-8"))
+            records[0]["source"] = records[0]["source"].replace("fixture", "forged", 1)
+            import hashlib
+            records[0]["sourceSha256"] = hashlib.sha256(records[0]["source"].encode("utf-8")).hexdigest()
+            forged.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            result = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", str(authority_root), "--fixtures", str(forged)], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("fixture corpus sha256", result.stderr)
+
+    def test_compiler_oracle_rejects_mutated_expected_stream(self) -> None:
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-expected-forge-") as temporary:
+            forged = pathlib.Path(temporary) / "expected.txt"
+            forged.write_text(COMPILER_EXPECTED.read_text(encoding="utf-8") + "forged\n", encoding="utf-8")
+            result = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", str(authority_root), "--fixtures", str(COMPILER_FIXTURES), "--check", str(forged)], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("expected stream sha256", result.stderr)
+
+    def test_compiler_oracle_rejects_unsupported_update_mode(self) -> None:
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        result = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--update"], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("--update is unsupported", result.stderr)
 
     def test_compiler_oracle_rejects_forged_transitive_module_before_import(self) -> None:
         node = shutil_which("node")

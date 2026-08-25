@@ -43,6 +43,7 @@ class EffectRegistry {
   [[nodiscard]] const std::vector<ProgramCompatibility>& compatibility() const noexcept { return canonical_programs_; }
   [[nodiscard]] const std::vector<ReferencePassCompatibility>& reference_passes() const noexcept { return reference_passes_; }
   [[nodiscard]] const CatalogProvenance& provenance() const noexcept { return provenance_; }
+  [[nodiscard]] bool manifest_backed() const noexcept { return manifest_backed_; }
 
  private:
   std::vector<EffectDefinition> definitions_;

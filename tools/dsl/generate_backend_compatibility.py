@@ -327,6 +327,17 @@ def _pass_index(effect: dict[str, Any], key: str) -> dict[str, Any]:
     return matches[0]
 
 
+def _authority_pass(current_pass: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "blend": current_pass.get("blend", False),
+        "inputs": current_pass.get("inputs", {}),
+        "name": current_pass.get("name"),
+        "outputs": current_pass.get("outputs", {}),
+        "repeat": current_pass.get("repeat"),
+        "uniforms": current_pass.get("uniforms", {}),
+    }
+
+
 def _extent(effect: dict[str, Any], current_pass: dict[str, Any], route: str) -> dict[str, Any]:
     if route in effect.get("textures", {}):
         texture = effect["textures"][route]
@@ -765,7 +776,8 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             else:
                 status, reasons = "missing", [{"code": "missing_backend_program", "detail": key}]
             reference_passes.append({"effect_id": effect["id"], "pass_index": index, "pass_name": current_pass.get("name"),
-                                     "program_key": key, "status": status, "reasons": reasons})
+                                     "program_key": key, "status": status, "reasons": reasons,
+                                     "authority_pass": _authority_pass(current_pass)})
     if len(reference_passes) != 305 or len(seen_pass_keys) != 295:
         raise CompatibilityError("reference pass status cardinality drift")
     scatter = by_key[SCATTER_KEY]
@@ -812,7 +824,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
 
 
 def _encoded(document: dict[str, Any]) -> bytes:
-    return (json.dumps(document, indent=2, sort_keys=True) + "\n").encode()
+    return (json.dumps(document, indent=2) + "\n").encode()
 
 
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -860,6 +872,15 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             raise CompatibilityError("unknown reference pass status or key")
         if not isinstance(item.get("reasons"), list):
             raise CompatibilityError("reference pass reasons malformed")
+        authority_pass = item.get("authority_pass")
+        if not isinstance(authority_pass, dict) or set(authority_pass) != {"blend", "inputs", "name", "outputs", "repeat", "uniforms"}:
+            raise CompatibilityError("reference authority pass metadata malformed")
+        if not isinstance(authority_pass["name"], str) or not isinstance(authority_pass["inputs"], dict) or not isinstance(authority_pass["outputs"], dict) or not isinstance(authority_pass["uniforms"], dict):
+            raise CompatibilityError("reference authority pass shape malformed")
+        if not isinstance(authority_pass["blend"], (bool, list)) or (isinstance(authority_pass["blend"], list) and (len(authority_pass["blend"]) != 2 or any(not isinstance(item, str) for item in authority_pass["blend"]))):
+            raise CompatibilityError("reference authority blend malformed")
+        if authority_pass["repeat"] is not None and ((isinstance(authority_pass["repeat"], str) and not authority_pass["repeat"]) or (not isinstance(authority_pass["repeat"], (int, str)) or isinstance(authority_pass["repeat"], bool) or (isinstance(authority_pass["repeat"], int) and authority_pass["repeat"] < 0))):
+            raise CompatibilityError("reference authority repeat malformed")
         for reason in item["reasons"]:
             if not isinstance(reason, dict) or not isinstance(reason.get("code"), str) \
                     or not isinstance(reason.get("detail"), str):

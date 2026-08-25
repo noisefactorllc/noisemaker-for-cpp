@@ -1,12 +1,38 @@
 {
   "authority": {
+    "cpu_behavioral_file_count": 90,
     "cpu_behavioral_lock": "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7",
-    "cpu_revision": "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7",
+    "cpu_package_lock_sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d",
+    "cpu_package_sha256": "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a",
+    "cpu_source_lock_sha256": "d1d43bfcb241c0e064ad5048fc45443145ad0d3de971a64aee199a865db45029",
     "source_lock_sha256": "66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4",
+    "upstream_package_lock_sha256": "033762c49845652b36ea91b75653c63ed62c45bd2fb455ab66567ff4b356109f",
+    "upstream_package_sha256": "109e0617b53eca612d6265672e010744ee3284aea26555eee1f614c3ddc33c8a",
     "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
     "upstream_tree": "a7a997dfdc807697adba008729dcdfdfcfbaf53c"
   },
-  "compatibility_sha256": "1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c",
+  "backend_counts": {
+    "definitions": 205,
+    "duplicate_fragment_keys": [
+      "filter/invert:inv",
+      "synth/solid:solid"
+    ],
+    "fragment_rows": 213,
+    "incompatible": 1,
+    "incompatible_keys": [
+      "filter/text:text"
+    ],
+    "raw_exact": 205,
+    "reference_passes": 305,
+    "reference_program_keys": 295,
+    "semantic_exact": 6,
+    "status_compatible": 210,
+    "status_incompatible": 1,
+    "unique_fragment_keys": 211
+  },
+  "backend_schema": "noisemaker-cpp.backend-compatibility.v1",
+  "compatibility_sha256": "d4c3c924c012128a5442a886927bed296958d493ae027dd0b1e97e0a1837ba7b",
+  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
   "counts": {
     "backend_programs": 212,
     "compatible_programs": 210,
@@ -20,7 +46,7 @@
     "scatter_passes": 1
   },
   "first_effect_id": "classicNoisedeck/bitEffects",
-  "generated_payload_sha256": "c657378b1f21081acf4eb4a1cbbad9c6261b2010f2e42ef17e038b3e1a971f8d",
+  "generated_payload_sha256": "00c0358e5efa2e9ecb7e23cab43f39ba0218b8064c4bb29c0108faa67c424f17",
   "last_effect_id": "synth3d/shape3d",
   "normalized_record_stream_sha256": "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996",
   "schema": "noisemaker-cpp.effect-catalog-generator.v1"

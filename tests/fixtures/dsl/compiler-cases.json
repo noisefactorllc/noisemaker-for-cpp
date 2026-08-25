@@ -228,5 +228,25 @@
     "name": "custom-no-search", "registryMode": "custom", "sourceName": "no-search.dsl",
     "source": "source().write(o0)\n", "options": {"requireExecutable": false},
     "sourceSha256": "5878562abb8ecd644e87f363771c58165a4b429252c68c75a3edcc120f86d9b0"
+  },
+  {
+    "name": "custom-partial-mode-precedence", "registryMode": "custom", "sourceName": "order.dsl",
+    "source": "search fixture\nlet p = source(first: 3)\np(-true).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "20b24af209d3d5f95f7e9f59bd555a4fa615b4307c7a08f9fcde3211daaba5e4"
+  },
+  {
+    "name": "custom-noncallable-precedence", "registryMode": "custom", "sourceName": "noncallable.dsl",
+    "source": "search fixture\nlet x = 1\nx(-true).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "cf136fcd88669e8516f4caf553f95482325b723bceb182f4865b9a2e212c8357"
+  },
+  {
+    "name": "custom-duplicate-incoming-map-set", "registryMode": "custom", "sourceName": "map-set.dsl",
+    "source": "search fixture\nlet p = all(f: 2)\np(flag: true, flag: false).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "e4b1f8eb5c335532aeb0ef2bec4525fa15c75adf5c45c974bf57eabcd4cbb105"
+  },
+  {
+    "name": "custom-duplicate-stored-map-set", "registryMode": "custom", "sourceName": "stored-map.dsl",
+    "source": "search fixture\nlet p = source(first: 1, first: 2)\np(first: 3).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "391c18708b4d8a1af296de6d7cba062d2dc3104d4a92c7f6600b2e185010fa6a"
   }
 ]

@@ -96,25 +96,17 @@ bool same_value(const Value& left, const Value& right) {
   return true;
 }
 
-bool same_authority_value(const Value& left, const Value& right) {
-  if (left.kind != right.kind) return false;
-  if (left.kind != ValueKind::object) return same_value(left, right);
-  if (left.object.size() != right.object.size()) return false;
-  for (const auto& item : left.object) {
-    const auto* counterpart = field(right.object, item.first);
-    if (counterpart == nullptr || !same_authority_value(item.second, *counterpart)) return false;
-  }
-  return true;
-}
-
 void required_binding_array(const Value& value, const std::string& context, bool output) {
   if (value.kind != ValueKind::array) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding array expected");
+  std::set<std::string> names;
   for (const auto& item : value.array) {
     if (item.kind != ValueKind::object) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": binding object expected");
     if (output) exact_object(item.object, {"slot", "physical_name", "logical_route", "cpp_type"}, context);
     else if (context.find(".samplers") != std::string::npos) exact_object(item.object, {"name", "type", "cpp_type", "source", "resource"}, context);
     else exact_object(item.object, {"name", "type", "cpp_type", "source", "source_name"}, context);
     nonempty_string(required_field(item.object, "cpp_type", ValueKind::string, context), context + ".cpp_type");
+    if (!output && !names.insert(required_field(item.object, "name", ValueKind::string, context).string).second)
+      throw std::invalid_argument("Malformed compatible compatibility row " + context + ": duplicate binding name");
     if (output) {
       const auto& slot = required_field(item.object, "slot", ValueKind::number, context);
       if (!std::isfinite(slot.number) || slot.number < 0 || std::trunc(slot.number) != slot.number)
@@ -186,11 +178,16 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   required_field(output, "physical_names", ValueKind::array, context + ".output_abi");
   required_field(output, "single_output_canonical", ValueKind::boolean, context + ".output_abi");
   const auto& extent = required_field(output, "extent", ValueKind::object, context + ".output_abi").object;
-  required_field(extent, "format", ValueKind::string, context + ".output_abi.extent");
+  exact_object(extent, {"width", "height", "format"}, context + ".output_abi.extent");
+  const auto& format = required_field(extent, "format", ValueKind::string, context + ".output_abi.extent");
+  const std::array<std::string_view, 3> formats = {"rgba8unorm", "rgba16f", "rgba16float"};
+  if (std::find(formats.begin(), formats.end(), format.string) == formats.end()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output format");
   for (const auto name : {"height", "width"}) {
     const auto* dimension = field(extent, name);
-    if (dimension == nullptr || (dimension->kind != ValueKind::string &&
-        (dimension->kind != ValueKind::number || dimension->number <= 0.0 || std::trunc(dimension->number) != dimension->number)))
+    const bool valid_string = dimension != nullptr && dimension->kind == ValueKind::string &&
+      (dimension->string == "screen" || dimension->string == "input" || dimension->string == "100%" || dimension->string == "6.25%" || dimension->string == "0.4%");
+    const bool valid_number = dimension != nullptr && dimension->kind == ValueKind::number && dimension->number == 1.0;
+    if (!valid_string && !valid_number)
       throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output extent");
   }
   const auto& outputs = field(raw, "outputs")->array;
@@ -198,9 +195,11 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   const auto& logical = field(output, "logical_routes")->array;
   const auto& physical = field(output, "physical_names")->array;
   const auto cardinality_value = field(output, "cardinality");
+  const auto single_value = field(output, "single_output_canonical");
   if (cardinality_value->number <= 0 || std::trunc(cardinality_value->number) != cardinality_value->number ||
       static_cast<std::size_t>(cardinality_value->number) != outputs.size() || slots.size() != outputs.size() ||
-      logical.size() != outputs.size() || physical.size() != outputs.size()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output ABI cardinality");
+      logical.size() != outputs.size() || physical.size() != outputs.size() ||
+      single_value->boolean != (outputs.size() == 1)) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output ABI cardinality");
   for (std::size_t i = 0; i < outputs.size(); ++i) {
     if (outputs[i].kind != ValueKind::object || field(outputs[i].object, "slot") == nullptr ||
         field(outputs[i].object, "logical_route") == nullptr || field(outputs[i].object, "physical_name") == nullptr ||
@@ -220,7 +219,8 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   required_field(authority_pass, "uniforms", ValueKind::object, context + ".authority_pass");
   required_field(authority_pass, "blend", ValueKind::boolean, context + ".authority_pass");
   const auto* repeat_value = field(authority_pass, "repeat");
-  if (repeat_value == nullptr || (repeat_value->kind != ValueKind::null_value && repeat_value->kind != ValueKind::number)) {
+  if (repeat_value == nullptr || (repeat_value->kind != ValueKind::null_value &&
+      (repeat_value->kind != ValueKind::number || !std::isfinite(repeat_value->number) || repeat_value->number < 0 || std::trunc(repeat_value->number) != repeat_value->number))) {
     throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass repeat");
   }
   const auto& factory = required_field(raw, "factory", ValueKind::object, context).object;
@@ -239,12 +239,15 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
     exact_object(abi, {"samplers", "uniforms"}, context + ".factory.route.binding_abi");
     for (const auto name : {"samplers", "uniforms"}) {
       const auto& entries = required_field(abi, name, ValueKind::array, context + ".factory.route.binding_abi");
+      std::set<std::string> binding_names;
       for (const auto& entry : entries.array) {
         if (entry.kind != ValueKind::object) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": custom binding ABI");
         exact_object(entry.object, {"cpp_type", "name", "source"}, context + ".factory.route.binding_abi");
         nonempty_string(required_field(entry.object, "cpp_type", ValueKind::string, context), context + ".custom.cpp_type");
         nonempty_string(required_field(entry.object, "name", ValueKind::string, context), context + ".custom.name");
         nonempty_string(required_field(entry.object, "source", ValueKind::string, context), context + ".custom.source");
+        if (!binding_names.insert(field(entry.object, "name")->string).second)
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": duplicate custom binding name");
       }
     }
     const auto& route_output = required_field(route, "output_abi", ValueKind::object, context + ".factory.route").object;
@@ -264,18 +267,37 @@ void validate_authority_pass(const ProgramCompatibility& row, const PassDefiniti
   for (const auto& item : pass.outputs) outputs.emplace_back(item.first, Value::string_value(item.second));
   std::vector<std::pair<std::string, Value>> uniforms;
   for (const auto& item : pass.uniforms) uniforms.emplace_back(item.first, item.second);
+  Value blend = Value::boolean_value(false);
+  if (pass.blend.has_value()) {
+    if (pass.blend->kind == BlendKind::boolean) blend = Value::boolean_value(pass.blend->enabled);
+    else blend = Value::array_value({Value::string_value(pass.blend->factors[0]), Value::string_value(pass.blend->factors[1])});
+  }
   const Value expected = Value::object_value({
       {"name", Value::string_value(pass.name)},
       {"inputs", Value::object_value(std::move(inputs))},
       {"outputs", Value::object_value(std::move(outputs))},
       {"uniforms", Value::object_value(std::move(uniforms))},
-      {"blend", Value::boolean_value(pass.blend.has_value() && pass.blend->enabled)},
+      {"blend", std::move(blend)},
       {"repeat", pass.repeat.value_or(Value::null())}});
-  if (raw->object.size() != expected.object.size()) throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
-  for (const auto& item : expected.object) {
-    const auto* actual = field(raw->object, item.first);
-    if (actual == nullptr || !same_authority_value(*actual, item.second)) throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
+  if (!same_value(*raw, expected)) throw std::invalid_argument("Canonical authority pass does not match catalog: " + row.program_key);
+}
+
+void validate_reference_authority(const ReferencePassCompatibility& row, const PassDefinition& pass) {
+  const auto& actual = row.authority_pass;
+  if (actual.name != pass.name || actual.inputs != pass.inputs || actual.outputs != pass.outputs ||
+      actual.uniforms.size() != pass.uniforms.size())
+    throw std::invalid_argument("Reference authority pass metadata mismatch: " + row.program_key);
+  for (std::size_t i = 0; i < pass.uniforms.size(); ++i) {
+    if (actual.uniforms[i].first != pass.uniforms[i].first || !same_value(actual.uniforms[i].second, pass.uniforms[i].second))
+      throw std::invalid_argument("Reference authority uniform metadata mismatch: " + row.program_key);
   }
+  Value expected_blend = Value::boolean_value(false);
+  if (pass.blend.has_value()) {
+    if (pass.blend->kind == BlendKind::boolean) expected_blend = Value::boolean_value(pass.blend->enabled);
+    else expected_blend = Value::array_value({Value::string_value(pass.blend->factors[0]), Value::string_value(pass.blend->factors[1])});
+  }
+  if (!same_value(actual.blend, expected_blend) || !same_value(actual.repeat, pass.repeat.value_or(Value::null())))
+    throw std::invalid_argument("Reference authority blend/repeat metadata mismatch: " + row.program_key);
 }
 
 std::string string_field(const std::vector<std::pair<std::string, Value>>& fields,
@@ -332,6 +354,37 @@ PlanValue copy_value(const Value& value) {
     }
   }
   throw std::invalid_argument("Unsupported parameter value");
+}
+
+void fill_authority_pass(graph::PassAdmission& result, const PassDefinition& pass) {
+  result.authority_pass.inputs = pass.inputs;
+  result.authority_pass.outputs = pass.outputs;
+  for (const auto& uniform : pass.uniforms) result.authority_pass.uniforms.emplace_back(uniform.first, copy_value(uniform.second));
+  if (!pass.blend.has_value()) result.authority_pass.blend_kind = "none";
+  else if (pass.blend->kind == BlendKind::boolean) {
+    result.authority_pass.blend_kind = "boolean";
+    result.authority_pass.blend = pass.blend->enabled;
+  } else {
+    result.authority_pass.blend_kind = "factors";
+    result.authority_pass.blend = true;
+    result.authority_pass.blend_factors = pass.blend->factors;
+  }
+  if (pass.repeat.has_value()) result.authority_pass.repeat = copy_value(*pass.repeat);
+}
+
+graph::ScatterContract scatter_contract(const ScatterCompatibility& scatter) {
+  graph::ScatterContract result;
+  result.adapter = scatter.adapter;
+  result.registry = scatter.registry;
+  result.draw_mode = scatter.draw_mode;
+  result.dimensionality = scatter.dimensionality;
+  result.count = scatter.count;
+  result.input_texture = scatter.input_texture;
+  result.destination_mutation = scatter.destination_mutation;
+  result.blend = scatter.blend;
+  for (const auto& uniform : scatter.uniforms) result.uniforms.push_back({uniform.name, {}, uniform.source, uniform.source_name, uniform.resource, uniform.cpp_type});
+  for (const auto& output : scatter.outputs) result.outputs.push_back({output.slot, output.physical_name, output.logical_route, output.cpp_type});
+  return result;
 }
 
 const std::vector<std::pair<std::string, Value>>& choices_for(const ParameterDefinition& parameter) {
@@ -483,6 +536,43 @@ PlanValue normalize_value(const ParameterDefinition& parameter, PlanValue value,
 EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     : canonical_programs_(catalog.canonical_programs), reference_passes_(catalog.reference_passes),
       scatter_(catalog.scatter), provenance_(catalog.provenance) {
+  const bool has_admission = !canonical_programs_.empty() || !reference_passes_.empty() || scatter_.has_value();
+  if (!has_admission) {
+    if (!provenance_.schema.empty()) throw std::invalid_argument("Custom catalog cannot carry production provenance");
+    for (const auto& definition : catalog.definitions) register_effect(definition);
+    provenance_.schema = "noisemaker-cpp.execution-plan.custom";
+    provenance_.cpu_behavioral_lock = "custom";
+    provenance_.normalized_record_stream_sha256 = "custom";
+    provenance_.compatibility_sha256 = "custom";
+    return;
+  }
+  if (provenance_.schema.empty()) {
+    for (const auto& definition : catalog.definitions) register_effect(definition);
+    provenance_.schema = "noisemaker-cpp.execution-plan.custom";
+    provenance_.cpu_behavioral_lock = "custom";
+    provenance_.normalized_record_stream_sha256 = "custom";
+    provenance_.compatibility_sha256 = "custom";
+    return;
+  }
+  if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
+      provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
+      provenance_.corpus_revision != "a024dc3a960cc44af454abc7aebce50456c194e6" ||
+      provenance_.generated_payload_sha256 != "00c0358e5efa2e9ecb7e23cab43f39ba0218b8064c4bb29c0108faa67c424f17" ||
+      provenance_.normalized_record_stream_sha256 != "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996" ||
+      provenance_.compatibility_sha256 != "d4c3c924c012128a5442a886927bed296958d493ae027dd0b1e97e0a1837ba7b" ||
+      provenance_.cpu_behavioral_lock != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||
+      provenance_.cpu_behavioral_file_count != 90 ||
+      provenance_.cpu_revision != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||
+      provenance_.source_lock_sha256 != "66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4" ||
+      provenance_.cpu_package_sha256 != "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a" ||
+      provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
+      provenance_.cpu_source_lock_sha256 != "d1d43bfcb241c0e064ad5048fc45443145ad0d3de971a64aee199a865db45029" ||
+      provenance_.upstream_revision != "117a236679d1db3ab8f0e278230ece277b57564c" ||
+      provenance_.upstream_tree != "a7a997dfdc807697adba008729dcdfdfcfbaf53c" ||
+      provenance_.upstream_package_sha256 != "109e0617b53eca612d6265672e010744ee3284aea26555eee1f614c3ddc33c8a" ||
+      provenance_.upstream_package_lock_sha256 != "033762c49845652b36ea91b75653c63ed62c45bd2fb455ab66567ff4b356109f" ||
+      provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
+    throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
@@ -494,6 +584,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       provenance_.counts.missing_passes != 93 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 166 ||
       provenance_.counts.incomplete_definitions != 39 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
+  if (provenance_.backend_fragment_rows != 213 || provenance_.backend_unique_fragment_keys != 211 ||
+      provenance_.backend_raw_exact != 205 || provenance_.backend_semantic_exact != 6)
+    throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());
   for (const auto& row : canonical_programs_) {
@@ -548,6 +641,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     if (definition == nullptr || row.pass_index >= definition->passes.size() || definition->passes[row.pass_index].name != row.pass_name ||
         definition->id + ":" + definition->passes[row.pass_index].program != row.program_key)
       throw std::invalid_argument("Reference pass identity does not join catalog: " + row.effect_id);
+    validate_reference_authority(row, definition->passes[row.pass_index]);
     if (strict_manifest) {
       std::size_t ordinal = 0;
       for (const auto& candidate : definitions_) {
@@ -678,7 +772,8 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
   const auto& pass = definition.passes[pass_index];
   graph::PassAdmission result;
   result.identity = {pass_index, pass.name, definition.id + ":" + pass.program};
-  if (!manifest_backed_) {
+  fill_authority_pass(result, pass);
+  if (!manifest_backed_ && reference_passes_.empty()) {
     result.status = graph::AvailabilityStatus::compatible;
     return result;
   }
@@ -689,6 +784,7 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
   if (reference->status == "scatter") {
     result.status = graph::AvailabilityStatus::scatter;
     result.reasons = {{"explicit_scatter_adapter", result.identity.program_key}};
+    if (scatter_) result.scatter = scatter_contract(*scatter_);
     return result;
   }
   result.status = reference->status == "compatible" ? graph::AvailabilityStatus::compatible :

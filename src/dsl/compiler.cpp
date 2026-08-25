@@ -2,6 +2,7 @@
 
 #include "noisemaker/dsl/parser.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <map>
 #include <stdexcept>
@@ -116,17 +117,20 @@ ResolvedCall merge_partial(const Partial& stored, const ResolvedCall& call) {
   ResolvedCall result = call;
   result.name = stored.call.name;
   result.mode = Call::ArgumentMode::named;
-  // Preserve the first insertion position on overwrite, then append new keys.
+  // Match the authority Map.set merge: overwrite in place and retain the
+  // first insertion position, while new keys append once.
   result.args.clear();
-  for (const auto& argument : stored.call.args) {
-    ResolvedArgument chosen = argument;
-    for (const auto& incoming : call.args) if (incoming.name == argument.name) chosen = incoming;
-    result.args.push_back(std::move(chosen));
+  for (const auto& stored_argument : stored.call.args) {
+    auto existing = std::find_if(result.args.begin(), result.args.end(), [&](const auto& argument) {
+      return argument.name == stored_argument.name;
+    });
+    if (existing == result.args.end()) result.args.push_back(stored_argument);
+    else *existing = stored_argument;
   }
   for (const auto& incoming : call.args) {
-    bool present = false;
-    for (const auto& existing : stored.call.args) if (existing.name == incoming.name) { present = true; break; }
-    if (!present) result.args.push_back(incoming);
+    auto existing = std::find_if(result.args.begin(), result.args.end(), [&](const auto& argument) { return argument.name == incoming.name; });
+    if (existing == result.args.end()) result.args.push_back(incoming);
+    else *existing = incoming;
   }
   return result;
 }
@@ -172,14 +176,21 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
   plan.search = program.search;
   plan.require_executable = options.require_executable;
   const auto& provenance = registry.provenance();
-  plan.provenance.kind = registry.compatibility().empty() ? "custom" : "manifest";
+  plan.provenance.kind = registry.manifest_backed() ? "manifest" : "custom";
   plan.provenance.schema = provenance.schema;
+  plan.provenance.backend_schema = provenance.backend_schema;
+  plan.provenance.corpus_revision = provenance.corpus_revision;
   plan.provenance.generated_payload_sha256 = provenance.generated_payload_sha256;
   plan.provenance.normalized_record_stream_sha256 = provenance.normalized_record_stream_sha256;
   plan.provenance.authority_lock = provenance.cpu_behavioral_lock;
   plan.provenance.cpu_revision = provenance.cpu_revision;
   plan.provenance.source_lock_sha256 = provenance.source_lock_sha256;
+  plan.provenance.cpu_package_sha256 = provenance.cpu_package_sha256;
+  plan.provenance.cpu_package_lock_sha256 = provenance.cpu_package_lock_sha256;
+  plan.provenance.cpu_source_lock_sha256 = provenance.cpu_source_lock_sha256;
   plan.provenance.upstream_revision = provenance.upstream_revision;
+  plan.provenance.upstream_package_sha256 = provenance.upstream_package_sha256;
+  plan.provenance.upstream_package_lock_sha256 = provenance.upstream_package_lock_sha256;
   plan.provenance.upstream_tree = provenance.upstream_tree;
   plan.provenance.compatibility_sha256 = provenance.compatibility_sha256;
   plan.provenance.counts = {provenance.counts.definitions, provenance.counts.passes, provenance.counts.reference_program_keys,
@@ -200,11 +211,14 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
     for (std::size_t index = 0; index < source_chain.calls.size(); ++index) {
       const auto& source_call = source_chain.calls[index];
       const auto found_binding = bindings.find(source_call.name);
-      ResolvedCall call = resolve_call(source_call, bindings);
       if (found_binding != bindings.end()) {
         if (!std::holds_alternative<Partial>(found_binding->second)) throw DslError("Binding \"" + source_call.name + "\" is not callable", source_call.loc);
-        call = merge_partial(std::get<Partial>(found_binding->second), call);
+        const auto stored_mode = std::get<Partial>(found_binding->second).call.mode;
+        if (stored_mode != Call::ArgumentMode::none && source_call.argument_mode != Call::ArgumentMode::none && stored_mode != source_call.argument_mode)
+          throw DslError("Partial and call arguments must use the same named or positional form", source_call.loc);
       }
+      ResolvedCall call = resolve_call(source_call, bindings);
+      if (found_binding != bindings.end()) call = merge_partial(std::get<Partial>(found_binding->second), call);
 
       if (call.name == "read") {
         if (index != 0 || call.args.size() != 1 || call.args.front().value.kind != PlanValue::Kind::surface) throw DslError("read(surface) must begin a chain", call.loc);

@@ -119,6 +119,46 @@ TEST(effect_registry_joins_repeated_reference_keys_by_structural_identity) {
   REQUIRE(billboard != nullptr);
   REQUIRE(registry.admission(*billboard, 2).identity.program_key == "render/pointsBillboardRender:deposit");
   REQUIRE(registry.admission(*billboard, 3).identity.program_key == "render/pointsBillboardRender:deposit");
+  const auto additive = registry.admission(*billboard, 2);
+  const auto alpha = registry.admission(*billboard, 3);
+  REQUIRE(additive.authority_pass.blend_kind == "boolean");
+  REQUIRE(additive.authority_pass.blend);
+  REQUIRE(alpha.authority_pass.blend_kind == "factors");
+  REQUIRE(alpha.authority_pass.blend_factors[0] == "ONE");
+  REQUIRE(alpha.authority_pass.blend_factors[1] == "ONE_MINUS_SRC_ALPHA");
+  REQUIRE(additive.authority_pass.inputs == alpha.authority_pass.inputs);
+  REQUIRE(additive.authority_pass.outputs == alpha.authority_pass.outputs);
+}
+
+TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contract) {
+  const auto& registry = EffectRegistry(noisemaker::effects::effect_catalog());
+  const auto& provenance = registry.provenance();
+  REQUIRE(registry.manifest_backed());
+  REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
+  REQUIRE(provenance.corpus_revision == "a024dc3a960cc44af454abc7aebce50456c194e6");
+  REQUIRE(provenance.cpu_package_sha256.size() == 64);
+  REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
+  const auto* wormhole = registry.get("filter", "wormhole");
+  REQUIRE(wormhole != nullptr);
+  const auto scatter = registry.admission(*wormhole, 1);
+  REQUIRE(scatter.status == noisemaker::graph::AvailabilityStatus::scatter);
+  REQUIRE(scatter.scatter.has_value());
+  REQUIRE(scatter.scatter->adapter == "noisemaker::scatter::wormhole::adapter");
+  REQUIRE(scatter.scatter->uniforms.size() == 4);
+  REQUIRE(scatter.scatter->outputs.size() == 1);
+  REQUIRE(scatter.scatter->outputs[0].logical_route == "wormhole_accum");
+}
+
+TEST(effect_registry_rejects_forged_reference_metadata_and_provenance) {
+  auto metadata = noisemaker::effects::effect_catalog();
+  metadata.reference_passes[0].authority_pass.name = "forged";
+  REQUIRE_THROWS_AS(EffectRegistry(metadata), std::invalid_argument);
+  auto provenance = noisemaker::effects::effect_catalog();
+  provenance.provenance.corpus_revision = "forged";
+  REQUIRE_THROWS_AS(EffectRegistry(provenance), std::invalid_argument);
+  auto scatter = noisemaker::effects::effect_catalog();
+  scatter.scatter->outputs[0].logical_route = "forged";
+  REQUIRE_THROWS_AS(EffectRegistry(scatter), std::invalid_argument);
 }
 
 TEST(effect_registry_preserves_complete_alias_census) {

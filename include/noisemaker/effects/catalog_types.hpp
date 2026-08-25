@@ -127,6 +127,15 @@ struct ProgramCompatibility {
   std::vector<std::pair<std::string, Value>> raw;
 };
 
+struct AuthorityPassMetadata {
+  std::string name;
+  std::vector<std::pair<std::string, std::string>> inputs;
+  std::vector<std::pair<std::string, std::string>> outputs;
+  std::vector<std::pair<std::string, Value>> uniforms;
+  Value blend = Value::boolean_value(false);
+  Value repeat = Value::null();
+};
+
 struct ReferencePassCompatibility {
   std::string effect_id;
   std::size_t pass_index = 0;
@@ -134,6 +143,7 @@ struct ReferencePassCompatibility {
   std::string program_key;
   std::string status;
   std::vector<std::pair<std::string, std::string>> reasons;
+  AuthorityPassMetadata authority_pass;
 };
 
 struct CompatibilityBindingEvidence {
@@ -182,10 +192,22 @@ struct CatalogCounts {
 
 struct CatalogProvenance {
   std::string schema;
+  std::string backend_schema;
+  std::string corpus_revision;
   std::string cpu_behavioral_lock;
+  std::size_t cpu_behavioral_file_count = 0;
   std::string cpu_revision;
   std::string source_lock_sha256;
+  std::string cpu_package_sha256;
+  std::string cpu_package_lock_sha256;
+  std::string cpu_source_lock_sha256;
   std::string upstream_revision;
+  std::string upstream_package_sha256;
+  std::string upstream_package_lock_sha256;
+  std::size_t backend_fragment_rows = 0;
+  std::size_t backend_unique_fragment_keys = 0;
+  std::size_t backend_raw_exact = 0;
+  std::size_t backend_semantic_exact = 0;
   // SHA-256 of generated C++ bytes with this field's string value replaced by
   // an empty placeholder. This is intentionally non-self-referential.
   std::string generated_payload_sha256;

@@ -57,8 +57,8 @@ class BackendCompatibilityTests(unittest.TestCase):
     def test_manifest_is_deterministic_and_checkable(self) -> None:
         first = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
         second = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
-        first_bytes = json.dumps(first, indent=2, sort_keys=True).encode() + b"\n"
-        second_bytes = json.dumps(second, indent=2, sort_keys=True).encode() + b"\n"
+        first_bytes = generator._encoded(first)
+        second_bytes = generator._encoded(second)
         self.assertEqual(first_bytes, second_bytes)
         self.assertEqual(first_bytes, MANIFEST.read_bytes())
         generator.check(cpu_root=CPU_ROOT, shader_git=SHADER_GIT, repository=ROOT)
