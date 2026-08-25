@@ -5,13 +5,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
 namespace noisemaker::dsl {
 
 struct Value;
-using ValuePtr = std::shared_ptr<Value>;
+using ValuePtr = std::unique_ptr<Value>;
 
 struct ColorValue {
   std::vector<double> components;
@@ -69,6 +70,15 @@ struct Value {
   Kind kind = Kind::number;
   Storage data = 0.0;
   SourceLocation loc{};
+
+  Value() = default;
+  Value(Kind value_kind, Storage value_data, SourceLocation location)
+      : kind(value_kind), data(std::move(value_data)), loc(std::move(location)) {}
+  Value(const Value& other);
+  Value& operator=(const Value& other);
+  Value(Value&& other) noexcept = default;
+  Value& operator=(Value&& other) noexcept = default;
+  ~Value() = default;
 
   static Value number(double value, SourceLocation location);
   static Value string(std::string value, SourceLocation location);

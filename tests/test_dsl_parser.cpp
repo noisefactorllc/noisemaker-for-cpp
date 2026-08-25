@@ -112,6 +112,34 @@ TEST(dsl_parser_uses_authority_expected_token_diagnostics) {
   REQUIRE(false);
 }
 
+TEST(dsl_parser_rejects_arbitrarily_large_surface_suffix_with_dsl_error) {
+  try {
+    static_cast<void>(parse(
+        "search synth\nsolid().write(o999999999999999999999999999999999999999999999999999999999999)",
+        "huge-surface.dsl"));
+  } catch (const DslError& error) {
+    REQUIRE(error.what() == std::string(
+                "huge-surface.dsl:2:15: Surface reference must be o0 through o7"));
+    return;
+  }
+  REQUIRE(false);
+}
+
+TEST(dsl_parser_copies_nested_expression_values_independently) {
+  const auto program = parse("search synth\nsolid(1 + 2 * 3).write(o0)");
+  Value original = program.chains[0].calls[0].arguments[0].value;
+  Value copied = original;
+  auto& copied_binary = std::get<noisemaker::dsl::BinaryValue>(copied.data);
+  copied_binary.left->data = 9.0;
+  REQUIRE(std::get<noisemaker::dsl::BinaryValue>(original.data).left != copied_binary.left);
+  REQUIRE(std::get<double>(std::get<noisemaker::dsl::BinaryValue>(original.data).left->data) != 9.0);
+
+  Value moved = std::move(copied);
+  auto& moved_binary = std::get<noisemaker::dsl::BinaryValue>(moved.data);
+  moved_binary.right->data = 11.0;
+  REQUIRE(std::get<double>(moved_binary.right->data) == 11.0);
+}
+
 #ifdef NOISEMAKER_DSL_PARSER_ORACLE_MAIN
 namespace {
 std::string json_escape(const std::string& value) {
@@ -271,7 +299,13 @@ std::string call_json(const noisemaker::dsl::Call& call) {
     out << "{\"name\":" << (arg.name.has_value() ? json_escape(*arg.name) : "null")
         << ",\"value\":" << value_json(arg.value) << ",\"loc\":" << loc_json(arg.loc) << '}';
   }
-  out << "],\"argMode\":\"" << mode << "\",\"loc\":" << loc_json(call.loc) << '}';
+  out << ']';
+  if (call.argument_mode == noisemaker::dsl::Call::ArgumentMode::none) {
+    out << ",\"argMode\":null";
+  } else {
+    out << ",\"argMode\":\"" << mode << '\"';
+  }
+  out << ",\"loc\":" << loc_json(call.loc) << '}';
   return out.str();
 }
 

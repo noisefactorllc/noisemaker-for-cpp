@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 namespace noisemaker::dsl {
@@ -243,8 +244,14 @@ class Parser {
       throw DslError("Expected surface reference", location(token));
     }
     ++current_;
-    const std::size_t index = static_cast<std::size_t>(std::stoul(token.lexeme.substr(1)));
-    if (index > 7) throw DslError("Surface reference must be o0 through o7", location(token));
+    std::size_t index = 0;
+    for (const char digit : std::string_view(token.lexeme).substr(1)) {
+      const std::size_t numeric_digit = static_cast<std::size_t>(digit - '0');
+      if (numeric_digit > 7 || index > (7 - numeric_digit) / 10) {
+        throw DslError("Surface reference must be o0 through o7", location(token));
+      }
+      index = index * 10 + numeric_digit;
+    }
     return Value::surface(token.lexeme, index, location(token));
   }
 
@@ -298,14 +305,44 @@ Value Value::vector(std::size_t width, std::vector<Value> values, SourceLocation
   return {Kind::vector, VectorValue{width, std::move(values)}, std::move(location)};
 }
 Value Value::unary(char operator_token, Value argument, SourceLocation location) {
-  return {Kind::unary, UnaryValue{operator_token, std::make_shared<Value>(std::move(argument))},
+  return {Kind::unary, UnaryValue{operator_token, std::make_unique<Value>(std::move(argument))},
           std::move(location)};
 }
 Value Value::binary(char operator_token, Value left, Value right, SourceLocation location) {
   return {Kind::binary,
-          BinaryValue{operator_token, std::make_shared<Value>(std::move(left)),
-                      std::make_shared<Value>(std::move(right))},
+          BinaryValue{operator_token, std::make_unique<Value>(std::move(left)),
+                      std::make_unique<Value>(std::move(right))},
           std::move(location)};
+}
+
+namespace {
+Value::Storage clone_storage(const Value::Storage& storage) {
+  return std::visit(
+      [](const auto& value) -> Value::Storage {
+        using T = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<T, UnaryValue>) {
+          return UnaryValue{value.operator_token, std::make_unique<Value>(*value.argument)};
+        } else if constexpr (std::is_same_v<T, BinaryValue>) {
+          return BinaryValue{value.operator_token, std::make_unique<Value>(*value.left),
+                             std::make_unique<Value>(*value.right)};
+        } else {
+          return value;
+        }
+      },
+      storage);
+}
+}  // namespace
+
+Value::Value(const Value& other)
+    : kind(other.kind), data(clone_storage(other.data)), loc(other.loc) {}
+
+Value& Value::operator=(const Value& other) {
+  if (this == &other) return *this;
+  Value copy(other);
+  kind = copy.kind;
+  data = std::move(copy.data);
+  loc = std::move(copy.loc);
+  return *this;
 }
 
 Program parse(std::string_view source, std::string_view source_name) {

@@ -25,5 +25,7 @@
   {"name":"parse-duplicate-render","parse":true,"source":"search synth\nrender(o0); render(o1)"},
   {"name":"parse-invalid-surface","parse":true,"source":"search synth\nsolid().write(o9)"},
   {"name":"parse-astral-location","parse":true,"source":"search synth\n// 😀\nsolid(color: #f80).write(o0)\nrender(o0)"},
+  {"name":"parse-empty-call","parse":true,"source":"search synth\nsolid().write(o0); render(o0)"},
+  {"name":"parse-huge-surface","parse":true,"source":"search synth\nsolid().write(o999999999999999999999999999999999999999999999999999999999999)"},
   {"name":"empty","source":""}
 ]

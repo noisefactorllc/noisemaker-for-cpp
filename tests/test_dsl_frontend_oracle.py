@@ -43,8 +43,13 @@ def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.
 
 def resolve_parser_oracle() -> pathlib.Path:
     configured = os.environ.get("NOISEMAKER_DSL_PARSER_ORACLE")
+    if configured:
+        candidate = pathlib.Path(configured)
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+        raise AssertionError(f"NOISEMAKER_DSL_PARSER_ORACLE is not an executable file: {candidate}")
     candidates = [
-        pathlib.Path(configured) if configured else pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-parser-oracle"),
+        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-parser-oracle"),
         pathlib.Path("/private/tmp/noisemaker-cpp-task4-build/noisemaker-dsl-parser-oracle"),
     ]
     for candidate in candidates:
@@ -178,6 +183,13 @@ class DslFrontendOracleTest(unittest.TestCase):
                 os.environ.pop("NOISEMAKER_DSL_CPP_ORACLE", None)
                 with self.assertRaisesRegex(AssertionError, "no documented external C\\+\\+ oracle"):
                     resolve_cpp_oracle([pathlib.Path(temporary) / "missing"])
+
+    def test_parser_oracle_rejects_configured_non_executable_path(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-parser-no-oracle-") as temporary:
+            missing = pathlib.Path(temporary) / "missing"
+            with mock.patch.dict(os.environ, {"NOISEMAKER_DSL_PARSER_ORACLE": str(missing)}, clear=False):
+                with self.assertRaisesRegex(AssertionError, "NOISEMAKER_DSL_PARSER_ORACLE is not an executable file"):
+                    resolve_parser_oracle()
 
 
 def hash_file(path: pathlib.Path) -> str:
