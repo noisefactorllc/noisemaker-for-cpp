@@ -8,14 +8,22 @@
 namespace noisemaker {
 namespace {
 
-std::uint8_t unorm8(float value) noexcept {
-  if (!std::isfinite(value) || value <= 0.0f) {
-    return 0;
+float unorm8(float value) noexcept {
+  // JavaScript's comparison-based quantizer leaves NaN untouched. Keep the
+  // NaN out of integer conversion while mapping infinities through the same
+  // ordered clamps as finite values.
+  if (std::isnan(value)) {
+    return value;
+  }
+  if (value <= 0.0f) {
+    return 0.0f;
   }
   if (value >= 1.0f) {
-    return 255;
+    return 1.0f;
   }
-  return static_cast<std::uint8_t>(std::floor(static_cast<double>(value) * 255.0 + 0.5));
+  const auto byte = static_cast<std::uint8_t>(
+      std::floor(static_cast<double>(value) * 255.0 + 0.5));
+  return static_cast<float>(byte) / 255.0f;
 }
 
 }  // namespace
@@ -29,7 +37,7 @@ Surface& quantize_texture(Surface& surface, TextureFormat format) noexcept {
       return surface;
     case TextureFormat::rgba8_unorm:
       for (float& channel : surface.data()) {
-        channel = static_cast<float>(unorm8(channel)) / 255.0f;
+        channel = unorm8(channel);
       }
       return surface;
     case TextureFormat::rgba32f:

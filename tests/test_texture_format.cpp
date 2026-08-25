@@ -32,7 +32,7 @@ TEST(texture_format_rgba8_unorm_clamps_and_rounds_to_normalized_bytes) {
   REQUIRE(surface.to_rgba8() == expected);
 }
 
-TEST(texture_format_rgba8_unorm_maps_nonfinite_channels_to_zero) {
+TEST(texture_format_rgba8_unorm_preserves_nan_and_clamps_infinities) {
   noisemaker::Surface surface(1, 1, std::vector<float>{
       noisemaker::uint_bits_to_float(0x7fc00001U),
       noisemaker::uint_bits_to_float(0x7f800000U),
@@ -43,8 +43,8 @@ TEST(texture_format_rgba8_unorm_maps_nonfinite_channels_to_zero) {
   noisemaker::quantize_texture(surface, noisemaker::TextureFormat::rgba8_unorm);
 
   const auto data = surface.data();
-  REQUIRE(noisemaker::float_bits_to_uint(data[0]) == 0x00000000U);
-  REQUIRE(noisemaker::float_bits_to_uint(data[1]) == 0x00000000U);
+  REQUIRE((data[0] != data[0]));
+  REQUIRE(noisemaker::float_bits_to_uint(data[1]) == 0x3f800000U);
   REQUIRE(noisemaker::float_bits_to_uint(data[2]) == 0x00000000U);
   REQUIRE(noisemaker::float_bits_to_uint(data[3]) == 0x3e808081U);
 }

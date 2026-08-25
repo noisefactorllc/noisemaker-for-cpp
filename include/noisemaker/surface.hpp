@@ -8,6 +8,10 @@
 
 namespace noisemaker {
 
+// Shared authority allocation boundary. Every Surface constructor enforces
+// this before computing a pixel/channel count or allocating storage.
+inline constexpr std::size_t kMaxSurfacePixels = 16'777'216U;
+
 enum class TextureFilter { nearest, linear };
 
 class Surface {

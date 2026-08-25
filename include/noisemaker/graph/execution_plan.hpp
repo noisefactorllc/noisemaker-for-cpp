@@ -1,5 +1,6 @@
 #pragma once
 
+#include "noisemaker/effects/catalog_types.hpp"
 #include "noisemaker/dsl/error.hpp"
 
 #include <cstddef>
@@ -60,6 +61,7 @@ struct CompatibilityBinding {
 };
 
 struct AuthorityPassMetadata {
+  std::string name;
   std::vector<std::pair<std::string, std::string>> inputs;
   std::vector<std::pair<std::string, std::string>> outputs;
   std::vector<std::pair<std::string, PlanValue>> uniforms;
@@ -69,12 +71,14 @@ struct AuthorityPassMetadata {
   std::optional<PlanValue> repeat;
 };
 
-struct ScatterOutput {
+struct CompatibilityOutput {
   std::size_t slot = 0;
   std::string physical_name;
   std::string logical_route;
   std::string cpp_type;
 };
+
+using ScatterOutput = CompatibilityOutput;
 
 struct ScatterContract {
   std::string adapter;
@@ -86,7 +90,7 @@ struct ScatterContract {
   std::string destination_mutation;
   bool blend = false;
   std::vector<CompatibilityBinding> uniforms;
-  std::vector<ScatterOutput> outputs;
+  std::vector<CompatibilityOutput> outputs;
 };
 
 struct PassAdmission {
@@ -101,12 +105,17 @@ struct PassAdmission {
   std::string draw_mode;
   std::vector<CompatibilityBinding> samplers;
   std::vector<CompatibilityBinding> uniforms;
-  std::vector<CompatibilityBinding> outputs;
+  std::vector<CompatibilityOutput> outputs;
   AuthorityPassMetadata authority_pass;
   std::optional<ScatterContract> scatter;
 };
 
 struct PlanProvenance {
+  // Exact source identity and the canonical execution payload identity. These
+  // are copied into a plan and never derived from a live registry at execute.
+  std::string source_sha256;
+  std::string source_name;
+  std::string plan_payload_sha256;
   std::string kind;
   std::string schema;
   std::string backend_schema;
@@ -138,10 +147,17 @@ struct PlanProvenance {
   } counts;
 };
 
+struct PlanEffectSnapshot {
+  effects::EffectDefinition definition;
+  std::vector<PassAdmission> admissions;
+  std::string snapshot_sha256;
+};
+
 struct ReadStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
 struct WriteStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
 struct EffectStep {
   EffectIdentity effect;
+  std::size_t snapshot_index = 0;
   std::vector<ParameterBinding> params;
   std::vector<std::string> explicit_params;
   std::vector<PassAdmission> passes;
@@ -156,6 +172,7 @@ struct ExecutionChain {
 
 struct ExecutionPlan {
   std::vector<std::string> search;
+  std::vector<PlanEffectSnapshot> effects;
   std::vector<ExecutionChain> chains;
   SurfaceReference render_surface;
   bool require_executable = false;
@@ -163,5 +180,17 @@ struct ExecutionPlan {
   std::vector<PassAdmission> availability;
   PlanProvenance provenance;
 };
+
+// Returns true only when every owned snapshot, step reference, and the plan
+// payload authenticate against their canonical value-owned bytes.
+[[nodiscard]] bool validate_execution_plan(const ExecutionPlan& plan) noexcept;
+
+// Canonical hashes are exposed for source-bound oracle projections and for
+// execution-side diagnostics; both operate only on value-owned plan data.
+namespace detail {
+[[nodiscard]] std::string admission_sha256(const PassAdmission& admission);
+[[nodiscard]] std::string snapshot_sha256(const PlanEffectSnapshot& snapshot);
+[[nodiscard]] std::string plan_payload_sha256(const ExecutionPlan& plan);
+}  // namespace detail
 
 }  // namespace noisemaker::graph

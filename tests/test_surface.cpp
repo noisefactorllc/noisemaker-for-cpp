@@ -16,6 +16,17 @@ TEST(surface_rejects_zero_and_overflowing_dimensions) {
   REQUIRE_THROWS_AS(noisemaker::Surface(std::numeric_limits<std::size_t>::max(), 2), std::overflow_error);
 }
 
+TEST(surface_accepts_exact_authority_pixel_cap) {
+  noisemaker::Surface surface(4096U, 4096U);
+  REQUIRE(surface.width() == 4096U);
+  REQUIRE(surface.height() == 4096U);
+  REQUIRE(surface.data().size() == 4096U * 4096U * 4U);
+}
+
+TEST(surface_rejects_one_pixel_over_authority_cap_before_allocation) {
+  REQUIRE_THROWS_AS(noisemaker::Surface(4097U, 4096U), std::overflow_error);
+}
+
 TEST(surface_rejects_mismatched_constructor_data) {
   REQUIRE_THROWS_AS((noisemaker::Surface(1, 1, std::vector<float>{0.0f, 0.0f, 0.0f})), std::invalid_argument);
 }

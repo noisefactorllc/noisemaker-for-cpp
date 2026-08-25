@@ -188,7 +188,7 @@ else process.stdout.write(text)
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
   const FIXTURE_SHA256 = '2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6'
-  const EXPECTED_STREAM_SHA256 = '34d34603085f16883ea680415785c6e3d1611f31bfc2b44db61d35139693617f'
+  const EXPECTED_STREAM_SHA256 = '4cf79daa1a05e06d3ee3e8f940b6d64a38b6922cc9d26e76309ab45eb93a81f5'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
@@ -298,24 +298,174 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     return tagged(null)
   }
   function loc(value) { return { sourceName: value.sourceName, line: value.line, column: value.column, index: value.index } }
+  function pairs(value) { return Object.entries(value ?? {}) }
+  function taggedEffect(value) {
+    if (value === null || value === undefined) return { kind: 'null' }
+    if (typeof value === 'boolean') return { kind: 'boolean', value }
+    if (typeof value === 'number') return { kind: 'number', value: taggedNumber(value) }
+    if (typeof value === 'string') return { kind: 'string', value }
+    if (Array.isArray(value)) return { kind: 'array', values: value.map(taggedEffect) }
+    return { kind: 'object', entries: Object.entries(value).map(([name, item]) => [name, taggedEffect(item)]) }
+  }
+  function optionalEffect(value, present = value !== undefined && value !== null) {
+    return present ? { present: true, value: taggedEffect(value) } : { present: false }
+  }
+  function optionalString(value, present = value !== undefined && value !== null) {
+    return present ? { present: true, value: String(value) } : { present: false }
+  }
+  function dimension(value) {
+    const result = { kind: 'unknown', parameter: '', inputOverride: '', literal: taggedNumber(0), defaultValue: taggedNumber(0), power: 1, raw: taggedEffect(value) }
+    if (typeof value === 'number') { result.kind = 'literal'; result.literal = taggedNumber(value); return result }
+    if (typeof value === 'string') {
+      if (value === 'input') { result.kind = 'input'; result.parameter = 'input' }
+      else if (value === 'screen') { result.kind = 'screen'; result.parameter = 'screen' }
+      else if (value === 'resolution') { result.kind = 'resolution'; result.parameter = 'resolution' }
+      else if (value.endsWith('%')) { result.kind = 'screen_division'; result.parameter = value }
+      return result
+    }
+    if (value && typeof value === 'object') {
+      result.parameter = value.param ?? value.screenDivide ?? ''
+      result.inputOverride = value.inputOverride ?? ''
+      result.defaultValue = taggedNumber(value.default ?? value.paramDefault ?? 0)
+      result.power = value.power ?? 1
+      if (value.paramDefault !== undefined) result.kind = 'parameter_default'
+      else if (value.power !== undefined) result.kind = 'power'
+      else if (value.screenDivide !== undefined) result.kind = 'screen_division'
+      else if (value.param !== undefined) result.kind = 'parameter'
+    }
+    return result
+  }
+  function definitionProjection(definition, rawRecord = null) {
+    const source = rawRecord ?? {}
+    const params = Object.entries(definition.params ?? {}).map(([name, param]) => {
+      const recordParam = rawRecord?.params?.[name] ?? null
+      return {
+      name, type: param.type ?? '', default: optionalEffect(param.default, Object.prototype.hasOwnProperty.call(param, 'default')), define: optionalString(param.define), uniform: optionalString(param.uniform),
+      zero: optionalEffect(param.zero), enumValues: pairs(param.enumValues).map(([key, item]) => [key, taggedEffect(item)]), enumName: optionalString(param.enumName ?? recordParam?.enum), choices: pairs(param.choices).map(([key, item]) => [key, taggedEffect(item)]),
+      min: optionalEffect(param.min), max: optionalEffect(param.max), texture: optionalString(param.texture), colorModeUniform: optionalString(param.colorModeUniform),
+      cpuOnly: param.cpuOnly === true, raw: rawRecord ? Object.entries(param).map(([key, item]) => [key, taggedEffect(item)]) : []
+      }
+    })
+    const passes = (definition.passes ?? []).map((pass) => {
+      const blend = pass.blend === undefined || pass.blend === null ? { present: false } : {
+        present: true,
+        value: Array.isArray(pass.blend) ? { kind: 'factors', enabled: true, factors: [...pass.blend] } : { kind: 'boolean', enabled: pass.blend === true, factors: ['', ''] }
+      }
+      return {
+        name: pass.name, program: pass.program, inputs: pairs(pass.inputs), outputs: pairs(pass.outputs), uniforms: pairs(pass.uniforms).map(([name, value]) => [name, taggedEffect(value)]),
+        count: optionalEffect(pass.count), repeat: optionalEffect(pass.repeat), conditions: optionalEffect(pass.conditions), viewport: optionalEffect(pass.viewport), blend,
+        drawMode: optionalString(pass.drawMode), drawBuffers: optionalEffect(pass.drawBuffers), raw: rawRecord ? Object.entries(pass).map(([key, item]) => [key, taggedEffect(item)]) : []
+      }
+    })
+    const textures = Object.entries(definition.textures ?? {}).map(([name, texture]) => ({
+      name, width: dimension(texture.width), height: dimension(texture.height), format: optionalString(texture.format), raw: rawRecord ? Object.entries(texture).map(([key, item]) => [key, taggedEffect(item)]) : []
+    }))
+    const raw = rawRecord ? Object.entries(rawRecord).map(([key, item]) => [key, taggedEffect(item)]) : []
+    return {
+      id: definition.id, directoryName: definition.directoryName ?? source.directoryName ?? '', name: definition.name ?? source.name ?? definition.func ?? '', namespace: definition.namespace, func: definition.func,
+      kind: definition.kind, domain: definition.domain, tags: [...(definition.tags ?? [])], description: definition.description ?? '', parameterAliases: pairs(definition.paramAliases),
+      parameters: params, passes, textures, externalTexture: optionalString(definition.externalTexture), outputTex3d: optionalString(definition.outputTex3d), outputGeo: optionalString(definition.outputGeo),
+      outputXyz: optionalString(source.outputXyz), outputVelocity: optionalString(source.outputVel), outputRgba: optionalString(source.outputRgba), iterated: definition.iterated === true,
+      loopRole: optionalString(definition.loopRole), raw
+    }
+  }
+  const dimensionKinds = new Map(['input', 'screen', 'literal', 'parameter', 'parameter_default', 'power', 'screen_division', 'resolution', 'unknown'].map((name, index) => [name, index]))
+  class CanonicalWriter {
+    constructor() { this.parts = [] }
+    token(value) { const text = String(value); this.parts.push(`${Buffer.byteLength(text, 'utf8')}:${text}`) }
+    boolean(value) { this.token(value ? 'true' : 'false') }
+    size(value) { this.token(String(value)) }
+    number(value) {
+      const bytes = new ArrayBuffer(8), view = new DataView(bytes); view.setFloat64(0, Number(value), false)
+      const high = view.getUint32(0, false).toString(16).padStart(8, '0'), low = view.getUint32(4, false).toString(16).padStart(8, '0')
+      this.token(`number-bits:${high}${low}`)
+    }
+    optional(value) { this.boolean(value) }
+    output() { return this.parts.join('') }
+  }
+  function writeEffectValue(writer, value) {
+    const kinds = { null: 0, boolean: 1, number: 2, string: 3, array: 4, object: 5 }; writer.size(kinds[value.kind])
+    writer.boolean(value.kind === 'boolean' ? value.value : false); writer.number(value.kind === 'number' ? Number(String(value.value).replace(/^number:/, '')) : 0); writer.token(value.kind === 'string' ? value.value : '')
+    const array = value.kind === 'array' ? value.values : []; writer.size(array.length); array.forEach((item) => writeEffectValue(writer, item))
+    const entries = value.kind === 'object' ? value.entries : []; writer.size(entries.length); entries.forEach(([name, item]) => { writer.token(name); writeEffectValue(writer, item) })
+  }
+  function writePlanValue(writer, value) {
+    const kind = value?.kind ?? 'null'; const kinds = { null: 0, boolean: 1, number: 2, string: 3, array: 4, surface: 5 }; writer.size(kinds[kind])
+    if (kind === 'boolean') writer.boolean(value.value)
+    else if (kind === 'number') writer.number(Number(String(value.value).replace(/^number:/, '')))
+    else if (kind === 'string') writer.token(value.value)
+    else if (kind === 'array') { writer.size(value.values.length); value.values.forEach((item) => writePlanValue(writer, item)) }
+    else if (kind === 'surface') { const surface = value.value; writer.size(surface.kind === 'input' ? 1 : 2); writer.token(surface.name ?? ''); writer.size(surface.index ?? 0) }
+  }
+  function writePairs(writer, values, valueWriter) { writer.size(values.length); values.forEach(([name, value]) => { writer.token(name); valueWriter(writer, value) }) }
+  function writeOptionalEffect(writer, value) { writer.optional(value.present); if (value.present) writeEffectValue(writer, value.value) }
+  function writeOptionalString(writer, value) { writer.optional(value.present); if (value.present) writer.token(value.value) }
+  function writeDimension(writer, value) { writer.size(dimensionKinds.get(value.kind)); writer.token(value.parameter); writer.token(value.inputOverride); writer.number(Number(String(value.literal).replace(/^number:/, ''))); writer.number(Number(String(value.defaultValue).replace(/^number:/, ''))); writer.number(value.power); writeEffectValue(writer, value.raw) }
+  function writeDefinition(writer, value) {
+    ;[value.id, value.directoryName, value.name, value.namespace, value.func, value.kind, value.domain].forEach((item) => writer.token(item)); writer.size(value.tags.length); value.tags.forEach((item) => writer.token(item)); writer.token(value.description); writePairs(writer, value.parameterAliases, (out, item) => out.token(item))
+    writer.size(value.parameters.length); value.parameters.forEach((item) => { writer.token(item.name); writer.token(item.type); writeOptionalEffect(writer, item.default); writeOptionalString(writer, item.define); writeOptionalEffect(writer, item.zero); writePairs(writer, item.choices, writeEffectValue); writePairs(writer, item.enumValues, writeEffectValue); writeOptionalString(writer, item.enumName); writeOptionalEffect(writer, item.min); writeOptionalEffect(writer, item.max); writeOptionalString(writer, item.uniform); writeOptionalString(writer, item.texture); writeOptionalString(writer, item.colorModeUniform); writer.boolean(item.cpuOnly); writePairs(writer, item.raw, writeEffectValue) })
+    writer.size(value.passes.length); value.passes.forEach((item) => { writer.token(item.name); writer.token(item.program); writePairs(writer, item.inputs, (out, entry) => out.token(entry)); writePairs(writer, item.outputs, (out, entry) => out.token(entry)); writePairs(writer, item.uniforms, writeEffectValue); writeOptionalEffect(writer, item.count); writeOptionalEffect(writer, item.repeat); writeOptionalEffect(writer, item.conditions); writeOptionalEffect(writer, item.viewport); writer.optional(item.blend.present); if (item.blend.present) { writer.size(item.blend.value.kind === 'factors' ? 1 : 0); writer.boolean(item.blend.value.enabled); writer.token(item.blend.value.factors[0]); writer.token(item.blend.value.factors[1]) } writeOptionalString(writer, item.drawMode); writeOptionalEffect(writer, item.drawBuffers); writePairs(writer, item.raw, writeEffectValue) })
+    writer.size(value.textures.length); value.textures.forEach((item) => { writer.token(item.name); writeDimension(writer, item.width); writeDimension(writer, item.height); writeOptionalString(writer, item.format); writePairs(writer, item.raw, writeEffectValue) })
+    writeOptionalString(writer, value.externalTexture); writeOptionalString(writer, value.outputTex3d); writeOptionalString(writer, value.outputGeo); writeOptionalString(writer, value.outputXyz); writeOptionalString(writer, value.outputVelocity); writeOptionalString(writer, value.outputRgba); writer.boolean(value.iterated); writeOptionalString(writer, value.loopRole); writePairs(writer, value.raw, writeEffectValue)
+  }
+  function writeBinding(writer, value) { ;[value.name, value.type, value.source, value.sourceName, value.resource, value.cppType].forEach((item) => writer.token(item ?? '')) }
+  function writeOutput(writer, value) { writer.size(value.slot); writer.token(value.physicalName); writer.token(value.logicalRoute); writer.token(value.cppType) }
+  function writeAuthority(writer, value) { writer.token(value.name); writePairs(writer, value.inputs, (out, item) => out.token(item)); writePairs(writer, value.outputs, (out, item) => out.token(item)); writePairs(writer, value.uniforms, writePlanValue); writer.token(value.blendKind); writer.boolean(value.blend); writer.token(value.blendFactors[0]); writer.token(value.blendFactors[1]); writer.optional(value.repeat.present); if (value.repeat.present) writePlanValue(writer, value.repeat.value) }
+  function writeAdmission(writer, value) {
+    writer.size(value.index); writer.token(value.name); writer.token(value.programKey); writer.size({ compatible: 0, scatter: 1, missing: 2, incompatible: 3 }[value.status]); writer.size(value.reasons.length); value.reasons.forEach((item) => { writer.token(item.code); writer.token(item.detail) }); writer.token(value.canonicalFactory); writer.token(value.sourceSha256); writer.token(value.semanticSha256); writer.size(value.capabilities.length); value.capabilities.forEach((item) => writer.token(item)); writer.token(value.dimensionality); writer.token(value.drawMode); [value.samplers, value.uniforms].forEach((items) => { writer.size(items.length); items.forEach((item) => writeBinding(writer, item)) }); writer.size(value.outputs.length); value.outputs.forEach((item) => writeOutput(writer, item)); writeAuthority(writer, value.authorityPass); writer.optional(value.scatter !== null); if (value.scatter !== null) { const item = value.scatter; ;[item.adapter, item.registry, item.drawMode, item.dimensionality, item.count, item.inputTexture, item.destinationMutation].forEach((entry) => writer.token(entry)); writer.boolean(item.blend); writer.size(item.uniforms.length); item.uniforms.forEach((entry) => writeBinding(writer, entry)); writer.size(item.outputs.length); item.outputs.forEach((entry) => writeOutput(writer, entry)) }
+  }
+  function hashSnapshot(value) { const writer = new CanonicalWriter(); writeDefinition(writer, value.definition); writer.size(value.admissions.length); value.admissions.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
+  function surfaceValue(value, location = null) { if (!value) return { kind: 'none', name: '', index: 0, loc: location }; if (typeof value === 'string') return { kind: 'named', name: value, index: Number(value.slice(1)), loc: location }; if (value.kind === 'input') return { kind: 'input', name: '', index: 0, loc: location }; return { kind: 'named', name: value.name, index: Number(String(value.name).slice(1)), loc: location } }
+  function writeSurface(writer, value) { writer.size({ none: 0, input: 1, named: 2 }[value.kind]); writer.token(value.name); writer.size(value.index); const location = value.loc ?? { sourceName: '', line: 0, column: 0, index: 0 }; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index) }
+  function writeStep(writer, value) {
+    if (value.kind === 'read' || value.kind === 'write') { writer.token(value.kind); writeSurface(writer, surfaceValue(value.surface, value.surfaceLocation ?? value.loc)); writer.token(value.loc.sourceName); writer.size(value.loc.line); writer.size(value.loc.column); writer.size(value.loc.index); return }
+    writer.token('effect'); writer.token(value.effectId); writer.token(value.domain); writer.token(value.effectKind); writer.size(value.snapshotIndex); writer.size(value.params.length); value.params.forEach((item) => { writer.token(item.name); writePlanValue(writer, item.value) }); writer.size(value.explicitParams.length); value.explicitParams.forEach((item) => writer.token(item)); writer.size(value.passes.length); value.passes.forEach((item) => writeAdmission(writer, item)); const location = value.loc; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index)
+  }
+  function hashPlan(value, renderLocation) { const writer = new CanonicalWriter(); writer.size(value.search.length); value.search.forEach((item) => writer.token(item)); writer.size(value.effects.length); value.effects.forEach((item) => { writeDefinition(writer, item.definition); writer.size(item.admissions.length); item.admissions.forEach((admissionValue) => writeAdmission(writer, admissionValue)) }); writer.size(value.chains.length); value.chains.forEach((chain) => { writer.token(chain.loc.sourceName); writer.size(chain.loc.line); writer.size(chain.loc.column); writer.size(chain.loc.index); writer.size(chain.steps.length); chain.steps.forEach((item) => writeStep(writer, item)) }); writeSurface(writer, surfaceValue(value.renderSurface, renderLocation)); writer.boolean(value.requireExecutable); writer.boolean(value.executable); writer.size(value.availability.length); value.availability.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
+
   function admission(definition, index) {
     const pass = definition.passes[index]
     const key = `${definition.id}:${pass.program}`
-    let row = compatibility?.reference_passes?.find((item) => item.effect_id === definition.id && item.pass_index === index && item.program_key === key)
-    if (!row) row = compatibility?.scatter?.program_key === key ? compatibility.scatter : null
-    const status = row?.status === 'registered' ? 'scatter' : (row?.status ?? 'compatible')
-    const reasons = row?.reasons ?? []
+    const reference = compatibility?.reference_passes?.find((item) => item.effect_id === definition.id && item.pass_index === index && item.program_key === key)
+    const row = compatibility?.canonical_programs?.find((item) => item.program_key === key)
+    const scatterRow = compatibility?.scatter?.program_key === key ? compatibility.scatter : null
+    const status = reference?.status === 'scatter' || scatterRow ? 'scatter' : (reference?.status ?? 'compatible')
+    const reasons = (reference?.reasons ?? []).map((reason) => ({ code: reason.code, detail: reason.detail }))
     if (status === 'scatter' && reasons.length === 0) reasons.push({ code: 'explicit_scatter_adapter', detail: key })
     const blend = pass.blend
     const authorityPass = {
-      inputs: { ...(pass.inputs ?? {}) }, outputs: { ...(pass.outputs ?? {}) }, uniforms: Object.fromEntries(Object.entries(pass.uniforms ?? {}).map(([name, value]) => [name, tagged(value)])),
+      name: pass.name, inputs: pairs(pass.inputs), outputs: pairs(pass.outputs), uniforms: pairs(pass.uniforms).map(([name, value]) => [name, tagged(value)]),
       blendKind: Array.isArray(blend) ? 'factors' : (typeof blend === 'boolean' ? 'boolean' : 'none'),
       blend: Array.isArray(blend) ? true : (blend === true),
       blendFactors: Array.isArray(blend) ? [...blend] : ['', ''],
-      repeat: pass.repeat == null ? null : tagged(pass.repeat)
+      repeat: pass.repeat == null ? { present: false } : { present: true, value: tagged(pass.repeat) }
     }
-    const result = { index, name: pass.name, programKey: key, status, reasons, authorityPass }
-    if (status === 'scatter') result.scatter = { adapter: 'noisemaker::scatter::wormhole::adapter', registry: 'noisemaker::scatter::resolve_scatter_adapter', drawMode: 'points', dimensionality: 'image', count: 'input', inputTexture: 'inputTex', destinationMutation: 'in_place_accumulate', blend: true, uniforms: [{ name: 'kink', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'stride', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'rotation', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }, { name: 'wrap', type: '', cppType: 'double', source: 'effect_parameter', sourceName: '', resource: '' }], outputs: [{ slot: 0, physicalName: 'fragColor', logicalRoute: 'wormhole_accum', cppType: 'glsl::Vec4' }] }
+    const bindings = (items) => (items ?? []).map((item) => ({ name: item.name ?? '', type: item.type ?? '', source: item.source ?? '', sourceName: item.source_name ?? '', resource: item.resource ?? '', cppType: item.cpp_type ?? '' }))
+    const outputs = (items) => (items ?? []).map((item) => ({ slot: item.slot, physicalName: item.physical_name ?? '', logicalRoute: item.logical_route ?? '', cppType: item.cpp_type ?? '' }))
+    const scatterBindings = (items) => (items ?? []).map((item) => ({ name: item.name ?? '', type: item.type ?? '', cppType: item.cpp_type ?? '', source: item.source ?? '', sourceName: item.source_name ?? '', resource: item.resource ?? '' }))
+    const result = {
+      index, name: pass.name, programKey: key, status, reasons,
+      canonicalFactory: row?.factory?.canonical ?? '', sourceSha256: row?.new_raw_sha256 ?? '', semanticSha256: row?.semantic?.old_typed_ir_sha256 ?? '',
+      capabilities: [...(row?.capabilities ?? [])], dimensionality: row?.dimensionality ?? '', drawMode: row?.draw_mode ?? '',
+      samplers: bindings(row?.samplers), uniforms: bindings(row?.uniforms), outputs: outputs(row?.outputs), authorityPass
+    }
+    const scatterOutputs = scatterRow?.outputs ?? (scatterRow?.output_abi
+      ? (scatterRow.output_abi.canonical_slots ?? []).map((slot, outputIndex) => ({
+        slot,
+        physical_name: scatterRow.output_abi.physical_names?.[outputIndex] ?? '',
+        logical_route: scatterRow.output_abi.logical_routes?.[outputIndex] ?? scatterRow.output_route ?? '',
+        // The registered scatter contract currently has one vec4 output; retain
+        // the C++ ABI type in the cross-language projection rather than dropping
+        // this load-bearing output field when the manifest uses output_abi arrays.
+        cpp_type: scatterRow.output_abi.cpp_type ?? 'glsl::Vec4'
+      }))
+      : [])
+    result.scatter = status === 'scatter' ? {
+      adapter: scatterRow?.adapter ?? 'noisemaker::scatter::wormhole::adapter', registry: scatterRow?.registry ?? 'noisemaker::scatter::resolve_scatter_adapter',
+      drawMode: scatterRow?.draw_mode ?? 'points', dimensionality: scatterRow?.dimensionality ?? 'image', count: scatterRow?.count ?? 'input',
+      inputTexture: scatterRow?.input_texture ?? 'inputTex', destinationMutation: scatterRow?.destination_mutation ?? 'in_place_accumulate', blend: scatterRow?.blend ?? true,
+      uniforms: scatterBindings(scatterRow?.uniforms), outputs: scatterOutputs.map((item) => ({ slot: item.slot, physicalName: item.physical_name, logicalRoute: item.logical_route, cppType: item.cpp_type }))
+    } : null
     return result
   }
   function indexFor(source, line, column) {
@@ -334,13 +484,25 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       const registry = registryFor(fixture)
       const compiled = compiler.compileDsl(fixture.source, registry, { sourceName: fixture.sourceName ?? fixture.name })
       const availability = []
-      const chains = compiled.chains.map((chain) => ({ loc: loc(chain.loc), steps: chain.steps.map((step) => {
-        if (step.kind === 'read') return { kind: 'read', surface: step.surface, loc: loc(step.loc) }
-        if (step.kind === 'write') return { kind: 'write', surface: step.surface, loc: loc(step.loc) }
+      const snapshots = []
+      const snapshotIndexes = new Map()
+      const chains = compiled.chains.map((chain, chainIndex) => ({ loc: loc(chain.loc), steps: chain.steps.map((step, stepIndex) => {
+        const surfaceLocation = compiled.ast?.chains?.[chainIndex]?.calls?.[stepIndex]?.args?.[0]?.value?.loc ?? null
+        if (step.kind === 'read') return { kind: 'read', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
+        if (step.kind === 'write') return { kind: 'write', surface: step.surface, loc: loc(step.loc), surfaceLocation: loc(surfaceLocation ?? step.loc) }
         const passes = step.definition.passes.map((_, index) => admission(step.definition, index))
         availability.push(...passes)
         const params = Object.keys(step.params).map((name) => ({ name, value: tagged(step.params[name]) }))
-        return { kind: 'effect', effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, params, explicitParams: [...step.explicitParams], passes, loc: loc(step.loc) }
+        let snapshotIndex = snapshotIndexes.get(step.definition.id)
+        if (snapshotIndex === undefined) {
+          snapshotIndex = snapshots.length
+          snapshotIndexes.set(step.definition.id, snapshotIndex)
+          const rawRecord = snapshot?.effectRecords?.find((record) => record.id === step.definition.id) ?? null
+          const snapshotValue = { effectId: step.definition.id, definition: definitionProjection(step.definition, rawRecord), admissions: passes, snapshotSha256: '' }
+          snapshotValue.snapshotSha256 = hashSnapshot(snapshotValue)
+          snapshots.push(snapshotValue)
+        }
+        return { kind: 'effect', effectId: step.definition.id, domain: step.definition.domain, effectKind: step.definition.kind, snapshotIndex, params, explicitParams: [...step.explicitParams], passes, loc: loc(step.loc) }
       }) }))
       const executable = availability.every((pass) => pass.status === 'compatible' || pass.status === 'scatter')
       if (fixture.options?.requireExecutable && !executable) {
@@ -349,9 +511,13 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
       const provenance = fixture.registryMode === 'catalog_records'
-        ? { kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: 'a024dc3a960cc44af454abc7aebce50456c194e6', generatedPayloadSha256: '4f744f6e62e9592554094f692ca113e9f95dd601ac573b7bc75f02a409b2232c', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: 'c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
-        : { kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
-      return { name: fixture.name, plan: { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance } }
+        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: 'a024dc3a960cc44af454abc7aebce50456c194e6', generatedPayloadSha256: '4f744f6e62e9592554094f692ca113e9f95dd601ac573b7bc75f02a409b2232c', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: 'c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
+        : { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
+      const plan = { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], effects: snapshots, chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance }
+      const renderLocation = compiled.ast?.render?.loc ?? [...chains].reverse().flatMap((chain) => [...chain.steps].reverse()).find((step) => step.kind === 'write')?.surfaceLocation ?? null
+      provenance.planPayloadSha256 = hashPlan(plan, renderLocation)
+      chains.forEach((chain) => chain.steps.forEach((step) => { delete step.surfaceLocation }))
+      return { name: fixture.name, plan }
     } catch (error) {
       const sourceName = error.sourceName ?? fixture.sourceName ?? fixture.name, line = error.line ?? 1, column = error.column ?? 1
       return { name: fixture.name, error: { name: error.name === 'DslError' ? 'DslError' : 'DslError', message: error.message, sourceName, line, column, index: indexFor(fixture.source, line, column) } }

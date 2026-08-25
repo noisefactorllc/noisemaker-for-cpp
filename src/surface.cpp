@@ -14,6 +14,9 @@ std::size_t channel_count(std::size_t width, std::size_t height) {
   if (width == 0 || height == 0) {
     throw std::invalid_argument("surface dimensions must be positive");
   }
+  if (height > kMaxSurfacePixels / width) {
+    throw std::overflow_error("surface pixel count exceeds allocation limit");
+  }
   if (width > std::numeric_limits<std::size_t>::max() / height) {
     throw std::overflow_error("surface pixel count overflows size_t");
   }

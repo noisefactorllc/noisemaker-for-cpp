@@ -135,6 +135,219 @@ TEST(dsl_compiler_plan_copy_owns_nested_parameter_arrays) {
   REQUIRE(original_step.params[0].value.array[0].number == 1.0);
 }
 
+TEST(dsl_compiler_owns_complete_effect_snapshot_and_admissions) {
+  auto source = effect("source");
+  noisemaker::effects::ParameterDefinition parameter;
+  parameter.name = "radius";
+  parameter.type = "float";
+  parameter.default_value = noisemaker::effects::Value::number_value(2.0);
+  parameter.raw = {{"custom", noisemaker::effects::Value::string_value("kept")}};
+  source.parameters.push_back(parameter);
+  noisemaker::effects::TextureDefinition texture;
+  texture.name = "_blurTemp";
+  texture.width.kind = noisemaker::effects::DimensionKind::input;
+  texture.height.kind = noisemaker::effects::DimensionKind::input;
+  texture.format = "rgba8unorm";
+  texture.raw = {{"format", noisemaker::effects::Value::string_value("rgba8unorm")}};
+  source.textures.push_back(texture);
+  source.passes[0].inputs = {{"inputTex", "inputTex"}};
+  source.passes[0].uniforms = {{"radius", noisemaker::effects::Value::number_value(2.0)}};
+  source.passes[0].repeat = noisemaker::effects::Value::number_value(2.0);
+  source.passes[0].conditions = noisemaker::effects::Value::boolean_value(true);
+  source.passes[0].viewport = noisemaker::effects::Value::string_value("screen");
+  source.passes[0].draw_mode = "fragment";
+  source.passes[0].draw_buffers = noisemaker::effects::Value::number_value(1.0);
+  source.passes[0].raw = {{"draw_mode", noisemaker::effects::Value::string_value("fragment")}};
+  noisemaker::effects::EffectRegistry registry({source});
+
+  const std::string dsl = "search fixture\nsource(radius: 3).write(o0)\n";
+  const auto plan = noisemaker::dsl::compile(dsl, registry, {}, "snapshot.dsl");
+  REQUIRE(plan.effects.size() == 1);
+  REQUIRE(plan.provenance.source_name == "snapshot.dsl");
+  REQUIRE(plan.provenance.source_sha256 == "fa4944a520a70cdc2a33345c4df28b4bef92f50ad1d53fcd202194d7d5058d99");
+  REQUIRE(plan.provenance.plan_payload_sha256.size() == 64);
+  const auto& snapshot = plan.effects.front();
+  REQUIRE(snapshot.definition.id == source.id);
+  REQUIRE(snapshot.definition.parameters.front().raw.front().first == "custom");
+  REQUIRE(snapshot.definition.textures.front().format == "rgba8unorm");
+  REQUIRE(snapshot.definition.passes.front().repeat.has_value());
+  REQUIRE(snapshot.definition.passes.front().conditions.has_value());
+  REQUIRE(snapshot.definition.passes.front().viewport.has_value());
+  REQUIRE(snapshot.definition.passes.front().draw_buffers.has_value());
+  REQUIRE(snapshot.definition.passes.front().raw.front().first == "draw_mode");
+  REQUIRE(snapshot.admissions.size() == snapshot.definition.passes.size());
+  REQUIRE(snapshot.snapshot_sha256.size() == 64);
+  const auto& step = std::get<noisemaker::graph::EffectStep>(plan.chains[0].steps[0]);
+  REQUIRE(step.snapshot_index == 0);
+  REQUIRE(noisemaker::graph::validate_execution_plan(plan));
+}
+
+TEST(dsl_compiler_plan_remains_valid_after_registry_lifetime) {
+  noisemaker::graph::ExecutionPlan plan;
+  {
+    noisemaker::effects::EffectRegistry registry({effect("lifetime")});
+    plan = noisemaker::dsl::compile("search fixture\nlifetime().write(o0)\n", registry);
+  }
+  REQUIRE(plan.effects.size() == 1);
+  REQUIRE(noisemaker::graph::validate_execution_plan(plan));
+  REQUIRE(plan.effects.front().definition.id == "fixture/lifetime");
+}
+
+TEST(dsl_compiler_deduplicates_snapshots_in_first_use_order) {
+  auto repeated = effect("repeated", "filter");
+  noisemaker::effects::EffectRegistry registry({repeated});
+  const auto plan = noisemaker::dsl::compile(
+      "search fixture\nrepeated().repeated().write(o0)\n", registry);
+  REQUIRE(plan.effects.size() == 1);
+  REQUIRE(std::get<noisemaker::graph::EffectStep>(plan.chains[0].steps[0]).snapshot_index == 0);
+  REQUIRE(std::get<noisemaker::graph::EffectStep>(plan.chains[0].steps[1]).snapshot_index == 0);
+}
+
+TEST(dsl_compiler_snapshot_and_payload_hashes_detect_mutation_and_copy_deterministically) {
+  noisemaker::effects::EffectRegistry registry({effect("source")});
+  const auto original = noisemaker::dsl::compile("search fixture\nsource().write(o0)\n", registry);
+  const auto copied = original;
+  REQUIRE(copied.provenance.plan_payload_sha256 == original.provenance.plan_payload_sha256);
+  REQUIRE(copied.effects[0].snapshot_sha256 == original.effects[0].snapshot_sha256);
+  REQUIRE(noisemaker::graph::validate_execution_plan(copied));
+
+  auto mutated = original;
+  mutated.effects[0].definition.passes[0].outputs[0].second = "mutated_route";
+  REQUIRE(!noisemaker::graph::validate_execution_plan(mutated));
+  mutated = original;
+  auto& mutated_step = std::get<noisemaker::graph::EffectStep>(mutated.chains[0].steps[0]);
+  mutated_step.params.push_back({"late", noisemaker::graph::PlanValue::number_value(1.0)});
+  REQUIRE(!noisemaker::graph::validate_execution_plan(mutated));
+}
+
+TEST(dsl_compiler_snapshot_authenticates_every_nested_definition_and_admission_field) {
+  auto definition = effect("complete");
+  definition.directory_name = "complete-dir";
+  definition.name = "Complete";
+  definition.tags = {"fixture", "complete"};
+  definition.description = "complete definition";
+  definition.parameter_aliases = {{"old", "new"}};
+  definition.external_texture = "externalTex";
+  definition.output_tex3d = "volumeOut";
+  definition.output_geo = "geoOut";
+  definition.output_xyz = "xyzOut";
+  definition.output_velocity = "velocityOut";
+  definition.output_rgba = "rgbaOut";
+  definition.iterated = true;
+  definition.loop_role = "loop";
+  definition.raw = {{"effect_raw", noisemaker::effects::Value::string_value("kept")}};
+  noisemaker::effects::ParameterDefinition parameter;
+  parameter.name = "amount";
+  parameter.type = "float";
+  parameter.default_value = noisemaker::effects::Value::number_value(1.0);
+  parameter.define = "AMOUNT";
+  parameter.uniform = "amount";
+  parameter.zero = noisemaker::effects::Value::number_value(0.0);
+  parameter.enum_values = {{"one", noisemaker::effects::Value::number_value(1.0)}};
+  parameter.enum_name = "Amount";
+  parameter.choices = {{"one", noisemaker::effects::Value::number_value(1.0)}};
+  parameter.min = noisemaker::effects::Value::number_value(0.0);
+  parameter.max = noisemaker::effects::Value::number_value(2.0);
+  parameter.texture = "amountTex";
+  parameter.color_mode_uniform = "amountMode";
+  parameter.cpu_only = true;
+  parameter.raw = {{"parameter_raw", noisemaker::effects::Value::boolean_value(true)}};
+  definition.parameters.push_back(parameter);
+  noisemaker::effects::TextureDefinition texture;
+  texture.name = "amountTex";
+  texture.width.kind = noisemaker::effects::DimensionKind::literal;
+  texture.width.literal = 17.0;
+  texture.width.raw = noisemaker::effects::Value::number_value(17.0);
+  texture.height.kind = noisemaker::effects::DimensionKind::parameter;
+  texture.height.parameter = "amount";
+  texture.height.raw = noisemaker::effects::Value::string_value("amount");
+  texture.format = "rgba16float";
+  texture.raw = {{"texture_raw", noisemaker::effects::Value::string_value("kept")}};
+  definition.textures.push_back(texture);
+  auto& pass = definition.passes.front();
+  pass.inputs = {{"inputTex", "inputTex"}};
+  pass.outputs = {{"color", "outputTex"}};
+  pass.uniforms = {{"amount", noisemaker::effects::Value::number_value(1.0)}};
+  pass.count = noisemaker::effects::Value::number_value(1.0);
+  pass.repeat = noisemaker::effects::Value::number_value(2.0);
+  pass.conditions = noisemaker::effects::Value::boolean_value(true);
+  pass.viewport = noisemaker::effects::Value::string_value("screen");
+  pass.blend = noisemaker::effects::BlendDefinition{noisemaker::effects::BlendKind::factors, true, {"src", "dst"}};
+  pass.draw_mode = "points";
+  pass.draw_buffers = noisemaker::effects::Value::number_value(1.0);
+  pass.raw = {{"pass_raw", noisemaker::effects::Value::string_value("kept")}};
+  noisemaker::effects::EffectRegistry registry({definition});
+  const auto original = noisemaker::dsl::compile("search fixture\ncomplete().write(o0)\n", registry);
+  REQUIRE(noisemaker::graph::validate_execution_plan(original));
+
+  const auto rejects = [&](auto mutate) {
+    auto mutated = original;
+    mutate(mutated);
+    REQUIRE(!noisemaker::graph::validate_execution_plan(mutated));
+  };
+  rejects([](auto& plan) { plan.effects[0].definition.parameters[0].default_value->number = 9.0; });
+  rejects([](auto& plan) { plan.effects[0].definition.parameters[0].raw[0].second.boolean = false; });
+  rejects([](auto& plan) { plan.effects[0].definition.textures[0].width.literal = 18.0; });
+  rejects([](auto& plan) { plan.effects[0].definition.textures[0].raw[0].second.string = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].inputs[0].second = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].uniforms[0].second.number = 9.0; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].repeat->number = 9.0; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].conditions->boolean = false; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].viewport->string = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].blend->factors[0] = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].draw_mode = "lines"; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].draw_buffers->number = 2.0; });
+  rejects([](auto& plan) { plan.effects[0].definition.passes[0].raw[0].second.string = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.external_texture = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].definition.raw[0].second.string = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].canonical_factory = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].source_sha256 = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].semantic_sha256 = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].capabilities.push_back("changed"); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].dimensionality = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].draw_mode = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].samplers.push_back({"s", "t", "source", "source", "resource", "cpp"}); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].uniforms.push_back({"u", "t", "source", "source", "resource", "cpp"}); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].outputs.push_back({1U, "o", "route", "cpp"}); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].authority_pass.name = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].authority_pass.inputs.push_back({"changed", "route"}); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].authority_pass.uniforms.push_back({"changed", noisemaker::graph::PlanValue::number_value(1.0)}); });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].scatter = noisemaker::graph::ScatterContract{}; });
+  rejects([](auto& plan) { plan.effects[0].snapshot_sha256[0] = plan.effects[0].snapshot_sha256[0] == '0' ? '1' : '0'; });
+  rejects([](auto& plan) { plan.provenance.plan_payload_sha256[0] = plan.provenance.plan_payload_sha256[0] == '0' ? '1' : '0'; });
+}
+
+TEST(dsl_compiler_snapshot_authenticates_every_scatter_contract_field) {
+  noisemaker::effects::EffectRegistry registry(noisemaker::effects::effect_catalog());
+  const auto original = noisemaker::dsl::compile(
+      "search filter\nread(o0).wormhole().write(o1)\nrender(o1)\n", registry);
+  REQUIRE(original.effects.size() == 1);
+  REQUIRE(original.effects.front().admissions.size() == 3);
+  REQUIRE(original.effects.front().admissions[1].scatter.has_value());
+  REQUIRE(noisemaker::graph::validate_execution_plan(original));
+
+  const auto rejects = [&](auto mutate) {
+    auto mutated = original;
+    mutate(*mutated.effects.front().admissions[1].scatter);
+    REQUIRE(!noisemaker::graph::validate_execution_plan(mutated));
+  };
+  rejects([](auto& scatter) { scatter.adapter = "changed"; });
+  rejects([](auto& scatter) { scatter.registry = "changed"; });
+  rejects([](auto& scatter) { scatter.draw_mode = "changed"; });
+  rejects([](auto& scatter) { scatter.dimensionality = "changed"; });
+  rejects([](auto& scatter) { scatter.count = "changed"; });
+  rejects([](auto& scatter) { scatter.input_texture = "changed"; });
+  rejects([](auto& scatter) { scatter.destination_mutation = "changed"; });
+  rejects([](auto& scatter) { scatter.blend = !scatter.blend; });
+  rejects([](auto& scatter) { scatter.uniforms[0].name = "changed"; });
+  rejects([](auto& scatter) { scatter.uniforms[0].source = "changed"; });
+  rejects([](auto& scatter) { scatter.uniforms[0].cpp_type = "changed"; });
+  rejects([](auto& scatter) { scatter.outputs[0].slot = 9; });
+  rejects([](auto& scatter) { scatter.outputs[0].physical_name = "changed"; });
+  rejects([](auto& scatter) { scatter.outputs[0].logical_route = "changed"; });
+  rejects([](auto& scatter) { scatter.outputs[0].cpp_type = "changed"; });
+}
+
 #ifdef NOISEMAKER_DSL_COMPILER_ORACLE_MAIN
 namespace {
 std::string oracle_escape(const std::string& value) {
@@ -188,30 +401,161 @@ std::string oracle_value(const noisemaker::graph::PlanValue& value) {
   return "{\"kind\":\"surface\",\"value\":{\"kind\":\"none\"}}";
 }
 
+std::string oracle_effect_value(const noisemaker::effects::Value& value) {
+  using Kind = noisemaker::effects::ValueKind;
+  if (value.kind == Kind::null_value) return "{\"kind\":\"null\"}";
+  if (value.kind == Kind::boolean) return "{\"kind\":\"boolean\",\"value\":" + std::string(value.boolean ? "true" : "false") + "}";
+  if (value.kind == Kind::number) return "{\"kind\":\"number\",\"value\":" + oracle_escape(oracle_number(value.number)) + "}";
+  if (value.kind == Kind::string) return "{\"kind\":\"string\",\"value\":" + oracle_escape(value.string) + "}";
+  if (value.kind == Kind::array) {
+    std::string result = "{\"kind\":\"array\",\"values\":[";
+    for (std::size_t index = 0; index < value.array.size(); ++index) {
+      if (index) result += ',';
+      result += oracle_effect_value(value.array[index]);
+    }
+    return result + "]}";
+  }
+  std::string result = "{\"kind\":\"object\",\"entries\":[";
+  for (std::size_t index = 0; index < value.object.size(); ++index) {
+    if (index) result += ',';
+    result += "[" + oracle_escape(value.object[index].first) + "," + oracle_effect_value(value.object[index].second) + "]";
+  }
+  return result + "]}";
+}
+
+std::string oracle_optional_effect_value(const std::optional<noisemaker::effects::Value>& value) {
+  if (!value.has_value()) return "{\"present\":false}";
+  return "{\"present\":true,\"value\":" + oracle_effect_value(*value) + "}";
+}
+
+std::string oracle_optional_plan_value(const std::optional<noisemaker::graph::PlanValue>& value) {
+  if (!value.has_value()) return "{\"present\":false}";
+  return "{\"present\":true,\"value\":" + oracle_value(*value) + "}";
+}
+
+std::string oracle_optional_string(const std::optional<std::string>& value) {
+  if (!value.has_value()) return "{\"present\":false}";
+  return "{\"present\":true,\"value\":" + oracle_escape(*value) + "}";
+}
+
+std::string oracle_effect_string_pairs(const std::vector<std::pair<std::string, std::string>>& values) {
+  std::string result = "[";
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    if (index) result += ',';
+    result += "[" + oracle_escape(values[index].first) + "," + oracle_escape(values[index].second) + "]";
+  }
+  return result + "]";
+}
+
+std::string oracle_effect_value_pairs(const std::vector<std::pair<std::string, noisemaker::effects::Value>>& values) {
+  std::string result = "[";
+  for (std::size_t index = 0; index < values.size(); ++index) {
+    if (index) result += ',';
+    result += "[" + oracle_escape(values[index].first) + "," + oracle_effect_value(values[index].second) + "]";
+  }
+  return result + "]";
+}
+
+std::string oracle_dimension_kind(noisemaker::effects::DimensionKind kind) {
+  using K = noisemaker::effects::DimensionKind;
+  if (kind == K::input) return "input";
+  if (kind == K::screen) return "screen";
+  if (kind == K::literal) return "literal";
+  if (kind == K::parameter) return "parameter";
+  if (kind == K::parameter_default) return "parameter_default";
+  if (kind == K::power) return "power";
+  if (kind == K::screen_division) return "screen_division";
+  if (kind == K::resolution) return "resolution";
+  return "unknown";
+}
+
+std::string oracle_dimension(const noisemaker::effects::DimensionExpression& value) {
+  return "{\"kind\":" + oracle_escape(oracle_dimension_kind(value.kind)) +
+         ",\"parameter\":" + oracle_escape(value.parameter) +
+         ",\"inputOverride\":" + oracle_escape(value.input_override) +
+         ",\"literal\":" + oracle_escape(oracle_number(value.literal)) +
+         ",\"defaultValue\":" + oracle_escape(oracle_number(value.default_value)) +
+         ",\"power\":" + std::to_string(value.power) +
+         ",\"raw\":" + oracle_effect_value(value.raw) + "}";
+}
+
+std::string oracle_blend(const std::optional<noisemaker::effects::BlendDefinition>& value) {
+  if (!value.has_value()) return "{\"present\":false}";
+  const auto kind = value->kind == noisemaker::effects::BlendKind::factors ? "factors" : "boolean";
+  return "{\"present\":true,\"value\":{\"kind\":" + oracle_escape(kind) +
+         ",\"enabled\":" + std::string(value->enabled ? "true" : "false") +
+         ",\"factors\":[" + oracle_escape(value->factors[0]) + "," + oracle_escape(value->factors[1]) + "]}}";
+}
+
+std::string oracle_parameter(const noisemaker::effects::ParameterDefinition& value) {
+  return "{\"name\":" + oracle_escape(value.name) + ",\"type\":" + oracle_escape(value.type) +
+         ",\"default\":" + oracle_optional_effect_value(value.default_value) +
+         ",\"define\":" + oracle_optional_string(value.define) +
+         ",\"uniform\":" + oracle_optional_string(value.uniform) +
+         ",\"zero\":" + oracle_optional_effect_value(value.zero) +
+         ",\"enumValues\":" + oracle_effect_value_pairs(value.enum_values) +
+         ",\"enumName\":" + oracle_optional_string(value.enum_name) +
+         ",\"choices\":" + oracle_effect_value_pairs(value.choices) +
+         ",\"min\":" + oracle_optional_effect_value(value.min) +
+         ",\"max\":" + oracle_optional_effect_value(value.max) +
+         ",\"texture\":" + oracle_optional_string(value.texture) +
+         ",\"colorModeUniform\":" + oracle_optional_string(value.color_mode_uniform) +
+         ",\"cpuOnly\":" + std::string(value.cpu_only ? "true" : "false") +
+         ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
+}
+
+std::string oracle_pass(const noisemaker::effects::PassDefinition& value) {
+  return "{\"name\":" + oracle_escape(value.name) + ",\"program\":" + oracle_escape(value.program) +
+         ",\"inputs\":" + oracle_effect_string_pairs(value.inputs) +
+         ",\"outputs\":" + oracle_effect_string_pairs(value.outputs) +
+         ",\"uniforms\":" + oracle_effect_value_pairs(value.uniforms) +
+         ",\"count\":" + oracle_optional_effect_value(value.count) +
+         ",\"repeat\":" + oracle_optional_effect_value(value.repeat) +
+         ",\"conditions\":" + oracle_optional_effect_value(value.conditions) +
+         ",\"viewport\":" + oracle_optional_effect_value(value.viewport) +
+         ",\"blend\":" + oracle_blend(value.blend) +
+         ",\"drawMode\":" + oracle_optional_string(value.draw_mode) +
+         ",\"drawBuffers\":" + oracle_optional_effect_value(value.draw_buffers) +
+         ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
+}
+
+std::string oracle_texture(const noisemaker::effects::TextureDefinition& value) {
+  return "{\"name\":" + oracle_escape(value.name) + ",\"width\":" + oracle_dimension(value.width) +
+         ",\"height\":" + oracle_dimension(value.height) + ",\"format\":" + oracle_optional_string(value.format) +
+         ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
+}
+
+std::string oracle_definition(const noisemaker::effects::EffectDefinition& value) {
+  std::string result = "{\"id\":" + oracle_escape(value.id) + ",\"directoryName\":" + oracle_escape(value.directory_name) +
+    ",\"name\":" + oracle_escape(value.name) + ",\"namespace\":" + oracle_escape(value.name_space) +
+    ",\"func\":" + oracle_escape(value.function) + ",\"kind\":" + oracle_escape(value.kind) +
+    ",\"domain\":" + oracle_escape(value.domain) + ",\"tags\":[";
+  for (std::size_t index = 0; index < value.tags.size(); ++index) { if (index) result += ','; result += oracle_escape(value.tags[index]); }
+  result += "],\"description\":" + oracle_escape(value.description) +
+    ",\"parameterAliases\":" + oracle_effect_string_pairs(value.parameter_aliases) + ",\"parameters\":[";
+  for (std::size_t index = 0; index < value.parameters.size(); ++index) { if (index) result += ','; result += oracle_parameter(value.parameters[index]); }
+  result += "],\"passes\":[";
+  for (std::size_t index = 0; index < value.passes.size(); ++index) { if (index) result += ','; result += oracle_pass(value.passes[index]); }
+  result += "],\"textures\":[";
+  for (std::size_t index = 0; index < value.textures.size(); ++index) { if (index) result += ','; result += oracle_texture(value.textures[index]); }
+  result += "],\"externalTexture\":" + oracle_optional_string(value.external_texture) +
+    ",\"outputTex3d\":" + oracle_optional_string(value.output_tex3d) +
+    ",\"outputGeo\":" + oracle_optional_string(value.output_geo) +
+    ",\"outputXyz\":" + oracle_optional_string(value.output_xyz) +
+    ",\"outputVelocity\":" + oracle_optional_string(value.output_velocity) +
+    ",\"outputRgba\":" + oracle_optional_string(value.output_rgba) +
+    ",\"iterated\":" + std::string(value.iterated ? "true" : "false") +
+    ",\"loopRole\":" + oracle_optional_string(value.loop_role) +
+    ",\"raw\":" + oracle_effect_value_pairs(value.raw) + "}";
+  return result;
+}
+
 std::string oracle_status(noisemaker::graph::AvailabilityStatus status) {
   using S = noisemaker::graph::AvailabilityStatus;
   if (status == S::compatible) return "compatible";
   if (status == S::scatter) return "scatter";
   if (status == S::incompatible) return "incompatible";
   return "missing";
-}
-
-std::string oracle_string_pairs(const std::vector<std::pair<std::string, std::string>>& values) {
-  std::string result = "{";
-  for (std::size_t index = 0; index < values.size(); ++index) {
-    if (index) result += ',';
-    result += oracle_escape(values[index].first) + ":" + oracle_escape(values[index].second);
-  }
-  return result + "}";
-}
-
-std::string oracle_value_pairs(const std::vector<std::pair<std::string, noisemaker::graph::PlanValue>>& values) {
-  std::string result = "{";
-  for (std::size_t index = 0; index < values.size(); ++index) {
-    if (index) result += ',';
-    result += oracle_escape(values[index].first) + ":" + oracle_value(values[index].second);
-  }
-  return result + "}";
 }
 
 std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) {
@@ -221,7 +565,36 @@ std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) 
     if (index) result += ',';
     result += "{\"code\":" + oracle_escape(admission.reasons[index].code) + ",\"detail\":" + oracle_escape(admission.reasons[index].detail) + "}";
   }
-  result += "],\"authorityPass\":{\"inputs\":" + oracle_string_pairs(admission.authority_pass.inputs) + ",\"outputs\":" + oracle_string_pairs(admission.authority_pass.outputs) + ",\"uniforms\":" + oracle_value_pairs(admission.authority_pass.uniforms) + ",\"blendKind\":" + oracle_escape(admission.authority_pass.blend_kind) + ",\"blend\":" + (admission.authority_pass.blend ? "true" : "false") + ",\"blendFactors\":[" + oracle_escape(admission.authority_pass.blend_factors[0]) + "," + oracle_escape(admission.authority_pass.blend_factors[1]) + "],\"repeat\":" + (admission.authority_pass.repeat.has_value() ? oracle_value(*admission.authority_pass.repeat) : "null") + "}";
+  result += "],\"canonicalFactory\":" + oracle_escape(admission.canonical_factory) +
+    ",\"sourceSha256\":" + oracle_escape(admission.source_sha256) +
+    ",\"semanticSha256\":" + oracle_escape(admission.semantic_sha256) + ",\"capabilities\":[";
+  for (std::size_t index = 0; index < admission.capabilities.size(); ++index) { if (index) result += ','; result += oracle_escape(admission.capabilities[index]); }
+  result += "],\"dimensionality\":" + oracle_escape(admission.dimensionality) + ",\"drawMode\":" + oracle_escape(admission.draw_mode) + ",\"samplers\":[";
+  const auto oracle_binding = [](const noisemaker::graph::CompatibilityBinding& binding) {
+    return "{\"name\":" + oracle_escape(binding.name) + ",\"type\":" + oracle_escape(binding.type) +
+      ",\"source\":" + oracle_escape(binding.source) + ",\"sourceName\":" + oracle_escape(binding.source_name) +
+      ",\"resource\":" + oracle_escape(binding.resource) + ",\"cppType\":" + oracle_escape(binding.cpp_type) + "}";
+  };
+  const auto oracle_bindings = [&](const auto& bindings) {
+    std::string output;
+    for (std::size_t index = 0; index < bindings.size(); ++index) { if (index) output += ','; output += oracle_binding(bindings[index]); }
+    return output;
+  };
+  result += oracle_bindings(admission.samplers) + "],\"uniforms\":[" + oracle_bindings(admission.uniforms) + "],\"outputs\":[";
+  for (std::size_t index = 0; index < admission.outputs.size(); ++index) {
+    if (index) result += ',';
+    const auto& output = admission.outputs[index];
+    result += "{\"slot\":" + std::to_string(output.slot) +
+      ",\"physicalName\":" + oracle_escape(output.physical_name) +
+      ",\"logicalRoute\":" + oracle_escape(output.logical_route) +
+      ",\"cppType\":" + oracle_escape(output.cpp_type) + "}";
+  }
+  result += "],\"authorityPass\":{\"name\":" + oracle_escape(admission.authority_pass.name) + ",\"inputs\":" + oracle_effect_string_pairs(admission.authority_pass.inputs) + ",\"outputs\":" + oracle_effect_string_pairs(admission.authority_pass.outputs) + ",\"uniforms\":[";
+  for (std::size_t index = 0; index < admission.authority_pass.uniforms.size(); ++index) {
+    if (index) result += ',';
+    result += "[" + oracle_escape(admission.authority_pass.uniforms[index].first) + "," + oracle_value(admission.authority_pass.uniforms[index].second) + "]";
+  }
+  result += "],\"blendKind\":" + oracle_escape(admission.authority_pass.blend_kind) + ",\"blend\":" + (admission.authority_pass.blend ? "true" : "false") + ",\"blendFactors\":[" + oracle_escape(admission.authority_pass.blend_factors[0]) + "," + oracle_escape(admission.authority_pass.blend_factors[1]) + "],\"repeat\":" + oracle_optional_plan_value(admission.authority_pass.repeat) + "}";
   if (admission.scatter.has_value()) {
     const auto& scatter = *admission.scatter;
     result += ",\"scatter\":{\"adapter\":" + oracle_escape(scatter.adapter) + ",\"registry\":" + oracle_escape(scatter.registry) + ",\"drawMode\":" + oracle_escape(scatter.draw_mode) + ",\"dimensionality\":" + oracle_escape(scatter.dimensionality) + ",\"count\":" + oracle_escape(scatter.count) + ",\"inputTexture\":" + oracle_escape(scatter.input_texture) + ",\"destinationMutation\":" + oracle_escape(scatter.destination_mutation) + ",\"blend\":" + (scatter.blend ? "true" : "false") + ",\"uniforms\":[";
@@ -238,6 +611,7 @@ std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) 
     }
     result += "]}";
   }
+  else result += ",\"scatter\":null";
   return result + "}";
 }
 
@@ -253,7 +627,7 @@ std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
     } else if constexpr (std::is_same_v<T, noisemaker::graph::WriteStep>) {
       return "{\"kind\":\"write\",\"surface\":" + oracle_surface(current.surface) + ",\"loc\":" + oracle_loc(current.loc) + "}";
     } else {
-      std::string result = "{\"kind\":\"effect\",\"effectId\":" + oracle_escape(current.effect.id) + ",\"domain\":" + oracle_escape(current.effect.domain) +",\"effectKind\":" + oracle_escape(current.effect.kind) + ",\"params\":[";
+      std::string result = "{\"kind\":\"effect\",\"effectId\":" + oracle_escape(current.effect.id) + ",\"domain\":" + oracle_escape(current.effect.domain) +",\"effectKind\":" + oracle_escape(current.effect.kind) + ",\"snapshotIndex\":" + std::to_string(current.snapshot_index) + ",\"params\":[";
       for (std::size_t index = 0; index < current.params.size(); ++index) { if (index) result += ','; result += "{\"name\":" + oracle_escape(current.params[index].name) + ",\"value\":" + oracle_value(current.params[index].value) + "}"; }
       result += "],\"explicitParams\":[";
       for (std::size_t index = 0; index < current.explicit_params.size(); ++index) { if (index) result += ','; result += oracle_escape(current.explicit_params[index]); }
@@ -264,9 +638,20 @@ std::string oracle_step(const noisemaker::graph::CompiledStep& step) {
   }, step);
 }
 
+std::string oracle_snapshot(const noisemaker::graph::PlanEffectSnapshot& snapshot) {
+  std::string result = "{\"effectId\":" + oracle_escape(snapshot.definition.id) +
+                       ",\"definition\":" + oracle_definition(snapshot.definition) + ",\"admissions\":[";
+  for (std::size_t index = 0; index < snapshot.admissions.size(); ++index) {
+    if (index) result += ',';
+    result += oracle_admission(snapshot.admissions[index]);
+  }
+  return result + "],\"snapshotSha256\":" + oracle_escape(snapshot.snapshot_sha256) + "}";
+}
+
 noisemaker::effects::EffectDefinition oracle_effect(std::string name, std::string kind = "generator", std::string domain = "image") {
   noisemaker::effects::EffectDefinition result;
   result.name_space = "fixture"; result.function = std::move(name); result.id = result.name_space + "/" + result.function;
+  result.name = result.function;
   result.kind = std::move(kind); result.domain = std::move(domain);
   noisemaker::effects::PassDefinition pass; pass.name = "main"; pass.program = result.function; pass.outputs = {{"color", "outputTex"}}; result.passes.push_back(std::move(pass));
   return result;
@@ -327,12 +712,14 @@ int main(int argc, char** argv) {
     const auto plan = noisemaker::dsl::compile(source, registry, {.require_executable = require_executable}, source_name);
     std::string output = ",\"plan\":{\"schema\":\"noisemaker-cpp.execution-plan.v1\",\"search\":[";
     for (std::size_t index = 0; index < plan.search.size(); ++index) { if (index) output += ','; output += oracle_escape(plan.search[index]); }
+    output += "],\"effects\":[";
+    for (std::size_t index = 0; index < plan.effects.size(); ++index) { if (index) output += ','; output += oracle_snapshot(plan.effects[index]); }
     output += "],\"chains\":[";
     for (std::size_t chain_index = 0; chain_index < plan.chains.size(); ++chain_index) { if (chain_index) output += ','; const auto& chain = plan.chains[chain_index]; output += "{\"loc\":" + oracle_loc(chain.loc) + ",\"steps\":["; for (std::size_t step_index = 0; step_index < chain.steps.size(); ++step_index) { if (step_index) output += ','; output += oracle_step(chain.steps[step_index]); } output += "]}"; }
     output += "],\"renderSurface\":" + oracle_surface(plan.render_surface) + ",\"requireExecutable\":" + (require_executable ? "true" : "false") + ",\"executable\":" + (plan.executable ? "true" : "false") + ",\"availability\":[";
     for (std::size_t index = 0; index < plan.availability.size(); ++index) { if (index) output += ','; output += oracle_admission(plan.availability[index]); }
     const auto& p = plan.provenance;
-    output += "],\"provenance\":{\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"backendSchema\":" + oracle_escape(p.backend_schema) + ",\"corpusRevision\":" + oracle_escape(p.corpus_revision) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"cpuPackageSha256\":" + oracle_escape(p.cpu_package_sha256) + ",\"cpuPackageLockSha256\":" + oracle_escape(p.cpu_package_lock_sha256) + ",\"cpuSourceLockSha256\":" + oracle_escape(p.cpu_source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"upstreamPackageSha256\":" + oracle_escape(p.upstream_package_sha256) + ",\"upstreamPackageLockSha256\":" + oracle_escape(p.upstream_package_lock_sha256) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
+    output += "],\"provenance\":{\"sourceSha256\":" + oracle_escape(p.source_sha256) + ",\"sourceName\":" + oracle_escape(p.source_name) + ",\"planPayloadSha256\":" + oracle_escape(p.plan_payload_sha256) + ",\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"backendSchema\":" + oracle_escape(p.backend_schema) + ",\"corpusRevision\":" + oracle_escape(p.corpus_revision) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"cpuPackageSha256\":" + oracle_escape(p.cpu_package_sha256) + ",\"cpuPackageLockSha256\":" + oracle_escape(p.cpu_package_lock_sha256) + ",\"cpuSourceLockSha256\":" + oracle_escape(p.cpu_source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"upstreamPackageSha256\":" + oracle_escape(p.upstream_package_sha256) + ",\"upstreamPackageLockSha256\":" + oracle_escape(p.upstream_package_lock_sha256) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
     std::cout << output;
   } catch (const noisemaker::dsl::DslError& error) {
     std::cout << ",\"error\":{\"name\":\"DslError\",\"message\":" << oracle_escape(error.what()) << ",\"sourceName\":" << oracle_escape(error.sourceName) << ",\"line\":" << error.line << ",\"column\":" << error.column << ",\"index\":" << error.index << '}';

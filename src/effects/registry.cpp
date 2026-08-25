@@ -323,6 +323,26 @@ void binding_array(const Value* value, std::vector<graph::CompatibilityBinding>&
   for (const auto& item : value->array) output.push_back(binding_value(item));
 }
 
+graph::CompatibilityOutput output_value(const Value& value) {
+  graph::CompatibilityOutput result;
+  if (value.kind != ValueKind::object) return result;
+  const auto* slot = field(value.object, "slot");
+  if (slot != nullptr && slot->kind == ValueKind::number &&
+      std::isfinite(slot->number) && slot->number >= 0.0) {
+    result.slot = static_cast<std::size_t>(slot->number);
+  }
+  result.physical_name = string_field(value.object, "physical_name");
+  result.logical_route = string_field(value.object, "logical_route");
+  result.cpp_type = string_field(value.object, "cpp_type");
+  return result;
+}
+
+void output_array(const Value* value,
+                  std::vector<graph::CompatibilityOutput>& output) {
+  if (value == nullptr || value->kind != ValueKind::array) return;
+  for (const auto& item : value->array) output.push_back(output_value(item));
+}
+
 PlanValue copy_value(const Value& value) {
   switch (value.kind) {
     case ValueKind::null_value: return PlanValue::null();
@@ -357,6 +377,7 @@ PlanValue copy_value(const Value& value) {
 }
 
 void fill_authority_pass(graph::PassAdmission& result, const PassDefinition& pass) {
+  result.authority_pass.name = pass.name;
   result.authority_pass.inputs = pass.inputs;
   result.authority_pass.outputs = pass.outputs;
   for (const auto& uniform : pass.uniforms) result.authority_pass.uniforms.emplace_back(uniform.first, copy_value(uniform.second));
@@ -631,7 +652,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     for (const auto& reason : row.reasons) view.reasons.push_back({reason.first, reason.second});
     binding_array(field(row.raw, "samplers"), view.samplers);
     binding_array(field(row.raw, "uniforms"), view.uniforms);
-    binding_array(field(row.raw, "outputs"), view.outputs);
+    output_array(field(row.raw, "outputs"), view.outputs);
     if (const auto* capabilities = field(row.raw, "capabilities"); capabilities != nullptr)
       for (const auto& item : capabilities->array) view.capabilities.push_back(item.string);
     canonical_views_.push_back(std::move(view));

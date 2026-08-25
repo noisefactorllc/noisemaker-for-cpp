@@ -34,6 +34,9 @@ add_library(noisemaker-cpu
   src/dsl/parser.cpp
   src/effects/registry.cpp
   src/dsl/compiler.cpp
+  src/graph/resource.cpp
+  src/graph/executor.cpp
+  src/renderer.cpp
 )
 target_include_directories(noisemaker-cpu PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -75,6 +78,8 @@ add_executable(noisemaker-cpu-tests
   tests/test_dsl_parser.cpp
   tests/test_effect_registry.cpp
   tests/test_dsl_compiler.cpp
+  tests/test_graph_resources.cpp
+  tests/test_graph_blur.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE
