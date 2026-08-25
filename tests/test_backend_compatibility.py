@@ -54,6 +54,17 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual("noisemaker::effects::bind_bit_effects", bit["factory"]["canonical"])
         self.assertEqual("custom_adapter", bit["factory"]["route"]["kind"])
 
+    def test_output_extent_uses_authority_default_for_absent_and_explicit_formats(self) -> None:
+        effect = {"textures": {"_blurTemp": {"width": "input", "height": "input", "format": "rgba8unorm"}}}
+        current_pass = {"viewport": {"width": "screen", "height": "screen"}}
+        self.assertEqual("rgba8unorm", generator._extent(effect, current_pass, "_blurTemp")["format"])
+        self.assertEqual("rgba16f", generator._extent(effect, current_pass, "outputTex")["format"])
+
+        declared_without_format = {"textures": {"outputTex": {"width": "screen", "height": "screen"}}}
+        self.assertEqual("rgba16f", generator._extent(declared_without_format, {}, "outputTex")["format"])
+        declared_explicit = {"textures": {"outputTex": {"width": "screen", "height": "screen", "format": "rgba8unorm"}}}
+        self.assertEqual("rgba8unorm", generator._extent(declared_explicit, {}, "outputTex")["format"])
+
     def test_manifest_is_deterministic_and_checkable(self) -> None:
         first = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
         second = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)

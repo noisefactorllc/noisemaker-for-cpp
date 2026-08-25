@@ -177,3 +177,35 @@ TEST(effect_registry_rejects_duplicate_reference_triple_and_order_mutation) {
   std::swap(swapped.reference_passes[0], swapped.reference_passes[1]);
   REQUIRE_THROWS_AS(EffectRegistry(swapped), std::invalid_argument);
 }
+
+TEST(effect_registry_rejects_copied_production_catalog_without_private_capability) {
+  auto copied = noisemaker::effects::effect_catalog();
+  REQUIRE_THROWS_AS(EffectRegistry(copied), std::invalid_argument);
+
+  noisemaker::effects::EffectCatalog assigned;
+  assigned = noisemaker::effects::effect_catalog();
+  REQUIRE_THROWS_AS(EffectRegistry(assigned), std::invalid_argument);
+}
+
+TEST(effect_registry_rejects_copied_catalog_parameter_mutation) {
+  auto parameter_name = noisemaker::effects::effect_catalog();
+  parameter_name.definitions.front().parameters.front().name = "forged_parameter";
+  REQUIRE_THROWS_AS(EffectRegistry(parameter_name), std::invalid_argument);
+
+  auto parameter_default = noisemaker::effects::effect_catalog();
+  parameter_default.definitions.front().parameters.front().default_value = Value::number_value(999.0);
+  REQUIRE_THROWS_AS(EffectRegistry(parameter_default), std::invalid_argument);
+}
+
+TEST(effect_registry_rejects_copied_catalog_pass_and_texture_mutation) {
+  auto pass = noisemaker::effects::effect_catalog();
+  pass.definitions.front().passes.front().raw.push_back({"forged", Value::boolean_value(true)});
+  REQUIRE_THROWS_AS(EffectRegistry(pass), std::invalid_argument);
+
+  auto texture = noisemaker::effects::effect_catalog();
+  const auto texture_effect = std::find_if(texture.definitions.begin(), texture.definitions.end(),
+                                           [](const auto& effect) { return !effect.textures.empty(); });
+  REQUIRE(texture_effect != texture.definitions.end());
+  texture_effect->textures.front().name = "forged_texture";
+  REQUIRE_THROWS_AS(EffectRegistry(texture), std::invalid_argument);
+}

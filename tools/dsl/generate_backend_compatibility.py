@@ -343,12 +343,12 @@ def _extent(effect: dict[str, Any], current_pass: dict[str, Any], route: str) ->
         texture = effect["textures"][route]
         if isinstance(texture, dict):
             return {"width": texture.get("width", "screen"), "height": texture.get("height", "screen"),
-                    "format": texture.get("format", "rgba8unorm")}
+                    "format": texture.get("format", "rgba16f")}
     viewport = current_pass.get("viewport")
     if isinstance(viewport, dict):
         return {"width": viewport.get("width", "screen"), "height": viewport.get("height", "screen"),
-                "format": "rgba8unorm"}
-    return {"width": "screen", "height": "screen", "format": "rgba8unorm"}
+                "format": "rgba16f"}
+    return {"width": "screen", "height": "screen", "format": "rgba16f"}
 
 
 def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_record: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
