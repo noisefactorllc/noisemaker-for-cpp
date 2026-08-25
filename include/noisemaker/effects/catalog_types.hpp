@@ -116,6 +116,8 @@ struct EffectDefinition {
 };
 
 struct ProgramCompatibility {
+  std::string effect_id;
+  std::string program;
   std::string program_key;
   std::string status;
   std::vector<std::pair<std::string, std::string>> reasons;
@@ -123,6 +125,46 @@ struct ProgramCompatibility {
   std::optional<std::string> source_sha256;
   std::optional<std::string> semantic_sha256;
   std::vector<std::pair<std::string, Value>> raw;
+};
+
+struct ReferencePassCompatibility {
+  std::string effect_id;
+  std::size_t pass_index = 0;
+  std::string pass_name;
+  std::string program_key;
+  std::string status;
+  std::vector<std::pair<std::string, std::string>> reasons;
+};
+
+struct CompatibilityBindingEvidence {
+  std::string name;
+  std::string type;
+  std::string cpp_type;
+  std::string source;
+  std::string source_name;
+  std::string resource;
+};
+
+struct CompatibilityOutputEvidence {
+  std::size_t slot = 0;
+  std::string physical_name;
+  std::string logical_route;
+  std::string cpp_type;
+};
+
+struct ScatterCompatibility {
+  std::string program_key;
+  std::string adapter;
+  std::string registry;
+  std::string draw_mode;
+  std::string dimensionality;
+  std::string count;
+  std::string input_texture;
+  std::string destination_mutation;
+  bool blend = false;
+  std::vector<CompatibilityBindingEvidence> uniforms;
+  std::vector<CompatibilityOutputEvidence> outputs;
+  std::vector<std::pair<std::string, std::string>> reasons;
 };
 
 struct CatalogCounts {
@@ -148,6 +190,8 @@ struct CatalogProvenance {
   // an empty placeholder. This is intentionally non-self-referential.
   std::string generated_payload_sha256;
   std::string normalized_record_stream_sha256;
+  std::string compatibility_sha256;
+  std::string upstream_tree;
   std::string first_effect_id;
   std::string last_effect_id;
   CatalogCounts counts;

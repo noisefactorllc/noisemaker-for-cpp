@@ -853,6 +853,9 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
     if {item.get("program_key") for item in references} != set(reference_keys):
         raise CompatibilityError("reference key membership drift")
     for item in references:
+        if not isinstance(item.get("effect_id"), str) or not isinstance(item.get("pass_index"), int) \
+                or item["pass_index"] < 0 or not isinstance(item.get("pass_name"), str):
+            raise CompatibilityError("reference pass identity malformed")
         if item.get("status") not in allowed_statuses or not isinstance(item.get("program_key"), str):
             raise CompatibilityError("unknown reference pass status or key")
         if not isinstance(item.get("reasons"), list):

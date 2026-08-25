@@ -72,6 +72,31 @@ struct PassAdmission {
   std::vector<CompatibilityBinding> outputs;
 };
 
+struct PlanProvenance {
+  std::string kind;
+  std::string schema;
+  std::string generated_payload_sha256;
+  std::string normalized_record_stream_sha256;
+  std::string authority_lock;
+  std::string cpu_revision;
+  std::string source_lock_sha256;
+  std::string upstream_revision;
+  std::string upstream_tree;
+  std::string compatibility_sha256;
+  struct Counts {
+    std::size_t definitions = 0;
+    std::size_t passes = 0;
+    std::size_t reference_program_keys = 0;
+    std::size_t backend_programs = 0;
+    std::size_t compatible_programs = 0;
+    std::size_t incompatible_programs = 0;
+    std::size_t missing_passes = 0;
+    std::size_t scatter_passes = 0;
+    std::size_t executable_definitions = 0;
+    std::size_t incomplete_definitions = 0;
+  } counts;
+};
+
 struct ReadStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
 struct WriteStep { SurfaceReference surface; dsl::SourceLocation loc{}; };
 struct EffectStep {
@@ -95,6 +120,7 @@ struct ExecutionPlan {
   bool require_executable = false;
   bool executable = false;
   std::vector<PassAdmission> availability;
+  PlanProvenance provenance;
 };
 
 }  // namespace noisemaker::graph

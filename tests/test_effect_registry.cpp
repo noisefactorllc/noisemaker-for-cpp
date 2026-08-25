@@ -2,6 +2,8 @@
 
 #include "test_harness.hpp"
 
+#include <algorithm>
+
 using noisemaker::effects::EffectDefinition;
 using noisemaker::effects::EffectRegistry;
 using noisemaker::effects::ParameterDefinition;
@@ -58,4 +60,80 @@ TEST(effect_registry_applies_aliases_and_rejects_ranges) {
   const auto normalized = registry.normalize(*found, {{"strength", PlanValue::number_value(4.0)}});
   REQUIRE(normalized.values[0].name == "amount");
   REQUIRE_THROWS_AS(registry.normalize(*found, {{"amount", PlanValue::number_value(5.0)}}), std::invalid_argument);
+}
+
+TEST(effect_registry_rejects_each_omitted_typed_compatibility_fact) {
+  const std::vector<std::string> fields = {"capabilities", "uniforms", "samplers", "outputs", "output_abi", "source", "factory", "semantic", "authority_pass", "draw_mode", "dimensionality"};
+  for (const auto& omitted : fields) {
+    auto catalog = noisemaker::effects::effect_catalog();
+    auto& row = catalog.canonical_programs.front();
+    row.raw.erase(std::remove_if(row.raw.begin(), row.raw.end(), [&](const auto& item) { return item.first == omitted; }), row.raw.end());
+    REQUIRE_THROWS_AS(EffectRegistry(catalog), std::invalid_argument);
+  }
+}
+
+TEST(effect_registry_rejects_typed_compatibility_value_mutants) {
+  const auto mutate = [](auto&& function) {
+    auto catalog = noisemaker::effects::effect_catalog();
+    function(catalog.canonical_programs.front());
+    REQUIRE_THROWS_AS(EffectRegistry(catalog), std::invalid_argument);
+  };
+  const auto raw_field = [](auto& row, const std::string& name) -> Value* {
+    for (auto& item : row.raw) if (item.first == name) return &item.second;
+    return nullptr;
+  };
+  const auto object_field = [](Value& value, const std::string& name) -> Value* {
+    for (auto& item : value.object) if (item.first == name) return &item.second;
+    return nullptr;
+  };
+  mutate([&](auto& row) { row.raw.push_back({"capabilities", Value::array_value({})}); });
+  mutate([&](auto& row) { raw_field(row, "source")->string = "sources/../forged.glsl"; });
+  mutate([&](auto& row) { raw_field(row, "old_raw_sha256")->string = std::string(64, 'A'); });
+  mutate([&](auto& row) { raw_field(row, "reasons")->array.push_back(Value::object_value({{"code", Value::string_value("unexpected")}, {"detail", Value::string_value("value")}})); });
+  mutate([&](auto& row) { object_field(*raw_field(row, "semantic"), "new_token_sha256")->string = std::string(64, '0'); });
+  mutate([&](auto& row) { object_field(*raw_field(row, "output_abi"), "canonical_slots")->array[0].number = 2; });
+  mutate([&](auto& row) { object_field(*raw_field(row, "authority_pass"), "blend")->boolean = true; });
+  mutate([&](auto& row) { object_field(*object_field(*raw_field(row, "factory"), "route"), "factory")->string = "wrong"; });
+  mutate([&](auto& row) { object_field(raw_field(row, "uniforms")->array.front(), "source")->string = "forged_source"; });
+}
+
+TEST(effect_registry_joins_repeated_reference_keys_by_structural_identity) {
+  EffectRegistry registry(noisemaker::effects::effect_catalog());
+  const auto* temporal = registry.get("filter", "temporalAberration");
+  REQUIRE(temporal != nullptr);
+  std::vector<std::size_t> indexes;
+  for (std::size_t index = 0; index < temporal->passes.size(); ++index) {
+    if (temporal->passes[index].program == "delayShift") indexes.push_back(registry.admission(*temporal, index).identity.index);
+  }
+  REQUIRE(indexes.size() == 8);
+  for (std::size_t index = 0; index < indexes.size(); ++index) REQUIRE(indexes[index] == index + 1);
+  const auto* physarum = registry.get("points", "physarum");
+  REQUIRE(physarum != nullptr);
+  REQUIRE(registry.admission(*physarum, 2).identity.program_key == "points/physarum:passthrough");
+  REQUIRE(registry.admission(*physarum, 4).identity.program_key == "points/physarum:passthrough");
+  const auto* loop_end = registry.get("render", "loopEnd");
+  REQUIRE(loop_end != nullptr);
+  REQUIRE(registry.admission(*loop_end, 0).identity.program_key == "render/loopEnd:copy");
+  REQUIRE(registry.admission(*loop_end, 1).identity.program_key == "render/loopEnd:copy");
+  const auto* billboard = registry.get("render", "pointsBillboardRender");
+  REQUIRE(billboard != nullptr);
+  REQUIRE(registry.admission(*billboard, 2).identity.program_key == "render/pointsBillboardRender:deposit");
+  REQUIRE(registry.admission(*billboard, 3).identity.program_key == "render/pointsBillboardRender:deposit");
+}
+
+TEST(effect_registry_preserves_complete_alias_census) {
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  std::size_t aliases = 0;
+  for (const auto& effect : catalog.definitions) aliases += effect.parameter_aliases.size();
+  REQUIRE(catalog.definitions.size() == 205);
+  REQUIRE(aliases == 84);
+}
+
+TEST(effect_registry_rejects_duplicate_reference_triple_and_order_mutation) {
+  auto duplicate = noisemaker::effects::effect_catalog();
+  duplicate.reference_passes.push_back(duplicate.reference_passes.front());
+  REQUIRE_THROWS_AS(EffectRegistry(duplicate), std::invalid_argument);
+  auto swapped = noisemaker::effects::effect_catalog();
+  std::swap(swapped.reference_passes[0], swapped.reference_passes[1]);
+  REQUIRE_THROWS_AS(EffectRegistry(swapped), std::invalid_argument);
 }

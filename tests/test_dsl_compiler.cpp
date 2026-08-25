@@ -50,7 +50,14 @@ TEST(dsl_compiler_fails_closed_for_missing_compatibility) {
   row.program_key = "fixture/source:source";
   row.status = "missing";
   row.reasons.push_back({"missing_backend_program", row.program_key});
-  catalog.compatibility.push_back(row);
+  noisemaker::effects::ReferencePassCompatibility reference;
+  reference.effect_id = source.id;
+  reference.pass_index = 0;
+  reference.pass_name = "main";
+  reference.program_key = row.program_key;
+  reference.status = "missing";
+  reference.reasons = row.reasons;
+  catalog.reference_passes.push_back(reference);
   noisemaker::effects::EffectRegistry registry(catalog);
   const auto inspected = noisemaker::dsl::compile("search fixture\nsource().write(o0)\n", registry);
   REQUIRE(!inspected.executable);
@@ -248,13 +255,15 @@ noisemaker::effects::EffectRegistry oracle_custom_registry() {
   noisemaker::effects::ParameterDefinition geometry; geometry.name = "geo"; geometry.type = "geometry"; geometry.default_value = noisemaker::effects::Value::string_value("geo"); all.parameters.push_back(geometry);
   auto source = oracle_effect("source"); noisemaker::effects::ParameterDefinition first; first.name = "first"; first.type = "int"; first.default_value = noisemaker::effects::Value::number_value(1); source.parameters.push_back(first); noisemaker::effects::ParameterDefinition second; second.name = "second"; second.type = "int"; second.default_value = noisemaker::effects::Value::number_value(2); source.parameters.push_back(second);
   auto alias = oracle_effect("alias"); alias.parameter_aliases = {{"strength", "amount"}}; noisemaker::effects::ParameterDefinition amount; amount.name = "amount"; amount.type = "float"; amount.default_value = noisemaker::effects::Value::number_value(1); alias.parameters.push_back(amount);
-  return noisemaker::effects::EffectRegistry({all, source, alias, oracle_effect("volumeGen", "generator", "volume-generator"), oracle_effect("volumeFilter", "filter", "volume-filter"), oracle_effect("volumeRender", "filter", "volume-renderer"), oracle_effect("loopBegin", "filter", "loop-begin"), oracle_effect("loopEnd", "filter", "loop-end")});
+  auto bounded = oracle_effect("bounded"); noisemaker::effects::ParameterDefinition bound; bound.name = "amount"; bound.type = "float"; bound.default_value = noisemaker::effects::Value::number_value(1); bound.min = noisemaker::effects::Value::number_value(0); bound.max = noisemaker::effects::Value::number_value(2); bounded.parameters.push_back(bound);
+  auto required = oracle_effect("required"); noisemaker::effects::ParameterDefinition needed; needed.name = "amount"; needed.type = "float"; required.parameters.push_back(needed);
+  return noisemaker::effects::EffectRegistry({all, source, alias, bounded, required, oracle_effect("mixer", "mixer", "image"), oracle_effect("volumeGen", "generator", "volume-generator"), oracle_effect("volumeFilter", "filter", "volume-filter"), oracle_effect("volumeRender", "filter", "volume-renderer"), oracle_effect("loopBegin", "filter", "loop-begin"), oracle_effect("loopEnd", "filter", "loop-end")});
 }
 }
 
 int main(int argc, char** argv) {
   std::string name, source, source_name = "<dsl>", mode = "custom";
-  bool require_executable = false;
+  bool require_executable = false, list_mode = false;
   for (int index = 1; index < argc; ++index) {
     const std::string argument = argv[index];
     if (argument == "--name" && index + 1 < argc) name = argv[++index];
@@ -262,7 +271,19 @@ int main(int argc, char** argv) {
     else if (argument == "--source-name" && index + 1 < argc) source_name = argv[++index];
     else if (argument == "--mode" && index + 1 < argc) mode = argv[++index];
     else if (argument == "--require-executable") require_executable = true;
+    else if (argument == "--list") list_mode = true;
     else { std::cerr << "usage: --name NAME --source TEXT --source-name NAME [--mode custom|catalog_records]\n"; return 2; }
+  }
+  if (list_mode) {
+    const auto registry = noisemaker::effects::EffectRegistry(noisemaker::effects::effect_catalog());
+    const auto definitions = registry.list();
+    std::cout << "[";
+    for (std::size_t index = 0; index < definitions.size(); ++index) {
+      if (index) std::cout << ',';
+      std::cout << oracle_escape(definitions[index]->id);
+    }
+    std::cout << "]\n";
+    return 0;
   }
   std::cout << "{\"name\":" << oracle_escape(name);
   try {
@@ -274,7 +295,8 @@ int main(int argc, char** argv) {
     for (std::size_t chain_index = 0; chain_index < plan.chains.size(); ++chain_index) { if (chain_index) output += ','; const auto& chain = plan.chains[chain_index]; output += "{\"loc\":" + oracle_loc(chain.loc) + ",\"steps\":["; for (std::size_t step_index = 0; step_index < chain.steps.size(); ++step_index) { if (step_index) output += ','; output += oracle_step(chain.steps[step_index]); } output += "]}"; }
     output += "],\"renderSurface\":" + oracle_surface(plan.render_surface) + ",\"requireExecutable\":" + (require_executable ? "true" : "false") + ",\"executable\":" + (plan.executable ? "true" : "false") + ",\"availability\":[";
     for (std::size_t index = 0; index < plan.availability.size(); ++index) { if (index) output += ','; output += oracle_admission(plan.availability[index]); }
-    output += "]}";
+    const auto& p = plan.provenance;
+    output += "],\"provenance\":{\"kind\":" + oracle_escape(p.kind) + ",\"schema\":" + oracle_escape(p.schema) + ",\"generatedPayloadSha256\":" + oracle_escape(p.generated_payload_sha256) + ",\"normalizedRecordStreamSha256\":" + oracle_escape(p.normalized_record_stream_sha256) + ",\"authorityLock\":" + oracle_escape(p.authority_lock) + ",\"cpuRevision\":" + oracle_escape(p.cpu_revision) + ",\"sourceLockSha256\":" + oracle_escape(p.source_lock_sha256) + ",\"upstreamRevision\":" + oracle_escape(p.upstream_revision) + ",\"upstreamTree\":" + oracle_escape(p.upstream_tree) + ",\"compatibilitySha256\":" + oracle_escape(p.compatibility_sha256) + ",\"counts\":{\"definitions\":" + std::to_string(p.counts.definitions) + ",\"passes\":" + std::to_string(p.counts.passes) + ",\"referenceProgramKeys\":" + std::to_string(p.counts.reference_program_keys) + ",\"backendPrograms\":" + std::to_string(p.counts.backend_programs) + ",\"compatiblePrograms\":" + std::to_string(p.counts.compatible_programs) + ",\"incompatiblePrograms\":" + std::to_string(p.counts.incompatible_programs) + ",\"missingPasses\":" + std::to_string(p.counts.missing_passes) + ",\"scatterPasses\":" + std::to_string(p.counts.scatter_passes) + ",\"executableDefinitions\":" + std::to_string(p.counts.executable_definitions) + ",\"incompleteDefinitions\":" + std::to_string(p.counts.incomplete_definitions) + "}}}";
     std::cout << output;
   } catch (const noisemaker::dsl::DslError& error) {
     std::cout << ",\"error\":{\"name\":\"DslError\",\"message\":" << oracle_escape(error.what()) << ",\"sourceName\":" << oracle_escape(error.sourceName) << ",\"line\":" << error.line << ",\"column\":" << error.column << ",\"index\":" << error.index << '}';

@@ -171,6 +171,21 @@ ExecutionPlan compile(const Program& program, const effects::EffectRegistry& reg
   ExecutionPlan plan;
   plan.search = program.search;
   plan.require_executable = options.require_executable;
+  const auto& provenance = registry.provenance();
+  plan.provenance.kind = registry.compatibility().empty() ? "custom" : "manifest";
+  plan.provenance.schema = provenance.schema;
+  plan.provenance.generated_payload_sha256 = provenance.generated_payload_sha256;
+  plan.provenance.normalized_record_stream_sha256 = provenance.normalized_record_stream_sha256;
+  plan.provenance.authority_lock = provenance.cpu_behavioral_lock;
+  plan.provenance.cpu_revision = provenance.cpu_revision;
+  plan.provenance.source_lock_sha256 = provenance.source_lock_sha256;
+  plan.provenance.upstream_revision = provenance.upstream_revision;
+  plan.provenance.upstream_tree = provenance.upstream_tree;
+  plan.provenance.compatibility_sha256 = provenance.compatibility_sha256;
+  plan.provenance.counts = {provenance.counts.definitions, provenance.counts.passes, provenance.counts.reference_program_keys,
+                            provenance.counts.backend_programs, provenance.counts.compatible_programs, provenance.counts.incompatible_programs,
+                            provenance.counts.missing_passes, provenance.counts.scatter_passes, provenance.counts.executable_definitions,
+                            provenance.counts.incomplete_definitions};
   SurfaceReference last_written;
   SourceLocation first_unavailable{};
   bool have_unavailable = false;

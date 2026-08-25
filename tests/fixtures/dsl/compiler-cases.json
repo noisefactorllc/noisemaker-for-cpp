@@ -158,5 +158,75 @@
       "requireExecutable": true
     },
     "sourceSha256": "bd26ff05780bc6961fdd0d64d7db772269a35b70662c099a09a81b7d304fe6d3"
+  },
+  {
+    "name": "custom-wrong-type", "registryMode": "custom", "sourceName": "wrong.dsl",
+    "source": "search fixture\nall(f: true).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "47304cc464434e3e6842d7a7c79dd65b2366226e4147db3a078e5618a1ab00ab"
+  },
+  {
+    "name": "custom-bound-low", "registryMode": "custom", "sourceName": "bounds.dsl",
+    "source": "search fixture\nbounded(amount: -1).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "4849586efc04289eb27c1f005d01177764d8b447d74bc8e4e8e5367fbb968abf"
+  },
+  {
+    "name": "custom-choice-null", "registryMode": "custom", "sourceName": "choice.dsl",
+    "source": "search fixture\nall(e: marker).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "9065e475bbbd8b775ff458117d27920cbec29cfd864f18230db4593946c3e0df"
+  },
+  {
+    "name": "custom-required", "registryMode": "custom", "sourceName": "required.dsl",
+    "source": "search fixture\nrequired().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "a0116ad398146d023601605a4268dc9427be0b1345e72bb3c12c15c96547a461"
+  },
+  {
+    "name": "custom-duplicate-binding", "registryMode": "custom", "sourceName": "duplicate.dsl",
+    "source": "search fixture\nlet x = 1\nlet x = 2\nsource().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "1f8750a578ee4d37142a8effb7654193a36c87b0c7f5caba899f466f9ec74497"
+  },
+  {
+    "name": "custom-forward-binding", "registryMode": "custom", "sourceName": "forward.dsl",
+    "source": "search fixture\nlet x = y\nlet y = 1\nsource(first: x).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "5bd9fc2746f0a749025b89afc8bf08392e702fa380a799aac84d54bf0efe62a0"
+  },
+  {
+    "name": "custom-partial-positional", "registryMode": "custom", "sourceName": "partial-pos.dsl",
+    "source": "search fixture\nlet p = source(1)\np(2).write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "72c7adcfce96bfdd163cdb4442296cd80eebb55e334c97fdca718baa439466c4"
+  },
+  {
+    "name": "custom-read-write", "registryMode": "custom", "sourceName": "read-write.dsl",
+    "source": "search fixture\nread(o0).mixer().write(o1)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "4434ad6255c45a6292cf0e908ba1e2869bce6e215f06e9512d4252ea986add58"
+  },
+  {
+    "name": "custom-generator-placement", "registryMode": "custom", "sourceName": "generator.dsl",
+    "source": "search fixture\nread(o0).source().write(o1)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "17aca54732fdf3ec42e8607125ca4497b8e3d601ab7f0400ca036f787116f54b"
+  },
+  {
+    "name": "custom-loop-unmatched", "registryMode": "custom", "sourceName": "loop.dsl",
+    "source": "search fixture\nloopEnd().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "9a7bb9e12aa0ccf6a6cf861811a6350d4bae7001eae1479425f1d6e1d086cd05"
+  },
+  {
+    "name": "custom-loop-no-image", "registryMode": "custom", "sourceName": "loop-no-image.dsl",
+    "source": "search fixture\nloopBegin().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "191f0f600461cb5a6c779e62ab9dc92d2d7d48c767c58fe0c860dabc82e41603"
+  },
+  {
+    "name": "custom-last-write", "registryMode": "custom", "sourceName": "last-write.dsl",
+    "source": "search fixture\nsource().write(o2)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "b2606c7349b082b03eb9879fbaa33473099d51ffb68b0355a4822177bb3854d6"
+  },
+  {
+    "name": "custom-unknown-effect", "registryMode": "custom", "sourceName": "unknown.dsl",
+    "source": "search fixture\nunknown().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "11972bb17ba8b726bf02b2be6ff0de1c5960b15ba4214bb1f1820dd87ff6a888"
+  },
+  {
+    "name": "custom-no-search", "registryMode": "custom", "sourceName": "no-search.dsl",
+    "source": "source().write(o0)\n", "options": {"requireExecutable": false},
+    "sourceSha256": "5878562abb8ecd644e87f363771c58165a4b429252c68c75a3edcc120f86d9b0"
   }
 ]

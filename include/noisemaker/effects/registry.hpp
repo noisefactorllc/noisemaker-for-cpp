@@ -40,11 +40,17 @@ class EffectRegistry {
   }
   [[nodiscard]] graph::PassAdmission admission(const EffectDefinition& definition,
                                                 std::size_t pass_index) const;
-  [[nodiscard]] const std::vector<ProgramCompatibility>& compatibility() const noexcept { return compatibility_; }
+  [[nodiscard]] const std::vector<ProgramCompatibility>& compatibility() const noexcept { return canonical_programs_; }
+  [[nodiscard]] const std::vector<ReferencePassCompatibility>& reference_passes() const noexcept { return reference_passes_; }
+  [[nodiscard]] const CatalogProvenance& provenance() const noexcept { return provenance_; }
 
  private:
   std::vector<EffectDefinition> definitions_;
-  std::vector<ProgramCompatibility> compatibility_;
+  std::vector<ProgramCompatibility> canonical_programs_;
+  std::vector<ReferencePassCompatibility> reference_passes_;
+  std::optional<ScatterCompatibility> scatter_;
+  std::vector<graph::PassAdmission> canonical_views_;
+  CatalogProvenance provenance_;
   bool manifest_backed_ = false;
 };
 

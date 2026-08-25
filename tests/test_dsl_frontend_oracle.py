@@ -80,6 +80,15 @@ def resolve_compiler_oracle() -> pathlib.Path:
 
 
 class DslFrontendOracleTest(unittest.TestCase):
+    def test_catalog_registry_list_matches_locale_compare_census(self) -> None:
+        cpu_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        node = shutil_which("node")
+        cpp = resolve_compiler_oracle()
+        js = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--list", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES)], check=True, capture_output=True, text=True).stdout
+        native = subprocess.run([str(cpp), "--list", "--mode", "catalog_records"], check=True, capture_output=True, text=True).stdout
+        self.assertEqual(js, native)
+        self.assertEqual(len(json.loads(js)), 205)
+
     def test_checked_compiler_stream_matches_node_cpp_and_is_deterministic(self) -> None:
         cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
         self.assertTrue(cpu_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")

@@ -185,7 +185,7 @@ else process.stdout.write(text)
 
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
-  if (!cpuRoot || !fixturesPath || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
+  if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
   if (fs.realpathSync(root) !== root || fs.lstatSync(root).isSymbolicLink()) fail('CPU root must be a real path, not a symlink')
@@ -229,6 +229,11 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   const { EffectDefinition } = await import(pathToFileURL(path.join(root, 'src/effects/definition.js')).href)
   const { EffectRegistry } = await import(pathToFileURL(path.join(root, 'src/effects/registry.js')).href)
   const snapshot = modes.has('catalog_records') ? await import(pathToFileURL(path.join(root, 'src/effects/generated/upstream-snapshot.js')).href) : null
+  if (args.includes('--list')) {
+    if (!snapshot) fail('--list requires catalog_records closure')
+    process.stdout.write(JSON.stringify(snapshot.effectRecords.map((record) => `${record.namespace}/${record.func}`).sort((left, right) => left.localeCompare(right))) + '\n')
+    return
+  }
   const compatibilityPath = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../src/effects/generated/backend_compatibility.json')
   let compatibility = null
   if (snapshot) {
@@ -253,6 +258,9 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
       { namespace: 'fixture', func: 'all', kind: 'generator', domain: 'image', params, passes: pass('all') },
       { namespace: 'fixture', func: 'source', kind: 'generator', domain: 'image', params: { first: { type: 'int', default: 1 }, second: { type: 'int', default: 2 } }, passes: pass('source') },
       { namespace: 'fixture', func: 'alias', kind: 'generator', domain: 'image', paramAliases: { strength: 'amount' }, params: { amount: { type: 'float', default: 1 } }, passes: pass('alias') },
+      { namespace: 'fixture', func: 'bounded', kind: 'generator', domain: 'image', params: { amount: { type: 'float', default: 1, min: 0, max: 2 } }, passes: pass('bounded') },
+      { namespace: 'fixture', func: 'required', kind: 'generator', domain: 'image', params: { amount: { type: 'float' } }, passes: pass('required') },
+      { namespace: 'fixture', func: 'mixer', kind: 'mixer', domain: 'image', params: {}, passes: pass('mixer') },
       { namespace: 'fixture', func: 'volumeGen', kind: 'generator', domain: 'volume-generator', params: {}, passes: pass('volumeGen') },
       { namespace: 'fixture', func: 'volumeFilter', kind: 'filter', domain: 'volume-filter', params: {}, passes: pass('volumeFilter') },
       { namespace: 'fixture', func: 'volumeRender', kind: 'filter', domain: 'volume-renderer', params: {}, passes: pass('volumeRender') },
@@ -283,8 +291,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   function admission(definition, index) {
     const pass = definition.passes[index]
     const key = `${definition.id}:${pass.program}`
-    let row = compatibility?.canonical_programs?.find((item) => item.program_key === key)
-    if (!row) row = compatibility?.reference_passes?.find((item) => item.program_key === key)
+    let row = compatibility?.reference_passes?.find((item) => item.effect_id === definition.id && item.pass_index === index && item.program_key === key)
     if (!row) row = compatibility?.scatter?.program_key === key ? compatibility.scatter : null
     const status = row?.status === 'registered' ? 'scatter' : (row?.status ?? 'compatible')
     const reasons = row?.reasons ?? []
@@ -321,7 +328,10 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
         const step = compiled.chains.flatMap((chain) => chain.steps).find((item) => item.kind === 'effect' && item.definition.passes.some((pass) => `${item.definition.id}:${pass.program}` === unavailable.programKey))
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
-      return { name: fixture.name, plan: { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability } }
+      const provenance = fixture.registryMode === 'catalog_records'
+        ? { kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', generatedPayloadSha256: 'c657378b1f21081acf4eb4a1cbbad9c6261b2010f2e42ef17e038b3e1a971f8d', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', compatibilitySha256: '1540c94aa7ce03a314cd3d49f9d809dae19353842b93630a40554460f3ba6f0c', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
+        : { kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', upstreamRevision: '', upstreamTree: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
+      return { name: fixture.name, plan: { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance } }
     } catch (error) {
       const sourceName = error.sourceName ?? fixture.sourceName ?? fixture.name, line = error.line ?? 1, column = error.column ?? 1
       return { name: fixture.name, error: { name: error.name === 'DslError' ? 'DslError' : 'DslError', message: error.message, sourceName, line, column, index: indexFor(fixture.source, line, column) } }
