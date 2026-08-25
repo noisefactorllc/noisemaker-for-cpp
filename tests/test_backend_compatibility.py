@@ -65,6 +65,26 @@ class BackendCompatibilityTests(unittest.TestCase):
         declared_explicit = {"textures": {"outputTex": {"width": "screen", "height": "screen", "format": "rgba8unorm"}}}
         self.assertEqual("rgba8unorm", generator._extent(declared_explicit, {}, "outputTex")["format"])
 
+    def test_scatter_extent_comes_from_authenticated_effect_texture(self) -> None:
+        entry = {"program_key": "filter/wormhole:deposit", "effect_id": "filter/wormhole",
+                 "program": "deposit", "source": "sources/filter/wormhole/deposit.glsl"}
+        effect = {"textures": {"wormhole_accum": {"width": "100%", "height": "100%", "format": "rgba16f"}},
+                  "passes": [{"program": "deposit", "outputs": {"fragColor": "wormhole_accum"}}]}
+        row = generator._scatter_source_entry(entry, effect, b"old", b"new")
+        self.assertEqual({"width": "100%", "height": "100%", "format": "rgba16f"}, row["output_abi"]["extent"])
+        forged_effect = {"textures": {"wormhole_accum": {"width": "screen", "height": "screen", "format": "rgba8unorm"}},
+                         "passes": [{"program": "deposit", "outputs": {"fragColor": "wormhole_accum"}}]}
+        forged = generator._scatter_source_entry(entry, forged_effect, b"old", b"new")
+        self.assertEqual({"width": "screen", "height": "screen", "format": "rgba8unorm"}, forged["output_abi"]["extent"])
+
+    def test_scatter_extent_mutants_fail_closed(self) -> None:
+        for mutate in (
+            lambda document: document["scatter"]["output_abi"]["extent"].update(width="screen"),
+            lambda document: document["scatter"]["output_abi"]["extent"].update(height="screen"),
+            lambda document: document["scatter"]["output_abi"]["extent"].update(format="rgba8unorm"),
+        ):
+            self._assert_fails_closed(mutate)
+
     def test_manifest_is_deterministic_and_checkable(self) -> None:
         first = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
         second = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)
@@ -98,6 +118,7 @@ class BackendCompatibilityTests(unittest.TestCase):
                     for row in self.document["canonical_programs"]
                 } | {self.document["scatter"]["program_key"]: self.document["scatter"]["new_raw_sha256"]},
                 factory_evidence=self.factory_evidence,
+                expected_scatter_extent=self.document["scatter"]["output_abi"]["extent"],
             )
 
     def test_forged_duplicate_program_fails_closed(self) -> None:

@@ -25086,7 +25086,7 @@ const EffectDefinition* EffectCatalog::find(const std::string& id) const {
 
 const EffectCatalog& effect_catalog() {
   static const EffectCatalog catalog = [] {
-    EffectCatalog c(EffectCatalog::ProductionToken{});
+    EffectCatalog c;
     c.provenance.schema = "noisemaker-cpp.effect-catalog-generator.v1";
     c.provenance.backend_schema = "noisemaker-cpp.backend-compatibility.v1";
     c.provenance.corpus_revision = "a024dc3a960cc44af454abc7aebce50456c194e6";
@@ -25101,9 +25101,9 @@ const EffectCatalog& effect_catalog() {
     c.provenance.upstream_tree = "a7a997dfdc807697adba008729dcdfdfcfbaf53c";
     c.provenance.upstream_package_sha256 = "109e0617b53eca612d6265672e010744ee3284aea26555eee1f614c3ddc33c8a";
     c.provenance.upstream_package_lock_sha256 = "033762c49845652b36ea91b75653c63ed62c45bd2fb455ab66567ff4b356109f";
-    c.provenance.generated_payload_sha256 = "533c4f44a31bdba241a68ae887364a7e0e5c14f97ba0b6f400766a8a2f0b5f94";
+    c.provenance.generated_payload_sha256 = "4f744f6e62e9592554094f692ca113e9f95dd601ac573b7bc75f02a409b2232c";
     c.provenance.normalized_record_stream_sha256 = "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996";
-    c.provenance.compatibility_sha256 = "592137006a16b4b3a650118fc723756cfdc0f4a394514deee0b02cecbe30e918";
+    c.provenance.compatibility_sha256 = "c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86";
     c.provenance.first_effect_id = "classicNoisedeck/bitEffects";
     c.provenance.last_effect_id = "synth3d/shape3d";
     c.provenance.counts.definitions = 205;

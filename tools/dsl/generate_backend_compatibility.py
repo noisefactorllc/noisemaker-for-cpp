@@ -520,8 +520,16 @@ def _shader_path(entry: dict[str, Any]) -> str:
     return pathlib.PurePosixPath("shaders", "effects", *parts[:2], "glsl", parts[-1]).as_posix()
 
 
-def _scatter_source_entry(entry: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
+def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
     classification = "raw_exact" if old == new else "incompatible"
+    current_pass = _pass_index(effect, entry["program_key"])
+    logical_outputs = list((current_pass.get("outputs") or {}).values())
+    if logical_outputs != ["wormhole_accum"]:
+        raise CompatibilityError(f"{entry['program_key']}: scatter output route drift")
+    texture = (effect.get("textures") or {}).get(logical_outputs[0])
+    if not isinstance(texture, dict):
+        raise CompatibilityError(f"{entry['program_key']}: authenticated scatter texture declaration missing")
+    extent = _extent(effect, current_pass, logical_outputs[0])
     return {
         "program_key": entry["program_key"], "effect_id": entry["effect_id"],
         "program": entry["program"], "source": entry["source"],
@@ -534,7 +542,7 @@ def _scatter_source_entry(entry: dict[str, Any], old: bytes, new: bytes) -> dict
                       "logical_route": "wormhole_accum", "cpp_type": "glsl::Vec4"}],
         "output_abi": {"cardinality": 1, "logical_routes": ["wormhole_accum"],
                        "physical_names": ["fragColor"], "canonical_slots": [0],
-                       "extent": {"width": "screen", "height": "screen", "format": "rgba8unorm"},
+                       "extent": extent,
                        "single_output_canonical": True},
         "derivative_use": False, "draw_mode": "points", "dimensionality": "image",
         "factory": {"canonical": None, "legacy_public": None,
@@ -726,6 +734,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     effect_records = _node_effect_records(cpu_root)
     effects = {item["id"]: item for item in effect_records}
     source_rows: list[dict[str, Any]] = []
+    scatter_extent: dict[str, Any] | None = None
     for entry in entries:
         key = entry["program_key"]
         effect = effects.get(entry["effect_id"])
@@ -735,7 +744,9 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         old = (corpus_root / entry["source"]).read_bytes()
         new = _git_blob(shader_git, UPSTREAM_REVISION, _shader_path(entry))
         if key == SCATTER_KEY:
-            source_rows.append(_scatter_source_entry(entry, old, new))
+            scatter_row = _scatter_source_entry(entry, effect, old, new)
+            scatter_extent = scatter_row["output_abi"]["extent"]
+            source_rows.append(scatter_row)
         else:
             source_rows.append(_program_entry(repository, typed_rows, defines_by_key.get(key, {}), effect, entry, old, new))
     by_key = {item["program_key"]: item for item in source_rows}
@@ -819,7 +830,8 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     }
     validate_document(document, expected_source_hashes={
         item["program_key"]: item["new_raw_sha256"] for item in source_rows
-    }, repository=repository, factory_evidence=factory_evidence)
+    }, repository=repository, factory_evidence=factory_evidence,
+    expected_scatter_extent=scatter_extent)
     return document
 
 
@@ -836,7 +848,8 @@ _BINDING_SOURCES = frozenset({
 
 def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[str, str] | None = None,
                       repository: pathlib.Path = ROOT,
-                      factory_evidence: dict[str, Any] | None = None) -> None:
+                      factory_evidence: dict[str, Any] | None = None,
+                      expected_scatter_extent: dict[str, Any] | None = None) -> None:
     """Validate persisted admission evidence, failing closed on edits."""
     if document.get("schema") != "noisemaker-cpp.backend-compatibility.v1":
         raise CompatibilityError("backend compatibility schema mismatch")
@@ -1021,6 +1034,12 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             or scatter_output.get("logical_routes") != ["wormhole_accum"] \
             or scatter_output.get("canonical_slots") != [0]:
         raise CompatibilityError("scatter output ABI mismatch")
+    extent = scatter_output.get("extent")
+    if not isinstance(extent, dict) or set(extent) != {"width", "height", "format"} \
+            or not all(isinstance(extent[key], str) for key in ("width", "height", "format")):
+        raise CompatibilityError("scatter output extent ABI malformed")
+    if expected_scatter_extent is not None and extent != expected_scatter_extent:
+        raise CompatibilityError("scatter output extent differs from authenticated effect texture")
     expected_scatter_bindings = [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
                                  for name in ("kink", "stride", "rotation", "wrap")]
     if scatter.get("adapter") != "noisemaker::scatter::wormhole::adapter" \

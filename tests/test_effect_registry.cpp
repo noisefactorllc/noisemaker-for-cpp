@@ -3,6 +3,7 @@
 #include "test_harness.hpp"
 
 #include <algorithm>
+#include <utility>
 
 using noisemaker::effects::EffectDefinition;
 using noisemaker::effects::EffectRegistry;
@@ -208,4 +209,17 @@ TEST(effect_registry_rejects_copied_catalog_pass_and_texture_mutation) {
   REQUIRE(texture_effect != texture.definitions.end());
   texture_effect->textures.front().name = "forged_texture";
   REQUIRE_THROWS_AS(EffectRegistry(texture), std::invalid_argument);
+}
+
+TEST(effect_registry_default_catalog_moves_remain_custom) {
+  noisemaker::effects::EffectCatalog original;
+  original.definitions.push_back(source_effect());
+  noisemaker::effects::EffectCatalog moved(std::move(original));
+  EffectRegistry move_registry(moved);
+  REQUIRE(!move_registry.manifest_backed());
+
+  noisemaker::effects::EffectCatalog assigned;
+  assigned = std::move(moved);
+  EffectRegistry assignment_registry(assigned);
+  REQUIRE(!assignment_registry.manifest_backed());
 }

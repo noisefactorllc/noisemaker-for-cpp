@@ -86481,9 +86481,9 @@
         0
       ],
       "extent": {
-        "width": "screen",
-        "height": "screen",
-        "format": "rgba8unorm"
+        "width": "100%",
+        "height": "100%",
+        "format": "rgba16f"
       },
       "single_output_canonical": true
     },
