@@ -21,6 +21,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests/fixtures/dsl/frontend-cases.json"
 EXPECTED = ROOT / "tests/oracles/dsl_frontend_expected.txt"
 ORACLE_JS = ROOT / "tools/dsl/js_frontend_oracle.mjs"
+COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
+COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
+COMPILER_ORACLE_JS = ORACLE_JS
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
 
 
@@ -58,7 +61,69 @@ def resolve_parser_oracle() -> pathlib.Path:
     raise AssertionError("NOISEMAKER_DSL_PARSER_ORACLE is unset and no documented external C++ parser oracle exists")
 
 
+def resolve_compiler_oracle() -> pathlib.Path:
+    configured = os.environ.get("NOISEMAKER_DSL_COMPILER_ORACLE")
+    if configured:
+        candidate = pathlib.Path(configured)
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+        raise AssertionError(f"NOISEMAKER_DSL_COMPILER_ORACLE is not an executable file: {candidate}")
+    candidates = [
+        pathlib.Path("/private/tmp/noisemaker-cpp-task5-build/noisemaker-dsl-compiler-oracle"),
+        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-compiler-oracle"),
+        pathlib.Path("/private/tmp/noisemaker-cpp-continuation.e033lt/build-task5c/noisemaker-dsl-compiler-oracle"),
+    ]
+    for candidate in candidates:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    raise AssertionError("NOISEMAKER_DSL_COMPILER_ORACLE is unset and no documented external C++ compiler oracle exists")
+
+
 class DslFrontendOracleTest(unittest.TestCase):
+    def test_checked_compiler_stream_matches_node_cpp_and_is_deterministic(self) -> None:
+        cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
+        self.assertTrue(cpu_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
+        cpu_root = pathlib.Path(cpu_root_value)
+        self.assertTrue(cpu_root.is_absolute())
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        cpp = resolve_compiler_oracle()
+        fixtures = json.loads(COMPILER_FIXTURES.read_text(encoding="utf-8"))
+        expected = COMPILER_EXPECTED.read_text(encoding="utf-8")
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-oracle-") as temporary:
+            first = pathlib.Path(temporary) / "first.txt"
+            second = pathlib.Path(temporary) / "second.txt"
+            for output in (first, second):
+                subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES), "--output", str(output)], check=True)
+            self.assertEqual(first.read_text(encoding="utf-8"), expected)
+            self.assertEqual(second.read_text(encoding="utf-8"), expected)
+            self.assertEqual(hash_file(first), hash_file(second))
+            cpp_records = []
+            for fixture in fixtures:
+                args = [str(cpp), "--name", fixture["name"], "--mode", fixture["registryMode"], "--source-name", fixture["sourceName"], "--source", fixture["source"]]
+                if fixture.get("options", {}).get("requireExecutable"):
+                    args.append("--require-executable")
+                result = subprocess.run(args, check=True, capture_output=True, text=True)
+                cpp_records.append(result.stdout)
+            self.assertEqual("".join(cpp_records), expected)
+
+    def test_compiler_oracle_rejects_forged_transitive_module_before_import(self) -> None:
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-forge-") as temporary:
+            root = pathlib.Path(temporary) / "root"
+            for relative in ("src/dsl/compiler.js", "src/dsl/error.js", "src/dsl/parser.js", "src/dsl/tokenize.js", "src/effects/definition.js", "src/effects/registry.js", "src/effects/generated/upstream-snapshot.js"):
+                destination = root / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(authority_root / relative, destination)
+            marker = root / "forged-imported"
+            definition = root / "src/effects/definition.js"
+            definition.write_text("import fs from 'node:fs'\nfs.writeFileSync(" + json.dumps(str(marker)) + ", 'imported')\n", encoding="utf-8")
+            result = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--cpu-root", os.path.realpath(root), "--fixtures", str(COMPILER_FIXTURES)], capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("sha256", result.stderr)
+            self.assertFalse(marker.exists())
     def test_checked_stream_matches_authoritative_node_oracle_and_cpp(self) -> None:
         cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
         if not cpu_root_value:
@@ -190,6 +255,13 @@ class DslFrontendOracleTest(unittest.TestCase):
             with mock.patch.dict(os.environ, {"NOISEMAKER_DSL_PARSER_ORACLE": str(missing)}, clear=False):
                 with self.assertRaisesRegex(AssertionError, "NOISEMAKER_DSL_PARSER_ORACLE is not an executable file"):
                     resolve_parser_oracle()
+
+    def test_compiler_oracle_rejects_configured_non_executable_path(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-no-oracle-") as temporary:
+            missing = pathlib.Path(temporary) / "missing"
+            with mock.patch.dict(os.environ, {"NOISEMAKER_DSL_COMPILER_ORACLE": str(missing)}, clear=False):
+                with self.assertRaisesRegex(AssertionError, "NOISEMAKER_DSL_COMPILER_ORACLE is not an executable file"):
+                    resolve_compiler_oracle()
 
 
 def hash_file(path: pathlib.Path) -> str:

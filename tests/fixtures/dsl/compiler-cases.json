@@ -1,0 +1,162 @@
+[
+  {
+    "name": "custom-all-defaults",
+    "registryMode": "custom",
+    "sourceName": "all.dsl",
+    "source": "search fixture\nall().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "818e4fe5eba524338be22126d1c124e5c6dd3d5f0a6b4621da025509aa345f07"
+  },
+  {
+    "name": "custom-all-explicit",
+    "registryMode": "custom",
+    "sourceName": "values😀.dsl",
+    "source": "search fixture\nall(f: 2.5, i: 4, flag: false, c: #12345678, v2: vec2(1, 2), v3: [1, 2, 3], v4: [1, 2, 3, 4], m: [1,2,3,4,5,6,7,8,9], e: one, member: member.brushed, palette: palette.brushed, str: style.bold, surf: inputTex, vol: volumeA, geo: geometryA).write(o1)\nrender(o1)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "585b21d805bb303ada36b72c41ecdd08df55e02c3bf55f4f2799e702d4177cdd"
+  },
+  {
+    "name": "custom-alias-overwrite",
+    "registryMode": "custom",
+    "sourceName": "alias.dsl",
+    "source": "search fixture\nalias(strength: 2, amount: 3).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "28aba9102abf7c45d7fb81c654801ab7317191b7f41ac468d6c0ebe794465afc"
+  },
+  {
+    "name": "custom-partial-named",
+    "registryMode": "custom",
+    "sourceName": "partial.dsl",
+    "source": "search fixture\nlet p = source(first: 3, second: 4)\np(second: 7).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "686e4a15684e9b979871b43a22f93562f294b7110257c0b0859672608309264c"
+  },
+  {
+    "name": "custom-arithmetic-and-utf16",
+    "registryMode": "custom",
+    "sourceName": "astral😀.dsl",
+    "source": "search fixture\nlet n = 2 * (3 + 4)\nsource(n).write(o2)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "8a775d26a775ed114bfff1d32848474e7d32dc3d1c89d819bec0dce9eab1cd51"
+  },
+  {
+    "name": "custom-error-malformed-exponent",
+    "registryMode": "custom",
+    "sourceName": "bad.dsl",
+    "source": "search fixture\nall(f: 1e).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "e0aafc8c04e97d3a42be31d6d0f4437b16c2061364ae11e08f39b73d5b3fc583"
+  },
+  {
+    "name": "custom-error-partial-mode",
+    "registryMode": "custom",
+    "sourceName": "mode.dsl",
+    "source": "search fixture\nlet p = source(1, 2)\np(first: 3).write(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "41e37665fabb53a4d5873ec4b300753e75ed32b24ac9fa5efba96b35538f6d0f"
+  },
+  {
+    "name": "catalog-solid",
+    "registryMode": "catalog_records",
+    "sourceName": "solid.dsl",
+    "source": "search synth\nsolid(color: #3a7).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "3c94c56b639664bcb41079a3021deb4afe3eb72a6bfa869357c6f3799791c734"
+  },
+  {
+    "name": "catalog-blur",
+    "registryMode": "catalog_records",
+    "sourceName": "blur.dsl",
+    "source": "search synth, filter\nsolid().blur(radiusX: 3, radiusY: 2).write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "5a0913e6cfca16e3a4ae6d8aa6a4594113ed5f76ddf4eaa2d04feeaab5a855ec"
+  },
+  {
+    "name": "catalog-scatter",
+    "registryMode": "catalog_records",
+    "sourceName": "scatter.dsl",
+    "source": "search filter\nread(o0).wormhole().write(o1)\nrender(o1)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "6626e9e0475ca1619bfab598fd4c14701f36a90f5cc8988bbd468a1601c81918"
+  },
+  {
+    "name": "catalog-missing",
+    "registryMode": "catalog_records",
+    "sourceName": "volume.dsl",
+    "source": "search synth3d, render\nnoise3d(volumeSize: 16).render3d().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "25e7b0c5c28fa912087b84cc9e5f8041cafc8a42ee3eeb4aa1569b82348e0a2f"
+  },
+  {
+    "name": "catalog-missing-required",
+    "registryMode": "catalog_records",
+    "sourceName": "volume-required.dsl",
+    "source": "search synth3d, render\nnoise3d(volumeSize: 16).render3d().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": true
+    },
+    "sourceSha256": "25e7b0c5c28fa912087b84cc9e5f8041cafc8a42ee3eeb4aa1569b82348e0a2f"
+  },
+  {
+    "name": "catalog-volume-filter",
+    "registryMode": "catalog_records",
+    "sourceName": "volume-filter.dsl",
+    "source": "search synth3d, filter3d, render\nnoise3d(volumeSize: 16).palette3d().render3d().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "a24d65af2d8591e3073eea8be40e99295cf15ae2c44db4670539036330e003d4"
+  },
+  {
+    "name": "catalog-loop-regions",
+    "registryMode": "catalog_records",
+    "sourceName": "loop.dsl",
+    "source": "search synth, filter, render\nsolid().loopBegin().blur().loopEnd().write(o0)\nrender(o0)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "a1683c04a9e948a940d38ea64e7cd47c5d10a680ae9df6a9d8b801f6921bb2cd"
+  },
+  {
+    "name": "catalog-incompatible",
+    "registryMode": "catalog_records",
+    "sourceName": "text.dsl",
+    "source": "search filter\nread(o0).text().write(o1)\nrender(o1)\n",
+    "options": {
+      "requireExecutable": false
+    },
+    "sourceSha256": "bd26ff05780bc6961fdd0d64d7db772269a35b70662c099a09a81b7d304fe6d3"
+  },
+  {
+    "name": "catalog-incompatible-required",
+    "registryMode": "catalog_records",
+    "sourceName": "text-required.dsl",
+    "source": "search filter\nread(o0).text().write(o1)\nrender(o1)\n",
+    "options": {
+      "requireExecutable": true
+    },
+    "sourceSha256": "bd26ff05780bc6961fdd0d64d7db772269a35b70662c099a09a81b7d304fe6d3"
+  }
+]
