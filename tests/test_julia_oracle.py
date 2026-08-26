@@ -23,6 +23,24 @@ AUTHORITY_ENV = "NOISEMAKER_CPU_ROOT"
 LIVE_ENV = "NOISEMAKER_FOR_CPU"
 
 
+# Authority-variable contract.
+#
+# The julia generator requires --cpu-root, NOISEMAKER_CPU_ROOT and
+# NOISEMAKER_FOR_CPU to resolve to one non-symlink pinned root. Other oracle
+# suites in this tree give NOISEMAKER_FOR_CPU the opposite meaning: the emboss
+# generator (docs/port-engineering/arrays/emboss-parity/
+# emboss_parity_oracle_generator.mjs) reads it as the *live* mutable checkout
+# and refuses a --cpu-root that overlaps it. One ambient value cannot satisfy
+# both readings, so this module stops reading the ambient NOISEMAKER_FOR_CPU
+# altogether: it derives its own authority from NOISEMAKER_CPU_ROOT and passes
+# that same root as NOISEMAKER_FOR_CPU to every generator it launches.
+#
+# Nothing is relaxed by that. The generator's same-root requirement is still
+# proved positively (every launch below sets both variables to the authority
+# and must exit 0) and negatively, by
+# test_authority_rejects_literal_dynamic_nonliteral_and_path_roots, which
+# asserts the generator refuses a NOISEMAKER_FOR_CPU that is a symlink, that is
+# missing, or that names a different real directory.
 def _authority() -> pathlib.Path:
     value = os.environ.get(AUTHORITY_ENV)
     if not value:
@@ -30,14 +48,6 @@ def _authority() -> pathlib.Path:
     path = pathlib.Path(value)
     if not path.is_dir() or path.is_symlink():
         raise AssertionError(f"{AUTHORITY_ENV} must be a non-symlink directory")
-    pinned = os.environ.get(LIVE_ENV)
-    if not pinned:
-        raise AssertionError(f"{LIVE_ENV} is required; oracle tests never skip")
-    pinned_path = pathlib.Path(pinned)
-    if not pinned_path.is_dir() or pinned_path.is_symlink():
-        raise AssertionError(f"{LIVE_ENV} must be the same non-symlink pinned authority")
-    if path.resolve() != pinned_path.resolve():
-        raise AssertionError("both authority variables must name the same pinned root")
     return path
 
 
@@ -323,6 +333,15 @@ class JuliaOracleTests(unittest.TestCase):
                 text=True, capture_output=True)
             self.assertNotEqual(0, mismatched_pinned.returncode)
             self.assertIn("same pinned authority", mismatched_pinned.stderr)
+
+            other_root = base / "other-real-root"
+            other_root.mkdir()
+            divergent_pinned = subprocess.run(
+                ["node", str(GENERATOR), "--check", "--cpu-root", str(authority)],
+                cwd=ROOT, env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(other_root)},
+                text=True, capture_output=True)
+            self.assertNotEqual(0, divergent_pinned.returncode)
+            self.assertIn("same pinned authority", divergent_pinned.stderr)
 
     def test_include_exposes_complete_typed_metadata_views(self) -> None:
         text = INCLUDE.read_text()
