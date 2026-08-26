@@ -65,14 +65,23 @@
 >   that split with any "138 exact" claim. Adapter identity is recorded and
 >   software rasterizers are refused unless `--allow-software`.
 >
-> ### In flight at this checkpoint
+> ### Step 9 — DONE at this checkpoint
 >
-> One lane: the **step-9 WebGL2/WebGPU expansion** over the 166-record
-> corpus (expansion manifest, per-record divergence evidence, protocol
-> contract test). If its results are not recorded in a block above this one,
-> it did not finish — rerun it from
-> `.superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/` context
-> (dispatch brief mirrored in `progress.md`).
+> The WebGL2/WebGPU expansion ran to completion: 332 hardware runs
+> (166 records x 2 backends, Apple M2 Metal, software gate untouched).
+> Distributions: webgl2 145 byte-exact / 15 mismatch / 6 refused; webgpu
+> 139 / 21 / 6. The measured intersection is **exactly the re-review's 138**
+> with zero status changes. Divergences are classified as failures with
+> per-record first-divergence evidence: A1 low-amplitude backend-independent
+> (3), A2 high-amplitude backend-independent (9, incl. synth/gradient), B1
+> one-lane-only (6), B2 both-lanes-different-signatures (2: snow, stipple),
+> **F upstream per-effect WGSL orientation defect (2: grime, texture — the
+> WebGPU raw readback equals the expectation byte-for-byte, so the flip is
+> upstream, not the harness)**, C 3 S005, D 3 no-CPU-expectation. The
+> protocol contract is pinned in `tests/test_benchmark_shader.py`
+> (hardware-dependent counts deliberately NOT pinned); the full report is
+> `task-7-step9-expansion.md` beside the ledger. Handoff steps 1-10 of the
+> 2026-08-25 sequence are all complete.
 >
 > ### Remaining work queue (in rough priority order)
 >
