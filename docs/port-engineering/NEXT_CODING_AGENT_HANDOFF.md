@@ -1,5 +1,136 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## HANDOFF CHECKPOINT 2026-08-26 — READ THIS FIRST
+>
+> This section supersedes every older status block below it, including the
+> 2026-08-25 STOP checkpoint. The older blocks are historical evidence only;
+> in particular, their statements that Task 7 is uncommitted or not ready are
+> obsolete.
+>
+> ### Checkout and Git state
+>
+> Work only in:
+>
+> ```text
+> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> ```
+>
+> Local `main`, clean tree, no remote, nothing pushed. Seven commits since
+> the Task 6 base `4062bc8`:
+>
+> ```text
+> a592b3e test: take lane test paths from the environment, not the session
+> 2431f81 fix(benchmark): bind the shader expectation to its render options
+> 1532e2c feat(benchmark): add the C++ corpus benchmark driver
+> acb9460 fix(julia): make the checked oracle package a pure function of its own inputs
+> 2b7be8c feat(dsl): serialize doubles as ECMAScript Number::toString everywhere
+> 7437b75 feat: render the supported DSL effect corpus exactly
+> 4062bc8 feat: execute multipass DSL graphs on CPU
+> ```
+>
+> `7437b75` is the Task 7 checkpoint: executor connected to the generated
+> canonical route table with authenticated route/ABI/define/output identity,
+> read-only preflight before any copy or allocation, every ordered sampler
+> route materialized, all 20 pass-derived bindings fail-closed by source
+> name. It landed only after four review rounds closed all eight blockers of
+> the independent executor review plus every finding of two scoped
+> re-reviews and a final gate matrix.
+>
+> ### Verified state (all re-derivable; evidence in .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/)
+>
+> - **Corpus:** 166 records = **150 byte-exact / 13 refused with frozen
+>   structured reasons / 3 authority-also-refuses / 0 divergent**, pinned by
+>   `tests/test_dsl_corpus_parity.py` with zero tolerance.
+> - **Step 8 (dual full-corpus passes):** JS CPU lane, the C++ benchmark
+>   driver and the C++ parity driver agree byte-for-byte: RGBA8 aggregate
+>   `e37414538f4af27c…`, relation aggregate `dff27acc0e595851…`, identical
+>   across two independent passes, re-verified after the final serializer
+>   rewire. Protocol: `tools/benchmark/two_pass_corpus.py` (enforces
+>   warmups>=5, samples>=30).
+> - **Full Python discovery:** 1997 tests, 0 failures (fresh external regen
+>   cache; NOISEMAKER_CPU_ROOT must point at the frozen mirror
+>   `/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu`
+>   — it has the oracle-ledger sidecar; the live platform checkout does not).
+> - **Native:** 476 PASS / 2 FAIL — the two FAILs are the documented
+>   pre-existing glitch/shapeMixer fixtures, byte-identical to the Task 6
+>   base. ASan 0 diagnostics; UBSan exactly the 2 pre-existing reports in
+>   untouched typed_slice.cpp. Sanitizer runs need `ulimit -s 65520`.
+> - **Generator gates:** typed slice (211 programs), effect catalog, backend
+>   compatibility all `--check` exit 0. Compatibility regeneration needs
+>   `--cpu-root <frozen mirror> --shader-git /Users/aayars/platform/noisemaker`
+>   (read-only, cat-file only).
+> - **Shader smoke (real browser):** webgl2 145 pass / 15 fail / 3 compile,
+>   webgpu 139 / 21 / 3; honest cross-backend intersection **138 records**
+>   (100 flat / 38 spatially varying / 26 flip-sensitive) — always publish
+>   that split with any "138 exact" claim. Adapter identity is recorded and
+>   software rasterizers are refused unless `--allow-software`.
+>
+> ### In flight at this checkpoint
+>
+> One lane: the **step-9 WebGL2/WebGPU expansion** over the 166-record
+> corpus (expansion manifest, per-record divergence evidence, protocol
+> contract test). If its results are not recorded in a block above this one,
+> it did not finish — rerun it from
+> `.superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/` context
+> (dispatch brief mirrored in `progress.md`).
+>
+> ### Remaining work queue (in rough priority order)
+>
+> 1. Step-9 expansion record (in flight, above).
+> 2. **paletteData override port** — closes 6 of the 13 corpus refusals
+>    (shapes/fractal class).
+> 3. **Worm-overlay port** (`filter/{fibers,scratches,strayHair}` 'ready'
+>    mode) — needs bit-exact Math.log/Math.hypot; fdlibm.hpp documents the
+>    gap. The one_shot=='initial' shortcut is REFUTED; the guard stays.
+> 4. `synth/testPattern` codegen-level divergence (2 grid-boundary pixels).
+> 5. `kMeasuredParityExclusions` is a 2-entry measured deny-list; entries can
+>    only refuse, never render. Shrink it by porting, never by relabeling.
+> 6. The 3 S005 chain-structure records + `synth/media` external-texture
+>    support; `filter/lighting`/`filter/parallax` are heightMap:o0 SELF-READS,
+>    not external textures (mislabeled upstream of the corpus generator).
+> 7. DEFECTS-FOUND item 7 (cross-lane whole-vector assignment) — still open;
+>    blocks `synth/mandelbrot`; the browser-side evidence now exists too
+>    (synth/gradient: both GPU backends agree against the CPU authority).
+> 8. Upstream report: WebGPU/WebGL2 `@builtin(position)` orientation
+>    inconsistency (driver now authenticates readback orientation per
+>    backend; the upstream defect itself is unreported).
+> 9. M6: single-frame ping-pong read-side property is unproven; the only two
+>    feedback-shaped records are excluded — keep them excluded until proven.
+>
+> ### Operating rules that keep binding the next agent
+>
+> - Bit-exact or fail-closed. No tolerances, no relabels, no epsilon.
+>   A dispatched program rendering wrong bytes is the worst failure class.
+> - **Two kinds of pin** (see the 2026-08-20 block below for the full
+>   lesson): live pins repin from the tree; reconstruction pins never move
+>   for a row landing (extend the removal set); when an EMITTER change moves
+>   historical regenerated bytes uniformly and the projected spec still
+>   regenerates identically, re-freeze once with a justification comment —
+>   that is the alias-fix precedent, and the spec-level input locks stay
+>   frozen as the independent witness.
+> - Oracle resolvers are env-first with one documented staging fallback
+>   (`/private/tmp/noisemaker-cpp-dsl-build/`). A stale binary from a
+>   per-task build tree has already forged one false defect report.
+> - Generated artifacts move only through their generators, exactly once per
+>   change, with the pin cascade propagated in dependency order (compat →
+>   effect catalog → corpus fixture → sidecars).
+> - No session-absolute or user-home paths in committed files; env-required
+>   with documented skips (the shader lane's scanner test enforces this for
+>   its files).
+> - Builds and caches only in external mktemp dirs; PYTHONDONTWRITEBYTECODE=1
+>   python3 -B; no pytest; one lane per file surface when parallel.
+> - Publication (public Noise Factor MIT repo, push) remains authorized only
+>   after the remaining port/parity work and formal review complete.
+>
+> ### SDD ledger
+>
+> The execution record for this whole phase (rulings, lane reports, review
+> verdicts, exact commands) is
+> `.superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/progress.md`
+> and the task-7-* reports beside it. Read the ledger before re-deriving any
+> decision recorded there.
+
+
 > ## STOP CHECKPOINT 2026-08-25 — READ THIS FIRST
 >
 > This section supersedes every older status block below it. The older blocks
