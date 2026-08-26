@@ -1,4 +1,5 @@
 #include "noisemaker/dsl/compiler.hpp"
+#include "noisemaker/js_number.hpp"
 #include "noisemaker/effects/catalog.hpp"
 
 #include "test_harness.hpp"
@@ -375,14 +376,12 @@ std::string oracle_escape(const std::string& value) {
   return out.str();
 }
 
+// Was a second, independently written formatter whose iostream-style exponent
+// emitted `number:1e-07` and `number:1e+20` where the JavaScript authority says
+// `number:1e-7` and `number:100000000000000000000`. One serializer, shared with
+// the lexer and parser oracles: see noisemaker/js_number.hpp.
 std::string oracle_number(double value) {
-  if (std::isnan(value)) return "number:NaN";
-  if (std::isinf(value)) return value < 0 ? "number:-Infinity" : "number:+Infinity";
-  if (value == 0.0 && std::signbit(value)) return "number:-0";
-  char buffer[64]{};
-  const auto result = std::to_chars(std::begin(buffer), std::end(buffer), value,
-                                    std::chars_format::general);
-  return std::string("number:") + (result.ec == std::errc{} ? std::string(buffer, result.ptr) : std::to_string(value));
+  return noisemaker::js_number_stream_text(value);
 }
 
 std::string oracle_loc(const noisemaker::dsl::SourceLocation& location) {

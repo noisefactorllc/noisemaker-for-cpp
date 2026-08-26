@@ -31,9 +31,12 @@ CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc87
 
 def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.Path:
     # The env var is NOISEMAKER_DSL_CPP_ORACLE, not the *_FRONTEND_ORACLE a
-    # reader would guess. When it is unset the fallback list below can pick up
-    # a stale binary from an earlier task's build tree, which silently weakens
-    # this lane -- always set it explicitly to the fresh external build.
+    # reader would guess. Prefer setting it explicitly to the fresh external
+    # build; the single fallback below is the one documented staging directory.
+    # Per-task scratch trees are deliberately absent: a resolver that reaches
+    # into an unrelated build tree serves a stale binary and turns this lane
+    # into a report about whatever someone compiled last (a stale
+    # noisemaker-cpp-task3-build oracle is what emitted `number:1e-07` here).
     configured = os.environ.get("NOISEMAKER_DSL_CPP_ORACLE")
     if configured is not None and configured != "":
         candidate = pathlib.Path(configured)
@@ -41,7 +44,6 @@ def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.
             return candidate
         raise AssertionError(f"NOISEMAKER_DSL_CPP_ORACLE is not an executable file: {candidate}")
     search = candidates if candidates is not None else [
-        pathlib.Path("/private/tmp/noisemaker-cpp-task3-build/noisemaker-dsl-frontend-oracle"),
         pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-frontend-oracle"),
     ]
     for candidate in search:
@@ -59,7 +61,6 @@ def resolve_parser_oracle() -> pathlib.Path:
         raise AssertionError(f"NOISEMAKER_DSL_PARSER_ORACLE is not an executable file: {candidate}")
     candidates = [
         pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-parser-oracle"),
-        pathlib.Path("/private/tmp/noisemaker-cpp-task4-build/noisemaker-dsl-parser-oracle"),
     ]
     for candidate in candidates:
         if candidate.is_file() and os.access(candidate, os.X_OK):
@@ -75,7 +76,6 @@ def resolve_compiler_oracle() -> pathlib.Path:
             return candidate
         raise AssertionError(f"NOISEMAKER_DSL_COMPILER_ORACLE is not an executable file: {candidate}")
     candidates = [
-        pathlib.Path("/private/tmp/noisemaker-cpp-task5-build/noisemaker-dsl-compiler-oracle"),
         pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-compiler-oracle"),
     ]
     for candidate in candidates:
@@ -208,6 +208,104 @@ class DslFrontendOracleTest(unittest.TestCase):
                 )
                 cpp_records.append(result.stdout)
             self.assertEqual("".join(cpp_records), EXPECTED.read_text(encoding="utf-8"))
+
+    def test_number_serialization_matches_node_at_toString_boundaries(self) -> None:
+        """Pin ECMAScript `Number::toString` at the boundaries the streams can carry.
+
+        Every expectation here is produced by Node at test time -- Leg A by the
+        authoritative generator itself, Leg B by `String(value)` -- because the
+        C++ side is the one that moves. The regression this covers is a C++
+        serializer that formatted the exponent the way iostream does
+        (`1e-07`, `1e+20`) instead of the way JavaScript does (`1e-7`,
+        `100000000000000000000`), which is invisible to a corpus whose numbers
+        all sit inside the plain-decimal window.
+
+        The lexer, parser and compiler oracles now share one serializer
+        (`noisemaker/js_number.hpp`), so Leg A's coverage of the non-finite and
+        signed-zero spellings is the compiler oracle's coverage too; Leg B adds
+        the signed finite values the lexer cannot produce as a single token.
+        """
+        cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
+        self.assertTrue(cpu_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
+        cpu_root = pathlib.Path(cpu_root_value)
+        node = shutil_which("node")
+        self.assertIsNotNone(node)
+        cpp = resolve_cpp_oracle()
+        compiler = resolve_compiler_oracle()
+
+        # Inputs only. Exponent-window edges (1e-7/1e-6 below, 1e20/1e21 above),
+        # denormal and finite-range ends, 17-significant-digit round-tripping,
+        # integers past 2^53, and the overflow/underflow literals that reach the
+        # non-finite and zero spellings.
+        literals = [
+            "0", "1", "100", "0.1", "0.3", "1234.5678", "0.0001", "0.00001",
+            "0.000001", "1e-6", "1e-7", "1e-5", "1e20", "1e21", "1e22",
+            "5e-324", "2.2250738585072014e-308", "1.7976931348623157e308",
+            "1.2345678901234567", "9007199254740993", "1000000000000000100",
+            "123456789012345678901", "1e999", "1e-999",
+        ]
+
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-number-boundaries-") as temporary:
+            fixtures_path = pathlib.Path(temporary) / "number-boundary-cases.json"
+            fixtures = [{"name": literal, "source": literal} for literal in literals]
+            fixtures_path.write_text(json.dumps(fixtures, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            authority_path = pathlib.Path(temporary) / "authority.txt"
+            subprocess.run(
+                [node, str(ORACLE_JS), "--cpu-root", str(cpu_root), "--fixtures", str(fixtures_path), "--output", str(authority_path)],
+                check=True,
+                text=True,
+            )
+            authority = authority_path.read_text(encoding="utf-8")
+
+            # Leg A: the whole checked stream, generator against C++, per literal.
+            cpp_records = []
+            for fixture in fixtures:
+                result = subprocess.run(
+                    [str(cpp), "--name", fixture["name"], "--source", fixture["source"], "--source-name", fixture["name"]],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                cpp_records.append(result.stdout)
+            self.assertEqual("".join(cpp_records), authority)
+
+            # The generator must actually have exercised the spellings that
+            # regressed; a silently emptied literal list would pass Leg A.
+            tagged = {}
+            for line in authority.splitlines():
+                record = json.loads(line)
+                number_tokens = [token for token in record["tokens"] if token["type"] == "number"]
+                self.assertEqual(len(number_tokens), 1, record["name"])
+                tagged[record["name"]] = number_tokens[0]["value"]
+            self.assertEqual(tagged["1e-7"], "number:1e-7")
+            self.assertEqual(tagged["1e-6"], "number:0.000001")
+            self.assertEqual(tagged["1e20"], "number:100000000000000000000")
+            self.assertEqual(tagged["1e21"], "number:1e+21")
+            self.assertEqual(tagged["1e999"], "number:+Infinity")
+            self.assertEqual(tagged["5e-324"], "number:5e-324")
+
+        # Leg B: the compiler oracle's plan serializer, including signed values
+        # the lexer emits as an operator plus a magnitude. `1e999` is dropped
+        # here because the registry rejects a non-finite parameter before any
+        # serializer runs -- Leg A already pins that spelling.
+        signed = ["-1e-7", "-1e-6", "-1e20", "-1e21", "-0.1", "-1.2345678901234567", "-5e-324"]
+        subjects = [literal for literal in literals if literal != "1e999"] + signed
+        expectations = json.loads(subprocess.run(
+            [node, "-e",
+             "const values = JSON.parse(process.argv[1]);"
+             "console.log(JSON.stringify(values.map((text) => `number:${String(Number(text))}`)))",
+             "--", json.dumps(subjects)],
+            check=True, capture_output=True, text=True).stdout)
+        for literal, expected in zip(subjects, expectations):
+            source = "search fixture\nalias(amount: " + literal + ").write(o0)\nrender(o0)"
+            result = subprocess.run(
+                [str(compiler), "--name", literal, "--mode", "custom", "--source-name", "boundaries.dsl", "--source", source],
+                check=True, capture_output=True, text=True)
+            record = json.loads(result.stdout)
+            self.assertNotIn("error", record, f"{literal}: {result.stdout}")
+            parameters = record["plan"]["chains"][0]["steps"][0]["params"]
+            self.assertEqual([item["name"] for item in parameters], ["amount"], literal)
+            self.assertEqual(parameters[0]["value"]["value"], expected, literal)
 
     def test_authority_rejects_forged_module_wrong_hash_and_symlinks(self) -> None:
         node = shutil_which("node")

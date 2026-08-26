@@ -1,5 +1,7 @@
 #include "noisemaker/effects/registry.hpp"
 
+#include "noisemaker/js_number.hpp"
+
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -521,17 +523,10 @@ std::string choice_names(const ParameterDefinition& parameter, bool omit_null) {
   return result;
 }
 
-std::string number_text(double value) {
-  if (std::isnan(value)) return "NaN";
-  if (std::isinf(value)) return value < 0.0 ? "-Infinity" : "Infinity";
-  if (value == 0.0 && std::signbit(value)) return "-0";
-  char buffer[64]{};
-  const auto converted = std::to_chars(std::begin(buffer), std::end(buffer), value,
-                                       std::chars_format::general,
-                                       std::numeric_limits<double>::max_digits10);
-  if (converted.ec == std::errc{}) return std::string(buffer, converted.ptr);
-  return std::to_string(value);
-}
+// Bound-violation messages cross into the checked plan stream verbatim, so the
+// bound must read exactly as `${min}` does in the JavaScript authority --
+// including `String(-0) === "0"`. One serializer: noisemaker/js_number.hpp.
+std::string number_text(double value) { return js_number_to_string(value); }
 
 PlanValue enum_value(const ParameterDefinition& parameter, PlanValue value,
                     const std::string& name) {

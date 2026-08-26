@@ -1,4 +1,5 @@
 #include "noisemaker/dsl/parser.hpp"
+#include "noisemaker/js_number.hpp"
 
 #include "test_harness.hpp"
 
@@ -159,61 +160,10 @@ std::string json_escape(const std::string& value) {
   return out.str();
 }
 
-double parse_number(std::string_view text) {
-  std::string copy(text);
-  char* end = nullptr;
-#if defined(_WIN32)
-  _locale_t c_locale = _create_locale(LC_NUMERIC, "C");
-  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
-  const double value = _strtod_l(copy.c_str(), &end, c_locale);
-  _free_locale(c_locale);
-#else
-  locale_t c_locale = newlocale(LC_NUMERIC_MASK, "C", static_cast<locale_t>(0));
-  if (c_locale == nullptr) throw std::runtime_error("failed to create C numeric locale");
-  const double value = strtod_l(copy.c_str(), &end, c_locale);
-  freelocale(c_locale);
-#endif
-  if (end != copy.c_str() + copy.size()) throw std::runtime_error("invalid number");
-  return value;
-}
-
+// One serializer, shared with the lexer and compiler oracles: see
+// noisemaker/js_number.hpp. Never reimplement it here.
 std::string number_string(double value) {
-  if (std::isnan(value)) return "number:NaN";
-  if (std::isinf(value)) return value > 0 ? "number:+Infinity" : "number:-Infinity";
-  if (std::signbit(value) && value == 0) return "number:-0";
-  std::string text;
-  for (int precision = 1; precision <= std::numeric_limits<double>::max_digits10; ++precision) {
-    char buffer[128]{};
-    const auto converted = std::to_chars(std::begin(buffer), std::end(buffer), value,
-                                         std::chars_format::general, precision);
-    if (converted.ec != std::errc{}) continue;
-    const std::string candidate(buffer, converted.ptr);
-    if (parse_number(candidate) == value) { text = candidate; break; }
-  }
-  if (text.empty()) throw std::runtime_error("failed to serialize finite number");
-  bool negative = false;
-  if (!text.empty() && text.front() == '-') { negative = true; text.erase(text.begin()); }
-  int exponent = 0;
-  const auto e = text.find_first_of("eE");
-  if (e != std::string::npos) { exponent = std::stoi(text.substr(e + 1)); text.erase(e); }
-  const auto dot = text.find('.');
-  const int before_dot = dot == std::string::npos ? static_cast<int>(text.size()) : static_cast<int>(dot);
-  if (dot != std::string::npos) text.erase(dot, 1);
-  const int decimal_position = before_dot + exponent;
-  const int scientific_exponent = decimal_position - 1;
-  std::string result;
-  if (scientific_exponent >= -6 && scientific_exponent < 21) {
-    if (decimal_position <= 0) result = "0." + std::string(static_cast<std::size_t>(-decimal_position), '0') + text;
-    else if (decimal_position >= static_cast<int>(text.size())) result = text + std::string(static_cast<std::size_t>(decimal_position - text.size()), '0');
-    else result = text.substr(0, static_cast<std::size_t>(decimal_position)) + "." + text.substr(static_cast<std::size_t>(decimal_position));
-  } else {
-    result.push_back(text.front());
-    if (text.size() > 1) result += "." + text.substr(1);
-    result += "e";
-    if (scientific_exponent >= 0) result += "+";
-    result += std::to_string(scientific_exponent);
-  }
-  return std::string(negative ? "number:-" : "number:") + result;
+  return noisemaker::js_number_stream_text(value);
 }
 
 std::string loc_json(const noisemaker::dsl::SourceLocation& loc) {
