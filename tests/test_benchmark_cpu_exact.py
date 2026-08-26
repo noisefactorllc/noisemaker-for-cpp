@@ -51,7 +51,8 @@ class ExactCpuBenchmarkTest(unittest.TestCase):
         if node is None or not authority.is_absolute() or not authority.is_dir():
             self.skipTest("node and NOISEMAKER_CPU_ROOT (the immutable CPU authority) are required")
         case = next(record for record in json.loads(FIXTURE.read_text(encoding="utf-8"))["records"] if record["effectId"] == "filter/blur")
-        with tempfile.TemporaryDirectory(prefix="noisemaker-cpu-case-", dir="/private/tmp") as directory:
+        # Default temp root: /private/tmp is a macOS-ism and errors on Linux.
+        with tempfile.TemporaryDirectory(prefix="noisemaker-cpu-case-") as directory:
             root = pathlib.Path(directory)
             case_path = root / "case.json"
             case_path.write_text(json.dumps(case), encoding="utf-8")

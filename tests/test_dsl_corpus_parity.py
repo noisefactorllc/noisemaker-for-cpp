@@ -16,20 +16,23 @@ Nothing here ever rewrites the fixture or the exclusion table.
 from __future__ import annotations
 
 import json
-import os
 import pathlib
 import shutil
 import subprocess
 import tempfile
 import unittest
 
+from tools.benchmark.corpus_lane import (
+    EXCLUSIONS,
+    JS_RUNNER,
+    load_corpus,
+    record_flags,
+    resolve_cpu_root,
+    resolve_driver,
+)
 from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tests/fixtures/dsl/executable-corpus.json"
-CORPUS_ORACLE = ROOT / "tests/oracles/dsl_executable_corpus.sha256"
-JS_RUNNER = ROOT / "tools/benchmark/run_cpu_case.mjs"
-EXCLUSIONS = ROOT / "tests/oracles/dsl_corpus_parity_exclusions.json"
 
 # Records are compared in bounded batches so a failing run reports a bounded,
 # readable diagnostic rather than 166 buffers.
@@ -37,34 +40,7 @@ BATCH_SIZE = 16
 
 
 def resolve_cpp_driver() -> pathlib.Path:
-    configured = os.environ.get("NOISEMAKER_DSL_CPU_CASE")
-    if not configured:
-        raise unittest.SkipTest(
-            "NOISEMAKER_DSL_CPU_CASE must point at the external noisemaker-dsl-cpu-case build")
-    candidate = pathlib.Path(configured)
-    if not (candidate.is_file() and os.access(candidate, os.X_OK)):
-        raise AssertionError(f"NOISEMAKER_DSL_CPU_CASE is not an executable file: {candidate}")
-    return candidate
-
-
-def resolve_cpu_root() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
-    if not value:
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT must identify the frozen CPU authority")
-    root = pathlib.Path(value)
-    if not root.is_absolute() or not root.is_dir():
-        raise AssertionError("NOISEMAKER_CPU_ROOT must be an absolute directory")
-    return root
-
-
-def load_corpus() -> dict:
-    """Load the corpus only through its own authenticated manifest digest."""
-    manifest = json.loads(CORPUS.read_text(encoding="utf-8"))
-    expected = CORPUS_ORACLE.read_text(encoding="utf-8").strip()
-    if manifest["manifestSha256"] != expected:
-        raise AssertionError(
-            f"corpus manifest digest drift: {manifest['manifestSha256']} != {expected}")
-    return manifest
+    return resolve_driver("NOISEMAKER_DSL_CPU_CASE", "noisemaker-dsl-cpu-case")
 
 
 class CorpusParityTest(unittest.TestCase):
@@ -108,11 +84,7 @@ class CorpusParityTest(unittest.TestCase):
                     cpp_raw = scratch / "cpp.rgba8"
                     cpp_meta = scratch / "cpp.json"
                     cpp = subprocess.run(
-                        [str(driver), "--source-file", str(source),
-                         "--source-sha256", record["sourceSha256"],
-                         "--width", str(options["width"]), "--height", str(options["height"]),
-                         "--time", repr(options["time"]), "--frame", str(options["frame"]),
-                         "--seed", repr(options["seed"]),
+                        [str(driver), *record_flags(record, source),
                          "--rgba8-output", str(cpp_raw), "--metadata-output", str(cpp_meta)],
                         capture_output=True, text=True)
                     cpp_detail = ""
