@@ -93,10 +93,45 @@ target_compile_options(noisemaker-cpu-example-perlin PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 
-add_executable(noisemaker-dsl-cpu-case tools/benchmark/run_cpp_case.cpp)
+add_executable(noisemaker-dsl-cpu-case
+  tools/benchmark/run_cpp_case.cpp
+  tools/benchmark/corpus_case.cpp
+)
 target_link_libraries(noisemaker-dsl-cpu-case PRIVATE noisemaker-cpu)
 target_compile_options(noisemaker-dsl-cpu-case PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+# The corpus benchmark driver. It shares corpus_case.cpp with the case driver
+# above rather than copying its compile/execute path, so there is exactly one
+# `require_executable = true` compile entry and one `GraphExecutor::execute`
+# call site across both. It is deliberately not registered with `add_test`, not
+# linked into `noisemaker-cpu`, and not part of any install or export set: it
+# is a measurement tool, not shipped library surface.
+#
+# `-ffp-contract=off` is not optional here. It is the reason a measured number
+# describes the same arithmetic the byte-exact parity lane validates.
+set(NOISEMAKER_BENCHMARK_STRICT_FLAGS -Wall -Wextra -Wpedantic -Werror -ffp-contract=off)
+string(JOIN " " NOISEMAKER_BENCHMARK_STRICT_FLAGS_TEXT ${NOISEMAKER_BENCHMARK_STRICT_FLAGS})
+if(CMAKE_BUILD_TYPE)
+  set(NOISEMAKER_BENCHMARK_BUILD_TYPE_TEXT "${CMAKE_BUILD_TYPE}")
+else()
+  set(NOISEMAKER_BENCHMARK_BUILD_TYPE_TEXT "unspecified")
+endif()
+add_executable(noisemaker-dsl-cpu-benchmark
+  tools/benchmark/run_cpp_benchmark.cpp
+  tools/benchmark/corpus_case.cpp
+)
+target_link_libraries(noisemaker-dsl-cpu-benchmark PRIVATE noisemaker-cpu)
+target_compile_options(noisemaker-dsl-cpu-benchmark PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:${NOISEMAKER_BENCHMARK_STRICT_FLAGS}>
+)
+# The emitted record must never claim a flag set the target was not built
+# with, so both the compile options and the recorded string come from the one
+# list above.
+target_compile_definitions(noisemaker-dsl-cpu-benchmark PRIVATE
+  NOISEMAKER_BENCHMARK_FLAGS="${NOISEMAKER_BENCHMARK_STRICT_FLAGS_TEXT}"
+  NOISEMAKER_BENCHMARK_BUILD_TYPE="${NOISEMAKER_BENCHMARK_BUILD_TYPE_TEXT}"
 )
 
 add_executable(noisemaker-dsl-frontend-oracle tests/test_dsl_lexer.cpp)
