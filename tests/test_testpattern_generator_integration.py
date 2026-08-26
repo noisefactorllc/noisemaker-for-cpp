@@ -27,8 +27,11 @@ class TestPatternGeneratorIntegrationTests(unittest.TestCase):
         })
         keys = [item["program_key"] for item in spec["programs"]]
         self.assertEqual(keys, sorted(keys))
-        self.assertEqual(keys.index(KEY), 208)
-        self.assertEqual(len(keys), 209)
+        # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
+                # slice at 211 typed rows. Measured, never carried from a report; see
+                # task-7-typed-generator-census-repair.md.
+        self.assertEqual(keys.index(KEY), 210)
+        self.assertEqual(len(keys), 211)
 
     def test_generator_authenticates_testpattern_bindings_and_loop_proof(self):
         source_path = (ROOT / "tools/glslcpp/corpus"

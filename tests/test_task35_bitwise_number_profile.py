@@ -310,6 +310,15 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
                 "classicNoisedeck/noise:noise",
                 "filter/historicPalette:historicPalette", "filter/median:median",
                 "filter/osd:osd", "filter/palette:palette",
+                # Removal-set insertion 2026-08-25: `filter/dither:dither` and
+                                # `synth/julia:julia` landed AFTER this milestone and were absent from
+                                # the projection, so it was measuring a slice two rows too large.
+                                # Adding the landed keys is the correct repair -- the frozen counts
+                                # below are unchanged, which is the proof this is the right one. The
+                                # set now equals the next milestone's exclusions plus its own row.
+                                # See task-7-typed-generator-census-repair.md.
+                "filter/dither:dither",
+                "synth/julia:julia",
                 "filter/spookyTicker:spookyTicker", "filter/texture:texture"}]
         self.assertEqual(176, len(historical["programs"]))
         self.assertNotIn(
@@ -334,8 +343,14 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         self.assertEqual(
             "54be6f2f09324a7cd1d41078112651d82153a2eb762937d371fdc1fce1f26710",
             hashlib.sha256(current[KEY].encode()).hexdigest())
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projection
+        # above is corrected first (the frozen COUNTS match again), so this
+        # measures the same milestone under the new emitter. Derived from a
+        # measured regeneration of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "2ea2a9d17e10b21f32fe9901c2839ec4e315e5bf4dce8b444bf198ba0d815ae9",
+            "98f8cd34c330efdb71c6a9ed552b3418ced2adaca5224b4415f63d75ecfd1f2d",
             hashlib.sha256("".join(
                 block for key, block in current.items() if key != KEY
             ).encode()).hexdigest())
@@ -355,12 +370,18 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         self.assertNotIn(
             "// Typed IR program: synth/bitwise:bitwise",
             without_task35["src/typed_generated/typed_slice.cpp"].decode())
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projection
+        # above is corrected first (its frozen COUNTS match again), so this still
+        # measures the same milestone. Derived from a measured regeneration of
+        # this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "a32de30c44686e9c22368d4cd2821d887128aa32c72fa535be688076105beddb",
+            "ee17e21b795a3aee7ddd068c121531d36a3e23d7803215120a1215cf937a9ba1",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
         self.assertEqual(
-            "4b330a71efe8df79428ff835d9fbeb5f7cfe00cd0b1bbdbf7e24c8d31c393cbc",
+            "82a01d26f20092cdd300b6fb1ae64d28b1f97e9fdb70a47dcb02d56c5b9a8ea0",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_manifest.json"]).hexdigest())
 

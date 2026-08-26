@@ -187,6 +187,10 @@ void admission(CanonicalWriter& writer, const PassAdmission& input) {
   writer.size(input.identity.index); writer.token(input.identity.name); writer.token(input.identity.program_key);
   writer.size(static_cast<std::size_t>(input.status)); vector_values(writer, input.reasons, [](auto& out, const auto& item) { out.token(item.code); out.token(item.detail); });
   writer.token(input.canonical_factory); writer.token(input.source_sha256); writer.token(input.semantic_sha256);
+  writer.token(input.emitted_factory); writer.token(input.route_kind); writer.token(input.typed_abi_sha256);
+  writer.token(input.binding_abi_sha256);
+  writer.token(input.output_extent.width); writer.token(input.output_extent.height); writer.token(input.output_extent.format);
+  vector_values(writer, input.compile_defines, [](auto& out, const auto& item) { binding(out, item); });
   vector_values(writer, input.capabilities, [](auto& out, const auto& item) { out.token(item); });
   writer.token(input.dimensionality); writer.token(input.draw_mode);
   vector_values(writer, input.samplers, [](auto& out, const auto& item) { binding(out, item); });
@@ -224,6 +228,9 @@ void step(CanonicalWriter& writer, const CompiledStep& input) {
   }, input);
 }
 
+
+}  // namespace
+
 std::string sha256(std::string_view input) {
   constexpr std::array<std::uint32_t, 64> k = {
       0x428a2f98u,0x71374491u,0xb5c0fbcfu,0xe9b5dba5u,0x3956c25bu,0x59f111f1u,0x923f82a4u,0xab1c5ed5u,
@@ -252,8 +259,6 @@ std::string sha256(std::string_view input) {
   for (const auto word : h) for (int shift = 28; shift >= 0; shift -= 4) result += hex[(word >> shift) & 0xfu];
   return result;
 }
-
-}  // namespace
 
 std::string admission_sha256(const PassAdmission& input) {
   CanonicalWriter writer; admission(writer, input); return sha256(writer.bytes());

@@ -383,6 +383,15 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
                      "classicNoisedeck/noise:noise",
                      "filter/historicPalette:historicPalette", "filter/median:median",
                      "filter/osd:osd", "filter/palette:palette",
+                    # Removal-set insertion 2026-08-25: `filter/dither:dither` and
+                                        # `synth/julia:julia` landed AFTER this milestone and were absent from
+                                        # the projection, so it was measuring a slice two rows too large.
+                                        # Adding the landed keys is the correct repair -- the frozen counts
+                                        # below are unchanged, which is the proof this is the right one. The
+                                        # set now equals the next milestone's exclusions plus its own row.
+                                        # See task-7-typed-generator-census-repair.md.
+                    "filter/dither:dither",
+                    "synth/julia:julia",
                      "filter/spookyTicker:spookyTicker", "filter/texture:texture"}]
             prior_spec = copy.deepcopy(current_spec)
             prior_spec["programs"] = [
@@ -398,21 +407,27 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
                 generate_typed_slice.render_catalog_header(current_spec))
             prior["include/noisemaker/generated/catalog.hpp"] = (
                 generate_typed_slice.render_catalog_header(prior_spec))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projection
+        # above is corrected first (the frozen COUNTS match again), so this
+        # measures the same milestone under the new emitter. Derived from a
+        # measured regeneration of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "13911a23e95d6f3a6e18e74043bc8afa3dd3a852854dff884290edc78d881bce",
+                "471d70bd17b72e9e50548ef7f1d7939b50398098999824039770eb68f4875579",
             "src/typed_generated/typed_manifest.json":
-                "28426b635570f1fe6d87396ca72244187cc514568fc19d409a158c34663c1a6c",
+                "64f714e8e6841c09d650d72f1f421bc0fa4050d33854f487cca4ce10ed944b19",
             "include/noisemaker/generated/catalog.hpp":
-                "5b29f9b683ae0d365c9ede4e6011ebcc854904b6447c6bf6aca3a60acdc7cbcb",
+                "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "89464e137c638d0c8092a508bc7b6d20635cc940ee635e37d75d9b79f79aacfe",
+                "3fe47617ee297fae87814eb4cad8000eef99778cc7e2c807581f7d20646b1f6d",
             "src/typed_generated/typed_manifest.json":
-                "85e913831cc0ec35e63156d6c34f86a42f2d15991ddfae0db9e6bd6970b0a6b5",
+                "197d82d740d5861c9dfd8ec681e6ffaef0ae0cfea0864bb60a9edd8d89cf7590",
             "include/noisemaker/generated/catalog.hpp":
-                "82012db9635dc83725aad87bf240cfecc619dbc1f56f02be069a11a5be36f88d",
+                "e1e42ad869ed3095a2fe263d36cc5ca59d45939044d3fa8bc1beaa2f5fb10888",
         }
         for label, outputs, expected in (
                 ("glyph178", current, expected_current),

@@ -100,6 +100,19 @@ def historical_cross_lane(spec: dict[str, Any]) -> Iterator[dict[str, Any]]:
         output_hash = hashlib.sha256(cpp).hexdigest()
         for row in manifest["programs"]:
             row["output_sha256"] = output_hash
+            # The generated translation-unit digest is carried TWICE per row
+            # since the DSL/Task-7 route work: `output_sha256`, and again as
+            # `factory_route.source_sha256` for every route whose `source` IS
+            # the generated unit. Both must describe the stripped bytes or the
+            # projected manifest is internally inconsistent. Keyed on the
+            # route's own `source`, so a route naming a different file --
+            # `classicNoisedeck/bitEffects:bitEffects` is a `custom_adapter`
+            # whose source is `src/effects/bit_effects.cpp` -- keeps its own
+            # real digest, in this projection and in any that still holds it.
+            route = row.get("factory_route")
+            if (isinstance(route, dict)
+                    and route.get("source") == _CPP_ARTIFACT):
+                route["source_sha256"] = output_hash
         manifest["typed_slice_sha256"] = output_hash
         outputs[_MANIFEST_ARTIFACT] = (
             (json.dumps(manifest, indent=2, sort_keys=True) + "\n")

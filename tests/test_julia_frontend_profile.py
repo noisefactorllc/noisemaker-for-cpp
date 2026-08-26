@@ -212,9 +212,14 @@ class JuliaFrontendAdmissionTests(unittest.TestCase):
         rows = data["programs"]
         row = next(item for item in rows if item["program_key"] == profile.KEY)
         self.assertEqual({}, row["defines"])
+        # Neighbour window: 20 rows landed in the DSL phase and shifted julia
+        # from index 193 to 194, so the WINDOW INDEX moves 192->193. The
+        # expected triple is deliberately unchanged -- rewriting it to whatever
+        # the slice returns is how this assertion would stop asserting anything.
+        # Measured 2026-08-25; see task-7-typed-generator-census-repair.md.
         self.assertEqual(
             ["synth/gradient:gradient", profile.KEY, "synth/mandala:mandala"],
-            [item["program_key"] for item in rows[192:195]])
+            [item["program_key"] for item in rows[193:196]])
 
 
 if __name__ == "__main__":

@@ -2142,8 +2142,28 @@ def render_catalog_header(slice_spec: dict[str, Any]) -> bytes:
     lines.extend([
         "", "struct KernelFactory {", "  std::string_view key;",
         "  BoundKernel (*bind)(const glsl::Bindings&);", "};", "",
+        "struct FactoryRoute {", "  std::string_view key;",
+        "  std::string_view canonical_factory;",
+        "  std::string_view emitted_factory;",
+        "  std::string_view route_kind;",
+        "  std::string_view source_sha256;",
+        "  std::string_view typed_abi_sha256;",
+        "  // The compile-define contract and the values baked into the emitted",
+        "  // kernel. A `default-only` program cannot honour any other value.",
+        "  std::string_view define_contract;",
+        "  std::string_view defines;",
+        "  // Out-of-plan anchors for the ordered binding ABI, one per section.",
+        "  std::string_view sampler_abi_sha256;",
+        "  std::string_view uniform_abi_sha256;",
+        "  std::string_view output_abi_sha256;",
+        "  std::string_view output_extent_sha256;",
+        "  std::string_view compile_define_abi_sha256;",
+        "  BoundKernel (*bind)(const glsl::Bindings&);", "};", "",
         "[[nodiscard]] std::span<const KernelFactory> catalog() noexcept;",
         "[[nodiscard]] BoundKernel bind(std::string_view key, const glsl::Bindings& bindings);",
+        "[[nodiscard]] std::span<const FactoryRoute> canonical_routes() noexcept;",
+        "[[nodiscard]] const FactoryRoute* find_canonical(std::string_view key,",
+        "                                                     std::string_view canonical_factory) noexcept;",
         "", "}  // namespace noisemaker::generated", "",
     ])
     return "\n".join(lines).encode("utf-8")
@@ -2181,6 +2201,177 @@ def _typed_abi(typed) -> dict[str, Any]:
         "uses_texture": bool(typed.resources.uses_texture),
         "uses_derivatives": bool(typed.resources.uses_derivatives),
     }
+
+
+def _typed_abi_sha256(typed_abi: dict[str, Any]) -> str:
+    """Hash the canonical serialized typed ABI used by compatibility admission."""
+    # The typed manifest is serialized with sort_keys=True.  Hashing the same
+    # canonical bytes here keeps this descriptor identical to the compatibility
+    # generator's authenticated typed_abi_sha256 after a clean regeneration.
+    return _sha256((json.dumps(typed_abi, indent=2, sort_keys=True) + "\n").encode("utf-8"))
+
+
+def _define_token(value: Any) -> str:
+    """Canonical text for one baked compile-define value."""
+    if isinstance(value, bool):
+        return "1" if value else "0"
+    if isinstance(value, int):
+        return str(value)
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return repr(value)
+
+
+def _baked_defines(item: dict[str, Any]) -> str:
+    """The compile-define values baked into the emitted kernel, canonically ordered.
+
+    The executor compares a requested effect parameter against these; a
+    `default-only` program cannot honour any other value, so a mismatch has to
+    fail closed instead of rendering the baked program with wrong bytes.
+    """
+    defines = item.get("defines") or {}
+    return ";".join(f"{name}={_define_token(defines[name])}" for name in sorted(defines))
+
+
+def _binding_abi_sections(row: dict[str, Any] | None, defines: list[dict[str, str]]) -> dict[str, str]:
+    """Per-section digests of one canonical compatibility row's ordered ABI.
+
+    This is the out-of-plan anchor: the executor re-derives the same sections
+    from the value-owned admission and compares them here, so a reordered or
+    retyped ABI inside a plan cannot authenticate. The grammar is mirrored in
+    `src/effects/registry.cpp`, `src/graph/executor.cpp`, and
+    `tools/dsl/js_frontend_oracle.mjs`; `tests/test_binding_abi_digest.py`
+    binds all four together.
+    """
+    def token(value: Any) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, bool):
+            return "1" if value else "0"
+        if isinstance(value, (int, float)):
+            return str(int(value)) if float(value).is_integer() else repr(value)
+        return str(value)
+
+    def bindings(name: str) -> str:
+        out = [f"{name}\x1e"]
+        for entry in (row or {}).get(name, []) or []:
+            for field in ("name", "type", "source", "source_name", "resource", "cpp_type"):
+                out.append(f"{token(entry.get(field, ''))}\x1f")
+        out.append("\x1e")
+        return "".join(out)
+
+    extent = ((row or {}).get("output_abi") or {}).get("extent") or {}
+    outputs = ["outputs\x1e"]
+    for entry in (row or {}).get("outputs", []) or []:
+        outputs.append(f"{token(entry.get('slot', 0))}\x1f")
+        for field in ("physical_name", "logical_route", "cpp_type"):
+            outputs.append(f"{token(entry.get(field, ''))}\x1f")
+    outputs.append("\x1e")
+    define_bytes = ["defines\x1e"]
+    for entry in defines:
+        define_bytes.append(f"{entry['name']}\x1f{entry['cpp_type']}\x1f{entry['source']}\x1f")
+    define_bytes.append("\x1e")
+    sections = {
+        "sampler_abi_sha256": bindings("samplers"),
+        "uniform_abi_sha256": bindings("uniforms"),
+        "output_abi_sha256": "".join(outputs),
+        "output_extent_sha256": "extent\x1e"
+                                f"{token(extent.get('width'))}\x1f"
+                                f"{token(extent.get('height'))}\x1f"
+                                f"{token(extent.get('format'))}\x1f\x1e",
+        "compile_define_abi_sha256": "".join(define_bytes),
+    }
+    return {name: _sha256(value.encode("utf-8")) for name, value in sections.items()}
+
+
+def _custom_adapter_defines(row: dict[str, Any] | None) -> list[dict[str, str]]:
+    """The custom adapter's compile defines, exactly as the registry projects them."""
+    if row is None or (((row.get("factory") or {}).get("route") or {}).get("kind")) != "custom_adapter":
+        return []
+    uniform_names = {entry.get("name", "") for entry in row.get("uniforms", []) or []}
+    result = []
+    for entry in ((row["factory"]["route"].get("binding_abi") or {}).get("uniforms") or []):
+        name = entry.get("name", "")
+        if not name or name in uniform_names:
+            continue
+        result.append({"name": name, "cpp_type": entry.get("cpp_type", ""),
+                       "source": entry.get("source", "")})
+    return result
+
+
+def _factory_route_descriptor(item: dict[str, Any], *, emitted_factory: str | None = None,
+                              bind_factory: str | None = None,
+                              route_kind: str | None = None,
+                              source_sha256: str | None = None,
+                              compatibility_row: dict[str, Any] | None = None) -> dict[str, str]:
+    """Project one authenticated manifest row into executable route identity."""
+    route = item["factory_route"]
+    descriptor = {
+        "key": item["program_key"],
+        "canonical_factory": item["factory"],
+        "emitted_factory": emitted_factory or item["emitted_factory"],
+        "route_kind": route_kind or route["kind"],
+        # This is the pinned shader source identity consumed by PassAdmission,
+        # not the generated translation-unit hash stored in factory_route.
+        "source_sha256": source_sha256 or item["source_sha256"],
+        "typed_abi_sha256": _typed_abi_sha256(item["typed_abi"]),
+        "define_contract": item.get("define_contract", ""),
+        "defines": _baked_defines(item),
+        "bind_factory": bind_factory or item["factory"],
+    }
+    descriptor.update(_binding_abi_sections(compatibility_row,
+                                            _custom_adapter_defines(compatibility_row)))
+    return descriptor
+
+
+def _compatibility_canonical_rows(repository: pathlib.Path) -> dict[str, dict[str, Any]]:
+    """The authenticated canonical compatibility rows, keyed by program key.
+
+    Only read here; this generator never writes the compatibility document.
+    A repository without the projection (historical generator tests) yields an
+    empty map and the ABI anchors degrade to the empty-section digests, which
+    the executor still compares.
+    """
+    path = repository / "src/effects/generated/backend_compatibility.json"
+    if not path.is_file():
+        return {}
+    document = json.loads(path.read_text(encoding="utf-8"))
+    return {row["program_key"]: row for row in document.get("canonical_programs", [])}
+
+
+def _compatibility_source_hashes(
+        repository: pathlib.Path,
+        manifest_programs: list[dict[str, Any]]) -> dict[str, str]:
+    """Authenticate the source identity that PassAdmission carries at execute time.
+
+    The typed manifest hashes the pinned corpus source.  The compatibility
+    projection additionally records the pinned upstream source after its
+    source-lock transform; that ``new_raw_sha256`` is the identity copied into
+    a live admission.  Keep a narrow fallback for historical generator tests
+    that construct a repository without the compatibility projection.
+    """
+    path = repository / "src/effects/generated/backend_compatibility.json"
+    if not path.is_file():
+        return {item["program_key"]: item["source_sha256"]
+                for item in manifest_programs}
+    try:
+        document = json.loads(path.read_text(encoding="utf-8"))
+        rows = document["canonical_programs"]
+        if not isinstance(rows, list):
+            raise ValueError("canonical_programs is not an array")
+        by_key = {row["program_key"]: row for row in rows}
+        result = {}
+        for item in manifest_programs:
+            row = by_key.get(item["program_key"])
+            if not isinstance(row, dict) or row.get("old_raw_sha256") != item["source_sha256"]:
+                raise ValueError(f"source identity mismatch for {item['program_key']}")
+            value = row.get("new_raw_sha256")
+            if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+                raise ValueError(f"invalid authenticated source identity for {item['program_key']}")
+            result[item["program_key"]] = value
+        return result
+    except (OSError, KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        raise GeneratorError(f"invalid authenticated compatibility source projection: {error}") from error
 
 
 def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
@@ -8991,13 +9182,50 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                  for item in manifest_programs]
     factories.extend((("filter/invert:inv", "bind_filter_invert"), ("synth/solid:solid", "bind_synth_solid")))
     factories.sort()
+    admission_source_hashes = _compatibility_source_hashes(repository, manifest_programs)
+    compatibility_rows = _compatibility_canonical_rows(repository)
+    canonical_routes = sorted(
+        (_factory_route_descriptor(
+            item,
+            bind_factory=("noisemaker::effects::bind_bit_effects"
+                          if item["program_key"] == BIT_EFFECTS_KEY
+                          else item["factory"]),
+            source_sha256=admission_source_hashes[item["program_key"]],
+            compatibility_row=compatibility_rows.get(item["program_key"]))
+         for item in manifest_programs),
+        key=lambda item: item["key"])
+
+    def route_initializer(route: dict[str, str]) -> str:
+        return (f'    {{"{route["key"]}", "{route["canonical_factory"]}", '
+                f'"{route["emitted_factory"]}", "{route["route_kind"]}", '
+                f'"{route["source_sha256"]}", "{route["typed_abi_sha256"]}", '
+                f'"{route["define_contract"]}", "{route["defines"]}", '
+                f'"{route["sampler_abi_sha256"]}", "{route["uniform_abi_sha256"]}", '
+                f'"{route["output_abi_sha256"]}", "{route["output_extent_sha256"]}", '
+                f'"{route["compile_define_abi_sha256"]}", '
+                f'&{route["bind_factory"]}}},')
+
     cpp.extend(["", "namespace {", f"constexpr std::array<KernelFactory, {len(factories)}> kCatalog{{{{"])
     cpp.extend(f"    {{\"{key}\", &{factory}}}," for key, factory in factories)
+    # The 213 physical rows are retained above as KernelFactory entries, which
+    # is what the duplicate-key equivalence proof reads. A second physical
+    # FactoryRoute table would carry authenticated anchors that nothing
+    # dispatches through and nothing can drift-check, so only the canonical
+    # view is emitted.
+    cpp.extend(["}};", "",
+                f"constexpr std::array<FactoryRoute, {len(canonical_routes)}> kCanonicalRoutes{{{{"])
+    cpp.extend(route_initializer(route) for route in canonical_routes)
     cpp.extend(["}};", "}  // namespace", "",
                 "std::span<const KernelFactory> catalog() noexcept { return kCatalog; }", "",
                 "BoundKernel bind(std::string_view key, const glsl::Bindings& bindings) {",
                 "  for (const KernelFactory& factory : kCatalog) if (factory.key == key) return factory.bind(bindings);",
-                "  throw std::invalid_argument(\"unknown generated kernel key\");", "}", "", "}  // namespace noisemaker::generated", ""])
+                "  throw std::invalid_argument(\"unknown generated kernel key\");", "}", "",
+                "std::span<const FactoryRoute> canonical_routes() noexcept { return kCanonicalRoutes; }", "",
+                "const FactoryRoute* find_canonical(std::string_view key,",
+                "                                         std::string_view canonical_factory) noexcept {",
+                "  for (const FactoryRoute& route : kCanonicalRoutes)",
+                "    if (route.key == key && route.canonical_factory == canonical_factory) return &route;",
+                "  return nullptr;", "}", "", "}  // namespace noisemaker::generated", ""])
     cpp_bytes = "\n".join(cpp).encode("utf-8")
     output_hash = _sha256(cpp_bytes)
     for entry in manifest_programs:

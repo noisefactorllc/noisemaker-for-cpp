@@ -227,7 +227,30 @@ struct KernelFactory {
   BoundKernel (*bind)(const glsl::Bindings&);
 };
 
+struct FactoryRoute {
+  std::string_view key;
+  std::string_view canonical_factory;
+  std::string_view emitted_factory;
+  std::string_view route_kind;
+  std::string_view source_sha256;
+  std::string_view typed_abi_sha256;
+  // The compile-define contract and the values baked into the emitted
+  // kernel. A `default-only` program cannot honour any other value.
+  std::string_view define_contract;
+  std::string_view defines;
+  // Out-of-plan anchors for the ordered binding ABI, one per section.
+  std::string_view sampler_abi_sha256;
+  std::string_view uniform_abi_sha256;
+  std::string_view output_abi_sha256;
+  std::string_view output_extent_sha256;
+  std::string_view compile_define_abi_sha256;
+  BoundKernel (*bind)(const glsl::Bindings&);
+};
+
 [[nodiscard]] std::span<const KernelFactory> catalog() noexcept;
 [[nodiscard]] BoundKernel bind(std::string_view key, const glsl::Bindings& bindings);
+[[nodiscard]] std::span<const FactoryRoute> canonical_routes() noexcept;
+[[nodiscard]] const FactoryRoute* find_canonical(std::string_view key,
+                                                     std::string_view canonical_factory) noexcept;
 
 }  // namespace noisemaker::generated

@@ -7,6 +7,7 @@
 #include <array>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -78,6 +79,15 @@ struct CompatibilityOutput {
   std::string cpp_type;
 };
 
+// The authenticated `output_abi.extent` of a canonical program. The width and
+// height are the authority's own dimension expressions; the format is the
+// quantization the destination must use.
+struct OutputExtent {
+  std::string width;
+  std::string height;
+  std::string format;
+};
+
 using ScatterOutput = CompatibilityOutput;
 
 struct ScatterContract {
@@ -100,6 +110,22 @@ struct PassAdmission {
   std::string canonical_factory;
   std::string source_sha256;
   std::string semantic_sha256;
+  // Generated-route identity carried by value so execution can authenticate
+  // the selected typed factory without consulting a live registry. These are
+  // the authenticated compatibility facts `factory.emitted_factory`,
+  // `factory.route.kind`, and `typed_abi_sha256`.
+  std::string emitted_factory;
+  std::string route_kind;
+  std::string typed_abi_sha256;
+  // Digest of the ordered sampler ABI, ordered uniform ABI, output ABI,
+  // output extent, and compile defines below. Execution recomputes it from
+  // those owned lists and refuses to dispatch when they disagree, so the
+  // ordered ABI cannot be reordered or retyped behind the identity strings.
+  std::string binding_abi_sha256;
+  OutputExtent output_extent;
+  // Custom-adapter compile defines. These are never GLSL uniforms and never
+  // merge into the uniform ABI; only a `custom_adapter` route consumes them.
+  std::vector<CompatibilityBinding> compile_defines;
   std::vector<std::string> capabilities;
   std::string dimensionality;
   std::string draw_mode;
@@ -188,6 +214,7 @@ struct ExecutionPlan {
 // Canonical hashes are exposed for source-bound oracle projections and for
 // execution-side diagnostics; both operate only on value-owned plan data.
 namespace detail {
+[[nodiscard]] std::string sha256(std::string_view bytes);
 [[nodiscard]] std::string admission_sha256(const PassAdmission& admission);
 [[nodiscard]] std::string snapshot_sha256(const PlanEffectSnapshot& snapshot);
 [[nodiscard]] std::string plan_payload_sha256(const ExecutionPlan& plan);

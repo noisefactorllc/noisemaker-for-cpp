@@ -25,11 +25,15 @@ COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
 COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
 COMPILER_ORACLE_JS = ORACLE_JS
 COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
-COMPILER_EXPECTED_SHA256 = "4cf79daa1a05e06d3ee3e8f940b6d64a38b6922cc9d26e76309ab45eb93a81f5"
+COMPILER_EXPECTED_SHA256 = "6948d60ff0c9bed7ea1546d686a41c8dc8016ca53d1f36934307ddfca98cc4ad"
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
 
 
 def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.Path:
+    # The env var is NOISEMAKER_DSL_CPP_ORACLE, not the *_FRONTEND_ORACLE a
+    # reader would guess. When it is unset the fallback list below can pick up
+    # a stale binary from an earlier task's build tree, which silently weakens
+    # this lane -- always set it explicitly to the fresh external build.
     configured = os.environ.get("NOISEMAKER_DSL_CPP_ORACLE")
     if configured is not None and configured != "":
         candidate = pathlib.Path(configured)
@@ -73,7 +77,6 @@ def resolve_compiler_oracle() -> pathlib.Path:
     candidates = [
         pathlib.Path("/private/tmp/noisemaker-cpp-task5-build/noisemaker-dsl-compiler-oracle"),
         pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-compiler-oracle"),
-        pathlib.Path("/private/tmp/noisemaker-cpp-continuation.e033lt/build-task5c/noisemaker-dsl-compiler-oracle"),
     ]
     for candidate in candidates:
         if candidate.is_file() and os.access(candidate, os.X_OK):

@@ -264,7 +264,24 @@ class MoodscapePreparedFrontendTests(unittest.TestCase):
         self.assertEqual(profile.PROFILE,
                          manifest["programs"][0]["moodscape_frontend_profile"])
         self.assertEqual(1, cpp.count("// Typed IR program: " + KEY))
-        self.assertEqual(1, cpp.count('"' + KEY + '"'))
+        # Re-derived 2026-08-25: the DSL/Task-7 emitter writes a second table,
+        # `kCanonicalRoutes`, into the same translation unit as `kCatalog`, so
+        # every program key is now quoted TWICE and the bare `== 1` this
+        # replaces can no longer hold. Asserting the count PER SECTION rather
+        # than a bare `== 2` keeps the isolation proof and sharpens it: exactly
+        # one catalog row, exactly one canonical route, and the key quoted
+        # nowhere in the emitted program body. The three slices partition the
+        # whole file, so this also pins the total. See
+        # task-7-typed-generator-census-repair.md.
+        quoted = '"' + KEY + '"'
+        catalog_at = cpp.index("constexpr std::array<KernelFactory")
+        routes_at = cpp.index("constexpr std::array<FactoryRoute")
+        self.assertLess(catalog_at, routes_at)
+        self.assertEqual(
+            (0, 1, 1),
+            (cpp[:catalog_at].count(quoted),
+             cpp[catalog_at:routes_at].count(quoted),
+             cpp[routes_at:].count(quoted)))
         self.assertIn("typed_0::State", cpp)
         self.assertIn("bindings.get<std::int32_t>(\"seed\")", cpp)
 

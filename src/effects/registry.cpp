@@ -306,6 +306,91 @@ std::string string_field(const std::vector<std::pair<std::string, Value>>& field
   return value != nullptr && value->kind == ValueKind::string ? value->string : std::string{};
 }
 
+// The authenticated dimension expressions in `output_abi.extent` are either
+// a string or the literal number 1; both project to one canonical token.
+std::string extent_token(const Value* value) {
+  if (value == nullptr) return {};
+  if (value->kind == ValueKind::string) return value->string;
+  if (value->kind == ValueKind::number && std::isfinite(value->number) &&
+      std::trunc(value->number) == value->number) {
+    return std::to_string(static_cast<long long>(value->number));
+  }
+  return {};
+}
+
+// The binding-ABI digest, serialized from the authenticated compatibility row
+// rather than from the projection the executor sees. `graph::executor`
+// re-serializes the same grammar from the value-owned admission and refuses to
+// dispatch when the two disagree, so this is a deliberate second
+// implementation of one grammar, not a shared helper.
+std::string binding_abi_digest(const std::vector<std::pair<std::string, Value>>& raw,
+                               const std::vector<graph::CompatibilityBinding>& defines) {
+  std::string bytes;
+  const auto emit = [&bytes](std::string_view value) {
+    bytes.append(value);
+    bytes.push_back('\x1f');
+  };
+  const auto section = [&bytes](std::string_view name) {
+    bytes.append(name);
+    bytes.push_back('\x1e');
+  };
+  const auto binding_array_digest = [&](std::string_view name) {
+    section(name);
+    if (const auto* items = field(raw, name); items != nullptr && items->kind == ValueKind::array) {
+      for (const auto& item : items->array) {
+        if (item.kind != ValueKind::object) continue;
+        emit(string_field(item.object, "name"));
+        emit(string_field(item.object, "type"));
+        emit(string_field(item.object, "source"));
+        emit(string_field(item.object, "source_name"));
+        emit(string_field(item.object, "resource"));
+        emit(string_field(item.object, "cpp_type"));
+      }
+    }
+    bytes.push_back('\x1e');
+  };
+  binding_array_digest("samplers");
+  binding_array_digest("uniforms");
+  section("outputs");
+  if (const auto* outputs = field(raw, "outputs"); outputs != nullptr && outputs->kind == ValueKind::array) {
+    for (const auto& item : outputs->array) {
+      if (item.kind != ValueKind::object) continue;
+      const auto* slot = field(item.object, "slot");
+      emit(std::to_string(slot != nullptr && slot->kind == ValueKind::number
+                              ? static_cast<std::size_t>(slot->number)
+                              : std::size_t{0}));
+      emit(string_field(item.object, "physical_name"));
+      emit(string_field(item.object, "logical_route"));
+      emit(string_field(item.object, "cpp_type"));
+    }
+  }
+  bytes.push_back('\x1e');
+  section("extent");
+  if (const auto* output_abi = field(raw, "output_abi");
+      output_abi != nullptr && output_abi->kind == ValueKind::object) {
+    if (const auto* extent = field(output_abi->object, "extent");
+        extent != nullptr && extent->kind == ValueKind::object) {
+      emit(extent_token(field(extent->object, "width")));
+      emit(extent_token(field(extent->object, "height")));
+      emit(extent_token(field(extent->object, "format")));
+    } else {
+      emit({}); emit({}); emit({});
+    }
+  } else {
+    emit({}); emit({}); emit({});
+  }
+  bytes.push_back('\x1e');
+  section("defines");
+  for (const auto& define : defines) {
+    emit(define.name);
+    emit(define.cpp_type);
+    emit(define.source);
+  }
+  bytes.push_back('\x1e');
+  return graph::detail::sha256(bytes);
+}
+
+
 graph::CompatibilityBinding binding_value(const Value& value) {
   graph::CompatibilityBinding result;
   if (value.kind != ValueKind::object) return result;
@@ -583,9 +668,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "a024dc3a960cc44af454abc7aebce50456c194e6" ||
-      provenance_.generated_payload_sha256 != "4f744f6e62e9592554094f692ca113e9f95dd601ac573b7bc75f02a409b2232c" ||
+      provenance_.generated_payload_sha256 != "de70d48cd3912b618f794ebaaef7e4aa0e546cf195f36f441abf94e6b0975b77" ||
       provenance_.normalized_record_stream_sha256 != "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996" ||
-      provenance_.compatibility_sha256 != "c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86" ||
+      provenance_.compatibility_sha256 != "2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49" ||
       provenance_.cpu_behavioral_lock != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||
       provenance_.cpu_behavioral_file_count != 90 ||
       provenance_.cpu_revision != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||
@@ -647,6 +732,53 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     view.canonical_factory = row.canonical_factory.value_or("");
     view.source_sha256 = row.source_sha256.value_or("");
     view.semantic_sha256 = row.semantic_sha256.value_or("");
+    // Generated-route identity. `validate_compatible_raw` has already proven
+    // these fields exist and are well formed for every compatible row; an
+    // incompatible row keeps whatever the authenticated document carries and
+    // is rejected by execution on status alone.
+    view.typed_abi_sha256 = string_field(row.raw, "typed_abi_sha256");
+    if (const auto* factory = field(row.raw, "factory"); factory != nullptr && factory->kind == ValueKind::object) {
+      view.emitted_factory = string_field(factory->object, "emitted_factory");
+      if (const auto* route = field(factory->object, "route"); route != nullptr && route->kind == ValueKind::object) {
+        view.route_kind = string_field(route->object, "kind");
+        // A custom adapter's binding ABI carries the compile defines: the
+        // entries with no GLSL uniform of the same name. They stay in their
+        // own list and never join the uniform ABI.
+        if (view.route_kind == "custom_adapter") {
+          std::set<std::string> uniform_names;
+          if (const auto* uniforms = field(row.raw, "uniforms"); uniforms != nullptr && uniforms->kind == ValueKind::array)
+            for (const auto& item : uniforms->array)
+              if (item.kind == ValueKind::object) uniform_names.insert(string_field(item.object, "name"));
+          const auto* abi = field(route->object, "binding_abi");
+          const auto* entries = abi != nullptr && abi->kind == ValueKind::object
+                                    ? field(abi->object, "uniforms") : nullptr;
+          if (entries != nullptr && entries->kind == ValueKind::array) {
+            for (const auto& item : entries->array) {
+              if (item.kind != ValueKind::object) continue;
+              const std::string name = string_field(item.object, "name");
+              if (name.empty() || uniform_names.count(name) != 0) continue;
+              graph::CompatibilityBinding define;
+              define.name = name;
+              define.cpp_type = string_field(item.object, "cpp_type");
+              define.source = string_field(item.object, "source");
+              if (define.cpp_type.empty() || define.source != "custom_adapter")
+                throw std::invalid_argument("Malformed custom adapter compile define: " + row.program_key);
+              view.compile_defines.push_back(std::move(define));
+            }
+          }
+        }
+      }
+    }
+    if (const auto* output_abi = field(row.raw, "output_abi");
+        output_abi != nullptr && output_abi->kind == ValueKind::object) {
+      if (const auto* extent = field(output_abi->object, "extent");
+          extent != nullptr && extent->kind == ValueKind::object) {
+        view.output_extent.width = extent_token(field(extent->object, "width"));
+        view.output_extent.height = extent_token(field(extent->object, "height"));
+        view.output_extent.format = extent_token(field(extent->object, "format"));
+      }
+    }
+    view.binding_abi_sha256 = binding_abi_digest(row.raw, view.compile_defines);
     view.dimensionality = string_field(row.raw, "dimensionality");
     view.draw_mode = string_field(row.raw, "draw_mode");
     for (const auto& reason : row.reasons) view.reasons.push_back({reason.first, reason.second});
@@ -822,6 +954,12 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
     result.canonical_factory = view.canonical_factory;
     result.source_sha256 = view.source_sha256;
     result.semantic_sha256 = view.semantic_sha256;
+    result.emitted_factory = view.emitted_factory;
+    result.route_kind = view.route_kind;
+    result.typed_abi_sha256 = view.typed_abi_sha256;
+    result.binding_abi_sha256 = view.binding_abi_sha256;
+    result.output_extent = view.output_extent;
+    result.compile_defines = view.compile_defines;
     result.dimensionality = view.dimensionality;
     result.draw_mode = view.draw_mode;
     result.capabilities = view.capabilities;

@@ -188,7 +188,7 @@ else process.stdout.write(text)
 async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
   const FIXTURE_SHA256 = '2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6'
-  const EXPECTED_STREAM_SHA256 = '4cf79daa1a05e06d3ee3e8f940b6d64a38b6922cc9d26e76309ab45eb93a81f5'
+  const EXPECTED_STREAM_SHA256 = '6948d60ff0c9bed7ea1546d686a41c8dc8016ca53d1f36934307ddfca98cc4ad'
   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
   const root = path.resolve(cpuRoot)
   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
@@ -249,7 +249,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   if (snapshot) {
     const compatibilityBytes = fs.readFileSync(compatibilityPath)
     const compatibilityHash = crypto.createHash('sha256').update(compatibilityBytes).digest('hex')
-    if (compatibilityHash !== 'c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86') fail('compatibility manifest sha256 mismatch')
+    if (compatibilityHash !== '2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49') fail('compatibility manifest sha256 mismatch')
     compatibility = JSON.parse(compatibilityBytes)
   }
   function customDefinitions() {
@@ -412,7 +412,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
   function writeOutput(writer, value) { writer.size(value.slot); writer.token(value.physicalName); writer.token(value.logicalRoute); writer.token(value.cppType) }
   function writeAuthority(writer, value) { writer.token(value.name); writePairs(writer, value.inputs, (out, item) => out.token(item)); writePairs(writer, value.outputs, (out, item) => out.token(item)); writePairs(writer, value.uniforms, writePlanValue); writer.token(value.blendKind); writer.boolean(value.blend); writer.token(value.blendFactors[0]); writer.token(value.blendFactors[1]); writer.optional(value.repeat.present); if (value.repeat.present) writePlanValue(writer, value.repeat.value) }
   function writeAdmission(writer, value) {
-    writer.size(value.index); writer.token(value.name); writer.token(value.programKey); writer.size({ compatible: 0, scatter: 1, missing: 2, incompatible: 3 }[value.status]); writer.size(value.reasons.length); value.reasons.forEach((item) => { writer.token(item.code); writer.token(item.detail) }); writer.token(value.canonicalFactory); writer.token(value.sourceSha256); writer.token(value.semanticSha256); writer.size(value.capabilities.length); value.capabilities.forEach((item) => writer.token(item)); writer.token(value.dimensionality); writer.token(value.drawMode); [value.samplers, value.uniforms].forEach((items) => { writer.size(items.length); items.forEach((item) => writeBinding(writer, item)) }); writer.size(value.outputs.length); value.outputs.forEach((item) => writeOutput(writer, item)); writeAuthority(writer, value.authorityPass); writer.optional(value.scatter !== null); if (value.scatter !== null) { const item = value.scatter; ;[item.adapter, item.registry, item.drawMode, item.dimensionality, item.count, item.inputTexture, item.destinationMutation].forEach((entry) => writer.token(entry)); writer.boolean(item.blend); writer.size(item.uniforms.length); item.uniforms.forEach((entry) => writeBinding(writer, entry)); writer.size(item.outputs.length); item.outputs.forEach((entry) => writeOutput(writer, entry)) }
+    writer.size(value.index); writer.token(value.name); writer.token(value.programKey); writer.size({ compatible: 0, scatter: 1, missing: 2, incompatible: 3 }[value.status]); writer.size(value.reasons.length); value.reasons.forEach((item) => { writer.token(item.code); writer.token(item.detail) }); writer.token(value.canonicalFactory); writer.token(value.sourceSha256); writer.token(value.semanticSha256); writer.token(value.emittedFactory); writer.token(value.routeKind); writer.token(value.typedAbiSha256); writer.token(value.bindingAbiSha256); writer.token(value.outputExtent.width); writer.token(value.outputExtent.height); writer.token(value.outputExtent.format); writer.size(value.compileDefines.length); value.compileDefines.forEach((item) => writeBinding(writer, item)); writer.size(value.capabilities.length); value.capabilities.forEach((item) => writer.token(item)); writer.token(value.dimensionality); writer.token(value.drawMode); [value.samplers, value.uniforms].forEach((items) => { writer.size(items.length); items.forEach((item) => writeBinding(writer, item)) }); writer.size(value.outputs.length); value.outputs.forEach((item) => writeOutput(writer, item)); writeAuthority(writer, value.authorityPass); writer.optional(value.scatter !== null); if (value.scatter !== null) { const item = value.scatter; ;[item.adapter, item.registry, item.drawMode, item.dimensionality, item.count, item.inputTexture, item.destinationMutation].forEach((entry) => writer.token(entry)); writer.boolean(item.blend); writer.size(item.uniforms.length); item.uniforms.forEach((entry) => writeBinding(writer, entry)); writer.size(item.outputs.length); item.outputs.forEach((entry) => writeOutput(writer, entry)) }
   }
   function hashSnapshot(value) { const writer = new CanonicalWriter(); writeDefinition(writer, value.definition); writer.size(value.admissions.length); value.admissions.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
   function surfaceValue(value, location = null) { if (!value) return { kind: 'none', name: '', index: 0, loc: location }; if (typeof value === 'string') return { kind: 'named', name: value, index: Number(value.slice(1)), loc: location }; if (value.kind === 'input') return { kind: 'input', name: '', index: 0, loc: location }; return { kind: 'named', name: value.name, index: Number(String(value.name).slice(1)), loc: location } }
@@ -422,6 +422,56 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     writer.token('effect'); writer.token(value.effectId); writer.token(value.domain); writer.token(value.effectKind); writer.size(value.snapshotIndex); writer.size(value.params.length); value.params.forEach((item) => { writer.token(item.name); writePlanValue(writer, item.value) }); writer.size(value.explicitParams.length); value.explicitParams.forEach((item) => writer.token(item)); writer.size(value.passes.length); value.passes.forEach((item) => writeAdmission(writer, item)); const location = value.loc; writer.token(location.sourceName); writer.size(location.line); writer.size(location.column); writer.size(location.index)
   }
   function hashPlan(value, renderLocation) { const writer = new CanonicalWriter(); writer.size(value.search.length); value.search.forEach((item) => writer.token(item)); writer.size(value.effects.length); value.effects.forEach((item) => { writeDefinition(writer, item.definition); writer.size(item.admissions.length); item.admissions.forEach((admissionValue) => writeAdmission(writer, admissionValue)) }); writer.size(value.chains.length); value.chains.forEach((chain) => { writer.token(chain.loc.sourceName); writer.size(chain.loc.line); writer.size(chain.loc.column); writer.size(chain.loc.index); writer.size(chain.steps.length); chain.steps.forEach((item) => writeStep(writer, item)) }); writeSurface(writer, surfaceValue(value.renderSurface, renderLocation)); writer.boolean(value.requireExecutable); writer.boolean(value.executable); writer.size(value.availability.length); value.availability.forEach((item) => writeAdmission(writer, item)); return crypto.createHash('sha256').update(writer.output()).digest('hex') }
+
+  // Mirrors of the C++ admission projection: the authenticated output extent,
+  // the custom-adapter compile defines, and the ordered binding-ABI digest.
+  // The digest grammar is duplicated deliberately — the executor recomputes it
+  // from the value-owned admission and both sides must agree.
+  function extentToken(value) {
+    if (value === undefined || value === null) return ''
+    if (typeof value === 'number') return String(Math.trunc(value))
+    return String(value)
+  }
+  function outputExtent(row) {
+    const extent = row?.output_abi?.extent
+    return { width: extentToken(extent?.width), height: extentToken(extent?.height), format: extentToken(extent?.format) }
+  }
+  function compileDefines(row) {
+    if (row?.factory?.route?.kind !== 'custom_adapter') return []
+    const uniformNames = new Set((row?.uniforms ?? []).map((item) => item.name ?? ''))
+    return (row?.factory?.route?.binding_abi?.uniforms ?? [])
+      .filter((item) => (item.name ?? '') !== '' && !uniformNames.has(item.name))
+      .map((item) => ({ name: item.name ?? '', type: '', source: item.source ?? '', sourceName: '', resource: '', cppType: item.cpp_type ?? '' }))
+  }
+  function bindingAbiDigest(row, defines) {
+    let bytes = ''
+    const emit = (value) => { bytes += `${value}\x1f` }
+    const section = (name) => { bytes += `${name}\x1e` }
+    const bindingArray = (name) => {
+      section(name)
+      for (const item of row?.[name] ?? []) {
+        emit(item.name ?? ''); emit(item.type ?? ''); emit(item.source ?? '')
+        emit(item.source_name ?? ''); emit(item.resource ?? ''); emit(item.cpp_type ?? '')
+      }
+      bytes += '\x1e'
+    }
+    bindingArray('samplers')
+    bindingArray('uniforms')
+    section('outputs')
+    for (const item of row?.outputs ?? []) {
+      emit(String(item.slot ?? 0)); emit(item.physical_name ?? '')
+      emit(item.logical_route ?? ''); emit(item.cpp_type ?? '')
+    }
+    bytes += '\x1e'
+    const extent = outputExtent(row)
+    section('extent')
+    emit(extent.width); emit(extent.height); emit(extent.format)
+    bytes += '\x1e'
+    section('defines')
+    for (const define of defines) { emit(define.name); emit(define.cppType); emit(define.source) }
+    bytes += '\x1e'
+    return crypto.createHash('sha256').update(Buffer.from(bytes, 'binary')).digest('hex')
+  }
 
   function admission(definition, index) {
     const pass = definition.passes[index]
@@ -446,6 +496,8 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
     const result = {
       index, name: pass.name, programKey: key, status, reasons,
       canonicalFactory: row?.factory?.canonical ?? '', sourceSha256: row?.new_raw_sha256 ?? '', semanticSha256: row?.semantic?.old_typed_ir_sha256 ?? '',
+      emittedFactory: row?.factory?.emitted_factory ?? '', routeKind: row?.factory?.route?.kind ?? '', typedAbiSha256: row?.typed_abi_sha256 ?? '',
+      bindingAbiSha256: row ? bindingAbiDigest(row, compileDefines(row)) : '', outputExtent: outputExtent(row), compileDefines: compileDefines(row),
       capabilities: [...(row?.capabilities ?? [])], dimensionality: row?.dimensionality ?? '', drawMode: row?.draw_mode ?? '',
       samplers: bindings(row?.samplers), uniforms: bindings(row?.uniforms), outputs: outputs(row?.outputs), authorityPass
     }
@@ -511,7 +563,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath 
         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
       }
       const provenance = fixture.registryMode === 'catalog_records'
-        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: 'a024dc3a960cc44af454abc7aebce50456c194e6', generatedPayloadSha256: '4f744f6e62e9592554094f692ca113e9f95dd601ac573b7bc75f02a409b2232c', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: 'c338050922d3ab90c3d6928f62f085c474ecc423e891671e6ebde2621892fb86', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
+        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: 'a024dc3a960cc44af454abc7aebce50456c194e6', generatedPayloadSha256: 'de70d48cd3912b618f794ebaaef7e4aa0e546cf195f36f441abf94e6b0975b77', normalizedRecordStreamSha256: '6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996', authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: '2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49', counts: { definitions: 205, passes: 305, referenceProgramKeys: 295, backendPrograms: 212, compatiblePrograms: 210, incompatiblePrograms: 1, missingPasses: 93, scatterPasses: 1, executableDefinitions: 166, incompleteDefinitions: 39 } }
         : { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
       const plan = { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], effects: snapshots, chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance }
       const renderLocation = compiled.ast?.render?.loc ?? [...chains].reverse().flatMap((chain) => [...chain.steps].reverse()).find((step) => step.kind === 'write')?.surfaceLocation ?? null

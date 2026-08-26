@@ -136,6 +136,20 @@ class NeutralizationTests(unittest.TestCase):
 
         def forget_program_scope(self) -> None:
             original_post_init(self)
+            # `__post_init__` RETURNS EARLY for programs emitted through a
+            # dedicated frontend (`synth/julia:julia` today): those emitters
+            # never reach the general setup and never collect pooled-vector
+            # aliases at all, so their general state does not exist. Forcing a
+            # collection there would fabricate a code path the emitter does
+            # not run -- and it is what made this neutralization raise
+            # AttributeError instead of reaching the guard.
+            # Detected from the state itself, never from a list of which
+            # frontends return early: such a list goes stale at the next one.
+            # This fails closed -- if the general setup stopped running for
+            # every program, nothing would be neutralized and the
+            # `assertRaises` below would go red.
+            if not hasattr(self, "mutated_symbol_ids"):
+                return
             self.program_scope_symbol_ids = set()
             self.alias_declaration_symbol_ids = set()
             self.alias_source_symbol_ids = set()

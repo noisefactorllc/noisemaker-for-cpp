@@ -1,5 +1,251 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## STOP CHECKPOINT 2026-08-25 — READ THIS FIRST
+>
+> This section supersedes every older status block below it. The older blocks
+> are retained only as historical evidence. Their statements that this is not
+> a Git repository, their effect counts, and their next actions are stale.
+>
+> ### User boundary
+>
+> The user stopped this coding run and requested this handoff as the only final
+> change. The next agent is explicitly banned from unrelated tasks, unrelated
+> changes, unrequested changes, and touching unrelated code. Resume only the
+> requested `noisemaker-for-cpp` polymorphic DSL execution, reproducible corpus,
+> exact cross-platform parity, benchmark, review, and checkpoint work. Do not
+> do cleanup, redesign, publication, or adjacent repository work unless it is
+> strictly required by those outcomes and separately authorized where needed.
+>
+> ### Checkout and Git checkpoint
+>
+> Work only in:
+>
+> ```text
+> /private/tmp/noisemaker-cpp-continuation.e033lt/work/noisemaker-for-cpp
+> ```
+>
+> The repository now has a clean committed Task 6 base:
+>
+> ```text
+> 4062bc8462e0042571a57e5f805f8333a23e7258
+> feat: execute multipass DSL graphs on CPU
+> ```
+>
+> The two preceding commits are:
+>
+> ```text
+> 5505c08 fix: close DSL authority admission gaps
+> f8f42ce fix: authenticate DSL catalog construction
+> ```
+>
+> Do not create a branch, worktree, or PR. Do not push or publish at this
+> checkpoint. The user authorized a later checkpoint commit, then continued
+> DSL implementation; the Task 7 delta below is not ready to commit because an
+> independent executor review found blocking integration defects.
+>
+> ### What Task 6 proved before commit
+>
+> Task 6 added value-owned multipass graph execution for the authenticated
+> Solid -> Blur vertical slice and was independently reviewed clean before
+> commit. Retained acceptance evidence included:
+>
+> ```text
+> frontend oracles: 11/11
+> render oracles:   11/11
+> package consumer: 1/1
+> UBSan focused:    36/36
+> ASan new paths:   clean (known pre-existing glitch/shapeMixer baseline remains separate)
+> ```
+>
+> The formal whole-project `superpowers:requesting-code-review`, review repair,
+> public Noise Factor MIT repository creation, and push still belong only after
+> the entire port and pixel-level parity work are complete.
+>
+> ### Current uncommitted Task 7 delta
+>
+> `git status --short` immediately before this handoff showed only the following
+> Task 7 files (plus this handoff after it is saved):
+>
+> ```text
+> M  include/noisemaker/generated/catalog.hpp
+> M  include/noisemaker/graph/executor.hpp
+> M  src/graph/executor.cpp
+> M  src/typed_generated/typed_manifest.json
+> M  src/typed_generated/typed_slice.cpp
+> M  tools/glslcpp/generate_typed_slice.py
+> ?? tests/fixtures/dsl/executable-corpus.json
+> ?? tests/oracles/dsl_executable_corpus.sha256
+> ?? tests/test_benchmark_cpu_exact.py
+> ?? tests/test_benchmark_shader.py
+> ?? tests/test_dsl_executable_corpus.py
+> ?? tests/test_graph_features.cpp
+> ?? tests/test_task7_generated_routes.py
+> ?? tools/benchmark/
+> ?? tools/dsl/corpus_authority.mjs
+> ?? tools/dsl/generate_executable_corpus.mjs
+> ?? tools/dsl/js_shader_benchmark.mjs
+> ?? tools/dsl/shader_benchmark_lib.mjs
+> ```
+>
+> Preserve this delta. Do not discard or overwrite it. All build trees, raw
+> frames, browser profiles, installed benchmark dependencies, and benchmark
+> result JSON remain outside the repository under `/private/tmp`.
+>
+> ### Task 7 completed pieces
+>
+> 1. **Generated authenticated factory routing is implemented.** The generated
+>    catalog retains 213 physical route rows and exposes 211 canonical unique
+>    routes. It selects the authenticated duplicate factories
+>    `filter/invert:inv -> bind_filter_invert_inv` and
+>    `synth/solid:solid -> bind_synth_solid_solid`, keeps `bitEffects` as a
+>    `custom_adapter`, and keeps `filter/text:text` explicitly incompatible.
+>    Every route carries program key, canonical/emitted factory, route kind,
+>    source SHA-256, typed ABI SHA-256, and binder pointer. Focused route tests
+>    were 5/5 and the generator `--check` was green in the implementing lane.
+>
+> 2. **The authenticated reproducible corpus is implemented.** The generated
+>    snapshot contains all 205 effect definitions: 166 admitted and 39
+>    explicitly excluded. It authenticates the frozen JS CPU authority and
+>    upstream shader revision, generates a canonical default program per
+>    definition, includes a dedicated raw top-down RGBA8 JS CPU runner, and
+>    uses a custom zero-tolerance comparer that reports dimensions, lengths,
+>    first `(x,y,channel)`, mismatch count, maximum delta, and both hashes.
+>    The current corpus oracle is:
+>
+>    ```text
+>    326792648a25319a2a83300e0915773b3f74cfb16bc3952bdc8a8a1d2dfc0c07
+>    ```
+>
+>    It is internally bound to the settled typed-manifest file hash:
+>
+>    ```text
+>    51e62f207d5b0ce3f7fdc735c62cc874af81058339a672ccff05833af893a456
+>    ```
+>
+>    The focused corpus/CPU lane was 7/7, Node syntax checks were green, and
+>    two fresh JS CPU Blur runs produced identical raw bytes and metadata.
+>
+> 3. **A narrow real upstream shader benchmark smoke exists.** The driver pins
+>    upstream shader commit `117a236679d1db3ab8f0e278230ece277b57564c`, tree
+>    `a7a997dfdc807697adba008729dcdfdfcfbaf53c`, Playwright 1.62.1, and the
+>    authenticated CPU source lock. It archives the pinned shader revision to
+>    external scratch, uses the real upstream `CanvasRenderer`, performs a 2x2
+>    orientation probe, reads the physical final texture as raw top-down
+>    RGBA8, uses separate correctness and timing renderers, and fences WebGL2
+>    and WebGPU samples. One existing 17x11 Solid -> Blur program was exact on
+>    both backends against the JS CPU expected bytes:
+>
+>    ```text
+>    expected/actual RGBA8 SHA-256:
+>    5462562a69fbf2751af9aecf9b8e423104c866b5465e8a4402ae00214eac928a
+>    mismatch count: 0
+>    maximum delta:  0
+>    WebGL2 result:  /private/tmp/noisemaker-task7-webgl2-blur-result.json
+>    WebGPU result:  /private/tmp/noisemaker-task7-webgpu-blur-result.json
+>    ```
+>
+>    This proves only the narrow real browser smoke. It is not evidence that
+>    the full corpus or the C++ executor is at parity. The independent shader
+>    benchmark review was interrupted by the user's stop and must be rerun.
+>
+> A fresh combined focused Python run immediately before the stop was:
+>
+> ```text
+> PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest \
+>   tests.test_task7_generated_routes \
+>   tests.test_dsl_executable_corpus \
+>   tests.test_benchmark_cpu_exact \
+>   tests.test_benchmark_shader -v
+> 17 tests, OK
+> ```
+>
+> Do not infer that the subsequently started typed-generator check completed;
+> the turn was interrupted before its result was captured.
+>
+> ### Blocking executor review — Task 7 is not ready
+>
+> Read these reports completely before editing:
+>
+> ```text
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-executor-codegen-preflight.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-generated-routes.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-executor-codegen-report.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-executor-review.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-corpus-cpu-lane-report.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-corpus-benchmark-design.md
+> .superpowers/sdd/2026-08-24-polymorphic-dsl-and-benchmarks/task-7-platform-inventory.md
+> ```
+>
+> The independent executor review disposition is **not ready**. The current
+> `include/noisemaker/graph/executor.hpp`, `src/graph/executor.cpp`, and
+> `tests/test_graph_features.cpp` are an incomplete intermediate delta. Exact
+> blockers:
+>
+> - `GraphExecutor::execute` still rejects every route outside the three Task 6
+>   Solid/Blur factories.
+> - The generated canonical route table is not connected to execution.
+> - Multi-sampler routes are neither completely preflighted nor materialized.
+> - Pass-derived uniforms fail because execution supplies no resolver.
+> - Generated source/typed-ABI route metadata is not authenticated at dispatch.
+> - `execute()` copies caller-owned `ExecutionInputs` before complete preflight.
+> - Output physical ABI authentication is insufficient.
+> - The new tests check helper shape but do not prove actual non-Task6 dispatch
+>   or the no-copy/no-allocation-before-failure safety property.
+>
+> Do not accept, benchmark, or commit Task 7 until these are fixed and reviewed.
+>
+> ### Exact next implementation sequence
+>
+> 1. Connect `generated::canonical_routes()` / exact
+>    `generated::find_canonical(program_key, canonical_factory)` to
+>    `GraphExecutor`. Never dispatch by program key alone; the two duplicate
+>    legacy rows make that observably wrong.
+> 2. Authenticate the selected route against the value-owned `PassAdmission`,
+>    including canonical factory, route kind, source hash, ordered sampler and
+>    uniform ABI, output ABI, and typed ABI identity. If `PassAdmission` lacks
+>    a load-bearing typed ABI field, extend the value-owned compiler snapshot
+>    narrowly and update its hashes/oracles rather than weakening this check.
+> 3. Perform a complete read-only plan/input/route/ABI/resource preflight before
+>    copying a seed or external surface or allocating a destination.
+> 4. Materialize every ordered sampler route, including named intermediates,
+>    secondary/external surfaces, and declared filtering. Never alias every
+>    sampler to `inputTex`.
+> 5. Implement explicit, source-name-based pass-derived resolution for all 20
+>    live bindings listed in the executor preflight report. Fail closed for an
+>    unknown source. Preserve exact typed compile defines, aspect ratio,
+>    canonical defaults, and the owned remap block.
+> 6. Add native actual-dispatch tests for at least a non-Task6 duplicate
+>    canonical route, a two-sampler route, a pass-derived route, incompatible
+>    text rejection, custom-adapter routing, and preflight-before-copy safety.
+>    Add `tests/test_graph_features.cpp` to the native CMake test target only
+>    after those tests exercise the real executor.
+> 7. Build the C++ raw RGBA8 benchmark driver. It must consume the same corpus
+>    source bytes/options, compile once for render-only timing, execute the
+>    value-owned plan, emit normalized plan metadata, and write raw top-down
+>    RGBA8 outside the repository. Do not use PNG, screenshots, epsilon, or
+>    normalized randomness.
+> 8. Run two independent full admitted-corpus passes through JS CPU and C++ CPU.
+>    Require identical normalized program relations and every RGBA8 byte. Keep
+>    only bounded diagnostics; do not check raw frames into Git.
+> 9. Rerun the independent shader-driver review, address valid findings, then
+>    expand WebGL2/WebGPU comparison only over the honestly supported
+>    intersection. Record exact mismatches as failures; never relabel them.
+> 10. Run fresh strict Release, ASan, and UBSan native builds plus the existing
+>     frontend/generator/oracle/package matrix. Use external build directories,
+>     remove only those exact disposable directories after recording evidence,
+>     request focused independent review, fix all valid findings, and only then
+>     create the Task 7 checkpoint commit.
+>
+> ### Non-negotiable parity contract
+>
+> `noisemaker-for-cpu` is the behavioral reference implementation for this C++
+> CPU port. The upstream `noisemaker` shader platform is the second comparison
+> platform for the same reproducible DSL bytes. Success means strict top-down
+> RGBA8 equality at every pixel and channel, with dimensions and length checked
+> first, mismatch count zero, maximum delta zero, and equal SHA-256 values.
+> Matching source text, compilation, generated C++, plan shape, or a screenshot
+> is not a substitute for rendered-byte parity.
+
 > ## RESTART CHECKPOINT 2026-08-23 13:32 MDT — READ THIS FIRST
 >
 > This section supersedes every older status block below it.  The previous

@@ -303,6 +303,14 @@ TEST(dsl_compiler_snapshot_authenticates_every_nested_definition_and_admission_f
   rejects([](auto& plan) { plan.effects[0].admissions[0].canonical_factory = "changed"; });
   rejects([](auto& plan) { plan.effects[0].admissions[0].source_sha256 = "changed"; });
   rejects([](auto& plan) { plan.effects[0].admissions[0].semantic_sha256 = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].emitted_factory = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].route_kind = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].typed_abi_sha256 = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].binding_abi_sha256 = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].output_extent.width = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].output_extent.height = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].output_extent.format = "changed"; });
+  rejects([](auto& plan) { plan.effects[0].admissions[0].compile_defines.push_back({"D", {}, "custom_adapter", {}, {}, "std::int32_t"}); });
   rejects([](auto& plan) { plan.effects[0].admissions[0].capabilities.push_back("changed"); });
   rejects([](auto& plan) { plan.effects[0].admissions[0].dimensionality = "changed"; });
   rejects([](auto& plan) { plan.effects[0].admissions[0].draw_mode = "changed"; });
@@ -567,7 +575,22 @@ std::string oracle_admission(const noisemaker::graph::PassAdmission& admission) 
   }
   result += "],\"canonicalFactory\":" + oracle_escape(admission.canonical_factory) +
     ",\"sourceSha256\":" + oracle_escape(admission.source_sha256) +
-    ",\"semanticSha256\":" + oracle_escape(admission.semantic_sha256) + ",\"capabilities\":[";
+    ",\"semanticSha256\":" + oracle_escape(admission.semantic_sha256) +
+    ",\"emittedFactory\":" + oracle_escape(admission.emitted_factory) +
+    ",\"routeKind\":" + oracle_escape(admission.route_kind) +
+    ",\"typedAbiSha256\":" + oracle_escape(admission.typed_abi_sha256) +
+    ",\"bindingAbiSha256\":" + oracle_escape(admission.binding_abi_sha256) +
+    ",\"outputExtent\":{\"width\":" + oracle_escape(admission.output_extent.width) +
+    ",\"height\":" + oracle_escape(admission.output_extent.height) +
+    ",\"format\":" + oracle_escape(admission.output_extent.format) + "},\"compileDefines\":[";
+  for (std::size_t index = 0; index < admission.compile_defines.size(); ++index) {
+    if (index) result += ',';
+    const auto& define = admission.compile_defines[index];
+    result += "{\"name\":" + oracle_escape(define.name) + ",\"type\":" + oracle_escape(define.type) +
+      ",\"source\":" + oracle_escape(define.source) + ",\"sourceName\":" + oracle_escape(define.source_name) +
+      ",\"resource\":" + oracle_escape(define.resource) + ",\"cppType\":" + oracle_escape(define.cpp_type) + "}";
+  }
+  result += "],\"capabilities\":[";
   for (std::size_t index = 0; index < admission.capabilities.size(); ++index) { if (index) result += ','; result += oracle_escape(admission.capabilities[index]); }
   result += "],\"dimensionality\":" + oracle_escape(admission.dimensionality) + ",\"drawMode\":" + oracle_escape(admission.draw_mode) + ",\"samplers\":[";
   const auto oracle_binding = [](const noisemaker::graph::CompatibilityBinding& binding) {

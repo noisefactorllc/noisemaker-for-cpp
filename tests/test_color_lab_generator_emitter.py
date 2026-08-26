@@ -24,7 +24,10 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
     def test_row_204_is_exact_source_bound_and_sorted(self):
         spec = generate_typed_slice.load_slice(ROOT)
         rows = spec["programs"]
-        self.assertEqual(209, len(rows))
+        # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
+                # slice at 211 typed rows. Measured, never carried from a report; see
+                # task-7-typed-generator-census-repair.md.
+        self.assertEqual(211, len(rows))
         self.assertEqual(
             {
                 "color_lab_frontend_profile": profile.PROFILE,
@@ -36,7 +39,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
         keys = [row["program_key"] for row in rows]
         self.assertEqual(keys, sorted(keys))
         self.assertEqual(
-            "bb8da3153926d085430f4da2952396070564e8ee57b58ff42cf84609c1b6b535",
+            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest(),
         )
         self.assertEqual((KEY,), profile.KEYS)

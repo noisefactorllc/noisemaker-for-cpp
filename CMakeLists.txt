@@ -80,6 +80,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_dsl_compiler.cpp
   tests/test_graph_resources.cpp
   tests/test_graph_blur.cpp
+  tests/test_graph_features.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE
@@ -89,6 +90,12 @@ target_compile_options(noisemaker-cpu-tests PRIVATE
 add_executable(noisemaker-cpu-example-perlin examples/perlin.cpp)
 target_link_libraries(noisemaker-cpu-example-perlin PRIVATE noisemaker-cpu)
 target_compile_options(noisemaker-cpu-example-perlin PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+add_executable(noisemaker-dsl-cpu-case tools/benchmark/run_cpp_case.cpp)
+target_link_libraries(noisemaker-dsl-cpu-case PRIVATE noisemaker-cpu)
+target_compile_options(noisemaker-dsl-cpu-case PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 

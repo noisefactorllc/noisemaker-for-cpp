@@ -1080,31 +1080,37 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             "edge179": "ec7888e36ad1828a185b80c77ea3915b1cd3fb77a79c6587cf75a94f6490e76f",
             "glyph178": "9c9a47f7ca42097888d9dc4e6869297fa713b9bba47842bf03736ada0ea64347",
         }
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projection
+        # is unchanged (its frozen COUNTS still match), so this measures the same
+        # milestone under the new emitter. Derived from a measured regeneration of
+        # this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         expected_artifact_hashes = {
             "live182": {
-                "src/typed_generated/typed_slice.cpp": "0d21379fa2caaf52537455e063e4c78dd93d992e2114eeee842ed96a35fd0e45",
-                "src/typed_generated/typed_manifest.json": "9b3ac6622c46ae0d56640d4e6398bdefc5619c54225732edd69138fcbb0d6e63",
-                "include/noisemaker/generated/catalog.hpp": "f3c84ac44e679808c0142db4dcc4ea11ea9b66e321cea1e0ab026c4573bea13e",
+                "src/typed_generated/typed_slice.cpp": "ba2aecdbb37da8db70899f35fa8c0edfa86f74cdf7b0e1a135fd50691d50c7ed",
+                "src/typed_generated/typed_manifest.json": "f24139ab830e077f3455a993a13218175dda84f1481f45a07984678d65873d3b",
+                "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
             },
             "emboss181": {
-                "src/typed_generated/typed_slice.cpp": "b758ffea548a5d0810dabe124605b8818dd681a5fbe2e0065427da9ab8b2c5d6",
-                "src/typed_generated/typed_manifest.json": "26456a5d6de8c1b776dd5d9118885c890f9fa2ed52982117831b3ebe0dc21730",
-                "include/noisemaker/generated/catalog.hpp": "864e722cc65ff51c80224ca4557ab20fca7ef33cd14583d7a4fc6fd99c4e908c",
+                "src/typed_generated/typed_slice.cpp": "8c6da7063b638c0f54c9539cdd36c385758ad4b36b8a50268905f19376fb89f5",
+                "src/typed_generated/typed_manifest.json": "fc1295b90eda86aecdfb7d2eee53663a287dd4ace6a2eb366bc21245383ef662",
+                "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
             },
             "glitch180": {
-                "src/typed_generated/typed_slice.cpp": "fcfdb407f7b29e579ae7a49b248769b0ca5bd7b6211579e198ddbeee56a1f462",
-                "src/typed_generated/typed_manifest.json": "2a7dcfa5ac9db8a10dbd09cb21855c88a1620fba35062eeffc2c23aef89addf8",
-                "include/noisemaker/generated/catalog.hpp": "105647d33091bb328be1ac98e21252c5a349de4e12b955f79f256d53a2b58716",
+                "src/typed_generated/typed_slice.cpp": "6238402e2e5e299564dd2b4e79c8c260ccfbc9127618bfdf5bbe8461e7338c5f",
+                "src/typed_generated/typed_manifest.json": "6b53b1e43ee7db246e394c988a512e343101f76ab3531af8bbb8d1f1ce162625",
+                "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "8c11cba4eceaada760977b597465bf714ffa0b72a7c20ba848de774652863431",
-                "src/typed_generated/typed_manifest.json": "5c5bc85b96b8f1ccc94377b8705fa5082d3d1eb7d0cf2044f5e6b2e9d6ce4662",
-                "include/noisemaker/generated/catalog.hpp": "14af2c62f92c6f025fdfd23f0e3eec95ca25ef7618314051d832d087d0a3fb7d",
+                "src/typed_generated/typed_slice.cpp": "c73bd4c3a51fc6df2be880f30a00c543e7c71ca1d3cad07ca4e2b2d1d6dee83b",
+                "src/typed_generated/typed_manifest.json": "cc4a45261594f8760eae63f554fbdf11f0a85b97f0a8dd3d90ce38b7d5b0912e",
+                "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "13911a23e95d6f3a6e18e74043bc8afa3dd3a852854dff884290edc78d881bce",
-                "src/typed_generated/typed_manifest.json": "28426b635570f1fe6d87396ca72244187cc514568fc19d409a158c34663c1a6c",
-                "include/noisemaker/generated/catalog.hpp": "5b29f9b683ae0d365c9ede4e6011ebcc854904b6447c6bf6aca3a60acdc7cbcb",
+                "src/typed_generated/typed_slice.cpp": "471d70bd17b72e9e50548ef7f1d7939b50398098999824039770eb68f4875579",
+                "src/typed_generated/typed_manifest.json": "64f714e8e6841c09d650d72f1f421bc0fa4050d33854f487cca4ce10ed944b19",
+                "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }
         for label, spec, rendered in states:
@@ -1152,12 +1158,31 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             "src/typed_generated/typed_manifest.json"])
                      for rendered in rendered_states]
         def semantic_rows(manifest):
-            return {
-                item["program_key"]: {
-                    key: value for key, value in item.items()
-                    if key != "output_sha256"}
-                for item in manifest["programs"]
-            }
+            # The whole-translation-unit digest is carried TWICE per row since
+            # the DSL/Task-7 route work: `output_sha256`, and again as
+            # `factory_route.source_sha256` for any route whose `source` IS the
+            # generated unit. It is a property of the slice, not of the row, so
+            # it differs between any two projections and says nothing about
+            # whether a row was perturbed. This drops the second copy on the
+            # same grounds the first was always dropped. Keyed on the route's
+            # own `source`, so a `custom_adapter` route naming a different file
+            # keeps its real digest and stays compared, as does every other
+            # field of `factory_route`. See
+            # task-7-typed-generator-census-repair.md.
+            def semantic_row(item):
+                row = {key: value for key, value in item.items()
+                       if key != "output_sha256"}
+                route = row.get("factory_route")
+                if (isinstance(route, dict)
+                        and route.get("source")
+                        == "src/typed_generated/typed_slice.cpp"):
+                    row["factory_route"] = {
+                        key: value for key, value in route.items()
+                        if key != "source_sha256"}
+                return row
+
+            return {item["program_key"]: semantic_row(item)
+                    for item in manifest["programs"]}
 
         for newer, older, delta in zip(
                 manifests, manifests[1:], expected_deltas):

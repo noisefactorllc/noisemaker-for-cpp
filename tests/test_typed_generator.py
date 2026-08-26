@@ -23,6 +23,46 @@ from tests.historical_cross_lane import historical_cross_lane
 from historical_compare import compare_artifact_pins, format_mismatches
 
 
+_GENERATED_TRANSLATION_UNIT = "src/typed_generated/typed_slice.cpp"
+
+
+def _row_without_translation_unit_hash(row):
+    """One manifest row with the whole-translation-unit hash removed.
+
+    The emitter writes that hash TWICE per row. `output_sha256` has always
+    carried it; since the DSL/Task-7 route work `factory_route.source_sha256`
+    carries it again for every route whose `source` IS the generated
+    translation unit. That digest is a property of the whole slice, not of the
+    program, so it necessarily differs between any two projections and says
+    nothing about whether a row was perturbed. The row-isolation proofs have
+    always excluded the first copy; this drops the second copy so they keep
+    measuring the row.
+
+    The discriminator is the route's own `source` field, not equality of the
+    two digests. A route that names a DIFFERENT file keeps its digest and
+    stays compared -- `classicNoisedeck/bitEffects:bitEffects` is a
+    `custom_adapter` whose `factory_route.source` is
+    `src/effects/bit_effects.cpp` and whose digest is a real, stable identity.
+    Equality was tried first and is NOT usable here: under
+    `historical_cross_lane` the two carriers legitimately disagree, because
+    that helper recomputes `output_sha256` after stripping the bitEffects
+    include but does not know about the second carrier. See the round-2
+    section of task-7-typed-generator-census-repair.md.
+
+    Every other field of `factory_route` -- factory, kind, source -- stays
+    compared, so this is strictly narrower than excluding the block.
+    """
+    trimmed = {name: value for name, value in row.items()
+               if name != "output_sha256"}
+    route = trimmed.get("factory_route")
+    if (isinstance(route, dict)
+            and route.get("source") == _GENERATED_TRANSLATION_UNIT):
+        trimmed["factory_route"] = {
+            name: value for name, value in route.items()
+            if name != "source_sha256"}
+    return trimmed
+
+
 class LightLeakPhase2Tests(unittest.TestCase):
     def test_lands_sorted_row_and_exact_out_abi(self) -> None:
         import hashlib
@@ -1800,13 +1840,23 @@ and item["program_key"] != "filter/wobble:wobble"
             current_spec)
         prior[header_path] = generate_typed_slice.render_catalog_header(prior_spec)
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_prior_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "34280ad7275c8598f23655eaae5981991f1722f8f281888b1f6c8a5b5e9f54b5",
+                "55e0f0e334d3f8e5e5c4171b78e3140f4bcfeb9f716543ed2734b05401e0b715",
             "src/typed_generated/typed_manifest.json":
-                "4721425d3b7dbd30d1d7a73540052e7ad2c9e2120649059be823a298ab7018e1",
+                "09db72a94e1d0c7762ecdb2e09746fab12105184655070f0c8d442aa35fbeae5",
             "include/noisemaker/generated/catalog.hpp":
-                "c7121f7cd2c0cdd5168b8832354435c9cf0b618392cdf64b7ba33fe6cabeb1dd",
+                "5ca9c58b712b493ec5ef548bf7fc75deec99dbe9546b22bdb0b9d0386885f52a",
         }
         for path, expected in expected_prior_hashes.items():
             self.assertEqual(expected, hashlib.sha256(prior[path]).hexdigest(), path)
@@ -1857,10 +1907,8 @@ and item["program_key"] != "filter/wobble:wobble"
         current_rows = {item["program_key"]: item
                         for item in current_manifest["programs"]}
         for key, row in prior_rows.items():
-            before = {name: value for name, value in row.items()
-                      if name != "output_sha256"}
-            after = {name: value for name, value in current_rows[key].items()
-                     if name != "output_sha256"}
+            before = _row_without_translation_unit_hash(row)
+            after = _row_without_translation_unit_hash(current_rows[key])
             self.assertEqual(before, after, key)
         gather_row = current_rows[GATHER_SORTED_KEY]
         self.assertNotIn("gather_sorted_round_profile", gather_row)
@@ -2836,9 +2884,15 @@ and item["program_key"] != "filter/wobble:wobble"
                                   return_value=prior_spec):
             prior_cpp = generate_typed_slice.generate_outputs(REPOSITORY)[
                 "src/typed_generated/typed_slice.cpp"].decode()
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            (932912,
-             "e5036a32db24533b49b74d44e98d90c9a0aca8188b0037648e6b71eece19263c"),
+            (1007593,
+             "3a8cd1ca9688c49f5889c48d8b110bfaca86f651fa8d79ae588bd7e078609492"),
             (len(prior_cpp.encode()),
              hashlib.sha256(prior_cpp.encode()).hexdigest()))
 
@@ -8023,21 +8077,31 @@ and item["program_key"] != "filter/wobble:wobble"
         prior["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(prior_spec))
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "7d71434b22578b8a817a595d145e530cc07434a7f12a4ca7cff1b740165ee333",
+                "0cee87d4c9d6e2a92028f1b99a48fdc1ef18e486f5a4d937408fd1b1ff91e87e",
             "src/typed_generated/typed_manifest.json":
-                "fb6f5a3d9fddd9ae751762ace3dafa0bb307b0468992a61a96c783f4d609100b",
+                "cbabde843ab58175a613caa99d29aafc7f4fa557fd11a920b44ff305c9d22c65",
             "include/noisemaker/generated/catalog.hpp":
-                "5bb3822f8827a39cfde2dfd7e3cb163aca942d60d51f6c1f7f276156488e0be6",
+                "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "dce58b436415fb9de274655919e3bcd936fb08013129c8bbdf06089be6d5ebbb",
+                "4b14d12113d2f66a0ca720efe506b8c14fa7c22274b1fec2c6bf47504c9cbf32",
             "src/typed_generated/typed_manifest.json":
-                "e15f9b4be3b922a84dc3c3a1a787995d252a60537a9d09fba78dd3ba5ddbe223",
+                "2240b96f8839908ca19dfb6fa0dec1c626891f93fc664bd88a89ac3e1bc39482",
             "include/noisemaker/generated/catalog.hpp":
-                "c6ca651547b81ae60bfb430999357a78217856c6fa6cee7aa4d81503739de3fa",
+                "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
         for label, outputs, expected in (
                 ("stats174", current, expected_current),
@@ -8147,21 +8211,31 @@ and item["program_key"] != "filter/wobble:wobble"
         prior["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(prior_spec))
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "de6b55891f7605ebaa6803c8792537b3c4ac814796363e8919031fdbe86687b6",
+                "2dc2580ffa4c40372eb41fa52a51ef577240bf998f1602cf69e7231274ace985",
             "src/typed_generated/typed_manifest.json":
-                "789fda43795f7b22bab74b5de2f66d1ae25ce50dc6d45524c1d60cf60c37d633",
+                "c6f867929a625cf0a23c2a25a9ac5c9fc6f5ad3a38fac98765e1a1325d7426ea",
             "include/noisemaker/generated/catalog.hpp":
-                "89e2a1875fa64ec68be3767e8664c4f7bb0eabe2f5eb81ef6fee0ba78b7adda9",
+                "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "7d71434b22578b8a817a595d145e530cc07434a7f12a4ca7cff1b740165ee333",
+                "0cee87d4c9d6e2a92028f1b99a48fdc1ef18e486f5a4d937408fd1b1ff91e87e",
             "src/typed_generated/typed_manifest.json":
-                "fb6f5a3d9fddd9ae751762ace3dafa0bb307b0468992a61a96c783f4d609100b",
+                "cbabde843ab58175a613caa99d29aafc7f4fa557fd11a920b44ff305c9d22c65",
             "include/noisemaker/generated/catalog.hpp":
-                "5bb3822f8827a39cfde2dfd7e3cb163aca942d60d51f6c1f7f276156488e0be6",
+                "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         for label, outputs, expected in (
                 ("grain175", current, expected_current),
@@ -8272,21 +8346,31 @@ and item["program_key"] != "filter/wobble:wobble"
         prior["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(prior_spec))
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "c36f0c58c42d3158eeb3a08500bc4d1ab0cd7e1380ab65147a8108209d97762c",
+                "aadbbda414b528dd1fcfa2c7d27d2489acc7fc5f32b9fa2f3534a9774aecf915",
             "src/typed_generated/typed_manifest.json":
-                "ac95920d99b955bbb56c5b6e0b6afdaa5c4b3b132a9137e29f74369d2cda8ceb",
+                "186ce23cffceac67551203a2d765d0bd83f4a3c292811176fb21417e3d87d053",
             "include/noisemaker/generated/catalog.hpp":
-                "bb8858999de0570f071403c979dfc82b9c92cf61af375f245633f9ee4b47afb4",
+                "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "de6b55891f7605ebaa6803c8792537b3c4ac814796363e8919031fdbe86687b6",
+                "2dc2580ffa4c40372eb41fa52a51ef577240bf998f1602cf69e7231274ace985",
             "src/typed_generated/typed_manifest.json":
-                "789fda43795f7b22bab74b5de2f66d1ae25ce50dc6d45524c1d60cf60c37d633",
+                "c6f867929a625cf0a23c2a25a9ac5c9fc6f5ad3a38fac98765e1a1325d7426ea",
             "include/noisemaker/generated/catalog.hpp":
-                "89e2a1875fa64ec68be3767e8664c4f7bb0eabe2f5eb81ef6fee0ba78b7adda9",
+                "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         for label, outputs, expected in (
                 ("gabor176", current, expected_current),
@@ -8395,21 +8479,31 @@ and item["program_key"] != "filter/wobble:wobble"
         prior["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(prior_spec))
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "8504ce6f30b9a16d4f4ed61baead901ff827344a4dae42de35b34fad24972da2",
+                "97c9aad64d9070737f5374c904ffa150be81fe2aaecdf3fa44910b2f9158b4ab",
             "src/typed_generated/typed_manifest.json":
-                "65dd9191f40179c9785c23abe481aaa8714826ba7b4b665453e2103f466fd861",
+                "74c249eadbdf966b9966efdbae64c9c310a277fbdcb49d127a8478d4064955f9",
             "include/noisemaker/generated/catalog.hpp":
-                "14c8c1fe44fd23f7437b6d116049e4c22297f16c231bb461b4e46e8212bcb766",
+                "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "c36f0c58c42d3158eeb3a08500bc4d1ab0cd7e1380ab65147a8108209d97762c",
+                "aadbbda414b528dd1fcfa2c7d27d2489acc7fc5f32b9fa2f3534a9774aecf915",
             "src/typed_generated/typed_manifest.json":
-                "ac95920d99b955bbb56c5b6e0b6afdaa5c4b3b132a9137e29f74369d2cda8ceb",
+                "186ce23cffceac67551203a2d765d0bd83f4a3c292811176fb21417e3d87d053",
             "include/noisemaker/generated/catalog.hpp":
-                "bb8858999de0570f071403c979dfc82b9c92cf61af375f245633f9ee4b47afb4",
+                "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         for label, outputs, expected in (
                 ("scanline177", current, expected_current),
@@ -10824,11 +10918,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # This is an intentional live projection: the Gradient carrier remains
         # in the narrow exclusion set, so these two full-output hashes are
         # current pins rather than historical reconstructions.
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "5ea36123aa7d90ab4313889ff6830fcc18a6c31adf51c7a83c1393a9964dd2ef",
+            "3c3be0cf32b6b45fdc366cba6beaf679c3ea6f608fe9de0bbe74da7eb97273c1",
             hashlib.sha256(current_cpp.encode()).hexdigest())
         self.assertEqual(
-            "e0bdef5bb34c6caa4a0abbfe3b2d4d63525b47a63f81ddb807c167ee877c50d9",
+            "92be07b53508498f9afd6e228efeb56c374c7409b828ed318f651fae20c9b1e0",
             hashlib.sha256(prior_cpp.encode()).hexdigest())
 
         marker = re.compile(r"(?m)^// Typed IR program: (.+)$")
@@ -11178,10 +11278,17 @@ synth/subdivide:subdivide""".splitlines())
                          set(current_rows) - set(prior_rows))
         for key, row in prior_rows.items():
             self.assertEqual(
-                {name: value for name, value in row.items()
-                 if name != "output_sha256"},
-                {name: value for name, value in current_rows[key].items()
-                 if name != "output_sha256"}, key)
+                _row_without_translation_unit_hash(row),
+                _row_without_translation_unit_hash(current_rows[key]), key)
+        # Re-frozen 2026-08-25: the DSL/Task-7 emitter added `emitted_factory`,
+        # `factory_route` and `typed_abi` to every manifest row. Every field this
+        # literal already froze is unchanged and still compared; the three new
+        # fields were taken from a measured regeneration of this test's own
+        # projection. See task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_manifest_rows = {
             LENS_KEY: {
                 "capabilities": list(generate_typed_slice.APPROVED_CAPABILITIES),
@@ -11195,6 +11302,51 @@ synth/subdivide:subdivide""".splitlines())
                 "source": "sources/classicNoisedeck/lensDistortion/lensDistortion.glsl",
                 "source_sha256":
                     "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444",
+                "emitted_factory":
+                    'bind_classicNoisedeck_lensDistortion_lensDistortion',
+                "factory_route":
+                    {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
+                     'kind': 'typed_emitter',
+                     'source': 'src/typed_generated/typed_slice.cpp',
+                     'source_sha256': 'a4c7a41df6447023dc16b3ecb2b63240d0d4ec5730f7221790b12fb46a364e88'},
+                "typed_abi":
+                    {'outputs': ['fragColor'],
+                     'samplers': ['inputTex'],
+                     'uniforms': [{'name': 'inputTex',
+                                   'type': 'sampler2D'},
+                                  {'name': 'resolution',
+                                   'type': 'vec2'},
+                                  {'name': 'tileOffset',
+                                   'type': 'vec2'},
+                                  {'name': 'fullResolution',
+                                   'type': 'vec2'},
+                                  {'name': 'time', 'type': 'float'},
+                                  {'name': 'aspectLens',
+                                   'type': 'bool'},
+                                  {'name': 'shape', 'type': 'int'},
+                                  {'name': 'tint', 'type': 'vec3'},
+                                  {'name': 'alpha', 'type': 'float'},
+                                  {'name': 'vignetteAmt',
+                                   'type': 'float'},
+                                  {'name': 'distortion',
+                                   'type': 'float'},
+                                  {'name': 'speed', 'type': 'float'},
+                                  {'name': 'loopScale',
+                                   'type': 'float'},
+                                  {'name': 'aberration',
+                                   'type': 'float'},
+                                  {'name': 'hueRotation',
+                                   'type': 'float'},
+                                  {'name': 'hueRange', 'type': 'float'},
+                                  {'name': 'mode', 'type': 'int'},
+                                  {'name': 'modulate', 'type': 'bool'},
+                                  {'name': 'blendMode', 'type': 'int'},
+                                  {'name': 'saturation',
+                                   'type': 'float'},
+                                  {'name': 'passthru',
+                                   'type': 'float'}],
+                     'uses_derivatives': False,
+                     'uses_texture': True},
             },
             PRISMATIC_KEY: {
                 "capabilities": list(generate_typed_slice.APPROVED_CAPABILITIES),
@@ -11206,6 +11358,37 @@ synth/subdivide:subdivide""".splitlines())
                 "source": "sources/filter/prismaticAberration/prismaticAberration.glsl",
                 "source_sha256":
                     "513eac95fdf7f67a6839ee5d96e5bbfd76b6cfa62d3254df6fed23d8effe380e",
+                "emitted_factory":
+                    'bind_filter_prismaticAberration_prismaticAberration',
+                "factory_route":
+                    {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
+                     'kind': 'typed_emitter',
+                     'source': 'src/typed_generated/typed_slice.cpp',
+                     'source_sha256': 'a4c7a41df6447023dc16b3ecb2b63240d0d4ec5730f7221790b12fb46a364e88'},
+                "typed_abi":
+                    {'outputs': ['fragColor'],
+                     'samplers': ['inputTex'],
+                     'uniforms': [{'name': 'inputTex',
+                                   'type': 'sampler2D'},
+                                  {'name': 'resolution',
+                                   'type': 'vec2'},
+                                  {'name': 'tileOffset',
+                                   'type': 'vec2'},
+                                  {'name': 'fullResolution',
+                                   'type': 'vec2'},
+                                  {'name': 'time', 'type': 'float'},
+                                  {'name': 'aberrationAmt',
+                                   'type': 'float'},
+                                  {'name': 'hueRotation',
+                                   'type': 'float'},
+                                  {'name': 'hueRange', 'type': 'float'},
+                                  {'name': 'modulate', 'type': 'bool'},
+                                  {'name': 'saturation',
+                                   'type': 'float'},
+                                  {'name': 'passthru',
+                                   'type': 'float'}],
+                     'uses_derivatives': False,
+                     'uses_texture': True},
             },
         }
         for key, expected in expected_manifest_rows.items():
@@ -13625,10 +13808,8 @@ synth/subdivide:subdivide""".splitlines())
         self.assertEqual({SMOOTH_EDGE_KEY}, set(current_rows) - set(prior_rows))
         for key, row in prior_rows.items():
             self.assertEqual(
-                {name: value for name, value in row.items()
-                 if name != "output_sha256"},
-                {name: value for name, value in current_rows[key].items()
-                 if name != "output_sha256"}, key)
+                _row_without_translation_unit_hash(row),
+                _row_without_translation_unit_hash(current_rows[key]), key)
         self.assertEqual(PROFILE, current_rows[SMOOTH_EDGE_KEY][
             "smooth_edge_luma_weights_profile"])
         self.assertFalse(any(
@@ -14647,13 +14828,23 @@ class Task27PerlinTests(unittest.TestCase):
             prior = generate_typed_slice.generate_outputs(REPOSITORY)
         prior_header = generate_typed_slice.render_catalog_header(prior_spec)
 
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_task26_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "91f630e898305c654b9cad887132ad54e843041543ea031aa5fb1e691bd06408",
+                "2539b621af1543bae74e6c9b5f8dd33c61a1684809fdf9d2850a002015691edf",
             "src/typed_generated/typed_manifest.json":
-                "614696e1fa4a130e072ddd76e57422f9f6b35c5f0a35112bf92ad1492960d59f",
+                "a2eb197e17d76d1316ed19eb95ce1b63a90895ba78f3cc517ee6dd3164381cd4",
             "include/noisemaker/generated/catalog.hpp":
-                "557ccdbee5a58ff6129269ad4a4dfdc25486b8a9f8c455da2bf2c8663d55527d",
+                "2a0c8a3abb57b8fed2d29e5bdc9791a53a4e119ccf224ba751022fbd0f7dd59e",
         }
         prior_with_header = {**prior,
             "include/noisemaker/generated/catalog.hpp": prior_header}
@@ -14714,10 +14905,8 @@ class Task27PerlinTests(unittest.TestCase):
         for key, row in prior_rows.items():
             with self.subTest(historical_manifest_row=key):
                 self.assertEqual(
-                    {name: value for name, value in row.items()
-                     if name != "output_sha256"},
-                    {name: value for name, value in current_rows[key].items()
-                     if name != "output_sha256"})
+                    _row_without_translation_unit_hash(row),
+                    _row_without_translation_unit_hash(current_rows[key]))
                 self.assertNotIn("perlin_scalar_uint_xor_profile", row)
         self.assertEqual(
             PROFILE,
@@ -15728,10 +15917,20 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
             prior = generate_typed_slice.generate_outputs(REPOSITORY)
         prior["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(prior_spec))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected = {
-            "src/typed_generated/typed_slice.cpp": "916d635c6bc43d57d4dfbaf035b24d4dbf3abcd45387560403986ceb6fbaf89f",
-            "src/typed_generated/typed_manifest.json": "1459aafc9ccf59f6bf7df10f44e368de8e000f9f79f6110790775580f1caee23",
-            "include/noisemaker/generated/catalog.hpp": "b82abfa09c224185a4152d487d290d9b6bc475bb15ae744ddc3550c86ded1da5",
+            "src/typed_generated/typed_slice.cpp": "81b23611a6f217c842042ada7aa4607f318c2f8b7cea192587e8acf66b77d0b6",
+            "src/typed_generated/typed_manifest.json": "a13220c943082de0d26bb7d12764cd7d39d3c1a4ce3ae399c80305f19a96287b",
+            "include/noisemaker/generated/catalog.hpp": "67d72e3417329523e40a214fb058e5ed9fb8cd74aeee108c6dacda1036bda704",
         }
         for path, digest in expected.items():
             self.assertEqual(digest, hashlib.sha256(prior[path]).hexdigest())
@@ -16589,13 +16788,23 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
             task28 = generate_typed_slice.generate_outputs(REPOSITORY)
         task28["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(task28_spec))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_task28 = {
             "src/typed_generated/typed_slice.cpp":
-                "8b93a9b7ce28682ee545b2772546ded1b1fc0f0e2e1d575d821abfb4742ade58",
+                "454f8463745fef243bcf267259b9e6d5b894fe294d43bab6f1e9d7eeea07863b",
             "src/typed_generated/typed_manifest.json":
-                "7d0ce25272a68af85f4adc15458190a9b2bfaf88c20e80105c841f15ca14f81c",
+                "0b1a2cf2d5f1b52306c80129797b4c288dfe1ae0821ae9dfbab9a797a8823645",
             "include/noisemaker/generated/catalog.hpp":
-                "372d1f69e1e7db772ddebc05945a714527b22b35f87ca3160bbb8eb85135a4ac",
+                "85f146ae07c41f97c57850229d3fcac788295dbdf236d025f03dd0b8d05f4cdd",
         }
         for path, expected in expected_task28.items():
             self.assertEqual(expected, hashlib.sha256(task28[path]).hexdigest(), path)
@@ -17422,13 +17631,23 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             task29 = generate_typed_slice.generate_outputs(REPOSITORY)
         task29["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(task29_spec))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_task29 = {
             "src/typed_generated/typed_slice.cpp":
-                "df16358b7ea212c5823a6fadff4c03dd78bbcd9fd6670c48f2f9736c5b30c8f5",
+                "c9a76fdd50ebe3a34b53c6c1b85cf1ebd6af005c19762639c85d50d0bef1ec79",
             "src/typed_generated/typed_manifest.json":
-                "ab65a61d75af85b7baa0d2f5e5c57b41bb6385cf5958910b440c96c0d546f3cf",
+                "5ec6fdf5fccff77120d18bec9791fa5d051c3541db8f3d6d85935b589318a7e2",
             "include/noisemaker/generated/catalog.hpp":
-                "2d32511c858a5caeedb7c4fe1b2d985191e639a9e4ed1d98ca9219a60b668304",
+                "a0bbb90c96f6647ede3e6910b97010a35e33d1e1191325883a11073ad6a45fb0",
         }
         for path, expected in expected_task29.items():
             self.assertEqual(expected, hashlib.sha256(task29[path]).hexdigest(), path)
@@ -18365,13 +18584,23 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             task30 = generate_typed_slice.generate_outputs(REPOSITORY)
         task30["include/noisemaker/generated/catalog.hpp"] = (
             generate_typed_slice.render_catalog_header(task30_spec))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_task30 = {
             "src/typed_generated/typed_slice.cpp":
-                "d7dffcf06e73f09e5fff2f253a5b398ac520f0e5004d1631076b7e70ea31f486",
+                "6a6fc22e031b5ce3706b4ab9f5d7de752966106bfb8ad062de4645e808fd6f10",
             "src/typed_generated/typed_manifest.json":
-                "2e7d133b772a742f57fd2e64f9313e0ebf40c46041ffbbe74e211daf59c11df8",
+                "9ea64a2ca51492efd06c27229217faa3f9875de598b58d02681d00706e22a18e",
             "include/noisemaker/generated/catalog.hpp":
-                "16ebd7b1c7908fcad87e4a0c1890b2eabc87a0ce09fa6ded961ce68162315b42",
+                "a47c84fb2bd9a5fbe7c336f5aad7c002c1a06101149cc117d7b3a73e0a9923f4",
         }
         for path, expected in expected_task30.items():
             self.assertEqual(expected, hashlib.sha256(task30[path]).hexdigest(), path)
@@ -18927,13 +19156,23 @@ class Task32GradeClusterTests(unittest.TestCase):
         manifest = json.loads(
             task31["src/typed_generated/typed_manifest.json"].decode())
         self.assertEqual(131, len(manifest["programs"]))
+        # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+        # FactoryRoute/define metadata into the emitted artifacts. The projected
+        # input spec is unchanged -- the spec-level lock still passes -- so this
+        # still measures the same milestone. Derived from a measured regeneration
+        # of this test's own projection; see
+        # task-7-typed-generator-census-repair.md.
+        # Manifest digests re-measured 2026-08-25 after the
+        # `historical_cross_lane` repair: the projection now rewrites BOTH
+        # translation-unit hash carriers, so the projected manifest is
+        # internally consistent. cpp/catalog digests were unaffected.
         expected_task31 = {
             "src/typed_generated/typed_slice.cpp":
-                "046596ad034f226b737ff5729e3073f237c679ffb0c445e7e71b805fe0b1063f",
+                "621c62f4fa08093c13a687a2cec55773d6d3d4d26067b1b81fa8a4f2accdef89",
             "src/typed_generated/typed_manifest.json":
-                "b82162dd3c73401d76dd06f797d23b2462a87681135d847d2f1788cf5cbb1c27",
+                "4451b95a530786aea88d97fcc894ad9d2acffe8fb4f6b5c879d6ebe3b4752fc1",
             "include/noisemaker/generated/catalog.hpp":
-                "b45c8cd8ad281c38ab49a575a9ef0879dd7ac2b1f4be222e8ca9cbc3e5676ec9",
+                "25b838ccd789bbe5163023ba112917c70f7c6bc3f78cade1eb08a4d795b3b663",
         }
         for path, expected in expected_task31.items():
             self.assertEqual(expected, hashlib.sha256(task31[path]).hexdigest(), path)
@@ -19604,19 +19843,29 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         "scalar_uint_xor_profile": XOR,
     }
     # The pre-change 183-row state, recovered by removing only the new row.
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_183 = {
         "tools/glslcpp/typed_slice.json": (
             22728,
             "8fb3b8bc876c380a0c406fdae8e81b74d4499924cf301ed7a980c450f7ccfe0a"),
         "src/typed_generated/typed_slice.cpp": (
-            1819763,
-            "517fc511caad0d9a4e7afae0898b8bb1b094a4a9e08c8e6386de4a40469ee3ef"),
+            1937387,
+            "89b63bdbaa35d55e367c7ddacd5d302264b8412f09d89e7abe98beb308e94b9c"),
         "src/typed_generated/typed_manifest.json": (
-            292207,
-            "1b08d7d5655a19203139f536fefbe3c5ce7e33e181ff853ad794f032664b6f58"),
+            519037,
+            "d494b480234ebb8d832e136257330e48df627b0bdb6650efe5c4280baae8d983"),
         "include/noisemaker/generated/catalog.hpp": (
-            16926,
-            "44b05685a3bdd263df1bd8834b8f994e6fc63b1a7717b2111b06e74272411be0"),
+            17919,
+            "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
     }
 
     @staticmethod
@@ -20307,19 +20556,29 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
     X_KERNEL = (0.5, 0.0, -0.5, 1.0, 0.0, -1.0, 0.5, 0.0, -0.5)
     Y_KERNEL = (0.5, 1.0, 0.5, 0.0, 0.0, 0.0, -0.5, -1.0, -0.5)
     # The pre-change 184-row state, recovered by removing only the new row.
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_184 = {
         "tools/glslcpp/typed_slice.json": (
             22993,
             "c03ba30a9bc74697e5db1a9524a047a1dab1b0718ef72f0d4d772327a83f87d2"),
         "src/typed_generated/typed_slice.cpp": (
-            1873479,
-            "cfa2d90eececc3013a8fbf27829e3f311a4fe79048435bbb29da291af5d95011"),
+            1991753,
+            "7b9f3ccde0408f26e11a57668e2e5ae96b2ea22ec879eb70800458ddb309c1ae"),
         "src/typed_generated/typed_manifest.json": (
-            293950,
-            "c625007e1407166435c95f4e710dd280b3afafdb538840d0fc40bcd9fbd12a4b"),
+            522139,
+            "783fbb049a4e2526ca55e31b486a5fde186c291a9d32b125b06e88b8bd829943"),
         "include/noisemaker/generated/catalog.hpp": (
-            17008,
-            "8b3b033780f20f1e9d2085ae74f84e87f2258c3eb7518a18c8b6a9dd0fa1bd1e"),
+            18001,
+            "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
     }
 
     @staticmethod
@@ -21517,19 +21776,29 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
     # The pre-change 185-row state, recovered by removing only the new row.
     # Verified byte-for-byte against the committed working tree before this
     # slice began (all four match HEAD 8edff08).
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_185 = {
         "tools/glslcpp/typed_slice.json": (
             23202,
             "69deb0c8b3f9b453c1101263b0de7fb2f0c1915a21ea5f6cbb298cf0508df20d"),
         "src/typed_generated/typed_slice.cpp": (
-            1886842,
-            "47d0ef80e6d578970f613ea9d45c358aa0e2f3ce5bbe0b4d1d9611a39e662c08"),
+            2005761,
+            "600c108565f1d2c2e743dd97ab51bbc4b568741e65a19909abf42ff29e944b5a"),
         "src/typed_generated/typed_manifest.json": (
-            295588,
-            "11d1c87ef0c57d1e695c70a00e65cd04c3c6ae5d686b6e9f30f430e52be45a04"),
+            524768,
+            "34234bc76c78d7f2678ef93a5fc3a1d782e081328938ff9139c042f94766204b"),
         "include/noisemaker/generated/catalog.hpp": (
-            17099,
-            "4c30f680957a9cec5667b501b64e56869e9e1d7d90e562e3014c6ccf8b50fb4f"),
+            18092,
+            "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
     }
     FIELDS = ("emboss", "sharpen", "blur", "edge", "edge2")
     WRITER = "loadKernels"
@@ -22169,21 +22438,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 207-row tree with authenticated Gradient semantic repair, QUOTED FROM
+        # The four artifacts of the LIVE 211-row tree with authenticated Gradient semantic repair, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2574771,
-                "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"),
+                2710827,
+                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
             "src/typed_generated/typed_manifest.json": (
-                339420,
-                "63d07632e115f708d53c3b5b3b2f2c54c37fc687cdcecb5ddd16956300605993"),
+                614417,
+                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
             "include/noisemaker/generated/catalog.hpp": (
-                19470,
-                "f19fe0ce2271b471f24ff0cdc53d37bb56e936f5eac96cf2838598bed220b727"),
+                20463,
+                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -22242,6 +22511,28 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # `typed_slice.json` is the pre-change INPUT lock, serialized exactly
         # the way the committed file is.
         prior["tools/glslcpp/typed_slice.json"] = prior_slice_bytes
+
+        # The projection strips the `bit_effects.hpp` include for milestones
+        # that predate the bitEffects row and repairs the digests describing
+        # the emitted bytes. BOTH carriers of the translation-unit hash must be
+        # repaired, not just `output_sha256`: since the DSL/Task-7 route work
+        # `factory_route.source_sha256` carries the same digest again for every
+        # route whose `source` IS the generated unit. Asserted here because an
+        # internally inconsistent projected manifest silently poisons every
+        # frozen manifest digest measured from it -- which is exactly what it
+        # did until 2026-08-25.
+        prior_manifest = json.loads(
+            prior["src/typed_generated/typed_manifest.json"])
+        prior_cpp_sha = hashlib.sha256(
+            prior["src/typed_generated/typed_slice.cpp"]).hexdigest()
+        self.assertEqual(prior_cpp_sha, prior_manifest["typed_slice_sha256"])
+        self.assertEqual(185, len(prior_manifest["programs"]))
+        self.assertEqual([], [
+            item["program_key"] for item in prior_manifest["programs"]
+            if item["output_sha256"] != prior_cpp_sha
+            or (item["factory_route"]["source"]
+                == "src/typed_generated/typed_slice.cpp"
+                and item["factory_route"]["source_sha256"] != prior_cpp_sha)])
 
         mismatches = compare_artifact_pins(self.BASELINE_185, prior)
         self.assertFalse(mismatches, format_mismatches(mismatches))
@@ -22338,19 +22629,29 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # verified against the generator's --check on that tree (all four gates
     # exit 0; the four artifacts equal the cellRefract class's post-slice
     # pins byte-for-byte).
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_186 = {
         "tools/glslcpp/typed_slice.json": (
             23429,
             "ffaff05c37d718e0e3b7bae6fe2da5a46c44599410a8d88db419cae136b5ec5f"),
         "src/typed_generated/typed_slice.cpp": (
-            1923393,
-            "27d112cc8d0027f5bf3edc4363322910d9355cc3d781a09874d5ff7c00444b10"),
+            2043037,
+            "0da79260f0f57ad4588ec5fa41232da77433c2c8cc3818a36d3c3cf7dc8fcfb6"),
         "src/typed_generated/typed_manifest.json": (
-            297339,
-            "928648dc951b51e7017afd22e71244d4ae0f493479cea40c94034ed693710605"),
+            528385,
+            "c827521a37f0c63a91081c7c08b8de82832ed28955125a87c9c6f4d145f15c54"),
         "include/noisemaker/generated/catalog.hpp": (
-            17204,
-            "9b79eb4219f9dfbc086ecde62d6a5a3a726458cf1072a9cc44de33f42a52284c"),
+            18197,
+            "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
     }
     FIELDS = ("emboss", "sharpen", "blur", "edge", "edge2")
     WRITER = "loadKernels"
@@ -22917,21 +23218,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 207-row tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 211-row tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2574771,
-                "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"),
+                2710827,
+                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
             "src/typed_generated/typed_manifest.json": (
-                339420,
-                "63d07632e115f708d53c3b5b3b2f2c54c37fc687cdcecb5ddd16956300605993"),
+                614417,
+                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
             "include/noisemaker/generated/catalog.hpp": (
-                19470,
-                "f19fe0ce2271b471f24ff0cdc53d37bb56e936f5eac96cf2838598bed220b727"),
+                20463,
+                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23673,21 +23974,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 207-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2574771,
-                "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"),
+                2710827,
+                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
             "src/typed_generated/typed_manifest.json": (
-                339420,
-                "63d07632e115f708d53c3b5b3b2f2c54c37fc687cdcecb5ddd16956300605993"),
+                614417,
+                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
             "include/noisemaker/generated/catalog.hpp": (
-                19470,
-                "f19fe0ce2271b471f24ff0cdc53d37bb56e936f5eac96cf2838598bed220b727"),
+                20463,
+                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23703,19 +24004,29 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # verified against the generator's --check on that tree (all four gates
     # exit 0; the four artifacts equal the kaleido class's post-slice pins
     # byte-for-byte).
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_187 = {
         "tools/glslcpp/typed_slice.json": (
             23751,
             "460edeccdce784b3d08f160ab32c6de399c07ff22aa99e04314b94435b59ac58"),
         "src/typed_generated/typed_slice.cpp": (
-            2001368,
-            "ce845eba8ee07251d0e6e01ad32ca4d1a942f654afba4eae7b7f4551fbd4b6cc"),
+            2121733,
+            "0df0d4ba862e8b19bc697084b68adadc6485e5761c47070004444f209f0e11dd"),
         "src/typed_generated/typed_manifest.json": (
-            299169,
-            "9ab2c7c4a12e45fe395d014883d7aeab242d9e944f4eb35aa67ec5add73bda25"),
+            531722,
+            "8e814beba1ad794791ff71e8c29665e4153bbcf863ee360b0b7adc1545349fd1"),
         "include/noisemaker/generated/catalog.hpp": (
-            17301,
-            "f7ba369927d0bd71f25d80339e650e91cc3722fa61b523a94ebbc9a8cddbb7fc"),
+            18294,
+            "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
     }
 
     def test_removing_only_the_new_row_reconstructs_the_187_state(self) -> None:
@@ -24199,21 +24510,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 207-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2574771,
-                "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"),
+                2710827,
+                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
             "src/typed_generated/typed_manifest.json": (
-                339420,
-                "63d07632e115f708d53c3b5b3b2f2c54c37fc687cdcecb5ddd16956300605993"),
+                614417,
+                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
             "include/noisemaker/generated/catalog.hpp": (
-                19470,
-                "f19fe0ce2271b471f24ff0cdc53d37bb56e936f5eac96cf2838598bed220b727"),
+                20463,
+                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24229,19 +24540,29 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
     # verified against the generator's --check on that tree (all four gates
     # exit 0; the four artifacts equal the effects class's post-slice pins
     # byte-for-byte).
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_188 = {
         "tools/glslcpp/typed_slice.json": (
             24086,
             "bc32451249e6b11de2944f69318cea54172b1b5a8c4656ad09ce6b50e2b0da04"),
         "src/typed_generated/typed_slice.cpp": (
-            2058872,
-            "c8ad51e81bf856b17798c7f454bbcd6929631662a3b4652e36b5ed058da897e8"),
+            2179929,
+            "da044bf563b421a7b7bafd369b8b723a0b59931bb8dc9616fc27e6c7b5bc8a85"),
         "src/typed_generated/typed_manifest.json": (
-            300959,
-            "ee9abd77972caa64e62f100ed4e08e44307297dd5f381f336c79ccff0aac96c4"),
+            535205,
+            "c164d63137e6782dbfa4a1d5639b330bdfb488f2b96f2a4cc0f4974df4b8aab2"),
         "include/noisemaker/generated/catalog.hpp": (
-            17398,
-            "ab45fef3f312345ebd8eb281e8f2ac9310888b37c37cca1dd95c420cd896965e"),
+            18391,
+            "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
     }
 
     def test_removing_only_the_new_row_reconstructs_the_188_state(self) -> None:
@@ -24789,21 +25110,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 207-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2574771,
-                "698d2e0a1aa700dd8c3bb923c6ff9211159ace35ee4b3d9594f05ae7442ec913"),
+                2710827,
+                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
             "src/typed_generated/typed_manifest.json": (
-                339420,
-                "63d07632e115f708d53c3b5b3b2f2c54c37fc687cdcecb5ddd16956300605993"),
+                614417,
+                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
             "include/noisemaker/generated/catalog.hpp": (
-                19470,
-                "f19fe0ce2271b471f24ff0cdc53d37bb56e936f5eac96cf2838598bed220b727"),
+                20463,
+                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24822,19 +25143,29 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
     # dict entry and the landed registry key are inert without the row (the
     # dict is keyed by program, the registry arms are row-driven), which is
     # exactly what the byte-identical reconstruction below proves.
+    # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
+    # FactoryRoute/define metadata into the emitted artifacts. The projected
+    # input spec is unchanged -- the spec-level lock still passes -- so this
+    # still measures the same milestone. Derived from a measured regeneration
+    # of this test's own projection; see
+    # task-7-typed-generator-census-repair.md.
+    # Manifest digests re-measured 2026-08-25 after the
+    # `historical_cross_lane` repair: the projection now rewrites BOTH
+    # translation-unit hash carriers, so the projected manifest is
+    # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_189 = {
         "tools/glslcpp/typed_slice.json": (
             24216,
             "d950efd9b79306bf0e02c79592e0887b7aee23b68c5067213e933cf57ae00806"),
         "src/typed_generated/typed_slice.cpp": (
-            2069139,
-            "189eec3c7b60d9d2056cc321078ee40c62a0bf7f54896fc0c4d111e81bd2a673"),
+            2190817,
+            "2e12a5f188b77e32ff70b8989ac51d64f8962e533dc45d4c40f840ea3e609992"),
         "src/typed_generated/typed_manifest.json": (
-            302565,
-            "9ffcd291317c99ae9d217e60995e9031442a3ecd684c97cefa6787f2fd61c7cc"),
+            537778,
+            "eda8251e89f6e7c1b9fec219091de2a389419aa9f35b138722806c71053f026f"),
         "include/noisemaker/generated/catalog.hpp": (
-            17483,
-            "37ae5bff677f977a59dc3c4a3c9946469fc739374bd61ddd6450a3c15b7ca2d6"),
+            18476,
+            "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),
     }
 
     def test_removing_only_the_new_row_reconstructs_the_189_state(self) -> None:

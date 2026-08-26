@@ -427,6 +427,9 @@ TEST(graph_executor_rejects_reauthenticated_pass_identity_mutations) {
 }
 
 TEST(graph_executor_rejects_reauthenticated_output_abi_mutations) {
+  // Renaming blurH's producer route consistently through every owned copy is
+  // caught by the authenticated ordered-ABI digest at the pass that was
+  // forged, before the consuming pass is ever reached.
   expect_plan_error(
       [](auto& plan) {
         auto& snapshot = plan.effects[1];
@@ -558,10 +561,21 @@ TEST(graph_executor_rejects_reauthenticated_uniform_abi_mutations) {
       noisemaker::graph::GraphErrorCode::missing_binding);
   expect_plan_error(
       [](auto& plan) {
-        auto& uniforms = plan.effects[1].admissions[0].uniforms;
-        std::swap(uniforms[0], uniforms[1]);
+        plan.effects[1].admissions[0].uniforms[0].resource = "wrongRoute";
+        plan.effects[1].admissions[0].uniforms[1].name =
+            plan.effects[1].admissions[0].uniforms[0].name;
       },
       noisemaker::graph::GraphErrorCode::missing_binding);
+  // A reordered uniform ABI is not observable by a name-keyed kernel, so the
+  // authenticated ordered-ABI digest is what rejects it.
+  expect_plan_error(
+      [](auto& plan) {
+        auto& uniforms = plan.effects[1].admissions[0].uniforms;
+        std::swap(uniforms[0], uniforms[1]);
+        auto& retained = effect_step(plan, "filter/blur").passes[0].uniforms;
+        std::swap(retained[0], retained[1]);
+      },
+      noisemaker::graph::GraphErrorCode::binding_type);
 }
 
 TEST(graph_executor_rejects_reauthenticated_pass_count_and_viewport_mutations) {
