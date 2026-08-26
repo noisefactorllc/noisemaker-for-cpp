@@ -28,6 +28,20 @@ const SOFTWARE_RENDERER_PATTERN =
 const CHANNEL_NAMES = ['r', 'g', 'b', 'a']
 const HEX_64 = /^[0-9a-f]{64}$/
 
+// Every option that changes the rendered image, with the value the renderers
+// apply when the case leaves it out. Both lanes read this one list, so an
+// option can never be applied by one side and ignored by the other.
+export const RENDER_OPTION_DEFAULTS = Object.freeze({
+    time: 0, frame: 0, seed: 0, oneShot: 'ready', renderScale: 1,
+})
+export const RENDER_OPTION_KEYS = Object.freeze([
+    ...Object.keys(RENDER_OPTION_DEFAULTS), 'width', 'height',
+])
+
+// A throughput figure measured at one resolution, on one fence mechanism, is
+// a property of that pairing and of nothing else.
+export const THROUGHPUT_BASIS = 'fenced_frame_wall_clock_including_fence_overhead'
+
 export function sha256(data) {
     return createHash('sha256').update(data).digest('hex')
 }
@@ -47,6 +61,64 @@ export class BenchmarkError extends Error {
             message: this.message,
             detail: this.detail,
         }
+    }
+}
+
+/**
+ * The upstream pin this lane renders against and the pin the CPU authority
+ * authenticates must be one value. The disagreement is raised as a
+ * `BenchmarkError` from inside the driver's `main()` rather than thrown at
+ * module load, so it reaches the operator as the same structured
+ * `noisemaker-cpp.benchmark-error.v1` document as every other refusal instead
+ * of as a raw Node stack trace.
+ */
+export function assertUpstreamPinAgreement(cpuAuthorityRevision) {
+    if (cpuAuthorityRevision !== UPSTREAM_REVISION) {
+        throw new BenchmarkError('ERR_PIN_DRIFT',
+            'shader benchmark and CPU authority disagree on the upstream revision',
+            {benchmark: UPSTREAM_REVISION, cpuAuthority: cpuAuthorityRevision ?? null})
+    }
+    return true
+}
+
+/**
+ * The full set of render-affecting options a document was produced with, with
+ * this lane's defaults applied, so two documents are compared on the values
+ * the renderer actually used rather than on which keys happen to be spelled
+ * out.
+ */
+export function renderOptionSet(options, width, height) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+        throw new BenchmarkError('ERR_EXPECTED_OPTIONS', 'render options must be an object')
+    }
+    const unknown = Object.keys(options).filter(key => !RENDER_OPTION_KEYS.includes(key))
+    if (unknown.length) {
+        throw new BenchmarkError('ERR_EXPECTED_OPTIONS',
+            `render options name keys this lane does not apply: ${unknown.join(', ')}`, {options: unknown})
+    }
+    const applied = {width, height}
+    for (const [key, fallback] of Object.entries(RENDER_OPTION_DEFAULTS)) {
+        applied[key] = options[key] === undefined ? fallback : options[key]
+    }
+    return applied
+}
+
+/**
+ * Relate two render-option sets. Case identity is not enough to bind an
+ * expectation to a case: the same DSL source rendered at a different time,
+ * frame or seed is a different image, so a disagreement here must refuse the
+ * pair rather than let the comparer sign a verdict about two different
+ * programs.
+ */
+export function relateRenderOptions(caseOptions, expectationOptions) {
+    const differing = RENDER_OPTION_KEYS
+        .filter(key => !Object.is(caseOptions[key], expectationOptions[key]))
+        .map(key => ({option: key, case: caseOptions[key] ?? null, expectation: expectationOptions[key] ?? null}))
+    return {
+        status: differing.length === 0 ? 'bound' : 'disagreement',
+        differing,
+        case: caseOptions,
+        expectation: expectationOptions,
     }
 }
 
@@ -222,6 +294,14 @@ function requiredSha(value, name) {
     }
 }
 
+function requiredStringArray(value, name, {allowEmpty = false} = {}) {
+    if (!Array.isArray(value) || (!allowEmpty && value.length === 0) ||
+        value.some(entry => typeof entry !== 'string' || entry.length === 0)) {
+        throw new Error(`${name} must be an array of nonempty strings`)
+    }
+    return value
+}
+
 export function validateBenchmarkResult(input) {
     const value = requiredObject(input, 'benchmark result')
     if (value.schema !== BENCHMARK_SCHEMA) throw new Error(`schema must be ${BENCHMARK_SCHEMA}`)
@@ -317,6 +397,28 @@ export function validateBenchmarkResult(input) {
     if (summary.megapixelsPerSecond === null && !summary.throughputSuppressedReason) {
         throw new Error('a suppressed throughput must state its reason')
     }
+    // A lane whose median sits inside its own fence floor publishes no
+    // cross-lane throughput, but it still measured something. What it measured
+    // is published here, carrying the resolution and the timing floor it was
+    // measured at and an explicit refusal to be read across backends, so the
+    // asymmetry between the two lanes is disclosed instead of being an absence.
+    const measured = requiredObject(summary.measured, 'summary.measured')
+    const resolution = requiredObject(measured.resolution, 'summary.measured.resolution')
+    if (resolution.width !== program.width || resolution.height !== program.height ||
+        resolution.pixels !== program.width * program.height) {
+        throw new Error('summary.measured.resolution must be the resolution the program was rendered at')
+    }
+    if (summary.pixels !== resolution.pixels) throw new Error('summary.pixels must be the measured pixel count')
+    if (measured.basis !== THROUGHPUT_BASIS) throw new Error(`summary.measured.basis must be ${THROUGHPUT_BASIS}`)
+    if (!Number.isSafeInteger(measured.timingResolutionNs) || measured.timingResolutionNs < 0) {
+        throw new Error('summary.measured.timingResolutionNs must be the measured fence floor')
+    }
+    if (measured.megapixelsPerSecond !== null && typeof measured.megapixelsPerSecond !== 'number') {
+        throw new Error('summary.measured.megapixelsPerSecond must be a number or null')
+    }
+    if (measured.comparableAcrossBackends !== false) {
+        throw new Error('summary.measured must never claim cross-backend comparability')
+    }
     const output = requiredObject(value.output, 'output')
     if (output.width !== program.width || output.height !== program.height) {
         throw new Error('output dimensions must match program dimensions')
@@ -335,18 +437,41 @@ export function validateBenchmarkResult(input) {
     if (graph.status !== 'exact' && !graph.reason) {
         throw new Error('a non-exact graph relation must carry its reason inside the record')
     }
+    // The verdict travels with its operands. An archived benchmark document
+    // names which effects the DSL source resolved to, which passes the shader
+    // graph actually ran, and what the CPU plan projected — not just the word
+    // the three of them were reduced to.
+    requiredStringArray(graph.sourceEffectIds, 'correctness.graph.sourceEffectIds')
+    const actualGraph = requiredObject(graph.actual, 'correctness.graph.actual')
+    requiredStringArray(actualGraph.effectIds, 'correctness.graph.actual.effectIds')
+    requiredStringArray(actualGraph.passKeys, 'correctness.graph.actual.passKeys')
+    requiredString(actualGraph.finalSurface, 'correctness.graph.actual.finalSurface')
+    requiredStringArray(actualGraph.infrastructurePasses, 'correctness.graph.actual.infrastructurePasses',
+        {allowEmpty: true})
+    const cpuPlan = requiredObject(graph.cpuPlan, 'correctness.graph.cpuPlan')
+    requiredStringArray(cpuPlan.effectIds, 'correctness.graph.cpuPlan.effectIds')
+    if (cpuPlan.passKeys !== null) requiredStringArray(cpuPlan.passKeys, 'correctness.graph.cpuPlan.passKeys')
+    if (cpuPlan.finalSurface !== null) requiredString(cpuPlan.finalSurface, 'correctness.graph.cpuPlan.finalSurface')
     if (['projection_unavailable', 'mismatch'].includes(graph.status) && correctness.status !== 'failed') {
         throw new Error('an unproven graph relation cannot be reported as a pass')
     }
     return true
 }
 
-export function summarizeSamples(sampleNs, pixels, fenceFloorNs) {
+export function summarizeSamples(sampleNs, resolution, fenceFloorNs) {
     if (!Array.isArray(sampleNs) || sampleNs.length === 0 ||
         sampleNs.some(sample => !Number.isSafeInteger(sample) || sample < 0)) {
         throw new Error('sampleNs must be a nonempty array of nonnegative integers')
     }
-    if (!Number.isSafeInteger(pixels) || pixels <= 0) throw new Error('pixels must be positive')
+    // The resolution is an operand, not a footnote: at 17x11 a fenced frame is
+    // mostly fence, and the only honest way to publish that measurement is
+    // next to the dimensions and the timing floor it was taken at.
+    if (!resolution || typeof resolution !== 'object' ||
+        !Number.isSafeInteger(resolution.width) || resolution.width <= 0 ||
+        !Number.isSafeInteger(resolution.height) || resolution.height <= 0) {
+        throw new Error('resolution must carry positive safe integer width and height')
+    }
+    const pixels = resolution.width * resolution.height
     if (!Number.isSafeInteger(fenceFloorNs) || fenceFloorNs < 0) throw new Error('fenceFloorNs must be a nonnegative integer')
     const sorted = [...sampleNs].sort((a, b) => a - b)
     const medianNs = sorted.length % 2 === 0
@@ -366,6 +491,19 @@ export function summarizeSamples(sampleNs, pixels, fenceFloorNs) {
         throughputSuppressedReason: dominatedByFence
             ? 'median_within_two_fence_floors'
             : (medianNs === 0 ? 'median_is_zero' : null),
+        // Published on every record, suppressed or not. It is the wall clock
+        // this lane really measured, fence overhead included, expressed per
+        // pixel at the one resolution it was measured at. It is not a backend
+        // comparison and says so; the suppressed `megapixelsPerSecond` above
+        // remains the only figure that would have been one.
+        measured: {
+            resolution: {width: resolution.width, height: resolution.height, pixels},
+            basis: THROUGHPUT_BASIS,
+            timingResolutionNs: fenceFloorNs,
+            megapixelsPerSecond: medianNs === 0 ? null : pixels * 1000 / medianNs,
+            nanosecondsPerPixel: medianNs === 0 ? null : medianNs / pixels,
+            comparableAcrossBackends: false,
+        },
     }
 }
 
@@ -397,6 +535,13 @@ export function describeContract() {
             samples: BENCHMARK_SAMPLES,
             fenceCalibrationSamples: FENCE_CALIBRATION_SAMPLES,
         },
+        throughput: {
+            basis: THROUGHPUT_BASIS,
+            crossBackendFigure: 'suppressed while the median sits within two measured fence floors',
+            publishedWith: ['resolution', 'timingResolutionNs'],
+            comparableAcrossBackends: false,
+        },
+        renderOptions: RENDER_OPTION_KEYS,
         adapter: {recorded: true, softwareRasterizer: 'refused unless --allow-software'},
     }
 }

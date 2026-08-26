@@ -24,12 +24,16 @@ import {
     ORIENTATION_AUTHENTICATION,
     ORIENTATION_CONTRACT,
     PLAYWRIGHT_VERSION,
+    RENDER_OPTION_KEYS,
     UPSTREAM_REVISION,
     UPSTREAM_TREE,
+    assertUpstreamPinAgreement,
     authenticateProbeOrientation,
     classifyAdapter,
     compareExactRgba8,
     describeContract,
+    relateRenderOptions,
+    renderOptionSet,
     resolvePinnedPlaywrightRoot,
     reverseRows,
     sha256,
@@ -43,15 +47,6 @@ import {
 const REPO_ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..')
 const COMPATIBILITY_DOCUMENT = path.join(REPO_ROOT, 'src/effects/generated/backend_compatibility.json')
 const CATALOG_PROVENANCE_DOCUMENT = path.join(REPO_ROOT, 'src/effects/generated/effect_catalog.provenance.json')
-
-// One authority path. The upstream pins the shader lane runs against and the
-// pins the CPU lane authenticates against must be the same values, so drift
-// between the two modules is a load-time failure rather than a silent split.
-if (UPSTREAM_REVISION !== CPU_AUTHORITY.upstreamRevision) {
-    throw new BenchmarkError('ERR_PIN_DRIFT', 'shader benchmark and CPU authority disagree on the upstream revision', {
-        benchmark: UPSTREAM_REVISION, cpuAuthority: CPU_AUTHORITY.upstreamRevision,
-    })
-}
 
 const BOOLEAN_FLAGS = new Set(['--describe', '--allow-software'])
 const HEX_64 = /^[0-9a-f]{64}$/
@@ -298,7 +293,7 @@ function normalizeCase(record, treeAuthority) {
             {seedSurfaces: record.seedSurfaces.map(seed => seed?.name ?? null)})
     }
     for (const key of Object.keys(options)) {
-        if (!['time', 'frame', 'seed', 'oneShot', 'renderScale', 'width', 'height'].includes(key)) {
+        if (!RENDER_OPTION_KEYS.includes(key)) {
             throw new BenchmarkError('ERR_UNSUPPORTED_OPTION', `the shader lane does not apply case option ${key}`, {option: key})
         }
     }
@@ -343,6 +338,18 @@ function normalizeExpectation(document, testCase) {
     }
     if (document.width !== testCase.width || document.height !== testCase.height) {
         throw new BenchmarkError('ERR_EXPECTED', 'expected document dimensions differ from the case')
+    }
+    // Identity binds the expectation to the case's *program*; this binds it to
+    // the case's *render*. Without it the driver will compare a case rendered
+    // at one time/frame/seed against an expectation rendered at another and
+    // sign the verdict — pass or fail — as if it were about one program.
+    const optionRelation = relateRenderOptions(
+        renderOptionSet(testCase.options, testCase.width, testCase.height),
+        renderOptionSet(document.options,
+            document.options?.width ?? document.width, document.options?.height ?? document.height))
+    if (optionRelation.status !== 'bound') {
+        throw new BenchmarkError('ERR_EXPECTED_OPTIONS',
+            'expected document was rendered with different options than the case', optionRelation)
     }
     if (document.format !== 'rgba8' || document.orientation !== 'top-down') {
         throw new BenchmarkError('ERR_EXPECTED', 'expected document must be top-down raw RGBA8')
@@ -729,7 +736,8 @@ async function execute(values) {
         const comparison = await compareExactRgba8(expected, actual)
         const graph = relateGraph(testCase, result.resolvedEffectIds, result.graph)
         const fenceFloorNs = medianOf(result.fenceFloorNs)
-        const summary = summarizeSamples(result.sampleNs, testCase.width * testCase.height, fenceFloorNs)
+        const summary = summarizeSamples(
+            result.sampleNs, {width: testCase.width, height: testCase.height}, fenceFloorNs)
         summary.passCount = result.passCount
         const correctnessStatus =
             comparison.status === 'failed' || graph.status === 'mismatch' || graph.status === 'projection_unavailable'
@@ -793,7 +801,25 @@ async function execute(values) {
                     firstMismatch: comparison.firstMismatch,
                     expectedSha256: comparison.expectedSha256, actualSha256: comparison.actualSha256,
                 },
-                graph: {status: graph.status, reason: graph.reason},
+                graph: {
+                    status: graph.status, reason: graph.reason,
+                    // The operands travel inside the validated record, so an
+                    // archived benchmark document names which effects resolved
+                    // and which passes ran rather than only the verdict.
+                    sourceEffectIds: result.resolvedEffectIds,
+                    cpuPlan: {
+                        effectIds: testCase.plan.effectIds,
+                        passKeys: testCase.plan.passKeys,
+                        finalSurface: testCase.plan.finalSurface,
+                        cpuPlanSha256: testCase.plan.cpuPlanSha256,
+                    },
+                    actual: {
+                        effectIds: result.graph.effectIds,
+                        passKeys: result.graph.passKeys,
+                        finalSurface: result.graph.finalSurface,
+                        infrastructurePasses: result.graph.infrastructurePasses ?? [],
+                    },
+                },
             },
         }
         validateBenchmarkResult(benchmark)
@@ -808,6 +834,11 @@ async function execute(values) {
 }
 
 async function main() {
+    // One authority path: the upstream pin this lane renders against and the
+    // pin the CPU authority authenticates must agree. Checked here rather than
+    // at module load so the refusal is reported as the same structured error
+    // document as every other failure.
+    assertUpstreamPinAgreement(CPU_AUTHORITY.upstreamRevision)
     const values = parseArguments(process.argv.slice(2))
     if (values.get('--describe')) {
         if (values.size !== 1) throw new BenchmarkError('ERR_ARGUMENTS', '--describe accepts no other arguments')
