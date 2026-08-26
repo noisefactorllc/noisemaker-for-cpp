@@ -627,5 +627,685 @@ class ShaderBenchmarkBrowserTest(unittest.TestCase):
             )
 
 
+# ---------------------------------------------------------------------------
+# The step-9 expansion protocol.
+#
+# The expansion runs the whole admitted corpus on both backends and records one
+# manifest. The manifest itself lives outside the repository — it names an
+# adapter, a browser build and a machine, and none of those are properties of
+# this tree. What IS a property of this tree is the shape the manifest must
+# have and the claims a summary derived from it is allowed to make, so that is
+# what is pinned here: the schema, the per-lane statuses, the evidence a
+# mismatch must carry, the refusal form, and the splits and ledger that must
+# accompany any "N exact" claim.
+#
+# Nothing below pins a count, an adapter string, a timing figure or an
+# intersection size. An adapter-dependent result must never become a frozen
+# expectation: a different GPU legitimately produces different numbers, and a
+# contract that went red for that reason would be measuring the machine.
+# ---------------------------------------------------------------------------
+
+EXPANSION_MANIFEST_SCHEMA = "noisemaker-cpp.shader-expansion-manifest.v1"
+EXPANSION_SUMMARY_SCHEMA = "noisemaker-cpp.shader-expansion-summary.v1"
+
+# A lane either compared bytes and they matched, compared bytes and they did
+# not, or never reached the comparer. There is no fourth status, and in
+# particular no status that reports a divergence as anything other than a
+# failure.
+LANE_STATUSES = ("byte_exact", "mismatch", "refused")
+RENDERED_LANE_STATUSES = ("byte_exact", "mismatch")
+
+# Graph verdicts that may accompany a byte-exact lane. `mismatch` and
+# `projection_unavailable` are proof the shader lane did not run the program
+# the CPU plan describes, so they can never sign an exact result.
+PROVEN_GRAPH_STATUSES = ("exact", "cpu_plan_projection_contained")
+
+EXPANSION_REQUIRED_KEYS = (
+    "schema", "generated", "checkout", "commit", "corpusFixtureSha256",
+    "backends", "recordCount", "records",
+)
+
+
+class ExpansionContractError(AssertionError):
+    """A manifest or summary that does not meet the expansion contract."""
+
+
+def _require(condition: object, message: str) -> None:
+    if not condition:
+        raise ExpansionContractError(message)
+
+
+def _require_sha256(value: object, where: str) -> None:
+    _require(
+        isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value),
+        f"{where} must be a lowercase sha256 digest",
+    )
+
+
+def validate_expansion_lane(lane: object, record: dict, backend: str) -> None:
+    """One backend's verdict on one record."""
+    where = f"{record.get('id')}/{backend}"
+    _require(isinstance(lane, dict), f"{where}: lane must be an object")
+    status = lane.get("status")
+    _require(status in LANE_STATUSES, f"{where}: status must be one of {LANE_STATUSES}, got {status!r}")
+
+    if status == "refused":
+        # A refusal is a first-class outcome, but it has to say what refused
+        # and why, or it is indistinguishable from a result that was dropped.
+        _require(isinstance(lane.get("code"), str) and lane["code"].startswith("ERR_"),
+                 f"{where}: a refusal must name an ERR_ code")
+        _require(isinstance(lane.get("stage"), str) and lane["stage"],
+                 f"{where}: a refusal must name the stage that refused")
+        _require(isinstance(lane.get("reason"), str) and lane["reason"],
+                 f"{where}: a refusal must carry a reason")
+        _require("comparison" not in lane,
+                 f"{where}: a refusal never compared bytes, so it may not carry a comparison")
+        return
+
+    comparison = lane.get("comparison")
+    _require(isinstance(comparison, dict), f"{where}: a rendered lane must carry its comparison")
+    _require_sha256(comparison.get("expectedSha256"), f"{where}: comparison.expectedSha256")
+    _require_sha256(comparison.get("actualSha256"), f"{where}: comparison.actualSha256")
+    count = comparison.get("mismatchCount")
+    _require(isinstance(count, int) and count >= 0, f"{where}: comparison.mismatchCount must be an integer")
+
+    if status == "byte_exact":
+        _require(count == 0, f"{where}: byte_exact with {count} mismatching bytes is a relabeled failure")
+        _require(comparison["expectedSha256"] == comparison["actualSha256"],
+                 f"{where}: byte_exact with two different image hashes is a relabeled failure")
+        _require(comparison.get("firstMismatch") is None,
+                 f"{where}: byte_exact may not name a first divergence")
+    else:
+        _require(count > 0, f"{where}: a mismatch must count the bytes that diverged")
+        _require(comparison["expectedSha256"] != comparison["actualSha256"],
+                 f"{where}: a mismatch must show two different image hashes")
+        first = comparison.get("firstMismatch")
+        _require(isinstance(first, dict), f"{where}: a mismatch must name its first divergence")
+        for key in ("x", "y", "channel", "channelName", "expected", "actual"):
+            _require(key in first, f"{where}: firstMismatch must name {key}")
+        _require(isinstance(comparison.get("maxDelta"), int),
+                 f"{where}: a mismatch must carry its maximum channel delta")
+
+    graph = lane.get("graph")
+    _require(isinstance(graph, dict), f"{where}: a rendered lane must carry its graph verdict")
+    _require(isinstance(graph.get("status"), str), f"{where}: graph.status must be a string")
+    if status == "byte_exact":
+        _require(graph["status"] in PROVEN_GRAPH_STATUSES,
+                 f"{where}: graph {graph['status']!r} cannot accompany a byte_exact lane")
+    _require(isinstance(graph.get("sourceEffectIds"), list) and graph["sourceEffectIds"],
+             f"{where}: the graph verdict must name the effects that resolved")
+    _require(isinstance(graph.get("actualPassKeys"), list) and graph["actualPassKeys"],
+             f"{where}: the graph verdict must name the passes that ran")
+
+    binding = lane.get("optionsBinding")
+    _require(isinstance(binding, dict), f"{where}: a rendered lane must record its options binding")
+    _require(binding.get("status") == "bound",
+             f"{where}: a lane compared under drifting render options is not a comparison of one program")
+    _require(binding.get("differing") == [], f"{where}: a bound options set has no differing options")
+
+    adapter = lane.get("adapter")
+    _require(isinstance(adapter, dict), f"{where}: a rendered lane must record the adapter it ran on")
+    renderer = (adapter.get("webgl") or {}).get("renderer")
+    _require(isinstance(renderer, str) and renderer, f"{where}: the adapter must name its renderer")
+    _require(adapter.get("software") is False or adapter.get("allowSoftware") is True,
+             f"{where}: a software rasterizer result must be marked as one")
+
+    timing = lane.get("timing")
+    _require(isinstance(timing, dict), f"{where}: a rendered lane must record its timing")
+    measured = timing.get("measured")
+    _require(isinstance(measured, dict), f"{where}: timing must publish what this lane measured")
+    resolution = measured.get("resolution")
+    _require(isinstance(resolution, dict), f"{where}: the measurement must name its own resolution")
+    _require(resolution.get("width") == record.get("width")
+             and resolution.get("height") == record.get("height"),
+             f"{where}: the measurement resolution must be the resolution the record rendered at")
+    _require(measured.get("comparableAcrossBackends") is False,
+             f"{where}: no lane measurement is comparable across backends")
+
+
+def validate_expansion_manifest(manifest: object) -> dict:
+    """The step-9 expansion manifest contract. Returns the manifest."""
+    _require(isinstance(manifest, dict), "the manifest must be an object")
+    for key in EXPANSION_REQUIRED_KEYS:
+        _require(key in manifest, f"the manifest must carry {key}")
+    _require(manifest["schema"] == EXPANSION_MANIFEST_SCHEMA,
+             f"the manifest schema must be {EXPANSION_MANIFEST_SCHEMA}")
+    _require_sha256(manifest.get("corpusFixtureSha256"), "corpusFixtureSha256")
+    backends = manifest["backends"]
+    _require(isinstance(backends, list) and len(backends) >= 2 and len(set(backends)) == len(backends),
+             "the expansion compares at least two named, distinct backends")
+    records = manifest["records"]
+    _require(isinstance(records, list) and records, "the manifest must carry records")
+    _require(manifest["recordCount"] == len(records),
+             "recordCount must equal the number of records carried")
+    seen = set()
+    for record in records:
+        _require(isinstance(record, dict), "each record must be an object")
+        identifier = record.get("id")
+        _require(isinstance(identifier, str) and identifier, "each record must carry an id")
+        _require(identifier not in seen, f"{identifier}: recorded twice")
+        seen.add(identifier)
+        expectation = record.get("expectation")
+        _require(isinstance(expectation, dict), f"{identifier}: must carry its expectation state")
+        if expectation.get("status") == "rendered":
+            # The split is a property of the expectation image, so it must be
+            # recorded per record — a summary cannot invent it later.
+            for key in ("uniform", "spatiallyVarying", "flipSensitive"):
+                _require(isinstance(expectation.get(key), bool),
+                         f"{identifier}: expectation must classify {key}")
+            _require(expectation["uniform"] is not expectation["spatiallyVarying"],
+                     f"{identifier}: an expectation is uniform or spatially varying, not both or neither")
+            _require(not (expectation["uniform"] and expectation["flipSensitive"]),
+                     f"{identifier}: a uniform image cannot be vertically flip-sensitive")
+            _require_sha256(expectation.get("rgba8Sha256"), f"{identifier}: expectation.rgba8Sha256")
+        else:
+            _require(isinstance(expectation.get("code"), str) and expectation["code"].startswith("ERR_"),
+                     f"{identifier}: an unrendered expectation must name an ERR_ code")
+        lanes = record.get("lanes")
+        _require(isinstance(lanes, dict), f"{identifier}: must carry one lane per backend")
+        _require(sorted(lanes) == sorted(backends),
+                 f"{identifier}: lanes {sorted(lanes)} do not cover the declared backends {sorted(backends)}")
+        for backend in backends:
+            validate_expansion_lane(lanes[backend], record, backend)
+    return manifest
+
+
+def summarize_expansion_manifest(manifest: dict) -> dict:
+    """Derive the only summary shape the expansion is allowed to publish."""
+    validate_expansion_manifest(manifest)
+    backends = list(manifest["backends"])
+    records = manifest["records"]
+
+    distributions = {}
+    for backend in backends:
+        counts = {status: 0 for status in LANE_STATUSES}
+        codes: dict = {}
+        graphs: dict = {}
+        for record in records:
+            lane = record["lanes"][backend]
+            counts[lane["status"]] += 1
+            if lane["status"] == "refused":
+                codes[lane["code"]] = codes.get(lane["code"], 0) + 1
+            else:
+                status = lane["graph"]["status"]
+                graphs[status] = graphs.get(status, 0) + 1
+        distributions[backend] = {"counts": counts, "refusalCodes": codes, "graph": graphs}
+
+    exact = {backend: {record["id"] for record in records
+                       if record["lanes"][backend]["status"] == "byte_exact"}
+             for backend in backends}
+    intersection_ids = set.intersection(*exact.values())
+    by_id = {record["id"]: record for record in records}
+    uniform = sum(1 for i in intersection_ids if by_id[i]["expectation"]["uniform"])
+    varying = sum(1 for i in intersection_ids if by_id[i]["expectation"]["spatiallyVarying"])
+    flip = sum(1 for i in intersection_ids if by_id[i]["expectation"]["flipSensitive"])
+
+    exclusions = []
+    for record in records:
+        if record["id"] in intersection_ids:
+            continue
+        reasons = []
+        for backend in backends:
+            lane = record["lanes"][backend]
+            if lane["status"] == "refused":
+                reasons.append(f"{backend}: refused {lane['code']} at {lane['stage']}")
+            elif lane["status"] == "mismatch":
+                comparison = lane["comparison"]
+                reasons.append(
+                    f"{backend}: mismatch {comparison['mismatchCount']} bytes, "
+                    f"maxDelta {comparison['maxDelta']}")
+        exclusions.append({"id": record["id"], "reason": "; ".join(reasons)})
+
+    timing = {}
+    for backend in backends:
+        lanes = [record["lanes"][backend] for record in records
+                 if record["lanes"][backend]["status"] in RENDERED_LANE_STATUSES]
+        resolutions = sorted({(lane["timing"]["measured"]["resolution"]["width"],
+                               lane["timing"]["measured"]["resolution"]["height"])
+                              for lane in lanes})
+        medians = sorted(lane["timing"]["medianNs"] for lane in lanes)
+        timing[backend] = {
+            "lanes": len(lanes),
+            "resolutions": [{"width": w, "height": h} for w, h in resolutions],
+            "medianOfMedianNs": medians[len(medians) // 2] if medians else None,
+            "throughputPublished": sum(1 for lane in lanes
+                                       if lane["timing"].get("megapixelsPerSecond") is not None),
+            "comparableAcrossBackends": False,
+        }
+
+    adapters = {}
+    for backend in backends:
+        identities = set()
+        for record in records:
+            lane = record["lanes"][backend]
+            if lane["status"] in RENDERED_LANE_STATUSES:
+                adapter = lane["adapter"]
+                identities.add((adapter["webgl"]["renderer"], adapter.get("browser"),
+                                bool(adapter["software"])))
+        adapters[backend] = [
+            {"renderer": renderer, "browser": browser, "software": software}
+            for renderer, browser, software in sorted(identities)
+        ]
+
+    return {
+        "schema": EXPANSION_SUMMARY_SCHEMA,
+        "recordCount": manifest["recordCount"],
+        "backends": distributions,
+        "intersection": {
+            "total": len(intersection_ids),
+            "uniform": uniform,
+            "spatiallyVarying": varying,
+            "flipSensitive": flip,
+            "ids": sorted(intersection_ids),
+        },
+        "exclusions": exclusions,
+        "timing": timing,
+        "adapters": adapters,
+    }
+
+
+def validate_expansion_summary(summary: object, manifest: dict) -> dict:
+    """What a published expansion summary must say, and must not say."""
+    _require(isinstance(summary, dict), "the summary must be an object")
+    _require(summary.get("schema") == EXPANSION_SUMMARY_SCHEMA,
+             f"the summary schema must be {EXPANSION_SUMMARY_SCHEMA}")
+    total_records = manifest["recordCount"]
+    _require(summary.get("recordCount") == total_records,
+             "the summary must account for every record in the manifest")
+
+    for backend, distribution in summary["backends"].items():
+        counts = distribution["counts"]
+        _require(sorted(counts) == sorted(LANE_STATUSES),
+                 f"{backend}: the distribution must name every lane status, including refusals")
+        _require(sum(counts.values()) == total_records,
+                 f"{backend}: the distribution must account for every record")
+
+    intersection = summary["intersection"]
+    # The mandatory split. "N exact" without it overstates what N proves,
+    # because a constant-coloured image agrees on both backends for reasons
+    # that have nothing to do with the effect under test.
+    for key in ("total", "uniform", "spatiallyVarying", "flipSensitive"):
+        _require(isinstance(intersection.get(key), int),
+                 f"the intersection must publish {key} alongside its total")
+    _require(intersection["uniform"] + intersection["spatiallyVarying"] == intersection["total"],
+             "the uniform and spatially varying counts must partition the intersection")
+    _require(intersection["flipSensitive"] <= intersection["spatiallyVarying"],
+             "a flip-sensitive image is spatially varying by construction")
+    _require(len(intersection["ids"]) == intersection["total"],
+             "the intersection must enumerate the records it counts")
+
+    exclusions = summary["exclusions"]
+    excluded_ids = {entry["id"] for entry in exclusions}
+    _require(excluded_ids.isdisjoint(set(intersection["ids"])),
+             "a record cannot be both counted and excluded")
+    _require(intersection["total"] + len(exclusions) == total_records,
+             "every record is either in the intersection or in the exclusion ledger")
+    for entry in exclusions:
+        _require(isinstance(entry.get("reason"), str) and entry["reason"],
+                 f"{entry.get('id')}: every exclusion must carry its own reason")
+
+    # A cross-backend performance figure is not merely absent by omission; the
+    # contract refuses it, because the two lanes fence on different mechanisms
+    # with fence floors an order of magnitude apart. Checked before the lanes
+    # are read, so a figure smuggled in beside them is refused as itself and
+    # not as a malformed lane.
+    banned = {"speedup", "backendRatio", "relativeThroughput", "crossBackendMegapixelsPerSecond"}
+    present = banned.intersection(summary["timing"]) | banned.intersection(summary)
+    _require(not present, f"the summary may not publish a cross-backend comparison figure: {sorted(present)}")
+    for backend, lane in summary["timing"].items():
+        # A lane that rendered nothing has nothing to label; a lane that
+        # rendered must name the resolution it measured at.
+        if lane["lanes"]:
+            _require(lane.get("resolutions"),
+                     f"{backend}: timing must name the resolution it was measured at")
+        _require(lane.get("comparableAcrossBackends") is False,
+                 f"{backend}: lane timings are not comparable across backends")
+
+    for backend, identities in summary["adapters"].items():
+        # A lane on which every record was refused never reached an adapter;
+        # a lane that rendered must say which one it rendered on.
+        if summary["timing"][backend]["lanes"]:
+            _require(identities, f"{backend}: the summary must name the adapter the lane ran on")
+        for identity in identities:
+            _require(identity.get("renderer"), f"{backend}: an adapter identity must name its renderer")
+    return summary
+
+
+def _expansion_lane(**overrides) -> dict:
+    lane = {
+        "status": "byte_exact",
+        "comparison": {"status": "pass", "reason": None, "mismatchCount": 0, "maxDelta": 0,
+                       "firstMismatch": None, "expectedSha256": "a" * 64, "actualSha256": "a" * 64},
+        "graph": {"status": "exact", "reason": None, "sourceEffectIds": ["synth/perlin"],
+                  "cpuPlanPassKeys": ["synth/perlin:perlin"],
+                  "actualPassKeys": ["synth/perlin:perlin"], "infrastructurePasses": []},
+        "optionsBinding": {"status": "bound", "differing": [], "enforcedBy": "ERR_EXPECTED_OPTIONS"},
+        "adapter": {"webgl": {"renderer": "some renderer"}, "webgpu": None,
+                    "software": False, "allowSoftware": False, "browser": "Chromium/x"},
+        "readback": {"orientation": "top_down", "normalized": False, "measuredFormat": "rgba16f",
+                     "authentication": "render_path_probe_per_backend_per_format"},
+        "timing": {"fenceMechanism": "some_fence", "fenceFloorNs": 1000, "medianNs": 5000,
+                   "p95Ns": 6000, "megapixelsPerSecond": None,
+                   "throughputSuppressedReason": "median_within_two_fence_floors",
+                   "measured": {"resolution": {"width": 17, "height": 11, "pixels": 187},
+                                "basis": "fenced_frame_wall_clock_including_fence_overhead",
+                                "timingResolutionNs": 1000, "megapixelsPerSecond": 37.4,
+                                "nanosecondsPerPixel": 26.7, "comparableAcrossBackends": False}},
+        "output": {"rgba8Sha256": "a" * 64, "rawRgba8Sha256": "a" * 64},
+    }
+    lane.update(overrides)
+    return lane
+
+
+def _expansion_mismatch_lane(**overrides) -> dict:
+    lane = _expansion_lane(status="mismatch")
+    lane["comparison"] = {
+        "status": "failed", "reason": None, "mismatchCount": 14, "maxDelta": 224,
+        "firstMismatch": {"x": 5, "y": 2, "channel": 0, "channelName": "r",
+                          "expected": 128, "actual": 127},
+        "expectedSha256": "a" * 64, "actualSha256": "b" * 64,
+    }
+    lane.update(overrides)
+    return lane
+
+
+def _expansion_refused_lane(**overrides) -> dict:
+    lane = {"status": "refused", "code": "ERR_COMPILATION_FAILED", "stage": "shader_compilation",
+            "reason": "S005 Illegal chain structure", "graph": None,
+            "optionsBinding": None, "adapter": None}
+    lane.update(overrides)
+    return lane
+
+
+def _expansion_record(identifier: str, lanes: dict, expectation: dict | None = None) -> dict:
+    return {
+        "id": identifier,
+        "namespace": identifier.split("/")[0],
+        "width": 17, "height": 11,
+        "caseOptions": {"width": 17, "height": 11, "time": 0.25, "frame": 0, "seed": 1,
+                        "oneShot": "ready", "renderScale": 1},
+        "expectation": expectation if expectation is not None else {
+            "status": "rendered", "schema": "noisemaker-cpp.dsl-cpu-expectation.v1",
+            "rgba8Sha256": "a" * 64, "runnerSha256": "c" * 64, "cpuBehavioralLock": "d" * 64,
+            "options": {"width": 17, "height": 11, "time": 0.25, "frame": 0, "seed": 1,
+                        "oneShot": "ready", "renderScale": 1},
+            "uniform": False, "spatiallyVarying": True, "flipSensitive": True,
+        },
+        "lanes": lanes,
+    }
+
+
+def expansion_manifest_fixture(records: list) -> dict:
+    return {
+        "schema": EXPANSION_MANIFEST_SCHEMA,
+        "generated": "1970-01-01T00:00:00+00:00",
+        "checkout": "<checkout>", "commit": "0" * 40,
+        "corpusFixtureSha256": "e" * 64,
+        "backends": ["webgl2", "webgpu"],
+        "recordCount": len(records),
+        "records": records,
+    }
+
+
+class ShaderExpansionProtocolTest(unittest.TestCase):
+    """The step-9 expansion contract: shape and claims, never this machine's numbers."""
+
+    def conforming(self) -> dict:
+        # Deliberately heterogeneous and deliberately tiny: the contract must
+        # hold for any corpus, so the fixture is not a stand-in for the real
+        # corpus and carries none of its counts.
+        varying_exact = _expansion_record(
+            "synth/perlin#default",
+            {"webgl2": _expansion_lane(), "webgpu": _expansion_lane()})
+        uniform_exact = _expansion_record(
+            "filter/invert#default",
+            {"webgl2": _expansion_lane(), "webgpu": _expansion_lane()})
+        uniform_exact["expectation"].update(
+            {"uniform": True, "spatiallyVarying": False, "flipSensitive": False})
+        one_sided = _expansion_record(
+            "synth/newton#default",
+            {"webgl2": _expansion_mismatch_lane(), "webgpu": _expansion_lane()})
+        refused = _expansion_record(
+            "mixer/mashup#default",
+            {"webgl2": _expansion_refused_lane(), "webgpu": _expansion_refused_lane()})
+        no_expectation = _expansion_record(
+            "synth/media#default",
+            {"webgl2": _expansion_refused_lane(code="ERR_NO_CPU_EXPECTATION",
+                                               stage="cpu_authority_render",
+                                               reason="requires external texture"),
+             "webgpu": _expansion_refused_lane(code="ERR_NO_CPU_EXPECTATION",
+                                               stage="cpu_authority_render",
+                                               reason="requires external texture")},
+            expectation={"status": "refused", "code": "ERR_NO_CPU_EXPECTATION",
+                         "stage": "cpu_authority_render",
+                         "message": "requires external texture"})
+        return expansion_manifest_fixture(
+            [varying_exact, uniform_exact, one_sided, refused, no_expectation])
+
+    def refusal(self, mutate) -> str:
+        manifest = self.conforming()
+        mutate(manifest)
+        with self.assertRaises(ExpansionContractError) as caught:
+            validate_expansion_manifest(manifest)
+        return str(caught.exception)
+
+    def test_a_conforming_manifest_and_its_summary_validate(self) -> None:
+        manifest = self.conforming()
+        validate_expansion_manifest(manifest)
+        summary = summarize_expansion_manifest(manifest)
+        validate_expansion_summary(summary, manifest)
+        self.assertEqual(summary["intersection"]["total"], 2)
+        self.assertEqual(summary["intersection"]["uniform"], 1)
+        self.assertEqual(summary["intersection"]["spatiallyVarying"], 1)
+        self.assertEqual(summary["intersection"]["flipSensitive"], 1)
+        self.assertEqual(summary["backends"]["webgl2"]["counts"],
+                         {"byte_exact": 2, "mismatch": 1, "refused": 2})
+        self.assertEqual(summary["backends"]["webgpu"]["counts"],
+                         {"byte_exact": 3, "mismatch": 0, "refused": 2})
+        self.assertEqual(
+            sorted(entry["id"] for entry in summary["exclusions"]),
+            ["mixer/mashup#default", "synth/media#default", "synth/newton#default"])
+
+    def test_the_contract_pins_no_hardware_dependent_count_or_identity(self) -> None:
+        # The same contract must accept a run on another adapter, at another
+        # resolution, with an entirely different distribution. If it did not,
+        # it would be pinning this machine rather than the protocol.
+        elsewhere = self.conforming()
+        for record in elsewhere["records"]:
+            record["width"] = 64
+            record["height"] = 64
+            for lane in record["lanes"].values():
+                if lane["status"] == "refused":
+                    continue
+                lane["adapter"]["webgl"]["renderer"] = "another vendor, another device"
+                lane["adapter"]["browser"] = "Chromium/other"
+                lane["timing"]["measured"]["resolution"] = {"width": 64, "height": 64, "pixels": 4096}
+                lane["timing"]["megapixelsPerSecond"] = 12.5
+                lane["timing"]["throughputSuppressedReason"] = None
+        validate_expansion_summary(summarize_expansion_manifest(elsewhere), elsewhere)
+
+        # And a manifest holding a single record, all lanes refused, is a
+        # legitimate expansion result: an empty intersection is a finding.
+        single = expansion_manifest_fixture([_expansion_record(
+            "mixer/mashup#default",
+            {"webgl2": _expansion_refused_lane(), "webgpu": _expansion_refused_lane()})])
+        summary = validate_expansion_summary(summarize_expansion_manifest(single), single)
+        self.assertEqual(summary["intersection"]["total"], 0)
+        self.assertEqual(len(summary["exclusions"]), 1)
+
+    def test_a_divergence_may_not_be_relabeled_as_an_exact_result(self) -> None:
+        def relabel(manifest):
+            lane = manifest["records"][2]["lanes"]["webgl2"]
+            lane["status"] = "byte_exact"
+        self.assertIn("relabeled failure", self.refusal(relabel))
+
+        def invent_status(manifest):
+            manifest["records"][2]["lanes"]["webgl2"]["status"] = "within_tolerance"
+        self.assertIn("status must be one of", self.refusal(invent_status))
+
+        def unproven_graph(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["graph"]["status"] = "projection_unavailable"
+        self.assertIn("cannot accompany a byte_exact lane", self.refusal(unproven_graph))
+
+        def exact_with_two_hashes(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["comparison"]["actualSha256"] = "9" * 64
+        self.assertIn("two different image hashes", self.refusal(exact_with_two_hashes))
+
+    def test_a_mismatch_must_carry_its_first_divergence_counts_and_both_hashes(self) -> None:
+        def drop_first(manifest):
+            manifest["records"][2]["lanes"]["webgl2"]["comparison"]["firstMismatch"] = None
+        self.assertIn("must name its first divergence", self.refusal(drop_first))
+
+        def drop_coordinate(manifest):
+            del manifest["records"][2]["lanes"]["webgl2"]["comparison"]["firstMismatch"]["channelName"]
+        self.assertIn("firstMismatch must name channelName", self.refusal(drop_coordinate))
+
+        def zero_count(manifest):
+            manifest["records"][2]["lanes"]["webgl2"]["comparison"]["mismatchCount"] = 0
+        self.assertIn("must count the bytes that diverged", self.refusal(zero_count))
+
+        def one_hash(manifest):
+            manifest["records"][2]["lanes"]["webgl2"]["comparison"]["actualSha256"] = "a" * 64
+        self.assertIn("two different image hashes", self.refusal(one_hash))
+
+    def test_a_refusal_must_name_its_code_stage_and_reason(self) -> None:
+        for key, expected in (("code", "must name an ERR_ code"),
+                              ("stage", "must name the stage that refused"),
+                              ("reason", "must carry a reason")):
+            def drop(manifest, key=key):
+                del manifest["records"][3]["lanes"]["webgl2"][key]
+            self.assertIn(expected, self.refusal(drop))
+
+        def silent_drop(manifest):
+            manifest["records"][3]["lanes"]["webgl2"]["code"] = "skipped"
+        self.assertIn("must name an ERR_ code", self.refusal(silent_drop))
+
+        def missing_lane(manifest):
+            del manifest["records"][3]["lanes"]["webgpu"]
+        self.assertIn("do not cover the declared backends", self.refusal(missing_lane))
+
+    def test_a_rendered_lane_must_be_options_bound_and_off_a_software_rasterizer(self) -> None:
+        def drifted(manifest):
+            binding = manifest["records"][0]["lanes"]["webgl2"]["optionsBinding"]
+            binding["status"] = "disagreement"
+            binding["differing"] = ["seed"]
+        self.assertIn("not a comparison of one program", self.refusal(drifted))
+
+        def software(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["adapter"]["software"] = True
+        self.assertIn("must be marked as one", self.refusal(software))
+
+        def anonymous(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["adapter"]["webgl"]["renderer"] = ""
+        self.assertIn("must name its renderer", self.refusal(anonymous))
+
+        def foreign_resolution(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["timing"]["measured"]["resolution"] = {
+                "width": 512, "height": 512, "pixels": 262144}
+        self.assertIn("resolution the record rendered at", self.refusal(foreign_resolution))
+
+        def comparable(manifest):
+            manifest["records"][0]["lanes"]["webgl2"]["timing"]["measured"]["comparableAcrossBackends"] = True
+        self.assertIn("comparable across backends", self.refusal(comparable))
+
+    def test_every_record_must_classify_its_expectation_image(self) -> None:
+        def unclassified(manifest):
+            del manifest["records"][0]["expectation"]["flipSensitive"]
+        self.assertIn("must classify flipSensitive", self.refusal(unclassified))
+
+        def both(manifest):
+            manifest["records"][0]["expectation"]["uniform"] = True
+        self.assertIn("not both or neither", self.refusal(both))
+
+        def impossible(manifest):
+            expectation = manifest["records"][1]["expectation"]
+            expectation["flipSensitive"] = True
+        self.assertIn("cannot be vertically flip-sensitive", self.refusal(impossible))
+
+    def test_the_manifest_must_bind_itself_to_a_tree_and_a_corpus(self) -> None:
+        def wrong_schema(manifest):
+            manifest["schema"] = "noisemaker-cpp.shader-expansion-manifest.v0"
+        self.assertIn("schema must be", self.refusal(wrong_schema))
+
+        for key in ("commit", "corpusFixtureSha256", "backends"):
+            def drop(manifest, key=key):
+                del manifest[key]
+            self.assertIn(f"must carry {key}", self.refusal(drop))
+
+        def miscounted(manifest):
+            manifest["recordCount"] = manifest["recordCount"] + 1
+        self.assertIn("recordCount must equal", self.refusal(miscounted))
+
+        def one_backend(manifest):
+            manifest["backends"] = ["webgl2"]
+            for record in manifest["records"]:
+                del record["lanes"]["webgpu"]
+        self.assertIn("at least two named, distinct backends", self.refusal(one_backend))
+
+    def summary_refusal(self, mutate) -> str:
+        manifest = self.conforming()
+        summary = summarize_expansion_manifest(manifest)
+        mutate(summary)
+        with self.assertRaises(ExpansionContractError) as caught:
+            validate_expansion_summary(summary, manifest)
+        return str(caught.exception)
+
+    def test_an_exact_claim_must_publish_the_uniform_varying_flip_split(self) -> None:
+        for key in ("uniform", "spatiallyVarying", "flipSensitive"):
+            def drop(summary, key=key):
+                del summary["intersection"][key]
+            self.assertIn(f"must publish {key}", self.summary_refusal(drop))
+
+        def inflate(summary):
+            summary["intersection"]["total"] += 1
+        self.assertIn("must partition the intersection", self.summary_refusal(inflate))
+
+        def more_flip_than_varying(summary):
+            summary["intersection"]["flipSensitive"] = summary["intersection"]["spatiallyVarying"] + 1
+        self.assertIn("spatially varying by construction", self.summary_refusal(more_flip_than_varying))
+
+    def test_every_excluded_record_must_carry_its_own_reason(self) -> None:
+        def drop_ledger(summary):
+            summary["exclusions"] = []
+        self.assertIn("intersection or in the exclusion ledger", self.summary_refusal(drop_ledger))
+
+        def blank_reason(summary):
+            summary["exclusions"][0]["reason"] = ""
+        self.assertIn("every exclusion must carry its own reason", self.summary_refusal(blank_reason))
+
+        def double_count(summary):
+            summary["intersection"]["ids"] = sorted(
+                set(summary["intersection"]["ids"]) | {summary["exclusions"][0]["id"]})
+            summary["intersection"]["total"] += 1
+            summary["intersection"]["spatiallyVarying"] += 1
+        self.assertIn("both counted and excluded", self.summary_refusal(double_count))
+
+        def hide_refusals(summary):
+            del summary["backends"]["webgl2"]["counts"]["refused"]
+        self.assertIn("including refusals", self.summary_refusal(hide_refusals))
+
+    def test_the_summary_may_not_publish_a_cross_backend_performance_figure(self) -> None:
+        def speedup(summary):
+            summary["timing"]["speedup"] = 4.1
+        self.assertIn("may not publish a cross-backend comparison", self.summary_refusal(speedup))
+
+        def comparable(summary):
+            summary["timing"]["webgl2"]["comparableAcrossBackends"] = True
+        self.assertIn("not comparable across backends", self.summary_refusal(comparable))
+
+        def unlabelled(summary):
+            summary["timing"]["webgl2"]["resolutions"] = []
+        self.assertIn("must name the resolution", self.summary_refusal(unlabelled))
+
+    def test_the_summary_must_name_the_adapter_each_lane_ran_on(self) -> None:
+        def anonymous(summary):
+            summary["adapters"]["webgl2"] = []
+        self.assertIn("must name the adapter", self.summary_refusal(anonymous))
+
+        def nameless(summary):
+            summary["adapters"]["webgl2"][0]["renderer"] = ""
+        self.assertIn("must name its renderer", self.summary_refusal(nameless))
+
+
 if __name__ == "__main__":
     unittest.main()
