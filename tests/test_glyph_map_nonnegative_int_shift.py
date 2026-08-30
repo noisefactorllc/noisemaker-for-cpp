@@ -415,17 +415,17 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "471d70bd17b72e9e50548ef7f1d7939b50398098999824039770eb68f4875579",
+                "ff1ec28034d0980190e18b2d9911f2e362d65226485fee55581799748d08762b",
             "src/typed_generated/typed_manifest.json":
-                "64f714e8e6841c09d650d72f1f421bc0fa4050d33854f487cca4ce10ed944b19",
+                "7fe7b5a68dd7a9e9434e479294983202ea316376589c5958c9f1746bf167c801",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "3fe47617ee297fae87814eb4cad8000eef99778cc7e2c807581f7d20646b1f6d",
+                "f64bcd72cd3b930c4ea5158fb54d05e98d3c819a9162ee02904350d9d5bd75bd",
             "src/typed_generated/typed_manifest.json":
-                "197d82d740d5861c9dfd8ec681e6ffaef0ae0cfea0864bb60a9edd8d89cf7590",
+                "4b7bf718133ad9ccb206b515589a63af5bb8b7d8b71220b82acd8a669825c00c",
             "include/noisemaker/generated/catalog.hpp":
                 "e1e42ad869ed3095a2fe263d36cc5ca59d45939044d3fa8bc1beaa2f5fb10888",
         }

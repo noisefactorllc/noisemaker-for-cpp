@@ -2891,8 +2891,8 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            (1007593,
-             "3a8cd1ca9688c49f5889c48d8b110bfaca86f651fa8d79ae588bd7e078609492"),
+            (1007614,
+             "c2c492a949ba39ba0a115352d05c0f930469433a7b0765cf9c295fcf5e756241"),
             (len(prior_cpp.encode()),
              hashlib.sha256(prior_cpp.encode()).hexdigest()))
 
@@ -11308,7 +11308,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': 'a4c7a41df6447023dc16b3ecb2b63240d0d4ec5730f7221790b12fb46a364e88'},
+                     'source_sha256': '65ff742e8c5c78e5d2a366549f6275fbccb7e6734b0d6f23d095b239cb985ce5'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11364,7 +11364,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': 'a4c7a41df6447023dc16b3ecb2b63240d0d4ec5730f7221790b12fb46a364e88'},
+                     'source_sha256': '65ff742e8c5c78e5d2a366549f6275fbccb7e6734b0d6f23d095b239cb985ce5'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],

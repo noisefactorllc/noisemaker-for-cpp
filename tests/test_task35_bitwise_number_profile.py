@@ -377,11 +377,11 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         # this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "ee17e21b795a3aee7ddd068c121531d36a3e23d7803215120a1215cf937a9ba1",
+            "815611bf2ee69cfddd455a988172f211b5a13daea0593390ca049f8ecdf21777",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
         self.assertEqual(
-            "82a01d26f20092cdd300b6fb1ae64d28b1f97e9fdb70a47dcb02d56c5b9a8ea0",
+            "570fb941955de6e5a5214c36b2a86055e13ef6120d8ef88a489ece0c5050459f",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_manifest.json"]).hexdigest())
 
