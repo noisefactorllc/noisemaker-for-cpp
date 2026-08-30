@@ -106,8 +106,9 @@ GraphResource& ResourceArena::insert(std::string name,
     throw;
   }
   // A superseded route does not by itself retire the pointee: another named
-  // alias may still be the executor's next input and must remain bindable.
-  if (previous != nullptr && !has_alias(*previous)) {
+  // alias, or a pin held by the executor's effect scope, may still be the
+  // executor's next input and must remain bindable.
+  if (previous != nullptr && !is_referenced(*previous)) {
     previous->retired_ = true;
     collect_retired(*previous);
   }
@@ -152,7 +153,7 @@ void ResourceArena::alias(std::string name, GraphResource& resource) {
   // Replacing one alias leaves the previous resource active whenever another
   // alias still names it; only its final alias removal makes it retireable.
   if (previous != nullptr && previous != &resource &&
-      !has_alias(*previous)) {
+      !is_referenced(*previous)) {
     previous->retired_ = true;
     collect_retired(*previous);
   }
@@ -165,7 +166,7 @@ void ResourceArena::remove_alias(std::string_view name) {
   }
   GraphResource* resource = iterator->second;
   named_.erase(iterator);
-  if (!has_alias(*resource)) {
+  if (!is_referenced(*resource)) {
     resource->retired_ = true;
     collect_retired(*resource);
   }
@@ -220,9 +221,46 @@ void ResourceArena::retire(GraphResource& resource) noexcept {
   collect_retired(resource);
 }
 
+void ResourceArena::pin(GraphResource& resource) {
+  if (!owns(resource)) {
+    throw std::invalid_argument("resource does not belong to arena");
+  }
+  if (resource.retired_) {
+    throw std::logic_error("cannot pin a retired resource");
+  }
+  if (resource.pin_count_ == std::numeric_limits<std::size_t>::max()) {
+    throw std::overflow_error("resource pin count overflow");
+  }
+  ++resource.pin_count_;
+}
+
+void ResourceArena::unpin(GraphResource& resource) noexcept {
+  if (!owns(resource) || resource.pin_count_ == 0U) {
+    return;
+  }
+  --resource.pin_count_;
+  // Dropping the last pin is the loss of a reference, exactly as removing the
+  // last alias is, so it retires an otherwise unreachable resource here rather
+  // than leaving it owned until the arena dies.
+  if (!is_referenced(resource)) {
+    resource.retired_ = true;
+  }
+  collect_retired(resource);
+}
+
+ResourceArena::ScopedPin::ScopedPin(ResourceArena& arena,
+                                    GraphResource* resource)
+    : arena_(arena), resource_(resource) {
+  if (resource_ != nullptr) arena_.pin(*resource_);
+}
+
+ResourceArena::ScopedPin::~ScopedPin() {
+  if (resource_ != nullptr) arena_.unpin(*resource_);
+}
+
 void ResourceArena::collect_retired(GraphResource& resource) noexcept {
   if (!owns(resource) || !resource.retired_ || resource.borrow_count_ != 0U ||
-      has_alias(resource)) {
+      is_referenced(resource)) {
     return;
   }
   const auto iterator = std::find_if(
@@ -239,6 +277,10 @@ bool ResourceArena::has_alias(const GraphResource& resource) const noexcept {
   return std::any_of(
       named_.begin(), named_.end(),
       [&resource](const auto& entry) { return entry.second == &resource; });
+}
+
+bool ResourceArena::is_referenced(const GraphResource& resource) const noexcept {
+  return resource.pin_count_ != 0U || has_alias(resource);
 }
 
 bool ResourceArena::owns(const GraphResource& resource) const noexcept {

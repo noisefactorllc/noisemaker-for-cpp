@@ -309,13 +309,19 @@ std::string sha256_bytes(const std::vector<std::uint8_t>& bytes) {
       std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size()));
 }
 
+// Every error-derived string goes through `json_string`. None of this text is
+// under the driver's control: the DSL frontend builds `Expected ")"` and
+// `Unexpected character "{"` with literal quote characters, and a refusal is a
+// recorded outcome the corpus lane parses as JSON. Interpolating that text
+// between bare quote characters emitted a record no parser accepts. Only the
+// enum code and the fixed field names are literal here.
 std::string refusal_record(std::string_view schema, const graph::GraphError& error) {
   std::string out = "{";
   out += "\"schema\":" + json_string(schema) + ",";
   out += "\"status\":\"refused\",";
   out += "\"code\":\"" + std::to_string(static_cast<unsigned>(error.code())) + "\",";
-  out += "\"detail\":\"" + std::string(error.detail()) + "\",";
-  out += "\"programKey\":\"" + std::string(error.program_key()) + "\"}";
+  out += "\"detail\":" + json_string(error.detail()) + ",";
+  out += "\"programKey\":" + json_string(error.program_key()) + "}";
   return out;
 }
 
@@ -323,7 +329,7 @@ std::string refusal_record(std::string_view schema, const std::exception& error)
   std::string out = "{";
   out += "\"schema\":" + json_string(schema) + ",";
   out += "\"status\":\"refused\",";
-  out += "\"code\":\"exception\",\"detail\":\"" + std::string(error.what()) + "\"}";
+  out += "\"code\":\"exception\",\"detail\":" + json_string(error.what()) + "}";
   return out;
 }
 

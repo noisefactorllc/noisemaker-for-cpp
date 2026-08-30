@@ -49,6 +49,21 @@ class ResourceArenaTestAccess {
   static void remove_alias(ResourceArena& arena, std::string_view name) {
     arena.remove_alias(name);
   }
+
+  static void pin(ResourceArena& arena, GraphResource& resource) {
+    arena.pin(resource);
+  }
+
+  static void unpin(ResourceArena& arena, GraphResource& resource) {
+    arena.unpin(resource);
+  }
+
+  // The executor holds its effect input through the scoped form, so the tests
+  // exercise that form rather than a hand-balanced pin/unpin pair.
+  [[nodiscard]] static ResourceArena::ScopedPin scoped_pin(
+      ResourceArena& arena, GraphResource* resource) {
+    return ResourceArena::ScopedPin(arena, resource);
+  }
 };
 
 }  // namespace noisemaker::graph
@@ -284,4 +299,146 @@ TEST(graph_resource_rejected_allocation_does_not_publish_partial_resource) {
                         noisemaker::graph::ResourceLifetime::transient),
                     std::invalid_argument);
   REQUIRE(arena.size() == 0U);
+}
+
+// ---------------------------------------------------------------------------
+// MAJOR-3 of the 2026-08-29 publication review: the executor holds its effect
+// input as a raw `GraphResource*` for the whole effect, while a non-final pass
+// that publishes over the one arena name that input holds retires the pointee
+// (`insert`) and the next `release_borrowed` erases it (`release` ->
+// `collect_retired`). A later pass resolving `inputTex` then dereferenced freed
+// memory. `filter/temporalAberration` has exactly that shape. The cases below
+// drive the arena through the executor's own call sequence.
+// ---------------------------------------------------------------------------
+
+namespace {
+
+noisemaker::Surface patterned_surface(std::size_t width, std::size_t height,
+                                      float base) {
+  std::vector<float> data(width * height * 4U);
+  for (std::size_t index = 0; index < data.size(); ++index) {
+    data[index] = base + static_cast<float>(index);
+  }
+  return noisemaker::Surface(width, height, std::move(data));
+}
+
+void require_surface_equals(const noisemaker::Surface& actual,
+                            const noisemaker::Surface& expected) {
+  REQUIRE(actual.width() == expected.width());
+  REQUIRE(actual.height() == expected.height());
+  REQUIRE(actual.data().size() == expected.data().size());
+  for (std::size_t index = 0; index < expected.data().size(); ++index) {
+    REQUIRE(actual.data()[index] == expected.data()[index]);
+  }
+}
+
+}  // namespace
+
+TEST(graph_resource_pinned_effect_input_survives_a_republished_route) {
+  using Access = noisemaker::graph::ResourceArenaTestAccess;
+  noisemaker::graph::ResourceArena arena;
+  const auto original = patterned_surface(2U, 1U, 0.5F);
+  auto& seeded = Access::copy(arena, "outputTex", original,
+                              noisemaker::TextureFormat::rgba32f,
+                              noisemaker::graph::ResourceLifetime::transient);
+  // The executor's capture: one raw pointer, held for the whole effect.
+  noisemaker::graph::GraphResource* const effect_input = &seeded;
+  noisemaker::graph::GraphResource* published = nullptr;
+  {
+    const auto effect_input_pin = Access::scoped_pin(arena, effect_input);
+
+    // Pass 0 binds `inputTex`, publishes over `outputTex`, releases its borrow.
+    Access::retain(arena, *effect_input);
+    published = &Access::allocate(arena, "outputTex", 3U, 2U,
+                                  noisemaker::TextureFormat::rgba16f,
+                                  noisemaker::graph::ResourceLifetime::transient);
+    Access::release(arena, *effect_input);
+
+    // Pass 1: the route has moved on; the effect's own input has not.
+    REQUIRE(&arena.require("outputTex") == published);
+    REQUIRE(arena.size() == 2U);
+    // `resolve_route` dereferences before the sampler loop retains
+    // (`ResolvedRoute{resource, &resource->surface()}`), so the read comes
+    // first -- that is the dereference that read freed memory.
+    require_surface_equals(effect_input->surface(), original);
+    // And it is still bindable: a bare borrow would have kept the memory but
+    // left the resource retired, and this retain would throw.
+    Access::retain(arena, *effect_input);
+    Access::release(arena, *effect_input);
+  }
+  // The effect ended: the input is reclaimed, exactly once, and only the
+  // published route remains.
+  REQUIRE(arena.size() == 1U);
+  REQUIRE(&arena.require("outputTex") == published);
+}
+
+TEST(graph_resource_pinned_effect_input_survives_every_repeat_of_one_pass) {
+  using Access = noisemaker::graph::ResourceArenaTestAccess;
+  noisemaker::graph::ResourceArena arena;
+  const auto original = patterned_surface(2U, 2U, 3.25F);
+  auto& seeded = Access::copy(arena, "outputTex", original,
+                              noisemaker::TextureFormat::rgba32f,
+                              noisemaker::graph::ResourceLifetime::transient);
+  noisemaker::graph::GraphResource* const effect_input = &seeded;
+  {
+    // One pass with `repeat > 1` reading `inputTex` and writing `outputTex`
+    // is the same hazard, once per iteration. Holding the input must not make
+    // the arena grow with the repeat count.
+    const auto effect_input_pin = Access::scoped_pin(arena, effect_input);
+    for (std::size_t iteration = 0; iteration < 64U; ++iteration) {
+      Access::retain(arena, *effect_input);
+      Access::allocate(arena, "outputTex", 1U, 1U,
+                       noisemaker::TextureFormat::rgba16f,
+                       noisemaker::graph::ResourceLifetime::transient);
+      Access::release(arena, *effect_input);
+      REQUIRE(arena.size() == 2U);
+      require_surface_equals(effect_input->surface(), original);
+    }
+  }
+  REQUIRE(arena.size() == 1U);
+}
+
+TEST(graph_resource_pin_is_an_unnamed_alias_for_retirement) {
+  using Access = noisemaker::graph::ResourceArenaTestAccess;
+  noisemaker::graph::ResourceArena arena;
+  auto& held = Access::allocate(arena, "route", 1U, 1U,
+                                noisemaker::TextureFormat::rgba16f,
+                                noisemaker::graph::ResourceLifetime::transient);
+  Access::pin(arena, held);
+  Access::alias(arena, "second", held);
+  auto& replacement = Access::allocate(arena, "route", 2U, 2U,
+                                       noisemaker::TextureFormat::rgba32f,
+                                       noisemaker::graph::ResourceLifetime::published);
+  REQUIRE(arena.size() == 2U);
+
+  // Neither reference alone releases it, in either order.
+  Access::remove_alias(arena, "second");
+  REQUIRE(arena.size() == 2U);
+  REQUIRE(held.width() == 1U);
+  Access::pin(arena, held);
+  Access::unpin(arena, held);
+  REQUIRE(arena.size() == 2U);
+
+  // Dropping the last reference retires and collects it, exactly as removing
+  // the last alias does.
+  Access::unpin(arena, held);
+  REQUIRE(arena.size() == 1U);
+  REQUIRE(&arena.require("route") == &replacement);
+
+  // An unpin with no pin outstanding is a no-op, not an underflow.
+  Access::unpin(arena, replacement);
+  REQUIRE(arena.size() == 1U);
+  REQUIRE(&arena.require("route") == &replacement);
+}
+
+TEST(graph_resource_pin_rejects_a_foreign_resource) {
+  using Access = noisemaker::graph::ResourceArenaTestAccess;
+  noisemaker::graph::ResourceArena arena;
+  noisemaker::graph::ResourceArena foreign_arena;
+  auto& foreign = Access::allocate(foreign_arena, "foreign", 1U, 1U,
+                                   noisemaker::TextureFormat::rgba16f,
+                                   noisemaker::graph::ResourceLifetime::transient);
+  REQUIRE_THROWS_AS(Access::pin(arena, foreign), std::invalid_argument);
+  Access::unpin(arena, foreign);
+  REQUIRE(foreign_arena.size() == 1U);
 }

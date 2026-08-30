@@ -54,6 +54,10 @@ class GraphResource final {
   noisemaker::TextureFormat format_;
   ResourceLifetime lifetime_;
   std::size_t borrow_count_ = 0;
+  // A pin is an unnamed alias: it holds a reference that no route publication
+  // can take away, so a pinned resource stays both alive and bindable even
+  // after the last name that reached it has moved to a newer pointee.
+  std::size_t pin_count_ = 0;
   bool retired_ = false;
 };
 
@@ -93,11 +97,40 @@ class ResourceArena final {
   void retain(GraphResource& resource);
   void release(GraphResource& resource) noexcept;
   void retire(GraphResource& resource) noexcept;
+  // Add or drop an unnamed reference. A borrow is not a substitute: a borrowed
+  // resource whose route was republished is retired, and retiring it makes the
+  // next `retain` throw, so the executor could not re-bind an effect input it
+  // is still contractually holding. A pin keeps the resource unretired for as
+  // long as it is held, and dropping the last pin retires and collects exactly
+  // as removing the last alias does.
+  void pin(GraphResource& resource);
+  void unpin(GraphResource& resource) noexcept;
   void collect_retired(GraphResource& resource) noexcept;
   [[nodiscard]] bool has_alias(const GraphResource& resource) const noexcept;
+  // Any name or any pin still reaching this resource. Retirement is exactly
+  // the loss of the last reference of either kind.
+  [[nodiscard]] bool is_referenced(const GraphResource& resource) const noexcept;
   [[nodiscard]] bool owns(const GraphResource& resource) const noexcept;
   static noisemaker::Surface copy_surface_preserving_filter(
       const noisemaker::Surface& source);
+
+  // A pin held for a lexical scope. The executor's effect scope has one normal
+  // exit and several throwing ones, so the pin is released by destruction
+  // rather than by a statement a later edit could route around. Holding a null
+  // resource is a no-op, which is the executor's first-effect case.
+  class ScopedPin final {
+   public:
+    ScopedPin(ResourceArena& arena, GraphResource* resource);
+    ~ScopedPin();
+    ScopedPin(const ScopedPin&) = delete;
+    ScopedPin& operator=(const ScopedPin&) = delete;
+    ScopedPin(ScopedPin&&) = delete;
+    ScopedPin& operator=(ScopedPin&&) = delete;
+
+   private:
+    ResourceArena& arena_;
+    GraphResource* resource_ = nullptr;
+  };
 
   std::vector<std::unique_ptr<GraphResource>> owned_;
   std::unordered_map<std::string, GraphResource*> named_;

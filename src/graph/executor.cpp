@@ -12,6 +12,9 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <locale.h>
+#if defined(__APPLE__)
+#include <xlocale.h>  // Darwin declares strtod_l here, not in <locale.h>.
+#endif
 #include <limits>
 #include <optional>
 #include <sstream>
@@ -1894,6 +1897,21 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         // that effect publishes an output; a later pass never re-reads its own
         // effect's result through the implicit input route.
         GraphResource* const effect_input = current;
+        // Holding that binding as a raw pointer is only sound while the arena
+        // keeps the pointee. It does not by default: when a non-final pass
+        // publishes over the one arena name the input holds, `insert` finds no
+        // remaining alias and retires the pointee, and the first
+        // `release_borrowed` after that erases it -- so a later pass resolving
+        // `inputTex` read freed memory. `filter/temporalAberration` has exactly
+        // that shape (pass `main` writes `outputTex`, pass `shift1` reads
+        // `inputTex`), and a single pass with `repeat > 1` over the same routes
+        // has it too. The pin makes the effect's own binding a reference the
+        // arena honours for the whole effect: the input stays alive *and*
+        // unretired, so a later pass can still `retain` it, and the input's
+        // pre-effect bytes are what that pass sees -- which is the authority's
+        // semantics. A borrow alone would keep the memory but leave the
+        // resource retired, turning the later `retain` into a throw.
+        const ResourceArena::ScopedPin effect_input_pin(arena, effect_input);
         // initializeCanonicalResources(): create and clear every declared
         // texture that no pass of this effect produces, at its own declared
         // extent and format, before the first pass runs.
