@@ -29,6 +29,11 @@ def authority():
     if not value or not pathlib.Path(value).is_dir(): pytest.skip('NOISEMAKER_CPU_ROOT unavailable')
     return pathlib.Path(value)
 
+def live():
+    value = os.environ.get('NOISEMAKER_FOR_CPU')
+    if not value or not pathlib.Path(value).is_dir(): pytest.skip('NOISEMAKER_FOR_CPU unavailable')
+    return pathlib.Path(value)
+
 def materializer_module():
     spec = importlib.util.spec_from_file_location('testpattern_materializer', MATERIALIZER)
     assert spec and spec.loader
@@ -176,7 +181,7 @@ def test_generator_anchor_rejects_materializer_and_manifest_forgery():
         for path in (report, ORACLE, INCLUDE): path.with_name(path.name+'.sha256').write_text(f'{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.name}\n')
         manifest=json.loads(originals[COHERENCE]); manifest['report_sha256']=hashlib.sha256(report.read_bytes()).hexdigest(); manifest['oracle_sha256']=hashlib.sha256(ORACLE.read_bytes()).hexdigest(); manifest['include_sha256']=hashlib.sha256(INCLUDE.read_bytes()).hexdigest()
         payload=(json.dumps(manifest,indent=2)+'\n').encode(); COHERENCE.write_bytes(payload); COHERENCE.with_name(COHERENCE.name+'.sha256').write_text(f'{hashlib.sha256(payload).hexdigest()}  {COHERENCE.name}\n')
-        result=run_generator('--check','--cpu-root',str(authority()),env={**os.environ,'NOISEMAKER_FOR_CPU':'/Users/aayars/platform/noisemaker-for-cpu'})
+        result=run_generator('--check','--cpu-root',str(authority()),env={**os.environ,'NOISEMAKER_FOR_CPU':str(live())})
         assert result.returncode != 0 and 'coherence content anchor drift' in result.stderr
     finally:
         for path,payload in originals.items(): path.write_bytes(payload)
@@ -194,7 +199,7 @@ def test_coherence_anchor_rejects_coordinated_manifest_forgery():
         payload=(json.dumps(manifest,indent=2)+'\n').encode(); COHERENCE.write_bytes(payload); COHERENCE.with_name(COHERENCE.name+'.sha256').write_text(f'{hashlib.sha256(payload).hexdigest()}  {COHERENCE.name}\n')
         materialized=subprocess.run(['python3',str(MATERIALIZER),'--check'],cwd=ROOT,text=True,capture_output=True)
         assert materialized.returncode != 0 and 'content anchor' in materialized.stderr
-        forged_env={**os.environ,'NOISEMAKER_FOR_CPU':'/Users/aayars/platform/noisemaker-for-cpu'}
+        forged_env={**os.environ,'NOISEMAKER_FOR_CPU':str(live())}
         generated=run_generator('--check','--cpu-root',str(authority()),env=forged_env)
         assert generated.returncode != 0 and ('coherence content anchor drift' in generated.stderr or 'anchored materializer coherence check failed' in generated.stderr)
     finally:

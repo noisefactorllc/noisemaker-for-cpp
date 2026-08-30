@@ -8,8 +8,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AUTHORITY = Path("/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu")
-LIVE = Path("/Users/aayars/platform/noisemaker-for-cpu")
+# No defaults: the frozen CPU authority and the live checkout live outside
+# the repository at machine-specific locations, so they must arrive by env.
+AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 PARALLAX = ROOT / "docs/port-engineering/counted-for-parity/parallax190_oracle_generator.mjs"
 GLITCH = ROOT / "docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs"
 
@@ -29,6 +31,10 @@ def run(generator, *args, env=None):
 
 
 class PublicationRootContractTests(unittest.TestCase):
+    def setUp(self) -> None:
+        if not AUTHORITY.is_dir() or not LIVE.is_dir():
+            self.skipTest("NOISEMAKER_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
+
     def test_both_generators_accept_only_explicit_a_and_l(self):
         for generator in (PARALLAX, GLITCH):
             result = run(

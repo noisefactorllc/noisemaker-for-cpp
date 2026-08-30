@@ -20,8 +20,10 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_moodscape_native_oracle_include.py
 ORACLE = PACKAGE / "moodscape-oracles.json"
 REPORT = PACKAGE / "moodscape-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/moodscape_expected.inc"
-AUTHORITY = Path("/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu")
-LIVE = Path("/Users/aayars/platform/noisemaker-for-cpu")
+# No defaults: the frozen CPU authority and the live checkout live outside
+# the repository at machine-specific locations, so they must arrive by env.
+AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 SOURCE = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/moodscape/moodscape.glsl"
 
 

@@ -19,12 +19,13 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_distortion_native_oracle_include.p
 ORACLE = PACKAGE / "distortion-oracles.json"
 REPORT = PACKAGE / "distortion-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/distortion_expected.inc"
-AUTHORITY = Path("/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu")
-DEFAULT_LIVE_CPU = Path("/Users/aayars/platform/noisemaker-for-cpu")
+# No defaults: the frozen CPU authority and the live checkout live outside
+# the repository at machine-specific locations, so they must arrive by env.
+AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
 
 
 def live_cpu_checkout() -> Path:
-    candidate = Path(os.environ.get("NOISEMAKER_FOR_CPU", DEFAULT_LIVE_CPU))
+    candidate = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
     if not candidate.is_dir():
         raise unittest.SkipTest(f"live noisemaker-for-cpu unavailable: {candidate}")
     return candidate

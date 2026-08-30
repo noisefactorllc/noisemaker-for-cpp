@@ -13,13 +13,19 @@ import tools.dsl.generate_effect_catalog as generator
 from tools.dsl.generate_effect_catalog import CatalogError, _canonical_json_value, _decode, load_export
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CPU = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT", "/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu"))
-SHADER = pathlib.Path(os.environ.get("NOISEMAKER_SHADER_GIT", "/Users/aayars/platform/noisemaker"))
+# No defaults: the frozen CPU authority and the live checkout live outside
+# the repository at machine-specific locations, so they must arrive by env.
+CPU = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+SHADER = pathlib.Path(os.environ.get("NOISEMAKER_SHADER_GIT") or "/nonexistent")
 EXPORTER = ROOT / "tools/dsl/export_cpu_catalog.mjs"
 GENERATOR = ROOT / "tools/dsl/generate_effect_catalog.py"
 
 
 class EffectCatalogGeneratorTests(unittest.TestCase):
+    def setUp(self) -> None:
+        if not CPU.is_dir() or not SHADER.is_dir():
+            self.skipTest("NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT are required")
+
     def run_generator(self, *args: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
             ["python3", "-B", str(GENERATOR), *args], cwd=ROOT, text=True,

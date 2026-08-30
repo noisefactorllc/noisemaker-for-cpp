@@ -14,8 +14,10 @@ import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..')
-const LEDGER_PATH = '/private/tmp/noisemaker-cpp-continuation.e033lt/oracle.sha256'
-const AUTHORITY_LEDGER_ROOT = '/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu'
+// The oracle ledger and the frozen CPU authority live outside the repository
+// at machine-specific locations, so both must arrive by environment.
+const LEDGER_PATH = process.env.NOISEMAKER_ORACLE_LEDGER ? path.resolve(process.env.NOISEMAKER_ORACLE_LEDGER) : ''
+const AUTHORITY_LEDGER_ROOT = process.env.NOISEMAKER_CPU_ROOT ? path.resolve(process.env.NOISEMAKER_CPU_ROOT) : ''
 const EXPECTED_LEDGER_ENTRIES = 713
 const EXPECTED_NODE_MAJOR = 22
 const CPU_PACKAGE_SHA256 = 'c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a'
@@ -133,7 +135,12 @@ function moduleKey(root, file) {
   return relative.split(path.sep).join('/')
 }
 
+function requireLedgerEnvironment() {
+  if (!LEDGER_PATH || !AUTHORITY_LEDGER_ROOT) fail('NOISEMAKER_ORACLE_LEDGER and NOISEMAKER_CPU_ROOT must name the oracle ledger and the frozen CPU authority')
+}
+
 function verifyLedger() {
+  requireLedgerEnvironment()
   const ledger = realPathOrFail(LEDGER_PATH, 'oracle ledger')
   const lines = readBytes(ledger).toString('utf8').split(/\r?\n/).filter(Boolean)
   if (lines.length !== EXPECTED_LEDGER_ENTRIES) fail(`oracle ledger entry count mismatch: expected ${EXPECTED_LEDGER_ENTRIES}, received ${lines.length}`)
@@ -186,6 +193,7 @@ function verifyPinnedRoot(root) {
 }
 
 function authenticateClosure(root) {
+  requireLedgerEnvironment()
   const ledgerBytes = readBytes(realPathOrFail(LEDGER_PATH, 'oracle ledger')).toString('utf8')
   const ledgerHashes = new Map()
   for (const line of ledgerBytes.split(/\r?\n/).filter(Boolean)) {

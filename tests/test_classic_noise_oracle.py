@@ -20,8 +20,10 @@ ORACLE = PACKAGE / "classic-noise-oracles.json"
 REPORT = PACKAGE / "classic-noise-oracle-report.md"
 MATERIALIZER = ROOT / "tools/glslcpp/generate_classic_noise_native_oracle_include.py"
 INCLUDE = ROOT / "tests/oracles/classic_noise_expected.inc"
-AUTHORITY = Path("/private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu")
-LIVE = Path("/Users/aayars/platform/noisemaker-for-cpu")
+# No defaults: the frozen CPU authority and the live checkout live outside
+# the repository at machine-specific locations, so they must arrive by env.
+AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 
 
 def checked(path):
