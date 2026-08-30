@@ -34,8 +34,8 @@ namespace {
 constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
 
 [[noreturn]] void usage(std::string_view message) {
-  std::cerr << "run_cpp_case: " << message << "\n"
-            << "usage: run_cpp_case --source-file ABS --source-sha256 HEX"
+  std::cerr << "noisemaker-dsl-cpu-case: " << message << "\n"
+            << "usage: noisemaker-dsl-cpu-case --source-file ABS --source-sha256 HEX"
                " --width N --height N --time D --frame N --seed D"
                " --rgba8-output ABS --metadata-output ABS"
                " [--record-id STRING] [--repo-root ABS]"
@@ -95,14 +95,14 @@ int main(int argc, char** argv) {
       nb::require_external_output_path(relation_output, repo_root);
     }
   } catch (const nb::CaseContractError& error) {
-    std::cerr << "run_cpp_case: " << error.what() << "\n";
+    std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";
     return error.exit_code();
   }
 
   const std::string source = read_file(source_path);
   const auto actual_sha256 = noisemaker::graph::detail::sha256(source);
   if (actual_sha256 != expected_sha256) {
-    std::cerr << "run_cpp_case: case source sha256 mismatch\n";
+    std::cerr << "noisemaker-dsl-cpu-case: case source sha256 mismatch\n";
     return nb::kExitSourceDigestMismatch;
   }
 
@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
       relation_document = nb::serialize_relation(relation, 0) + "\n";
     }
   } catch (const nb::CaseContractError& error) {
-    std::cerr << "run_cpp_case: " << error.what() << "\n";
+    std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";
     return error.exit_code();
   } catch (const noisemaker::graph::GraphError& error) {
     // A structured refusal is a first-class outcome: the caller records the
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
     if (!relation_output.empty()) nb::write_text_file(relation_output, relation_document);
     nb::write_text_file(metadata_output, metadata.str());
   } catch (const nb::CaseContractError& error) {
-    std::cerr << "run_cpp_case: " << error.what() << "\n";
+    std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";
     return error.exit_code();
   }
   std::cout << metadata.str();

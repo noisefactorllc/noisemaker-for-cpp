@@ -95,6 +95,84 @@ reference.
 
 ## Use
 
+### Render a DSL program
+
+`noisemaker-render` is the command-line front end. Build it, point it at a DSL
+program, and you get a PNG:
+
+```bash
+cmake --build build --target noisemaker-render
+
+./build/noisemaker-render tests/fixtures/dsl/blur.dsl   # writes blur.png
+```
+
+With no options it renders 512x512 at time 0, frame 0, seed 1, and writes the
+program's own name with a `.png` extension into the current directory. Every
+option is optional and paths may be relative:
+
+```bash
+./build/noisemaker-render program.dsl -o out.png
+./build/noisemaker-render program.dsl --width 512 --height 512 --seed 7 \
+    --time 0.5 --frame 3
+```
+
+| option | default | meaning |
+|---|---|---|
+| `-o`, `--output PATH` | the program's basename + `.png` | PNG to write |
+| `--width N` | 512 | pixels across |
+| `--height N` | 512 | pixels down |
+| `--time D` | 0 | animation time in seconds |
+| `--frame N` | 0 | frame counter |
+| `--seed D` | 1 | seed |
+| `--raw-rgba8 PATH` | — | also write raw top-down RGBA8 bytes |
+| `--metadata PATH` | — | also write a JSON document describing the render |
+
+**No environment variables are needed to render.** The renderer reads nothing
+but the program file you name. (The parity lane in
+[Tests](#tests) is the only thing that needs the external JS authority.)
+
+A DSL program names effects from the catalog. To see what is available:
+
+```bash
+./build/noisemaker-render --list-effects   # every catalog key, sorted
+```
+
+Rendering is fail-closed. A program the executor will not run is refused with
+the executor's own reason and a nonzero exit status, and nothing is written:
+
+```
+$ ./build/noisemaker-render snow.dsl
+noisemaker-render: snow.dsl cannot be rendered, so nothing was written.
+  reason: the authority executes a hand-written CPU adapter for this program and the emitted typed kernel is measured divergent (499 of 748 RGBA8 bytes at 17x11)
+  code:   unavailable_pass (7)
+  effect: filter/snow, pass 0 "main" (filter/snow:snow)
+```
+
+`--help` prints the full option list and the exit codes (`0` rendered, `2`
+unusable command line, `4` refused, `5` plan authentication failure, `6` output
+could not be written).
+
+`noisemaker-render` renders through the same compile/execute/export path as the
+corpus parity driver `noisemaker-dsl-cpu-case`, so the bytes it produces are the
+bytes that lane validates. That driver is a *harness* tool: it demands absolute
+paths and a `--source-sha256` of its input because a corpus record must prove
+which bytes it ran. Reach for it only when running the parity lane; for
+rendering a program, use `noisemaker-render`.
+
+### Use the library directly
+
+Much of this library is header-inline — every `noisemaker::glsl::` helper, and
+the matrix and vector operators — so it compiles in *your* translation unit
+under *your* flags. `-ffp-contract=off` is therefore part of the public
+contract, not just this project's build: without it the compiler may fuse a
+multiply and an add into a single FMA and silently change results.
+
+The exported CMake target carries the flag for you. Consuming the package with
+`find_package(noisemaker-for-cpp CONFIG REQUIRED)` and linking
+`NoisemakerForCpp::noisemaker-cpu` propagates both `-ffp-contract=off` and the
+C++20 requirement to your targets. If you build without CMake, pass
+`-std=c++20 -ffp-contract=off` yourself.
+
 Bind a kernel by name, run a pass, encode the result:
 
 ```cpp

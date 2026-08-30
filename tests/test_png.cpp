@@ -214,11 +214,11 @@ TEST(png_decoder_converts_each_supported_color_type_and_transparency) {
 }
 
 TEST(png_decoder_rejects_present_invalid_transparency_and_nonfirst_header) {
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 0U, {0U, 7U}, {}, {}, true)), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U, 4U}, {}, {}, true)), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 0U, {0U, 7U}, {}, {1U, 7U})), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 0U, {0U, 7U}, {}, {}, true)), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U, 4U}, {}, {}, true)), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 0U, {0U, 7U}, {}, {1U, 7U})), noisemaker::PngError);
   REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 2U, {0U, 1U, 2U, 3U}, {}, {1U, 1U, 0U, 2U, 0U, 3U})),
-                    std::invalid_argument);
+                    noisemaker::PngError);
 
   const auto header = make_ihdr(1U, 1U, 8U, 2U);
   const auto compressed = deflate_independently({0U, 1U, 2U, 3U});
@@ -228,45 +228,45 @@ TEST(png_decoder_rejects_present_invalid_transparency_and_nonfirst_header) {
   append_chunk(transparency_before_palette, "PLTE", {10U, 20U, 30U});
   append_chunk(transparency_before_palette, "IDAT", compressed);
   append_chunk(transparency_before_palette, "IEND", {});
-  REQUIRE_THROWS_AS(noisemaker::decode_png(transparency_before_palette), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(transparency_before_palette), noisemaker::PngError);
 
   std::vector<std::uint8_t> nonfirst_header(signature.begin(), signature.end());
   append_chunk(nonfirst_header, "aBcD", {});
   append_chunk(nonfirst_header, "IHDR", header);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(nonfirst_header), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(nonfirst_header), noisemaker::PngError);
 }
 
 TEST(png_decoder_rejects_malformed_png_structure_and_format) {
   const auto valid = make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U, 4U});
   auto wrong_signature = valid;
   wrong_signature[0] = 0U;
-  REQUIRE_THROWS_AS(noisemaker::decode_png(wrong_signature), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(wrong_signature), noisemaker::PngError);
   auto truncated = valid;
   truncated.pop_back();
-  REQUIRE_THROWS_AS(noisemaker::decode_png(truncated), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(truncated), noisemaker::PngError);
   auto corrupt_crc = valid;
   corrupt_crc[29] ^= 1U;
-  REQUIRE_THROWS_AS(noisemaker::decode_png(corrupt_crc), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(corrupt_crc), noisemaker::PngError);
   auto trailing = valid;
   trailing.push_back(0U);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(trailing), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(trailing), noisemaker::PngError);
 
   std::vector<std::uint8_t> duplicate(signature.begin(), signature.end());
   const auto header = make_ihdr(1U, 1U, 8U, 6U);
   append_chunk(duplicate, "IHDR", header);
   append_chunk(duplicate, "IHDR", header);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(duplicate), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(duplicate), noisemaker::PngError);
   std::vector<std::uint8_t> unknown(signature.begin(), signature.end());
   append_chunk(unknown, "IHDR", header);
   append_chunk(unknown, "ABCD", {});
-  REQUIRE_THROWS_AS(noisemaker::decode_png(unknown), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(unknown), noisemaker::PngError);
 
   for (const auto& invalid_header : {make_ihdr(1U, 1U, 4U, 6U), make_ihdr(1U, 1U, 8U, 1U), make_ihdr(1U, 1U, 8U, 6U, 1U)}) {
     std::vector<std::uint8_t> png(signature.begin(), signature.end());
     append_chunk(png, "IHDR", invalid_header);
     append_chunk(png, "IDAT", deflate_independently({0U, 1U, 2U, 3U, 4U}));
     append_chunk(png, "IEND", {});
-    REQUIRE_THROWS_AS(noisemaker::decode_png(png), std::invalid_argument);
+    REQUIRE_THROWS_AS(noisemaker::decode_png(png), noisemaker::PngError);
   }
 }
 
@@ -279,23 +279,23 @@ TEST(png_decoder_rejects_chunk_order_palette_scanline_and_size_violations) {
   append_chunk(nonconsecutive, "aBcD", {});
   append_chunk(nonconsecutive, "IDAT", compressed);
   append_chunk(nonconsecutive, "IEND", {});
-  REQUIRE_THROWS_AS(noisemaker::decode_png(nonconsecutive), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(nonconsecutive), noisemaker::PngError);
   std::vector<std::uint8_t> nonempty_end(signature.begin(), signature.end());
   append_chunk(nonempty_end, "IHDR", header);
   append_chunk(nonempty_end, "IDAT", compressed);
   append_chunk(nonempty_end, "IEND", {0U});
-  REQUIRE_THROWS_AS(noisemaker::decode_png(nonempty_end), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(nonempty_end), noisemaker::PngError);
   std::vector<std::uint8_t> missing_end(signature.begin(), signature.end());
   append_chunk(missing_end, "IHDR", header);
   append_chunk(missing_end, "IDAT", compressed);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(missing_end), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {1U, 2U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {1U, 2U, 3U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 4U, {0U, 1U, 2U}, {}, {0U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {5U, 1U, 2U, 3U, 4U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U})), std::invalid_argument);
-  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {10U, 20U, 30U})), std::invalid_argument);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(missing_end), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {1U, 2U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {1U, 2U, 3U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 4U, {0U, 1U, 2U}, {}, {0U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {5U, 1U, 2U, 3U, 4U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U})), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(make_png(1U, 1U, 3U, {0U, 1U}, {10U, 20U, 30U})), noisemaker::PngError);
 
   std::vector<std::uint8_t> too_large(signature.begin(), signature.end());
   append_chunk(too_large, "IHDR", make_ihdr(16'777'217U, 1U, 8U, 6U));
@@ -306,4 +306,36 @@ TEST(png_decoder_rejects_chunk_order_palette_scanline_and_size_violations) {
   append_chunk(overinflated, "IDAT", deflate_independently(megabyte));
   append_chunk(overinflated, "IEND", {});
   REQUIRE_THROWS_AS(noisemaker::decode_png(overinflated), std::overflow_error);
+}
+
+TEST(png_decoder_reports_corrupt_input_as_a_runtime_error) {
+  // Corrupt *input bytes* are a runtime condition, not a caller logic error.
+  // A consumer's natural `catch (const std::runtime_error&)` must catch every
+  // way decode_png can reject its input, and no rejection may arrive as a
+  // std::logic_error.
+  const std::vector<std::uint8_t> garbage{1U, 2U, 3U, 4U};
+  const std::vector<std::uint8_t> empty{};
+  auto valid = make_png(1U, 1U, 6U, {0U, 1U, 2U, 3U, 4U});
+  auto corrupt_crc = valid;
+  corrupt_crc[29] ^= 1U;
+  std::vector<std::uint8_t> too_large(signature.begin(), signature.end());
+  append_chunk(too_large, "IHDR", make_ihdr(16'777'217U, 1U, 8U, 6U));
+
+  for (const auto& input : {garbage, empty, corrupt_crc, too_large}) {
+    bool runtime_caught = false;
+    bool logic_caught = false;
+    try {
+      const auto decoded = noisemaker::decode_png(input);
+      static_cast<void>(decoded);
+    } catch (const std::logic_error&) {
+      logic_caught = true;
+    } catch (const std::runtime_error&) {
+      runtime_caught = true;
+    }
+    REQUIRE(runtime_caught);
+    REQUIRE(!logic_caught);
+  }
+
+  REQUIRE_THROWS_AS(noisemaker::decode_png(garbage), noisemaker::PngError);
+  REQUIRE_THROWS_AS(noisemaker::decode_png(empty), noisemaker::PngError);
 }

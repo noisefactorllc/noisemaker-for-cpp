@@ -213,6 +213,13 @@ struct ExecutionPlan {
 
 // Canonical hashes are exposed for source-bound oracle projections and for
 // execution-side diagnostics; both operate only on value-owned plan data.
+//
+// NOT A STABLE API. `detail` here means what it says: these functions exist
+// for this repository's own oracle and diagnostic code. They are visible in an
+// installed header only because this header is reachable from
+// `noisemaker/renderer.hpp`, not because outside callers are invited to build
+// on them. Their names, signatures and the exact bytes they hash will change
+// without a version bump.
 namespace detail {
 [[nodiscard]] std::string sha256(std::string_view bytes);
 [[nodiscard]] std::string admission_sha256(const PassAdmission& admission);

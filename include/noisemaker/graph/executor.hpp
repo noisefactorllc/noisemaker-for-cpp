@@ -107,6 +107,23 @@ struct FactoryRouteDescriptor {
   noisemaker::BoundKernel (*bind)(const glsl::Bindings&) = nullptr;
 };
 
+// ---------------------------------------------------------------------------
+// NOT A STABLE API
+//
+// Everything from here to `class GraphExecutor` below is the executor's own
+// authentication and binding-materialization machinery: route lookup and
+// authentication, compile-define authentication, ABI preflight, uniform and
+// sampler materialization, and the `BindingMaterializationContext` seam with
+// its raw `void*` contexts and C function-pointer callbacks.
+//
+// It is declared in an installed header only because this header also
+// declares `GraphExecutor`, which `noisemaker/renderer.hpp` needs; it is not
+// part of the surface this project supports for outside callers. These
+// signatures, types and semantics will change without a version bump. Build
+// on `noisemaker::Renderer`, `GraphExecutor::execute`, `ExecutionPlan` and
+// `GraphError` instead.
+// ---------------------------------------------------------------------------
+
 [[nodiscard]] const FactoryRouteDescriptor* find_factory_route(
     std::span<const FactoryRouteDescriptor> routes,
     std::string_view program_key,
@@ -202,6 +219,8 @@ void materialize_sampler_bindings(
     glsl::Bindings& bindings, const PassAdmission& admission,
     const BindingMaterializationContext& context, const EffectStep& step,
     const effects::PassDefinition& pass);
+
+// ------------------------- end NOT A STABLE API ----------------------------
 
 class GraphExecutor final {
  public:

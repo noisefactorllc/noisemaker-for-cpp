@@ -43,6 +43,13 @@ target_include_directories(noisemaker-cpu PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(noisemaker-cpu PUBLIC ZLIB::ZLIB)
+# `CMAKE_CXX_STANDARD` above is a directory variable: it governs this project's
+# own targets and is not exported. Without a compile feature on the target
+# itself, a consumer that only calls `find_package` + `target_link_libraries`
+# compiles the installed headers at the compiler's default standard and fails
+# inside headers it did not write. State the requirement where the export set
+# can carry it.
+target_compile_features(noisemaker-cpu PUBLIC cxx_std_20)
 add_library(NoisemakerForCpp::noisemaker-cpu ALIAS noisemaker-cpu)
 
 # Machine-generated and generator-refreshed files emit one dense statement
@@ -55,8 +62,20 @@ set_source_files_properties(
   tests/test_typed_slice.cpp
   PROPERTIES COMPILE_OPTIONS
   "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wno-misleading-indentation>")
+# `-ffp-contract=off` is PUBLIC, not PRIVATE. Most of the arithmetic-bearing
+# surface of this library -- `glsl::` in `glsl_runtime.hpp`, the matrix and
+# vector operators in `glsl_types.hpp` -- is header-inline, so it compiles in
+# the *consumer's* translation unit under the consumer's flags. A consumer
+# built with the compiler default (`-ffp-contract=fast` for Clang and GCC)
+# gets fused multiply-add in those helpers, which is not the arithmetic the
+# parity lane validates. The compiler guard matches the one used for warnings
+# below: these are the compilers this project's bit-exactness is verified on.
+target_compile_options(noisemaker-cpu PUBLIC
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-ffp-contract=off>
+)
+# Warnings stay PRIVATE: they are this project's discipline, not a consumer's.
 target_compile_options(noisemaker-cpu PRIVATE
-  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror>
 )
 # Task-5's immutable proof artifact intentionally retains one unused context
 # parameter and helper. Keep it byte-identical while strict AppleClang warnings
@@ -145,6 +164,22 @@ target_compile_definitions(noisemaker-dsl-cpu-benchmark PRIVATE
   NOISEMAKER_BENCHMARK_BUILD_TYPE="${NOISEMAKER_BENCHMARK_BUILD_TYPE_TEXT}"
 )
 
+# The user-facing render CLI. It compiles `corpus_case.cpp` rather than
+# reimplementing anything: `noisemaker-render` and `noisemaker-dsl-cpu-case`
+# share one compile entry, one `GraphExecutor::execute` call site and one byte
+# writer, so a picture a user renders is the picture the parity lane validates.
+# It is deliberately not added to any install or export set: `cmake --install`
+# must stay buildable from the `noisemaker-cpu` target alone.
+add_executable(noisemaker-render
+  tools/cli/noisemaker_render.cpp
+  tools/benchmark/corpus_case.cpp
+)
+target_include_directories(noisemaker-render PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tools/benchmark)
+target_link_libraries(noisemaker-render PRIVATE noisemaker-cpu)
+target_compile_options(noisemaker-render PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
 add_executable(noisemaker-dsl-frontend-oracle tests/test_dsl_lexer.cpp)
 target_compile_definitions(noisemaker-dsl-frontend-oracle PRIVATE NOISEMAKER_DSL_ORACLE_MAIN)
 target_link_libraries(noisemaker-dsl-frontend-oracle PRIVATE noisemaker-cpu)
@@ -168,6 +203,26 @@ target_compile_options(noisemaker-dsl-compiler-oracle PRIVATE
 
 enable_testing()
 add_test(NAME noisemaker-cpu-tests COMMAND noisemaker-cpu-tests)
+
+# `tests/test_render_cli.py` drives the built binaries rather than the library,
+# so it needs them on disk and their paths in the environment. Registering the
+# build as a ctest fixture is what makes `ctest` self-sufficient here: CI builds
+# only `noisemaker-cpu-tests` before running ctest, so without this setup step
+# the CLI test would find no binary and fail for the wrong reason.
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_Interpreter_FOUND)
+  add_test(NAME noisemaker-render-cli-build
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR}
+            --target noisemaker-render noisemaker-dsl-cpu-case
+            --config $<CONFIG>)
+  set_tests_properties(noisemaker-render-cli-build PROPERTIES FIXTURES_SETUP render-cli)
+  add_test(NAME noisemaker-render-cli
+    COMMAND ${Python3_EXECUTABLE} -B -m unittest -v tests.test_render_cli
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  set_tests_properties(noisemaker-render-cli PROPERTIES
+    FIXTURES_REQUIRED render-cli
+    ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_RENDER_CLI=$<TARGET_FILE:noisemaker-render>;NOISEMAKER_DSL_CPU_CASE=$<TARGET_FILE:noisemaker-dsl-cpu-case>")
+endif()
 
 install(TARGETS noisemaker-cpu
   EXPORT noisemaker-for-cppTargets

@@ -379,8 +379,22 @@ class BenchmarkBuildContractTest(unittest.TestCase):
             'string(JOIN " " NOISEMAKER_BENCHMARK_STRICT_FLAGS_TEXT '
             "${NOISEMAKER_BENCHMARK_STRICT_FLAGS})", text)
         self.assertIn("${NOISEMAKER_BENCHMARK_STRICT_FLAGS}>", text)
-        # Shared with the parity driver by compilation, not by copy.
-        self.assertEqual(text.count("tools/benchmark/corpus_case.cpp"), 2)
+        # Shared with the parity driver and the user-facing render CLI by
+        # compilation, not by copy: three targets name the one translation
+        # unit, and no target names a second copy of it.
+        self.assertEqual(text.count("tools/benchmark/corpus_case.cpp"), 3)
+        self.assertEqual(
+            sorted(
+                line.split("(")[1].strip()
+                for line in text.splitlines()
+                if line.startswith("add_executable(")
+                and line.split("(")[1].strip() in {
+                    "noisemaker-dsl-cpu-case", "noisemaker-dsl-cpu-benchmark",
+                    "noisemaker-render",
+                }
+            ),
+            ["noisemaker-dsl-cpu-benchmark", "noisemaker-dsl-cpu-case", "noisemaker-render"],
+        )
         # A measurement tool, never shipped library surface.
         self.assertNotIn("add_test(NAME noisemaker-dsl-cpu-benchmark", text)
         self.assertNotIn("install(TARGETS noisemaker-dsl-cpu-benchmark", text)

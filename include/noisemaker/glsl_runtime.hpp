@@ -261,7 +261,23 @@ class KernelBindingError : public std::runtime_error { public: using std::runtim
 class Bindings {
  public:
   void set_uniform(std::string name,UniformValue value);
-  // The caller retains ownership: surface must outlive this Bindings and captured kernels.
+  // BORROWS. Unlike set_uniform, which copies its value into owned storage
+  // (see RemapUniformData above), this stores a bare `const Surface*`. The
+  // caller keeps ownership and must keep `surface` alive, at a stable address
+  // and unmodified, for the lifetime of this Bindings AND of every kernel
+  // bound from it -- generated kernel state copies the same raw pointer out
+  // at bind time, so destroying the Bindings does not end the borrow.
+  //
+  // Nothing enforces this. There is no reference count, no generation check
+  // and no debug assertion, because by the time the pointer is stale the only
+  // way to notice is to dereference it. Break the contract and the failure
+  // mode is a silent heap-use-after-free: reads of freed memory that render
+  // garbage, or render correctly on your machine and wrongly elsewhere. It is
+  // reproducible under AddressSanitizer and invisible without one.
+  //
+  // A `Surface` held in an owning container that may reallocate (a
+  // `std::vector<Surface>` that grows) violates the stable-address half of
+  // this even while the object is alive.
   void set_texture(std::string name,const noisemaker::Surface& surface);
   template <class T> [[nodiscard]] T get(std::string_view name) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())throw KernelBindingError("uniform binding '"+std::string(name)+"' is missing");if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
   template <class T> [[nodiscard]] T get_or(std::string_view name,const T& fallback) const { const auto found=uniforms_.find(std::string(name));if(found==uniforms_.end())return fallback;if(const auto* value=std::get_if<T>(&found->second);value!=nullptr)return *value;throw KernelBindingError("uniform binding '"+std::string(name)+"' has the wrong type"); }
