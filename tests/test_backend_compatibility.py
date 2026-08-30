@@ -13,18 +13,23 @@ from tools.dsl import generate_backend_compatibility as generator
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
+# No defaults, and no import-time abort: the frozen CPU authority and the live
+# shader checkout live outside the repository at machine-specific locations, so
+# they must arrive by env. Raising here would break `unittest discover` for the
+# entire suite on any checkout that lacks them, so the gate moved into
+# setUpClass -- unset env skips, a set-but-wrong env still fails hard.
 CPU_ENV = os.environ.get("NOISEMAKER_CPU_ROOT")
 SHADER_ENV = os.environ.get("NOISEMAKER_SHADER_GIT")
-if not CPU_ENV or not SHADER_ENV:
-    raise RuntimeError("NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT are required")
-CPU_ROOT = pathlib.Path(CPU_ENV)
-SHADER_GIT = pathlib.Path(SHADER_ENV)
+CPU_ROOT = pathlib.Path(CPU_ENV or "/nonexistent")
+SHADER_GIT = pathlib.Path(SHADER_ENV or "/nonexistent")
 MANIFEST = ROOT / "src/effects/generated/backend_compatibility.json"
 
 
 class BackendCompatibilityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        if not CPU_ENV or not SHADER_ENV:
+            raise unittest.SkipTest("NOISEMAKER_CPU_ROOT and NOISEMAKER_SHADER_GIT are required")
         if not CPU_ROOT.is_dir() or not SHADER_GIT.is_dir():
             raise RuntimeError("authority paths must name existing directories")
         cls.document = generator.generate(cpu_root=CPU_ROOT, shader_git=SHADER_GIT)

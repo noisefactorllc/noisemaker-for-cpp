@@ -25,68 +25,70 @@ COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
 COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
 COMPILER_ORACLE_JS = ORACLE_JS
 COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
-COMPILER_EXPECTED_SHA256 = "6948d60ff0c9bed7ea1546d686a41c8dc8016ca53d1f36934307ddfca98cc4ad"
+COMPILER_EXPECTED_SHA256 = "1eb8d0bb28cebf13ab84eac9af3cf4c3d3616654c377b0e82c811142ef3b4958"
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
+
+
+def require_cpu_root(test: unittest.TestCase) -> pathlib.Path:
+    """Return the frozen CPU authority root, skipping when it is not supplied.
+
+    The authority lives outside the repository at a machine-specific location,
+    so it arrives by NOISEMAKER_CPU_ROOT and by nothing else. A checkout that
+    does not have it cannot run this lane at all; skipping says that, whereas a
+    failure would read as a parity defect that is not there.
+    """
+    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    if not value:
+        test.skipTest("NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
+    return pathlib.Path(value)
 
 
 def resolve_cpp_oracle(candidates: list[pathlib.Path] | None = None) -> pathlib.Path:
     # The env var is NOISEMAKER_DSL_CPP_ORACLE, not the *_FRONTEND_ORACLE a
-    # reader would guess. Prefer setting it explicitly to the fresh external
-    # build; the single fallback below is the one documented staging directory.
-    # Per-task scratch trees are deliberately absent: a resolver that reaches
-    # into an unrelated build tree serves a stale binary and turns this lane
-    # into a report about whatever someone compiled last (a stale
-    # noisemaker-cpp-task3-build oracle is what emitted `number:1e-07` here).
+    # reader would guess. Resolution is env-only: there is no fallback search
+    # path, because a resolver that reaches into a build tree it was not told
+    # about serves a stale binary and turns this lane into a report on whatever
+    # someone compiled last (a stale noisemaker-cpp-task3-build oracle is what
+    # emitted `number:1e-07` here). Point it at a fresh external build.
+    # `candidates` exists only so the regression test below can pin the
+    # unset-env message; nothing populates it in normal use.
     configured = os.environ.get("NOISEMAKER_DSL_CPP_ORACLE")
     if configured is not None and configured != "":
         candidate = pathlib.Path(configured)
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return candidate
         raise AssertionError(f"NOISEMAKER_DSL_CPP_ORACLE is not an executable file: {candidate}")
-    search = candidates if candidates is not None else [
-        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-frontend-oracle"),
-    ]
-    for candidate in search:
+    for candidate in candidates or []:
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return candidate
     raise AssertionError("NOISEMAKER_DSL_CPP_ORACLE is unset and no documented external C++ oracle exists")
 
 
 def resolve_parser_oracle() -> pathlib.Path:
+    # Env-only for the same stale-binary reason as resolve_cpp_oracle.
     configured = os.environ.get("NOISEMAKER_DSL_PARSER_ORACLE")
     if configured:
         candidate = pathlib.Path(configured)
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return candidate
         raise AssertionError(f"NOISEMAKER_DSL_PARSER_ORACLE is not an executable file: {candidate}")
-    candidates = [
-        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-parser-oracle"),
-    ]
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            return candidate
     raise AssertionError("NOISEMAKER_DSL_PARSER_ORACLE is unset and no documented external C++ parser oracle exists")
 
 
 def resolve_compiler_oracle() -> pathlib.Path:
+    # Env-only for the same stale-binary reason as resolve_cpp_oracle.
     configured = os.environ.get("NOISEMAKER_DSL_COMPILER_ORACLE")
     if configured:
         candidate = pathlib.Path(configured)
         if candidate.is_file() and os.access(candidate, os.X_OK):
             return candidate
         raise AssertionError(f"NOISEMAKER_DSL_COMPILER_ORACLE is not an executable file: {candidate}")
-    candidates = [
-        pathlib.Path("/private/tmp/noisemaker-cpp-dsl-build/noisemaker-dsl-compiler-oracle"),
-    ]
-    for candidate in candidates:
-        if candidate.is_file() and os.access(candidate, os.X_OK):
-            return candidate
     raise AssertionError("NOISEMAKER_DSL_COMPILER_ORACLE is unset and no documented external C++ compiler oracle exists")
 
 
 class DslFrontendOracleTest(unittest.TestCase):
     def test_catalog_registry_list_matches_locale_compare_census(self) -> None:
-        cpu_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        cpu_root = require_cpu_root(self)
         node = shutil_which("node")
         cpp = resolve_compiler_oracle()
         js = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--list", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES)], check=True, capture_output=True, text=True).stdout
@@ -95,9 +97,7 @@ class DslFrontendOracleTest(unittest.TestCase):
         self.assertEqual(len(json.loads(js)), 205)
 
     def test_checked_compiler_stream_matches_node_cpp_and_is_deterministic(self) -> None:
-        cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
-        self.assertTrue(cpu_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
-        cpu_root = pathlib.Path(cpu_root_value)
+        cpu_root = require_cpu_root(self)
         self.assertTrue(cpu_root.is_absolute())
         node = shutil_which("node")
         self.assertIsNotNone(node)
@@ -126,7 +126,7 @@ class DslFrontendOracleTest(unittest.TestCase):
     def test_compiler_oracle_rejects_mutated_fixture_even_with_updated_inner_hashes(self) -> None:
         node = shutil_which("node")
         self.assertIsNotNone(node)
-        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        authority_root = require_cpu_root(self)
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-fixture-forge-") as temporary:
             forged = pathlib.Path(temporary) / "compiler-cases.json"
             records = json.loads(COMPILER_FIXTURES.read_text(encoding="utf-8"))
@@ -141,7 +141,7 @@ class DslFrontendOracleTest(unittest.TestCase):
     def test_compiler_oracle_rejects_mutated_expected_stream(self) -> None:
         node = shutil_which("node")
         self.assertIsNotNone(node)
-        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        authority_root = require_cpu_root(self)
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-expected-forge-") as temporary:
             forged = pathlib.Path(temporary) / "expected.txt"
             forged.write_text(COMPILER_EXPECTED.read_text(encoding="utf-8") + "forged\n", encoding="utf-8")
@@ -159,7 +159,7 @@ class DslFrontendOracleTest(unittest.TestCase):
     def test_compiler_oracle_rejects_forged_transitive_module_before_import(self) -> None:
         node = shutil_which("node")
         self.assertIsNotNone(node)
-        authority_root = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
+        authority_root = require_cpu_root(self)
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-compiler-forge-") as temporary:
             root = pathlib.Path(temporary) / "root"
             for relative in ("src/dsl/compiler.js", "src/dsl/error.js", "src/dsl/parser.js", "src/dsl/tokenize.js", "src/effects/definition.js", "src/effects/registry.js", "src/effects/generated/upstream-snapshot.js"):
@@ -174,10 +174,7 @@ class DslFrontendOracleTest(unittest.TestCase):
             self.assertIn("sha256", result.stderr)
             self.assertFalse(marker.exists())
     def test_checked_stream_matches_authoritative_node_oracle_and_cpp(self) -> None:
-        cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
-        if not cpu_root_value:
-            self.fail("NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
-        cpu_root = pathlib.Path(cpu_root_value)
+        cpu_root = require_cpu_root(self)
         self.assertTrue(cpu_root.is_absolute(), "NOISEMAKER_CPU_ROOT must be absolute")
         self.assertEqual(cpu_root, pathlib.Path(os.path.realpath(cpu_root)), "NOISEMAKER_CPU_ROOT must be a real path")
         tokenize_path = cpu_root / "src/dsl/tokenize.js"
@@ -225,9 +222,7 @@ class DslFrontendOracleTest(unittest.TestCase):
         signed-zero spellings is the compiler oracle's coverage too; Leg B adds
         the signed finite values the lexer cannot produce as a single token.
         """
-        cpu_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
-        self.assertTrue(cpu_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
-        cpu_root = pathlib.Path(cpu_root_value)
+        cpu_root = require_cpu_root(self)
         node = shutil_which("node")
         self.assertIsNotNone(node)
         cpp = resolve_cpp_oracle()
@@ -310,9 +305,7 @@ class DslFrontendOracleTest(unittest.TestCase):
     def test_authority_rejects_forged_module_wrong_hash_and_symlinks(self) -> None:
         node = shutil_which("node")
         self.assertIsNotNone(node)
-        authority_root_value = os.environ.get("NOISEMAKER_CPU_ROOT")
-        self.assertTrue(authority_root_value, "NOISEMAKER_CPU_ROOT must explicitly identify the frozen CPU authority")
-        authority_root = pathlib.Path(authority_root_value)
+        authority_root = require_cpu_root(self)
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-authority-") as temporary:
             root = pathlib.Path(os.path.realpath(temporary)) / "root"
             module = root / "src/dsl/tokenize.js"

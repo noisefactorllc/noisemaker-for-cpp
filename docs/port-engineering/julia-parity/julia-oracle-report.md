@@ -10753,7 +10753,7 @@ This table supersedes the earlier abbreviated audit. It is the complete Task34-o
 | tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | 8fa6d370657ae859294fa470e01646f4077a86054831749f1b8d3f1f9726f80e | changed |
 | tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 2bd1d4356779c4dd779f0e545472f5817df969bd51a157143c0cfaaea318fce4 | changed |
 | tests/test_generated_kernels.cpp | d2210b840fa6ffe3b07b73330f7a336d01683c163e5887f276c254de40beb685 | e375c33914a968634ab7276c1f1146031c57ea182ae63c269bad72e81559649b | changed (recorded at Task34; cross-lane file, not re-read) |
-| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 0e14e168a76b18ddec1824a4893b32fbd6c75592ec2904c186c2f32866298e52 | changed |
+| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 5bc6d65fdeccbb53bd0823f69a44432e9e5fcbf8ce51fb76a7c097854b785b54 | changed |
 
 ## Fix3 observed seven-test RED reconstruction
 

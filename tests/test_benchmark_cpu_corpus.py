@@ -42,6 +42,7 @@ DRIVER_SOURCES = (
     ROOT / "tools/benchmark/run_cpp_benchmark.cpp",
     ROOT / "tools/benchmark/corpus_case.cpp",
     ROOT / "tools/benchmark/corpus_case.hpp",
+    ROOT / "tools/benchmark/exact_compare.py",
 )
 
 # A bounded cross-lane subset: a three-pass filter behind a starter with two

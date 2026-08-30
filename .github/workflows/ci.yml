@@ -112,8 +112,56 @@ jobs:
         with:
           python-version: '3.13'
 
+      # pytest is a LIBRARY dependency here, not the runner: five oracle
+      # modules import it for `pytest.skip`, `pytest.raises`, and
+      # `pytest.skip.Exception`, so `unittest discover` cannot even import
+      # them without it. The runner below stays unittest.
+      - name: Install Python test dependencies
+        run: python -m pip install --disable-pip-version-check pytest
+
       - name: Run full discovery
         run: python -m unittest discover -s tests -p 'test_*.py' -q
+
+  corpus-parity:
+    name: byte-exact corpus parity (C++ vs JS authority)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      # The frozen CPU authority is the public JS reference at the revision
+      # whose 90-file behavioral aggregate this repository pins. Checking it
+      # out at that exact commit reproduces the authority bit-for-bit.
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker-for-cpu
+          ref: 4834b0144ee0524588144a482cca0067b15f68ec
+          path: cpu-authority-checkout
+
+      - name: Stage authority outside the repository tree
+        run: |
+          mv "$GITHUB_WORKSPACE/cpu-authority-checkout" "$RUNNER_TEMP/cpu-authority"
+          rm -rf "$RUNNER_TEMP/cpu-authority/.git"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install zlib
+        run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
+
+      - name: Build the C++ corpus driver
+        run: |
+          cmake -S . -B build-parity -DCMAKE_BUILD_TYPE=Release
+          cmake --build build-parity --target noisemaker-dsl-cpu-case -j
+
+      # This is the hard parity gate: every admitted corpus record renders on
+      # both lanes and must be byte-exact (or carry its frozen refusal reason).
+      - name: Run the byte-exact corpus lane
+        env:
+          NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
+          NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
+        run: python3 -B -m unittest tests.test_dsl_corpus_parity -v
 
   package-consumer:
     name: install + external find_package consumer

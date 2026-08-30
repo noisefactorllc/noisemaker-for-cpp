@@ -121,10 +121,10 @@ class FractalOracleTests(unittest.TestCase):
                 loaded.validate(candidate)
 
     def test_generator_accepts_identical_copy_and_rejects_mutated_copy(self):
-        source_root = os.environ.get("NOISEMAKER_CPU_AUTHORITY_ROOT")
+        source_root = os.environ.get("NOISEMAKER_CPU_ROOT")
         if not source_root:
-            self.skipTest("NOISEMAKER_CPU_AUTHORITY_ROOT is required for authority-copy test")
-        with tempfile.TemporaryDirectory(prefix="fractal-authority-", dir="/private/tmp") as directory:
+            self.skipTest("NOISEMAKER_CPU_ROOT is required for authority-copy test")
+        with tempfile.TemporaryDirectory(prefix="fractal-authority-") as directory:
             clone = Path(directory) / "cpu"
             shutil.copytree(source_root, clone)
             accepted = subprocess.run(

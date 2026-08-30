@@ -44,7 +44,9 @@ LIVE_ENV = "NOISEMAKER_FOR_CPU"
 def _authority() -> pathlib.Path:
     value = os.environ.get(AUTHORITY_ENV)
     if not value:
-        raise AssertionError(f"{AUTHORITY_ENV} is required; oracle tests never skip")
+        # Unset means the machine has no frozen authority (e.g. public CI):
+        # skip visibly. A SET-but-wrong root still fails loudly below.
+        raise unittest.SkipTest(f"{AUTHORITY_ENV} (the frozen CPU authority) is required")
     path = pathlib.Path(value)
     if not path.is_dir() or path.is_symlink():
         raise AssertionError(f"{AUTHORITY_ENV} must be a non-symlink directory")

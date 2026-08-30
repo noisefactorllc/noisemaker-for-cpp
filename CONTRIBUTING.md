@@ -5,7 +5,10 @@ Thanks for your interest in contributing.
 ## Getting set up
 
 The project requires CMake 3.20+, a C++20 compiler, and zlib. Python 3.12+
-is required for the generator test suite.
+is required for the generator test suite. Install `pytest` before running the
+Python suite (`python -m pip install pytest`): the runner is `unittest`, but
+five oracle modules import `pytest` as a library for its skip and raises
+helpers, so discovery cannot import them without it.
 
 Run the project checks before submitting a change:
 

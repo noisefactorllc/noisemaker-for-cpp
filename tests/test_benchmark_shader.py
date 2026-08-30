@@ -39,10 +39,20 @@ LANE_FILES = (
     "tools/dsl/js_shader_benchmark.mjs",
     "tools/dsl/shader_benchmark_lib.mjs",
     "tools/dsl/corpus_authority.mjs",
+    "tools/dsl/generate_executable_corpus.mjs",
+    "tools/dsl/js_render_oracle.mjs",
     "tools/benchmark/run_cpu_case.mjs",
     "tools/benchmark/exact_compare.py",
+    "tools/benchmark/corpus_lane.py",
+    "tools/benchmark/two_pass_corpus.py",
+    "tools/benchmark/run_cpp_benchmark.cpp",
+    "tools/benchmark/run_cpp_case.cpp",
+    "tools/benchmark/corpus_case.cpp",
+    "tools/benchmark/corpus_case.hpp",
     "tests/test_benchmark_shader.py",
     "tests/test_benchmark_cpu_corpus.py",
+    "tests/test_benchmark_cpu_exact.py",
+    "tests/test_dsl_corpus_parity.py",
 )
 
 VALID_RECORD = """{
