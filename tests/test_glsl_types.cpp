@@ -9,6 +9,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "noisemaker/glsl_types.hpp"
@@ -317,14 +318,92 @@ TEST(glsl_javascript_unsigned_multiply_and_fractional_array_read_are_exact) {
               std::numeric_limits<double>::quiet_NaN()) == 0);
 }
 
-TEST(glsl_pack_and_unpack_half2x16_use_round_to_nearest_even) {
+// The JS CPU authority's packHalf2x16 is
+// `uint32(floatToHalf(value[0]) | (floatToHalf(value[1]) << 16))`
+// (noisemaker-for-cpu/src/csl/glsl-runtime.js:419), and its floatToHalf
+// (:61-81) rounds half-UP unconditionally rather than to nearest-even. Every
+// expected value below was produced by running that exact authority function
+// under node; do not "fix" them toward IEEE ties-to-even.
+TEST(glsl_pack_and_unpack_half2x16_match_the_js_authority_float_to_half) {
   using namespace noisemaker::glsl;
+  const auto low_half = [](std::uint32_t float_bits) {
+    return pack_half2x16(Vec2(noisemaker::uint_bits_to_float(float_bits), 0.0f)) & 0xffffU;
+  };
+
   const std::uint32_t packed = pack_half2x16(Vec2(1.0f, -2.0f));
   REQUIRE(packed == 0xc0003c00U);
   REQUIRE(unpack_half2x16(packed) == Vec2(1.0f, -2.0f));
 
-  const float tie_even = noisemaker::uint_bits_to_float(0x3f801000U);
-  REQUIRE((pack_half2x16(Vec2(tie_even, 0.0f)) & 0xffffU) == 0x3c00U);
+  // Exact halfway case. IEEE ties-to-even would give 0x3c00; the authority
+  // adds 0x1000 unconditionally and gives 0x3c01.
+  REQUIRE(low_half(0x3f801000U) == 0x3c01U);
+  REQUIRE(low_half(0xbf801000U) == 0xbc01U);
+  REQUIRE(low_half(0x3f803000U) == 0x3c02U);
+
+  // First two divergent inputs of the exhaustive 2^32 differential.
+  REQUIRE(low_half(0x33000000U) == 0x0001U);
+  REQUIRE(low_half(0x34200000U) == 0x0003U);
+  REQUIRE(low_half(0xb3000000U) == 0x8001U);
+
+  // Subnormal band: pre-truncation plus the unconditional bias, including the
+  // carry that promotes the largest subnormal to the smallest normal (0x0400).
+  REQUIRE(low_half(0x00000001U) == 0x0000U);
+  REQUIRE(low_half(0x007fffffU) == 0x0000U);
+  REQUIRE(low_half(0x33800000U) == 0x0001U);
+  REQUIRE(low_half(0x387fc000U) == 0x03ffU);
+  REQUIRE(low_half(0x387ff000U) == 0x0400U);
+  REQUIRE(low_half(0x38800000U) == 0x0400U);
+
+  // Overflow: 65504 is the largest representable half; 65520 carries out of
+  // the fraction, bumps the exponent to 31, and becomes infinity.
+  REQUIRE(low_half(0x477fe000U) == 0x7bffU);
+  REQUIRE(low_half(0x477ff000U) == 0x7c00U);
+  REQUIRE(low_half(0x7f7fffffU) == 0x7c00U);
+
+  // Signed zero and infinity.
+  REQUIRE(low_half(0x00000000U) == 0x0000U);
+  REQUIRE(low_half(0x80000000U) == 0x8000U);
+  REQUIRE(low_half(0x7f800000U) == 0x7c00U);
+  REQUIRE(low_half(0xff800000U) == 0xfc00U);
+
+  // Every NaN, of either sign and any payload, canonicalizes to 0x7e00 —
+  // the authority checks Number.isNaN before it ever reads the sign bit.
+  REQUIRE(low_half(0x7fc00000U) == 0x7e00U);
+  REQUIRE(low_half(0xffc00000U) == 0x7e00U);
+  REQUIRE(low_half(0x7f800001U) == 0x7e00U);
+  REQUIRE(low_half(0xffc12345U) == 0x7e00U);
+
+  // Both lanes at once, high lane shifted by 16.
+  REQUIRE(pack_half2x16(Vec2(noisemaker::uint_bits_to_float(0x33000000U),
+                             noisemaker::uint_bits_to_float(0xbf801000U))) == 0xbc010001U);
+}
+
+// The authority's unpackHalf2x16 (glsl-runtime.js:420-425) is two halfToFloat
+// calls (:52-59) whose results are stored into the Float32Array that alloc()
+// returns (:120-124). halfToFloat maps EVERY NaN half code to Number.NaN, so
+// sign and payload are discarded and the lane comes back as 0x7fc00000. These
+// are bit-pattern comparisons: `Vec2 == Vec2` uses float equality and NaN is
+// never equal to itself, so it cannot express this contract. Expected values
+// came from running the authority under node.
+TEST(glsl_unpack_half2x16_matches_the_js_authority_half_to_float) {
+  using namespace noisemaker::glsl;
+  using Lanes = std::pair<std::uint32_t, std::uint32_t>;
+  const auto lanes = [](std::uint32_t packed) {
+    const Vec2 unpacked = unpack_half2x16(packed);
+    return Lanes(noisemaker::float_bits_to_uint(unpacked[0]),
+                 noisemaker::float_bits_to_uint(unpacked[1]));
+  };
+
+  REQUIRE(lanes(0xbc003c00U) == Lanes(0x3f800000U, 0xbf800000U));
+  REQUIRE(lanes(0x80000000U) == Lanes(0x00000000U, 0x80000000U));
+  REQUIRE(lanes(0xfc007c00U) == Lanes(0x7f800000U, 0xff800000U));
+  REQUIRE(lanes(0x03ff7bffU) == Lanes(0x477fe000U, 0x387fc000U));
+
+  // NaN codes canonicalize in both lanes; the negative NaN does NOT come back
+  // as 0xffc00000, and the payload does not survive.
+  REQUIRE(lanes(0x7e007c01U) == Lanes(0x7fc00000U, 0x7fc00000U));
+  REQUIRE(lanes(0xfe00fe00U) == Lanes(0x7fc00000U, 0x7fc00000U));
+  REQUIRE(lanes(0xffff3c00U) == Lanes(0x3f800000U, 0x7fc00000U));
 }
 
 TEST(glsl_float_expressions_materialize_at_flattening_and_matrix_boundaries) {

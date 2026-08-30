@@ -120,18 +120,64 @@ TEST(numeric_round_trips_the_shapes183_controlled_nan_payload_and_scalar_xor) {
   REQUIRE((0xffffffffU ^ 0x7fffffffU) == 0x80000000U);
 }
 
-TEST(numeric_converts_ieee_half_with_round_to_nearest_even) {
-  REQUIRE(noisemaker::float_to_half_rte(0.0f) == 0x0000U);
-  REQUIRE(noisemaker::float_to_half_rte(-0.0f) == 0x8000U);
+// The JS CPU authority's floatToHalf (glsl-runtime.js:61-81) rounds half-UP
+// unconditionally and canonicalizes every NaN to 0x7e00; it is NOT IEEE
+// ties-to-even. Expected values below come from that authority under node.
+TEST(numeric_converts_float_to_half_with_the_js_authority_rule) {
+  REQUIRE(noisemaker::float_to_half_js(0.0f) == 0x0000U);
+  REQUIRE(noisemaker::float_to_half_js(-0.0f) == 0x8000U);
   REQUIRE(noisemaker::float_bits_to_uint(noisemaker::half_to_float(0x8000U)) == 0x80000000U);
-  REQUIRE(noisemaker::float_to_half_rte(1.0f) == 0x3c00U);
-  REQUIRE(noisemaker::float_to_half_rte(65504.0f) == 0x7bffU);
-  REQUIRE(noisemaker::float_to_half_rte(std::numeric_limits<float>::infinity()) == 0x7c00U);
-  REQUIRE(noisemaker::float_to_half_rte(-std::numeric_limits<float>::infinity()) == 0xfc00U);
-  REQUIRE(std::isnan(noisemaker::half_to_float(noisemaker::float_to_half_rte(std::numeric_limits<float>::quiet_NaN()))));
+  REQUIRE(noisemaker::float_to_half_js(1.0f) == 0x3c00U);
+  REQUIRE(noisemaker::float_to_half_js(65504.0f) == 0x7bffU);
+  REQUIRE(noisemaker::float_to_half_js(std::numeric_limits<float>::infinity()) == 0x7c00U);
+  REQUIRE(noisemaker::float_to_half_js(-std::numeric_limits<float>::infinity()) == 0xfc00U);
+  REQUIRE(std::isnan(noisemaker::half_to_float(noisemaker::float_to_half_js(std::numeric_limits<float>::quiet_NaN()))));
   REQUIRE(noisemaker::half_to_float(0x0001U) == 0x1p-24f);
-  REQUIRE(noisemaker::float_to_half_rte(1.00048828125f) == 0x3c00U);
-  REQUIRE(noisemaker::float_to_half_rte(1.00146484375f) == 0x3c02U);
+  // Exact halfway case: ties-to-even would give 0x3c00, the authority gives 0x3c01.
+  REQUIRE(noisemaker::float_to_half_js(1.00048828125f) == 0x3c01U);
+  REQUIRE(noisemaker::float_to_half_js(-1.00048828125f) == 0xbc01U);
+  // Every NaN canonicalizes, sign and payload discarded.
+  REQUIRE(noisemaker::float_to_half_js(std::numeric_limits<float>::quiet_NaN()) == 0x7e00U);
+  REQUIRE(noisemaker::float_to_half_js(noisemaker::uint_bits_to_float(0xffc12345U)) == 0x7e00U);
+  REQUIRE(noisemaker::float_to_half_js(1.00146484375f) == 0x3c02U);
+}
+
+// Expansion direction. The JS CPU authority's halfToFloat (glsl-runtime.js:52-59)
+// collapses EVERY NaN half code to Number.NaN -- sign and payload discarded --
+// which the caller's Float32Array store narrows to 0x7fc00000. Comparisons are on
+// bit patterns, never on float equality, because NaN != NaN. Every expected value
+// below came from running that authority function under node.
+TEST(numeric_expands_half_to_float_with_the_js_authority_rule) {
+  const auto expand = [](std::uint16_t code) {
+    return noisemaker::float_bits_to_uint(noisemaker::half_to_float(code));
+  };
+
+  // Signed zero, subnormals, the subnormal/normal boundary.
+  REQUIRE(expand(0x0000U) == 0x00000000U);
+  REQUIRE(expand(0x8000U) == 0x80000000U);
+  REQUIRE(expand(0x0001U) == 0x33800000U);
+  REQUIRE(expand(0x8001U) == 0xb3800000U);
+  REQUIRE(expand(0x03ffU) == 0x387fc000U);
+  REQUIRE(expand(0x83ffU) == 0xb87fc000U);
+  REQUIRE(expand(0x0400U) == 0x38800000U);
+
+  // Normals, including the largest representable half.
+  REQUIRE(expand(0x3c00U) == 0x3f800000U);
+  REQUIRE(expand(0xbc00U) == 0xbf800000U);
+  REQUIRE(expand(0x3c01U) == 0x3f802000U);
+  REQUIRE(expand(0x7bffU) == 0x477fe000U);
+  REQUIRE(expand(0xfbffU) == 0xc77fe000U);
+
+  // Infinities keep their sign.
+  REQUIRE(expand(0x7c00U) == 0x7f800000U);
+  REQUIRE(expand(0xfc00U) == 0xff800000U);
+
+  // Every NaN code -- either sign, any payload -- becomes canonical 0x7fc00000.
+  REQUIRE(expand(0x7c01U) == 0x7fc00000U);
+  REQUIRE(expand(0xfc01U) == 0x7fc00000U);
+  REQUIRE(expand(0x7e00U) == 0x7fc00000U);
+  REQUIRE(expand(0xfe00U) == 0x7fc00000U);
+  REQUIRE(expand(0xffffU) == 0x7fc00000U);
 }
 
 TEST(numeric_truncates_float16_and_handles_special_values) {

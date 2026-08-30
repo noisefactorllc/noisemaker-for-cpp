@@ -23,8 +23,8 @@ namespace noisemaker::glsl {
 [[nodiscard]] double round(double x) noexcept;
 [[nodiscard]] inline std::uint32_t pack_half2x16(
     const Vec2& value) noexcept {
-  const std::uint32_t low = noisemaker::float_to_half_rte(value[0]);
-  const std::uint32_t high = noisemaker::float_to_half_rte(value[1]);
+  const std::uint32_t low = noisemaker::float_to_half_js(value[0]);
+  const std::uint32_t high = noisemaker::float_to_half_js(value[1]);
   return low | (high << 16U);
 }
 [[nodiscard]] inline Vec2 unpack_half2x16(std::uint32_t value) noexcept {
