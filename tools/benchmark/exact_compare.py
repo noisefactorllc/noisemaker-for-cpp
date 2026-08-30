@@ -1,4 +1,4 @@
-"""Zero-tolerance top-down RGBA8 comparison for CPU benchmark runs."""
+"""Byte-exact top-down RGBA8 comparison for CPU benchmark runs."""
 
 from __future__ import annotations
 

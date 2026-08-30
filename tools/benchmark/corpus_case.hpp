@@ -103,7 +103,6 @@ struct TimingSummary {
 // ---------------------------------------------------------------------------
 [[nodiscard]] std::string json_string(std::string_view value);
 [[nodiscard]] std::string json_array(const std::vector<std::string>& values);
-[[nodiscard]] std::string json_number(std::size_t value);
 [[nodiscard]] std::string json_number(std::uint64_t value);
 [[nodiscard]] std::string json_double(double value);
 

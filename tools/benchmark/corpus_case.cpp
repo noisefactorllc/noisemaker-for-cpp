@@ -92,8 +92,8 @@ std::string json_array(const std::vector<std::string>& values) {
   return out;
 }
 
-std::string json_number(std::size_t value) { return std::to_string(value); }
-
+// One unsigned overload only: std::size_t and std::uint64_t are the same
+// type on LP64 Linux, so a second overload is a redefinition there.
 std::string json_number(std::uint64_t value) { return std::to_string(value); }
 
 std::string json_double(double value) {
