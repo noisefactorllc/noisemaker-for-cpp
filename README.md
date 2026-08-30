@@ -37,17 +37,46 @@ differs by a single byte. CI runs that check on every push.
 This port is **in progress**. Coverage against the pinned corpus revision
 `a024dc3a960cc44af454abc7aebce50456c194e6`:
 
-| | Count |
-|---|---:|
-| Corpus programs | 212 |
-| Ported (typed) | 197 |
-| Public kernels | 199 |
-| Not yet ported | 15 |
+| | Count | Derived from |
+|---|---:|---|
+| Corpus programs | 212 | the `programs` array in `tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/manifest.json` |
+| Ported into the typed slice | 211 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+| Corpus programs outside the typed slice | 1 | set difference of the two arrays above: `filter/wormhole:deposit`, which is ported separately as a scatter pass in `src/effects/scatter/wormhole.cpp` |
+| Catalog entries | 213 | `kCatalog` in `src/typed_generated/typed_slice.cpp`: the 211 typed program keys, plus a second, earlier-generation factory registered under `filter/invert:inv` and under `synth/solid:solid` |
 
-Every ported program is verified against the JavaScript reference
-implementation with pixel-level fixtures, not merely compiled. Programs are
-added one authenticated capability at a time; a program is only exposed once
-its parity fixtures pass.
+The corpus and typed counts are re-derivable from a clean checkout without
+external state: `python -m tools.glslcpp.check_semantics --check` prints the
+corpus count and `python -m tools.glslcpp.generate_typed_slice --check` prints
+the typed count.
+
+Every program in the pinned corpus is therefore compiled and bound, but the
+port is not finished: parity verification, the DSL graph executor, and a
+standing queue of open defects are still in flight. The live list of remaining
+work is the top block of
+[`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
+
+The corpus itself is vendored, not authored here. Its GLSL sources under
+`tools/glslcpp/corpus/` come from
+[`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at
+revision `a024dc3a960cc44af454abc7aebce50456c194e6`, and are MIT-licensed
+there.
+
+### Parity and its documented exceptions
+
+Ported programs are checked against the JavaScript reference implementation
+with pixel-level fixtures, not merely compiled, and capabilities are admitted
+one authenticated closure at a time.
+
+Where a program's emitted kernel has been *measured* divergent from the
+reference, the project records that in code rather than leaving it implicit:
+each such program is listed in `kMeasuredParityExclusions` in
+`src/graph/executor.cpp`, together with the measured divergence. The DSL graph
+executor refuses to run an excluded program, raising `unavailable_pass`.
+
+Read that list before treating any kernel's output as authority-exact, and
+note its scope: the guard lives in the graph executor. The generated catalog
+still exposes an excluded program's `bind_*` factory, so a direct
+`noisemaker::generated::bind()` call by key is not gated by it.
 
 ## Build
 
@@ -97,9 +126,10 @@ for (const auto& factory : noisemaker::generated::catalog()) {
 }
 ```
 
-Binding is fail-closed: a missing or wrongly-typed uniform throws
-`noisemaker::glsl::KernelBindingError` rather than rendering something
-plausible.
+Binding is fail-closed with respect to uniforms: a missing or wrongly-typed
+uniform throws `noisemaker::glsl::KernelBindingError` rather than rendering
+something plausible. It does not consult the measured-parity exclusion list
+described under [Coverage](#parity-and-its-documented-exceptions).
 
 `BoundKernel` is a stateful execution handle, matching the JavaScript bound
 factory it ports. It retains fragment output state across pixels and repeated
@@ -159,3 +189,7 @@ quietly re-baselining. See `docs/port-engineering/README.md`.
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+The vendored GLSL corpus under `tools/glslcpp/corpus/` is MIT-licensed source
+from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker),
+pinned at revision `a024dc3a960cc44af454abc7aebce50456c194e6`.
