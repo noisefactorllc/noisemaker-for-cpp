@@ -174,3 +174,8 @@ Full-suite result:
 ```text
 100% tests passed, 0 tests failed out of 1
 ```
+
+
+---
+
+**Correction (2026-08-30):** this report described the half conversion as IEEE round-to-nearest-even (`float_to_half_rte`). The independent publication review proved the JS authority `floatToHalf` rounds half-up with subnormal pre-truncation; the port diverged on 8,420,351 of 2^32 float32 inputs and the suite pinned the wrong value. The function is now `float_to_half_js`, a verified transcription (exhaustive 2^32 differential, 0 divergent), and `half_to_float` now canonicalizes NaN like the authority (65,536-code differential, 0 divergent). See .superpowers fix-3 lane report of the 2026-08-29 publication review.

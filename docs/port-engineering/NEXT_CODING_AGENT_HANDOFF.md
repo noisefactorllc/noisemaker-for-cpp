@@ -1,6 +1,117 @@
 # noisemaker-for-cpp Continuation Plan
 
-> ## HANDOFF CHECKPOINT 2026-08-26 — READ THIS FIRST
+> ## PUBLICATION CHECKPOINT 2026-08-30 — READ THIS FIRST
+>
+> This block supersedes the 2026-08-26 checkpoint below (kept as history).
+>
+> ### What happened
+>
+> - The repository is PUBLISHED: `github.com/noisefactorllc/noisemaker-for-cpp`,
+>   pushed at `686d421` under explicit operator authorization. NOTE: it was
+>   created public and verified public via the API, then something org-side
+>   flipped it to private within ~15 minutes; do not override visibility
+>   without the operator.
+> - A six-lane independent review (hygiene / parity / cpp / generator / docs /
+>   tests) ran against `686d421` and every actionable finding was fixed in the
+>   working tree (commits after `686d421`). Full evidence:
+>   `.superpowers/sdd/2026-08-29-publication-review/` (git-ignored, machine-local).
+>
+> ### Defects found and fixed after publication
+>
+> 1. **Parity**: `float_to_half_rte` implemented ties-to-even; the authority
+>    rounds half-up (8,420,351 of 2^32 inputs diverged; the suite pinned the
+>    wrong value). Now `float_to_half_js`, exhaustive differential 0 divergent.
+>    `half_to_float` now canonicalizes NaN like the authority (2045/65536
+>    codes diverged). Both proven against the live node authority.
+> 2. **Runtime**: use-after-free of the effect input when a non-final pass
+>    rewrites its arena name (latent; ASan-proven both ways; fixed with an
+>    arena pin primitive). Refusal records emitted unescaped JSON; now routed
+>    through `json_string` (python regression added).
+> 3. **Portability (CI was red on every native job)**: generated slice used
+>    `std::clamp` without `<algorithm>` (fixed in the EMITTER, cascaded);
+>    `-Wmisleading-indentation` on dense generated-style files (scoped
+>    suppression in CMake); GCC `-Wdangling-reference` false positives in
+>    registry.cpp (context strings hoisted); fdlibm `fq` zero-init;
+>    Darwin-GCC `<xlocale.h>` guards; `bit_effects.cpp` one-line if split.
+> 4. **Python suite on clean machines**: pytest declared in CI (library only,
+>    runner stays unittest); backend-compat/frontend-oracle/dither/julia
+>    env-gates converted to visible skips (set-but-wrong stays fatal); all
+>    machine-absolute defaults removed.
+> 5. **Docs**: README coverage table re-derived from the tree (211 of 212 in
+>    the typed slice; 213 catalog rows); oracle-reproduction recipe verified
+>    against real generators; corpus attribution added (MIT
+>    noisefactorllc/noisemaker@a024dc3a, 211 files byte-verified).
+> 6. **Sidecars**: 106 stale refreshed, 20 orphans deleted, one misnamed
+>    renamed; dated float_to_half corrections appended to task-1 report and
+>    task-31 design review.
+>
+> ### The emitter-change re-freeze (doctrine case 3)
+>
+> Adding `<algorithm>` to the emitted include list moved every historical
+> reconstruction uniformly (+21 bytes). Live and reconstruction pins were
+> re-frozen once; spec-level input locks stayed frozen as independent witness.
+> New anchors: slice `86e8794f…` (2,710,848B), manifest `a53b1df4…`,
+> backend compatibility `ec076aec…`, catalog payload `24c38ccb…`,
+> corpus manifest `f45da8c3…`, compiler-expected pin `1eb8d0bb…`.
+>
+> ### Environment contract (all external roots arrive by env, no defaults)
+>
+> ```text
+> NOISEMAKER_CPU_ROOT            frozen CPU authority (public repo
+>                                noisemaker-for-cpu @ 4834b0144ee0…, whose
+>                                90-file behavioral aggregate matches the
+>                                pinned lock e2d52e1b…)
+> NOISEMAKER_FOR_CPU             live CPU checkout (must differ from the
+>                                authority except for julia, which wants all
+>                                three equal)
+> NOISEMAKER_SHADER_GIT          shader git checkout (read-only)
+> NOISEMAKER_ORACLE_LEDGER       the oracle ledger file (713 entries)
+> NOISEMAKER_DSL_CPP_ORACLE      built noisemaker-dsl-frontend-oracle binary
+> NOISEMAKER_DSL_PARSER_ORACLE   built noisemaker-dsl-parser-oracle binary
+> NOISEMAKER_DSL_COMPILER_ORACLE built noisemaker-dsl-compiler-oracle binary
+> NOISEMAKER_DSL_CPU_CASE        built noisemaker-dsl-cpu-case driver
+> NOISEMAKER_DSL_CPU_BENCHMARK   built corpus benchmark driver
+> NOISEMAKER_DITHER_BASELINE_ROOT dither pre-port baseline snapshot (REAPED on
+>                                the original machine; regenerate or retire —
+>                                open decision)
+> NOISEMAKER_REGEN_CACHE         optional reconstruction cache root
+> ```
+>
+> ### The /private/tmp reaper (institutional memory)
+>
+> macOS deletes /private/tmp files by atime after ~3 days. It destroyed the
+> working tree twice and the ENTIRE frozen authority + ledger once. The
+> authority was reconstructed provably: live checkout HEAD `4834b01` matches
+> the pinned behavioral aggregate; `git archive` restored 713 files; the
+> ledger was regenerated. If it happens again, that is the procedure. The
+> durable fix is moving the authority out of /private/tmp (open queue item).
+> CI now needs no local authority for the byte-exact lane: the new
+> `corpus-parity` job checks out the public authority at the pinned revision.
+>
+> ### Remaining queue (supersedes the 2026-08-26 list; items 2–9 there stand)
+>
+> - Move the frozen authority + ledger to a durable machine-local home.
+> - 49 doc-package generators hardcode `../noisemaker-for-cpu` sibling roots
+>   (F4, deferred: each is coherence-pinned; env-first rewrites cascade 49
+>   package re-freezes). 15 of them pin authority revisions predating both
+>   local roots — provenance drift documented in docs/port-engineering/README.
+> - No automated cross-check between test-side kOracleSha256 anchors and
+>   generator ORACLE_SHA256 constants (this let 50 pixel comparisons sit
+>   disabled behind red CI). glitch-parity-native.inc lacks a .sha256 sidecar.
+> - Consolidate the strtod_l locale-parse blocks (js_number.hpp, lexer.cpp,
+>   executor.cpp) into one code path.
+> - js_render_oracle.mjs lines 36-38 are freeze-time provenance stamps, not
+>   live verification — label or re-derive.
+> - Bridge manifest cannot see a NEW pytest-style module; test_texture_oracle
+>   sidecar unenforced; coverage table has no pinning test.
+> - Dither pre-port baseline: regenerate or retire (env var exists, snapshot
+>   is gone).
+> - kMeasuredParityExclusions (filter/snow, synth/testPattern) are excluded on
+>   the DSL executor path but still bindable via the public catalog API —
+>   decide gate-or-document (README now describes the mechanism honestly).
+>
+
+> ## HANDOFF CHECKPOINT 2026-08-26 — READ THIS FIRST (superseded)
 >
 > This section supersedes every older status block below it, including the
 > 2026-08-25 STOP checkpoint. The older blocks are historical evidence only;
