@@ -1852,9 +1852,9 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_prior_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "55e0f0e334d3f8e5e5c4171b78e3140f4bcfeb9f716543ed2734b05401e0b715",
+                "76193e0056fedd2d5e226c707c31a9186ee3892b9b800fd9c33f3b6e9f5e346a",
             "src/typed_generated/typed_manifest.json":
-                "09db72a94e1d0c7762ecdb2e09746fab12105184655070f0c8d442aa35fbeae5",
+                "54a2082509bf8a41f266fcdcc4e40a166849c12319c69de1cab66674b43beab8",
             "include/noisemaker/generated/catalog.hpp":
                 "5ca9c58b712b493ec5ef548bf7fc75deec99dbe9546b22bdb0b9d0386885f52a",
         }
@@ -8089,17 +8089,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "0cee87d4c9d6e2a92028f1b99a48fdc1ef18e486f5a4d937408fd1b1ff91e87e",
+                "e0ed9807ebe0f1524d130ad2fd400fc0831c88a6350072d848b6032167ac2941",
             "src/typed_generated/typed_manifest.json":
-                "cbabde843ab58175a613caa99d29aafc7f4fa557fd11a920b44ff305c9d22c65",
+                "583b5caf1459cce35daef4b437c99fdf050c97464f4da20a283fd84a8eed0591",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "4b14d12113d2f66a0ca720efe506b8c14fa7c22274b1fec2c6bf47504c9cbf32",
+                "a0b5a94773909f777925e595c1c16eb961dedf58bf6fec324a4a83cebdbf5e7c",
             "src/typed_generated/typed_manifest.json":
-                "2240b96f8839908ca19dfb6fa0dec1c626891f93fc664bd88a89ac3e1bc39482",
+                "cb5690a2cd9d99dde1e2bddd11d31386668ba26a8c8e860dba5a679ddfa7a8dc",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8223,17 +8223,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "2dc2580ffa4c40372eb41fa52a51ef577240bf998f1602cf69e7231274ace985",
+                "b84531ddfc3783c25b20f3700a63ceb43fc486de42813be7ce4994bb0c7383cc",
             "src/typed_generated/typed_manifest.json":
-                "c6f867929a625cf0a23c2a25a9ac5c9fc6f5ad3a38fac98765e1a1325d7426ea",
+                "7881fb30e1e0dbe48cdb0391d5d2b86571e10ceb55344a531572c0f31306c43d",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "0cee87d4c9d6e2a92028f1b99a48fdc1ef18e486f5a4d937408fd1b1ff91e87e",
+                "e0ed9807ebe0f1524d130ad2fd400fc0831c88a6350072d848b6032167ac2941",
             "src/typed_generated/typed_manifest.json":
-                "cbabde843ab58175a613caa99d29aafc7f4fa557fd11a920b44ff305c9d22c65",
+                "583b5caf1459cce35daef4b437c99fdf050c97464f4da20a283fd84a8eed0591",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8358,17 +8358,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "aadbbda414b528dd1fcfa2c7d27d2489acc7fc5f32b9fa2f3534a9774aecf915",
+                "4619ae4b7a9442a5e57a403a8227d3047797374dab0f82f8a9cab8482d7f0db4",
             "src/typed_generated/typed_manifest.json":
-                "186ce23cffceac67551203a2d765d0bd83f4a3c292811176fb21417e3d87d053",
+                "56ff72bfb2cb4e56f033c8bfb6a4845aedbe0c14bc59d51f17145cefe6e7d70e",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "2dc2580ffa4c40372eb41fa52a51ef577240bf998f1602cf69e7231274ace985",
+                "b84531ddfc3783c25b20f3700a63ceb43fc486de42813be7ce4994bb0c7383cc",
             "src/typed_generated/typed_manifest.json":
-                "c6f867929a625cf0a23c2a25a9ac5c9fc6f5ad3a38fac98765e1a1325d7426ea",
+                "7881fb30e1e0dbe48cdb0391d5d2b86571e10ceb55344a531572c0f31306c43d",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8491,17 +8491,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "97c9aad64d9070737f5374c904ffa150be81fe2aaecdf3fa44910b2f9158b4ab",
+                "d2e6e97b596d8d4cf0d8dc0340a6933fd4ae890134adaff7f23ec82c9ff58f21",
             "src/typed_generated/typed_manifest.json":
-                "74c249eadbdf966b9966efdbae64c9c310a277fbdcb49d127a8478d4064955f9",
+                "4d1e6a84fd6d7e8b9704a4dc256b766da6e6b5376e18335c1869e7d657fa156c",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "aadbbda414b528dd1fcfa2c7d27d2489acc7fc5f32b9fa2f3534a9774aecf915",
+                "4619ae4b7a9442a5e57a403a8227d3047797374dab0f82f8a9cab8482d7f0db4",
             "src/typed_generated/typed_manifest.json":
-                "186ce23cffceac67551203a2d765d0bd83f4a3c292811176fb21417e3d87d053",
+                "56ff72bfb2cb4e56f033c8bfb6a4845aedbe0c14bc59d51f17145cefe6e7d70e",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -10925,10 +10925,10 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "3c3be0cf32b6b45fdc366cba6beaf679c3ea6f608fe9de0bbe74da7eb97273c1",
+            "7450579e797c94409c4d605dd0b21a3c0cfcb8d294fc3151026bdb9baac7144a",
             hashlib.sha256(current_cpp.encode()).hexdigest())
         self.assertEqual(
-            "92be07b53508498f9afd6e228efeb56c374c7409b828ed318f651fae20c9b1e0",
+            "69a56f86328d64a810e2f66825bdedd79bb31e0ec24081bfff65a13bebe06831",
             hashlib.sha256(prior_cpp.encode()).hexdigest())
 
         marker = re.compile(r"(?m)^// Typed IR program: (.+)$")
@@ -14840,9 +14840,9 @@ class Task27PerlinTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task26_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "2539b621af1543bae74e6c9b5f8dd33c61a1684809fdf9d2850a002015691edf",
+                "33aeeb14422cd5ed2d29c246c05b746e6de505d0b2cdf17913f5c075e9b314f6",
             "src/typed_generated/typed_manifest.json":
-                "a2eb197e17d76d1316ed19eb95ce1b63a90895ba78f3cc517ee6dd3164381cd4",
+                "ee24dd9c2bac570099510025545b248f213fc3c3f873b4dc563c02ac2030c268",
             "include/noisemaker/generated/catalog.hpp":
                 "2a0c8a3abb57b8fed2d29e5bdc9791a53a4e119ccf224ba751022fbd0f7dd59e",
         }
@@ -15928,8 +15928,8 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         # translation-unit hash carriers, so the projected manifest is
         # internally consistent. cpp/catalog digests were unaffected.
         expected = {
-            "src/typed_generated/typed_slice.cpp": "81b23611a6f217c842042ada7aa4607f318c2f8b7cea192587e8acf66b77d0b6",
-            "src/typed_generated/typed_manifest.json": "a13220c943082de0d26bb7d12764cd7d39d3c1a4ce3ae399c80305f19a96287b",
+            "src/typed_generated/typed_slice.cpp": "20173b8d97c1833c78e90b8455259dae074f702694e643bbff48becb4453bfed",
+            "src/typed_generated/typed_manifest.json": "7f241cab186ebca4339a4e4d46bd3ffb2f81475c6da64a03412b0a4177738d4b",
             "include/noisemaker/generated/catalog.hpp": "67d72e3417329523e40a214fb058e5ed9fb8cd74aeee108c6dacda1036bda704",
         }
         for path, digest in expected.items():
@@ -16800,9 +16800,9 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task28 = {
             "src/typed_generated/typed_slice.cpp":
-                "454f8463745fef243bcf267259b9e6d5b894fe294d43bab6f1e9d7eeea07863b",
+                "b79fd8d179a9b96e1d2c92a624dc651b4866dc95eb448a09fc84e783ea605a9d",
             "src/typed_generated/typed_manifest.json":
-                "0b1a2cf2d5f1b52306c80129797b4c288dfe1ae0821ae9dfbab9a797a8823645",
+                "5e10c2dd12739e3c5cb0f4841b2eb17c99877fdb71afde525f322b7f6a57df5c",
             "include/noisemaker/generated/catalog.hpp":
                 "85f146ae07c41f97c57850229d3fcac788295dbdf236d025f03dd0b8d05f4cdd",
         }
@@ -17643,9 +17643,9 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task29 = {
             "src/typed_generated/typed_slice.cpp":
-                "c9a76fdd50ebe3a34b53c6c1b85cf1ebd6af005c19762639c85d50d0bef1ec79",
+                "8c723f40d01a10653935ba21053aa0dc977f3cce7d8edcea6e08b7e433ccaead",
             "src/typed_generated/typed_manifest.json":
-                "5ec6fdf5fccff77120d18bec9791fa5d051c3541db8f3d6d85935b589318a7e2",
+                "76fdd06f1cce3529eb8e94ad489f23d5822cc038e75fbf74efbd08ec17748dbb",
             "include/noisemaker/generated/catalog.hpp":
                 "a0bbb90c96f6647ede3e6910b97010a35e33d1e1191325883a11073ad6a45fb0",
         }
@@ -18596,9 +18596,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task30 = {
             "src/typed_generated/typed_slice.cpp":
-                "6a6fc22e031b5ce3706b4ab9f5d7de752966106bfb8ad062de4645e808fd6f10",
+                "78855c0352e79f95714c272f67857b0ec025dcc8fcb3c59004fb57e168794489",
             "src/typed_generated/typed_manifest.json":
-                "9ea64a2ca51492efd06c27229217faa3f9875de598b58d02681d00706e22a18e",
+                "f2737b19b0031630401c3c9e771357abbe9593cd064285ad6b3d66b0368a8ec2",
             "include/noisemaker/generated/catalog.hpp":
                 "a47c84fb2bd9a5fbe7c336f5aad7c002c1a06101149cc117d7b3a73e0a9923f4",
         }
@@ -19168,9 +19168,9 @@ class Task32GradeClusterTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task31 = {
             "src/typed_generated/typed_slice.cpp":
-                "621c62f4fa08093c13a687a2cec55773d6d3d4d26067b1b81fa8a4f2accdef89",
+                "9dd73c935e0d05442864535d70629e9c46f98b3c7a7e265be644fec64e66afdd",
             "src/typed_generated/typed_manifest.json":
-                "4451b95a530786aea88d97fcc894ad9d2acffe8fb4f6b5c879d6ebe3b4752fc1",
+                "17829a67bcbcb6d98254368f960956ee7ecd6624f155c7a84ef150d13df1d1c1",
             "include/noisemaker/generated/catalog.hpp":
                 "25b838ccd789bbe5163023ba112917c70f7c6bc3f78cade1eb08a4d795b3b663",
         }
@@ -19858,11 +19858,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             22728,
             "8fb3b8bc876c380a0c406fdae8e81b74d4499924cf301ed7a980c450f7ccfe0a"),
         "src/typed_generated/typed_slice.cpp": (
-            1937387,
-            "89b63bdbaa35d55e367c7ddacd5d302264b8412f09d89e7abe98beb308e94b9c"),
+            1937408,
+            "08a89d99e2e51ed37260fb28102a68efa473cb1f427da02c4f9785f264ac9ffe"),
         "src/typed_generated/typed_manifest.json": (
             519037,
-            "d494b480234ebb8d832e136257330e48df627b0bdb6650efe5c4280baae8d983"),
+            "b33752b0e1f08c48dc402d85e6eb2ae307fd92a791132c0acd106c7374fdabd2"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20571,11 +20571,11 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
             22993,
             "c03ba30a9bc74697e5db1a9524a047a1dab1b0718ef72f0d4d772327a83f87d2"),
         "src/typed_generated/typed_slice.cpp": (
-            1991753,
-            "7b9f3ccde0408f26e11a57668e2e5ae96b2ea22ec879eb70800458ddb309c1ae"),
+            1991774,
+            "8e3370b9a79b6c255952ba710dfbec95993600f78496bac0380055b73d5ede12"),
         "src/typed_generated/typed_manifest.json": (
             522139,
-            "783fbb049a4e2526ca55e31b486a5fde186c291a9d32b125b06e88b8bd829943"),
+            "610fc7d7e317922e44b80a4040d0fc94dde4bac51833391443d653afd165bec8"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -21791,11 +21791,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
             23202,
             "69deb0c8b3f9b453c1101263b0de7fb2f0c1915a21ea5f6cbb298cf0508df20d"),
         "src/typed_generated/typed_slice.cpp": (
-            2005761,
-            "600c108565f1d2c2e743dd97ab51bbc4b568741e65a19909abf42ff29e944b5a"),
+            2005782,
+            "7b146446e09dc99ca8c475d778efe0aaaae178b4f555950c26d34366a5475135"),
         "src/typed_generated/typed_manifest.json": (
             524768,
-            "34234bc76c78d7f2678ef93a5fc3a1d782e081328938ff9139c042f94766204b"),
+            "c7a7be74f3bf53d4af62df359056a810cc507e24a2d240fe8843d868c4a2c876"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -22445,11 +22445,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710827,
-                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
+                2710848,
+                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
+                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -22644,11 +22644,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
             23429,
             "ffaff05c37d718e0e3b7bae6fe2da5a46c44599410a8d88db419cae136b5ec5f"),
         "src/typed_generated/typed_slice.cpp": (
-            2043037,
-            "0da79260f0f57ad4588ec5fa41232da77433c2c8cc3818a36d3c3cf7dc8fcfb6"),
+            2043058,
+            "7fc36a5e4a7fb95b9b078efcde98b608cf1c1a7ccbfcf0a7641b3ef05b8ea538"),
         "src/typed_generated/typed_manifest.json": (
             528385,
-            "c827521a37f0c63a91081c7c08b8de82832ed28955125a87c9c6f4d145f15c54"),
+            "084dce699bb7b9d901831461c805463ddba3f93107fd9809b91a8061b3c4166d"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -23225,11 +23225,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710827,
-                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
+                2710848,
+                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
+                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -23981,11 +23981,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710827,
-                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
+                2710848,
+                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
+                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -24019,11 +24019,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             23751,
             "460edeccdce784b3d08f160ab32c6de399c07ff22aa99e04314b94435b59ac58"),
         "src/typed_generated/typed_slice.cpp": (
-            2121733,
-            "0df0d4ba862e8b19bc697084b68adadc6485e5761c47070004444f209f0e11dd"),
+            2121754,
+            "d7f3ebe20e8bfbcf2b774e08b3245a6c2d648ada16d6c2223d5023abdde70fba"),
         "src/typed_generated/typed_manifest.json": (
             531722,
-            "8e814beba1ad794791ff71e8c29665e4153bbcf863ee360b0b7adc1545349fd1"),
+            "282bbdb1a66321e9cdad1d5f44e97e64135c16b77138b4e399a2188eb5ffc5a8"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24517,11 +24517,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710827,
-                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
+                2710848,
+                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
+                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -24555,11 +24555,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
             24086,
             "bc32451249e6b11de2944f69318cea54172b1b5a8c4656ad09ce6b50e2b0da04"),
         "src/typed_generated/typed_slice.cpp": (
-            2179929,
-            "da044bf563b421a7b7bafd369b8b723a0b59931bb8dc9616fc27e6c7b5bc8a85"),
+            2179950,
+            "f3286120a8b11ea3bbdf9ed71029572920f91bc3b86a439b5c97bfcb49ab8707"),
         "src/typed_generated/typed_manifest.json": (
             535205,
-            "c164d63137e6782dbfa4a1d5639b330bdfb488f2b96f2a4cc0f4974df4b8aab2"),
+            "5d05db2af0f88bb5c5933c479377366ab3f7bfbbdaae591f9517f5e832d06073"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25117,11 +25117,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710827,
-                "1b80b3e2281e558f89b12522fedd47d45178f6407e8db38d251b0ea6e6e155f6"),
+                2710848,
+                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "3c285b592f82fd8d2008d60bd72afe72df653e833134830cad43a3563f3246fa"),
+                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -25158,11 +25158,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             24216,
             "d950efd9b79306bf0e02c79592e0887b7aee23b68c5067213e933cf57ae00806"),
         "src/typed_generated/typed_slice.cpp": (
-            2190817,
-            "2e12a5f188b77e32ff70b8989ac51d64f8962e533dc45d4c40f840ea3e609992"),
+            2190838,
+            "4732318e044bdf9cc6865eab1d653f284faef7a686e809448d3b4d2045ad852c"),
         "src/typed_generated/typed_manifest.json": (
             537778,
-            "eda8251e89f6e7c1b9fec219091de2a389419aa9f35b138722806c71053f026f"),
+            "81a0b4b0495e1e5260f7c9999ac69872fab82b01f1c556eb40dd6bdf572e1047"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),

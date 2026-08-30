@@ -44,6 +44,17 @@ target_include_directories(noisemaker-cpu PUBLIC
 )
 target_link_libraries(noisemaker-cpu PUBLIC ZLIB::ZLIB)
 add_library(NoisemakerForCpp::noisemaker-cpu ALIAS noisemaker-cpu)
+
+# Machine-generated and generator-refreshed files emit one dense statement
+# per IR node, which trips -Wmisleading-indentation on GCC and newer Clang.
+# The warning is purely stylistic for these files; every other warning in
+# them, and all warnings elsewhere, remain -Werror.
+set_source_files_properties(
+  src/typed_generated/typed_slice.cpp
+  tests/test_generated_kernels.cpp
+  tests/test_typed_slice.cpp
+  PROPERTIES COMPILE_OPTIONS
+  "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wno-misleading-indentation>")
 target_compile_options(noisemaker-cpu PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )

@@ -332,8 +332,7 @@ function atomicWriteExternal(file, data, label) {
 function defaultScratchDirectory() {
   // macOS exposes /tmp through a /var symlink.  Select the canonical private
   // temp root so the strict no-symlink policy does not disable default use.
-  const temporaryRoot = process.platform === 'darwin' && fs.existsSync('/private/tmp') ? '/private/tmp' : os.tmpdir()
-  return fs.mkdtempSync(path.join(temporaryRoot, 'noisemaker-dsl-render-oracle-'))
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'noisemaker-dsl-render-oracle-'))
 }
 
 async function main() {

@@ -20,6 +20,9 @@
 
 #include <cstdlib>
 #include <locale.h>
+#if defined(__APPLE__)
+#include <xlocale.h>  // Darwin declares strtod_l here, not in <locale.h>.
+#endif
 
 namespace noisemaker {
 

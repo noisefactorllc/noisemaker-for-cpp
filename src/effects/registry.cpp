@@ -180,8 +180,9 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   required_field(output, "physical_names", ValueKind::array, context + ".output_abi");
   required_field(output, "single_output_canonical", ValueKind::boolean, context + ".output_abi");
   const auto& extent = required_field(output, "extent", ValueKind::object, context + ".output_abi").object;
-  exact_object(extent, {"width", "height", "format"}, context + ".output_abi.extent");
-  const auto& format = required_field(extent, "format", ValueKind::string, context + ".output_abi.extent");
+  const std::string extent_context = context + ".output_abi.extent";
+  exact_object(extent, {"width", "height", "format"}, extent_context);
+  const auto& format = required_field(extent, "format", ValueKind::string, extent_context);
   const std::array<std::string_view, 3> formats = {"rgba8unorm", "rgba16f", "rgba16float"};
   if (std::find(formats.begin(), formats.end(), format.string) == formats.end()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output format");
   for (const auto name : {"height", "width"}) {
@@ -230,17 +231,19 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   for (const auto name : {"canonical", "emitted_factory", "legacy_public", "typed_manifest_output"}) nonempty_string(required_field(factory, name, ValueKind::string, context + ".factory"), context + ".factory." + std::string(name));
   sha256_field(required_field(factory, "typed_manifest_output_sha256", ValueKind::string, context + ".factory"), context + ".factory.typed_manifest_output_sha256");
   const auto& route = required_field(factory, "route", ValueKind::object, context + ".factory").object;
-  const auto& route_kind = required_field(route, "kind", ValueKind::string, context + ".factory.route");
+  const std::string route_context = context + ".factory.route";
+  const auto& route_kind = required_field(route, "kind", ValueKind::string, route_context);
   if (route_kind.string == "typed_emitter") {
     exact_object(route, {"factory", "kind", "source", "source_sha256"}, context + ".factory.route");
     if (required_field(route, "factory", ValueKind::string, context + ".factory.route").string != field(factory, "canonical")->string) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": factory route identity");
   } else if (route_kind.string == "custom_adapter") {
     exact_object(route, {"binding_abi", "emitted_factory", "factory", "kind", "output_abi", "source", "source_sha256"}, context + ".factory.route");
     if (required_field(route, "factory", ValueKind::string, context + ".factory.route").string != field(factory, "canonical")->string || required_field(route, "emitted_factory", ValueKind::string, context + ".factory.route").string != field(factory, "emitted_factory")->string) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": custom route identity");
-    const auto& abi = required_field(route, "binding_abi", ValueKind::object, context + ".factory.route").object;
-    exact_object(abi, {"samplers", "uniforms"}, context + ".factory.route.binding_abi");
+    const auto& abi = required_field(route, "binding_abi", ValueKind::object, route_context).object;
+    const std::string abi_context = route_context + ".binding_abi";
+    exact_object(abi, {"samplers", "uniforms"}, abi_context);
     for (const auto name : {"samplers", "uniforms"}) {
-      const auto& entries = required_field(abi, name, ValueKind::array, context + ".factory.route.binding_abi");
+      const auto& entries = required_field(abi, name, ValueKind::array, abi_context);
       std::set<std::string> binding_names;
       for (const auto& entry : entries.array) {
         if (entry.kind != ValueKind::object) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": custom binding ABI");
@@ -663,9 +666,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "a024dc3a960cc44af454abc7aebce50456c194e6" ||
-      provenance_.generated_payload_sha256 != "de70d48cd3912b618f794ebaaef7e4aa0e546cf195f36f441abf94e6b0975b77" ||
+      provenance_.generated_payload_sha256 != "24c38ccb28ba9b7c7e0bbf33885fc7da93613612df7d4af71b7989cee71e88ab" ||
       provenance_.normalized_record_stream_sha256 != "6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996" ||
-      provenance_.compatibility_sha256 != "2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49" ||
+      provenance_.compatibility_sha256 != "ec076aec3cbc400a0ec34cf20318f50fe8b1a5770bdf28004f1fad6c847cba64" ||
       provenance_.cpu_behavioral_lock != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||
       provenance_.cpu_behavioral_file_count != 90 ||
       provenance_.cpu_revision != "e2d52e1b9891c3adf8897922d4eeb6312b93fe4d78868ff7db814a7d7668dcc7" ||

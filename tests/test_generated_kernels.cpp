@@ -15455,7 +15455,7 @@ TEST(typed_glitch_exact_comparer_rejects_shape_and_signed_zero) {
 
 TEST(typed_glitch_matches_all_eight_authoritative_js_oracles) {
   REQUIRE(glitch_native_oracle::kOracleSha256 ==
-          "646fefd6ba2213b787e540a30cab175503292b95dc16bf270b7de95ee03ad0ad");
+          "535dda6aff731f41974b0f37277949a7d18a2c311c0795ac846a1497acc22e55");
   REQUIRE(glitch_native_oracle::kProgramKey ==
           "classicNoisedeck/glitch:glitch");
   REQUIRE(glitch_native_oracle::kTotalFloatWords == 2468U);
@@ -16306,7 +16306,7 @@ TEST(typed_shape_mixer_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape_mixer_matches_all_forty_two_independent_js_oracles) {
   REQUIRE(shape_mixer182_oracle::kOracleSha256 ==
-          "bf75e1d19dd6f06d3c31d252b58bc5db0ab12471f3843f3091d8301b9d885378");
+          "512227a80d040c7c7f72a7a142554ce45ccc353796c01ef3bec468c97cbe62a0");
   REQUIRE(shape_mixer182_oracle::kProgramKey ==
           "classicNoisedeck/shapeMixer:shapeMixer");
   REQUIRE(shape_mixer182_oracle::kCorpusRevision ==

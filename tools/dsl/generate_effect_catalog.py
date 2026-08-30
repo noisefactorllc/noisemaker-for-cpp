@@ -25,7 +25,7 @@ CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
 CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
-COMPATIBILITY_SHA256 = "2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49"
+COMPATIBILITY_SHA256 = "ec076aec3cbc400a0ec34cf20318f50fe8b1a5770bdf28004f1fad6c847cba64"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -138,12 +138,10 @@ def _authority(cpu_root: pathlib.Path, shader_git: pathlib.Path, compatibility: 
             raise CatalogError(f"compatibility authority mismatch: {key}")
     if compatibility.get("corpus_revision") != CORPUS_REVISION:
         raise CatalogError("compatibility corpus revision mismatch")
-    try:
-        revision = subprocess.run(["git", "-C", str(cpu_root), "rev-parse", "HEAD"], check=True,
-                                  text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.strip()
-    except (OSError, subprocess.CalledProcessError):
-        revision = authority["cpu_behavioral_lock"]
-    authority["cpu_revision"] = revision
+    # Content-addressed on purpose: the behavioral lock identifies the exact
+    # authority bytes, works for git and non-git roots alike, and never falls
+    # back silently to a second meaning the way a failed `git rev-parse` did.
+    authority["cpu_revision"] = authority["cpu_behavioral_lock"]
     return authority
 
 

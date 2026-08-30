@@ -160,7 +160,8 @@ struct State final : KernelState {
   if (formula == 30) {
     const double xf = std::floor(mul(freq, .5)) + 1, yf = std::floor(freq); const float xm = mod(std::floor(mul(sx, xf)), xf), ym = mod(std::floor(mul(sy, yf)), yf);
     if (xm == 0 || ym == 0 || xm == f32(xf - 1) || ym == f32(yf - 1)) return 0;
-    if (ym == 1) return xm == 1 ? 1 : 0; return static_cast<float>(cconstant(s, sx, sy, xf, yf, seed));
+    if (ym == 1) return xm == 1 ? 1 : 0;
+    return static_cast<float>(cconstant(s, sx, sy, xf, yf, seed));
   }
   return 1;
 }

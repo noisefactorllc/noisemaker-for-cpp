@@ -8,7 +8,7 @@ const ROOT = path.resolve(new URL('.', import.meta.url).pathname, '../..')
 const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
 const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
 const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
-const BACKEND_SHA256 = '2f5e6b1aeba98abe3c83d71c30e089a10736ddb1b5486396382aa4907f886e49'
+const BACKEND_SHA256 = 'ec076aec3cbc400a0ec34cf20318f50fe8b1a5770bdf28004f1fad6c847cba64'
 
 function usage(message) {
   if (message) console.error(`generate_executable_corpus: ${message}`)

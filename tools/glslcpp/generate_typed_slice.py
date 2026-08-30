@@ -9166,7 +9166,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             manifest_program["reflect_admission_profile"] = (
                 reflect_admission_profile)
         manifest_programs.append(manifest_program)
-    standard_headers = ["#include <array>"]
+    standard_headers = ["#include <algorithm>", "#include <array>"]
     if blur_runtime_preflight:
         standard_headers.append("#include <cmath>")
     standard_headers.extend([

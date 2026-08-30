@@ -3,6 +3,7 @@
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
