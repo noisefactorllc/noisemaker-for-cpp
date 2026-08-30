@@ -1,13 +1,47 @@
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
-import { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } from '../noisemaker-for-cpu/src/effects/catalog.js'
-import { createCanonicalBindings } from '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-import { bindGlslKernel } from '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-import { runPass } from '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-import { Surface } from '../noisemaker-for-cpu/src/runtime/surface.js'
+// The JS CPU authority arrives by ENV, never by a machine-specific path.
+// (Historical note, 2026-08-30: the static imports below used to be
+// '../noisemaker-for-cpu/...' resolved against THIS FILE -- i.e.
+// docs/port-engineering/future-precompute/noisemaker-for-cpu -- while the
+// fs-read paths resolved the same spelling against CWD. No checkout layout
+// satisfies both, so this generator was unrunnable exactly as committed and
+// had to be mirrored into scratch to run. Roots now resolve from
+// NOISEMAKER_CPU_ROOT or NOISEMAKER_FOR_CPU, historical sibling-of-CWD last.)
+function resolveCpuRoot() {
+  const candidates = [process.env.NOISEMAKER_CPU_ROOT, process.env.NOISEMAKER_FOR_CPU, '../noisemaker-for-cpu']
+  for (const candidate of candidates) {
+    if (!candidate) continue
+    const root = path.resolve(candidate)
+    if (fs.existsSync(path.join(root, 'src/effects/catalog.js'))) return root
+  }
+  throw new Error('JS authority not found: set NOISEMAKER_CPU_ROOT (or NOISEMAKER_FOR_CPU) to a noisemaker-for-cpu checkout')
+}
+const cpuRoot = resolveCpuRoot()
+const authority = (relative) => import(pathToFileURL(path.join(cpuRoot, relative)).href)
+const { canonicalAdapterFactories, canonicalKernelFactories, kernelFactories } = await authority('src/effects/catalog.js')
+const { createCanonicalBindings } = await authority('src/csl/glsl-kernel.js')
+const { bindGlslKernel } = await authority('src/csl/glsl-runtime.js')
+const { runPass } = await authority('src/runtime/pass-runner.js')
+const { Surface } = await authority('src/runtime/surface.js')
+
+// The `mask-zero-divide-by-zero-diagnostic` case pins the bytes of a NaN the
+// HARDWARE manufactures (`r & 0` collapses every operator branch, so bitOp
+// returns float(0)/float(0)). That NaN's sign is an ISA property -- AArch64
+// `fdiv` yields 0x7fc00000, x86-64 SSE2 `divsd` yields the "QNaN indefinite"
+// 0xffc00000 -- and V8 does NOT canonicalize NaN, so the JS authority inherits
+// it. One hash cannot speak for both architectures; the frozen package records
+// one capture per architecture, and a THIRD architecture must fail loudly here
+// rather than silently inherit either capture.
+const SUPPORTED_ARCHES = ['arm64', 'x64']
+const ARCH = process.arch
+if (!SUPPORTED_ARCHES.includes(ARCH)) {
+  throw new Error(`unsupported architecture "${ARCH}": this package records authority captures for ${SUPPORTED_ARCHES.join(' and ')} only -- capture ${ARCH} against the JS authority before running here`)
+}
+const ARCH_DIVERGENCE_REASON = 'hardware-manufactured NaN (0.0/0.0): the sign bit is an ISA property (AArch64 fdiv 0x7fc00000 vs x86-64 SSE2 divsd 0xffc00000) and V8 does not canonicalize NaN, so the JS authority itself differs per architecture. See docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.'
 
 // ---------------------------------------------------------------------------
 // Cheap-unlocks cluster 2 -- `synth/bitwise:bitwise`, the ONE program in the
@@ -72,13 +106,13 @@ const outPath = path.join(here, 'bitwise-oracles.json')
 const reportPath = path.join(here, 'bitwise-oracle-report.md')
 const revision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
 const corpusRoot = `tools/glslcpp/corpus/${revision}`
-const glslKernelPath = '../noisemaker-for-cpu/src/csl/glsl-kernel.js'
-const glslRuntimePath = '../noisemaker-for-cpu/src/csl/glsl-runtime.js'
-const passRunnerPath = '../noisemaker-for-cpu/src/runtime/pass-runner.js'
-const surfacePath = '../noisemaker-for-cpu/src/runtime/surface.js'
-const catalogPath = '../noisemaker-for-cpu/src/effects/catalog.js'
-const canonicalPath = '../noisemaker-for-cpu/src/effects/generated/canonical-kernels.js'
-const adapterPath = '../noisemaker-for-cpu/src/effects/adapters/index.js'
+const glslKernelPath = path.join(cpuRoot, 'src/csl/glsl-kernel.js')
+const glslRuntimePath = path.join(cpuRoot, 'src/csl/glsl-runtime.js')
+const passRunnerPath = path.join(cpuRoot, 'src/runtime/pass-runner.js')
+const surfacePath = path.join(cpuRoot, 'src/runtime/surface.js')
+const catalogPath = path.join(cpuRoot, 'src/effects/catalog.js')
+const canonicalPath = path.join(cpuRoot, 'src/effects/generated/canonical-kernels.js')
+const adapterPath = path.join(cpuRoot, 'src/effects/adapters/index.js')
 const AUTHORIZED_DEFINES = Object.freeze({})
 const f = Math.fround
 const PROGRAM_KEY = 'synth/bitwise:bitwise'
@@ -105,7 +139,14 @@ const RUNTIME_PROVENANCE = {
   pass_runner_sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa',
   surface_sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59',
   public_catalog_sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4',
-  canonical_kernels_sha256: 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56',
+  // Refreshed 2026-08-30 (was 'e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56').
+  // This is a WHOLE-FILE hash of canonical-kernels.js, which grows every time
+  // the authority adds a factory, so it drifts for reasons that have nothing to
+  // do with this program. The load-bearing invariant is the per-program
+  // canonical_factory_to_string_sha256 below, which is still exactly
+  // a00438c5b07fb3e4cfe58a511453f8856f70cb9449465c9bd8d2f35a3afdd3e2 on both
+  // architectures: canonicalFactory244's own text has not changed.
+  canonical_kernels_sha256: '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe',
   adapter_index_sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267',
 }
 for (const [file, hash] of [
@@ -390,6 +431,14 @@ function build() {
   }
 }
 
+// A hash cell is a plain string when both architectures produced the same
+// bytes, and an arch-keyed record when they did not. Render both forms rather
+// than picking one, so the report never silently speaks for one architecture.
+function hashCell(value) {
+  if (typeof value === 'string') return `\`${value.slice(0, 16)}...\``
+  return SUPPORTED_ARCHES.map((arch) => `${arch} \`${value.by_arch[arch].slice(0, 16)}...\``).join('<br>')
+}
+
 function report(d) {
   const lines = [
     '# Cheap-unlocks cluster 2 -- `synth/bitwise:bitwise` oracle report', '',
@@ -404,7 +453,7 @@ function report(d) {
     '## Cases', '', '| Case | Size | Op | ColorMode | Diagnostic | Nonfinite lanes | F32 SHA-256 | RGBA8 SHA-256 |', '| --- | --- | --- | ---: | --- | ---: | --- | --- |',
   ]
   for (const c of d.program.cases) {
-    lines.push(`| ${c.name} | ${c.dimensions.width}x${c.dimensions.height} | ${c.operation_name ?? c.operation} | ${c.color_mode} | ${c.diagnostic} | ${c.output.nonfinite_lanes} | \`${c.output.f32_sha256.slice(0, 16)}...\` | \`${c.output.rgba8_sha256.slice(0, 16)}...\` |`)
+    lines.push(`| ${c.name} | ${c.dimensions.width}x${c.dimensions.height} | ${c.operation_name ?? c.operation} | ${c.color_mode} | ${c.diagnostic} | ${c.output.nonfinite_lanes} | ${hashCell(c.output.f32_sha256)} | ${hashCell(c.output.rgba8_sha256)} |`)
   }
   lines.push('', '## Mutations', '', '| Mutation | Op | Reaching | Divergent (reaching) | Non-reaching | Divergent (non-reaching) |', '| --- | --- | ---: | ---: | ---: | ---: |')
   for (const m of d.program.mutations) {
@@ -417,16 +466,125 @@ function report(d) {
   return lines.join('\n')
 }
 
-const data = build()
-const json = `${JSON.stringify(data, null, 2)}\n`
-const md = `${report(data)}\n`
+// ---------------------------------------------------------------------------
+// Per-architecture capture, merge and verification.
+//
+// `--capture` renders on WHATEVER architecture node is running and emits that
+// one architecture's document. `--freeze a.json b.json` merges one capture per
+// supported architecture and writes the package: leaves both architectures
+// agree on stay plain scalars, leaves they disagree on become
+// `{ arch_divergent, by_arch: { arm64, x64 } }`. `--check` re-renders on the
+// current architecture and verifies the package's selection for THAT
+// architecture, so the gate stays meaningful on either machine.
+// ---------------------------------------------------------------------------
+const FROZEN_SCHEMA = 'noisemaker-for-cpp.future-precompute.cheap-unlocks.bitwise-cluster1.oracles.v2'
+const CAPTURE_SCHEMA = 'noisemaker-for-cpp.future-precompute.cheap-unlocks.bitwise-cluster1.oracles.arch-capture.v1'
+// tests/oracles/task-35-oracles.json is a byte-identical vendored copy of the
+// package. It is materialized HERE so the copy can never drift from its source.
+const vendoredPath = path.join('tests', 'oracles', 'task-35-oracles.json')
 
-if (process.argv.includes('--check')) {
-  if (!fs.existsSync(outPath) || fs.readFileSync(outPath, 'utf8') !== json) throw new Error('bitwise oracle JSON drift')
-  if (!fs.existsSync(reportPath) || fs.readFileSync(reportPath, 'utf8') !== md) throw new Error('bitwise oracle report drift')
-  console.log(`bitwise oracle fixture ok (1 program, ${data.eligibility_summary.total_cases} cases, ${MUTATIONS.length} mutations)`)
-} else {
+function captureDocument() {
+  const document = build()
+  delete document.schema
+  return { schema: CAPTURE_SCHEMA, arch: ARCH, node: process.version, v8: process.versions.v8, document }
+}
+
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+function mergeArch(left, right, leftArch, rightArch, at) {
+  if (JSON.stringify(left) === JSON.stringify(right)) return left
+  if (Array.isArray(left) && Array.isArray(right)) {
+    if (left.length !== right.length) throw new Error(`${at}: captures disagree on array length (${left.length} vs ${right.length}) -- structural difference, not an arch materialization difference`)
+    return left.map((value, index) => mergeArch(value, right[index], leftArch, rightArch, `${at}[${index}]`))
+  }
+  if (isPlainObject(left) && isPlainObject(right)) {
+    const leftKeys = Object.keys(left)
+    const rightKeys = Object.keys(right)
+    if (leftKeys.join('\u0000') !== rightKeys.join('\u0000')) throw new Error(`${at}: captures disagree on object keys -- structural difference, not an arch materialization difference`)
+    const merged = {}
+    for (const objectKey of leftKeys) merged[objectKey] = mergeArch(left[objectKey], right[objectKey], leftArch, rightArch, `${at}.${objectKey}`)
+    return merged
+  }
+  return { arch_divergent: ARCH_DIVERGENCE_REASON, by_arch: { [leftArch]: left, [rightArch]: right } }
+}
+
+function selectArch(node, arch, at) {
+  if (isPlainObject(node) && Object.prototype.hasOwnProperty.call(node, 'arch_divergent') && isPlainObject(node.by_arch)) {
+    if (!Object.prototype.hasOwnProperty.call(node.by_arch, arch)) throw new Error(`${at}: frozen package has no capture for architecture "${arch}"`)
+    return selectArch(node.by_arch[arch], arch, at)
+  }
+  if (Array.isArray(node)) return node.map((value, index) => selectArch(value, arch, `${at}[${index}]`))
+  if (isPlainObject(node)) {
+    const selected = {}
+    for (const objectKey of Object.keys(node)) selected[objectKey] = selectArch(node[objectKey], arch, `${at}.${objectKey}`)
+    return selected
+  }
+  return node
+}
+
+function freeze(captures) {
+  if (captures.length !== SUPPORTED_ARCHES.length) throw new Error(`--freeze needs exactly ${SUPPORTED_ARCHES.length} captures, one per supported architecture`)
+  for (const capture of captures) {
+    if (capture.schema !== CAPTURE_SCHEMA) throw new Error(`capture schema drift: ${capture.schema}`)
+    if (!SUPPORTED_ARCHES.includes(capture.arch)) throw new Error(`capture records unsupported architecture "${capture.arch}"`)
+  }
+  const ordered = SUPPORTED_ARCHES.map((arch) => {
+    const matches = captures.filter((capture) => capture.arch === arch)
+    if (matches.length !== 1) throw new Error(`expected exactly one capture for architecture "${arch}", got ${matches.length}`)
+    return matches[0]
+  })
+  const [first, second] = ordered
+  return {
+    schema: FROZEN_SCHEMA,
+    arch_captures: ordered.map((capture) => ({ arch: capture.arch, node: capture.node, v8: capture.v8 })),
+    arch_divergence: {
+      reason: ARCH_DIVERGENCE_REASON,
+      shape: 'any leaf the architectures disagree on is recorded as { arch_divergent, by_arch: { <arch>: <value> } }; every other leaf is a plain value both architectures produced.',
+      third_architecture: 'unsupported: this generator refuses to run on an architecture with no recorded capture rather than let it inherit another architecture\'s bytes.',
+      probe_note: 'this package\'s f32Bits() collapses every NaN to the string "nan", so the per-probe records carry no NaN sign; the arch difference surfaces only in the case f32_sha256.',
+    },
+    ...mergeArch(first.document, second.document, first.arch, second.arch, '$'),
+  }
+}
+
+function sidecar(file, text) {
+  fs.writeFileSync(`${file}.sha256`, `${sha256(Buffer.from(text, 'utf8'))}\n`)
+}
+
+const argv = process.argv.slice(2)
+if (argv.length === 1 && argv[0] === '--capture') {
+  process.stdout.write(`${JSON.stringify(captureDocument(), null, 2)}\n`)
+} else if (argv.length === SUPPORTED_ARCHES.length + 1 && argv[0] === '--freeze') {
+  const document = freeze(argv.slice(1).map((file) => JSON.parse(fs.readFileSync(file, 'utf8'))))
+  const json = `${JSON.stringify(document, null, 2)}\n`
+  const md = `${report(document)}\n`
   fs.writeFileSync(outPath, json)
+  sidecar(outPath, json)
   fs.writeFileSync(reportPath, md)
-  console.log(outPath)
+  sidecar(reportPath, md)
+  fs.writeFileSync(vendoredPath, json)
+  console.log(`${outPath}\n${reportPath}\n${vendoredPath}`)
+} else if (argv.length === 1 && argv[0] === '--check') {
+  const live = captureDocument()
+  if (!fs.existsSync(outPath)) throw new Error('bitwise oracle JSON missing')
+  const frozen = JSON.parse(fs.readFileSync(outPath, 'utf8'))
+  if (frozen.schema !== FROZEN_SCHEMA) throw new Error(`bitwise oracle schema drift (${frozen.schema})`)
+  const recorded = (frozen.arch_captures ?? []).find((capture) => capture.arch === ARCH)
+  if (!recorded) throw new Error(`bitwise oracle has no recorded capture for architecture "${ARCH}"`)
+  if (recorded.node !== live.node || recorded.v8 !== live.v8) throw new Error(`bitwise oracle capture for "${ARCH}" was taken with node ${recorded.node} / V8 ${recorded.v8}, this run is node ${live.node} / V8 ${live.v8}`)
+  const { schema: _schema, arch_captures: _archCaptures, arch_divergence: _archDivergence, ...body } = frozen
+  if (JSON.stringify(selectArch(body, ARCH, '$')) !== JSON.stringify(live.document)) throw new Error(`bitwise oracle JSON drift for architecture "${ARCH}"`)
+  const json = `${JSON.stringify(frozen, null, 2)}\n`
+  if (fs.readFileSync(outPath, 'utf8') !== json) throw new Error('bitwise oracle JSON is not canonically formatted')
+  if (!fs.existsSync(reportPath) || fs.readFileSync(reportPath, 'utf8') !== `${report(frozen)}\n`) throw new Error('bitwise oracle report drift')
+  if (!fs.existsSync(vendoredPath) || fs.readFileSync(vendoredPath, 'utf8') !== json) throw new Error(`${vendoredPath} is not a byte-identical copy of ${outPath}`)
+  for (const file of [outPath, reportPath]) {
+    const expected = `${sha256(fs.readFileSync(file))}\n`
+    if (!fs.existsSync(`${file}.sha256`) || fs.readFileSync(`${file}.sha256`, 'utf8') !== expected) throw new Error(`${file}.sha256 sidecar drift`)
+  }
+  console.log(`bitwise oracle fixture ok (${ARCH}, node ${live.node}; 1 program, ${frozen.eligibility_summary.total_cases} cases, ${MUTATIONS.length} mutations)`)
+} else {
+  throw new Error('usage: node bitwise_oracle_generator.mjs --check | --capture | --freeze <arm64-capture.json> <x64-capture.json>')
 }

@@ -88,7 +88,50 @@
 > CI now needs no local authority for the byte-exact lane: the new
 > `corpus-parity` job checks out the public authority at the pinned revision.
 >
+> ### Post-publication round 2 (2026-08-30, same day, after the push of cb47328)
+>
+> - Public CI immediately earned its keep: it caught an LP64-only duplicate
+>   overload (json_number size_t/uint64_t — same type on Linux, distinct on
+>   Darwin) and two x86-only bit-exactness failures.
+> - THE ARCHITECTURE PARITY CONTRACT, settled: V8 does NOT canonicalize NaN.
+>   x86-64 node produces 0xffc00000 for hardware-manufactured NaNs exactly
+>   like x86 SSE; arm64 produces 0x7fc00000. The port matches the
+>   SAME-ARCHITECTURE JS authority byte-for-byte on both ISAs (proven with a
+>   sha256-verified x64 node under Rosetta; independently reproduces the
+>   Lane G report docs/port-engineering/x86-64-divergences/). The contract is
+>   therefore "bit-exact against the JS authority on the same architecture",
+>   implemented as per-architecture frozen pins (compile-time ISA selection,
+>   #error on a third arch; oracle packages carry both captures with
+>   process.arch provenance, frozen via the generators' --freeze). Never
+>   "fix" this by canonicalizing NaN in noisemaker::f32 — that manufactures a
+>   real divergence from x86 JS to make an arm64 pin green.
+> - `noisemaker-render` exists now (PNG out, defaults, --list-effects,
+>   refusals exit 4 with the executor's reason) — the harness driver
+>   noisemaker-dsl-cpu-case is for the corpus lane, not humans.
+> - API hardening landed: exported target carries cxx_std_20 (find_package
+>   consumers literally could not compile before) and INTERFACE
+>   -ffp-contract=off for AppleClang/Clang/GNU; EffectCatalog::find() is
+>   thread-safe (was a TSan-proven race on a const path); PNG decode throws
+>   PngError : std::runtime_error; executor internals headers are marked NOT
+>   A STABLE API.
+> - Running x86_64 suites on macOS/Rosetta: `ulimit -s 65520` or the run
+>   SIGSEGVs in the catalog test with silently truncated stdout. Reading NaN
+>   bits in node: use a DataView over the surface's own buffer, never
+>   `new Float32Array([v])` (constructor paths canonicalize on x64).
+>
 > ### Remaining queue (supersedes the 2026-08-26 list; items 2–9 there stand)
+> - Finish EffectCatalog::find() properly at the next oracle re-freeze: eager
+>   index in the constructor (the clean fix moves generated_payload_sha256,
+>   213 pin occurrences; the shipped fix is a correct mutex memo).
+> - Rename typed_task16_..._preserves_canonical_quiet_nan (accurate on arm64
+>   only now); bitwise package probe collapses NaN sign at probe level
+>   (arch_divergence.probe_note); no gate runs the two dual-arch generators'
+>   --check (CI has no JS authority; consider a corpus-parity-style arm).
+> - Deliberate design decisions queued from the API review: noisemaker::Error
+>   base hierarchy; UniformValue is 4280 bytes (one 267-Vec4 variant
+>   alternative); real set_texture borrow enforcement; installing
+>   noisemaker-render; a diagnostic for compilers that get neither
+>   -ffp-contract=off nor a warning.
 >
 > - Move the frozen authority + ledger to a durable machine-local home.
 > - 49 doc-package generators hardcode `../noisemaker-for-cpu` sibling roots

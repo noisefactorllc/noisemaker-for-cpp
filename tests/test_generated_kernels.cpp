@@ -11422,7 +11422,7 @@ TEST(typed_waves_any_notequal_matches_vendored_oracle_bit_exact) {
 // inputs. Oracle vendored at tests/oracles/task-35-oracles.json (byte-
 // identical copy of
 // docs/port-engineering/future-precompute/cheap-unlocks/bitwise-oracles.json,
-// sha256 df6f50adbd60ffc7ca30720bf8f09f47cfc339be6d10203f5238be6008b3bf9b).
+// sha256 10b01899cbc1e125594f0d8094c98188bc88778a72248b565865b36994727687).
 // Five legacy cases cover the five bitwise branches (xor/and/or/nand/xnor)
 // across mono/RGB/HSV color modes, plus one deliberate mask=0 divide-by-zero
 // diagnostic. The seven-case Number-boundary table below separately covers
@@ -11457,13 +11457,38 @@ struct Task35BitwiseCase {
   bool diagnostic;
 };
 
+// The mask=0 diagnostic case pins the bytes of a NaN MANUFACTURED BY HARDWARE:
+// `r = r & 0` collapses every operator branch, so bitOp() returns
+// float(0)/float(0). That NaN's sign is an ISA property -- AArch64 `fdiv`
+// yields the positive default NaN 0x7fc00000, x86-64 SSE2 `divsd` yields the
+// "QNaN indefinite" 0xffc00000 -- and V8 does NOT canonicalize NaN, so the JS
+// authority inherits the same split (measured on both architectures with the
+// same node v24.7.0 / V8 13.6.233.10-node.26). Each constant below is a
+// SAME-ARCHITECTURE JS authority capture, recorded with its provenance in
+// tests/oracles/task-35-oracles.json (schema v2, `arch_captures` +
+// `arch_divergence`). Root cause and the full dual-arch measurement:
+// docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.
+// The case's rgba8 hash is NOT arch-keyed: to_rgba8() maps any NaN to 0
+// regardless of sign. The other five cases are finite and arch-independent.
+#if defined(__aarch64__)
+// arm64 authority capture.
+constexpr std::string_view kTask35MaskZeroFloatHash =
+    "720415a4af3de87c558c06dbc5c970ee576379eb01d0e3af743c30b35a93986c";
+#elif defined(__x86_64__)
+// x86_64 authority capture.
+constexpr std::string_view kTask35MaskZeroFloatHash =
+    "72f71c0a368a60c12d9d7cfa112e460e6dccf009df5ecd1754bc43ed86bb6803";
+#else
+#error "task35 mask-zero-divide-by-zero-diagnostic: no JS-authority capture is recorded for this architecture. This fixture pins the bytes of a hardware-manufactured NaN whose sign is ISA-specific, so neither recorded capture may be inherited. Capture the authority on this architecture, add it to tests/oracles/task-35-oracles.json via the generator, then extend this switch."
+#endif
+
 constexpr std::array<Task35BitwiseCase, 6> kTask35BitwiseCases{{
     {"xor-mono-seed-negative-one-signbit-mask", 6U, 5U, 0.0, 0.0, 6.0, 5.0, 1.0, 0, 3.5, 17, -9, (-2147483647 - 1), -1, 0, 0.4, 15.0, 0, 0.0, "6b974a31a2eb50d7d7a809bfafe3a477c1838657941f6a1dd55674b19ec02d8b", "a867f774a9b52de6716665e4f23ed7b0342508511fb112b49fd3d46600e4b209", false},
     {"and-rgb-int32min-offsets-near-max-mask", 5U, 6U, 0.0, 0.0, 5.0, 6.0, 1.0, 1, 1.7, -1500000000, 500000000, 2147483647, -2000000000, 1, 1.1, -40.0, 37, 0.75, "35d4755eb6b88c0a2fa5b9a1109e00cbaed2203c0ed99045dee6fc9538cb2c46", "02bc6717b1256d975316f93619834874ef320092e10e23eb08dff0971e795e28", false},
     {"or-hsv-negative-offsets-large-seed", 7U, 4U, 0.0, 0.0, 7.0, 4.0, 1.0, 2, 0.6, -777, 888, 999983, 123456789, 2, -0.3, 200.0, 5, 0.0, "9a7907811e4db580b1ce3bf3b477da2eb667768ed329c5fad6ff05948a81ac5b", "03fe3364206e61a0a511a12a9f965e61447407287081fb42ae6efeca72fb3378", false},
     {"nand-mono-int32-extremes-tiled", 4U, 7U, 1.0, 1.0, 6.0, 9.0, 1.0, 3, 2.2, 2000000000, -2000000000, -65536, -1, 0, 0.9, 77.0, 0, 0.0, "18df6df90284225e0d2850a3858d3bab3a8bffdd75f0804f440c053cd820ead1", "d583aef59874543a14822c32be48385b86bd239a918575d36cf695b0eb1e0c1c", false},
     {"xnor-rgb-high-bit-mixed-signs", 6U, 6U, 0.0, 0.0, 6.0, 6.0, 1.0, 4, 4.1, 333, -444, -3, 2147483647, 1, 0.2, -15.0, -19, 2.3, "5ab11529ca24e34bf7a38b09a757690d18dde44d219fe554006e8cf8365ec100", "218be6c5703006d77363e4bda8ff683649616f6314ff9dab331b6f4974c4934c", false},
-    {"mask-zero-divide-by-zero-diagnostic", 3U, 3U, 0.0, 0.0, 3.0, 3.0, 1.0, 0, 2.0, 1, 1, 0, 5, 0, 0.0, 0.0, 0, 0.0, "720415a4af3de87c558c06dbc5c970ee576379eb01d0e3af743c30b35a93986c", "d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538", true},
+    {"mask-zero-divide-by-zero-diagnostic", 3U, 3U, 0.0, 0.0, 3.0, 3.0, 1.0, 0, 2.0, 1, 1, 0, 5, 0, 0.0, 0.0, 0, 0.0, kTask35MaskZeroFloatHash, "d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538", true},
 }};
 
 }  // namespace

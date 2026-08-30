@@ -1,5 +1,22 @@
 {
-  "schema": "noisemaker-for-cpp.task16-canonical-oracles.v1",
+  "schema": "noisemaker-for-cpp.task16-canonical-oracles.v2",
+  "arch_captures": [
+    {
+      "arch": "arm64",
+      "node": "v24.7.0",
+      "v8": "13.6.233.10-node.26"
+    },
+    {
+      "arch": "x64",
+      "node": "v24.7.0",
+      "v8": "13.6.233.10-node.26"
+    }
+  ],
+  "arch_divergence": {
+    "reason": "hardware-manufactured NaN (0.0/0.0): the sign bit is an ISA property (AArch64 fdiv 0x7fc00000 vs x86-64 SSE2 divsd 0xffc00000) and V8 does not canonicalize NaN, so the JS authority itself differs per architecture. See docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.",
+    "shape": "any leaf the architectures disagree on is recorded as { arch_divergent, by_arch: { <arch>: <value> } }; every other leaf is a plain value both architectures produced.",
+    "third_architecture": "unsupported: this generator refuses to run on an architecture with no recorded capture rather than let it inherit another architecture's bytes."
+  },
   "program": {
     "key": "filter/pixelSort:computeRank",
     "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
@@ -15,7 +32,7 @@
     "node": "v24.7.0",
     "api": "canonicalKernelFactories+bindCanonicalKernel+runPass+Surface",
     "canonical_kernels_path": "src/effects/generated/canonical-kernels.js",
-    "canonical_kernels_sha256": "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56",
+    "canonical_kernels_sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
     "factory_to_string_sha256": "77391180a834b322967664440caeba3dbf51f2b1ae024e5ab8a3cc781c151acf",
     "factory_hash_contract": "SHA-256 of exact UTF-8 Function.prototype.toString() for canonicalKernelFactories[key]",
     "generator": "task-16-oracle-generator.mjs"
@@ -223,7 +240,13 @@
         "quiet-nan-blue-lane",
         "all-samples-continue"
       ],
-      "f32_sha256": "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c",
+      "f32_sha256": {
+        "arch_divergent": "hardware-manufactured NaN (0.0/0.0): the sign bit is an ISA property (AArch64 fdiv 0x7fc00000 vs x86-64 SSE2 divsd 0xffc00000) and V8 does not canonicalize NaN, so the JS authority itself differs per architecture. See docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.",
+        "by_arch": {
+          "arm64": "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c",
+          "x64": "79d1c1af5c1c16157179b44c4a5c04320924e03c6748cbb0eeb40ae4cb8a5582"
+        }
+      },
       "rgba8_sha256": "1f71b62d981be40a6adc0ccd7ef62b6bc47317c7a1de96d4b934f761b67b135e",
       "probes": [
         {
@@ -240,7 +263,13 @@
           "f32_bits_le": [
             "0x00000000",
             "0x3f000000",
-            "0x7fc00000",
+            {
+              "arch_divergent": "hardware-manufactured NaN (0.0/0.0): the sign bit is an ISA property (AArch64 fdiv 0x7fc00000 vs x86-64 SSE2 divsd 0xffc00000) and V8 does not canonicalize NaN, so the JS authority itself differs per architecture. See docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.",
+              "by_arch": {
+                "arm64": "0x7fc00000",
+                "x64": "0xffc00000"
+              }
+            },
             "0x3f800000"
           ]
         }

@@ -2655,18 +2655,54 @@ TEST(typed_task16_compute_rank_external_oracles_are_exact_and_repeatable) {
   }
 }
 
+namespace {
+
+// filter/pixelSort:computeRank writes `float(x) / float(width - 1)` into the
+// blue lane; at width 1 that is 0.0/0.0 -- a NaN MANUFACTURED BY HARDWARE.
+// Its sign is an ISA property: AArch64 `fdiv` yields the positive default NaN
+// 0x7fc00000, x86-64 SSE2 `divsd` yields the "QNaN indefinite" 0xffc00000.
+// V8 does NOT canonicalize NaN, so the JS authority inherits the same split --
+// measured on both architectures with the same node v24.7.0 / V8
+// 13.6.233.10-node.26. Parity is therefore per-architecture here, and each
+// constant below is a SAME-ARCHITECTURE JS authority capture, recorded with
+// its provenance in docs/port-engineering/task-16-oracles.json (schema v2,
+// `arch_captures` + `arch_divergence`). Root cause and the full dual-arch
+// measurement:
+// docs/port-engineering/x86-64-divergences/x86-64-divergences-report.md.
+//
+// The rgba8 hash below is deliberately NOT arch-keyed: to_rgba8() maps any NaN
+// to 0 regardless of sign, so one value is correct on every architecture.
+//
+// (The test's name predates this split. It is accurate on arm64; on x86-64 the
+// authority's own materialization is the negative quiet NaN, which is what the
+// x86_64 capture pins.)
+#if defined(__aarch64__)
+// arm64 authority capture.
+constexpr std::string_view kTask16WidthOneFloatHash =
+    "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c";
+constexpr std::uint32_t kTask16WidthOneBlueBits = 0x7fc00000U;
+#elif defined(__x86_64__)
+// x86_64 authority capture.
+constexpr std::string_view kTask16WidthOneFloatHash =
+    "79d1c1af5c1c16157179b44c4a5c04320924e03c6748cbb0eeb40ae4cb8a5582";
+constexpr std::uint32_t kTask16WidthOneBlueBits = 0xffc00000U;
+#else
+#error "typed_task16 width-one: no JS-authority capture is recorded for this architecture. This fixture pins the bytes of a hardware-manufactured NaN whose sign is ISA-specific, so neither recorded capture may be inherited. Capture the authority on this architecture, add it to docs/port-engineering/task-16-oracles.json via the generator, then extend this switch."
+#endif
+
+}  // namespace
+
 TEST(typed_task16_compute_rank_width_one_preserves_canonical_quiet_nan) {
   const noisemaker::Surface input = task16_flat_surface(1U, 1U);
   const noisemaker::Surface first = render_task16(input, 1U, 1U);
   const noisemaker::Surface second = render_task16(input, 1U, 1U);
-  REQUIRE(hex(sha256(little_endian_float_bytes(first))) ==
-          "24f56616adaf6242697f97e5d9420c4bafa1529c99e8e053b9dc0cb6bc87341c");
+  REQUIRE(hex(sha256(little_endian_float_bytes(first))) == kTask16WidthOneFloatHash);
   REQUIRE(hex(sha256(first.to_rgba8())) ==
           "1f71b62d981be40a6adc0ccd7ef62b6bc47317c7a1de96d4b934f761b67b135e");
   REQUIRE(noisemaker::float_bits_to_uint(first.data()[0]) == 0x00000000U);
   REQUIRE(noisemaker::float_bits_to_uint(first.data()[1]) == 0x3f000000U);
   REQUIRE(std::isnan(first.data()[2]));
-  REQUIRE(noisemaker::float_bits_to_uint(first.data()[2]) == 0x7fc00000U);
+  REQUIRE(noisemaker::float_bits_to_uint(first.data()[2]) == kTask16WidthOneBlueBits);
   REQUIRE(noisemaker::float_bits_to_uint(first.data()[3]) == 0x3f800000U);
   REQUIRE(first.to_rgba8()[2] == 0U);
   require_repeat(first, second);

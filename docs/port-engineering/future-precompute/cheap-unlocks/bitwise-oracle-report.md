@@ -33,7 +33,7 @@ Every non-diagnostic case supplies at least one operand with the int32 sign bit 
 | or-hsv-negative-offsets-large-seed | 7x4 | or | 2 | false | 0 | `9a7907811e4db580...` | `03fe3364206e61a0...` |
 | nand-mono-int32-extremes-tiled | 4x7 | nand | 0 | false | 0 | `18df6df90284225e...` | `d583aef59874543a...` |
 | xnor-rgb-high-bit-mixed-signs | 6x6 | xnor | 1 | false | 0 | `5ab11529ca24e34b...` | `218be6c5703006d7...` |
-| mask-zero-divide-by-zero-diagnostic | 3x3 | xor | 0 | true | 27 | `720415a4af3de87c...` | `d574fbbbc44a56d8...` |
+| mask-zero-divide-by-zero-diagnostic | 3x3 | xor | 0 | true | 27 | arm64 `720415a4af3de87c...`<br>x64 `72f71c0a368a60c1...` | `d574fbbbc44a56d8...` |
 
 ## Mutations
 

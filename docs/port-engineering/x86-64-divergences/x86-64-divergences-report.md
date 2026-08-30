@@ -1,5 +1,30 @@
 # x86_64-only native test divergences — root-cause report (Lane G)
 
+> **STATUS 2026-08-30 — RESOLVED, recommendation 1 adopted.** The publication
+> review's FIX-8 lane re-derived this report's conclusion from scratch
+> (independent x86_64-node measurement, same values) and the controller ruled
+> that the parity contract is "byte-identical to the JS authority running on
+> the SAME architecture". Recommendation 1 (per-architecture dual pins) is
+> implemented; recommendation 2 (do not canonicalize hardware NaNs in the port)
+> stands as written and was explicitly rejected as a fix. The two fixtures now
+> carry one capture per architecture, selected by `#if defined(__aarch64__)` /
+> `#if defined(__x86_64__)` with a `#error` on any third architecture, and both
+> oracle generators gained `--capture` / `--freeze` so each architecture's
+> capture is recorded with its own provenance. Recommendation 3 (not in the
+> cellRefract slice) was honoured — this landed in its own lane. Evidence:
+> `.superpowers/sdd/2026-08-29-publication-review/fix-8-report.md`.
+>
+> One correction to §4 of this report: the probe spelling `new Float32Array([v])`
+> that both generators used to format probe bits is itself UNSTABLE on x86_64
+> (V8 canonicalizes NaN in some typed-array constructor/tier paths), so it can
+> report a NaN sign that is not the one stored in the surface. The task-16
+> generator now reads probe bits with a `DataView` over the surface's own
+> buffer. This does not change any conclusion here — the f32 hashes in §1 and
+> §4 were computed over the surface bytes, not the probes — but it does mean a
+> re-run of the old probe code could print a lane that disagrees with its own
+> buffer.
+
+
 Investigation of the two PRE-EXISTING x86_64-only failures surfaced by the
 cellRefract186 gate matrix. Both reproduce at commit `8edff08` (HEAD of the
 185-row stop line) **without** the uncommitted cellRefract slice, so they are

@@ -1050,7 +1050,10 @@ untouched general `float(intExpr)` rule still governs every other program.
 
 `tests/oracles/task-35-oracles.json` (byte-identical copy of
 `docs/port-engineering/future-precompute/cheap-unlocks/bitwise-oracles.json`,
-sha256 `df6f50adbd60ffc7ca30720bf8f09f47cfc339be6d10203f5238be6008b3bf9b`).
+sha256 `10b01899cbc1e125594f0d8094c98188bc88778a72248b565865b36994727687`
+— re-frozen 2026-08-30 as a dual-architecture package; the copy was
+`df6f50adbd60ffc7ca30720bf8f09f47cfc339be6d10203f5238be6008b3bf9b` while it
+carried only the arm64 capture).
 Unlike the grade cluster (texture input, unreproducible synthetic image) and
 unlike zoomBlur/reindexStats (oracle vendored but never wired to a consuming
 test), `synth/bitwise:bitwise` has **no texture input at all** — a pure
