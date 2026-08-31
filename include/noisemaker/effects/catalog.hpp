@@ -50,10 +50,15 @@ class EffectIndex {
   };
 
   EffectIndex() = default;
+  // The constructors build nothing and can therefore promise `noexcept`. The
+  // assignments cannot: they discard the memo, `clear()` takes the mutex, and
+  // `std::mutex::lock` is specified to throw `std::system_error`. Marking them
+  // `noexcept` would turn that into `std::terminate` -- an unreachable path
+  // today, but a promise this class is not in a position to make.
   EffectIndex(const EffectIndex&) noexcept {}
   EffectIndex(EffectIndex&&) noexcept {}
-  EffectIndex& operator=(const EffectIndex&) noexcept { return clear(); }
-  EffectIndex& operator=(EffectIndex&&) noexcept { return clear(); }
+  EffectIndex& operator=(const EffectIndex&) { return clear(); }
+  EffectIndex& operator=(EffectIndex&&) { return clear(); }
   ~EffectIndex() = default;
 
   [[nodiscard]] Cursor find(const std::string& id) const {

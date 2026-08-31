@@ -63,6 +63,14 @@ class GraphError final : public std::runtime_error {
   std::string program_key_;
 };
 
+// The stable spelling of a `GraphErrorCode`, and the one the library itself
+// uses: `GraphError::what()` is prefixed `graph:<code_name(code)>: `. Any
+// caller that formats a refusal needs this, and a second copy of the switch in
+// a caller drifts -- a new enumerator compiles in both switches because both
+// end in a fallback return, so `-Werror` catches neither omission. Declared
+// here so there is exactly one table.
+[[nodiscard]] const char* code_name(GraphErrorCode code) noexcept;
+
 struct ExecutionInputs {
   std::size_t width = 512;
   std::size_t height = 512;

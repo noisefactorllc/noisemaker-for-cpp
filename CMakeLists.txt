@@ -166,10 +166,15 @@ target_compile_definitions(noisemaker-dsl-cpu-benchmark PRIVATE
 
 # The user-facing render CLI. It compiles `corpus_case.cpp` rather than
 # reimplementing anything: `noisemaker-render` and `noisemaker-dsl-cpu-case`
-# share one compile entry, one `GraphExecutor::execute` call site and one byte
-# writer, so a picture a user renders is the picture the parity lane validates.
-# It is deliberately not added to any install or export set: `cmake --install`
-# must stay buildable from the `noisemaker-cpu` target alone.
+# share one compile entry, one `GraphExecutor::execute` call site, one byte
+# writer and one rendered-record serializer, so a picture a user renders is the
+# picture the parity lane validates.
+# It is deliberately kept out of the `noisemaker-for-cppTargets` EXPORT set --
+# an exported executable would make `find_package` consumers depend on it --
+# but it IS installed, by its own OPTIONAL `install(TARGETS ...)` below, so the
+# answer to "how do I run this?" is not a build-tree path forever. OPTIONAL
+# keeps `cmake --install` working after a `--target noisemaker-cpu` build,
+# which is the constraint the old comment here was really protecting.
 add_executable(noisemaker-render
   tools/cli/noisemaker_render.cpp
   tools/benchmark/corpus_case.cpp
@@ -222,6 +227,20 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(noisemaker-render-cli PROPERTIES
     FIXTURES_REQUIRED render-cli
     ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_RENDER_CLI=$<TARGET_FILE:noisemaker-render>;NOISEMAKER_DSL_CPU_CASE=$<TARGET_FILE:noisemaker-dsl-cpu-case>")
+else()
+  # Not fatal: a consumer who only wants the library must still be able to
+  # configure. But a test suite that deregisters itself in silence is the
+  # failure mode the fail-closed rule exists to prevent -- without this,
+  # `ctest` reports 100% passing on a machine where the one-code-path proof
+  # never ran.
+  message(WARNING
+    "Python3 interpreter not found. These tests are NOT registered and will "
+    "NOT run under ctest: noisemaker-render-cli-build, noisemaker-render-cli "
+    "(tests/test_render_cli.py -- the proof that noisemaker-render and "
+    "noisemaker-dsl-cpu-case produce byte-identical frames and metadata). "
+    "Install a Python 3 interpreter to verify this repository; "
+    "tests/test_benchmark_cpu_corpus.py, tests/test_dsl_corpus_parity.py and "
+    "the typed-generator suites need it too.")
 endif()
 
 install(TARGETS noisemaker-cpu
@@ -230,6 +249,14 @@ install(TARGETS noisemaker-cpu
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
   INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+# Outside the export set on purpose, and OPTIONAL on purpose: this installs
+# the CLI when it has been built and is a no-op when it has not, so
+# `cmake --build . --target noisemaker-cpu && cmake --install .` still works.
+install(TARGETS noisemaker-render
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+  OPTIONAL
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/noisemaker/

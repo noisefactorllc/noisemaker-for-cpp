@@ -333,4 +333,20 @@ std::string refusal_record(std::string_view schema, const std::exception& error)
   return out;
 }
 
+std::string rendered_record(std::string_view schema, std::string_view source_sha256,
+                            std::size_t width, std::size_t height,
+                            std::string_view rgba8_sha256, std::size_t byte_length) {
+  std::string out = "{\n";
+  out += "  \"schema\": " + json_string(schema) + ",\n";
+  out += "  \"status\": \"rendered\",\n";
+  out += "  \"sourceSha256\": " + json_string(source_sha256) + ",\n";
+  out += "  \"width\": " + json_number(width) + ",\n";
+  out += "  \"height\": " + json_number(height) + ",\n";
+  out += "  \"format\": \"rgba8\",\n";
+  out += "  \"orientation\": \"top-down\",\n";
+  out += "  \"rgba8Sha256\": " + json_string(rgba8_sha256) + ",\n";
+  out += "  \"byteLength\": " + json_number(byte_length) + "\n}\n";
+  return out;
+}
+
 }  // namespace noisemaker::benchmark

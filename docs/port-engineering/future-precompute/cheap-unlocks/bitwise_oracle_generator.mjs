@@ -3,6 +3,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+// The per-architecture capture/merge/select scaffolding is shared with
+// docs/port-engineering/task-16-oracle-generator.mjs rather than copied from
+// it: two near-identical copies had already drifted apart in strictness. The
+// specifier resolves against THIS FILE, so the generator stays runnable
+// exactly as committed from any working directory.
+import {
+  divergenceWhitelist,
+  mergeArch,
+  orderCaptures,
+  requireIdenticalProvenance,
+  selectArch,
+} from '../../arch-capture.mjs'
+
 // The JS CPU authority arrives by ENV, never by a machine-specific path.
 // (Historical note, 2026-08-30: the static imports below used to be
 // '../noisemaker-for-cpu/...' resolved against THIS FILE -- i.e.
@@ -472,10 +485,14 @@ function report(d) {
 // `--capture` renders on WHATEVER architecture node is running and emits that
 // one architecture's document. `--freeze a.json b.json` merges one capture per
 // supported architecture and writes the package: leaves both architectures
-// agree on stay plain scalars, leaves they disagree on become
-// `{ arch_divergent, by_arch: { arm64, x64 } }`. `--check` re-renders on the
-// current architecture and verifies the package's selection for THAT
-// architecture, so the gate stays meaningful on either machine.
+// agree on stay plain scalars, and a leaf they disagree on becomes
+// `{ arch_divergent, by_arch: { arm64, x64 } }` -- but ONLY at the whitelisted
+// path below. Any other disagreement, and any disagreement at all in the
+// provenance leaves, throws with the offending path named; see
+// ../../arch-capture.mjs for why that guard belongs on the freeze path.
+// `--check` re-renders on the current architecture and verifies the package's
+// selection for THAT architecture, so the gate stays meaningful on either
+// machine.
 // ---------------------------------------------------------------------------
 const FROZEN_SCHEMA = 'noisemaker-for-cpp.future-precompute.cheap-unlocks.bitwise-cluster1.oracles.v2'
 const CAPTURE_SCHEMA = 'noisemaker-for-cpp.future-precompute.cheap-unlocks.bitwise-cluster1.oracles.arch-capture.v1'
@@ -489,52 +506,42 @@ function captureDocument() {
   return { schema: CAPTURE_SCHEMA, arch: ARCH, node: process.version, v8: process.versions.v8, document }
 }
 
-function isPlainObject(value) {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+// THE ONLY LEAF THAT MAY DIFFER PER ARCHITECTURE, and why exactly this one.
+// In the `mask-zero-divide-by-zero-diagnostic` case `r & 0` collapses every
+// operator branch, so `bitOp()` returns float(0)/float(0) -- a NaN the
+// HARDWARE manufactures, whose sign is an ISA property. Only that case's
+// whole-surface F32 hash can carry the sign: every other case is finite, the
+// RGBA8 hashes are sign-blind, and this package's `f32Bits()` collapses every
+// NaN to the string "nan" so the per-probe records carry no sign at all.
+// Any other disagreement between two captures is a REAL difference -- a port
+// bug on one ISA, a capture taken against the wrong authority checkout, a
+// corpus revision mismatch -- and `mergeArch` throws on it, naming the path,
+// rather than stamping it with the NaN explanation and minting a permanently
+// green per-architecture pin out of it.
+const ARCH_DIVERGENT_CASE = 'mask-zero-divide-by-zero-diagnostic'
+
+function allowedDivergentPaths(document) {
+  const index = document.program.cases.findIndex((entry) => entry.name === ARCH_DIVERGENT_CASE)
+  if (index < 0) throw new Error(`no "${ARCH_DIVERGENT_CASE}" case in this capture: the per-architecture divergence whitelist cannot be derived`)
+  return [`$.program.cases[${index}].output.f32_sha256`]
 }
 
-function mergeArch(left, right, leftArch, rightArch, at) {
-  if (JSON.stringify(left) === JSON.stringify(right)) return left
-  if (Array.isArray(left) && Array.isArray(right)) {
-    if (left.length !== right.length) throw new Error(`${at}: captures disagree on array length (${left.length} vs ${right.length}) -- structural difference, not an arch materialization difference`)
-    return left.map((value, index) => mergeArch(value, right[index], leftArch, rightArch, `${at}[${index}]`))
-  }
-  if (isPlainObject(left) && isPlainObject(right)) {
-    const leftKeys = Object.keys(left)
-    const rightKeys = Object.keys(right)
-    if (leftKeys.join('\u0000') !== rightKeys.join('\u0000')) throw new Error(`${at}: captures disagree on object keys -- structural difference, not an arch materialization difference`)
-    const merged = {}
-    for (const objectKey of leftKeys) merged[objectKey] = mergeArch(left[objectKey], right[objectKey], leftArch, rightArch, `${at}.${objectKey}`)
-    return merged
-  }
-  return { arch_divergent: ARCH_DIVERGENCE_REASON, by_arch: { [leftArch]: left, [rightArch]: right } }
-}
-
-function selectArch(node, arch, at) {
-  if (isPlainObject(node) && Object.prototype.hasOwnProperty.call(node, 'arch_divergent') && isPlainObject(node.by_arch)) {
-    if (!Object.prototype.hasOwnProperty.call(node.by_arch, arch)) throw new Error(`${at}: frozen package has no capture for architecture "${arch}"`)
-    return selectArch(node.by_arch[arch], arch, at)
-  }
-  if (Array.isArray(node)) return node.map((value, index) => selectArch(value, arch, `${at}[${index}]`))
-  if (isPlainObject(node)) {
-    const selected = {}
-    for (const objectKey of Object.keys(node)) selected[objectKey] = selectArch(node[objectKey], arch, `${at}.${objectKey}`)
-    return selected
-  }
-  return node
-}
+// Leaves that can never legitimately be architecture-divergent, checked before
+// the merge so a mismatch is reported as what it is: the corpus revision, the
+// pinned runtime/catalog sha256 block, the program source bytes, and the
+// canonical factory's own text hash. Captures that disagree here were taken
+// against different checkouts, and a package merged from them would describe
+// neither.
+const PROVENANCE_PATHS = [
+  '$.corpus_revision',
+  '$.provenance',
+  '$.program.source_sha256',
+  '$.program.canonical_factory_to_string_sha256',
+]
 
 function freeze(captures) {
-  if (captures.length !== SUPPORTED_ARCHES.length) throw new Error(`--freeze needs exactly ${SUPPORTED_ARCHES.length} captures, one per supported architecture`)
-  for (const capture of captures) {
-    if (capture.schema !== CAPTURE_SCHEMA) throw new Error(`capture schema drift: ${capture.schema}`)
-    if (!SUPPORTED_ARCHES.includes(capture.arch)) throw new Error(`capture records unsupported architecture "${capture.arch}"`)
-  }
-  const ordered = SUPPORTED_ARCHES.map((arch) => {
-    const matches = captures.filter((capture) => capture.arch === arch)
-    if (matches.length !== 1) throw new Error(`expected exactly one capture for architecture "${arch}", got ${matches.length}`)
-    return matches[0]
-  })
+  const ordered = orderCaptures(captures, SUPPORTED_ARCHES, CAPTURE_SCHEMA)
+  requireIdenticalProvenance(ordered, PROVENANCE_PATHS)
   const [first, second] = ordered
   return {
     schema: FROZEN_SCHEMA,
@@ -545,7 +552,10 @@ function freeze(captures) {
       third_architecture: 'unsupported: this generator refuses to run on an architecture with no recorded capture rather than let it inherit another architecture\'s bytes.',
       probe_note: 'this package\'s f32Bits() collapses every NaN to the string "nan", so the per-probe records carry no NaN sign; the arch difference surfaces only in the case f32_sha256.',
     },
-    ...mergeArch(first.document, second.document, first.arch, second.arch, '$'),
+    ...mergeArch(first.document, second.document, first.arch, second.arch, {
+      reason: ARCH_DIVERGENCE_REASON,
+      allowedDivergentPaths: divergenceWhitelist(ordered, allowedDivergentPaths),
+    }),
   }
 }
 
@@ -575,7 +585,7 @@ if (argv.length === 1 && argv[0] === '--capture') {
   if (!recorded) throw new Error(`bitwise oracle has no recorded capture for architecture "${ARCH}"`)
   if (recorded.node !== live.node || recorded.v8 !== live.v8) throw new Error(`bitwise oracle capture for "${ARCH}" was taken with node ${recorded.node} / V8 ${recorded.v8}, this run is node ${live.node} / V8 ${live.v8}`)
   const { schema: _schema, arch_captures: _archCaptures, arch_divergence: _archDivergence, ...body } = frozen
-  if (JSON.stringify(selectArch(body, ARCH, '$')) !== JSON.stringify(live.document)) throw new Error(`bitwise oracle JSON drift for architecture "${ARCH}"`)
+  if (JSON.stringify(selectArch(body, ARCH)) !== JSON.stringify(live.document)) throw new Error(`bitwise oracle JSON drift for architecture "${ARCH}"`)
   const json = `${JSON.stringify(frozen, null, 2)}\n`
   if (fs.readFileSync(outPath, 'utf8') !== json) throw new Error('bitwise oracle JSON is not canonically formatted')
   if (!fs.existsSync(reportPath) || fs.readFileSync(reportPath, 'utf8') !== `${report(frozen)}\n`) throw new Error('bitwise oracle report drift')

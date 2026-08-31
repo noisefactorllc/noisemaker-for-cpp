@@ -123,15 +123,33 @@
 > - Finish EffectCatalog::find() properly at the next oracle re-freeze: eager
 >   index in the constructor (the clean fix moves generated_payload_sha256,
 >   213 pin occurrences; the shipped fix is a correct mutex memo).
-> - Rename typed_task16_..._preserves_canonical_quiet_nan (accurate on arm64
->   only now); bitwise package probe collapses NaN sign at probe level
+> - The bitwise package's probe records collapse the NaN sign at probe level
 >   (arch_divergence.probe_note); no gate runs the two dual-arch generators'
 >   --check (CI has no JS authority; consider a corpus-parity-style arm).
+>   [DONE 2026-08-30: typed_task16_... renamed to
+>   ..._matches_same_arch_authority_nan.]
 > - Deliberate design decisions queued from the API review: noisemaker::Error
 >   base hierarchy; UniformValue is 4280 bytes (one 267-Vec4 variant
->   alternative); real set_texture borrow enforcement; installing
->   noisemaker-render; a diagnostic for compilers that get neither
->   -ffp-contract=off nor a warning.
+>   alternative); real set_texture borrow enforcement; a diagnostic for
+>   compilers that get neither -ffp-contract=off nor a warning.
+>   [DONE 2026-08-30: noisemaker-render is installed, OPTIONAL and outside the
+>   export set.]
+> - Deferred from the round-2 publication review (all Minor, all verified
+>   harmless today): ctest's noisemaker-render-cli-build runs `cmake --build`
+>   as a test, so ctest is non-hermetic; the CLI writes the PNG before the raw
+>   frame and metadata, so a late write failure leaves a partial output;
+>   EffectIndex is unannotated public surface whose find/end/emplace shape
+>   exists solely to keep tools/dsl/generate_effect_catalog.py's emitted body
+>   compiling, and neither file points at the other; both oracle generators
+>   still resolve some paths against the CWD (task-16's `cppRoot = '.'`,
+>   bitwise's `vendoredPath`); and -ffp-contract=off on the PUBLIC interface
+>   reaches every consumer TU while MSVC consumers get neither the flag nor a
+>   diagnostic.
+> - The whole-file authority hash `canonical_kernels_sha256` is recorded at
+>   FREEZE time and is not expected to agree across packages: the two dual-arch
+>   packages carry 66adc01c..., roughly twenty older sites still carry
+>   e605746c.... Only bitwise_oracle_generator.mjs hashes the live authority,
+>   which is why only it needed the refresh. Not a bug; do not "reconcile" it.
 >
 > - Move the frozen authority + ledger to a durable machine-local home.
 > - 49 doc-package generators hardcode `../noisemaker-for-cpu` sibling roots

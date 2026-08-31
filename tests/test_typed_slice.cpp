@@ -2673,9 +2673,12 @@ namespace {
 // The rgba8 hash below is deliberately NOT arch-keyed: to_rgba8() maps any NaN
 // to 0 regardless of sign, so one value is correct on every architecture.
 //
-// (The test's name predates this split. It is accurate on arm64; on x86-64 the
-// authority's own materialization is the negative quiet NaN, which is what the
-// x86_64 capture pins.)
+// The test below is named for what it actually asserts: the blue lane matches
+// the SAME-ARCHITECTURE authority's NaN, which is the positive quiet NaN on
+// arm64 and the negative one on x86-64. It deliberately does not claim a
+// canonical quiet NaN is preserved -- that is true on arm64 only, and a green
+// test whose name states a false invariant gets cited later as evidence the
+// invariant holds.
 #if defined(__aarch64__)
 // arm64 authority capture.
 constexpr std::string_view kTask16WidthOneFloatHash =
@@ -2692,7 +2695,7 @@ constexpr std::uint32_t kTask16WidthOneBlueBits = 0xffc00000U;
 
 }  // namespace
 
-TEST(typed_task16_compute_rank_width_one_preserves_canonical_quiet_nan) {
+TEST(typed_task16_compute_rank_width_one_matches_same_arch_authority_nan) {
   const noisemaker::Surface input = task16_flat_surface(1U, 1U);
   const noisemaker::Surface first = render_task16(input, 1U, 1U);
   const noisemaker::Surface second = render_task16(input, 1U, 1U);

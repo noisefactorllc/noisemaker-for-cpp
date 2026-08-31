@@ -6,10 +6,10 @@
 // repository; the caller owns the scratch directory.
 //
 // The compile/execute/refuse/write path is shared with the benchmark driver
-// through corpus_case.{hpp,cpp}: one compile entry with
-// `require_executable = true`, one `GraphExecutor::execute` call site, one
-// refusal formatter. This file owns only its CLI and its frozen metadata
-// document.
+// and the user-facing render CLI through corpus_case.{hpp,cpp}: one compile
+// entry with `require_executable = true`, one `GraphExecutor::execute` call
+// site, one refusal formatter and one rendered-record serializer. This file
+// owns only its CLI.
 #include "corpus_case.hpp"
 
 #include "noisemaker/graph/execution_plan.hpp"
@@ -22,7 +22,6 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -143,23 +142,18 @@ int main(int argc, char** argv) {
     return nb::kExitRefused;
   }
 
-  const std::string digest = nb::sha256_bytes(bytes);
-  std::ostringstream metadata;
-  metadata << "{\n  \"schema\": \"noisemaker-cpp.dsl-cpu-run.v1\",\n"
-           << "  \"status\": \"rendered\",\n"
-           << "  \"sourceSha256\": \"" << actual_sha256 << "\",\n"
-           << "  \"width\": " << width << ",\n  \"height\": " << height << ",\n"
-           << "  \"format\": \"rgba8\",\n  \"orientation\": \"top-down\",\n"
-           << "  \"rgba8Sha256\": \"" << digest << "\",\n"
-           << "  \"byteLength\": " << bytes.size() << "\n}\n";
+  // The shared serializer, not a second one: `noisemaker-render` emits the
+  // identical document from the identical call, so the two cannot drift.
+  const std::string metadata = nb::rendered_record(
+      kSchema, actual_sha256, width, height, nb::sha256_bytes(bytes), bytes.size());
   try {
     nb::write_raw_rgba8(raw_output, bytes);
     if (!relation_output.empty()) nb::write_text_file(relation_output, relation_document);
-    nb::write_text_file(metadata_output, metadata.str());
+    nb::write_text_file(metadata_output, metadata);
   } catch (const nb::CaseContractError& error) {
     std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";
     return error.exit_code();
   }
-  std::cout << metadata.str();
+  std::cout << metadata;
   return nb::kExitOk;
 }

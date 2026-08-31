@@ -25,28 +25,6 @@
 #include <unordered_set>
 
 namespace noisemaker::graph {
-namespace {
-
-[[nodiscard]] bool parse_c_number(std::string_view text, double& value) {
-  const std::string owned(text);
-  char* end = nullptr;
-#if defined(_WIN32)
-  _locale_t c_locale = _create_locale(LC_NUMERIC, "C");
-  if (c_locale == nullptr) {
-    throw std::runtime_error("failed to create C numeric locale");
-  }
-  value = _strtod_l(owned.c_str(), &end, c_locale);
-  _free_locale(c_locale);
-#else
-  locale_t c_locale = newlocale(LC_NUMERIC_MASK, "C", static_cast<locale_t>(0));
-  if (c_locale == nullptr) {
-    throw std::runtime_error("failed to create C numeric locale");
-  }
-  value = strtod_l(owned.c_str(), &end, c_locale);
-  freelocale(c_locale);
-#endif
-  return end == owned.c_str() + owned.size();
-}
 
 const char* code_name(GraphErrorCode code) noexcept {
   switch (code) {
@@ -68,6 +46,29 @@ const char* code_name(GraphErrorCode code) noexcept {
     case GraphErrorCode::execution_failure: return "execution_failure";
   }
   return "execution_failure";
+}
+
+namespace {
+
+[[nodiscard]] bool parse_c_number(std::string_view text, double& value) {
+  const std::string owned(text);
+  char* end = nullptr;
+#if defined(_WIN32)
+  _locale_t c_locale = _create_locale(LC_NUMERIC, "C");
+  if (c_locale == nullptr) {
+    throw std::runtime_error("failed to create C numeric locale");
+  }
+  value = _strtod_l(owned.c_str(), &end, c_locale);
+  _free_locale(c_locale);
+#else
+  locale_t c_locale = newlocale(LC_NUMERIC_MASK, "C", static_cast<locale_t>(0));
+  if (c_locale == nullptr) {
+    throw std::runtime_error("failed to create C numeric locale");
+  }
+  value = strtod_l(owned.c_str(), &end, c_locale);
+  freelocale(c_locale);
+#endif
+  return end == owned.c_str() + owned.size();
 }
 
 [[nodiscard]] const PlanValue* parameter(const EffectStep& step,

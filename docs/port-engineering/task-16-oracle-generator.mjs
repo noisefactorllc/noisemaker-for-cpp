@@ -3,6 +3,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
+// The per-architecture capture/merge/select scaffolding is shared with
+// docs/port-engineering/future-precompute/cheap-unlocks/bitwise_oracle_generator.mjs
+// rather than copied into it: two near-identical copies had already drifted
+// apart in strictness. The specifier resolves against THIS FILE, so the
+// generator stays runnable exactly as committed from any working directory.
+import {
+  divergenceWhitelist,
+  mergeArch,
+  orderCaptures,
+  requireIdenticalProvenance,
+  selectArch,
+} from './arch-capture.mjs'
+
 // The JS CPU authority arrives by ENV, never by a machine-specific path.
 // (Historical note, 2026-08-30: this generator used to `import
 // '../noisemaker-for-cpu/...'` -- resolved against THIS FILE, i.e.
@@ -215,11 +228,14 @@ function build() {
 // `--capture` renders on WHATEVER architecture node is running and emits that
 // one architecture's document. `--freeze a.json b.json` merges one capture per
 // supported architecture into the frozen package: every leaf the two captures
-// agree on stays a plain scalar, and every leaf they disagree on becomes
-// `{ arch_divergent, by_arch: { arm64, x64 } }` so the divergence is explicit
-// and attributable rather than hidden in a single hash. `--check` re-renders
-// on the current architecture and verifies the frozen package's selection for
-// THAT architecture, so the gate stays meaningful on either machine.
+// agree on stays a plain scalar, and a leaf they disagree on becomes
+// `{ arch_divergent, by_arch: { arm64, x64 } }` -- but ONLY at the whitelisted
+// paths below. Any other disagreement, and any disagreement at all in the
+// provenance leaves, throws with the offending path named; see
+// ./arch-capture.mjs for why that guard belongs on the freeze path.
+// `--check` re-renders on the current architecture and verifies the frozen
+// package's selection for THAT architecture, plus the file's canonical
+// formatting, so the gate stays meaningful on either machine.
 // ---------------------------------------------------------------------------
 const FROZEN_SCHEMA = 'noisemaker-for-cpp.task16-canonical-oracles.v2'
 const CAPTURE_SCHEMA = 'noisemaker-for-cpp.task16-canonical-oracles.arch-capture.v1'
@@ -234,54 +250,53 @@ function captureDocument() {
   }
 }
 
-function isPlainObject(value) {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
+// THE ONLY LEAVES THAT MAY DIFFER PER ARCHITECTURE, and why exactly these.
+// The `width-one` case renders `float(x)/float(width-1)` = 0.0/0.0 into the
+// blue lane, so its whole-surface F32 hash and that lane's raw bits carry the
+// sign of a hardware-manufactured NaN. Nothing else in this package can:
+// `formula` and `flat-tie` are finite on every architecture, the RGBA8 hashes
+// are sign-blind because `toRgba8()` maps any NaN to 0, and every remaining
+// leaf is either a recorded provenance fact or a finite computed value. Any
+// other disagreement between two captures is a REAL difference -- a port bug
+// on one ISA, a capture taken against the wrong authority checkout, a corpus
+// revision mismatch -- and `mergeArch` throws on it, naming the path, rather
+// than stamping it with the NaN explanation and minting a permanently green
+// per-architecture pin out of it.
+const ARCH_DIVERGENT_CASE = 'width-one'
+const ARCH_DIVERGENT_LANE = 2  // blue
+
+function allowedDivergentPaths(document) {
+  const index = document.cases.findIndex((entry) => entry.name === ARCH_DIVERGENT_CASE)
+  if (index < 0) throw new Error(`no "${ARCH_DIVERGENT_CASE}" case in this capture: the per-architecture divergence whitelist cannot be derived`)
+  const base = `$.cases[${index}]`
+  const paths = [`${base}.f32_sha256`]
+  const probes = document.cases[index].probes ?? []
+  for (let probeIndex = 0; probeIndex < probes.length; probeIndex += 1) {
+    paths.push(`${base}.probes[${probeIndex}].f32_bits_le[${ARCH_DIVERGENT_LANE}]`)
+  }
+  return paths
 }
 
-function mergeArch(left, right, leftArch, rightArch, at) {
-  if (JSON.stringify(left) === JSON.stringify(right)) return left
-  if (Array.isArray(left) && Array.isArray(right)) {
-    if (left.length !== right.length) throw new Error(`${at}: captures disagree on array length (${left.length} vs ${right.length}) -- that is a structural difference, not an arch materialization difference`)
-    return left.map((value, index) => mergeArch(value, right[index], leftArch, rightArch, `${at}[${index}]`))
-  }
-  if (isPlainObject(left) && isPlainObject(right)) {
-    const leftKeys = Object.keys(left)
-    const rightKeys = Object.keys(right)
-    if (leftKeys.join('\u0000') !== rightKeys.join('\u0000')) throw new Error(`${at}: captures disagree on object keys -- that is a structural difference, not an arch materialization difference`)
-    const merged = {}
-    for (const objectKey of leftKeys) merged[objectKey] = mergeArch(left[objectKey], right[objectKey], leftArch, rightArch, `${at}.${objectKey}`)
-    return merged
-  }
-  return { arch_divergent: ARCH_DIVERGENCE_REASON, by_arch: { [leftArch]: left, [rightArch]: right } }
-}
-
-function selectArch(node, arch, at) {
-  if (isPlainObject(node) && Object.prototype.hasOwnProperty.call(node, 'arch_divergent') && isPlainObject(node.by_arch)) {
-    if (!Object.prototype.hasOwnProperty.call(node.by_arch, arch)) throw new Error(`${at}: frozen package has no capture for architecture "${arch}"`)
-    return selectArch(node.by_arch[arch], arch, at)
-  }
-  if (Array.isArray(node)) return node.map((value, index) => selectArch(value, arch, `${at}[${index}]`))
-  if (isPlainObject(node)) {
-    const selected = {}
-    for (const objectKey of Object.keys(node)) selected[objectKey] = selectArch(node[objectKey], arch, `${at}.${objectKey}`)
-    return selected
-  }
-  return node
-}
+// Leaves that can never legitimately be architecture-divergent, checked before
+// the merge so a mismatch is reported as what it is: the corpus revision the
+// source came from, the source bytes themselves, and the whole authority
+// provenance block (node version, authority file hash, factory text hash).
+// Captures that disagree here were taken against different checkouts, and a
+// package merged from them would describe neither.
+const PROVENANCE_PATHS = [
+  '$.program.corpus_revision',
+  '$.program.source_sha256',
+  '$.provenance',
+]
 
 function freeze(captures) {
-  if (captures.length !== SUPPORTED_ARCHES.length) throw new Error(`--freeze needs exactly ${SUPPORTED_ARCHES.length} captures, one per supported architecture`)
-  for (const capture of captures) {
-    if (capture.schema !== CAPTURE_SCHEMA) throw new Error(`capture schema drift: ${capture.schema}`)
-    if (!SUPPORTED_ARCHES.includes(capture.arch)) throw new Error(`capture records unsupported architecture "${capture.arch}"`)
-  }
-  const ordered = SUPPORTED_ARCHES.map((arch) => {
-    const matches = captures.filter((capture) => capture.arch === arch)
-    if (matches.length !== 1) throw new Error(`expected exactly one capture for architecture "${arch}", got ${matches.length}`)
-    return matches[0]
-  })
+  const ordered = orderCaptures(captures, SUPPORTED_ARCHES, CAPTURE_SCHEMA)
+  requireIdenticalProvenance(ordered, PROVENANCE_PATHS)
   const [first, second] = ordered
-  const merged = mergeArch(first.document, second.document, first.arch, second.arch, '$')
+  const merged = mergeArch(first.document, second.document, first.arch, second.arch, {
+    reason: ARCH_DIVERGENCE_REASON,
+    allowedDivergentPaths: divergenceWhitelist(ordered, allowedDivergentPaths),
+  })
   const document = {
     schema: FROZEN_SCHEMA,
     arch_captures: ordered.map((capture) => ({ arch: capture.arch, node: capture.node, v8: capture.v8 })),
@@ -303,8 +318,16 @@ function check() {
   if (!recorded) throw new Error(`${outputPath}: no recorded capture for architecture "${ARCH}"`)
   if (recorded.node !== live.node || recorded.v8 !== live.v8) throw new Error(`${outputPath}: capture for "${ARCH}" was taken with node ${recorded.node} / V8 ${recorded.v8}, this run is node ${live.node} / V8 ${live.v8}`)
   const { schema: _schema, arch_captures: _archCaptures, arch_divergence: _archDivergence, ...body } = frozen
-  const selected = selectArch(body, ARCH, '$')
+  const selected = selectArch(body, ARCH)
   if (JSON.stringify(selected) !== JSON.stringify(live.document)) throw new Error(`${outputPath} is not the exact frozen canonical oracle output for architecture "${ARCH}"`)
+  // The structural comparison above cannot see the file's own bytes: it runs
+  // on the parsed graph, so whitespace, indentation and the trailing newline
+  // are invisible to it. Re-serialize the parsed document and compare it to
+  // the file text, exactly as the sibling bitwise generator does, so the
+  // package's canonical formatting is gated too.
+  if (fs.readFileSync(outputPath, 'utf8') !== `${JSON.stringify(frozen, null, 2)}\n`) {
+    throw new Error(`${outputPath} is not canonically formatted (re-serializing the parsed document does not reproduce the file bytes)`)
+  }
   return `ok ${path.basename(outputPath)} (${ARCH}, node ${live.node})\n`
 }
 

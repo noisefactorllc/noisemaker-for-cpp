@@ -106,6 +106,12 @@ cmake --build build --target noisemaker-render
 ./build/noisemaker-render tests/fixtures/dsl/blur.dsl   # writes blur.png
 ```
 
+`cmake --install build --prefix <prefix>` also installs it to
+`<prefix>/bin/noisemaker-render`, so the build-tree path below is a
+convenience, not the only way to run it. The install is optional: a
+library-only build (`cmake --build build --target noisemaker-cpu`) still
+installs cleanly, without the executable.
+
 With no options it renders 512x512 at time 0, frame 0, seed 1, and writes the
 program's own name with a `.png` extension into the current directory. Every
 option is optional and paths may be relative:

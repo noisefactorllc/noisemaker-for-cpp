@@ -27,6 +27,7 @@
 #include "noisemaker/renderer.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <exception>
@@ -34,6 +35,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -43,11 +45,12 @@ namespace nb = noisemaker::benchmark;
 
 namespace {
 
-// The same schema and the same field set the harness driver emits, so a
-// consumer of `--metadata` parses one document shape regardless of which
-// binary produced it. `tests/test_render_cli.py` renders one program through
-// both binaries and asserts the two documents are byte-identical, so the
-// schema cannot drift apart unnoticed.
+// The same schema the harness driver emits, and the same serializer:
+// `nb::rendered_record` lives in the shared translation unit, so a consumer of
+// `--metadata` parses one document shape regardless of which binary produced
+// it -- by construction, not by a test that keeps two copies honest.
+// `tests/test_render_cli.py` still asserts the two documents are
+// byte-identical, now as a behavioral check on one code path.
 constexpr std::string_view kMetadataSchema = "noisemaker-cpp.dsl-cpu-run.v1";
 
 constexpr std::string_view kHelp =
@@ -73,6 +76,10 @@ options:
       --metadata PATH   also write a JSON document describing the render
       --list-effects    print every effect key in the catalog, sorted, and exit
   -h, --help            print this text and exit
+      --                stop reading options; every later argument is a path
+
+Numbers are decimal. Every option may be given at most once; a repeated option
+is a usage error rather than a silent last-one-wins guess.
 
 examples:
   noisemaker-render program.dsl
@@ -105,7 +112,37 @@ struct Options {
   std::exit(nb::kExitUsage);
 }
 
+// The help says "a number", and it means a decimal one. `std::stod` also
+// accepts `0x10`, `inf` and `nan`, so `--width 0x10` used to render a 16-pixel
+// image -- a value the user never typed. The grammar is checked before the
+// conversion rather than inferred from what happened to parse.
+[[nodiscard]] bool is_decimal_number(std::string_view text) {
+  std::size_t index = 0;
+  if (index < text.size() && (text[index] == '+' || text[index] == '-')) ++index;
+  const std::size_t integer_start = index;
+  while (index < text.size() && text[index] >= '0' && text[index] <= '9') ++index;
+  std::size_t digits = index - integer_start;
+  if (index < text.size() && text[index] == '.') {
+    ++index;
+    const std::size_t fraction_start = index;
+    while (index < text.size() && text[index] >= '0' && text[index] <= '9') ++index;
+    digits += index - fraction_start;
+  }
+  if (digits == 0) return false;
+  if (index < text.size() && (text[index] == 'e' || text[index] == 'E')) {
+    ++index;
+    if (index < text.size() && (text[index] == '+' || text[index] == '-')) ++index;
+    const std::size_t exponent_start = index;
+    while (index < text.size() && text[index] >= '0' && text[index] <= '9') ++index;
+    if (index == exponent_start) return false;
+  }
+  return index == text.size();
+}
+
 [[nodiscard]] double parse_number(const std::string& text, std::string_view flag) {
+  if (!is_decimal_number(text)) {
+    fail_usage(std::string(flag) + " needs a number, not \"" + text + "\"");
+  }
   try {
     std::size_t consumed = 0;
     const double value = std::stod(text, &consumed);
@@ -114,13 +151,26 @@ struct Options {
     }
     return value;
   } catch (const std::exception&) {
+    // Out of `double` range, e.g. `1e400`. Reported as the usage error it is.
     fail_usage(std::string(flag) + " needs a number, not \"" + text + "\"");
   }
 }
 
+// The range check precedes every double->integer conversion. A cast of an
+// out-of-range double is undefined behavior, so the old
+// `value != static_cast<double>(static_cast<std::size_t>(value))` spelling
+// depended on UB to reject its own bad input.
+template <typename Integer>
+[[nodiscard]] bool fits_whole(double value, double lowest) {
+  constexpr double kExclusiveUpperBound =
+      static_cast<double>(std::numeric_limits<Integer>::max()) + 1.0;
+  return value >= lowest && value < kExclusiveUpperBound &&
+         value == std::trunc(value);
+}
+
 [[nodiscard]] std::size_t parse_extent(const std::string& text, std::string_view flag) {
   const double value = parse_number(text, flag);
-  if (!(value >= 1.0) || value != static_cast<double>(static_cast<std::size_t>(value))) {
+  if (!fits_whole<std::size_t>(value, 1.0)) {
     fail_usage(std::string(flag) + " needs a whole number of pixels of at least 1, not \"" +
                text + "\"");
   }
@@ -129,7 +179,7 @@ struct Options {
 
 [[nodiscard]] std::uint32_t parse_frame(const std::string& text, std::string_view flag) {
   const double value = parse_number(text, flag);
-  if (!(value >= 0.0) || value != static_cast<double>(static_cast<std::uint32_t>(value))) {
+  if (!fits_whole<std::uint32_t>(value, 0.0)) {
     fail_usage(std::string(flag) + " needs a whole frame number of at least 0, not \"" +
                text + "\"");
   }
@@ -168,29 +218,6 @@ void print_effect_keys() {
   std::cout << out;
 }
 
-[[nodiscard]] std::string_view code_name(noisemaker::graph::GraphErrorCode code) {
-  using Code = noisemaker::graph::GraphErrorCode;
-  switch (code) {
-    case Code::invalid_options: return "invalid_options";
-    case Code::invalid_dimension: return "invalid_dimension";
-    case Code::allocation_limit: return "allocation_limit";
-    case Code::invalid_format: return "invalid_format";
-    case Code::missing_resource: return "missing_resource";
-    case Code::read_before_write: return "read_before_write";
-    case Code::duplicate_output: return "duplicate_output";
-    case Code::unavailable_pass: return "unavailable_pass";
-    case Code::invalid_snapshot: return "invalid_snapshot";
-    case Code::missing_binding: return "missing_binding";
-    case Code::binding_type: return "binding_type";
-    case Code::unsupported_blend: return "unsupported_blend";
-    case Code::unsupported_mrt: return "unsupported_mrt";
-    case Code::unsupported_draw_mode: return "unsupported_draw_mode";
-    case Code::unsupported_scatter: return "unsupported_scatter";
-    case Code::execution_failure: return "execution_failure";
-  }
-  return "unknown";
-}
-
 // Fail-closed, phrased for a person. The executor's own reason string is
 // reproduced verbatim on the `reason:` line -- a refusal that paraphrases the
 // executor is a refusal you cannot act on.
@@ -199,7 +226,10 @@ void report_refusal(const noisemaker::graph::GraphError& error,
   std::cerr << "noisemaker-render: " << source_path
             << " cannot be rendered, so nothing was written.\n"
             << "  reason: " << error.detail() << "\n"
-            << "  code:   " << code_name(error.code()) << " ("
+            // The library's own table (declared in graph/executor.hpp), so the
+            // `code:` line here can never disagree with the `graph:<name>:`
+            // prefix `GraphError::what()` carries.
+            << "  code:   " << noisemaker::graph::code_name(error.code()) << " ("
             << static_cast<unsigned>(error.code()) << ")\n";
   if (!error.effect_id().empty()) {
     std::cerr << "  effect: " << error.effect_id();
@@ -213,66 +243,103 @@ void report_refusal(const noisemaker::graph::GraphError& error,
   }
 }
 
-[[nodiscard]] std::string metadata_document(const std::string& source_sha256,
-                                            std::size_t width, std::size_t height,
-                                            const std::string& rgba8_sha256,
-                                            std::size_t byte_length) {
-  std::string out = "{\n";
-  out += "  \"schema\": " + nb::json_string(kMetadataSchema) + ",\n";
-  out += "  \"status\": \"rendered\",\n";
-  out += "  \"sourceSha256\": " + nb::json_string(source_sha256) + ",\n";
-  out += "  \"width\": " + nb::json_number(width) + ",\n";
-  out += "  \"height\": " + nb::json_number(height) + ",\n";
-  out += "  \"format\": \"rgba8\",\n";
-  out += "  \"orientation\": \"top-down\",\n";
-  out += "  \"rgba8Sha256\": " + nb::json_string(rgba8_sha256) + ",\n";
-  out += "  \"byteLength\": " + nb::json_number(byte_length) + "\n}\n";
-  return out;
-}
-
 [[nodiscard]] Options parse_options(const std::vector<std::string>& args) {
   Options options;
   std::optional<std::string> source;
+  // Contradictory repeats are a guess, not forgiveness: `--width 64 --width
+  // 128` silently rendered 128 wide. `noisemaker-dsl-cpu-case` already treats
+  // a duplicate flag as a usage violation
+  // (tests/test_benchmark_cpu_corpus.py), and the user tool now agrees.
+  std::vector<std::string> seen;
+  const auto claim = [&seen](const std::string& name) {
+    if (std::find(seen.begin(), seen.end(), name) != seen.end()) {
+      fail_usage(name + " was given more than once");
+    }
+    seen.push_back(name);
+  };
+  bool flags_ended = false;
   for (std::size_t index = 0; index < args.size(); ++index) {
     std::string flag = args[index];
     std::optional<std::string> inline_value;
-    if (flag.rfind("--", 0) == 0) {
+    if (!flags_ended && flag.rfind("--", 0) == 0) {
       const auto equals = flag.find('=');
       if (equals != std::string::npos) {
         inline_value = flag.substr(equals + 1);
         flag = flag.substr(0, equals);
       }
     }
-    const auto value = [&](std::string_view name) -> std::string {
-      if (inline_value) return *inline_value;
-      if (index + 1 >= args.size()) fail_usage(std::string(name) + " needs a value");
-      return args[++index];
-    };
-    if (flag == "-o" || flag == "--output") {
-      options.png_output = value(flag);
-    } else if (flag == "--width") {
-      options.render.width = parse_extent(value(flag), "--width");
-    } else if (flag == "--height") {
-      options.render.height = parse_extent(value(flag), "--height");
-    } else if (flag == "--time") {
-      options.render.time = parse_number(value(flag), "--time");
-    } else if (flag == "--frame") {
-      options.render.frame = parse_frame(value(flag), "--frame");
-    } else if (flag == "--seed") {
-      options.render.seed = parse_number(value(flag), "--seed");
-    } else if (flag == "--raw-rgba8") {
-      options.raw_output = value(flag);
-    } else if (flag == "--metadata") {
-      options.metadata_output = value(flag);
-    } else if (flag == "-" || flag.rfind("-", 0) == 0) {
-      fail_usage("unknown option \"" + flag + "\"");
-    } else {
-      if (source) {
-        fail_usage("only one program can be rendered at a time; got \"" + *source +
-                   "\" and \"" + flag + "\"");
+    // An explicitly empty value is a mistake, never the default: `--output=`
+    // used to be indistinguishable from an unset `--output` and quietly wrote
+    // the default filename while reporting success.
+    // `name` is the spelling the user typed, so the diagnostic quotes it back;
+    // `canonical` is what the duplicate check keys on, so `-o` and `--output`
+    // are one option.
+    const auto value = [&](const std::string& name, const char* canonical) -> std::string {
+      claim(canonical);
+      std::string text;
+      if (inline_value) {
+        text = *inline_value;
+      } else {
+        if (index + 1 >= args.size()) fail_usage(name + " needs a value");
+        text = args[++index];
       }
-      source = flag;
+      if (text.empty()) fail_usage(name + " needs a non-empty value");
+      return text;
+    };
+    const auto reject_inline_value = [&](const std::string& name) {
+      if (inline_value) fail_usage(name + " takes no value");
+    };
+    if (flags_ended) {
+      // Everything after `--` is a path, even one that starts with a dash.
+    } else if (flag == "--") {
+      reject_inline_value(flag);
+      flags_ended = true;
+      continue;
+    } else if (flag == "-h" || flag == "--help") {
+      // Parsed in position, so `-o -h` still means "write to a file named -h"
+      // rather than silently printing help and writing nothing.
+      reject_inline_value(flag);
+      std::cout << kHelp;
+      std::exit(nb::kExitOk);
+    } else if (flag == "--list-effects") {
+      reject_inline_value(flag);
+      if (args.size() != 1) {
+        fail_usage("--list-effects takes no other arguments");
+      }
+      print_effect_keys();
+      std::exit(nb::kExitOk);
+    } else if (flag == "-o" || flag == "--output") {
+      options.png_output = value(flag, "--output");
+      continue;
+    } else if (flag == "--width") {
+      options.render.width = parse_extent(value(flag, "--width"), "--width");
+      continue;
+    } else if (flag == "--height") {
+      options.render.height = parse_extent(value(flag, "--height"), "--height");
+      continue;
+    } else if (flag == "--time") {
+      options.render.time = parse_number(value(flag, "--time"), "--time");
+      continue;
+    } else if (flag == "--frame") {
+      options.render.frame = parse_frame(value(flag, "--frame"), "--frame");
+      continue;
+    } else if (flag == "--seed") {
+      options.render.seed = parse_number(value(flag, "--seed"), "--seed");
+      continue;
+    } else if (flag == "--raw-rgba8") {
+      options.raw_output = value(flag, "--raw-rgba8");
+      continue;
+    } else if (flag == "--metadata") {
+      options.metadata_output = value(flag, "--metadata");
+      continue;
+    } else if (flag.rfind("-", 0) == 0) {
+      fail_usage("unknown option \"" + flag + "\"");
     }
+    if (source) {
+      fail_usage("only one program can be rendered at a time; got \"" + *source +
+                 "\" and \"" + flag + "\"");
+    }
+    source = flag;
   }
   if (!source) {
     fail_usage("name a DSL program to render, for example: noisemaker-render program.dsl");
@@ -281,6 +348,17 @@ void report_refusal(const noisemaker::graph::GraphError& error,
   if (options.png_output.empty()) {
     options.png_output = default_png_output(options.source_path);
   }
+  // Refuse a size the encoder cannot write BEFORE rendering it. `encode_png`
+  // throws above this limit, and reaching that throw means the whole surface
+  // has already been computed and the failure then reads as a program refusal
+  // (exit 4) when nothing about the program was refused.
+  if (options.render.height != 0 &&
+      options.render.width > noisemaker::max_png_pixels / options.render.height) {
+    fail_usage("--width x --height is " + std::to_string(options.render.width) + "x" +
+               std::to_string(options.render.height) + ", which is more than the " +
+               std::to_string(noisemaker::max_png_pixels) +
+               " pixels a PNG can hold; choose a smaller --width or --height");
+  }
   return options;
 }
 
@@ -288,20 +366,6 @@ void report_refusal(const noisemaker::graph::GraphError& error,
 
 int main(int argc, char** argv) {
   const std::vector<std::string> args(argv + 1, argv + argc);
-  for (const auto& argument : args) {
-    if (argument == "-h" || argument == "--help") {
-      std::cout << kHelp;
-      return nb::kExitOk;
-    }
-    if (argument == "--list-effects") {
-      if (args.size() != 1) {
-        fail_usage("--list-effects takes no other arguments");
-      }
-      print_effect_keys();
-      return nb::kExitOk;
-    }
-  }
-
   const Options options = parse_options(args);
   const std::string source = read_source(options.source_path);
   const auto source_sha256 = noisemaker::graph::detail::sha256(source);
@@ -334,8 +398,9 @@ int main(int argc, char** argv) {
     return nb::kExitRefused;
   }
 
-  const std::string metadata = metadata_document(
-      source_sha256, width, height, nb::sha256_bytes(bytes), bytes.size());
+  // The shared serializer, not a second one; see `nb::rendered_record`.
+  const std::string metadata = nb::rendered_record(
+      kMetadataSchema, source_sha256, width, height, nb::sha256_bytes(bytes), bytes.size());
   try {
     // `write_raw_rgba8` is the shared byte writer; `write_text_file` the shared
     // text writer. Neither the PNG nor the raw frame gets a second serializer.

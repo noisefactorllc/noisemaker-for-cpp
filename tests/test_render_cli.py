@@ -224,12 +224,60 @@ class RenderCliTests(unittest.TestCase):
             ((str(BLUR), "--width", "0"), "at least 1"),
             ((str(BLUR), "--frame", "-1"), "at least 0"),
             ((str(BLUR), str(BLUR)), "only one program"),
+            # An explicitly empty value is a mistake, not the default.
+            ((str(BLUR), "--output="), "--output needs a non-empty value"),
+            ((str(BLUR), "-o"), "-o needs a value"),
+            # Contradictory repeats are a guess, not forgiveness. `-o` and
+            # `--output` are the same option.
+            ((str(BLUR), "--width", "64", "--width", "128"),
+             "--width was given more than once"),
+            ((str(BLUR), "-o", "a.png", "--output", "b.png"),
+             "--output was given more than once"),
+            # The help says "a number", and it means a decimal one: `std::stod`
+            # would otherwise read 0x10 as 16 and inf/nan as extents.
+            ((str(BLUR), "--width", "0x10"), '--width needs a number, not "0x10"'),
+            ((str(BLUR), "--width", "inf"), '--width needs a number, not "inf"'),
+            ((str(BLUR), "--width", "nan"), '--width needs a number, not "nan"'),
+            # Out of range for the destination integer: rejected by a range
+            # check, never by observing what an out-of-range cast produced.
+            ((str(BLUR), "--width", "1e20"), "whole number of pixels"),
+            ((str(BLUR), "--frame", "1e20"), "whole frame number"),
+            # Refused before rendering: reaching `encode_png`'s own limit means
+            # the whole surface was computed first and the failure then reads
+            # as a program refusal, which it is not.
+            ((str(BLUR), "--width", "8192", "--height", "8192"),
+             "more than the 16777216 pixels a PNG can hold"),
         ):
             with self.subTest(args=args):
                 result = self.run_cli(*args)
                 self.assertEqual(2, result.returncode, result.stderr)
                 self.assertIn(needle, result.stderr)
                 self.assertIn("--help", result.stderr)
+
+    def test_an_oversized_request_is_refused_before_the_program_is_even_read(self) -> None:
+        """Exit 2 naming the flags, not exit 4 after a full render."""
+        result = self.run_cli("/nonexistent/missing.dsl", "--width", "8192", "--height", "8192")
+        self.assertEqual(2, result.returncode, result.stderr)
+        self.assertIn("--width", result.stderr)
+        self.assertIn("--height", result.stderr)
+        self.assertNotIn("cannot read the program file", result.stderr)
+
+    def test_end_of_options_and_positional_help_reach_awkward_filenames(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-render-dashes-") as directory:
+            work = pathlib.Path(directory)
+            (work / "-weird.dsl").write_bytes(BLUR.read_bytes())
+            # Without `--` this argument is an unknown option.
+            self.assertEqual(2, self.run_cli("-weird.dsl", cwd=work).returncode)
+            ok = self.run_cli("--", "-weird.dsl", cwd=work)
+            self.assertEqual(0, ok.returncode, ok.stderr)
+            self.assertEqual(PNG_MAGIC, (work / "-weird.png").read_bytes()[:8])
+
+            # `-h` is parsed in position, so it is a value here rather than a
+            # request for help that silently renders nothing. Options come
+            # before `--`; everything after it is an operand.
+            named = self.run_cli("-o", "-h", "--", "-weird.dsl", cwd=work)
+            self.assertEqual(0, named.returncode, named.stderr)
+            self.assertEqual(PNG_MAGIC, (work / "-h").read_bytes()[:8])
 
 
 if __name__ == "__main__":

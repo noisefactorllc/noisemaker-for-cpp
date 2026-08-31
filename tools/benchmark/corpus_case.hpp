@@ -172,4 +172,16 @@ void write_text_file(const std::string& path, const std::string& text);
 [[nodiscard]] std::string refusal_record(std::string_view schema,
                                          const std::exception& error);
 
+// The rendered counterpart of `refusal_record`, here for the same reason: the
+// parity driver, the benchmark driver and the user-facing render CLI all emit
+// this document, so it is serialized once. Every string goes through
+// `json_string` -- `source_sha256` is a digest today, but a hand-quoted
+// serializer diverges the moment a value needs escaping, which is exactly the
+// drift a second copy invites.
+[[nodiscard]] std::string rendered_record(std::string_view schema,
+                                          std::string_view source_sha256,
+                                          std::size_t width, std::size_t height,
+                                          std::string_view rgba8_sha256,
+                                          std::size_t byte_length);
+
 }  // namespace noisemaker::benchmark
