@@ -143,6 +143,21 @@ jobs:
           mv "$GITHUB_WORKSPACE/cpu-authority-checkout" "$RUNNER_TEMP/cpu-authority"
           rm -rf "$RUNNER_TEMP/cpu-authority/.git"
 
+      # The JS runner refuses any authority without its ledger (fail-closed).
+      # Here the content is already authenticated by checking out the pinned
+      # commit, so a ledger generated from that checkout carries the same
+      # trust. 713 entries, `sha256  abspath` — the runner verifies each.
+      - name: Write the authority ledger
+        run: |
+          python3 - "$RUNNER_TEMP/cpu-authority" "$RUNNER_TEMP/cpu-authority-ledger.sha256" <<'PY'
+          import hashlib, pathlib, sys
+          root, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+          lines = [f"{hashlib.sha256(f.read_bytes()).hexdigest()}  {f}"
+                   for f in sorted(p for p in root.rglob("*") if p.is_file())]
+          out.write_text("\n".join(lines) + "\n")
+          print(f"ledger entries: {len(lines)}")
+          PY
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -160,6 +175,7 @@ jobs:
       - name: Run the byte-exact corpus lane
         env:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
+          NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
         run: python3 -B -m unittest tests.test_dsl_corpus_parity -v
 
