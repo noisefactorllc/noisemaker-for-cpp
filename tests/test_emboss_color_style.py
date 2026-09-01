@@ -749,12 +749,30 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 f"{completed.stdout}\nstderr:\n{completed.stderr}")
             self.assertIn(expected, completed.stdout)
 
+    def _require_live_checkout(self) -> pathlib.Path:
+        """The generator resolves the live checkout before it validates
+        --cpu-root, so every guard that drives it needs the live checkout to
+        exist. Name the resource instead of erroring on its absence."""
+        configured = os.environ.get("NOISEMAKER_FOR_CPU")
+        if not configured:
+            self.skipTest(
+                "live-checkout-dependent Emboss guard skipped: "
+                "NOISEMAKER_FOR_CPU is unset")
+        live = pathlib.Path(configured)
+        if not live.is_dir():
+            self.skipTest(
+                "live-checkout-dependent Emboss guard skipped: "
+                f"NOISEMAKER_FOR_CPU is missing: {live}")
+        return live
+
     def test_oracle_check_rejects_a_cpu_root_inside_cpp_repository(self):
+        live = self._require_live_checkout()
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
         completed = subprocess.run(
             ("node", str(package / "emboss_parity_oracle_generator.mjs"),
              "--check", "--cpu-root", str(ROOT)),
-            cwd=ROOT, text=True, stdout=subprocess.PIPE,
+            cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(live)},
+            text=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, check=False)
         self.assertNotEqual(0, completed.returncode)
         self.assertIn(
@@ -789,6 +807,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                       completed.stderr)
 
     def test_oracle_realpaths_symlinked_cpp_root_containment(self):
+        live = self._require_live_checkout()
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
         with tempfile.TemporaryDirectory(
                 prefix="noisemaker-emboss181-symlink-",
@@ -798,7 +817,9 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             completed = subprocess.run(
                 ("node", str(package / "emboss_parity_oracle_generator.mjs"),
                  "--check", "--cpu-root", str(symlinked_cpp_root)),
-                cwd=ROOT, env=os.environ.copy(), text=True,
+                cwd=ROOT,
+                env={**os.environ, "NOISEMAKER_FOR_CPU": str(live)},
+                text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         self.assertNotEqual(0, completed.returncode)
         self.assertIn(
@@ -1088,28 +1109,28 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_artifact_hashes = {
             "live182": {
-                "src/typed_generated/typed_slice.cpp": "c5e7f346eb77499351287e090e9f0181b2696c964c2b8e48331cbea65f20c2c2",
-                "src/typed_generated/typed_manifest.json": "9614fbfce0e303018ed4500a665c5707e5351305efe0ccf57314c309bdbf910b",
+                "src/typed_generated/typed_slice.cpp": "515adc13a3b37416177036497e8dbea58e8153e9f5e4960aa299ed2a291390f8",
+                "src/typed_generated/typed_manifest.json": "e4251e95a61f29c236b24fdc26246b82c620a0860949ccde9e5a2868cb839509",
                 "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
             },
             "emboss181": {
-                "src/typed_generated/typed_slice.cpp": "279f15c2eb171a8dd6e00c9af5fc0a5dee22a0c666c52c31f70c7972fa09d529",
-                "src/typed_generated/typed_manifest.json": "8c6f7c3967b99757e0cd7bbb9539ebedf8b7c1c532f264c37b2c48653a9ee753",
+                "src/typed_generated/typed_slice.cpp": "44833e3372a9ea4cbeab776486c706c8344f3ea4378817b67c5bf0292624b789",
+                "src/typed_generated/typed_manifest.json": "9528fe705959192eae1984fe037a856f1956d752998b7a219af93fc834ac9ca3",
                 "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
             },
             "glitch180": {
-                "src/typed_generated/typed_slice.cpp": "af04490baa7b2d617bccecd8373687da64baf7d3d631795140fc2eb0ecd93523",
-                "src/typed_generated/typed_manifest.json": "039f73ee1aa473a2df471a5fa891da3a78c9eab4474c2e2e9596550a1174d777",
+                "src/typed_generated/typed_slice.cpp": "25d58069c566ac33ebb2c96ec1a8e4668ca5eaddcb64762241a46f99cfcf0ba9",
+                "src/typed_generated/typed_manifest.json": "43cbf8db804a8e667ce5a830c87c083486bacc36d07ed6b9affab73250ba26c1",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "f97b404b2dd8b18dd3295b2ea0525f9dd6f048128e14a5d16daefeb97304e290",
-                "src/typed_generated/typed_manifest.json": "6ffbab70ce98e5ac883cc10c61efcdbb34e5093c0ca04037f3ff2209836fa53f",
+                "src/typed_generated/typed_slice.cpp": "1c92b2bf340c38c7f156660bdad5d63357714eaf2825b30599665d507d05ff3d",
+                "src/typed_generated/typed_manifest.json": "1818323e4a2232fa79f5bfc212d70f857fb3e3e202733f87c22c52c640b8ca83",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "ff1ec28034d0980190e18b2d9911f2e362d65226485fee55581799748d08762b",
-                "src/typed_generated/typed_manifest.json": "7fe7b5a68dd7a9e9434e479294983202ea316376589c5958c9f1746bf167c801",
+                "src/typed_generated/typed_slice.cpp": "99ca5fe5becfe92515364524e31f6de2412231617f212d3618e55ffa12152e25",
+                "src/typed_generated/typed_manifest.json": "a4f915cec1ba4e2ac730af554bee89854ffe2b91c1bcbee83a1645b4d02cbce5",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }

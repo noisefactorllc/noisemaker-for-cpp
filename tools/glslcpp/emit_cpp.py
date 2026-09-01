@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 
 from .parser import GeneratorError
-from .types import Expr, Program, Statement
+from .ir_types import Expr, Program, Statement
 
 
 _CPP_TYPES = {

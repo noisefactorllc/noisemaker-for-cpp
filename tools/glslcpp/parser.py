@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from .lexer import Token, lex
 from .preprocess import normalize
-from .types import Expr, Program, Statement, Uniform
+from .ir_types import Expr, Program, Statement, Uniform
 
 
 class GeneratorError(ValueError):

@@ -1,4 +1,12 @@
-"""Immutable parsed subset used by the deterministic C++ emitter."""
+"""Immutable parsed subset used by the deterministic C++ emitter.
+
+Not named types.py. Every tool in this directory is also run as a
+script, which puts this directory at the head of sys.path, so a module
+named after a standard-library module hides the real one from the
+interpreter itself -- including from the imports CPython performs while
+loading argparse. tests/test_tool_script_module_hygiene.py holds the
+invariant.
+"""
 
 from __future__ import annotations
 

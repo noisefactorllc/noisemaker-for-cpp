@@ -85,9 +85,25 @@ set_source_files_properties(src/generated/synth_solid.cpp PROPERTIES
 )
 # The generated catalog is metadata-heavy; keep strict diagnostics while
 # avoiding multi-minute optimizer memory use for its immutable initializer.
+#
+# Under sanitizers this one file is also the difference between a job that
+# finishes and one that never does: instrumenting its single 7,967-line
+# initializer measured 1739s against 30s uninstrumented (58x), while the
+# comparably sized typed slice -- same generator, many small functions -- is
+# only 2.5x. Excluding it buys real ASan/UBSan coverage of every hand-written
+# file, where none existed before because the job always timed out. What is
+# given up is instrumentation INSIDE that initializer, which is emitted
+# straight-line aggregate construction with no allocation or indexing;
+# heap blocks it creates are still tracked by ASan's allocator and still
+# checked wherever instrumented code touches them. The real fix is splitting
+# the initializer at the emitter -- see the handoff queue.
 set_source_files_properties(src/effects/generated/effect_catalog.cpp PROPERTIES
   COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-O0>"
 )
+if(CMAKE_CXX_FLAGS MATCHES "-fsanitize")
+  set_property(SOURCE src/effects/generated/effect_catalog.cpp APPEND
+    PROPERTY COMPILE_OPTIONS "-fno-sanitize=all")
+endif()
 
 add_executable(noisemaker-cpu-tests
   tests/test_main.cpp

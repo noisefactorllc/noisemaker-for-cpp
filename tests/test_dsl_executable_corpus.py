@@ -18,6 +18,16 @@ FIXTURE = ROOT / "tests/fixtures/dsl/executable-corpus.json"
 ORACLE = ROOT / "tests/oracles/dsl_executable_corpus.sha256"
 
 
+def _temporary_root() -> str:
+    """The platform's temporary root.
+
+    Scratch trees used to be pinned to /private/tmp, which exists on Darwin
+    and nowhere else; on Linux the pin turned a test that should have skipped
+    for a missing authority into a FileNotFoundError.
+    """
+    return os.environ.get("TMPDIR") or tempfile.gettempdir()
+
+
 class ExecutableCorpusTest(unittest.TestCase):
     def node(self) -> str:
         value = shutil.which("node")
@@ -67,13 +77,14 @@ class ExecutableCorpusTest(unittest.TestCase):
                 self.assertTrue(record["allReasons"])
 
     def test_generation_is_deterministic_and_does_not_rewrite_fixture(self) -> None:
+        authority = self.authority()
         fixture_before = FIXTURE.read_bytes()
         oracle_before = ORACLE.read_bytes()
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-corpus-", dir="/private/tmp") as directory:
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-corpus-", dir=_temporary_root()) as directory:
             first = pathlib.Path(directory) / "first.json"
             second = pathlib.Path(directory) / "second.json"
             for output in (first, second):
-                result = self.run_generator(output)
+                result = self.run_generator(output, authority)
                 self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(first.read_bytes(), second.read_bytes())
             generated = json.loads(first.read_text(encoding="utf-8"))
@@ -94,9 +105,10 @@ class ExecutableCorpusTest(unittest.TestCase):
         self.assertEqual(ORACLE.read_bytes(), oracle_before)
 
     def test_generator_fails_closed_for_forged_authority_before_import(self) -> None:
-        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-corpus-forge-", dir="/private/tmp") as directory:
+        authority = self.authority()
+        with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-corpus-forge-", dir=_temporary_root()) as directory:
             forged = pathlib.Path(directory) / "cpu"
-            shutil.copytree(self.authority(), forged, symlinks=True)
+            shutil.copytree(authority, forged, symlinks=True)
             marker = forged / "imported-marker"
             renderer = forged / "src/runtime/renderer.js"
             renderer.write_text(f"import fs from 'node:fs'; fs.writeFileSync({json.dumps(str(marker))}, 'imported');\n")
