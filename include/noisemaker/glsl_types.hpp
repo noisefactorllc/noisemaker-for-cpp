@@ -26,6 +26,49 @@ namespace detail {
 [[nodiscard]] std::int32_t js_array_int32_read_for_bitwise(
     const std::int32_t* values, std::size_t size, double index) noexcept;
 
+// GLSL's integral constructors, `int(x)` and `uint(x)`, as the JavaScript CPU
+// authority realizes them. Its transpiled kernels spell both casts with the
+// 32-bit wrap operators -- `var seedInt = floor(s)|0;` and
+// `hash_mix((cellX|0) ^ ((rowSeed|0) * 997))` in canonical-kernels.js, and
+// `int: (value) => value | 0` / `uint: (value) => value >>> 0` in the CSL
+// runtime stdlib -- i.e. ECMAScript ToInt32 / ToUint32. Measured against that
+// authority with node: NaN, +Infinity and -Infinity all convert to 0, and
+// every finite value truncates toward zero and then wraps modulo 2^32
+// (4294967296 -> 0, -6000000000 -> -1705032704, 1e300 -> 0).
+//
+// C++'s own float-to-integer conversion agrees only while the truncated value
+// is representable in the destination; for NaN and for anything outside that
+// range it is UNDEFINED BEHAVIOR, so it can neither be relied upon nor made
+// to agree with the authority. On arm64 it saturates (uint32(-12.5238) == 0,
+// where the authority yields (-12.5238)|0 == -12), on x86-64 it wraps -- the
+// same source, two different pictures. Both classes are reachable in the
+// pinned corpus: UBSan reported `nan is outside the range of representable
+// values of type 'int'` and `-12.5238 is outside the range of representable
+// values of type 'unsigned int'` from the generated slice.
+//
+// Every emitted GLSL integral cast routes through these. The integral
+// overloads are the ordinary well-defined conversions, so a cast whose
+// operand is already an integer keeps exactly the semantics it had; only the
+// floating operands -- including GLSL integers this port carries as
+// JavaScript Numbers -- change, and they change from undefined to the
+// authority's.
+template <class T>
+[[nodiscard]] std::int32_t glsl_int_cast(T value) noexcept {
+  if constexpr (std::floating_point<T>) {
+    return js_to_int32(static_cast<double>(value));
+  } else {
+    return static_cast<std::int32_t>(value);
+  }
+}
+template <class T>
+[[nodiscard]] std::uint32_t glsl_uint_cast(T value) noexcept {
+  if constexpr (std::floating_point<T>) {
+    return float_to_uint32(static_cast<double>(value));
+  } else {
+    return static_cast<std::uint32_t>(value);
+  }
+}
+
 template <class T>
 [[nodiscard]] constexpr T add(T a, T b) noexcept {
   if constexpr (std::same_as<T, std::int32_t>) {

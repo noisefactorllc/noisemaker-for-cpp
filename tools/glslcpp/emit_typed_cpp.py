@@ -6602,6 +6602,38 @@ class _Emitter:
                 # conversions (notably vec3(pcg(...))) materialize first.
                 lanes = display[-1]
                 return f"glsl::FloatExpr<{lanes}>({self.expression(value.children[0])})"
+            if (display in {"int", "uint"} and len(value.children) == 1
+                    and value.children[0].kind != "literal"
+                    and value.children[0].type.display() in {
+                        "float", "int", "uint", "bool"}):
+                # GLSL's `int(x)`/`uint(x)` is not C++'s float-to-integer
+                # conversion. The authority spells both casts with the 32-bit
+                # wrap operators -- `var seedInt = floor(s)|0;` and
+                # `hash_mix((cellX|0) ^ ((rowSeed|0) * 997))` in
+                # canonical-kernels.js -- i.e. ECMAScript ToInt32/ToUint32,
+                # which is total: NaN and +/-Infinity give 0 and finite values
+                # wrap modulo 2^32. `std::int32_t(d)` on a `double` truncates
+                # and is UNDEFINED outside the destination range, and UBSan
+                # proves both classes reachable in the pinned corpus
+                # (`nan is outside the range ... of type 'int'` from
+                # bitEffects' `int(floor(s))`, and `-12.5238 is outside the
+                # range ... of type 'unsigned int'` from spookyTicker's
+                # `uint(cellX)`, whose GLSL `int` this emitter carries as a
+                # JavaScript Number).
+                #
+                # The rule is deliberately total rather than typed on the IR:
+                # whether the C++ operand is a `double` depends on carrier
+                # decisions spread across the per-program Number profiles
+                # (spookyTicker's `cellX`, OSD's `glyph_idx`, ...), so a rule
+                # that reasoned about the IR type alone would miss exactly the
+                # sites that are hardest to see. `glsl_int_cast`/
+                # `glsl_uint_cast` resolve on the C++ operand type instead:
+                # integral operands keep the ordinary conversion they already
+                # had, floating operands get the authority's. Literal operands
+                # are excluded because a literal is never Number-carried.
+                helper = "glsl_int_cast" if display == "int" else "glsl_uint_cast"
+                return (f"glsl::detail::{helper}("
+                        + self.expression(value.children[0]) + ")")
             return f"{self.type(value.constructor_type)}(" + ", ".join(self.expression(x) for x in value.children) + ")"
         if value.kind == "swizzle":
             if (value.children

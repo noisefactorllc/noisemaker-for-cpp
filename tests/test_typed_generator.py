@@ -1852,9 +1852,9 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_prior_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "76193e0056fedd2d5e226c707c31a9186ee3892b9b800fd9c33f3b6e9f5e346a",
+                "7e30f1466e87203dec9c179f00905cff700603b73fb07148901729de0fe4411c",
             "src/typed_generated/typed_manifest.json":
-                "54a2082509bf8a41f266fcdcc4e40a166849c12319c69de1cab66674b43beab8",
+                "bb15fae1e1d0d2d0105961783b424f363be0cb9fd4f41e8549b83e53dd112356",
             "include/noisemaker/generated/catalog.hpp":
                 "5ca9c58b712b493ec5ef548bf7fc75deec99dbe9546b22bdb0b9d0386885f52a",
         }
@@ -2287,14 +2287,17 @@ and item["program_key"] != "filter/wobble:wobble"
 
         nested = "glsl::detail::float_to_int32(glsl::round("
         self.assertEqual(1, canonical_cpp.count(nested))
-        self.assertEqual(1, floor_cpp.count("std::int32_t(glsl::floor("))
+        self.assertEqual(
+            1, floor_cpp.count("glsl::detail::glsl_int_cast(glsl::floor("))
         self.assertEqual(0, floor_cpp.count("glsl::round("))
-        self.assertEqual(1, ceil_cpp.count("std::int32_t(glsl::ceil("))
+        self.assertEqual(
+            1, ceil_cpp.count("glsl::detail::glsl_int_cast(glsl::ceil("))
         self.assertEqual(0, ceil_cpp.count("glsl::round("))
         self.assertEqual(1, loop_cpp.count(nested))
         self.assertEqual(1, loop_cpp.count("NUM_SAMPLES = std::int32_t(8);"))
         self.assertEqual(0, loop_cpp.count("NUM_SAMPLES = std::int32_t(64);"))
-        self.assertEqual(1, std_round_cpp.count("std::int32_t(std::round("))
+        self.assertEqual(
+            1, std_round_cpp.count("glsl::detail::glsl_int_cast(std::round("))
         for index, rendered in enumerate(
                 (floor_cpp, ceil_cpp, loop_cpp, std_round_cpp)):
             self.assertEqual(1, rendered.count(
@@ -2891,8 +2894,8 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            (1007614,
-             "c2c492a949ba39ba0a115352d05c0f930469433a7b0765cf9c295fcf5e756241"),
+            (1008154,
+             "efaa89d06543548ad9c3634b3e3029f10f80a45a478e5987a928ee4f5f00bec7"),
             (len(prior_cpp.encode()),
              hashlib.sha256(prior_cpp.encode()).hexdigest()))
 
@@ -8089,17 +8092,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "e0ed9807ebe0f1524d130ad2fd400fc0831c88a6350072d848b6032167ac2941",
+                "d7880bfbfef24ca79b7b30faf6663ec524c0cbd8ed8ee0c10ac0aebfd8c35a3a",
             "src/typed_generated/typed_manifest.json":
-                "583b5caf1459cce35daef4b437c99fdf050c97464f4da20a283fd84a8eed0591",
+                "d464399ca832775befc6db1b8be07a0ddf01a5277c7597defde5c13a9befec43",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "a0b5a94773909f777925e595c1c16eb961dedf58bf6fec324a4a83cebdbf5e7c",
+                "70e25682ba07bd18978896d0ead820b284e0f282234e3fc007075b466158ac75",
             "src/typed_generated/typed_manifest.json":
-                "cb5690a2cd9d99dde1e2bddd11d31386668ba26a8c8e860dba5a679ddfa7a8dc",
+                "bc7c2636c9747b9bd526fe94bba6dd3bc7516577f729dc72dbaf594e0feca5b8",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8223,17 +8226,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "b84531ddfc3783c25b20f3700a63ceb43fc486de42813be7ce4994bb0c7383cc",
+                "e49eb91cc8b83fb98acb60729138893910aa229f40159d14f64a2bf9c2d1980f",
             "src/typed_generated/typed_manifest.json":
-                "7881fb30e1e0dbe48cdb0391d5d2b86571e10ceb55344a531572c0f31306c43d",
+                "47aa33228fbfd4b873cc962860920690151801662bf4faa9d02b4e4a3abebb48",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "e0ed9807ebe0f1524d130ad2fd400fc0831c88a6350072d848b6032167ac2941",
+                "d7880bfbfef24ca79b7b30faf6663ec524c0cbd8ed8ee0c10ac0aebfd8c35a3a",
             "src/typed_generated/typed_manifest.json":
-                "583b5caf1459cce35daef4b437c99fdf050c97464f4da20a283fd84a8eed0591",
+                "d464399ca832775befc6db1b8be07a0ddf01a5277c7597defde5c13a9befec43",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8358,17 +8361,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "4619ae4b7a9442a5e57a403a8227d3047797374dab0f82f8a9cab8482d7f0db4",
+                "2156f949a48a95e030f3194a967789440c5857ad8ef0c3d6e7b7eb830811e850",
             "src/typed_generated/typed_manifest.json":
-                "56ff72bfb2cb4e56f033c8bfb6a4845aedbe0c14bc59d51f17145cefe6e7d70e",
+                "686b94d9fce512070f6c69645b9113261a2c37243b3595b3d228c264df1b8abe",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "b84531ddfc3783c25b20f3700a63ceb43fc486de42813be7ce4994bb0c7383cc",
+                "e49eb91cc8b83fb98acb60729138893910aa229f40159d14f64a2bf9c2d1980f",
             "src/typed_generated/typed_manifest.json":
-                "7881fb30e1e0dbe48cdb0391d5d2b86571e10ceb55344a531572c0f31306c43d",
+                "47aa33228fbfd4b873cc962860920690151801662bf4faa9d02b4e4a3abebb48",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8491,17 +8494,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "d2e6e97b596d8d4cf0d8dc0340a6933fd4ae890134adaff7f23ec82c9ff58f21",
+                "65b2185b9e4cc0a61a1781cf533580becea3acdf7c038f499df4f65c9fb09764",
             "src/typed_generated/typed_manifest.json":
-                "4d1e6a84fd6d7e8b9704a4dc256b766da6e6b5376e18335c1869e7d657fa156c",
+                "1094fe6ba5af1b19a35b2284e230825d1e1791adbae3912344078e689a5116fc",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "4619ae4b7a9442a5e57a403a8227d3047797374dab0f82f8a9cab8482d7f0db4",
+                "2156f949a48a95e030f3194a967789440c5857ad8ef0c3d6e7b7eb830811e850",
             "src/typed_generated/typed_manifest.json":
-                "56ff72bfb2cb4e56f033c8bfb6a4845aedbe0c14bc59d51f17145cefe6e7d70e",
+                "686b94d9fce512070f6c69645b9113261a2c37243b3595b3d228c264df1b8abe",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -10925,10 +10928,10 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "7450579e797c94409c4d605dd0b21a3c0cfcb8d294fc3151026bdb9baac7144a",
+            "28266df098d59a39ca24077819b7ba3752ea106d62ca41cfe5ddef89f8b88015",
             hashlib.sha256(current_cpp.encode()).hexdigest())
         self.assertEqual(
-            "69a56f86328d64a810e2f66825bdedd79bb31e0ec24081bfff65a13bebe06831",
+            "777760cbeddf00f7e27b97664e707d536a371464dc32efa62375401047bfb9b1",
             hashlib.sha256(prior_cpp.encode()).hexdigest())
 
         marker = re.compile(r"(?m)^// Typed IR program: (.+)$")
@@ -10960,13 +10963,13 @@ and item["program_key"] != "filter/wobble:wobble"
         # Both figures come from the REGENERATED projection this test builds,
         # not from the live slice file -- the projection carries different
         # typed_N ordinals, so the live file's digest is a different number.
-        self.assertEqual(56866, len(crt.encode()))
+        self.assertEqual(56971, len(crt.encode()))
         self.assertEqual(
-            "323ba5e5fd1f70776d21c6aaeb3d29288f99241b693d12ebd6dd279ad19a839e",
+            "896ac7b10eff5fb1e79ed529d35589a99e104db7489ff3bba06e5688be5d738a",
             hashlib.sha256(crt.encode()).hexdigest())
         normalized_crt = re.sub(r"typed_[0-9]+", "typed_SENTINEL", crt)
         self.assertEqual(
-            "80b7c0e1bfdc7c6211da3b0cd1c3561871112e992cbed987407696d7d29021ad",
+            "695adcb14194a1c68489ab2d344b3e59e40df5c82be270bc3a96018601283f1b",
             hashlib.sha256(normalized_crt.encode()).hexdigest())
 
     def test_task25_slice_counts_lists_positions_and_generated_isolation_are_exact(self) -> None:
@@ -11308,7 +11311,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '65ff742e8c5c78e5d2a366549f6275fbccb7e6734b0d6f23d095b239cb985ce5'},
+                     'source_sha256': '34b5fa0dbfa8bc1d4856ab520c64b38df6d664d2c6bf96fd56770ab411ce9c1b'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11364,7 +11367,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '65ff742e8c5c78e5d2a366549f6275fbccb7e6734b0d6f23d095b239cb985ce5'},
+                     'source_sha256': '34b5fa0dbfa8bc1d4856ab520c64b38df6d664d2c6bf96fd56770ab411ce9c1b'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11428,8 +11431,15 @@ synth/subdivide:subdivide""".splitlines())
         # Grain moved this native fixture from the raw pixel callback to the
         # public BoundKernel execution API; all Task 25 generated resources
         # above remain frozen independently.
+        #
+        # This pin tracks the hand-written fixture, so every deliberate edit to
+        # tests/test_typed_slice.cpp has to land here in the same commit. It
+        # did not in 8edbaed, which renamed the task16 NaN test and rewrote the
+        # comment above it (no assertion or captured value changed) and left
+        # the pin on the pre-rename bytes f704ac4c...; the suite was red on
+        # every platform from that commit until this one.
         self.assertEqual(
-            "f704ac4c178e759c86a6c7c5a401b0a2f993e7c49d743d9bb15217846d3bde13",
+            "af04534ed4f57a606cb28da961e7cb2e64f55cfe479ed1537112f14f813ac8b6",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -14840,9 +14850,9 @@ class Task27PerlinTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task26_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "33aeeb14422cd5ed2d29c246c05b746e6de505d0b2cdf17913f5c075e9b314f6",
+                "13bc9805c5bd57cbc262a16e4d665c5f680ff26ca09a057fcc780ee92fe3d1fa",
             "src/typed_generated/typed_manifest.json":
-                "ee24dd9c2bac570099510025545b248f213fc3c3f873b4dc563c02ac2030c268",
+                "a606c33c8ee4a005f47062e0608d299327a0201de85fcde874dc21bcd78934e3",
             "include/noisemaker/generated/catalog.hpp":
                 "2a0c8a3abb57b8fed2d29e5bdc9791a53a4e119ccf224ba751022fbd0f7dd59e",
         }
@@ -15928,8 +15938,8 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         # translation-unit hash carriers, so the projected manifest is
         # internally consistent. cpp/catalog digests were unaffected.
         expected = {
-            "src/typed_generated/typed_slice.cpp": "20173b8d97c1833c78e90b8455259dae074f702694e643bbff48becb4453bfed",
-            "src/typed_generated/typed_manifest.json": "7f241cab186ebca4339a4e4d46bd3ffb2f81475c6da64a03412b0a4177738d4b",
+            "src/typed_generated/typed_slice.cpp": "0b511b6e081749a57f36b98aa4230ea12d19113739fa24ce057ac002cace230b",
+            "src/typed_generated/typed_manifest.json": "9a2796c2a9b3194de94c75070f1ae8c11c9c288867ef261ab0a814f2f0da236b",
             "include/noisemaker/generated/catalog.hpp": "67d72e3417329523e40a214fb058e5ed9fb8cd74aeee108c6dacda1036bda704",
         }
         for path, digest in expected.items():
@@ -16800,9 +16810,9 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task28 = {
             "src/typed_generated/typed_slice.cpp":
-                "b79fd8d179a9b96e1d2c92a624dc651b4866dc95eb448a09fc84e783ea605a9d",
+                "c934a4966b6c88c18048cb0aec7c7632200e7381aba69d24b536e2a2b04fb24e",
             "src/typed_generated/typed_manifest.json":
-                "5e10c2dd12739e3c5cb0f4841b2eb17c99877fdb71afde525f322b7f6a57df5c",
+                "b6e3b58a3fd8076df9a4fa337d3277930263531f9d50e7d163f9d9046574d2ee",
             "include/noisemaker/generated/catalog.hpp":
                 "85f146ae07c41f97c57850229d3fcac788295dbdf236d025f03dd0b8d05f4cdd",
         }
@@ -17643,9 +17653,9 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task29 = {
             "src/typed_generated/typed_slice.cpp":
-                "8c723f40d01a10653935ba21053aa0dc977f3cce7d8edcea6e08b7e433ccaead",
+                "b6f71b7d5a1c359e83577a1d2c401a50b8f460b0a7a178a80b1f08dc3dda1b45",
             "src/typed_generated/typed_manifest.json":
-                "76fdd06f1cce3529eb8e94ad489f23d5822cc038e75fbf74efbd08ec17748dbb",
+                "4407ed77c6cd069ede1e13c4846919d1e5cfaf0515382bb96c5bb5f59f86a1e0",
             "include/noisemaker/generated/catalog.hpp":
                 "a0bbb90c96f6647ede3e6910b97010a35e33d1e1191325883a11073ad6a45fb0",
         }
@@ -18596,9 +18606,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task30 = {
             "src/typed_generated/typed_slice.cpp":
-                "78855c0352e79f95714c272f67857b0ec025dcc8fcb3c59004fb57e168794489",
+                "31ee953257c2a50b092ef40e87f105f559488e3f1e68701cdd8c93cc3d7e5736",
             "src/typed_generated/typed_manifest.json":
-                "f2737b19b0031630401c3c9e771357abbe9593cd064285ad6b3d66b0368a8ec2",
+                "74fa7573bd4c5b51a26497fdc505d06d806a97f40aa1651843e88065a0e96cb4",
             "include/noisemaker/generated/catalog.hpp":
                 "a47c84fb2bd9a5fbe7c336f5aad7c002c1a06101149cc117d7b3a73e0a9923f4",
         }
@@ -19168,9 +19178,9 @@ class Task32GradeClusterTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task31 = {
             "src/typed_generated/typed_slice.cpp":
-                "9dd73c935e0d05442864535d70629e9c46f98b3c7a7e265be644fec64e66afdd",
+                "39fac9cffc322fd28460cc810aa5c20186a10417db5524f68cd5fd411ff3ba94",
             "src/typed_generated/typed_manifest.json":
-                "17829a67bcbcb6d98254368f960956ee7ecd6624f155c7a84ef150d13df1d1c1",
+                "8c0d878d88e61db0573f5d924604e859d59cd8bf03a838454f121b5c4558110b",
             "include/noisemaker/generated/catalog.hpp":
                 "25b838ccd789bbe5163023ba112917c70f7c6bc3f78cade1eb08a4d795b3b663",
         }
@@ -19858,11 +19868,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             22728,
             "8fb3b8bc876c380a0c406fdae8e81b74d4499924cf301ed7a980c450f7ccfe0a"),
         "src/typed_generated/typed_slice.cpp": (
-            1937408,
-            "08a89d99e2e51ed37260fb28102a68efa473cb1f427da02c4f9785f264ac9ffe"),
+            1938998,
+            "df433fb4ea4a292365e7b379efd80932b171dd6308237b3a9f0b8632e2b448f2"),
         "src/typed_generated/typed_manifest.json": (
             519037,
-            "b33752b0e1f08c48dc402d85e6eb2ae307fd92a791132c0acd106c7374fdabd2"),
+            "b7759b876ffb08a2771993e7cd1ff77fe0815d62346912de1536980748fbed02"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20571,11 +20581,11 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
             22993,
             "c03ba30a9bc74697e5db1a9524a047a1dab1b0718ef72f0d4d772327a83f87d2"),
         "src/typed_generated/typed_slice.cpp": (
-            1991774,
-            "8e3370b9a79b6c255952ba710dfbec95993600f78496bac0380055b73d5ede12"),
+            1993439,
+            "562d136c292f69284d77b5d041244849cabd2b5c15edc3c423e45f6e51dceb4b"),
         "src/typed_generated/typed_manifest.json": (
             522139,
-            "610fc7d7e317922e44b80a4040d0fc94dde4bac51833391443d653afd165bec8"),
+            "404fabec6ea763cb5dfa760ab9cb8b0c19db0c68879fc588e7ca900c7f625fe0"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -21791,11 +21801,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
             23202,
             "69deb0c8b3f9b453c1101263b0de7fb2f0c1915a21ea5f6cbb298cf0508df20d"),
         "src/typed_generated/typed_slice.cpp": (
-            2005782,
-            "7b146446e09dc99ca8c475d778efe0aaaae178b4f555950c26d34366a5475135"),
+            2007537,
+            "f7145240be04d302ec0311b7ea7b1a3480ea108efdf2dfb1b8ae510bffb207d4"),
         "src/typed_generated/typed_manifest.json": (
             524768,
-            "c7a7be74f3bf53d4af62df359056a810cc507e24a2d240fe8843d868c4a2c876"),
+            "29a6329466bd2f9de5bde31dcdfad3ddae748de1e737e1cac85f0d7c52b3c9c8"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -22445,11 +22455,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710848,
-                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
+                2713668,
+                "f2a1425eade262d3959ca77d446d2dee1a0ba4ea2e4e0c62b5c083257fa6788f"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
+                "4b8c63e93f747a7746cb900cb0b20205086fa58d6895a7c55b90bfa612d9285f"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -22644,11 +22654,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
             23429,
             "ffaff05c37d718e0e3b7bae6fe2da5a46c44599410a8d88db419cae136b5ec5f"),
         "src/typed_generated/typed_slice.cpp": (
-            2043058,
-            "7fc36a5e4a7fb95b9b078efcde98b608cf1c1a7ccbfcf0a7641b3ef05b8ea538"),
+            2044813,
+            "1d883521670677559f5437d1f647c5fe490e0647929e513d64dfe3ad9b26bceb"),
         "src/typed_generated/typed_manifest.json": (
             528385,
-            "084dce699bb7b9d901831461c805463ddba3f93107fd9809b91a8061b3c4166d"),
+            "4588935f1c1f7bc917b887d39e649c42674bd0925b2d46f2bd9fecca53630fb5"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -23225,11 +23235,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710848,
-                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
+                2713668,
+                "f2a1425eade262d3959ca77d446d2dee1a0ba4ea2e4e0c62b5c083257fa6788f"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
+                "4b8c63e93f747a7746cb900cb0b20205086fa58d6895a7c55b90bfa612d9285f"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -23981,11 +23991,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710848,
-                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
+                2713668,
+                "f2a1425eade262d3959ca77d446d2dee1a0ba4ea2e4e0c62b5c083257fa6788f"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
+                "4b8c63e93f747a7746cb900cb0b20205086fa58d6895a7c55b90bfa612d9285f"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -24019,11 +24029,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             23751,
             "460edeccdce784b3d08f160ab32c6de399c07ff22aa99e04314b94435b59ac58"),
         "src/typed_generated/typed_slice.cpp": (
-            2121754,
-            "d7f3ebe20e8bfbcf2b774e08b3245a6c2d648ada16d6c2223d5023abdde70fba"),
+            2123584,
+            "64962657ace137c2de6865e5194701503fb080a2c78640e4933fb157bd1927d0"),
         "src/typed_generated/typed_manifest.json": (
             531722,
-            "282bbdb1a66321e9cdad1d5f44e97e64135c16b77138b4e399a2188eb5ffc5a8"),
+            "2102fe3a7d710b0cfeea6f8e16ff6efcfb0a109fd165837df1b7c1c5dcd0ec4c"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24517,11 +24527,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710848,
-                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
+                2713668,
+                "f2a1425eade262d3959ca77d446d2dee1a0ba4ea2e4e0c62b5c083257fa6788f"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
+                "4b8c63e93f747a7746cb900cb0b20205086fa58d6895a7c55b90bfa612d9285f"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -24555,11 +24565,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
             24086,
             "bc32451249e6b11de2944f69318cea54172b1b5a8c4656ad09ce6b50e2b0da04"),
         "src/typed_generated/typed_slice.cpp": (
-            2179950,
-            "f3286120a8b11ea3bbdf9ed71029572920f91bc3b86a439b5c97bfcb49ab8707"),
+            2181780,
+            "f587e0ccabf6a4798fa46ac7950585d4a67a702bf7d006fa5a622aa946cccf64"),
         "src/typed_generated/typed_manifest.json": (
             535205,
-            "5d05db2af0f88bb5c5933c479377366ab3f7bfbbdaae591f9517f5e832d06073"),
+            "cc14bfc5be988998b560ae47d9fa5515ac1178214bef7f1045f2a77a385be8f7"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25117,11 +25127,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 28591,
                 "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
             "src/typed_generated/typed_slice.cpp": (
-                2710848,
-                "86e8794f35db0cc250c9f0a2c98dd5d1b847704e6c5e03c341beecd9ba6e5330"),
+                2713668,
+                "f2a1425eade262d3959ca77d446d2dee1a0ba4ea2e4e0c62b5c083257fa6788f"),
             "src/typed_generated/typed_manifest.json": (
                 614417,
-                "a53b1df42e58a35a31754e3743f251e31f86e46b59990f9a73990ae29165bf93"),
+                "4b8c63e93f747a7746cb900cb0b20205086fa58d6895a7c55b90bfa612d9285f"),
             "include/noisemaker/generated/catalog.hpp": (
                 20463,
                 "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
@@ -25158,11 +25168,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             24216,
             "d950efd9b79306bf0e02c79592e0887b7aee23b68c5067213e933cf57ae00806"),
         "src/typed_generated/typed_slice.cpp": (
-            2190838,
-            "4732318e044bdf9cc6865eab1d653f284faef7a686e809448d3b4d2045ad852c"),
+            2192683,
+            "e93e9c4538d5628d177d40c36b093c2f5b7d646b03345f22b9d570b3320aed10"),
         "src/typed_generated/typed_manifest.json": (
             537778,
-            "81a0b4b0495e1e5260f7c9999ac69872fab82b01f1c556eb40dd6bdf572e1047"),
+            "c4b60b1b88d921e8f8fb7699edf97bc0542d1a290f388388ee99e1f757a703e5"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),

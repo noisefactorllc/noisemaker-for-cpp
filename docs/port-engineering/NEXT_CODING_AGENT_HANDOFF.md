@@ -120,6 +120,39 @@
 >   `new Float32Array([v])` (constructor paths canonicalize on x64).
 >
 > ### Remaining queue (supersedes the 2026-08-26 list; items 2–9 there stand)
+> - **Sanitizers, the real fix**: `effect_catalog()` is ONE 7,967-line
+>   initializer; ASan+UBSan on that TU measured 1739s vs 30s uninstrumented
+>   (58x) while the comparably sized typed slice is 2.5x, so the cost is the
+>   single function, not generated code or file size. Shipped remedy is a
+>   guarded `-fno-sanitize=all` on that one file (CMakeLists) so the job
+>   finishes and every hand-written file gets real coverage; the durable fix
+>   is splitting the initializer at the emitter into `append_part_N()` across
+>   part files (churns generated artifacts, provenance, CMake list, two test
+>   references). Get one completed `workflow_dispatch` run at
+>   `timeout-minutes: 180` before ruling. ccache is an accelerator only — it
+>   cannot fix a cold build that has never once completed.
+> - **`emboss_parity_oracle_generator.mjs` checks arguments in the wrong
+>   order**: it resolves the live checkout before validating `--cpu-root`, so
+>   an argument invalid on its face reports a missing machine resource. Still
+>   fail-closed, so this is diagnosability, not safety — but the generator
+>   self-authenticates (`verifySidecar(generatorPath)` and never writes that
+>   sidecar), so the four-line fix needs its own commit with a full emboss
+>   re-verify. The tests skip honestly in the meantime.
+> - **16 oracle generators default the live checkout to
+>   `$HOME/platform/noisemaker-for-cpu`** — the author's machine layout baked
+>   into the tools. Repo-wide removal touches 16 self-attesting sidecars.
+> - **Darwin-only temp roots remain** in `test_dsl_render_oracle.py` (7) and
+>   `test_lightleak192_oracle.py` (2). They never fire on public CI (all sit
+>   behind an authority that job lacks) but will for a Linux dev who has one.
+>   `/private/tmp` may be load-bearing there: on Darwin it is the already-
+>   realpath'd temp root while `$TMPDIR` sits under the `/var` symlink, which
+>   is exactly what those symlink-rejection tests refuse. The portable form is
+>   `Path(tempfile.gettempdir()).resolve()`; proving intent needs a
+>   two-platform run.
+> - **Process, learned the hard way**: `8edbaed` shipped a stale pin because
+>   the ~52-minute full discovery was not run before it. Renaming or editing
+>   ANY hand-written test file can move a pin in `test_typed_generator.py`
+>   that hashes those bytes; run full discovery before pushing such a commit.
 > - Finish EffectCatalog::find() properly at the next oracle re-freeze: eager
 >   index in the constructor (the clean fix moves generated_payload_sha256,
 >   213 pin occurrences; the shipped fix is a correct mutex memo).

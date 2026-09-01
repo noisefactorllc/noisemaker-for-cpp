@@ -490,6 +490,72 @@ TEST(glsl_unsigned_vector_shift_and_xor_match_javascript_uint32_semantics) {
   REQUIRE(detail::float_to_uint32(std::numeric_limits<double>::quiet_NaN()) == 0U);
 }
 
+// The GLSL integral constructors the typed emitter routes through
+// `glsl_int_cast`/`glsl_uint_cast`. Every expected value below was measured
+// against the JS CPU authority: its transpiled kernels spell `int(x)` and
+// `uint(x)` as `x|0` (canonical-kernels.js: `var seedInt = floor(s)|0;`,
+// `hash_mix((cellX|0) ^ ((rowSeed|0) * 997))`) and its CSL runtime stdlib
+// declares `int: (value) => value | 0` and `uint: (value) => value >>> 0`.
+// The three classes C++ leaves UNDEFINED -- NaN, the infinities, and finite
+// values outside the destination range -- are the point of these pins: UBSan
+// caught both a `nan`->int and a `-12.5238`->unsigned conversion in the
+// generated slice, and either one is free to change with the compiler.
+TEST(glsl_integral_casts_match_the_authority_for_every_input_class) {
+  using namespace noisemaker::glsl::detail;
+  const double nan_value = std::numeric_limits<double>::quiet_NaN();
+  const double inf_value = std::numeric_limits<double>::infinity();
+
+  // NaN and both infinities: `NaN|0`, `Infinity|0`, `(-Infinity)|0` are 0,
+  // and so are the `>>>0` forms.
+  REQUIRE(glsl_int_cast(nan_value) == 0);
+  REQUIRE(glsl_int_cast(inf_value) == 0);
+  REQUIRE(glsl_int_cast(-inf_value) == 0);
+  REQUIRE(glsl_uint_cast(nan_value) == 0U);
+  REQUIRE(glsl_uint_cast(inf_value) == 0U);
+  REQUIRE(glsl_uint_cast(-inf_value) == 0U);
+  REQUIRE(glsl_int_cast(std::numeric_limits<float>::quiet_NaN()) == 0);
+  REQUIRE(glsl_uint_cast(std::numeric_limits<float>::quiet_NaN()) == 0U);
+
+  // In-range finite values truncate toward zero, exactly as C++ would.
+  REQUIRE(glsl_int_cast(1.9) == 1);
+  REQUIRE(glsl_int_cast(-1.9) == -1);
+  REQUIRE(glsl_int_cast(-0.9) == 0);
+  REQUIRE(glsl_int_cast(2147483647.5) == 2147483647);
+  REQUIRE(glsl_uint_cast(1.9) == 1U);
+  REQUIRE(glsl_uint_cast(-0.9) == 0U);
+
+  // Out-of-range finite values wrap modulo 2^32. `-12.5238` is the exact
+  // value UBSan reported out of spookyTicker's `uint(cellX)`; the authority
+  // yields `(-12.5238)|0 == -12`, while the C++ conversion saturates to 0 on
+  // arm64 and wraps on x86-64.
+  REQUIRE(glsl_uint_cast(-12.5238) == 4294967284U);
+  REQUIRE(glsl_int_cast(-12.5238) == -12);
+  REQUIRE(glsl_int_cast(2147483648.0) == INT32_MIN);
+  REQUIRE(glsl_uint_cast(2147483648.0) == 2147483648U);
+  REQUIRE(glsl_int_cast(-2147483649.0) == 2147483647);
+  REQUIRE(glsl_uint_cast(-2147483649.0) == 2147483647U);
+  REQUIRE(glsl_int_cast(3000000000.0) == -1294967296);
+  REQUIRE(glsl_uint_cast(3000000000.0) == 3000000000U);
+  REQUIRE(glsl_int_cast(4294967296.0) == 0);
+  REQUIRE(glsl_uint_cast(4294967296.0) == 0U);
+  REQUIRE(glsl_int_cast(-6000000000.0) == -1705032704);
+  REQUIRE(glsl_uint_cast(-6000000000.0) == 2589934592U);
+  REQUIRE(glsl_int_cast(1e300) == 0);
+  REQUIRE(glsl_uint_cast(1e300) == 0U);
+  REQUIRE(glsl_int_cast(-1e300) == 0);
+  REQUIRE(glsl_uint_cast(-1e300) == 0U);
+
+  // An operand that is already integral keeps the conversion it always had:
+  // these sites are reinterpretations, not float narrowing, and the emitter
+  // routes them through the same helper only so no cast site can be missed.
+  REQUIRE(glsl_uint_cast(std::int32_t(-1)) == UINT32_MAX);
+  REQUIRE(glsl_int_cast(std::uint32_t(4294967295U)) == -1);
+  REQUIRE(glsl_uint_cast(std::int32_t(7)) == 7U);
+  REQUIRE(glsl_int_cast(std::int32_t(INT32_MIN)) == INT32_MIN);
+  REQUIRE(glsl_int_cast(true) == 1);
+  REQUIRE(glsl_uint_cast(false) == 0U);
+}
+
 TEST(glsl_javascript_to_int32_and_bitwise_boundaries_are_exact) {
   using namespace noisemaker::glsl::detail;
 

@@ -594,18 +594,18 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_hashes = {
             "live180": {
-                "src/typed_generated/typed_slice.cpp": "af04490baa7b2d617bccecd8373687da64baf7d3d631795140fc2eb0ecd93523",
-                "src/typed_generated/typed_manifest.json": "039f73ee1aa473a2df471a5fa891da3a78c9eab4474c2e2e9596550a1174d777",
+                "src/typed_generated/typed_slice.cpp": "25d58069c566ac33ebb2c96ec1a8e4668ca5eaddcb64762241a46f99cfcf0ba9",
+                "src/typed_generated/typed_manifest.json": "43cbf8db804a8e667ce5a830c87c083486bacc36d07ed6b9affab73250ba26c1",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "f97b404b2dd8b18dd3295b2ea0525f9dd6f048128e14a5d16daefeb97304e290",
-                "src/typed_generated/typed_manifest.json": "6ffbab70ce98e5ac883cc10c61efcdbb34e5093c0ca04037f3ff2209836fa53f",
+                "src/typed_generated/typed_slice.cpp": "1c92b2bf340c38c7f156660bdad5d63357714eaf2825b30599665d507d05ff3d",
+                "src/typed_generated/typed_manifest.json": "1818323e4a2232fa79f5bfc212d70f857fb3e3e202733f87c22c52c640b8ca83",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "ff1ec28034d0980190e18b2d9911f2e362d65226485fee55581799748d08762b",
-                "src/typed_generated/typed_manifest.json": "7fe7b5a68dd7a9e9434e479294983202ea316376589c5958c9f1746bf167c801",
+                "src/typed_generated/typed_slice.cpp": "99ca5fe5becfe92515364524e31f6de2412231617f212d3618e55ffa12152e25",
+                "src/typed_generated/typed_manifest.json": "a4f915cec1ba4e2ac730af554bee89854ffe2b91c1bcbee83a1645b4d02cbce5",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }
