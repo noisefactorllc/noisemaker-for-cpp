@@ -35,8 +35,10 @@
 >    Darwin-GCC `<xlocale.h>` guards; `bit_effects.cpp` one-line if split.
 > 4. **Python suite on clean machines**: pytest declared in CI (library only,
 >    runner stays unittest); backend-compat/frontend-oracle/dither/julia
->    env-gates converted to visible skips (set-but-wrong stays fatal); all
->    machine-absolute defaults removed.
+>    env-gates converted to visible skips (set-but-wrong stays fatal); the
+>    machine-absolute defaults removed from the test suite. NOT from the
+>    oracle generators: 16 still default the live checkout to
+>    `$HOME/platform/noisemaker-for-cpu` (queued below).
 > 5. **Docs**: README coverage table re-derived from the tree (211 of 212 in
 >    the typed slice; 213 catalog rows); oracle-reproduction recipe verified
 >    against real generators; corpus attribution added (MIT
@@ -50,9 +52,9 @@
 > Adding `<algorithm>` to the emitted include list moved every historical
 > reconstruction uniformly (+21 bytes). Live and reconstruction pins were
 > re-frozen once; spec-level input locks stayed frozen as independent witness.
-> New anchors: slice `86e8794f…` (2,710,848B), manifest `a53b1df4…`,
+> New anchors: slice `f2a1425e…` (2,713,668B), manifest `4b8c63e9…`,
 > backend compatibility `ec076aec…`, catalog payload `24c38ccb…`,
-> corpus manifest `f45da8c3…`, compiler-expected pin `1eb8d0bb…`.
+> corpus manifest `de5a61d4…`, compiler-expected pin `1eb8d0bb…`.
 >
 > ### Environment contract (all external roots arrive by env, no defaults)
 >
@@ -120,6 +122,45 @@
 >   `new Float32Array([v])` (constructor paths canonicalize on x64).
 >
 > ### Remaining queue (supersedes the 2026-08-26 list; items 2–9 there stand)
+> - **`float_to_int32` saturates where the authority wraps — two
+>   implementations of one GLSL operation now coexist.** The scalar `int()`
+>   path was fixed to ToInt32 (`glsl_int_cast`), but `detail::convert_lane`
+>   (`include/noisemaker/glsl_types.hpp`) still routes every `ivecN(vecN)`
+>   lane through the saturating `float_to_int32`, and the Gather round-to-int
+>   site emitted at `tools/glslcpp/emit_typed_cpp.py:6326` bypasses the new
+>   rule entirely (~20 call sites, e.g. `src/typed_generated/typed_slice.cpp`
+>   lines 278 and 284, four lines above the NaN cast that was just repaired).
+>   The authority is explicit at
+>   `$NOISEMAKER_CPU_ROOT/src/csl/glsl-runtime.js:443` —
+>   `out[index] = unsigned ? (value ?? 0) >>> 0 : (value ?? 0) | 0` — so
+>   `uvecN` lanes are already right and `ivecN` lanes are not. Defined
+>   behaviour, so no sanitizer reports it, and unreachable in the pinned
+>   corpus today. Fix `convert_lane` and the `:6326` emitter site in ONE lane
+>   so the repo ends with a single float→int32 path.
+> - **No durable gate stops a raw float→int cast returning to generated
+>   output.** The completeness check was a one-off probe (rewrite the
+>   functional casts to a deprecated-overload pair and count diagnostics; it
+>   reads 0 today). Also: float *literals* are deliberately excluded from the
+>   new emitter rule, so `int(1e30)` would still emit a raw UB cast. Zero such
+>   sites exist now — an observation, not an invariant.
+> - **Nothing asserts which files are excluded from the sanitizer build.** A
+>   second `-fno-sanitize=all` would pass every gate silently. (A test pinning
+>   the list ships with this change; keep it honest as the build grows.)
+> - **`EffectCatalog::find()` lives in the carved-out translation unit.** It
+>   is the one piece of *executed* code with no instrumentation
+>   (`src/effects/generated/effect_catalog.cpp`). Have the emitter put it in
+>   its own TU (or the header) so the carve-out covers only the data
+>   initializer, which is what the CMake comment describes.
+> - **The tool-directory hygiene test discovers 11 directories; ~21 more hold
+>   `__main__`-guarded scripts and are not covered**, including two frozen
+>   corpus snapshots that still contain a `types.py` of their own. Nothing
+>   shadows outside those two today. Widening the discovery rule needs an
+>   explicit, justified exclusion for frozen snapshots — they are evidence and
+>   must not be renamed.
+> - **The two emboss containment assertions now run on no CI job at all.**
+>   They skip without `NOISEMAKER_FOR_CPU`, which no CI job provides. Not a
+>   regression (they were failing there), but the coverage is gone until the
+>   generator's argument-validation order is fixed.
 > - **Sanitizers, the real fix**: `effect_catalog()` is ONE 7,967-line
 >   initializer; ASan+UBSan on that TU measured 1739s vs 30s uninstrumented
 >   (58x) while the comparably sized typed slice is 2.5x, so the cost is the

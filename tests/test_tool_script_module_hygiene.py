@@ -52,8 +52,13 @@ class ToolScriptModuleHygieneTests(unittest.TestCase):
         offenders = sorted(
             str(path.relative_to(ROOT))
             for directory in runnable_tool_directories()
-            for path in directory.glob("*.py")
-            if path.stem in standard)
+            for path in (*directory.glob("*.py"),
+                         *(child / "__init__.py"
+                           for child in directory.iterdir()
+                           if child.is_dir()
+                           and (child / "__init__.py").is_file()))
+            if (path.stem if path.stem != "__init__"
+                else path.parent.name) in standard)
         self.assertEqual([], offenders, "\n".join((
             "tool modules shadow the standard library for every script run "
             "from their own directory; rename them:", *offenders)))

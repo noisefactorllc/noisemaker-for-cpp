@@ -92,17 +92,26 @@ set_source_files_properties(src/generated/synth_solid.cpp PROPERTIES
 # comparably sized typed slice -- same generator, many small functions -- is
 # only 2.5x. Excluding it buys real ASan/UBSan coverage of every hand-written
 # file, where none existed before because the job always timed out. What is
-# given up is instrumentation INSIDE that initializer, which is emitted
-# straight-line aggregate construction with no allocation or indexing;
-# heap blocks it creates are still tracked by ASan's allocator and still
-# checked wherever instrumented code touches them. The real fix is splitting
-# the initializer at the emitter -- see the handoff queue.
+# given up is instrumentation inside this one translation unit. Be precise
+# about what that covers: the bulk is emitted aggregate construction, but the
+# TU also allocates (every std::string/vector/map member) and defines
+# EffectCatalog::find(), which indexes and returns interior pointers -- so
+# find() is the one piece of EXECUTED code here running uninstrumented. Heap
+# blocks this TU creates are still tracked by ASan's allocator and still
+# checked wherever instrumented code touches them, and find()'s loop is
+# .size()-bounded with its memo mutex-guarded in the header. The real fixes,
+# both queued in the handoff: emit find() into its own TU so the carve-out
+# covers only data, and split the initializer at the emitter.
 set_source_files_properties(src/effects/generated/effect_catalog.cpp PROPERTIES
   COMPILE_OPTIONS "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-O0>"
 )
+# Only CMAKE_CXX_FLAGS is inspected, which is how CI passes -fsanitize; a
+# sanitizer arriving through CMAKE_CXX_FLAGS_<CONFIG> or a toolchain file
+# would restore the 29-minute build, so keep passing it here.
 if(CMAKE_CXX_FLAGS MATCHES "-fsanitize")
   set_property(SOURCE src/effects/generated/effect_catalog.cpp APPEND
-    PROPERTY COMPILE_OPTIONS "-fno-sanitize=all")
+    PROPERTY COMPILE_OPTIONS
+    "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-fno-sanitize=all>")
 endif()
 
 add_executable(noisemaker-cpu-tests

@@ -529,6 +529,11 @@ TEST(glsl_integral_casts_match_the_authority_for_every_input_class) {
   // yields `(-12.5238)|0 == -12`, while the C++ conversion saturates to 0 on
   // arm64 and wraps on x86-64.
   REQUIRE(glsl_uint_cast(-12.5238) == 4294967284U);
+  // The exact shape UBSan reported, and the sign of zero, which the
+  // authority erases: ToUint32(-1.9) truncates toward zero then wraps.
+  REQUIRE(glsl_uint_cast(-1.9) == 4294967295U);
+  REQUIRE(glsl_uint_cast(-0.0) == 0U);
+  REQUIRE(glsl_int_cast(-0.0) == 0);
   REQUIRE(glsl_int_cast(-12.5238) == -12);
   REQUIRE(glsl_int_cast(2147483648.0) == INT32_MIN);
   REQUIRE(glsl_uint_cast(2147483648.0) == 2147483648U);

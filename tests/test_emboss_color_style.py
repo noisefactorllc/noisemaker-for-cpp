@@ -759,10 +759,12 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 "live-checkout-dependent Emboss guard skipped: "
                 "NOISEMAKER_FOR_CPU is unset")
         live = pathlib.Path(configured)
-        if not live.is_dir():
-            self.skipTest(
-                "live-checkout-dependent Emboss guard skipped: "
-                f"NOISEMAKER_FOR_CPU is missing: {live}")
+        # Unset means the machine has no live checkout: skip. Set-but-wrong is
+        # a misconfiguration and stays fatal, which is the contract the
+        # handoff publishes for every NOISEMAKER_* root.
+        self.assertTrue(
+            live.is_dir(),
+            f"NOISEMAKER_FOR_CPU is set but is not a directory: {live}")
         return live
 
     def test_oracle_check_rejects_a_cpu_root_inside_cpp_repository(self):

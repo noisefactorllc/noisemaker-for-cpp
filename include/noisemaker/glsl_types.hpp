@@ -57,6 +57,9 @@ template <class T>
   if constexpr (std::floating_point<T>) {
     return js_to_int32(static_cast<double>(value));
   } else {
+    // Anything but a floating or integral operand would be a silent
+    // conversion this helper never reasoned about.
+    static_assert(std::integral<T>);
     return static_cast<std::int32_t>(value);
   }
 }
@@ -65,6 +68,9 @@ template <class T>
   if constexpr (std::floating_point<T>) {
     return float_to_uint32(static_cast<double>(value));
   } else {
+    // Anything but a floating or integral operand would be a silent
+    // conversion this helper never reasoned about.
+    static_assert(std::integral<T>);
     return static_cast<std::uint32_t>(value);
   }
 }
