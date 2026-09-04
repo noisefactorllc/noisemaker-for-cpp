@@ -135,7 +135,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: noisefactorllc/noisemaker-for-cpu
-          ref: 4834b0144ee0524588144a482cca0067b15f68ec
+          ref: e17dd02c3b2803607d2f38c7607236f33f1badae
           path: cpu-authority-checkout
 
       - name: Stage authority outside the repository tree
@@ -146,7 +146,7 @@ jobs:
       # The JS runner refuses any authority without its ledger (fail-closed).
       # Here the content is already authenticated by checking out the pinned
       # commit, so a ledger generated from that checkout carries the same
-      # trust. 713 entries, `sha256  abspath` — the runner verifies each.
+      # trust. 714 entries, `sha256  abspath` — the runner verifies each.
       - name: Write the authority ledger
         run: |
           python3 - "$RUNNER_TEMP/cpu-authority" "$RUNNER_TEMP/cpu-authority-ledger.sha256" <<'PY'

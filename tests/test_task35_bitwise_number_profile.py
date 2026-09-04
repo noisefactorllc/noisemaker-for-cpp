@@ -350,7 +350,7 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         # measured regeneration of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "3502d134bd8f8df40ea56375f1142af835006bb01df8759be4bec66d6c7921b0",
+            "d3c92da2c5525fea1a8db61c94d5419700fc00d6e0095adf76ff4303b42147e2",
             hashlib.sha256("".join(
                 block for key, block in current.items() if key != KEY
             ).encode()).hexdigest())
@@ -377,11 +377,11 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         # this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "0180656a094e4af6d052615dcdb0b565d1fb84786adc2e48eadf672d4c5139cf",
+            "2a5923048865ece3fb02d5ca8d3854ab783b18f1bd538f79656b41606f4b0331",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
         self.assertEqual(
-            "d3873e27f745622f13fa54ec04a73defdb457d541811cf05c79034f90218245f",
+            "5bf088ec3650eb86be25173e5ba96cf19f952ddb4c82f3e0f1f6c293b9d01274",
             hashlib.sha256(without_task35[
                 "src/typed_generated/typed_manifest.json"]).hexdigest())
 

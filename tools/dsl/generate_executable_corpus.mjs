@@ -8,7 +8,7 @@ const ROOT = path.resolve(new URL('.', import.meta.url).pathname, '../..')
 const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
 const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
 const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
-const BACKEND_SHA256 = 'ec076aec3cbc400a0ec34cf20318f50fe8b1a5770bdf28004f1fad6c847cba64'
+const BACKEND_SHA256 = 'aa79eb9c505811137a5bef5b08b12e80ae63769bd01c748730ff48a42b956580'
 
 function usage(message) {
   if (message) console.error(`generate_executable_corpus: ${message}`)
@@ -115,7 +115,7 @@ async function main() {
     const source = sourceFor(effect)
     const sourceSha256 = sha256(Buffer.from(source))
     const options = { width: 17, height: 11, time: 0.25, frame: 0, seed: seedFor(`${effect.id}#default`), oneShot: 'ready', renderScale: 1 }
-    const provenanceRecord = { cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256 }
+    const provenanceRecord = { cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: '0ecc1cf7fd1eb731de9a7206d927c7f14899f70b', compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256 }
     const admissionFailure = firstFailure(effect, rows, source)
     let failure = admissionFailure
     if (!failure && effect.domain === 'image') {
@@ -134,7 +134,7 @@ async function main() {
     buckets[bucket] = count ? { available: true, count } : { available: false, count: 0, reason: 'no admitted definition in authenticated current intersection' }
   }
   const counts = { admitted: records.filter((record) => record.recordKind === 'admitted').length, excluded: records.filter((record) => record.recordKind === 'excluded').length, variants: records.length, coverage: Object.fromEntries(Object.entries(buckets).map(([key, value]) => [key, value.count])) }
-  const manifest = { schema: 'noisemaker-cpp.dsl-executable-corpus.v1', generator: 'generate_executable_corpus.mjs', provenance: { compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256, cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: 'a7a997dfdc807697adba008729dcdfdfcfbaf53c', }, counts, coverage: buckets, records }
+  const manifest = { schema: 'noisemaker-cpp.dsl-executable-corpus.v1', generator: 'generate_executable_corpus.mjs', provenance: { compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256, cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: '0ecc1cf7fd1eb731de9a7206d927c7f14899f70b', }, counts, coverage: buckets, records }
   const canonical = Buffer.from(json(manifest))
   manifest.manifestSha256 = sha256(canonical)
   const output = path.resolve(outputArg)

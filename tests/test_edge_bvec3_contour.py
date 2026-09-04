@@ -472,17 +472,17 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "1c92b2bf340c38c7f156660bdad5d63357714eaf2825b30599665d507d05ff3d",
+                "67c70a8a66792d57844d50a8409757891264a951e6b56d06ba41bded78ff7e3f",
             "src/typed_generated/typed_manifest.json":
-                "1818323e4a2232fa79f5bfc212d70f857fb3e3e202733f87c22c52c640b8ca83",
+                "0225c98b4ad08ff9a3c5036ec49de0464cec13649d369ce92c4de556d765d8a0",
             "include/noisemaker/generated/catalog.hpp":
                 "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "99ca5fe5becfe92515364524e31f6de2412231617f212d3618e55ffa12152e25",
+                "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
             "src/typed_generated/typed_manifest.json":
-                "a4f915cec1ba4e2ac730af554bee89854ffe2b91c1bcbee83a1645b4d02cbce5",
+                "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }

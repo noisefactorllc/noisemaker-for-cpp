@@ -137,7 +137,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
             self.assertEqual(93, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
-            self.assertEqual("6ced4d890dc665f5f3d1196286260b972ae6858ccc9d045ec94c4e81479bf996", provenance["normalized_record_stream_sha256"])
+            self.assertEqual("0f603fa04e4a479b513affe58251101aeacf122de46d521698dfc54c95fd02af", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()

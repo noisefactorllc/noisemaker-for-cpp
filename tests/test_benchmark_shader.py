@@ -60,7 +60,7 @@ VALID_RECORD = """{
   program: {id:'synth/solid+filter/blur#default',sourceSha256:'a'.repeat(64),planSha256:'b'.repeat(64),width:17,height:11,options:{time:0.25,frame:0,seed:17,oneShot:'ready',renderScale:1}},
   provenance: {
     cpuBehavioralLock:'c'.repeat(64),cpuSourceLockSha256:'d'.repeat(64),upstreamSourceDigest:'e'.repeat(64),
-    upstreamRevision:'117a236679d1db3ab8f0e278230ece277b57564c',upstreamTree:'a7a997dfdc807697adba008729dcdfdfcfbaf53c',
+    upstreamRevision:'ee523ab910cacf4b6a52c0886fe019bfe89e2933',upstreamTree:'0ecc1cf7fd1eb731de9a7206d927c7f14899f70b',
     catalogPayloadSha256:'1'.repeat(64),compatibilitySha256:'2'.repeat(64),
     expectation:{schema:'noisemaker-cpp.dsl-cpu-expectation.v1',id:'synth/solid+filter/blur#default',rgba8Sha256:'3'.repeat(64),runnerSha256:'4'.repeat(64),cpuBehavioralLock:'c'.repeat(64)}
   },
@@ -376,7 +376,7 @@ let document = null;
 try {{ assertUpstreamPinAgreement('0'.repeat(40)); }}
 catch (error) {{ document = error instanceof BenchmarkError ? error.toDocument() : {{raw: String(error)}}; }}
 console.log(JSON.stringify({{
-  agrees: assertUpstreamPinAgreement('117a236679d1db3ab8f0e278230ece277b57564c'),
+  agrees: assertUpstreamPinAgreement('ee523ab910cacf4b6a52c0886fe019bfe89e2933'),
   document,
 }}));
 """
@@ -386,7 +386,7 @@ console.log(JSON.stringify({{
         self.assertTrue(values["agrees"])
         self.assertEqual(values["document"]["schema"], "noisemaker-cpp.benchmark-error.v1")
         self.assertEqual(values["document"]["code"], "ERR_PIN_DRIFT")
-        self.assertEqual(values["document"]["detail"]["benchmark"], "117a236679d1db3ab8f0e278230ece277b57564c")
+        self.assertEqual(values["document"]["detail"]["benchmark"], "ee523ab910cacf4b6a52c0886fe019bfe89e2933")
 
     def test_driver_describes_exact_pinned_platform_contract(self) -> None:
         result = subprocess.run(
@@ -399,8 +399,8 @@ console.log(JSON.stringify({{
         self.assertEqual(result.returncode, 0, result.stderr)
         description = json.loads(result.stdout)
         self.assertEqual(description["schema"], "noisemaker-cpp.benchmark-result.v2")
-        self.assertEqual(description["upstreamRevision"], "117a236679d1db3ab8f0e278230ece277b57564c")
-        self.assertEqual(description["upstreamTree"], "a7a997dfdc807697adba008729dcdfdfcfbaf53c")
+        self.assertEqual(description["upstreamRevision"], "ee523ab910cacf4b6a52c0886fe019bfe89e2933")
+        self.assertEqual(description["upstreamTree"], "0ecc1cf7fd1eb731de9a7206d927c7f14899f70b")
         self.assertEqual(description["playwrightVersion"], "1.62.1")
         self.assertEqual(description["orientation"], {
             "contract": "top_down",

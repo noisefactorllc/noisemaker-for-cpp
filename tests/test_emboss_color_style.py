@@ -1111,28 +1111,28 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_artifact_hashes = {
             "live182": {
-                "src/typed_generated/typed_slice.cpp": "515adc13a3b37416177036497e8dbea58e8153e9f5e4960aa299ed2a291390f8",
-                "src/typed_generated/typed_manifest.json": "e4251e95a61f29c236b24fdc26246b82c620a0860949ccde9e5a2868cb839509",
+                "src/typed_generated/typed_slice.cpp": "3f108d58d2e06369cf785bd6871592bb554302df7ff1bd3f65bd4545987ce2d0",
+                "src/typed_generated/typed_manifest.json": "a64ecabd3f102b49063eaa8aa6cf9a3f4d36f0bc823c75bbff11528ad12f07c3",
                 "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
             },
             "emboss181": {
-                "src/typed_generated/typed_slice.cpp": "44833e3372a9ea4cbeab776486c706c8344f3ea4378817b67c5bf0292624b789",
-                "src/typed_generated/typed_manifest.json": "9528fe705959192eae1984fe037a856f1956d752998b7a219af93fc834ac9ca3",
+                "src/typed_generated/typed_slice.cpp": "a7225d35d813f7781663287a5f6b335a8d2e052d470f5314860146ce844a3a00",
+                "src/typed_generated/typed_manifest.json": "88b2ea6b7e541ef877e439aa7b32191116c47911da1d9ec83c806b6be489c43e",
                 "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
             },
             "glitch180": {
-                "src/typed_generated/typed_slice.cpp": "25d58069c566ac33ebb2c96ec1a8e4668ca5eaddcb64762241a46f99cfcf0ba9",
-                "src/typed_generated/typed_manifest.json": "43cbf8db804a8e667ce5a830c87c083486bacc36d07ed6b9affab73250ba26c1",
+                "src/typed_generated/typed_slice.cpp": "b003b93a26ed7504c39fd052c75811af70b50d96be6ee44ae49fec7a795b9954",
+                "src/typed_generated/typed_manifest.json": "721ce86527490b038f4378c7878e135382ba992497d9829015b4f1ace7c316d9",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "1c92b2bf340c38c7f156660bdad5d63357714eaf2825b30599665d507d05ff3d",
-                "src/typed_generated/typed_manifest.json": "1818323e4a2232fa79f5bfc212d70f857fb3e3e202733f87c22c52c640b8ca83",
+                "src/typed_generated/typed_slice.cpp": "67c70a8a66792d57844d50a8409757891264a951e6b56d06ba41bded78ff7e3f",
+                "src/typed_generated/typed_manifest.json": "0225c98b4ad08ff9a3c5036ec49de0464cec13649d369ce92c4de556d765d8a0",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "99ca5fe5becfe92515364524e31f6de2412231617f212d3618e55ffa12152e25",
-                "src/typed_generated/typed_manifest.json": "a4f915cec1ba4e2ac730af554bee89854ffe2b91c1bcbee83a1645b4d02cbce5",
+                "src/typed_generated/typed_slice.cpp": "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
+                "src/typed_generated/typed_manifest.json": "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }

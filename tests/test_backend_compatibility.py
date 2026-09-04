@@ -48,9 +48,9 @@ class BackendCompatibilityTests(unittest.TestCase):
             document["counts"]["duplicate_fragment_keys"],
         )
         self.assertEqual("filter/wormhole:deposit", document["scatter"]["program_key"])
-        self.assertEqual("117a236679d1db3ab8f0e278230ece277b57564c", document["authority"]["upstream_revision"])
-        self.assertEqual("a7a997dfdc807697adba008729dcdfdfcfbaf53c", document["authority"]["upstream_tree"])
-        self.assertEqual("66f4e9337810ca839dddaba047dadc0c15e903e0f662f189ee6d08ff84fb62c4", document["authority"]["source_lock_sha256"])
+        self.assertEqual("ee523ab910cacf4b6a52c0886fe019bfe89e2933", document["authority"]["upstream_revision"])
+        self.assertEqual("0ecc1cf7fd1eb731de9a7206d927c7f14899f70b", document["authority"]["upstream_tree"])
+        self.assertEqual("7ba23000f4cf9bb0a532639b7c26b8fb8cc1a58d5ae5d9e95ebf9b25f9e0fbad", document["authority"]["source_lock_sha256"])
         self.assertEqual(205, document["counts"]["raw_exact"])
         self.assertEqual(6, document["counts"]["semantic_exact"])
         self.assertEqual(["filter/text:text"], document["counts"]["incompatible_keys"])
