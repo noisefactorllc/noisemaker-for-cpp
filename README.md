@@ -15,8 +15,7 @@ The library has no dependencies beyond a C++20 compiler and zlib.
 
 ## How it works
 
-Effects are **not** hand-written C++. The pinned GLSL corpus is compiled ahead
-of time into C++20 by a typed generator in `tools/glslcpp/`:
+Effects are **not** hand-written C++. A typed generator in `tools/glslcpp/` compiles the pinned GLSL corpus ahead of time into C++20:
 
 1. Each GLSL program is parsed and semantically analyzed into a typed IR.
 2. A per-program structural profile authenticates the exact AST closure that
@@ -49,14 +48,9 @@ This port is **in progress**. Coverage against the pinned corpus revision
 | Corpus programs outside the typed slice | 1 | set difference of the two arrays above: `filter/wormhole:deposit`, which is ported separately as a scatter pass in `src/effects/scatter/wormhole.cpp` |
 | Catalog entries | 213 | `kCatalog` in `src/typed_generated/typed_slice.cpp`: the 211 typed program keys, plus a second, earlier-generation factory registered under `filter/invert:inv` and under `synth/solid:solid` |
 
-The corpus and typed counts are re-derivable from a clean checkout without
-external state: `python -m tools.glslcpp.check_semantics --check` prints the
-corpus count and `python -m tools.glslcpp.generate_typed_slice --check` prints
-the typed count.
+You can derive the corpus and typed counts from a clean checkout without external state. `python -m tools.glslcpp.check_semantics --check` prints the corpus count. `python -m tools.glslcpp.generate_typed_slice --check` prints the typed count.
 
-Every program in the pinned corpus is therefore compiled and bound, but the
-port is not finished: parity verification, the DSL graph executor, and a
-standing queue of open defects are still in flight. The live list of remaining
+Every program in the pinned corpus is therefore compiled and bound. The port is not finished. Parity verification, the DSL graph executor, and an open defect queue still need work. The live list of remaining
 work is the top block of
 [`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
 
@@ -68,20 +62,12 @@ there.
 
 ### Parity and its documented exceptions
 
-Ported programs are checked against the JavaScript reference implementation
-with pixel-level fixtures, not merely compiled, and capabilities are admitted
-one authenticated closure at a time.
+Pixel-level fixtures check ported programs against the JavaScript reference implementation. Compilation alone is insufficient. The project admits capabilities one authenticated closure at a time.
 
-Where a program's emitted kernel has been *measured* divergent from the
-reference, the project records that in code rather than leaving it implicit:
-each such program is listed in `kMeasuredParityExclusions` in
-`src/graph/executor.cpp`, together with the measured divergence. The DSL graph
+The project records each emitted kernel's *measured* divergence from the reference in code. `kMeasuredParityExclusions` in `src/graph/executor.cpp` lists each affected program and its measured divergence. The DSL graph
 executor refuses to run an excluded program, raising `unavailable_pass`.
 
-Read that list before treating any kernel's output as authority-exact, and
-note its scope: the guard lives in the graph executor. The generated catalog
-still exposes an excluded program's `bind_*` factory, so a direct
-`noisemaker::generated::bind()` call by key is not gated by it.
+Read that list before treating any kernel's output as authority-exact. The guard applies only in the graph executor. The generated catalog still exposes an excluded program's `bind_*` factory. The guard does not apply to a direct `noisemaker::generated::bind()` call by key.
 
 ## Build
 
@@ -102,8 +88,7 @@ reference.
 
 ### Render a DSL program
 
-`noisemaker-render` is the command-line front end. Build it, point it at a DSL
-program, and you get a PNG:
+`noisemaker-render` is the command-line front end. Build it. Run it with a DSL program to produce a PNG:
 
 ```bash
 cmake --build build --target noisemaker-render
@@ -117,8 +102,7 @@ convenience, not the only way to run it. The install is optional: a
 library-only build (`cmake --build build --target noisemaker-cpu`) still
 installs cleanly, without the executable.
 
-With no options it renders 512x512 at time 0, frame 0, seed 1, and writes the
-program's own name with a `.png` extension into the current directory. Every
+With no options, it renders 512x512 at time 0, frame 0, seed 1. It writes to the current directory, using the program's own name with a `.png` extension. Every
 option is optional and paths may be relative:
 
 ```bash
@@ -148,8 +132,7 @@ A DSL program names effects from the catalog. To see what is available:
 ./build/noisemaker-render --list-effects   # every catalog key, sorted
 ```
 
-Rendering is fail-closed. A program the executor will not run is refused with
-the executor's own reason and a nonzero exit status, and nothing is written:
+Rendering is fail-closed. If the executor refuses a program, the command reports the executor's reason and returns a nonzero exit status. It writes nothing:
 
 ```
 $ ./build/noisemaker-render snow.dsl
@@ -159,24 +142,19 @@ noisemaker-render: snow.dsl cannot be rendered, so nothing was written.
   effect: filter/snow, pass 0 "main" (filter/snow:snow)
 ```
 
-`--help` prints the full option list and the exit codes (`0` rendered, `2`
-unusable command line, `4` refused, `5` plan authentication failure, `6` output
-could not be written).
+`--help` prints the full option list and these exit codes:
 
-`noisemaker-render` renders through the same compile/execute/export path as the
-corpus parity driver `noisemaker-dsl-cpu-case`, so the bytes it produces are the
-bytes that lane validates. That driver is a *harness* tool: it demands absolute
-paths and a `--source-sha256` of its input because a corpus record must prove
-which bytes it ran. Reach for it only when running the parity lane; for
-rendering a program, use `noisemaker-render`.
+- `0`: rendered.
+- `2`: unusable command line.
+- `4`: refused.
+- `5`: plan authentication failure.
+- `6`: output could not be written.
+
+`noisemaker-render` uses the same compile/execute/export path as the corpus parity driver `noisemaker-dsl-cpu-case`. It produces the bytes that the parity lane validates. That driver is a *harness* tool. It requires absolute paths and a `--source-sha256` of its input to prove which bytes a corpus record ran. Use it only for the parity lane. To render a program, use `noisemaker-render`.
 
 ### Use the library directly
 
-Much of this library is header-inline — every `noisemaker::glsl::` helper, and
-the matrix and vector operators — so it compiles in *your* translation unit
-under *your* flags. `-ffp-contract=off` is therefore part of the public
-contract, not just this project's build: without it the compiler may fuse a
-multiply and an add into a single FMA and silently change results.
+Much of this library is header-inline: every `noisemaker::glsl::` helper and the matrix and vector operators. These compile in *your* translation unit under *your* flags. `-ffp-contract=off` is therefore part of the public contract, not just this project's build. Without it, the compiler may fuse a multiply and an add into a single FMA and silently change results.
 
 The exported CMake target carries the flag for you. Consuming the package with
 `find_package(noisemaker-for-cpp CONFIG REQUIRED)` and linking
@@ -184,7 +162,7 @@ The exported CMake target carries the flag for you. Consuming the package with
 C++20 requirement to your targets. If you build without CMake, pass
 `-std=c++20 -ffp-contract=off` yourself.
 
-Bind a kernel by name, run a pass, encode the result:
+Bind a kernel by name. Run a pass. Encode the result:
 
 ```cpp
 #include "noisemaker/generated/catalog.hpp"
@@ -204,7 +182,7 @@ const noisemaker::Surface surface =
 const std::vector<std::uint8_t> png = noisemaker::encode_png(surface);
 ```
 
-Kernels can also be looked up dynamically:
+You can also find kernels dynamically:
 
 ```cpp
 const noisemaker::BoundKernel kernel =
@@ -224,9 +202,7 @@ described under [Coverage](#parity-and-its-documented-exceptions).
 factory it ports. It retains fragment output state across pixels and repeated
 passes, and copies of one `BoundKernel` share that same state. Do not render
 through the same bound instance, or any of its copies, concurrently. Bind a
-fresh kernel for each concurrent worker instead. Both `run_pass` and the
-lower-level `run_pixel` preserve this stateful contract; the raw generated
-callback and its state are intentionally not exposed.
+fresh kernel for each concurrent worker instead. Both `run_pass` and the lower-level `run_pixel` preserve this stateful contract. The library intentionally hides the raw generated callback and its state.
 
 `Bindings::set_texture` does **not** take ownership. The caller must keep the
 `Surface` alive, at a stable address, and unmodified for the lifetime of any
@@ -254,8 +230,7 @@ reconstruction, determinism) require Python 3.12+:
 python -m unittest discover -s tests -p 'test_*.py' -q
 ```
 
-The Python suite is slow by design — it regenerates the entire typed slice
-many times to prove reconstruction and determinism properties.
+The Python suite is slow by design. It regenerates the entire typed slice many times to prove reconstruction and determinism properties.
 
 ## Layout
 
@@ -270,10 +245,7 @@ docs/port-engineering/  design record: briefs, reviews, corpus censuses,
                         and the JS-golden oracle generators
 ```
 
-The parity oracles are the load-bearing part of `docs/port-engineering/`: each
-generator drives the real, unmodified JavaScript reference and emits a
-`--check`-deterministic fixture, so a drifted oracle fails loudly instead of
-quietly re-baselining. See `docs/port-engineering/README.md`.
+The parity oracles are essential to `docs/port-engineering/`. Each generator drives the real, unmodified JavaScript reference and emits a `--check`-deterministic fixture. If an oracle changes, the check fails instead of silently replacing the baseline. See `docs/port-engineering/README.md`.
 
 ## License
 
