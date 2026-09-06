@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(noisemaker-for-cpp VERSION 0.1.0 LANGUAGES CXX)
 
+option(NOISEMAKER_BUILD_DEVELOPMENT_TOOLS "Build tests, examples and benchmark tools" ON)
+
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
@@ -114,6 +116,7 @@ if(CMAKE_CXX_FLAGS MATCHES "-fsanitize")
     "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-fno-sanitize=all>")
 endif()
 
+if(NOISEMAKER_BUILD_DEVELOPMENT_TOOLS)
 add_executable(noisemaker-cpu-tests
   tests/test_main.cpp
   tests/test_surface.cpp
@@ -189,6 +192,8 @@ target_compile_definitions(noisemaker-dsl-cpu-benchmark PRIVATE
   NOISEMAKER_BENCHMARK_BUILD_TYPE="${NOISEMAKER_BENCHMARK_BUILD_TYPE_TEXT}"
 )
 
+endif()
+
 # The user-facing render CLI. It compiles `corpus_case.cpp` rather than
 # reimplementing anything: `noisemaker-render` and `noisemaker-dsl-cpu-case`
 # share one compile entry, one `GraphExecutor::execute` call site, one byte
@@ -210,6 +215,7 @@ target_compile_options(noisemaker-render PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 
+if(NOISEMAKER_BUILD_DEVELOPMENT_TOOLS)
 add_executable(noisemaker-dsl-frontend-oracle tests/test_dsl_lexer.cpp)
 target_compile_definitions(noisemaker-dsl-frontend-oracle PRIVATE NOISEMAKER_DSL_ORACLE_MAIN)
 target_link_libraries(noisemaker-dsl-frontend-oracle PRIVATE noisemaker-cpu)
@@ -266,6 +272,8 @@ else()
     "Install a Python 3 interpreter to verify this repository; "
     "tests/test_benchmark_cpu_corpus.py, tests/test_dsl_corpus_parity.py and "
     "the typed-generator suites need it too.")
+endif()
+
 endif()
 
 install(TARGETS noisemaker-cpu

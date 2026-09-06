@@ -1,0 +1,33 @@
+{
+  "configVersion": 1,
+  "id": "cpp",
+  "series": "0.1",
+  "shaderSource": "kit",
+  "engineSource": "kit",
+  "pageTemplate": false,
+  "subtrees": [
+    { "from": "CMakeLists.txt", "to": "engine/CMakeLists.txt" },
+    { "from": "cmake", "to": "engine/cmake" },
+    { "from": "include", "to": "engine/include" },
+    { "from": "src", "to": "engine/src" },
+    { "from": "tools/cli", "to": "engine/tools/cli" },
+    { "from": "tools/benchmark/corpus_case.cpp", "to": "engine/tools/benchmark/corpus_case.cpp" },
+    { "from": "tools/benchmark/corpus_case.hpp", "to": "engine/tools/benchmark/corpus_case.hpp" }
+  ],
+  "licenses": [
+    { "from": "LICENSE", "to": "LICENSES/noisemaker-for-cpp-LICENSE.txt" }
+  ],
+  "requireFiles": [
+    "engine/CMakeLists.txt",
+    "engine/cmake/noisemaker-for-cppConfig.cmake.in",
+    "engine/include/noisemaker/renderer.hpp",
+    "engine/src/typed_generated/typed_slice.cpp",
+    "engine/tools/cli/noisemaker_render.cpp",
+    "engine/tools/benchmark/corpus_case.cpp",
+    "engine/tools/benchmark/corpus_case.hpp"
+  ],
+  "forbidDirs": ["shaders", "engine/tests", "engine/docs"],
+  "inject": { "type": "dsl-file", "target": "program.dsl" },
+  "compat": { "mode": "list", "fromJsonList": "export-kit/compat-effects.json" },
+  "engineBytesFrom": ["engine/"]
+}

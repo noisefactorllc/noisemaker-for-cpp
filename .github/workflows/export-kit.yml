@@ -1,0 +1,63 @@
+name: Export kit
+
+# Public repo: holds NO deploy credentials. Dispatches scaffold's
+# export-kit-release.yml, which builds this repo's export kit at this exact
+# SHA and ships it to kits.noisedeck.app. See scaffold
+# docs/runbook/export-kits.md.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "export-kit/**"
+      - ".github/workflows/export-kit.yml"
+      # LICENSE is shipped kit content (vendored into LICENSES/): a relicense must auto-publish.
+      - "LICENSE"
+      # Every source path vendored by kit.config.json changes shipped bytes.
+      - "CMakeLists.txt"
+      - "cmake/**"
+      - "include/**"
+      - "src/**"
+      - "tools/cli/**"
+      - "tools/benchmark/corpus_case.cpp"
+      - "tools/benchmark/corpus_case.hpp"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: export-kit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check compatibility list
+        run: node export-kit/generate-compat.mjs --check
+
+      - name: Mint scaffold-dispatch token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: Iv23liy6T6BW0BXuZRzx
+          private-key: ${{ secrets.EHSRE_APP_PRIVATE_KEY }}
+          owner: noisefactorllc
+          repositories: scaffold
+
+      - name: Dispatch export-kit-release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh workflow run export-kit-release.yml \
+            --repo noisefactorllc/scaffold \
+            --ref main \
+            -f kit=cpp \
+            -f sha=${{ github.sha }}
