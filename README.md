@@ -5,6 +5,8 @@
 
 # noisemaker-for-cpp
 
+> This package supports the "Export Shader Pipeline" feature in Noisedeck.app. The feature runs shader compositions on other platforms. Noise Factor derives this package from the upstream Noisemaker Engine project and tests it for pixel-level parity.
+
 A C++20 CPU port of the [Noisemaker](https://noisemaker.app) shader engine.
 
 This renders Noisemaker's GLSL effect catalog on the CPU, with no GPU, no
