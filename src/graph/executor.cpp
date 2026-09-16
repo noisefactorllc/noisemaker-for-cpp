@@ -1895,7 +1895,21 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
   }
   for (const auto& input : inputs.external_textures) {
     try {
-      arena.copy(input.name, input.surface, TextureFormat::rgba32f,
+      // The authority always wraps an externally supplied texture with
+      // `filter: 'linear'` before binding it (src/runtime/renderer.js,
+      // `canonicalTextures()`: `if (definition.externalTexture) { ... filter:
+      // 'linear' }`), regardless of what the caller passed in. Any pass that
+      // samples it through the generic `texture()`/`textureSize()` builtins
+      // (`sample_texture` in the typed emitter) therefore interpolates --
+      // e.g. filter/text's `textTex` -- even though a caller-supplied Surface
+      // otherwise defaults to nearest. synth/media's `imageTex` is unaffected
+      // in practice: its kernel samples it only through `texelFetch`, which
+      // never consults the filter. Force the filter here, once, so every
+      // effect that binds an external texture gets the authority's sampling
+      // mode regardless of how the caller built the source Surface.
+      noisemaker::Surface filtered = input.surface.clone();
+      filtered.set_filter(noisemaker::TextureFilter::linear);
+      arena.copy(input.name, filtered, TextureFormat::rgba32f,
                  ResourceLifetime::external);
     } catch (const std::overflow_error&) {
       throw GraphError(GraphErrorCode::allocation_limit,

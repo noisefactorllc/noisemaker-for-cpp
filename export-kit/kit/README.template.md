@@ -20,6 +20,18 @@ building and rendering require no network, Python, GPU or shader compiler.
 Increase `--width` and `--height` for larger output. `--seed`, `--time` and `--frame` control the render. `--help` lists all options. Paths are relative to
 the directory you run the command from. The program itself is `program.dsl`.
 
+Programs that sample an image need one bound on the command line:
+
+- `--input photo.png` binds a PNG as both `imageTex` (used by Media) and
+  `textTex` (used by Text).
+- `--texture NAME=FILE` binds a PNG under a specific name; repeat it for more
+  than one. A `--texture` naming `imageTex` or `textTex` overrides what
+  `--input` bound for that name.
+
+```sh
+./build/noisemaker-render program.dsl --input photo.png --output out.png
+```
+
 ## Contents
 
 - `engine/`: the C++ renderer, public headers and generated effect kernels.
@@ -35,7 +47,7 @@ flags required by the renderer. See the
 ## Compatibility
 
 Noisedeck exported this program against Noisemaker `{{NM_ENGINE_VERSION}}`.
-This port is still in progress. The kit's compatibility list excludes effects with unavailable or scatter passes. It also excludes Snow and Test Pattern because of their measured parity exclusions. The list also excludes media input because this CLI cannot bind external images. The renderer can also refuse other parameter or graph combinations. Fibers, Scratches and Stray Hair need an unavailable overlay
+This port is still in progress. The kit's compatibility list excludes effects with unavailable or scatter passes. It also excludes Snow and Test Pattern because of their measured parity exclusions. The renderer can also refuse other parameter or graph combinations. Fibers, Scratches and Stray Hair need an unavailable overlay
 adapter and are excluded too. A refusal reports a reason and writes no image. The kit does
 not guarantee pixel parity with the current browser engine.
 

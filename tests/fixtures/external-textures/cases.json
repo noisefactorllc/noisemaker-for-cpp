@@ -1,0 +1,50 @@
+{
+  "schema": "noisemaker-cpp.external-texture-cases.v1",
+  "cases": [
+    {
+      "name": "filter-text-input",
+      "dsl": "filter-text-input.dsl",
+      "width": 96,
+      "height": 64,
+      "input": "overlay-37x53.png",
+      "textures": [],
+      "rgba8Sha256": "57ff510f22017cf5f7801226db998252987f18a97c45d04ddb363cdc3c33ad2b"
+    },
+    {
+      "name": "filter-text-override",
+      "dsl": "filter-text-override.dsl",
+      "width": 50,
+      "height": 70,
+      "input": "mask-16x16.png",
+      "textures": ["textTex=overlay-37x53.png"],
+      "rgba8Sha256": "332540eb8e2f98fdb14a9fa84d2dd67947617c1b77b7a5d65273a9a9f25bf0b9"
+    },
+    {
+      "name": "synth-media-input",
+      "dsl": "synth-media-input.dsl",
+      "width": 80,
+      "height": 80,
+      "input": "photo-64x40.png",
+      "textures": [],
+      "rgba8Sha256": "4537a446132d52fed09bb0fe3098246e9e092bdbe202a157ef2bfd14263ba31e"
+    },
+    {
+      "name": "synth-media-texture",
+      "dsl": "synth-media-texture.dsl",
+      "width": 128,
+      "height": 96,
+      "input": null,
+      "textures": ["imageTex=photo-64x40.png"],
+      "rgba8Sha256": "31f278a46311edebf90e052789fff5ea1a6c906832c1f8f9229fd9b4259a0dd4"
+    },
+    {
+      "name": "combined-media-text",
+      "dsl": "combined-media-text.dsl",
+      "width": 72,
+      "height": 55,
+      "input": "photo-64x40.png",
+      "textures": ["textTex=overlay-37x53.png"],
+      "rgba8Sha256": "ba4db1ccc4fd50e76a45572b5d3d2848512a950cf3a2d7ea502231498414c7e4"
+    }
+  ]
+}

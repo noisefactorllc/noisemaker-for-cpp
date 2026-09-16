@@ -259,6 +259,18 @@ if(Python3_Interpreter_FOUND)
   set_tests_properties(noisemaker-render-cli PROPERTIES
     FIXTURES_REQUIRED render-cli
     ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_RENDER_CLI=$<TARGET_FILE:noisemaker-render>;NOISEMAKER_DSL_CPU_CASE=$<TARGET_FILE:noisemaker-dsl-cpu-case>")
+
+  # `tests/test_external_textures.py` -- the --input/--texture proof. It only
+  # needs the render CLI (frozen hashes stand in for the JS authority; see
+  # tests/fixtures/external-textures/compare_with_js_authority.py for the
+  # live authority comparison that captured them), so it reuses the same
+  # render-cli build fixture rather than adding a second one.
+  add_test(NAME noisemaker-external-textures-cli
+    COMMAND ${Python3_EXECUTABLE} -B -m unittest -v tests.test_external_textures
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  set_tests_properties(noisemaker-external-textures-cli PROPERTIES
+    FIXTURES_REQUIRED render-cli
+    ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;NOISEMAKER_RENDER_CLI=$<TARGET_FILE:noisemaker-render>")
 else()
   # Not fatal: a consumer who only wants the library must still be able to
   # configure. But a test suite that deregisters itself in silence is the
@@ -269,7 +281,9 @@ else()
     "Python3 interpreter not found. These tests are NOT registered and will "
     "NOT run under ctest: noisemaker-render-cli-build, noisemaker-render-cli "
     "(tests/test_render_cli.py -- the proof that noisemaker-render and "
-    "noisemaker-dsl-cpu-case produce byte-identical frames and metadata). "
+    "noisemaker-dsl-cpu-case produce byte-identical frames and metadata), "
+    "noisemaker-external-textures-cli (tests/test_external_textures.py -- "
+    "the --input/--texture proof against hashes frozen from the JS authority). "
     "Install a Python 3 interpreter to verify this repository; "
     "tests/test_benchmark_cpu_corpus.py, tests/test_dsl_corpus_parity.py and "
     "the typed-generator suites need it too.")

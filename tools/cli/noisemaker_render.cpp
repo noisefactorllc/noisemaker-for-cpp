@@ -39,6 +39,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace nb = noisemaker::benchmark;
@@ -72,20 +73,28 @@ options:
       --time D          animation time in seconds (default: 0)
       --frame N         frame counter (default: 0)
       --seed D          seed (default: 1)
+      --input FILE      PNG bound as both imageTex and textTex
+      --texture NAME=FILE  named external PNG texture (repeatable)
       --raw-rgba8 PATH  also write the raw top-down RGBA8 bytes
       --metadata PATH   also write a JSON document describing the render
       --list-effects    print every effect key in the catalog, sorted, and exit
   -h, --help            print this text and exit
       --                stop reading options; every later argument is a path
 
-Numbers are decimal. Every option may be given at most once; a repeated option
-is a usage error rather than a silent last-one-wins guess.
+Numbers are decimal. Every option may be given at most once; a repeated
+option is a usage error rather than a silent last-one-wins guess. --texture
+is the one repeatable option, but the same NAME may not be bound twice --
+a later --texture naming imageTex or textTex does override the binding
+--input made for that name, since that is an explicit, intentional choice
+rather than an ambiguous repeat.
 
 examples:
   noisemaker-render program.dsl
   noisemaker-render program.dsl -o out.png
   noisemaker-render program.dsl --width 512 --height 512 --seed 7 --time 0.5
   noisemaker-render program.dsl --raw-rgba8 frame.rgba8 --metadata frame.json
+  noisemaker-render program.dsl --input photo.png
+  noisemaker-render program.dsl --texture logoTex=logo.png --texture maskTex=mask.png
 
 No environment variables are needed to render. Rendering reads nothing but the
 program file you name.
@@ -103,6 +112,12 @@ struct Options {
   std::string png_output;
   std::string raw_output;
   std::string metadata_output;
+  // Empty means no --input was given. Populated (and read) only in main(),
+  // never here: parse_options performs no file I/O, matching source_path.
+  std::string input_path;
+  // One entry per --texture NAME=FILE, in the order given; a later entry
+  // never repeats an earlier one's NAME (checked at parse time).
+  std::vector<std::pair<std::string, std::string>> textures;
   noisemaker::RenderOptions render;
 };
 
@@ -195,6 +210,66 @@ template <typename Integer>
                      std::istreambuf_iterator<char>());
 }
 
+[[nodiscard]] std::vector<std::uint8_t> read_binary_file(const std::string& path,
+                                                          const std::string& missing_message) {
+  std::ifstream stream(path, std::ios::binary);
+  if (!stream) {
+    fail_usage(missing_message + " \"" + path + "\"");
+  }
+  return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(stream),
+                                   std::istreambuf_iterator<char>());
+}
+
+// Decodes a PNG exactly the way the JS CLI's `readPng` + `Surface.fromRgba8`
+// do: straight (non-premultiplied) alpha, no colour-space conversion, each
+// byte scaled to a float by 1/255 -- see `noisemaker::decode_png` and
+// `Surface::from_rgba8`, which mirror `decodePng`/`Surface.fromRgba8`
+// byte-for-byte (src/node/png.js, src/runtime/surface.js). A bad texture
+// file is a usage mistake, not a program refusal: the DSL program named on
+// the command line did nothing wrong, so this fails closed the same way an
+// unreadable --width does, rather than through the executor's refusal path.
+[[nodiscard]] noisemaker::Surface load_texture_surface(const std::string& path,
+                                                        const std::string& missing_message,
+                                                        const std::string& invalid_prefix) {
+  const auto bytes = read_binary_file(path, missing_message);
+  try {
+    return noisemaker::decode_png(bytes);
+  } catch (const std::exception& error) {
+    fail_usage(invalid_prefix + " \"" + path + "\" is not a valid PNG: " + error.what());
+  }
+}
+
+// Mirrors the JS CLI's `loadExternalTextures` (bin/noisemaker-cpu.js): --input
+// binds one PNG as both `imageTex` (synth/media) and `textTex` (filter/text);
+// --texture entries are then applied in argument order, so a --texture
+// naming either route overrides what --input bound for that name -- the same
+// object-assignment order the authority's `{ ...loaded, ...explicit }` uses.
+[[nodiscard]] std::vector<noisemaker::graph::NamedSurface> load_external_textures(
+    const Options& options) {
+  std::vector<noisemaker::graph::NamedSurface> textures;
+  const auto bind = [&](std::string name, noisemaker::Surface surface) {
+    for (auto& entry : textures) {
+      if (entry.name == name) {
+        entry.surface = std::move(surface);
+        return;
+      }
+    }
+    textures.push_back(noisemaker::graph::NamedSurface{std::move(name), std::move(surface)});
+  };
+  if (!options.input_path.empty()) {
+    noisemaker::Surface surface =
+        load_texture_surface(options.input_path, "cannot read the --input file", "--input");
+    noisemaker::Surface clone = surface.clone();
+    bind("imageTex", std::move(surface));
+    bind("textTex", std::move(clone));
+  }
+  for (const auto& [name, path] : options.textures) {
+    bind(name, load_texture_surface(path, "cannot read the --texture " + name + " file",
+                                    "--texture " + name));
+  }
+  return textures;
+}
+
 // `program.dsl` -> `program.png`, `a/b/program.dsl` -> `program.png`. The
 // default output lands in the working directory rather than beside the source,
 // so rendering a file out of a checkout never writes into that checkout.
@@ -274,8 +349,11 @@ void report_refusal(const noisemaker::graph::GraphError& error,
     // `name` is the spelling the user typed, so the diagnostic quotes it back;
     // `canonical` is what the duplicate check keys on, so `-o` and `--output`
     // are one option.
-    const auto value = [&](const std::string& name, const char* canonical) -> std::string {
-      claim(canonical);
+    // Shared by every option that takes a value. `value()` additionally
+    // claims the option so a second occurrence is a usage error; `--texture`
+    // is deliberately repeatable, so its branch calls `read_value` directly
+    // and enforces its own, narrower duplicate rule (same NAME twice).
+    const auto read_value = [&](const std::string& name) -> std::string {
       std::string text;
       if (inline_value) {
         text = *inline_value;
@@ -285,6 +363,10 @@ void report_refusal(const noisemaker::graph::GraphError& error,
       }
       if (text.empty()) fail_usage(name + " needs a non-empty value");
       return text;
+    };
+    const auto value = [&](const std::string& name, const char* canonical) -> std::string {
+      claim(canonical);
+      return read_value(name);
     };
     const auto reject_inline_value = [&](const std::string& name) {
       if (inline_value) fail_usage(name + " takes no value");
@@ -325,6 +407,24 @@ void report_refusal(const noisemaker::graph::GraphError& error,
       continue;
     } else if (flag == "--seed") {
       options.render.seed = parse_number(value(flag, "--seed"), "--seed");
+      continue;
+    } else if (flag == "--input") {
+      options.input_path = value(flag, "--input");
+      continue;
+    } else if (flag == "--texture") {
+      const std::string assignment = read_value(flag);
+      const auto equals = assignment.find('=');
+      if (equals == std::string::npos || equals == 0 || equals == assignment.size() - 1) {
+        fail_usage("--texture needs NAME=FILE, not \"" + assignment + "\"");
+      }
+      std::string name = assignment.substr(0, equals);
+      std::string path = assignment.substr(equals + 1);
+      for (const auto& existing : options.textures) {
+        if (existing.first == name) {
+          fail_usage("--texture " + name + " was given more than once");
+        }
+      }
+      options.textures.emplace_back(std::move(name), std::move(path));
       continue;
     } else if (flag == "--raw-rgba8") {
       options.raw_output = value(flag, "--raw-rgba8");
@@ -369,6 +469,11 @@ int main(int argc, char** argv) {
   const Options options = parse_options(args);
   const std::string source = read_source(options.source_path);
   const auto source_sha256 = noisemaker::graph::detail::sha256(source);
+  // Loaded here, not in parse_options: file I/O is deferred to main() the
+  // same way read_source's is, and any failure here is a usage error (exit
+  // 2), reported before compiling or executing the program.
+  noisemaker::RenderOptions render_inputs = options.render;
+  render_inputs.external_textures = load_external_textures(options);
 
   std::vector<std::uint8_t> bytes;
   std::vector<std::uint8_t> png;
@@ -380,7 +485,7 @@ int main(int argc, char** argv) {
     const auto registry = nb::build_registry();
     const auto plan =
         nb::compile_case(source, registry, options.source_path, source_sha256);
-    const auto result = nb::execute_case(plan, options.render);
+    const auto result = nb::execute_case(plan, render_inputs);
     bytes = result.surface.to_rgba8();
     width = result.surface.width();
     height = result.surface.height();
