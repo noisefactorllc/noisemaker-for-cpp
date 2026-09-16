@@ -19,6 +19,7 @@
   "authorityRefused": [
     "filter/lighting",
     "filter/parallax",
+    "filter/text",
     "synth/media"
   ]
 }

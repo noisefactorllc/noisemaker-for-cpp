@@ -24,15 +24,15 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
-COMPATIBILITY_SHA256 = "aa79eb9c505811137a5bef5b08b12e80ae63769bd01c748730ff48a42b956580"
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+COMPATIBILITY_SHA256 = "b6a764853afd95c8310eb9c0f0c9eb85dd9e0265835df3f56582e844b1ace613"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
     "outputTex3d", "outputGeo", "outputXyz", "outputVel", "outputRgba", "iterated", "loopRole",
 })
 PARAM_KEYS = frozenset({"type", "default", "define", "uniform", "zero", "enum", "choices", "min", "max", "texture", "colorModeUniform", "cpuOnly"})
-PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers"})
+PASS_KEYS = frozenset({"name", "program", "inputs", "outputs", "uniforms", "count", "repeat", "conditions", "viewport", "blend", "drawMode", "drawBuffers", "type", "defines"})
 TEXTURE_KEYS = frozenset({"width", "height", "format"})
 DIMENSION_KEYS = frozenset({"default", "param", "paramDefault", "screenDivide", "inputOverride", "power"})
 
@@ -96,7 +96,7 @@ def load_export(path: pathlib.Path) -> list[dict[str, Any]]:
     for index, record in enumerate(document["records"]):
         if not isinstance(record, dict): raise CatalogError(f"effect[{index}] must be an object")
         records.append({key: _decode(value, f"effect[{index}].{key}") for key, value in record.items()})
-    if len(records) != 205:
+    if len(records) != 208:
         raise CatalogError(f"CPU definition count drift: {len(records)}")
     for index, effect in enumerate(records):
         _check_keys(effect, EFFECT_KEYS, f"effect[{index}]")
@@ -161,8 +161,8 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
     passes = compatibility.get("reference_passes")
     if not isinstance(canonical, list) or len({row.get("program_key") for row in canonical}) != len(canonical):
         raise CatalogError("compatibility canonical keys are not unique")
-    if not isinstance(closure, list) or len(closure) != 295 or closure != sorted(set(closure)):
-        raise CatalogError("compatibility key closure is not the exact ordered 295-key set")
+    if not isinstance(closure, list) or len(closure) != 304 or closure != sorted(set(closure)):
+        raise CatalogError("compatibility key closure is not the exact ordered 304-key set")
     status_by_key = {row["program_key"]: row["status"] for row in canonical}
     scatter = compatibility.get("scatter")
     if not isinstance(scatter, dict) or scatter.get("program_key") != "filter/wormhole:deposit" or scatter.get("status") != "registered":
@@ -176,7 +176,7 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
         for index, current_pass in enumerate(effect.get("passes", [])):
             key = f"{effect['namespace']}/{effect['directoryName']}:{current_pass.get('program')}"
             expected_passes.append((effect["id"], index, current_pass.get("name"), key))
-    if len(expected_passes) != 305 or not isinstance(passes, list) or len(passes) != len(expected_passes):
+    if len(expected_passes) != 344 or not isinstance(passes, list) or len(passes) != len(expected_passes):
         raise CatalogError("compatibility reference pass cardinality drift")
     for row, expected in zip(passes, expected_passes):
         if (row.get("effect_id"), row.get("pass_index"), row.get("pass_name"), row.get("program_key")) != expected:
@@ -345,7 +345,7 @@ def _authority_pass_cpp(authority_pass: dict[str, Any]) -> list[str]:
 
 
 def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
-    lines = [f"static EffectDefinition make_effect_{index}() {{", "  EffectDefinition e;"]
+    lines = [f"NOISEMAKER_CATALOG_OUTLINE static EffectDefinition make_effect_{index}() {{", "  EffectDefinition e;"]
     assignments = {
         "id": effect.get("id", ""), "directory_name": effect.get("directoryName", ""),
         "name": effect.get("name", ""), "name_space": effect.get("namespace", ""),
@@ -386,12 +386,13 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
             pairs = "{" + ", ".join("{" + _cpp_string(k) + ", " + _cpp_string(str(v)) + "}" for k, v in (current_pass.get(key) or {}).items()) + "}"
             lines.append(f"    p.{field} = {pairs};")
         if "uniforms" in current_pass: lines.append(f"    p.uniforms = {_raw_pairs(current_pass['uniforms'])};")
-        for key in ("count", "repeat", "conditions", "viewport", "drawBuffers"):
+        for key in ("count", "repeat", "conditions", "viewport", "drawBuffers", "defines"):
             if key in current_pass: lines.append(f"    p.{ {'drawBuffers':'draw_buffers'}.get(key,key) } = {cpp_value(current_pass[key])};")
         if "blend" in current_pass:
             blend_context = f"{effect.get('id', '<effect>')}.{current_pass.get('name', '<pass>')}.blend"
             lines.append(f"    p.blend = {_blend(current_pass['blend'], blend_context)};")
         if "drawMode" in current_pass: lines.append(f"    p.draw_mode = {_cpp_optional_string(current_pass['drawMode'])};")
+        if "type" in current_pass: lines.append(f"    p.type = {_cpp_optional_string(current_pass['type'])};")
         lines.append(f"    p.raw = {_raw_pairs(current_pass)};")
         lines += ["    e.passes.push_back(std::move(p));", "  }"]
     for key, field in (("externalTexture", "external_texture"), ("outputTex3d", "output_tex3d"), ("outputGeo", "output_geo"), ("outputXyz", "output_xyz"), ("outputVel", "output_velocity"), ("outputRgba", "output_rgba"), ("loopRole", "loop_role")):
@@ -403,8 +404,23 @@ def _emit_effect(index: int, effect: dict[str, Any]) -> list[str]:
 
 
 def _emit_cpp(records: list[dict[str, Any]], compatibility: dict[str, Any], authority: dict[str, Any], normalized_hash: str, payload_hash: str) -> bytes:
-    lines = ["// Generated by tools/dsl/generate_effect_catalog.py; do not edit.", '#include "noisemaker/effects/catalog.hpp"', "#include <cmath>", "#include <limits>", "#include <utility>", "", "namespace noisemaker::effects {", ""]
+    lines = ["// Generated by tools/dsl/generate_effect_catalog.py; do not edit.", '#include "noisemaker/effects/catalog.hpp"', "#include <cmath>", "#include <limits>", "#include <utility>", "",
+             "// Every record builder is kept out of line: inlined into one initializer, the",
+             "// combined frame of 208 effects and 555 compatibility rows exceeds an 8 MiB stack.",
+             "#if defined(_MSC_VER)", "#define NOISEMAKER_CATALOG_OUTLINE __declspec(noinline)",
+             "#elif defined(__GNUC__) || defined(__clang__)", "#define NOISEMAKER_CATALOG_OUTLINE __attribute__((noinline))",
+             "#else", "#define NOISEMAKER_CATALOG_OUTLINE", "#endif", "", "namespace noisemaker::effects {", ""]
     for index, effect in enumerate(records): lines.extend(_emit_effect(index, effect)); lines.append("")
+    appenders: list[str] = []
+    for index, row in enumerate(compatibility["canonical_programs"]):
+        name = f"append_program_compatibility_{index}"
+        appenders.append(name)
+        lines += [f"NOISEMAKER_CATALOG_OUTLINE static void {name}(EffectCatalog& c) {{"] + _program_compatibility_cpp(row) + ["}", ""]
+    record_by_id = {record["id"]: record for record in records}
+    for index, reference in enumerate(compatibility["reference_passes"]):
+        name = f"append_reference_pass_{index}"
+        appenders.append(name)
+        lines += [f"NOISEMAKER_CATALOG_OUTLINE static void {name}(EffectCatalog& c) {{"] + _reference_pass_cpp(reference, record_by_id) + ["}", ""]
     lines += ["const EffectDefinition* EffectCatalog::find(const std::string& id) const {", "  const auto found = index.find(id);", "  if (found != index.end()) return &definitions[found->second];", "  for (std::size_t i = 0; i < definitions.size(); ++i) {", "    if (definitions[i].id == id) { index.emplace(id, i); return &definitions[i]; }", "  }", "  return nullptr;", "}", "", "const EffectCatalog& effect_catalog() {", "  static const EffectCatalog catalog = [] {", "    EffectCatalog c;"]
     lines += [f"    c.provenance.schema = {_cpp_string(GENERATOR_SCHEMA)};", f"    c.provenance.backend_schema = {_cpp_string(BACKEND_SCHEMA)};", f"    c.provenance.corpus_revision = {_cpp_string(CORPUS_REVISION)};", f"    c.provenance.cpu_behavioral_lock = {_cpp_string(authority['cpu_behavioral_lock'])};", f"    c.provenance.cpu_behavioral_file_count = {authority['cpu_behavioral_file_count']};", f"    c.provenance.cpu_revision = {_cpp_string(authority['cpu_revision'])};", f"    c.provenance.source_lock_sha256 = {_cpp_string(authority['source_lock_sha256'])};", f"    c.provenance.cpu_package_sha256 = {_cpp_string(authority['cpu_package_sha256'])};", f"    c.provenance.cpu_package_lock_sha256 = {_cpp_string(authority['cpu_package_lock_sha256'])};", f"    c.provenance.cpu_source_lock_sha256 = {_cpp_string(authority['cpu_source_lock_sha256'])};", f"    c.provenance.upstream_revision = {_cpp_string(authority['upstream_revision'])};", f"    c.provenance.upstream_tree = {_cpp_string(authority.get('upstream_tree', ''))};", f"    c.provenance.upstream_package_sha256 = {_cpp_string(authority['upstream_package_sha256'])};", f"    c.provenance.upstream_package_lock_sha256 = {_cpp_string(authority['upstream_package_lock_sha256'])};", f"    c.provenance.generated_payload_sha256 = {_cpp_string(payload_hash)};", f"    c.provenance.normalized_record_stream_sha256 = {_cpp_string(normalized_hash)};", f"    c.provenance.compatibility_sha256 = {_cpp_string(COMPATIBILITY_SHA256)};", f"    c.provenance.first_effect_id = {_cpp_string(records[0]['id'])};", f"    c.provenance.last_effect_id = {_cpp_string(records[-1]['id'])};"]
     counts = compatibility["_derived_counts"]
@@ -414,29 +430,43 @@ def _emit_cpp(records: list[dict[str, Any]], compatibility: dict[str, Any], auth
     for field, key in (("backend_fragment_rows", "fragment_rows"), ("backend_unique_fragment_keys", "unique_fragment_keys"), ("backend_raw_exact", "raw_exact"), ("backend_semantic_exact", "semantic_exact")):
         lines.append(f"    c.provenance.{field} = {backend_counts[key]};")
     for index in range(len(records)): lines.append(f"    c.definitions.push_back(make_effect_{index}());")
-    for row in compatibility["canonical_programs"]:
-        lines += ["    {", "      ProgramCompatibility p;", f"      p.effect_id = {_cpp_string(row['effect_id'])};", f"      p.program = {_cpp_string(row['program'])};", f"      p.program_key = {_cpp_string(row['program_key'])};", f"      p.status = {_cpp_string(str(row.get('status', 'incompatible')))};", "      p.reasons = {" + ", ".join("{" + _cpp_string(str(r.get('code',''))) + ", " + _cpp_string(str(r.get('detail',''))) + "}" for r in row.get('reasons', [])) + "};"]
-        if row.get("factory", {}).get("canonical"): lines.append(f"      p.canonical_factory = {_cpp_optional_string(row['factory']['canonical'])};")
-        if row.get("new_raw_sha256"): lines.append(f"      p.source_sha256 = {_cpp_optional_string(row['new_raw_sha256'])};")
-        if row.get("semantic", {}).get("old_typed_ir_sha256"): lines.append(f"      p.semantic_sha256 = {_cpp_optional_string(row['semantic']['old_typed_ir_sha256'])};")
-        lines.append(f"      p.raw = {_raw_pairs(row)};")
-        lines += ["      c.canonical_programs.push_back(std::move(p));", "    }"]
-    record_by_id = {record["id"]: record for record in records}
-    for reference in compatibility["reference_passes"]:
-        effect = record_by_id[reference["effect_id"]]
-        authority_pass = reference["authority_pass"]
-        lines += ["    {", "      ReferencePassCompatibility p;", f"      p.effect_id = {_cpp_string(reference['effect_id'])};", f"      p.pass_index = {reference['pass_index']};", f"      p.pass_name = {_cpp_string(reference['pass_name'])};", f"      p.program_key = {_cpp_string(reference['program_key'])};", f"      p.status = {_cpp_string(reference['status'])};", "      p.reasons = {" + ", ".join("{" + _cpp_string(str(r.get('code',''))) + ", " + _cpp_string(str(r.get('detail',''))) + "}" for r in reference.get('reasons', [])) + "};"]
-        lines += _authority_pass_cpp(authority_pass)
-        lines += ["      c.reference_passes.push_back(std::move(p));", "    }"]
+    lines += [f"    {name}(c);" for name in appenders]
     scatter = compatibility["scatter"]
+    lines += _scatter_cpp(scatter)
+    lines += ["    return c;", "  }();", "  return catalog;", "}", "", "}  // namespace noisemaker::effects", ""]
+    return "\n".join(lines).encode("utf-8")
+
+
+def _program_compatibility_cpp(row: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    lines += ["    {", "      ProgramCompatibility p;", f"      p.effect_id = {_cpp_string(row['effect_id'])};", f"      p.program = {_cpp_string(row['program'])};", f"      p.program_key = {_cpp_string(row['program_key'])};", f"      p.status = {_cpp_string(str(row.get('status', 'incompatible')))};", "      p.reasons = {" + ", ".join("{" + _cpp_string(str(r.get('code',''))) + ", " + _cpp_string(str(r.get('detail',''))) + "}" for r in row.get('reasons', [])) + "};"]
+    if row.get("factory", {}).get("canonical"): lines.append(f"      p.canonical_factory = {_cpp_optional_string(row['factory']['canonical'])};")
+    if row.get("new_raw_sha256"): lines.append(f"      p.source_sha256 = {_cpp_optional_string(row['new_raw_sha256'])};")
+    if row.get("semantic", {}).get("old_typed_ir_sha256"): lines.append(f"      p.semantic_sha256 = {_cpp_optional_string(row['semantic']['old_typed_ir_sha256'])};")
+    lines.append(f"      p.raw = {_raw_pairs(row)};")
+    lines += ["      c.canonical_programs.push_back(std::move(p));", "    }"]
+    return lines
+
+
+def _reference_pass_cpp(reference: dict[str, Any], record_by_id: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
+    effect = record_by_id[reference["effect_id"]]
+    authority_pass = reference["authority_pass"]
+    lines += ["    {", "      ReferencePassCompatibility p;", f"      p.effect_id = {_cpp_string(reference['effect_id'])};", f"      p.pass_index = {reference['pass_index']};", f"      p.pass_name = {_cpp_string(reference['pass_name'])};", f"      p.program_key = {_cpp_string(reference['program_key'])};", f"      p.status = {_cpp_string(reference['status'])};", "      p.reasons = {" + ", ".join("{" + _cpp_string(str(r.get('code',''))) + ", " + _cpp_string(str(r.get('detail',''))) + "}" for r in reference.get('reasons', [])) + "};"]
+    lines += _authority_pass_cpp(authority_pass)
+    lines += ["      c.reference_passes.push_back(std::move(p));", "    }"]
+    return lines
+
+
+def _scatter_cpp(scatter: dict[str, Any]) -> list[str]:
+    lines: list[str] = []
     lines += ["    {", "      ScatterCompatibility s;", f"      s.program_key = {_cpp_string(scatter['program_key'])};", f"      s.adapter = {_cpp_string(scatter['adapter'])};", f"      s.registry = {_cpp_string(scatter['registry'])};", f"      s.draw_mode = {_cpp_string(scatter['draw_mode'])};", f"      s.dimensionality = {_cpp_string(scatter['dimensionality'])};", f"      s.count = {_cpp_string(scatter['count'])};", f"      s.input_texture = {_cpp_string(scatter['input_texture'])};", f"      s.destination_mutation = {_cpp_string(scatter['destination_mutation'])};", f"      s.blend = {'true' if scatter['blend'] else 'false'};"]
     for uniform in scatter["uniforms"]:
         lines.append("      s.uniforms.push_back({" + ", ".join(_cpp_string(str(uniform.get(k, ''))) for k in ("name", "type", "cpp_type", "source", "source_name", "resource")) + "});")
     for output in scatter.get("outputs", [{"slot": 0, "physical_name": "fragColor", "logical_route": scatter.get("output_route", ""), "cpp_type": "glsl::Vec4"}]):
         lines.append("      s.outputs.push_back({" + str(output.get("slot", 0)) + ", " + ", ".join(_cpp_string(str(output.get(k, ''))) for k in ("physical_name", "logical_route", "cpp_type")) + "});")
     lines += ["      s.reasons = {{\"explicit_scatter_adapter\", \"filter/wormhole:deposit\"}};", "      c.scatter = std::move(s);", "    }"]
-    lines += ["    return c;", "  }();", "  return catalog;", "}", "", "}  // namespace noisemaker::effects", ""]
-    return "\n".join(lines).encode("utf-8")
+    return lines
 
 
 def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, compatibility_path: pathlib.Path = DEFAULT_COMPATIBILITY) -> tuple[bytes, bytes]:

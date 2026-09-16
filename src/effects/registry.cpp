@@ -665,36 +665,36 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "a024dc3a960cc44af454abc7aebce50456c194e6" ||
-      provenance_.generated_payload_sha256 != "7df157b1b992ca7db6d68d63f928042eb4073c9dbf891ecf4729fe00976f0e67" ||
-      provenance_.normalized_record_stream_sha256 != "0f603fa04e4a479b513affe58251101aeacf122de46d521698dfc54c95fd02af" ||
-      provenance_.compatibility_sha256 != "aa79eb9c505811137a5bef5b08b12e80ae63769bd01c748730ff48a42b956580" ||
-      provenance_.cpu_behavioral_lock != "1e4a1148d9fdf0ef3c58e2170b552af8dfebec5435b263da71a2527ca866d792" ||
-      provenance_.cpu_behavioral_file_count != 90 ||
-      provenance_.cpu_revision != "1e4a1148d9fdf0ef3c58e2170b552af8dfebec5435b263da71a2527ca866d792" ||
-      provenance_.source_lock_sha256 != "7ba23000f4cf9bb0a532639b7c26b8fb8cc1a58d5ae5d9e95ebf9b25f9e0fbad" ||
+      provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
+      provenance_.generated_payload_sha256 != "300b57990d05bad9e4150998df7ef8c6bc219c719bb4e2ac82514e1ff9195e34" ||
+      provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
+      provenance_.compatibility_sha256 != "b6a764853afd95c8310eb9c0f0c9eb85dd9e0265835df3f56582e844b1ace613" ||
+      provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
+      provenance_.cpu_behavioral_file_count != 91 ||
+      provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
+      provenance_.source_lock_sha256 != "4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812" ||
       provenance_.cpu_package_sha256 != "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "fd90ff2fb463245f86c61fe21b773982cd6d1709111c2582d0a57b3dec9ecc73" ||
-      provenance_.upstream_revision != "ee523ab910cacf4b6a52c0886fe019bfe89e2933" ||
-      provenance_.upstream_tree != "0ecc1cf7fd1eb731de9a7206d927c7f14899f70b" ||
-      provenance_.upstream_package_sha256 != "65d0243ce2f435c8a31111bb047d460fcdc50b8aebe90a4d36e491fd8a1c375d" ||
-      provenance_.upstream_package_lock_sha256 != "929494da5e20f86f61d6112e2274cf787ba2ad37467f88d3bb9165ae48ccda91" ||
+      provenance_.cpu_source_lock_sha256 != "1fa90dfdeb0c854a1b910909d5f7788e9305f38b6ab39d6182058e914840c7e2" ||
+      provenance_.upstream_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
+      provenance_.upstream_tree != "cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6" ||
+      provenance_.upstream_package_sha256 != "08cb3f947196e49c009a8eba0bcb1350c68a2fe98444d61fb2cd680ed95ffd50" ||
+      provenance_.upstream_package_lock_sha256 != "b4fa6f5d08263c6ee6eef2dbf5d0426f833fce827a32205c79ea3bc295bd8c4b" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
     throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 211 || reference_passes_.size() != 305 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 211 || reference_passes_.size() != 344 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
-  if (strict_manifest && (provenance_.counts.definitions != 205 || provenance_.counts.passes != 305 || provenance_.counts.reference_program_keys != 295 ||
+  if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
       provenance_.counts.backend_programs != 212 || provenance_.counts.compatible_programs != 210 || provenance_.counts.incompatible_programs != 1 ||
-      provenance_.counts.missing_passes != 93 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 166 ||
-      provenance_.counts.incomplete_definitions != 39 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.missing_passes != 132 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 166 ||
+      provenance_.counts.incomplete_definitions != 42 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
   if (provenance_.backend_fragment_rows != 213 || provenance_.backend_unique_fragment_keys != 211 ||
-      provenance_.backend_raw_exact != 205 || provenance_.backend_semantic_exact != 6)
+      provenance_.backend_raw_exact != 211 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());
@@ -827,7 +827,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       if (row.reasons != expected_reasons({{"explicit_scatter_adapter", row.program_key}})) throw std::invalid_argument("Scatter reference reason mismatch: " + row.program_key);
     } else throw std::invalid_argument("Invalid reference compatibility status");
   }
-  if (strict_manifest && expected_reference != 305) throw std::invalid_argument("Compatibility reference authority cardinality drift");
+  if (strict_manifest && expected_reference != 344) throw std::invalid_argument("Compatibility reference authority cardinality drift");
   if (scatter_ && (scatter_->program_key != "filter/wormhole:deposit" || scatter_->adapter != "noisemaker::scatter::wormhole::adapter" || scatter_->registry != "noisemaker::scatter::resolve_scatter_adapter" ||
       scatter_->draw_mode != "points" || scatter_->dimensionality != "image" || scatter_->count != "input" ||
       scatter_->input_texture != "inputTex" || scatter_->destination_mutation != "in_place_accumulate" ||

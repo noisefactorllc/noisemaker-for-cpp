@@ -34,13 +34,13 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "ee523ab910cacf4b6a52c0886fe019bfe89e2933"
-UPSTREAM_TREE = "0ecc1cf7fd1eb731de9a7206d927c7f14899f70b"
-SOURCE_LOCK_SHA256 = "7ba23000f4cf9bb0a532639b7c26b8fb8cc1a58d5ae5d9e95ebf9b25f9e0fbad"
+UPSTREAM_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+UPSTREAM_TREE = "cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6"
+SOURCE_LOCK_SHA256 = "4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812"
 CPU_PACKAGE_SHA256 = "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
-UPSTREAM_PACKAGE_SHA256 = "65d0243ce2f435c8a31111bb047d460fcdc50b8aebe90a4d36e491fd8a1c375d"
-UPSTREAM_LOCK_SHA256 = "929494da5e20f86f61d6112e2274cf787ba2ad37467f88d3bb9165ae48ccda91"
+UPSTREAM_PACKAGE_SHA256 = "08cb3f947196e49c009a8eba0bcb1350c68a2fe98444d61fb2cd680ed95ffd50"
+UPSTREAM_LOCK_SHA256 = "b4fa6f5d08263c6ee6eef2dbf5d0426f833fce827a32205c79ea3bc295bd8c4b"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
 RESERVED_RUNTIME = frozenset({
@@ -789,7 +789,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             reference_passes.append({"effect_id": effect["id"], "pass_index": index, "pass_name": current_pass.get("name"),
                                      "program_key": key, "status": status, "reasons": reasons,
                                      "authority_pass": _authority_pass(current_pass)})
-    if len(reference_passes) != 305 or len(seen_pass_keys) != 295:
+    if len(reference_passes) != 344 or len(seen_pass_keys) != 304:
         raise CompatibilityError("reference pass status cardinality drift")
     scatter = by_key[SCATTER_KEY]
     scatter_contract = {
@@ -868,11 +868,11 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         raise CompatibilityError("forged or duplicate canonical program key")
     if scatter.get("program_key") != SCATTER_KEY or scatter.get("status") != "registered":
         raise CompatibilityError("scatter registration missing or forged")
-    if len(references) != 305 or any(not isinstance(item, dict) for item in references):
+    if len(references) != 344 or any(not isinstance(item, dict) for item in references):
         raise CompatibilityError("reference pass status closure drift")
     allowed_statuses = {"compatible", "incompatible", "missing", "scatter"}
     reference_keys = document.get("reference_key_closure")
-    if not isinstance(reference_keys, list) or len(reference_keys) != 295 \
+    if not isinstance(reference_keys, list) or len(reference_keys) != 304 \
             or sorted(set(reference_keys)) != sorted(reference_keys):
         raise CompatibilityError("reference key closure missing or forged")
     if {item.get("program_key") for item in references} != set(reference_keys):

@@ -1429,12 +1429,12 @@ _LOCKS = {
     KALEIDO_KEY: {
         "profile": "mutable-global-nine-array-kaleido-v1",
         "source_path": "classicNoisedeck/kaleido/kaleido.glsl",
-        "raw_bytes": 27567,
-        "raw_sha256": "3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9",
+        "raw_bytes": 27570,
+        "raw_sha256": "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52",
         "normalized_bytes": 21817,
         "normalized_sha256": "d31299ee69dd0c41965209860ef60a4ad2abf762229cc340383dce2646c6cc1d",
         "functions_sha256": "2ffb48e5f118844d675f9741ccbf7e831ce2f7cfe4609b24777ddb5fb67887ff",
-        "whole_sha256": "bae48e72088ee01b07a1c8cfcba2398df87e2baf64284eebe750665e2aebc749",
+        "whole_sha256": "404e8217b5f532c03537e9d1b7ba4e7e3ae36e921393baceff5c9c6ab63e3818",
         "interface_sha256": "666586f65044abc1a147a7c3007f376fde3833c275f5f25bce9b6027b7eaa717",
         "defines": (
             ("DIRECTION", "int", "2"),

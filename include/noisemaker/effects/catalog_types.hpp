@@ -87,6 +87,8 @@ struct PassDefinition {
   std::optional<BlendDefinition> blend;
   std::optional<std::string> draw_mode;
   std::optional<Value> draw_buffers;
+  std::optional<std::string> type;
+  std::optional<Value> defines;
   std::vector<std::pair<std::string, Value>> raw;
 };
 

@@ -1139,7 +1139,7 @@
       "testpattern_profile": "testpattern-frontend-admission-v1"
     }
   ],
-  "revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "schema": 1,
   "types": [
     "bool",

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "programs": [
+    {
+      "output": "filter_invert.cpp",
+      "pass_bindings": {"mode": "int", "inputTex": "sampler2D"},
+      "program_key": "filter/invert:inv",
+      "raw_sha256": "a18fa342ca8507983495ff5eeaaa7704f227b58d476cf413476b230cbd5d6de4",
+      "source": "filter_invert.glsl",
+      "stripped_sha256": "8e188f77ac1bc93575385153d3cdee18fc0a314f4bb561e05137fdb22e84c185"
+    },
+    {
+      "output": "synth_solid.cpp",
+      "pass_bindings": {"alpha": "float", "color": "vec3"},
+      "program_key": "synth/solid:solid",
+      "raw_sha256": "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c",
+      "source": "synth_solid.glsl",
+      "stripped_sha256": "1ad5094ee24be64efc809666858121a0e6a8f4b7b2f5c75830d47f19cbc88ad6"
+    }
+  ]
+}
