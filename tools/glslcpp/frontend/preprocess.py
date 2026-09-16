@@ -62,8 +62,16 @@ def normalize(source: str, runtime_defines: dict | None = None) -> dict:
         out_lines.append(line)
 
     # Declare runtime-define uniforms (they were lowered to runtime branches).
-    decls = "".join(f"uniform {'float' if t == 'float' else 'int'} {name};\n"
-                    for name, t in runtime_defines.items() if isinstance(t, str))
+    # `t` is the canonical GLSL scalar type name the caller asked for -- pass
+    # it straight through for anything we recognize (float/int/bool) instead
+    # of collapsing every non-float dynamic define to int. A bare `#if NAME`
+    # or a plain `if (NAME)` statement (e.g. synth/curl's `if (RIDGES)`)
+    # requires a real `bool` uniform: GLSL has no implicit int->bool
+    # conversion in a condition, unlike a preprocessor-substituted literal.
+    _RUNTIME_DEFINE_GLSL_TYPES = {"float", "int", "bool"}
+    decls = "".join(
+        f"uniform {t if t in _RUNTIME_DEFINE_GLSL_TYPES else 'int'} {name};\n"
+        for name, t in runtime_defines.items() if isinstance(t, str))
     return {"source": decls + "\n".join(out_lines), "outputs": outputs or ["fragColor"],
             "varyings": varyings, "varying_types": varying_types}
 
