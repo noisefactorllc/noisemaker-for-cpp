@@ -1204,8 +1204,54 @@ void validate_uniform_abi_shape(const EffectStep& step,
   }
   const std::size_t width = vector_width(cpp_type);
   if (width != 0U) {
-    if (value.kind != PlanValue::Kind::array || value.array.size() != width) {
-      return fail("vector has the wrong width");
+    if (value.kind != PlanValue::Kind::array) return fail("vector has the wrong width");
+    const std::size_t supplied_width = value.array.size();
+    if (supplied_width != width) {
+      // The authority's "color" DSL parameter type accepts either 3 or 4
+      // numeric components -- RGB or RGBA, e.g. `#rrggbb`/`#rrggbbaa`, or a
+      // 3- or 4-element literal array -- even though every uniform a
+      // "color" parameter binds to in this catalog is declared vec3 (or,
+      // for synth/remap's zone colors, dvec3): the authority's
+      // src/effects/definition.js `normalizeValue`'s "color" case accepts
+      // `value.length === 3 || value.length === 4`, and the result is fed
+      // straight through to `uniforms[name] = value` in
+      // src/runtime/renderer.js with no truncation. Every canonical kernel
+      // that reads such a uniform destructures it by fixed index (e.g.
+      // `var r = rgb[0], g = rgb[1], b = rgb[2]`, canonical-kernels.js's
+      // filter/tint `rgb_to_hsv`), so a 4th (alpha) component is simply
+      // never read -- confirmed by a static scan of every "color"-typed
+      // uniform's kernel body for length-sensitive vector ops
+      // (distance/length/dot/mix/clamp/...) and by empirically re-rendering
+      // all 64 "color" parameters in the catalog with a 3- vs. 4-component
+      // value (byte-identical in every case but one, handled below). A
+      // supplied width of `width + 1` is that legitimate "RGBA given for a
+      // vec3/dvec3 color uniform" case; anything else is a real mismatch
+      // and stays refused.
+      if (supplied_width != width + 1U) return fail("vector has the wrong width");
+      // classicNoisedeck/composite's `inputColor` is the one exception.
+      // canonical-kernels.js's composite kernel (`canonicalFactory6`)
+      // passes `$bindings["inputColor"]` directly -- never re-sliced to 3
+      // components -- into `distance(inputColor, color1)` /
+      // `distance(inputColor, color2)`, while `color1`/`color2` ARE always
+      // re-sliced to exactly 3 components in `main()`
+      // (`new PooledFloat32Array([color1[0], color1[1], color1[2]])`).
+      // glsl-runtime.js's `#binary` (backing `subtract`, which `distance`
+      // composes from `length`/`dot`) takes its output length from the
+      // LEFT operand whenever it is a vector -- here always `inputColor` --
+      // and reads `component(right, index)` for every lane up to that
+      // length, which is `undefined` (=> NaN) past the always-3-wide right
+      // operand's end whenever inputColor carries a 4th component. `dot()`
+      // sums across all lanes, so that single NaN lane poisons the whole
+      // `distance()` result; NaN compares false against every threshold, so
+      // blendMode 0/1/2 (the only modes that reference inputColor) always
+      // take their "no match" branch. Measured directly: rendering
+      // composite with a 3- vs. 4-component inputColor of the same RGB
+      // produces different bytes. Reproduce the poisoning instead of
+      // silently dropping the alpha.
+      if (step.effect.id == "classicNoisedeck/composite" && binding_name == "inputColor") {
+        const float nan = std::numeric_limits<float>::quiet_NaN();
+        return glsl::Vec3(nan, nan, nan);
+      }
     }
     // DVec3/DVec4 (remap's zone geometry/color/bounds ABI) keep the plan
     // value's full double precision -- unlike Vec2/Vec3/Vec4, which round to

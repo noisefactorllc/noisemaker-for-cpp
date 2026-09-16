@@ -925,6 +925,34 @@ NormalizedArguments EffectRegistry::normalize(const EffectDefinition& definition
   for (std::size_t index = 0; index < params.size(); ++index) {
     if (!present[index] && !params[index].default_value.has_value()) throw std::invalid_argument("Missing required parameter \"" + params[index].name + "\" for " + definition.id);
   }
+  // filter/dither: the authority's findClosestPaletteColor (canonical-kernels.js)
+  // hands each non-trivial palette table (DOT_MATRIX, AMBER, PICO8, C64, CGA,
+  // ZX_SPECTRUM, APPLE_II, EGA -- palette values 2..9) through
+  // `$runtime.copy(pal)` (glsl-runtime.js `copy()`, `alloc(value.length);
+  // out.set(value)`). `pal` is an array of Float32Array triples, so
+  // `value.length` is the palette's ENTRY COUNT (4/15/16), and
+  // `Float32Array.prototype.set` coerces each Float32Array entry with
+  // `Number(...)`, which is NaN for a typed array -- corrupting the palette
+  // copy into an all-NaN flat array. `findClosest4/15/16` then returns a bare
+  // NaN (pal[0], never replaced because every `dist < minDist` compares NaN
+  // to NaN), and the caller's `ditherWithPalette(...).reduce(...)` throws
+  // `TypeError: ... .reduce is not a function`. Only palette 0 (input, which
+  // never reaches findClosestPaletteColor) and 1 (monochrome, whose branch
+  // returns before the corrupted copy) survive. Every other palette value
+  // crashes the authority unconditionally, independent of ditherType, size,
+  // time, or any other parameter -- so refuse it here rather than render a
+  // program the authority can never produce bytes for.
+  if (definition.id == "filter/dither") {
+    for (const auto& [name, value] : values) {
+      if (name == "palette" && value.kind == PlanValue::Kind::number &&
+          value.number != 0.0 && value.number != 1.0) {
+        throw std::invalid_argument(
+            "Parameter \"palette\" is not renderable by the authority: only "
+            "input(0) and monochrome(1) avoid its findClosestPaletteColor "
+            "NaN-corruption bug (canonical-kernels.js copy()/findClosest4-15-16)");
+      }
+    }
+  }
   NormalizedArguments result;
   for (std::size_t index = 0; index < params.size(); ++index) if (present[index] || params[index].default_value.has_value()) result.values.push_back({params[index].name, std::move(values[index].second)});
   return result;
