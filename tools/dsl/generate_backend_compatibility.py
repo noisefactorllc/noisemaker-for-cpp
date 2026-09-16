@@ -39,6 +39,12 @@ from tools.glslcpp.frontend.snow_profile import (
     CUSTOM_ADAPTER_SOURCE as SNOW_CUSTOM_ADAPTER_SOURCE,
     custom_adapter_binding_abi as snow_custom_adapter_binding_abi,
     verify_custom_adapter_binding_abi as snow_verify_custom_adapter_binding_abi)
+from tools.glslcpp.frontend.median_profile import (
+    KEY as MEDIAN_KEY,
+    CUSTOM_ADAPTER_FACTORY as MEDIAN_CUSTOM_ADAPTER_FACTORY,
+    CUSTOM_ADAPTER_SOURCE as MEDIAN_CUSTOM_ADAPTER_SOURCE,
+    custom_adapter_binding_abi as median_custom_adapter_binding_abi,
+    verify_custom_adapter_binding_abi as median_verify_custom_adapter_binding_abi)
 from tools.glslcpp.frontend.lexer import tokenize
 from tools.glslcpp.frontend.preprocess import normalize
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -764,11 +770,44 @@ def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]])
 
 
 # Custom-adapter routes this generator recognizes. bit_effects's ABI is
-# regex-scraped from its literal `b.get<T>("name")` text (see below); remap's
-# is declared explicitly by tools/glslcpp/frontend/remap_profile.py, since
-# bind_remap builds its names at runtime and has no such literal text to
-# scrape (see that module's docstring for the full rationale).
-_CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY, SNOW_KEY})
+# regex-scraped from its literal `b.get<T>("name")` text (see below); remap's,
+# snow's and median's are declared explicitly by their frontend profile
+# modules -- bind_remap builds its names at runtime and has no such literal
+# text to scrape (see remap_profile.py's docstring for the full rationale);
+# median's COULD be scraped like bit_effects's (every one of bind_median's
+# reads is a literal call) but is declared explicitly anyway, to register
+# exactly the way remap does.
+_CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY, SNOW_KEY, MEDIAN_KEY})
+
+
+def _median_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / MEDIAN_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise CompatibilityError("custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_median\s*\([^)]*\)", source):
+        raise CompatibilityError(f"{key}: custom factory identity missing")
+    try:
+        median_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise CompatibilityError(f"{key}: {error}") from error
+    calls = list(median_custom_adapter_binding_abi())
+    # Dispatched bind pointer stays the generated `bind_filter_median_median`
+    # symbol (now a one-line trampoline into bind_median, not the typed
+    # kernel it used to be); `factory`/`canonical` name the real hand-written
+    # function it trampolines to -- same split as remap's route above.
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": MEDIAN_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
 
 
 def _remap_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
@@ -830,6 +869,8 @@ def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
         return _remap_custom_factory_route(repository, key)
     if key == SNOW_KEY:
         return _snow_custom_factory_route(repository, key)
+    if key == MEDIAN_KEY:
+        return _median_custom_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
     if source_path.is_symlink() or not source_path.is_file():
         raise CompatibilityError("custom factory source missing")

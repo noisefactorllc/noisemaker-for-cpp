@@ -283,6 +283,11 @@ if __package__ in (None, ""):
         CUSTOM_ADAPTER_SOURCE as SNOW_CUSTOM_ADAPTER_SOURCE,
         custom_adapter_binding_abi as snow_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as snow_verify_custom_adapter_binding_abi)
+    from tools.glslcpp.frontend.median_profile import (
+        CUSTOM_ADAPTER_FACTORY as MEDIAN_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as MEDIAN_CUSTOM_ADAPTER_SOURCE,
+        custom_adapter_binding_abi as median_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as median_verify_custom_adapter_binding_abi)
     from tools.glslcpp.frontend.mutable_global_array_profile import (
         CELLREFRACT_KEY as MUTABLE_GLOBAL_ARRAY_CELLREFRACT_KEY,
         EFFECTS_KEY as MUTABLE_GLOBAL_ARRAY_EFFECTS_KEY,
@@ -652,6 +657,11 @@ else:
         CUSTOM_ADAPTER_SOURCE as SNOW_CUSTOM_ADAPTER_SOURCE,
         custom_adapter_binding_abi as snow_custom_adapter_binding_abi,
         verify_custom_adapter_binding_abi as snow_verify_custom_adapter_binding_abi)
+    from .frontend.median_profile import (
+        CUSTOM_ADAPTER_FACTORY as MEDIAN_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as MEDIAN_CUSTOM_ADAPTER_SOURCE,
+        custom_adapter_binding_abi as median_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as median_verify_custom_adapter_binding_abi)
     from .frontend.mutable_global_array_profile import (
         CELLREFRACT_KEY as MUTABLE_GLOBAL_ARRAY_CELLREFRACT_KEY,
         EFFECTS_KEY as MUTABLE_GLOBAL_ARRAY_EFFECTS_KEY,
@@ -2407,12 +2417,17 @@ def _compatibility_source_hashes(
 # C++ factory, not a typed-generated kernel. Each entry names the factory
 # source file and the canonical (dispatched) factory function; bit_effects's
 # ABI is regex-scraped from its literal `b.get<T>("name")` text below (it has
-# none of remap's runtime-built names), remap's is declared explicitly (see
-# tools/glslcpp/frontend/remap_profile.py's module docstring for why).
+# none of remap's runtime-built names), remap's and median's are declared
+# explicitly (see tools/glslcpp/frontend/remap_profile.py's and
+# median_profile.py's module docstrings for why -- median's COULD be
+# regex-scraped like bit_effects's, since every one of its reads is a
+# literal call, but is declared explicitly anyway to register exactly the
+# way remap does).
 _CUSTOM_ADAPTER_FACTORIES: dict[str, str] = {
     BIT_EFFECTS_KEY: "noisemaker::effects::bind_bit_effects",
     REMAP_KEY: REMAP_CUSTOM_ADAPTER_FACTORY,
     SNOW_KEY: SNOW_CUSTOM_ADAPTER_FACTORY,
+    MEDIAN_KEY: MEDIAN_CUSTOM_ADAPTER_FACTORY,
 }
 
 
@@ -2468,6 +2483,38 @@ def _snow_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     }
 
 
+def _median_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / MEDIAN_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise GeneratorError(f"{key}: custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_median\s*\([^)]*\)", source):
+        raise GeneratorError(f"{key}: custom factory identity missing")
+    try:
+        median_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise GeneratorError(f"{key}: {error}") from error
+    calls = list(median_custom_adapter_binding_abi())
+    # The dispatched bind pointer stays the generated `bind_filter_median_median`
+    # symbol (a one-line trampoline into bind_median now, not the typed
+    # kernel it used to be) -- see src/typed_generated/typed_slice.cpp's
+    # kCanonicalRoutes row comment. `emitted_factory` names that symbol;
+    # `factory`/`canonical` (the caller's admission cross-check target) name
+    # the real hand-written function it trampolines to.
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": MEDIAN_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha256(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     emitted = "bind_" + key.replace("/", "_").replace(":", "_")
     if key not in _CUSTOM_ADAPTER_FACTORIES:
@@ -2477,6 +2524,8 @@ def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
         return _remap_factory_route(repository, key)
     if key == SNOW_KEY:
         return _snow_factory_route(repository, key)
+    if key == MEDIAN_KEY:
+        return _median_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
     source = source_path.read_text(encoding="utf-8")
     calls = []
