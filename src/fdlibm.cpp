@@ -665,6 +665,39 @@ double kernel_sin(double x, double y, int iy) {
   }
 }
 
+// The shared r/v/s polynomial combination __kernel_tan needs, factored into
+// its own never-inlined function. This is NOT an algorithmic change --
+// compare byte-for-byte with the two lines this replaces inside
+// __kernel_tan below, textually identical, zero explicit std::fma. It
+// exists because of a measured, reproducible compiler fact, not a
+// portability shortcut: with these two lines inlined directly into
+// kernel_tan (as fdlibm.cpp originally had them), the exact same source
+// compiles to DIFFERENT machine code depending on surrounding code shape
+// -- clang's -ffp-contract=fast auto-fusion heuristic for these
+// multiply-adds is sensitive to register pressure/scheduling context from
+// the rest of kernel_tan's body, and that context-dependence is exactly
+// why this port measured a residual 304/2,000,000 (0.015%) divergence
+// from V8's Math.tan even though every other fdlibm-derived function in
+// this file reaches 0/2,000,000 under the same -ffp-contract=fast.
+// Isolating the expression in its own `noinline` function removes that
+// context-dependence: compiled on its own, with no other live variables
+// competing for registers, clang's heuristic makes one fixed choice
+// regardless of the caller, and that choice reproduces V8's arm64 AND
+// x86-64 binaries exactly (verified: 0/2,000,000 on both architectures,
+// at both -O2 and -O3, see docs/port-engineering/v8-math/v8-math-report.md
+// section on tan). tests/test_fdlibm_contract_pin.cpp pins several of the
+// specific inputs that were divergent before this change, specifically so
+// a future refactor that re-inlines this (or a compiler upgrade that
+// changes the isolated function's own codegen) fails loudly instead of
+// silently reintroducing the residual.
+__attribute__((noinline)) double kernel_tan_combine(double y, double z,
+                                                      double s, double r,
+                                                      double v, double T0) {
+  double result = y + z * (s * (r + v) + y);
+  result += T0 * s;
+  return result;
+}
+
 // ============================================================
 // __kernel_tan(x, y, iy): tangent on [-pi/4, pi/4] (plus the low-order
 // correction y and the "which half" flag iy), exactly as
@@ -726,8 +759,7 @@ double kernel_tan(double x, double y, int iy) {
   r = T[1] + w * (T[3] + w * (T[5] + w * (T[7] + w * (T[9] + w * T[11]))));
   v = z * (T[2] + w * (T[4] + w * (T[6] + w * (T[8] + w * (T[10] + w * T[12])))));
   s = z * x;
-  r = y + z * (s * (r + v) + y);
-  r += T[0] * s;
+  r = kernel_tan_combine(y, z, s, r, v, T[0]);
   w = x + r;
   if (ix >= 0x3fe59428) {
     v = iy;
@@ -1057,6 +1089,36 @@ double fd_atan2(double y, double x) {
 // cannot share this TU's -ffp-contract=fast override. See that file's
 // header comment and docs/port-engineering/v8-math/v8-math-report.md.
 
+// The two combining expressions fd_log's k!=0 branches need, each factored
+// into its own never-inlined function -- same rationale and technique as
+// kernel_tan_combine below: the identical source, inlined directly inside
+// fd_log (as this file originally had it), measurably diverges from V8 on
+// arm64 under this file's -ffp-contract=fast (2/50,000 residual at that
+// scale; see docs/port-engineering/v8-math/v8-math-report.md).
+//
+// An earlier version of this fix used an explicit std::fma() at each site
+// instead of a noinline extraction, and that reached 0/2,000,000 on arm64
+// -- but REGRESSED x86-64 to 180/2,000,000 divergent, because std::fma()
+// unconditionally fuses on every architecture, while V8's own x86-64
+// binary does not fuse this expression at all (the x86-64 baseline this
+// project targets has no hardware fused-multiply-add for
+// -ffp-contract=fast to select, so V8's own ieee754.cc build stays
+// unfused there). Isolating the plain, unfused expression in its own
+// noinline function instead lets ordinary -ffp-contract=fast auto-fusion
+// decide per architecture -- fusing on arm64 (matching V8's arm64
+// binary), staying unfused on x86-64 baseline (matching V8's x86-64
+// binary) -- with no explicit std::fma anywhere. Verified 0/2,000,000 on
+// both arm64 and x86-64.
+__attribute__((noinline)) double log_combine_a(double s, double hfsq,
+                                                 double r, double dk,
+                                                 double ln2_lo) {
+  return s * (hfsq + r) + dk * ln2_lo;
+}
+__attribute__((noinline)) double log_combine_b(double s, double f, double r,
+                                                 double dk, double ln2_lo) {
+  return s * (f - r) - dk * ln2_lo;
+}
+
 // ============================================================
 // log(x): natural logarithm.
 //
@@ -1138,17 +1200,12 @@ double fd_log(double x) {
     if (k == 0)
       return f - (hfsq - s * (hfsq + r));
     else
-      // std::fma here (not s*(hfsq+r) + dk*ln2_lo) reproduces V8's actual
-      // arm64 binary bit-for-bit -- verified by differential bisection
-      // against Math.log (see docs/port-engineering/v8-math/), not
-      // assumed. Ambient -ffp-contract alone (either setting) does not
-      // reach this fusion for this expression shape.
-      return dk * ln2_hi - ((hfsq - std::fma(s, hfsq + r, dk * ln2_lo)) - f);
+      return dk * ln2_hi - ((hfsq - log_combine_a(s, hfsq, r, dk, ln2_lo)) - f);
   } else {
     if (k == 0)
       return f - s * (f - r);
     else
-      return dk * ln2_hi - ((std::fma(s, f - r, -(dk * ln2_lo))) - f);
+      return dk * ln2_hi - (log_combine_b(s, f, r, dk, ln2_lo) - f);
   }
 }
 

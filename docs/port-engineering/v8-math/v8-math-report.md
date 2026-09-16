@@ -79,22 +79,29 @@ direct differential evidence (not inferred):
    `-ffp-contract=off`, 108-208/50,000 under `=fast` -- the *opposite*
    direction from every other fdlibm-derived function in this file, where
    `fast` is required to reach 0.
-4. **log needed one explicit `std::fma`, not just the ambient flag.** Under
-   blanket `-ffp-contract=fast`, log's residual dropped from 134/50,000 to
-   2/50,000 but did not reach 0. Bisected (side-by-side intermediate-value
-   trace against both `-ffp-contract=off` and `=fast`, matching neither):
-   the k!=0 combining step `s*(hfsq+r) + dk*ln2_lo` needed an *explicit*
-   `std::fma(s, hfsq + r, dk * ln2_lo)` (and its i<=0 mirror) to reach V8's
-   bit -- the automatic contraction heuristic under `-ffp-contract=fast`
-   does not choose to fuse this particular expression shape on this
-   compiler, even though it fuses others in the same file that make
-   sin/cos/exp/expm1/tanh/asin/acos/atan/atan2 reach 0 with no manual help.
-   Fixed: 0/50,000 (and 0/2,000,000 at full scale, see below).
+4. **log's combining step needed isolating from its surrounding function,
+   not just the ambient flag.** Under blanket `-ffp-contract=fast`, log's
+   residual dropped from 134/50,000 to 2/50,000 but did not reach 0. This
+   was FIRST (incorrectly) fixed with an explicit `std::fma(s, hfsq + r,
+   dk * ln2_lo)`, which reached 0/50,000 on arm64 -- but that fix was
+   itself wrong (Section 6a): it regressed x86-64 to 180/2,000,000 at full
+   scale, because `std::fma()` fuses unconditionally on every
+   architecture while V8's own x86-64 binary does not fuse this
+   expression at all. The correct fix (same technique `tan` needed,
+   Section 6): factor the plain, unfused expression into its own
+   `__attribute__((noinline))` function and let ordinary
+   `-ffp-contract=fast` auto-fusion decide per architecture. 0/2,000,000
+   on both arm64 and x86-64.
+5. **tan's combining step had the identical disease as log's**, at a
+   much larger scale (304/2,000,000, not 2/50,000) -- see Section 6 for
+   the full root-cause writeup and fix (same noinline-extraction
+   technique, no explicit fma).
 
-Findings 2 and 4 were only found because this pass built a real
-exhaustive differential harness and *used* it, rather than trusting the
-project-wide `-ffp-contract=fast` override to be sufficient by
-construction.
+Findings 2, 4, and 5 were only found because this pass built a real
+exhaustive differential harness AND used it at the project's actual
+build flags (`-O3 -DNDEBUG`, both architectures) rather than trusting the
+project-wide `-ffp-contract=fast` override, or a single architecture's
+result, to be sufficient by construction.
 
 ## 4. The contraction/FMA resolution (deterministic, evidence-gated)
 
@@ -102,14 +109,15 @@ No single global flag setting is correct for every function. Resolved as
 three, evidence-gated groups, each pinned by direct measurement rather than
 by architecture theory alone:
 
-- **`src/fdlibm.cpp`** (sin, cos, tan\*, asin, acos, atan, atan2, exp,
+- **`src/fdlibm.cpp`** (sin, cos, tan, asin, acos, atan, atan2, exp,
   expm1, log, tanh, pow-wrapper): compiled with a per-source
   `set_source_files_properties(... COMPILE_OPTIONS -ffp-contract=fast)`
   override in `CMakeLists.txt`, layered on top of the project-wide
-  `-ffp-contract=off`. Verified safe on **both** target architectures:
+  `-ffp-contract=off`. Verified safe on **both** target architectures, for
+  **every** function this file owns, with 0 explicit `std::fma()` calls
+  anywhere in it:
   - arm64 (NEON always has hardware FMA): reproduces V8's own arm64
-    binary's contraction, measured 0 divergent for every function except
-    tan (below).
+    binary's contraction, measured 0 divergent for every function.
   - x86-64 **without `-mfma`** (this project's actual baseline --
     `-march`/`-mfma` do not appear anywhere in `CMakeLists.txt`, confirmed
     by grep, and CI's `ubuntu-latest` native job configures no arch flags
@@ -118,18 +126,25 @@ by architecture theory alone:
     is a byte-for-byte no-op there -- proven, not assumed, by cross-compiling
     this exact TU with `clang++ -arch x86_64 ... -ffp-contract=fast` and
     running the differential harness against Node's official x64 darwin
-    build under Rosetta (Section 5): 0 divergent for every function this
-    file owns.
-  - `log` additionally needed one explicit `std::fma` at the one site
-    bisection identified (Section 3.4); explicit `std::fma()` is a portable
-    C++20 standard-library call whose value does not depend on the ambient
-    `-ffp-contract` setting, so it is correct under either flag and on
-    either architecture.
+    build under Rosetta: 0 divergent for every function this file owns.
+  - `tan` and `log` each needed one additional structural change beyond
+    the ambient flag: their shared multi-line combining expressions had to
+    be factored into their own `__attribute__((noinline))` functions
+    (`kernel_tan_combine`, `log_combine_a`/`log_combine_b`) to remove a
+    measured surrounding-code-shape sensitivity in clang's auto-fusion
+    heuristic (Sections 6, 6a). This is NOT an explicit-fma workaround --
+    each helper is the plain, unfused original formula, byte-identical to
+    what fdlibm.cpp had inline before, and the fix is exactly as portable
+    as the rest of this file: it relies on the SAME ambient
+    `-ffp-contract=fast` auto-fusion, just with the compiler making its
+    fusion decision in a smaller, context-free function.
   - `tests/test_fdlibm_contract_pin.cpp` pins the override is actually
     taking effect (last-flag-wins on the compiler command line) by
-    asserting `fdlibm::expm1` at a specific bit pattern equals the value
-    only reachable under `-ffp-contract=fast`, captured directly from this
-    environment's `node -e` (not retyped from the superseded report).
+    asserting `fdlibm::expm1`, `fdlibm::tan` (two inputs), and
+    `fdlibm::log` each at a specific bit pattern only reachable with the
+    override AND the noinline extractions both intact, captured directly
+    from this environment's `node -e` (not retyped from the superseded
+    report).
 - **`src/fdlibm_off.cpp`** (log2, hypot 2/3/N-arg): compiled under the
   project's ordinary `-ffp-contract=off` -- no override, because for both
   functions here `fast` is measurably *worse*: log2's Dekker summation
@@ -173,13 +188,23 @@ Run at N = 2,000,000 per function, on:
   `clang++ -arch x86_64` (still `-ffp-contract=fast` /
   `-ffp-contract=off` respectively per file) and run under Rosetta.
 
+**Methodology correction made during integrator review**: every run in
+this section is compiled with `-O3 -DNDEBUG -Wall -Wextra -Wpedantic
+-Werror`, matching `CMakeLists.txt`'s actual `CMAKE_CXX_FLAGS_RELEASE`
+byte-for-byte (confirmed via `cmake --system-information` and the literal
+`flags.make` this project's own build generates). An earlier pass of this
+harness built its probes at `-O2`, which is NOT what ships; that gap is
+exactly what let `tan`'s residual go unnoticed until the integrator asked
+for a from-scratch comparison against V8's own `-ffp-contract` behavior
+per function (Section 6).
+
 ### Results (both architectures identical -- one table)
 
 | function | N | exact | divergent | % divergent | max ULP |
 |---|---|---|---|---|---|
 | sin | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 | cos | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
-| tan | 2,000,000 | ~1,999,696 | ~304 | ~0.0152% | 1 |
+| tan | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 | asin | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 | acos | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 | atan | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
@@ -193,43 +218,78 @@ Run at N = 2,000,000 per function, on:
 | hypot (2-arg) | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 | hypot (3-arg) | 2,000,000 | 2,000,000 | 0 | 0% | 0 |
 
-13 of 14 functions: 0 divergent, on both architectures, at 2,000,000
-inputs each (28,000,000 total comparisons per architecture). Only `tan`
-has a residual (below).
+**14 of 14 functions: 0 divergent, on both architectures, at 2,000,000
+inputs each (28,000,000 total comparisons per architecture).**
 
-## 6. tan: honest residual, not claimed as zero
+## 6. tan: root-caused and fixed to 0/2,000,000
 
-`tan` improved from ~417/50,000 (`-ffp-contract=off`, no fdlibm) to
-~9/50,000 (`-ffp-contract=fast`) to ~304/2,000,000 (0.0152%) at full scale
--- roughly two orders of magnitude better than an unfused port, and better
-than every flag/fma combination this pass tried. It was NOT resolved
-further within this pass's time budget. Root-cause evidence gathered, not
-just asserted:
-- Instrumented trace of one residual input showed `kernel_tan`'s own
-  combining arithmetic (`r = y + z*(s*(r+v)+y); r += T[0]*s;`) computes
-  the **identical** bit pattern under both `-ffp-contract=off` and `=fast`
-  for that input -- the divergence from V8 is NOT inside this file's own
-  polynomial evaluation.
-- The divergence therefore originates in the shared `__ieee754_rem_pio2` /
-  `__kernel_rem_pio2` argument-reduction machinery `tan` shares with `sin`
-  and `cos` (both of which measure exactly 0 divergent over the same input
-  distribution). `tan`'s kernel involves division (`w*w/(w+v)`, `-1.0/w`),
-  which plausibly amplifies a sub-ULP reduction difference that `sin`/`cos`
-  don't expose.
-- Six explicit-`std::fma` variants at the two most plausible sites in
-  `kernel_tan`, and one at `__ieee754_rem_pio2`'s primary reduction step,
-  were each tried against a real residual case (bisection scripts kept
-  informally in this pass's scratch area, not committed -- reproducible
-  from this report's description): none reached V8's bit at that input,
-  and the two that came closest on that single input measured *worse*
-  (46/50,000) at full-sweep scale than the ambient-flag-only baseline
-  (9/50,000). This is recorded so a future pass does not repeat the same
-  six attempts.
-- Flagged for a future pass, same template as this report's Section 3 used
-  for log/log2/atan2: a wider bisection across `__kernel_rem_pio2`'s
-  refinement branches (the `i > 16` / `i > 49` blocks), which this pass's
-  one traced example did not enter (`i = 10`) but other residual inputs
-  might.
+The integrator correctly rejected the earlier "304/2,000,000, documented
+residual" as not good enough. Root cause, found by comparing byte-for-byte
+against the vendored V8 source and by per-statement bisection against the
+real (not simplified) `kernel_tan`/`tan`/`fd_log`:
+
+1. **`kernel_tan` and `tan()` are byte-for-byte identical to
+   `v8_ieee754_reference.cc`** (line-by-line diff performed; no
+   transcription error, no missing branch, no `iy`-handling difference
+   from sin/cos's dispatch). The `|x| < 2**-28` and `|x| >= 0x3FE59428`
+   branches, and the `iy` odd/even dispatch, all match V8 exactly.
+2. **Classifying all 304 pre-fix residual inputs** (script: none entered
+   the `>= 0x3FE59428` large-angle branch; 10 never reached
+   `__ieee754_rem_pio2` at all (`|x| <= pi/4`); the rest split ~evenly
+   between `iy=1` and `iy=-1`). This proved the divergence was in the
+   *shared* `r/v/s` polynomial combination both paths execute before
+   branching, not in the reduction machinery or the reciprocal branch.
+3. **The actual mechanism, found by direct A/B compiled-object
+   comparison, not inference**: the two-line combination
+   (`r = y + z*(s*(r+v)+y); r += T[0]*s;`), compiled *inline* inside
+   `kernel_tan` exactly as fdlibm.cpp originally had it, produces
+   DIFFERENT machine code under `-ffp-contract=fast` depending on
+   `kernel_tan`'s surrounding code shape -- confirmed directly: wrapping
+   the identical two lines in an unrelated `switch` statement (even with
+   only the original case reachable) changed the compiled result from
+   304/2,000,000 divergent to 0/2,000,000, proving the auto-fusion
+   heuristic is sensitive to register pressure/scheduling context from
+   the rest of the function, not to the two lines' own semantics.
+4. **The fix**: factor those two lines into their own
+   `__attribute__((noinline))` function, `kernel_tan_combine` (no explicit
+   `std::fma`, no algorithm change -- byte-identical formula, just
+   isolated). Isolating the expression removes the context-dependence:
+   compiled standalone, with no competing live variables, clang's
+   `-ffp-contract=fast` heuristic makes one fixed choice, and that choice
+   reproduces V8 exactly. Verified against the REAL (not a copy)
+   `src/fdlibm.cpp`, at both `-O2` and `-O3`, on both architectures: **0
+   divergent out of 2,000,000 in every combination.**
+5. **`tests/test_fdlibm_contract_pin.cpp`** pins both the small-bypass
+   input (`0x3fdca1f6cacd184c`, never touches `rem_pio2`) and the
+   large-reduction input (`0xc087d64e1c088d03`) that were divergent before
+   this fix, so a future re-inlining (or a compiler upgrade that changes
+   the isolated function's own codegen) fails loudly.
+
+This same "noinline extraction, no explicit fma" technique also replaced
+an earlier, INCORRECT fix to `log` -- see Section 3a.
+
+## 6a. A second architecture-split bug, caught only by testing x86-64 at
+the correct optimization level
+
+The Section 3 fix for `log`'s residual (originally: explicit
+`std::fma(s, hfsq + r, dk * ln2_lo)`) reached 0/2,000,000 on arm64 but,
+re-measured at `-O3` on x86-64 (the methodology correction above), showed
+**180/2,000,000 divergent, max 1 ULP**. Root cause: `std::fma()` fuses
+UNCONDITIONALLY on every architecture (it is defined to always produce a
+single, correctly-rounded fused result), but V8's own x86-64 binary does
+NOT fuse this expression -- this project's x86-64 baseline has no
+hardware fused-multiply-add for `-ffp-contract=fast` to select, so V8's
+own `ieee754.cc` build stays unfused there, while arm64's NEON always has
+hardware FMA and V8's arm64 binary fuses it. An unconditional
+`std::fma()` therefore matched arm64-V8 but forced the WRONG (fused)
+behavior on x86-64. Fixed the same way as `tan`: two
+`__attribute__((noinline))` helpers (`log_combine_a`, `log_combine_b`),
+plain unfused formula, no explicit `std::fma` anywhere -- letting ordinary
+`-ffp-contract=fast` auto-fusion decide per architecture, matching V8's
+own per-architecture build in both directions. Verified 0/2,000,000 on
+arm64 AND x86-64 after the change. `tests/test_fdlibm_contract_pin.cpp`
+pins the specific input (`0x40769487cdb54080`) that discriminates this
+fix from the rejected explicit-fma version.
 
 ## 7. Call sites migrated
 
@@ -277,12 +337,15 @@ just asserted:
 
 ## 8. Native / oracle / corpus results
 
-- `noisemaker-cpu-tests` (Release build): 491 PASS, 3 FAIL -- all 3 are the
+- `noisemaker-cpu-tests` (Release build): 494 PASS, 3 FAIL -- all 3 are the
   pre-existing `synth/remap` pass-not-executable/compatible failures
   (Section 7), reproduced identically on a pristine clone of the
-  unmodified commit; not caused by this pass. New tests added by this
-  pass (`fdlibm_contract_pin_expm1_matches_v8_fma_contracted_result`,
-  `test_no_raw_transcendentals`'s two cases) all PASS.
+  unmodified commit; not caused by this pass. All 5 tests added by this
+  pass PASS: `fdlibm_contract_pin_expm1_matches_v8_fma_contracted_result`,
+  `fdlibm_contract_pin_tan_small_bypass_matches_v8`,
+  `fdlibm_contract_pin_tan_large_reduction_matches_v8`,
+  `fdlibm_contract_pin_log_matches_v8`, and
+  `test_no_raw_transcendentals`'s two cases.
 - `python -m tools.glslcpp.check_corpus --check`,
   `check_semantics --check`, `generate_kernels --check`: all clean (the
   `remap` ABI-mismatch diagnostic line is pre-existing and does not fail
@@ -308,60 +371,112 @@ just asserted:
   unmodified commit. Nothing in this pass touches any oracle generator or
   its pinned closure list.
 
-## 9b. Two real transcription-bug findings caught only by exhaustive testing
+## 9. Pixel-level parity sweep (before/after)
 
-Beyond the math-layer bugs (Section 3), a fast ad hoc before/after pixel
-comparison (bypassing the slow Python harness, direct binary diffs) at
-first appeared to show `synth/julia` and `synth/newton` diverging between
-the pristine and fixed builds even at their *default* time/size -- which
-would have been a striking, easy-to-see manifestation of the math fix.
-Re-verified carefully with unique per-run output filenames (the first
-attempt reused one filename across a shell loop's iterations) and it does
-NOT hold: both builds render byte-identical output, matching the live JS
-authority's own hash, at every (time, size) pair tried. This correction is
-recorded here deliberately -- an unverified "before/after" claim would
-have been exactly the kind of unsupported ops-fact this pass's own
-standards forbid.
+(An earlier, less rigorous pass at this section, using this pass's own
+`pixel_sweep.py` on 5 hand-picked effects, briefly produced a false
+"julia/newton diverge" result from a shell-scripting bug -- reused output
+filenames across a loop's iterations -- that was caught and corrected
+before being reported; it is superseded entirely by the integrator's
+parity harness results below, which cover those same effects plus 107
+more with byte-hash-level before/after proof, not a hand-rolled check.)
 
-## 9. Pixel-level sweep (before/after)
+Superseded this pass's own earlier `pixel_sweep.py` (5 effects, corpus
+defaults + a hand-varied size/time grid) with the integrator-provided
+**parameter/geometry sweep harness**, copied into this lane at
+`tools/parity/sweep.py` + `tools/parity/dump_catalog.mjs`. Unlike
+`pixel_sweep.py`, it varies every declared parameter across its domain
+(numeric min/max/interior, every enum, booleans, colors/vectors), not just
+size and time, so it is a strictly stronger check.
 
-`pixel_sweep.py` (this directory) renders every admitted corpus record for
-`synth/julia`, `synth/mandelbrot`, `synth/newton`, `classicNoisedeck/fractal`,
-and `filter/wormhole` -- every compatible effect whose kernel calls a
-transcendental this pass touched -- through the live JS authority and a
-given C++ `noisemaker-dsl-cpu-case` driver, at several sizes and `time`
-values, requiring byte-exact RGBA8 equality, and can run two different
-driver binaries ("before": the pristine, unmodified commit; "after": this
-pass's build) to show the effect directly.
+Ran with `--variants 20 --seed 20260916 --no-chains`, on TWO driver
+binaries -- "before" (`/tmp/v8math_pristine`, a fresh clone of this lane's
+base commit, i.e. before ANY change in this task) and "after" (this lane's
+current `build-lane`, with every fix above) -- against the same JS
+authority, same seed, same catalog:
 
-Result at 64x64 and 97x61 (default `time`): 6/6 successful renders (2
-sizes x {julia, mandelbrot, newton}) byte-exact against the live JS
-authority, identically in the pristine ("before") build and this pass's
-("after") build. `classicNoisedeck/fractal` and `filter/wormhole` refuse
-in the C++ executor at every size tried, for reasons unrelated to this
-pass and present identically before and after (`fractal`: "parameter
-palette selects palette entry 12 and the authority overrides its
-built-in table..."; `wormhole`: "scatter is not enabled in Task 6") --
-pre-existing, documented refusals, not part of this pass's scope.
+**Named 13 effects** (`filter/clouds`, `filter/scanlineError`,
+`filter/texture`, `mixer/patternMix`, `synth/cell`, `synth/curl`,
+`synth/gabor`, `synth/modPattern`, `synth/perlin`, `synth/mandala`,
+`synth/pattern`, `synth/gradient`, `classicNoisedeck/splat`), 260 cases
+(20 variants x 13 effects):
 
-Extended to 256x256 and a wide `time` sweep (0.25 default, 10, 100, 1000,
-10,000, 100,000, -500) via direct binary before/after diffs (bypassing the
-Python harness for speed): julia and newton also render byte-identical
-between the pristine and fixed build at every (time, size) combination
-tried, matching the live JS authority's hash in each case checked
-directly. **Honest conclusion, not the more dramatic one a first
-(and incorrect) pass at this comparison seemed to show (Section 9b):**
-none of the three math bugs this pass fixed (atan2's dropped `m &= 1`
-line, hypot's wrong compensation formula, tan's residual) happens to be
-reachable by these three effects' actual coordinate/parameter ranges, even
-under wide time/zoom variation, at the sizes tried. This is plausible on
-its own terms -- the atan2 bug needs `\|y/x\| > 2**60`, an extreme ratio a
-smoothly-varying fractal coordinate grid essentially never produces except
-by engineering a center point deliberately on an axis -- and it is why
-this exact hole survived the project's existing 719-fixture ledger and
-166-record corpus test for as long as it did. The exhaustive per-function
-differential harness (Section 5), not a pixel-level image diff at
-plausible sizes, is what actually closes it.
+| | before | after |
+|---|---|---|
+| byte_exact | 172 | 172 |
+| cpp_refused_only | 66 | 66 |
+| divergent | 22 | 22 |
+
+**All 22 divergent cases produce byte-identical output in "before" and
+"after"** (compared by `actualSha256` per case, not just the divergent
+count -- every one of the 22 case ids matches exactly, same hash, same
+first-mismatch offset/channel/expected/actual, same mismatch count). Zero
+cases moved between classifications in either direction: nothing this
+pass's fixes broke, nothing this pass's fixes happened to repair either.
+
+**Root-caused to the exact pixel and the exact call path, not just
+diffed**, for the simplest of the 22 (`filter__clouds__v16`, 17x11,
+reproduced standalone with the exact DSL
+`solid(color:#3a7).clouds(seed:1,scale:0.1,speed:0)`, divergent at
+output pixel (6,2): expected R=241, actual R=240). Instrumented the
+actual `pixel()` function (temporarily, reverted after -- `git diff` was
+empty before continuing) to print every value feeding `cloudNoise`/
+`simplex2d` at that exact pixel (`context.frag_coord = (6.5, 8.5)` in this
+kernel's bottom-up convention). Two independent, direct findings, not
+inference:
+1. **`animPhase = 0` and `animSpeed = 0`** for this DSL (`speed: 0`), so
+   `cloudNoise`'s `timeOffset` term is
+   `(cos(animPhase+octavePhase) - cos(octavePhase)) * octaveRadius*animSpeed`
+   -- with `animPhase = 0`, `cos(0 + octavePhase)` and `cos(octavePhase)`
+   are the SAME argument bit-for-bit, so the subtraction is exactly 0
+   *symbolically*, before any rounding question even arises, and the
+   whole term is additionally multiplied by `animSpeed = 0`. **`cos` and
+   `sin` cannot be the cause at this pixel by construction, independent
+   of any measurement.**
+2. The only other transcendental on the path is `pow(2, i)` for small
+   integer `i` (0-6, the octave loop) inside `freq`/`amp` -- proven exact
+   against V8 at 2,000,000 inputs including small-integer exponents
+   (Section 5).
+
+That leaves only non-transcendental arithmetic (`floor`, `fract`, `abs`,
+`dot`, `mix`, plain multiply/add/divide) in `simplex2d`'s permutation
+noise as the possible cause -- consistent with the 1-bit-per-channel
+pattern (`maxDelta` 1 in 8 of the 11 named-effect cases with a
+diagnostic; two `filter/scanlineError` cases reach `maxDelta` 3 and 222,
+still byte-identical before/after) pointing at a float32-narrowing-order
+or similar arithmetic-sequencing difference elsewhere in the typed
+emitter's generated code (the JS authority narrows to float32 on every
+`PooledFloat32Array` store; the C++ emitter's narrowing points in a
+multi-term sum may not land in the same places), independent of which
+transcendental implementation is called underneath. Combined with the
+before/after byte-identity above (proving this pass changed nothing about
+it), **this is a real, pre-existing, non-math bug, out of scope for "the
+fdlibm/pow/hypot hole" this pass owns, and is reported here
+rather than fixed or hidden.**
+
+**Broader effect coverage** (every other effect whose generated kernel
+calls a transcendental, grepped from `typed_slice.cpp`: 94 additional
+effect ids, 1,880 cases, `--variants 20`, same seed), run on BOTH driver
+binaries:
+
+| | before | after |
+|---|---|---|
+| byte_exact | 1,195 | 1,195 |
+| cpp_refused_only | 665 | 665 |
+| both_refused | 20 | 20 |
+| divergent | 0 | 0 |
+
+Identical classification counts, **0 divergent in both.** (One case
+transiently reported `harness_error` in the "after" run because this
+run's driver binary was mid-relink from a concurrent rebuild in this same
+pass; re-ran it standalone once the binary was stable and it is
+`byte_exact`, folded into the 1,195 above.)
+
+Combined with the named-13 sweep above and the pure per-function
+differential harness (Section 5), this pass's fixes are verified with
+**zero regressions and zero unintended changes** across 107 effects,
+4,280 rendered variants (2,140 x 2 builds), and 28,000,000 direct
+function-level comparisons on two architectures.
 
 ## 10. Files changed
 
