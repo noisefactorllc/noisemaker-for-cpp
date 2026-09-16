@@ -88,6 +88,33 @@ CPP_TYPES = {
     "ivec4": "glsl::IVec4", "uvec2": "glsl::UVec2", "uvec3": "glsl::UVec3",
     "uvec4": "glsl::UVec4", "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
 }
+# Mirrors tools/glslcpp/emit_typed_cpp.py's
+# `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS` exactly -- the authority binds
+# classicNoisedeck's paletteAmp/paletteFreq/paletteOffset/palettePhase as raw
+# un-rounded JS doubles (renderer.js buildBindings()), narrowing to float32
+# only where its own per-op arithmetic narrows; a `glsl::Vec3` (float lanes)
+# uniform ABI narrows at construction instead, before that arithmetic runs,
+# which is measurably not byte-exact against the authority. This is the only
+# uniform/program carrier list this generator's `_cpp_type()` override
+# applies to; every other program or uniform keeps its ordinary CPP_TYPES
+# mapping unconditionally. Two independent generators (this one and
+# emit_typed_cpp.py) each compute a uniform's cpp_type; they must agree, so
+# this list is deliberately kept identical to, not derived from, the other.
+CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES = (
+    "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
+)
+CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS = frozenset({
+    "classicNoisedeck/cellNoise:cellNoise",
+    "classicNoisedeck/colorLab:colorLab",
+    "classicNoisedeck/fractal:fractal",
+    "classicNoisedeck/shapeMixer:shapeMixer",
+    "classicNoisedeck/shapes:shapes",
+})
+CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
+    (program_key, uniform_name)
+    for program_key in CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
+    for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
+)
 SUPPORTED_DRAW_MODES = frozenset({"fragment", "triangles"})
 
 
@@ -434,7 +461,12 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
         else:
             source = None
             source_name = mapped
-        item = {"name": name, "type": typ, "cpp_type": _cpp_type(typ), "source": source,
+        program_key = typed_record.get("program_key")
+        cpp_type = (
+            "glsl::DVec3"
+            if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS
+            else _cpp_type(typ))
+        item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
                 "source_name": source_name}
         uniforms.append(item)
         if source is None:

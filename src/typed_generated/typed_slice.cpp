@@ -666,7 +666,7 @@ BoundKernel bind_classicNoisedeck_caustic_caustic(const glsl::Bindings& bindings
 // Source SHA-256: 9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8
 namespace typed_2 {
 struct State final : KernelState {
-  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, std::int32_t shape_value, double scale_value, double cellScale_value, double cellSmooth_value, double variation_value, double speed_value, std::int32_t paletteMode_value, glsl::Vec3 paletteOffset_value, glsl::Vec3 paletteAmp_value, glsl::Vec3 paletteFreq_value, glsl::Vec3 palettePhase_value, std::int32_t colorMode_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, std::int32_t texInfluence_value, double texIntensity_value, const Surface* tex_value) : time(time_value), seed(seed_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), shape(shape_value), scale(scale_value), cellScale(cellScale_value), cellSmooth(cellSmooth_value), variation(variation_value), speed(speed_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), colorMode(colorMode_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), texInfluence(texInfluence_value), texIntensity(texIntensity_value), tex(tex_value) {}
+  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, std::int32_t shape_value, double scale_value, double cellScale_value, double cellSmooth_value, double variation_value, double speed_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t colorMode_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, std::int32_t texInfluence_value, double texIntensity_value, const Surface* tex_value) : time(time_value), seed(seed_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), shape(shape_value), scale(scale_value), cellScale(cellScale_value), cellSmooth(cellSmooth_value), variation(variation_value), speed(speed_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), colorMode(colorMode_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), texInfluence(texInfluence_value), texIntensity(texIntensity_value), tex(tex_value) {}
   double time;
   std::int32_t seed;
   glsl::Vec2 resolution;
@@ -680,10 +680,10 @@ struct State final : KernelState {
   double variation;
   double speed;
   std::int32_t paletteMode;
-  glsl::Vec3 paletteOffset;
-  glsl::Vec3 paletteAmp;
-  glsl::Vec3 paletteFreq;
-  glsl::Vec3 palettePhase;
+  glsl::DVec3 paletteOffset;
+  glsl::DVec3 paletteAmp;
+  glsl::DVec3 paletteFreq;
+  glsl::DVec3 palettePhase;
   std::int32_t colorMode;
   std::int32_t cyclePalette;
   double rotatePalette;
@@ -823,12 +823,14 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 pal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept {
-  [[maybe_unused]] glsl::Vec3 a = state.paletteOffset;
-  [[maybe_unused]] glsl::Vec3 b = state.paletteAmp;
-  [[maybe_unused]] glsl::Vec3 c = state.paletteFreq;
-  [[maybe_unused]] glsl::Vec3 d = state.palettePhase;
   t = (static_cast<double>((static_cast<double>(t) * static_cast<double>(state.repeatPalette))) + static_cast<double>((static_cast<double>(state.rotatePalette) * static_cast<double>(static_cast<float>(0.01)))));
-  [[maybe_unused]] glsl::Vec3 color = glsl::Vec3((a + glsl::Vec3((b * glsl::cos((static_cast<float>(6.28318) * ((c * t) + d)))))));
+  glsl::Vec3 color{};
+  for (int lane = 0; lane < 3; ++lane) {
+    const float argument = noisemaker::f32(static_cast<double>(noisemaker::f32(6.28318)) * ((state.paletteFreq[lane] * t) + state.palettePhase[lane]));
+    const float cosine = glsl::cos(static_cast<double>(argument));
+    const float product = noisemaker::f32(state.paletteAmp[lane] * static_cast<double>(cosine));
+    color[lane] = noisemaker::f32(state.paletteOffset[lane] + static_cast<double>(product));
+  }
   if (state.paletteMode == std::int32_t(1)) {
     color = glsl::Vec3(hsv2rgb(state, context, color));
   } else {
@@ -1029,7 +1031,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_2
 
 BoundKernel bind_classicNoisedeck_cellNoise_cellNoise(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_2::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get<std::int32_t>("shape"), bindings.get_number("scale"), bindings.get_number("cellScale"), bindings.get_number("cellSmooth"), bindings.get_number("variation"), bindings.get_number("speed"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::Vec3>("paletteOffset"), bindings.get<glsl::Vec3>("paletteAmp"), bindings.get<glsl::Vec3>("paletteFreq"), bindings.get<glsl::Vec3>("palettePhase"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get<std::int32_t>("texInfluence"), bindings.get_number("texIntensity"), &bindings.texture("tex"));
+  const auto state = std::make_shared<typed_2::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get<std::int32_t>("shape"), bindings.get_number("scale"), bindings.get_number("cellScale"), bindings.get_number("cellSmooth"), bindings.get_number("variation"), bindings.get_number("speed"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get<std::int32_t>("texInfluence"), bindings.get_number("texIntensity"), &bindings.texture("tex"));
   (void)bindings;
   return BoundKernel(state, &typed_2::pixel);
 }
@@ -1830,7 +1832,7 @@ BoundKernel bind_classicNoisedeck_coalesce_coalesce(const glsl::Bindings& bindin
 // Source SHA-256: 4bf9ea925634ee684e01917ea3b690d332b37905d21c8aa7377bf88625570945
 namespace typed_5 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, double time_value, double levels_value, std::int32_t dither_value, double hueRotation_value, double hueRange_value, bool invert_value, double brightness_value, double contrast_value, double saturation_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::Vec3 paletteOffset_value, glsl::Vec3 paletteAmp_value, glsl::Vec3 paletteFreq_value, glsl::Vec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), time(time_value), levels(levels_value), dither(dither_value), hueRotation(hueRotation_value), hueRange(hueRange_value), invert(invert_value), brightness(brightness_value), contrast(contrast_value), saturation(saturation_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, double time_value, double levels_value, std::int32_t dither_value, double hueRotation_value, double hueRange_value, bool invert_value, double brightness_value, double contrast_value, double saturation_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), time(time_value), levels(levels_value), dither(dither_value), hueRotation(hueRotation_value), hueRange(hueRange_value), invert(invert_value), brightness(brightness_value), contrast(contrast_value), saturation(saturation_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -1847,10 +1849,10 @@ struct State final : KernelState {
   double saturation;
   std::int32_t colorMode;
   std::int32_t paletteMode;
-  glsl::Vec3 paletteOffset;
-  glsl::Vec3 paletteAmp;
-  glsl::Vec3 paletteFreq;
-  glsl::Vec3 palettePhase;
+  glsl::DVec3 paletteOffset;
+  glsl::DVec3 paletteAmp;
+  glsl::DVec3 paletteFreq;
+  glsl::DVec3 palettePhase;
   std::int32_t cyclePalette;
   double rotatePalette;
   double repeatPalette;
@@ -1969,12 +1971,14 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 pal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept {
-  [[maybe_unused]] glsl::Vec3 a = state.paletteOffset;
-  [[maybe_unused]] glsl::Vec3 b = state.paletteAmp;
-  [[maybe_unused]] glsl::Vec3 c = state.paletteFreq;
-  [[maybe_unused]] glsl::Vec3 d = state.palettePhase;
   t = (static_cast<double>((static_cast<double>(t) * static_cast<double>(state.repeatPalette))) + static_cast<double>((static_cast<double>(state.rotatePalette) * static_cast<double>(static_cast<float>(0.01)))));
-  [[maybe_unused]] glsl::Vec3 color = glsl::Vec3((a + glsl::Vec3((b * glsl::cos((static_cast<float>(6.28318) * ((c * t) + d)))))));
+  glsl::Vec3 color{};
+  for (int lane = 0; lane < 3; ++lane) {
+    const float argument = noisemaker::f32(static_cast<double>(noisemaker::f32(6.28318)) * ((state.paletteFreq[lane] * t) + state.palettePhase[lane]));
+    const float cosine = glsl::cos(static_cast<double>(argument));
+    const float product = noisemaker::f32(state.paletteAmp[lane] * static_cast<double>(cosine));
+    color[lane] = noisemaker::f32(state.paletteOffset[lane] + static_cast<double>(product));
+  }
   if (state.paletteMode == std::int32_t(1)) {
     color = glsl::Vec3(hsv2rgb(state, context, color));
   } else {
@@ -2168,7 +2172,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_5
 
 BoundKernel bind_classicNoisedeck_colorLab_colorLab(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_5::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("time"), bindings.get_number("levels"), bindings.get<std::int32_t>("dither"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<bool>("invert"), bindings.get_number("brightness"), bindings.get_number("contrast"), bindings.get_number("saturation"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::Vec3>("paletteOffset"), bindings.get<glsl::Vec3>("paletteAmp"), bindings.get<glsl::Vec3>("paletteFreq"), bindings.get<glsl::Vec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"));
+  const auto state = std::make_shared<typed_5::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("time"), bindings.get_number("levels"), bindings.get<std::int32_t>("dither"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<bool>("invert"), bindings.get_number("brightness"), bindings.get_number("contrast"), bindings.get_number("saturation"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"));
   (void)bindings;
   return BoundKernel(state, &typed_5::pixel);
 }
@@ -3065,7 +3069,7 @@ BoundKernel bind_classicNoisedeck_effects_effects(const glsl::Bindings& bindings
 // Source SHA-256: a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b
 namespace typed_8 {
 struct State final : KernelState {
-  State(double time_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t type_value, std::int32_t symmetry_value, double offsetX_value, double offsetY_value, double centerX_value, double centerY_value, double zoomAmt_value, double speed_value, double rotation_value, std::int32_t iterations_value, std::int32_t mode_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::Vec3 paletteOffset_value, glsl::Vec3 paletteAmp_value, glsl::Vec3 paletteFreq_value, glsl::Vec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double hueRange_value, double levels_value, glsl::Vec3 bgColor_value, double bgAlpha_value, double cutoff_value) : time(time_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), type(type_value), symmetry(symmetry_value), offsetX(offsetX_value), offsetY(offsetY_value), centerX(centerX_value), centerY(centerY_value), zoomAmt(zoomAmt_value), speed(speed_value), rotation(rotation_value), iterations(iterations_value), mode(mode_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), hueRange(hueRange_value), levels(levels_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value), cutoff(cutoff_value) {}
+  State(double time_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t type_value, std::int32_t symmetry_value, double offsetX_value, double offsetY_value, double centerX_value, double centerY_value, double zoomAmt_value, double speed_value, double rotation_value, std::int32_t iterations_value, std::int32_t mode_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double hueRange_value, double levels_value, glsl::Vec3 bgColor_value, double bgAlpha_value, double cutoff_value) : time(time_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), type(type_value), symmetry(symmetry_value), offsetX(offsetX_value), offsetY(offsetY_value), centerX(centerX_value), centerY(centerY_value), zoomAmt(zoomAmt_value), speed(speed_value), rotation(rotation_value), iterations(iterations_value), mode(mode_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), hueRange(hueRange_value), levels(levels_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value), cutoff(cutoff_value) {}
   double time;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -3083,10 +3087,10 @@ struct State final : KernelState {
   std::int32_t mode;
   std::int32_t colorMode;
   std::int32_t paletteMode;
-  glsl::Vec3 paletteOffset;
-  glsl::Vec3 paletteAmp;
-  glsl::Vec3 paletteFreq;
-  glsl::Vec3 palettePhase;
+  glsl::DVec3 paletteOffset;
+  glsl::DVec3 paletteAmp;
+  glsl::DVec3 paletteFreq;
+  glsl::DVec3 palettePhase;
   std::int32_t cyclePalette;
   double rotatePalette;
   double repeatPalette;
@@ -3466,7 +3470,7 @@ BoundKernel bind_classicNoisedeck_fractal_fractal(const glsl::Bindings& bindings
   if (mode < 0 || mode > 1) {
     throw glsl::KernelBindingError("classicNoisedeck/fractal:fractal mode must be one of the authenticated choices [0,1]");
   }
-  const auto state = std::make_shared<typed_8::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("type"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoomAmt"), bindings.get_number("speed"), bindings.get_number("rotation"), iterations, mode, bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::Vec3>("paletteOffset"), bindings.get<glsl::Vec3>("paletteAmp"), bindings.get<glsl::Vec3>("paletteFreq"), bindings.get<glsl::Vec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("hueRange"), bindings.get_number("levels"), bindings.get<glsl::Vec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get_number("cutoff"));
+  const auto state = std::make_shared<typed_8::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("type"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoomAmt"), bindings.get_number("speed"), bindings.get_number("rotation"), iterations, mode, bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("hueRange"), bindings.get_number("levels"), bindings.get<glsl::Vec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get_number("cutoff"));
   (void)bindings;
   return BoundKernel(state, &typed_8::pixel);
 }
@@ -5508,7 +5512,7 @@ BoundKernel bind_classicNoisedeck_refract_refract(const glsl::Bindings& bindings
 // Source SHA-256: 51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b
 namespace typed_15 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t seed_value, std::int32_t blendMode_value, double loopScale_value, std::int32_t paletteMode_value, glsl::Vec3 paletteOffset_value, glsl::Vec3 paletteAmp_value, glsl::Vec3 paletteFreq_value, glsl::Vec3 palettePhase_value, std::int32_t animate_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double levels_value, bool wrap_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), seed(seed_value), blendMode(blendMode_value), loopScale(loopScale_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), animate(animate_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), levels(levels_value), wrap(wrap_value) {}
+  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t seed_value, std::int32_t blendMode_value, double loopScale_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t animate_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double levels_value, bool wrap_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), seed(seed_value), blendMode(blendMode_value), loopScale(loopScale_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), animate(animate_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), levels(levels_value), wrap(wrap_value) {}
   const Surface* inputTex;
   const Surface* tex;
   glsl::Vec2 resolution;
@@ -5519,10 +5523,10 @@ struct State final : KernelState {
   std::int32_t blendMode;
   double loopScale;
   std::int32_t paletteMode;
-  glsl::Vec3 paletteOffset;
-  glsl::Vec3 paletteAmp;
-  glsl::Vec3 paletteFreq;
-  glsl::Vec3 palettePhase;
+  glsl::DVec3 paletteOffset;
+  glsl::DVec3 paletteAmp;
+  glsl::DVec3 paletteFreq;
+  glsl::DVec3 palettePhase;
   std::int32_t animate;
   std::int32_t cyclePalette;
   double rotatePalette;
@@ -5840,12 +5844,14 @@ struct State final : KernelState {
       return glsl::FloatExpr<3>(static_cast<float>(0.0));
     }
   }
-  [[maybe_unused]] glsl::Vec3 a = state.paletteOffset;
-  [[maybe_unused]] glsl::Vec3 b = state.paletteAmp;
-  [[maybe_unused]] glsl::Vec3 c = state.paletteFreq;
-  [[maybe_unused]] glsl::Vec3 d = state.palettePhase;
   t = (static_cast<double>((static_cast<double>(t) * static_cast<double>(state.repeatPalette))) + static_cast<double>((static_cast<double>(state.rotatePalette) * static_cast<double>(static_cast<float>(0.01)))));
-  [[maybe_unused]] glsl::Vec3 color = glsl::Vec3((a + glsl::Vec3((b * glsl::cos((static_cast<float>(6.28318) * ((c * t) + d)))))));
+  glsl::Vec3 color{};
+  for (int lane = 0; lane < 3; ++lane) {
+    const float argument = noisemaker::f32(static_cast<double>(noisemaker::f32(6.28318)) * ((state.paletteFreq[lane] * t) + state.palettePhase[lane]));
+    const float cosine = glsl::cos(static_cast<double>(argument));
+    const float product = noisemaker::f32(state.paletteAmp[lane] * static_cast<double>(cosine));
+    color[lane] = noisemaker::f32(state.paletteOffset[lane] + static_cast<double>(product));
+  }
   if (state.paletteMode == std::int32_t(1)) {
     color = glsl::Vec3(hsv2rgb(state, context, color));
   } else {
@@ -6165,7 +6171,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_15
 
 BoundKernel bind_classicNoisedeck_shapeMixer_shapeMixer(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_15::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("loopScale"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::Vec3>("paletteOffset"), bindings.get<glsl::Vec3>("paletteAmp"), bindings.get<glsl::Vec3>("paletteFreq"), bindings.get<glsl::Vec3>("palettePhase"), bindings.get<std::int32_t>("animate"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("levels"), bindings.get<bool>("wrap"));
+  const auto state = std::make_shared<typed_15::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("loopScale"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("animate"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("levels"), bindings.get<bool>("wrap"));
   (void)bindings;
   return BoundKernel(state, &typed_15::pixel);
 }
@@ -6174,7 +6180,7 @@ BoundKernel bind_classicNoisedeck_shapeMixer_shapeMixer(const glsl::Bindings& bi
 // Source SHA-256: 28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e
 namespace typed_16 {
 struct State final : KernelState {
-  State(double time_value, std::int32_t seed_value, bool wrap_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double loopAScale_value, double loopBScale_value, double speedA_value, double speedB_value, std::int32_t paletteMode_value, glsl::Vec3 paletteOffset_value, glsl::Vec3 paletteAmp_value, glsl::Vec3 paletteFreq_value, glsl::Vec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value) : time(time_value), seed(seed_value), wrap(wrap_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), loopAScale(loopAScale_value), loopBScale(loopBScale_value), speedA(speedA_value), speedB(speedB_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value) {}
+  State(double time_value, std::int32_t seed_value, bool wrap_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double loopAScale_value, double loopBScale_value, double speedA_value, double speedB_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value) : time(time_value), seed(seed_value), wrap(wrap_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), loopAScale(loopAScale_value), loopBScale(loopBScale_value), speedA(speedA_value), speedB(speedB_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value) {}
   double time;
   std::int32_t seed;
   bool wrap;
@@ -6186,10 +6192,10 @@ struct State final : KernelState {
   double speedA;
   double speedB;
   std::int32_t paletteMode;
-  glsl::Vec3 paletteOffset;
-  glsl::Vec3 paletteAmp;
-  glsl::Vec3 paletteFreq;
-  glsl::Vec3 palettePhase;
+  glsl::DVec3 paletteOffset;
+  glsl::DVec3 paletteAmp;
+  glsl::DVec3 paletteFreq;
+  glsl::DVec3 palettePhase;
   std::int32_t cyclePalette;
   double rotatePalette;
   double repeatPalette;
@@ -6496,12 +6502,14 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 pal([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept {
-  [[maybe_unused]] glsl::Vec3 a = state.paletteOffset;
-  [[maybe_unused]] glsl::Vec3 b = state.paletteAmp;
-  [[maybe_unused]] glsl::Vec3 c = state.paletteFreq;
-  [[maybe_unused]] glsl::Vec3 d = state.palettePhase;
   t = (static_cast<double>((static_cast<double>(t) * static_cast<double>(state.repeatPalette))) + static_cast<double>((static_cast<double>(state.rotatePalette) * static_cast<double>(static_cast<float>(0.01)))));
-  [[maybe_unused]] glsl::Vec3 color = glsl::Vec3((a + glsl::Vec3((b * glsl::cos((static_cast<float>(6.28318) * ((c * t) + d)))))));
+  glsl::Vec3 color{};
+  for (int lane = 0; lane < 3; ++lane) {
+    const float argument = noisemaker::f32(static_cast<double>(noisemaker::f32(6.28318)) * ((state.paletteFreq[lane] * t) + state.palettePhase[lane]));
+    const float cosine = glsl::cos(static_cast<double>(argument));
+    const float product = noisemaker::f32(state.paletteAmp[lane] * static_cast<double>(cosine));
+    color[lane] = noisemaker::f32(state.paletteOffset[lane] + static_cast<double>(product));
+  }
   if (state.paletteMode == std::int32_t(1)) {
     color = glsl::Vec3(hsv2rgb(state, context, color));
   } else {
@@ -6782,7 +6790,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_16
 
 BoundKernel bind_classicNoisedeck_shapes_shapes(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_16::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("wrap"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::Vec3>("paletteOffset"), bindings.get<glsl::Vec3>("paletteAmp"), bindings.get<glsl::Vec3>("paletteFreq"), bindings.get<glsl::Vec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"));
+  const auto state = std::make_shared<typed_16::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("wrap"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"));
   (void)bindings;
   return BoundKernel(state, &typed_16::pixel);
 }
@@ -30489,21 +30497,21 @@ constexpr std::array<KernelFactory, 213> kCatalog{{
 constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"classicNoisedeck/bitEffects:bitEffects", "noisemaker::effects::bind_bit_effects", "bind_classicNoisedeck_bitEffects_bitEffects", "custom_adapter", "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b", "8f356b8ee94ca2b24c42612d6672340aed73765aa37bcd076ce3730b7728f11e", "default-only", "COLOR_SCHEME=20;FORMULA=0;INTERP=0;MASK_COLOR_SCHEME=1;MASK_FORMULA=10;MODE=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "6e832a653b8fc6179be04c72a505501c04fcc234f493cb925eabcbcb9f1ec2c2", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "90c6fd51fda687348a92373857d49ab0045fd6571831765cc24eefadd422aec2", &noisemaker::effects::bind_bit_effects},
     {"classicNoisedeck/caustic:caustic", "bind_classicNoisedeck_caustic_caustic", "bind_classicNoisedeck_caustic_caustic", "typed_emitter", "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d", "3e98bf1e43078e5b42d17f73f37d58d764789eb086868a862ae6ee137f9e5e51", "default-only", "NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "2d069fd2c1b2c058a6d64d34cf943f5303f0e113b0e8e76ed3f8225bb477fff1", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_caustic_caustic},
-    {"classicNoisedeck/cellNoise:cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "typed_emitter", "9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8", "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85", "none", "", "e93de6c8f46919a3709b61a9b897956d2556bbe8db7b44bcd1868867d20b75f6", "074595affff322c3888e53b98ca2d07e43b73d1b05a6d6dc96bab62a73c56ba3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellNoise_cellNoise},
+    {"classicNoisedeck/cellNoise:cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "typed_emitter", "9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8", "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85", "none", "", "e93de6c8f46919a3709b61a9b897956d2556bbe8db7b44bcd1868867d20b75f6", "c629e6de43637d76cebbac4a7d2f49990de0b4e157c7a6202dc803d4838a6871", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellNoise_cellNoise},
     {"classicNoisedeck/cellRefract:cellRefract", "bind_classicNoisedeck_cellRefract_cellRefract", "bind_classicNoisedeck_cellRefract_cellRefract", "typed_emitter", "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70", "e0df92eda5c1e7338dcbb054ef7e08d5697ccb3db9fbb79449d87a951dc173d8", "default-only", "KERNEL=0;SHAPE=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "03c219f0273c27b4e6f784647accaa4604705ae1042545df29f3141c1780e435", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellRefract_cellRefract},
     {"classicNoisedeck/coalesce:coalesce", "bind_classicNoisedeck_coalesce_coalesce", "bind_classicNoisedeck_coalesce_coalesce", "typed_emitter", "a0f96df68ce058e5e2154c78880b5a611eaf5ab9adcd64242368978c813b6b58", "5442b956df178a4854c2111a99dfee821ea40b4287b5032db81e1277cf76f8c2", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "f1d2dc0f8c0b7d16e146389ac51490d60319cd936add92a5c6c51e13ecd4c766", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_coalesce_coalesce},
-    {"classicNoisedeck/colorLab:colorLab", "bind_classicNoisedeck_colorLab_colorLab", "bind_classicNoisedeck_colorLab_colorLab", "typed_emitter", "4bf9ea925634ee684e01917ea3b690d332b37905d21c8aa7377bf88625570945", "c0382753b33ff19abf120ffa898dedafc7732a77daaf70d954ee8d1635d7429a", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "15cad1942d71287266368e3440213a56520f8b3def4ec94b625b91a8c0d09897", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_colorLab_colorLab},
+    {"classicNoisedeck/colorLab:colorLab", "bind_classicNoisedeck_colorLab_colorLab", "bind_classicNoisedeck_colorLab_colorLab", "typed_emitter", "4bf9ea925634ee684e01917ea3b690d332b37905d21c8aa7377bf88625570945", "c0382753b33ff19abf120ffa898dedafc7732a77daaf70d954ee8d1635d7429a", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "b974c4463f0a47a6afb6dd54d109615eeb0d8217c6dd4d57e0cef869ac4e1f2e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_colorLab_colorLab},
     {"classicNoisedeck/composite:composite", "bind_classicNoisedeck_composite_composite", "bind_classicNoisedeck_composite_composite", "typed_emitter", "ae3f29a129016653a5705647cb61c5c6448504e44ad321539fb4ce2e120d9123", "d0429b0fb6bec601654e551cd99c4f82a9bcd35d7298b0b2f7e2b90ea44bac0d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "fc7c162009de2fe1f604e7b695a471a7f38e4add38229860e5c13ccbae418cba", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_composite_composite},
     {"classicNoisedeck/effects:effects", "bind_classicNoisedeck_effects_effects", "bind_classicNoisedeck_effects_effects", "typed_emitter", "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c", "196f7fd2e8efc1fe546f1d200caef086311d6b889937062185059a4647774eb0", "default-only", "EFFECT=0;FLIP=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "69e22b42e76123c886162455a854e1f2e4ad9baef16ec6c1dd375a3143a2e375", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_effects_effects},
-    {"classicNoisedeck/fractal:fractal", "bind_classicNoisedeck_fractal_fractal", "bind_classicNoisedeck_fractal_fractal", "typed_emitter", "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b", "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "e2a910ff406c8259ebdb0ae7d2fb08362776b5009a2046e643c111a9f68095d0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_fractal_fractal},
+    {"classicNoisedeck/fractal:fractal", "bind_classicNoisedeck_fractal_fractal", "bind_classicNoisedeck_fractal_fractal", "typed_emitter", "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b", "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "b3f238f0dde0cafa8fbf1c302785d3689e38d6422e08c396e9d81f4566ee9431", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_fractal_fractal},
     {"classicNoisedeck/glitch:glitch", "bind_classicNoisedeck_glitch_glitch", "bind_classicNoisedeck_glitch_glitch", "typed_emitter", "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134", "18c825ca788a34601c37fe9b92bcdfac459b161152daec55180079e970d4f403", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d943ffb87711414ba260a2a49aaa31e3df68ed4e9b3bdb23870fab6a3574435f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_glitch_glitch},
     {"classicNoisedeck/kaleido:kaleido", "bind_classicNoisedeck_kaleido_kaleido", "bind_classicNoisedeck_kaleido_kaleido", "typed_emitter", "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52", "56be169c4101a109d3b370d8ac2f3aad91aa6030d3fd0e660017e1ba257c0da9", "default-only", "DIRECTION=2;KERNEL=0;LOOP_OFFSET=10;METRIC=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "77fcf603caf02990cbd176ca239b26a8c32622aff1a3d9933c891cee37e5f745", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_kaleido_kaleido},
     {"classicNoisedeck/lensDistortion:lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "typed_emitter", "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444", "b2e660a89fff9c62dad6d083e7a81302e10af981db4fcfb9849e00c91c47e5f7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f847baf53d024e261ba494db421b607c9711b2e12df85710c1d27ad3836afb63", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_lensDistortion_lensDistortion},
     {"classicNoisedeck/moodscape:moodscape", "bind_classicNoisedeck_moodscape_moodscape", "bind_classicNoisedeck_moodscape_moodscape", "typed_emitter", "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44", "f7f870f37d82b3406b5cce4f2248fcb362084688bee6aa18ffcf960bad8ca0ed", "default-only", "COLOR_MODE=2;NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "0e1e4db0c97e9c0e65ffa674b104b177ba891b54ccd1a2c654c85cc40d5aefbb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_moodscape_moodscape},
     {"classicNoisedeck/noise:noise", "bind_classicNoisedeck_noise_noise", "bind_classicNoisedeck_noise_noise", "typed_emitter", "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138", "49092c171718e69eb5e4e7f48a561004ea01bc94eaa4f76b9b90cf446e1c505a", "default-only", "COLOR_MODE=6;LOOP_OFFSET=300;METRIC=0;NOISE_TYPE=10;REFRACT_MODE=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "562de05d02108b26920202ea40ba7c2813d8625ec504f129e1b7477292f154e8", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_noise_noise},
     {"classicNoisedeck/refract:refract", "bind_classicNoisedeck_refract_refract", "bind_classicNoisedeck_refract_refract", "typed_emitter", "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a49cfa2", "59ff19cdf6bf811af7e3d29e10f74471670cac20921aa53c0f1466e5ce8a57eb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "3b9b39414d81fdbd685b4464d6e10dc87ffd9c020c5a8f27f09b755231f42d13", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_refract_refract},
-    {"classicNoisedeck/shapeMixer:shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "typed_emitter", "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b", "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46", "default-only", "LOOP_OFFSET=10", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "99fe3439e3cdf2f47f6caa42316aa447e32638c295cb6d548aa6e0a2127bc6b1", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapeMixer_shapeMixer},
-    {"classicNoisedeck/shapes:shapes", "bind_classicNoisedeck_shapes_shapes", "bind_classicNoisedeck_shapes_shapes", "typed_emitter", "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e", "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "20359d3a5fba972feb5e2402e71492215e0f7bdf46719ab1e7ac871fdde68ec2", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapes_shapes},
+    {"classicNoisedeck/shapeMixer:shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "typed_emitter", "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b", "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46", "default-only", "LOOP_OFFSET=10", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "160350637fec3d53f933adba50e3ed50fd95ac9fda34c74da2a782b70a5edd0c", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapeMixer_shapeMixer},
+    {"classicNoisedeck/shapes:shapes", "bind_classicNoisedeck_shapes_shapes", "bind_classicNoisedeck_shapes_shapes", "typed_emitter", "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e", "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "d0ae1e3d502916c30a775f9350ead9e235b09bd82d6d5c9075f4c2f618da596e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapes_shapes},
     {"classicNoisedeck/splat:splat", "bind_classicNoisedeck_splat_splat", "bind_classicNoisedeck_splat_splat", "typed_emitter", "cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced", "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6e332f579840e83ae7b10bf483a92d6fe841cc33efa97ffe10a18b1af8ec7018", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_splat_splat},
     {"filter/adjust:adjust", "bind_filter_adjust_adjust", "bind_filter_adjust_adjust", "typed_emitter", "dafbae039de5463cb5a94bb5e3046fd65b3212240e15a14996186e3d4d88b71d", "7daf8c804ed6bb78918a6834966466805ec75113b69686c8c8c58808e76edb9d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a219a4baab4e73e66728b0ce80a586cadcb64663ad046e512b29e062c2e2bd7b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_adjust_adjust},
     {"filter/bc:bc", "bind_filter_bc_bc", "bind_filter_bc_bc", "typed_emitter", "1422e35c223dd3b9095dc0eb7b26b1b9f75767748689b15fd3e4006128089701", "6d60f2efae772f867fcac7513045104827009305500cae4df64e64bb62e38ff7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "69cc5e5df95b4c178679ad7346c2aea96649bdd01121a769fd44e1fc144a873f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bc_bc},

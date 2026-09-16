@@ -16165,12 +16165,16 @@ void shape_mixer_require_same_surface(const noisemaker::Surface& reference,
   const auto vec3 = [&](std::string_view name, std::size_t offset) {
     if (missing == name) return;
     if (wrong == name) bindings.set_uniform(std::string(name), 1.0);
+    // classicNoisedeck/shapeMixer:shapeMixer is on the double-precision
+    // palette-uniform carrier list (see executor.cpp's
+    // classic_noisedeck_palette_uses_double_carrier); this lambda is only
+    // ever called for the four palette uniforms in this fixture builder.
     else bindings.set_uniform(
         std::string(name),
-        noisemaker::glsl::Vec3(
-            shape_mixer_float(fixture.palette_f32_words[offset]),
-            shape_mixer_float(fixture.palette_f32_words[offset + 1U]),
-            shape_mixer_float(fixture.palette_f32_words[offset + 2U])));
+        noisemaker::glsl::DVec3(
+            static_cast<double>(shape_mixer_float(fixture.palette_f32_words[offset])),
+            static_cast<double>(shape_mixer_float(fixture.palette_f32_words[offset + 1U])),
+            static_cast<double>(shape_mixer_float(fixture.palette_f32_words[offset + 2U]))));
   };
   const auto number = [&](std::string_view name, std::size_t offset) {
     if (missing == name) return;
@@ -16849,7 +16853,15 @@ struct Shapes183Overrides {
                            const noisemaker::glsl::Vec3& value) {
     if (overrides.missing == name) return;
     if (overrides.wrong == name) bindings.set_uniform(std::string(name), 1.0);
-    else bindings.set_uniform(std::string(name), value);
+    // classicNoisedeck/shapes:shapes is on the double-precision
+    // palette-uniform carrier list (see executor.cpp's
+    // classic_noisedeck_palette_uses_double_carrier); this lambda is only
+    // ever called for the four palette uniforms in this fixture builder.
+    else bindings.set_uniform(
+        std::string(name),
+        noisemaker::glsl::DVec3(static_cast<double>(value[0]),
+                                static_cast<double>(value[1]),
+                                static_cast<double>(value[2])));
   };
 
   number("time", overrides.time_word.value_or(fixture.time_word));
@@ -16927,11 +16939,17 @@ struct Shapes183Overrides {
     for (std::size_t lane = 0; lane < 2U; ++lane)
       push32(noisemaker::float_bits_to_uint(value[lane]));
   };
-  const auto vector3 = [&](std::string_view name) {
+  // classicNoisedeck/shapes:shapes is on the double-precision
+  // palette-uniform carrier list (see executor.cpp's
+  // classic_noisedeck_palette_uses_double_carrier); its four palette
+  // uniforms bind `glsl::DVec3`, narrowed to float32 here only for this
+  // digest, matching the single narrowing the authority's own Vec3-shaped
+  // binding used to perform at this same probe.
+  const auto palette_vector3 = [&](std::string_view name) {
     ++visited;
-    const auto value = bindings.get<noisemaker::glsl::Vec3>(name);
+    const auto value = bindings.get<noisemaker::glsl::DVec3>(name);
     for (std::size_t lane = 0; lane < 3U; ++lane)
-      push32(noisemaker::float_bits_to_uint(value[lane]));
+      push32(noisemaker::float_bits_to_uint(noisemaker::f32(value[lane])));
   };
   number("time");
   integer("seed");
@@ -16944,10 +16962,10 @@ struct Shapes183Overrides {
   number("speedA");
   number("speedB");
   integer("paletteMode");
-  vector3("paletteOffset");
-  vector3("paletteAmp");
-  vector3("paletteFreq");
-  vector3("palettePhase");
+  palette_vector3("paletteOffset");
+  palette_vector3("paletteAmp");
+  palette_vector3("paletteFreq");
+  palette_vector3("palettePhase");
   integer("cyclePalette");
   number("rotatePalette");
   number("repeatPalette");
@@ -27829,7 +27847,15 @@ struct Controls {
   const auto vector3 = [&](std::string_view name, noisemaker::glsl::Vec3 value) {
     if (skip(name)) return;
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
-    else result.set_uniform(std::string(name), value);
+    // classicNoisedeck/colorLab:colorLab is on the double-precision
+    // palette-uniform carrier list (see executor.cpp's
+    // classic_noisedeck_palette_uses_double_carrier); this lambda is only
+    // ever called for the four palette uniforms in this fixture builder.
+    else result.set_uniform(
+        std::string(name),
+        noisemaker::glsl::DVec3(static_cast<double>(value[0]),
+                                static_cast<double>(value[1]),
+                                static_cast<double>(value[2])));
   };
   const auto number = [&](std::string_view name, float value) {
     if (skip(name)) return;
@@ -29977,9 +30003,23 @@ constexpr std::array<Controls, 9> kControls{{
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
     else result.set_uniform(std::string(name), noisemaker::glsl::Vec2(value[0], value[1]));
   };
+  // classicNoisedeck/fractal:fractal is on the double-precision
+  // palette-uniform carrier list (see executor.cpp's
+  // classic_noisedeck_palette_uses_double_carrier); only its four palette
+  // uniforms bind `glsl::DVec3` -- bgColor (fractal's other vec3 uniform)
+  // is unaffected and keeps `glsl::Vec3`.
+  const auto is_double_palette_uniform = [](std::string_view name) {
+    return name == "paletteOffset" || name == "paletteAmp" ||
+           name == "paletteFreq" || name == "palettePhase";
+  };
   const auto put_vec3 = [&](std::string_view name, const std::array<float, 3>& value) {
     if (skip(name)) return;
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
+    else if (is_double_palette_uniform(name))
+      result.set_uniform(std::string(name),
+                         noisemaker::glsl::DVec3(static_cast<double>(value[0]),
+                                                 static_cast<double>(value[1]),
+                                                 static_cast<double>(value[2])));
     else result.set_uniform(std::string(name), noisemaker::glsl::Vec3(value[0], value[1], value[2]));
   };
   const auto put_number = [&](std::string_view name, float value) {

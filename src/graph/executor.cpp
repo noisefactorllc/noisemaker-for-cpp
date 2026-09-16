@@ -744,14 +744,42 @@ void authenticate_palette_override(const EffectStep& step,
 // exactly like `paletteData[paletteIndex - 1]` being `undefined` in JS -- so
 // the plan's own (already-bound) palette uniforms are left untouched.
 //
-// The table stores full authority double precision and is narrowed to
-// float32 here, at construction of the Vec3/int32 uniform the generated
-// kernel actually reads -- the same single narrowing point the authority's
-// own Vec3-shaped GLSL uniform binding performs.
+// The double-precision palette-uniform carrier list (see this file's
+// kTypes comment in validate_uniform_abi_shape and
+// tools/glslcpp/emit_typed_cpp.py's
+// _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS, which this mirrors exactly):
+// the generated kernel for exactly these five classicNoisedeck effects
+// reads paletteAmp/paletteFreq/paletteOffset/palettePhase as
+// `glsl::DVec3`. classicNoisedeck/noise also has a palette parameter, but
+// its generated route bakes colorMode to a compile-time constant that never
+// reaches `pal()` (dead code in this port -- see the carrier-list comment
+// in emit_typed_cpp.py), so its uniforms are still bound `glsl::Vec3` and
+// must not be overridden with a `glsl::DVec3` here or its State
+// constructor's `bindings.get<glsl::Vec3>(...)` call would throw.
+bool classic_noisedeck_palette_uses_double_carrier(
+    const effects::EffectDefinition& definition) {
+  static constexpr std::array<std::string_view, 5> kIds = {{
+      "classicNoisedeck/cellNoise",
+      "classicNoisedeck/colorLab",
+      "classicNoisedeck/fractal",
+      "classicNoisedeck/shapeMixer",
+      "classicNoisedeck/shapes",
+  }};
+  return std::find(kIds.begin(), kIds.end(), definition.id) != kIds.end();
+}
+
+// The table stores full authority double precision. For the double
+// carrier's five effects it is bound completely unnarrowed, exactly as the
+// authority's own raw-JS-double uniform binding is, and the generated
+// kernel narrows to float32 only where the authority's own per-op
+// arithmetic narrows. classicNoisedeck/noise (palette-typed but not on the
+// carrier list) still narrows once here, at construction of the Vec3/int32
+// uniform its generated kernel actually reads.
 void apply_classic_noisedeck_palette_override(
     glsl::Bindings& bindings, const EffectStep& step,
     const effects::EffectDefinition& definition) {
   if (definition.name_space != "classicNoisedeck") return;
+  const bool double_carrier = classic_noisedeck_palette_uses_double_carrier(definition);
   for (const auto& declared : definition.parameters) {
     if (declared.type != "palette") continue;
     const double index = plan_number(parameter(step, declared.name));
@@ -760,22 +788,29 @@ void apply_classic_noisedeck_palette_override(
     const auto row = static_cast<std::size_t>(index) - 1U;
     if (row >= table.size()) return;
     const auto& entry = table[row];
-    bindings.set_uniform("paletteAmp",
-                         glsl::Vec3(noisemaker::f32(entry.amp[0]),
-                                    noisemaker::f32(entry.amp[1]),
-                                    noisemaker::f32(entry.amp[2])));
-    bindings.set_uniform("paletteFreq",
-                         glsl::Vec3(noisemaker::f32(entry.freq[0]),
-                                    noisemaker::f32(entry.freq[1]),
-                                    noisemaker::f32(entry.freq[2])));
-    bindings.set_uniform("paletteOffset",
-                         glsl::Vec3(noisemaker::f32(entry.offset[0]),
-                                    noisemaker::f32(entry.offset[1]),
-                                    noisemaker::f32(entry.offset[2])));
-    bindings.set_uniform("palettePhase",
-                         glsl::Vec3(noisemaker::f32(entry.phase[0]),
-                                    noisemaker::f32(entry.phase[1]),
-                                    noisemaker::f32(entry.phase[2])));
+    if (double_carrier) {
+      bindings.set_uniform("paletteAmp", glsl::DVec3(entry.amp[0], entry.amp[1], entry.amp[2]));
+      bindings.set_uniform("paletteFreq", glsl::DVec3(entry.freq[0], entry.freq[1], entry.freq[2]));
+      bindings.set_uniform("paletteOffset", glsl::DVec3(entry.offset[0], entry.offset[1], entry.offset[2]));
+      bindings.set_uniform("palettePhase", glsl::DVec3(entry.phase[0], entry.phase[1], entry.phase[2]));
+    } else {
+      bindings.set_uniform("paletteAmp",
+                           glsl::Vec3(noisemaker::f32(entry.amp[0]),
+                                      noisemaker::f32(entry.amp[1]),
+                                      noisemaker::f32(entry.amp[2])));
+      bindings.set_uniform("paletteFreq",
+                           glsl::Vec3(noisemaker::f32(entry.freq[0]),
+                                      noisemaker::f32(entry.freq[1]),
+                                      noisemaker::f32(entry.freq[2])));
+      bindings.set_uniform("paletteOffset",
+                           glsl::Vec3(noisemaker::f32(entry.offset[0]),
+                                      noisemaker::f32(entry.offset[1]),
+                                      noisemaker::f32(entry.offset[2])));
+      bindings.set_uniform("palettePhase",
+                           glsl::Vec3(noisemaker::f32(entry.phase[0]),
+                                      noisemaker::f32(entry.phase[1]),
+                                      noisemaker::f32(entry.phase[2])));
+    }
     bindings.set_uniform("paletteMode",
                          static_cast<std::int32_t>(entry.mode == 0 ? 3 : entry.mode));
     return;
@@ -1144,7 +1179,15 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 void validate_uniform_abi_shape(const EffectStep& step,
                                 const PassAdmission& admission,
                                 const CompatibilityBinding& abi) {
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 10>
+  // "vec3"->"glsl::DVec3" is the classicNoisedeck palette-uniform
+  // double-precision carrier (see apply_classic_noisedeck_palette_override
+  // and tools/glslcpp/emit_typed_cpp.py's
+  // _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS): the authenticated ABI for
+  // paletteAmp/paletteFreq/paletteOffset/palettePhase on exactly five
+  // programs declares this cpp_type instead of the ordinary "glsl::Vec3",
+  // and only because their generated kernel actually reads a
+  // `glsl::DVec3`-typed uniform there.
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 11>
       kTypes = {{{"float", "float"},
                  {"double", "double"},
                  {"int", "std::int32_t"},
@@ -1152,6 +1195,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
                  {"bool", "bool"},
                  {"vec2", "glsl::Vec2"},
                  {"vec3", "glsl::Vec3"},
+                 {"vec3", "glsl::DVec3"},
                  {"vec4", "glsl::Vec4"},
                  {"dvec3", "glsl::DVec3"},
                  {"dvec4", "glsl::DVec4"}}};
@@ -1317,6 +1361,8 @@ void validate_uniform_abi_shape(const EffectStep& step,
     }
     std::array<float, 4> f{};
     std::array<std::int32_t, 4> i{};
+    std::array<double, 4> d{};
+    const bool is_double = cpp_type == "glsl::DVec3";
     for (std::size_t index = 0; index < width; ++index) {
       if (cpp_type.starts_with("glsl::I")) {
         if (!is_integral_plan_number(value.array[index]) ||
@@ -1325,6 +1371,13 @@ void validate_uniform_abi_shape(const EffectStep& step,
           return fail("integral vector has an invalid lane");
         }
         i[index] = static_cast<std::int32_t>(value.array[index].number);
+      } else if (is_double) {
+        // The classicNoisedeck palette-uniform double-precision carrier
+        // (see validate_uniform_abi_shape's kTypes comment): the authority
+        // binds these as raw, un-rounded JS doubles, narrowing only where
+        // its own per-op arithmetic narrows -- never here, at bind.
+        if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
+        d[index] = value.array[index].number;
       } else {
         if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
         f[index] = noisemaker::f32(value.array[index].number);
@@ -1332,6 +1385,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
     }
     if (cpp_type == "glsl::Vec2") return glsl::Vec2(f[0], f[1]);
     if (cpp_type == "glsl::Vec3") return glsl::Vec3(f[0], f[1], f[2]);
+    if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
     if (cpp_type == "glsl::Vec4") return glsl::Vec4(f[0], f[1], f[2], f[3]);
     if (cpp_type == "glsl::IVec2") return glsl::IVec2(i[0], i[1]);
   }

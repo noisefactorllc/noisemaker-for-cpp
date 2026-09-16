@@ -766,6 +766,51 @@ _TYPES = {
     "uvec2": "glsl::UVec2", "uvec3": "glsl::UVec3", "uvec4": "glsl::UVec4",
     "mat2": "glsl::Mat2", "mat3": "glsl::Mat3",
 }
+
+# classicNoisedeck's palette-typed parameter overrides an effect's
+# paletteAmp/paletteFreq/paletteOffset/palettePhase uniforms from the
+# authority's own built-in 55-entry table (noisemaker-for-cpu
+# src/runtime/renderer.js buildBindings()). The authority binds those four
+# uniforms as raw, un-rounded JS doubles: they only narrow to float32 where
+# the authority's own per-op arithmetic narrows -- inside its vec3
+# add/multiply (src/csl/glsl-runtime.js's `vectorType.add`/`multiply`) for
+# cellNoise/colorLab/shapeMixer/shapes's shared `pal()` shape, or (for
+# fractal's hand-written adapter, src/effects/adapters/fractal.js) once per
+# lane at the very end of the whole cosine-palette expression. A uniform
+# ABI type of `glsl::Vec3` (float lanes) narrows at construction, before any
+# of that arithmetic runs, which is measurably not byte-exact (~1 ULP,
+# rarely) against the authority. This declared carrier list is the only
+# uniform/program combination this port binds as `glsl::DVec3` (double
+# lanes) instead; every other program or uniform keeps float lanes
+# unconditionally -- see `_classic_noisedeck_double_uniform_type` and
+# `_classic_noisedeck_cosine_palette_function` below.
+_CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES = (
+    "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
+)
+_CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS = frozenset({
+    "classicNoisedeck/cellNoise:cellNoise",
+    "classicNoisedeck/colorLab:colorLab",
+    "classicNoisedeck/fractal:fractal",
+    "classicNoisedeck/shapeMixer:shapeMixer",
+    "classicNoisedeck/shapes:shapes",
+})
+_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
+    (program_key, uniform_name)
+    for program_key in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
+    for uniform_name in _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
+)
+# classicNoisedeck/noise:noise also declares a palette-typed parameter, but
+# this port's generated route bakes `colorMode` as a compile-time constant
+# fixed at 6 ("hsv") -- the authenticated route never admits `colorMode: 4`
+# ("palette"), so `noise`'s `pal()` is unreachable dead code in this port
+# and is deliberately left off the carrier list: there is nothing for a
+# double-precision uniform to fix, and adding one would touch a program with
+# no live palette-consuming code path to prove it against.
+
+# classicNoisedeck/shapes3d:shapes3d also declares a palette-typed
+# parameter, but its corpus record is `recordKind: "excluded"` (unrelated
+# 3D/volume-output limitation): it is never admitted by this port's executor
+# at all, so it is not on the carrier list either.
 # Identifiers the emitter itself binds inside every generated pixel function
 # and helper signature. A GLSL local or parameter with one of these names would
 # shadow them and either change meaning silently or fail to compile — e.g. a
@@ -5808,6 +5853,18 @@ class _Emitter:
         # compatibly through Bindings::get_number().
         return "double" if value.display() == "float" else self.type(value)
 
+    def _classic_noisedeck_double_uniform_type(self, symbol_name: str) -> str | None:
+        """The declared double-precision-uniform carrier list override.
+
+        Returns "glsl::DVec3" for exactly the (program, uniform) pairs in
+        `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`; `None` for every other
+        program or uniform, which then falls through to the ordinary
+        `glsl::Vec3` (float lanes) uniform type unchanged.
+        """
+        if (self.program.key, symbol_name) in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
+            return "glsl::DVec3"
+        return None
+
     @staticmethod
     def _contains_vector_value_boundary(value: TypedExpression) -> bool:
         if value.kind in {"builtin", "call"} and value.type.display() in {"vec2", "vec3", "vec4"}:
@@ -9738,6 +9795,156 @@ class _Emitter:
         ])
         return lines
 
+    def _classic_noisedeck_cosine_palette_walk(self, node):
+        yield node
+        for child in node.children:
+            yield from self._classic_noisedeck_cosine_palette_walk(child)
+
+    def _classic_noisedeck_cosine_palette_color_shape(
+            self, expr, local_names: tuple[str, ...], t_name: str) -> bool:
+        """True exactly for `<a> + <b> * cos(6.28318 * (<c> * t + <d>))`.
+
+        `local_names` is (a, b, c, d) in source order -- the four locals
+        aliasing paletteOffset/paletteAmp/paletteFreq/palettePhase, whatever
+        the corpus source happens to call them. Every other shape (including
+        a merely similar one) fails closed via the caller's `_error`.
+        """
+        if expr is None or expr.kind != "binary" or expr.operator != "+":
+            return False
+        nodes = list(self._classic_noisedeck_cosine_palette_walk(expr))
+        binaries = [node for node in nodes if node.kind == "binary"]
+        if sorted(node.operator for node in binaries) != ["*", "*", "*", "+", "+"]:
+            return False
+        builtins = [node for node in nodes if node.kind == "builtin"]
+        if [node.callee for node in builtins] != ["cos"]:
+            return False
+        literals = [node for node in nodes if node.kind == "literal"]
+        if [node.literal for node in literals] != ["6.28318"]:
+            return False
+        ids = [node for node in nodes if node.kind == "id" and node.symbol is not None]
+        id_names = sorted(node.symbol.name for node in ids)
+        if id_names != sorted((*local_names, t_name)):
+            return False
+        # Every local/parameter must appear exactly once; `t` is the only one
+        # of the five referenced identifiers that is not one of the four
+        # palette-uniform aliases.
+        counts = {name: id_names.count(name) for name in set(id_names)}
+        return all(count == 1 for count in counts.values())
+
+    def _classic_noisedeck_cosine_palette_function(self, function) -> list[str] | None:
+        if self.program.key not in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS:
+            return None
+        if self.program.key == "classicNoisedeck/fractal:fractal" or function.name != "pal":
+            # Fractal's `pal` is a distinct hand-written adapter shape
+            # (`_fractal_palette_number_function` above); only its uniform
+            # storage type changes, handled by the carrier-list override in
+            # `uniform_type`'s call sites, not here.
+            return None
+        # From here on a shape mismatch is a hard failure: this program is on
+        # the double-precision palette-uniform carrier list on the strength
+        # of this exact `pal` shape, so any drift from it must fail loud
+        # rather than silently keep emitting (correct-looking, wrong-byte)
+        # float-lane code.
+        if (function.return_type.display() != "vec3" or len(function.parameters) != 1
+                or function.parameters[0].type.display() != "float"):
+            raise _error(self.program, function,
+                         "malformed classicNoisedeck palette cosine function signature")
+        parameter = function.parameters[0]
+        t_name = _safe_identifier(parameter.name, parameter.id)
+        self.current_function_name = function.name
+        self.current_function_signature_id = function.signature.id
+        self.locals = {parameter.id: t_name}
+        body = list(function.body)
+        guard_lines: list[str] = []
+        if self.program.key == "classicNoisedeck/shapeMixer:shapeMixer":
+            if not body or body[0].kind != "if":
+                raise _error(self.program, function,
+                             "classicNoisedeck/shapeMixer pal is missing its isNan/isInf guard")
+            guard_lines = self.statement(body[0])
+            body = body[1:]
+        if len(body) < 6:
+            raise _error(self.program, function,
+                         "classicNoisedeck palette cosine function body shape drift")
+        local_names = []
+        for statement, expected_uniform in zip(
+                body[:4], _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES):
+            if statement.kind != "decl" or len(statement.expressions) != 1:
+                raise _error(self.program, function,
+                             "malformed classicNoisedeck palette uniform alias declaration")
+            declaration = statement.expressions[0]
+            initializer = declaration.children[0] if declaration.children else None
+            if (declaration.type.display() != "vec3" or declaration.symbol is None
+                    or initializer is None or initializer.kind != "id"
+                    or initializer.symbol is None
+                    or initializer.symbol.name != expected_uniform):
+                raise _error(self.program, function,
+                             "classicNoisedeck palette uniform alias order/shape drift")
+            local_names.append(declaration.symbol.name)
+        t_scale_statement = body[4]
+        if (t_scale_statement.kind != "expr" or len(t_scale_statement.expressions) != 1
+                or t_scale_statement.expressions[0].kind != "assign"
+                or t_scale_statement.expressions[0].operator != "="
+                or t_scale_statement.expressions[0].children[0].kind != "id"
+                or t_scale_statement.expressions[0].children[0].symbol_id != parameter.id):
+            raise _error(self.program, function,
+                         "malformed classicNoisedeck palette t-scale statement")
+        t_scale_lines = self.statement(t_scale_statement)
+        color_statement = body[5]
+        if color_statement.kind != "decl" or len(color_statement.expressions) != 1:
+            raise _error(self.program, function,
+                         "malformed classicNoisedeck palette color declaration")
+        color_declaration = color_statement.expressions[0]
+        color_initializer = color_declaration.children[0] if color_declaration.children else None
+        if (color_declaration.type.display() != "vec3" or color_declaration.symbol is None
+                or not self._classic_noisedeck_cosine_palette_color_shape(
+                    color_initializer, tuple(local_names), t_name)):
+            raise _error(self.program, function,
+                         "classicNoisedeck palette color expression shape drift")
+        color_name = _safe_identifier(color_declaration.symbol.name, color_declaration.symbol_id)
+        self.locals[color_declaration.symbol_id] = color_name
+        # Statements after the color declaration (the paletteMode
+        # hsv/oklab branch, the `return color;`) are unrelated to the
+        # precision fix -- and reference `color` and GLSL builtins the
+        # generic compiler already emits correctly -- so they are delegated
+        # to it unchanged.
+        remaining_lines: list[str] = []
+        for statement in body[6:]:
+            remaining_lines.extend(self.statement(statement))
+        lines = [
+            f"[[nodiscard]] glsl::Vec3 pal([[maybe_unused]] const State& state, "
+            f"[[maybe_unused]] const glsl::PixelContext& context, "
+            f"[[maybe_unused]] double {t_name}) noexcept {{",
+        ]
+        lines.extend(guard_lines)
+        lines.extend(t_scale_lines)
+        lines.append(f"  glsl::Vec3 {color_name}{{}};")
+        lines.append("  for (int lane = 0; lane < 3; ++lane) {")
+        # Mirrors the authority's exact narrowing sequence for this shape
+        # (src/csl/glsl-runtime.js): the cosine argument narrows once (its
+        # Float32Array constructor boundary), `cos` narrows its own result,
+        # the amplitude multiply narrows once (`vectorType.multiply`), and
+        # the offset add narrows once more (`vectorType.add`) -- four
+        # narrowing points total, each reading the palette uniform's full
+        # double precision up to the moment it narrows.
+        lines.append(
+            "    const float argument = noisemaker::f32("
+            "static_cast<double>(noisemaker::f32(6.28318)) * "
+            f"((state.paletteFreq[lane] * {t_name}) + state.palettePhase[lane]));")
+        lines.append(
+            "    const float cosine = glsl::cos(static_cast<double>(argument));")
+        lines.append(
+            "    const float product = noisemaker::f32("
+            "state.paletteAmp[lane] * static_cast<double>(cosine));")
+        lines.append(
+            f"    {color_name}[lane] = noisemaker::f32("
+            "state.paletteOffset[lane] + static_cast<double>(product));")
+        lines.append("  }")
+        lines.extend(remaining_lines)
+        lines.append("}")
+        self.current_function_name = None
+        self.current_function_signature_id = None
+        return lines
+
     def function(self, function) -> list[str]:
         palette_adapter = self._palette_adapter_function(function)
         if palette_adapter is not None:
@@ -9766,6 +9973,9 @@ class _Emitter:
         fractal_palette = self._fractal_palette_number_function(function)
         if fractal_palette is not None:
             return fractal_palette
+        classic_noisedeck_palette = self._classic_noisedeck_cosine_palette_function(function)
+        if classic_noisedeck_palette is not None:
+            return classic_noisedeck_palette
         rotate_helper = getattr(self, "authorized_rotate_helper", None)
         if function.return_type.kind == "matrix" and function is not rotate_helper:
             raise _error(self.program, function,
@@ -10934,7 +11144,8 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 "}", ""])
         lines.append("struct State final : KernelState {")
         constructor_parts = [
-            f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else f"{self.uniform_type(symbol.type)} {symbol.name}_value"
+            f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else
+            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
             for symbol in uniforms]
         if remap is not None:
             constructor_parts.insert(0, "glsl::RemapUniformData data_value")
@@ -10958,7 +11169,8 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         if remap is not None:
             lines.append("  glsl::RemapUniformData data;")
         for symbol in uniforms:
-            type_name = "const Surface*" if symbol.type.kind == "sampler" else self.uniform_type(symbol.type)
+            type_name = ("const Surface*" if symbol.type.kind == "sampler" else
+                        self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type))
             lines.append(f"  {type_name} {symbol.name};")
         if (self.runtime_loop_contract is not None
                 and self.runtime_loop_contract.kind == "blur-radius"):
@@ -11140,7 +11352,9 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                   and symbol.name in {"gridSize", "pattern"}):
                 arguments.append(symbol.name)
             elif symbol.type.display() == "float": arguments.append(f"bindings.get_number(\"{symbol.name}\")")
-            else: arguments.append(f"bindings.get<{self.type(symbol.type)}>(\"{symbol.name}\")")
+            else:
+                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self.type(symbol.type)
+                arguments.append(f"bindings.get<{cpp_type}>(\"{symbol.name}\")")
         if remap_data_argument is not None:
             arguments.insert(0, remap_data_argument)
         if contract is not None and contract.kind == "blur-radius":
