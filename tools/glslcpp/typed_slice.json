@@ -105,8 +105,7 @@
       "defines": {
         "NOISE_TYPE": 10
       },
-      "program_key": "classicNoisedeck/caustic:caustic",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "classicNoisedeck/caustic:caustic"
     },
     {
       "defines": {},
@@ -119,8 +118,7 @@
         "SHAPE": 1
       },
       "mutable_global_array_profile": "mutable-global-nine-array-cellrefract-v1",
-      "program_key": "classicNoisedeck/cellRefract:cellRefract",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "classicNoisedeck/cellRefract:cellRefract"
     },
     {
       "defines": {},
@@ -143,8 +141,7 @@
       },
       "glitch_mat4_chain_profile": "mat4-bicubic-chain-effects-v1",
       "mutable_global_array_profile": "mutable-global-nine-array-effects-v1",
-      "program_key": "classicNoisedeck/effects:effects",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "classicNoisedeck/effects:effects"
     },
     {
       "defines": {},
@@ -165,7 +162,6 @@
       },
       "mutable_global_array_profile": "mutable-global-nine-array-kaleido-v1",
       "program_key": "classicNoisedeck/kaleido:kaleido",
-      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1"
     },
     {
@@ -179,8 +175,7 @@
         "NOISE_TYPE": 10
       },
       "moodscape_frontend_profile": "moodscape-frontend-admission-v1",
-      "program_key": "classicNoisedeck/moodscape:moodscape",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "classicNoisedeck/moodscape:moodscape"
     },
     {
       "defines": {
@@ -202,7 +197,6 @@
         "LOOP_OFFSET": 10
       },
       "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
-      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1",
       "shape_mixer_builtin_profile": "shape-mixer-builtin-closure-v1"
     },
@@ -213,7 +207,6 @@
       },
       "linear_srgb_lane_index_profile": "linear-srgb-shapes-lane-index-v1",
       "program_key": "classicNoisedeck/shapes:shapes",
-      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1",
       "shapes_float_bits_ingress_profile": "shapes-float-bits-ingress-v1",
       "shapes_rvalue_assign_profile": "shapes-rvalue-assign-v1"
@@ -347,8 +340,7 @@
         "STYLE": 0
       },
       "emboss_color_style_profile": "emboss-color-style-v1",
-      "program_key": "filter/emboss:emboss",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/emboss:emboss"
     },
     {
       "defines": {
@@ -356,8 +348,7 @@
         "EXTRUDE_TYPE": 0
       },
       "extrude_bvec2_relational_reduction_profile": "extrude-bvec2-relational-reduction-v1",
-      "program_key": "filter/extrude:extrude",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/extrude:extrude"
     },
     {
       "defines": {},
@@ -434,15 +425,13 @@
         "PATTERN": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/halftone:halftone",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/halftone:halftone"
     },
     {
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/hatch:hatch",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/hatch:hatch"
     },
     {
       "defines": {},
@@ -501,8 +490,7 @@
         "LP_BORDER": 0,
         "LP_LIGHT": 0
       },
-      "program_key": "filter/lowPoly:lowPoly",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/lowPoly:lowPoly"
     },
     {
       "defines": {
@@ -565,15 +553,13 @@
       "defines": {
         "MODE": 1
       },
-      "program_key": "filter/oilPaint:oilFlatten",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/oilPaint:oilFlatten"
     },
     {
       "defines": {
         "MODE": 1
       },
-      "program_key": "filter/oilPaint:oilPost",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/oilPaint:oilPost"
     },
     {
       "defines": {},
@@ -675,8 +661,7 @@
         "WRAP": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/pondRipples:pondRipples",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/pondRipples:pondRipples"
     },
     {
       "defines": {},
@@ -854,8 +839,7 @@
         "MODE": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/stipple:stipple",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/stipple:stipple"
     },
     {
       "defines": {},
@@ -865,15 +849,13 @@
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/strokes:stkPost",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/strokes:stkPost"
     },
     {
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/strokes:stkSmear",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/strokes:stkSmear"
     },
     {
       "defines": {},
@@ -893,7 +875,6 @@
         "MODE": 3
       },
       "program_key": "filter/texture:texture",
-      "runtime_define_profile": "runtime-defines-generic-v1",
       "texture_frontend_profile": "texture-frontend-admission-v1"
     },
     {
@@ -965,8 +946,7 @@
       "defines": {
         "METHOD": 1
       },
-      "program_key": "filter/wind:wind",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/wind:wind"
     },
     {
       "defines": {},
@@ -1130,8 +1110,7 @@
         "DIMENSIONS": 2
       },
       "perlin_scalar_uint_xor_profile": "perlin-scalar-uint-xor-v1",
-      "program_key": "synth/perlin:perlin",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "synth/perlin:perlin"
     },
     {
       "defines": {},
@@ -1152,7 +1131,6 @@
       },
       "mutable_global_frame_profile": "mutable-global-frame-shape-v1",
       "program_key": "synth/shape:shape",
-      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1"
     },
     {

@@ -769,54 +769,31 @@ else:
         authenticate_dither_frontend)
     from .generate_kernels import GeneratorError, _validate_output_name
 
-# Every program admitted through the generic runtime-define contract: no
-# per-program hand-authenticated carrier (unlike synth/noise:noise's
-# NOISE_DYNAMIC_DEFINES/mutable-global-frame/scalar-XOR/runtime-loop-bound
-# stack), because none of these declare a dynamic loop bound or need a
-# mutable per-pixel frame -- each define is a plain scalar `#if NAME == N`
-# selector, exactly the shape preprocess.py's dynamic-define lowering (and,
-# where a branch declares a local read after the chain closes,
-# dynamic_define_hoist.py's hoist) already handle generically. Every value
-# here is "int": none of these define-backed parameters are float-typed, and
-# the one boolean case in the wider gap (synth/curl's RIDGES) carries its own
-# loop-bound requirement (OCTAVES) and is not part of this table.
+# Every program admitted through the generic runtime-define contract. The JS
+# authority binds every define-backed parameter as a runtime uniform
+# (scripts/upstream/compile-glsl.js runtimeDefines()), so a `runtime-int`
+# kernel whose `#if NAME == N` chains are lowered to real branches
+# (preprocess.py) mirrors it; a `default-only` kernel bakes one value and the
+# executor refuses every other request.
+#
+# A row belongs here only when its WHOLE dynamic tree -- every branch the
+# baked kernel used to strip -- passes the generator's own gates with no
+# companion carrier: validate_capabilities admits every newly reachable
+# construct and render_typed_cpp emits it. Rows are admitted per effect, never
+# per pass, so an effect's define parameter is either fully dispatchable or
+# still refused at its first default-only pass. Every value is "int": none of
+# these define-backed parameters is float- or bool-typed.
 GENERIC_RUNTIME_DEFINE_PROFILE = "runtime-defines-generic-v1"
 GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
-    "classicNoisedeck/caustic:caustic": {"NOISE_TYPE": "int"},
-    "classicNoisedeck/cellRefract:cellRefract": {"KERNEL": "int", "SHAPE": "int"},
-    "classicNoisedeck/kaleido:kaleido": {
-        "DIRECTION": "int", "KERNEL": "int", "LOOP_OFFSET": "int", "METRIC": "int"},
-    "classicNoisedeck/effects:effects": {"EFFECT": "int", "FLIP": "int"},
-    "classicNoisedeck/moodscape:moodscape": {"COLOR_MODE": "int", "NOISE_TYPE": "int"},
-    "classicNoisedeck/noise:noise": {
-        "COLOR_MODE": "int", "LOOP_OFFSET": "int", "METRIC": "int",
-        "NOISE_TYPE": "int", "REFRACT_MODE": "int"},
-    "classicNoisedeck/shapeMixer:shapeMixer": {"LOOP_OFFSET": "int"},
-    "classicNoisedeck/shapes:shapes": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
-    "synth/shape:shape": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
-    "filter/emboss:emboss": {"STYLE": "int"},
-    "filter/extrude:extrude": {"DEPTH_SOURCE": "int", "EXTRUDE_TYPE": "int"},
-    "filter/halftone:halftone": {"MODE": "int", "PATTERN": "int"},
-    "filter/pondRipples:pondRipples": {"STYLE": "int", "WRAP": "int"},
-    "filter/stipple:stipple": {"MODE": "int"},
     "filter/lensFlare:lensFlare": {"LENS_TYPE": "int"},
-    "filter/lowPoly:lowPoly": {"LP_BORDER": "int", "LP_LIGHT": "int"},
     "filter/morphology:morphA": {"SHAPE": "int"},
     "filter/morphology:morphB": {"SHAPE": "int"},
     "filter/mosaicTiles:mosaicTiles": {"MODE": "int"},
-    "filter/oilPaint:oilFlatten": {"MODE": "int"},
-    "filter/oilPaint:oilPost": {"MODE": "int"},
     "filter/relief:rlBlurH": {"MODE": "int"},
     "filter/relief:rlBlurV": {"MODE": "int"},
     "filter/relief:rlShade": {"MODE": "int"},
     "filter/scatter:scatterJitter": {"MODE": "int"},
     "filter/scatter:scatterSmooth": {"MODE": "int"},
-    "filter/strokes:stkPost": {"MODE": "int"},
-    "filter/strokes:stkSmear": {"MODE": "int"},
-    "filter/texture:texture": {"MODE": "int"},
-    "filter/wind:wind": {"METHOD": "int"},
-    "filter/hatch:hatch": {"MODE": "int"},
-    "synth/perlin:perlin": {"DIMENSIONS": "int"},
 }
 
 
@@ -1511,6 +1488,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             if item.get("runtime_define_profile") != NOISE_RUNTIME_DEFINE_PROFILE:
                 raise GeneratorError(
                     f"{key}: exact runtime-define profile required")
+        elif key in GENERIC_DYNAMIC_DEFINE_TYPES:
+            if item.get("runtime_define_profile") != GENERIC_RUNTIME_DEFINE_PROFILE:
+                raise GeneratorError(
+                    f"{key}: exact runtime-define profile required")
         elif "runtime_define_profile" in item:
             raise GeneratorError(
                 f"{key}: runtime-define profile on foreign key")
@@ -1683,6 +1664,17 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     {"defines", "fractal_frontend_profile", "program_key"}
                     if key in FRACTAL_PREPARED_KEYS else
                     {"defines", "program_key"})
+        # The generic runtime-define contract is additive on top of whatever
+        # companion carrier the arms above already admitted for this key --
+        # scoped by GENERIC_DYNAMIC_DEFINE_TYPES itself (an exact key set),
+        # never by widening one of the shared KEYS-group arms above, several
+        # of which have members outside this table (e.g. classicNoisedeck/
+        # effects:effects also carries CEIL_ADMISSION_KEYS' and
+        # MUTABLE_GLOBAL_ARRAY_KEYS' own fields; widening either group's arm
+        # instead of adding this precisely-scoped union would leak the field
+        # onto their other, unrelated members).
+        if key in GENERIC_DYNAMIC_DEFINE_TYPES:
+            expected = expected | {"runtime_define_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
     keys = [item["program_key"] for item in programs]

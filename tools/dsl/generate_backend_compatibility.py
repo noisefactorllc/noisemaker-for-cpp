@@ -81,33 +81,14 @@ PASS_DERIVED_BINDINGS = {
     "splatSource": "canonical_splat_source_default",
     "speed": "canonical_speed_default",
     # The generic runtime-define contract (tools/glslcpp/generate_typed_slice.py's
-    # GENERIC_DYNAMIC_DEFINE_TYPES) turns every one of these into a real
-    # `uniform int NAME;` for the specific program(s) it names -- the same
-    # `typed_compile_define` pass_derived source LOOP_OFFSET/NOISE_TYPE
-    # already use above. Each name only ever appears in `typed_abi.uniforms`
-    # for a program actually carrying that define, so a name shared by many
-    # unrelated effects (e.g. MODE) is unambiguous per program.
-    "COLOR_MODE": "typed_compile_define",
-    "DEPTH_SOURCE": "typed_compile_define",
-    "DIMENSIONS": "typed_compile_define",
-    "DIRECTION": "typed_compile_define",
-    "EFFECT": "typed_compile_define",
-    "EXTRUDE_TYPE": "typed_compile_define",
-    "FLIP": "typed_compile_define",
-    "KERNEL": "typed_compile_define",
+    # GENERIC_DYNAMIC_DEFINE_TYPES) declares each of these as a real
+    # `uniform int NAME;` for the programs it admits -- the same
+    # `typed_compile_define` source LOOP_OFFSET/NOISE_TYPE already use. A name
+    # only reaches this lookup when it is in a program's typed_abi.uniforms, so
+    # a name shared by unrelated effects (MODE) is unambiguous per program.
     "LENS_TYPE": "typed_compile_define",
-    "LOOP_A_OFFSET": "typed_compile_define",
-    "LOOP_B_OFFSET": "typed_compile_define",
-    "LP_BORDER": "typed_compile_define",
-    "LP_LIGHT": "typed_compile_define",
-    "METHOD": "typed_compile_define",
-    "METRIC": "typed_compile_define",
     "MODE": "typed_compile_define",
-    "PATTERN": "typed_compile_define",
-    "REFRACT_MODE": "typed_compile_define",
     "SHAPE": "typed_compile_define",
-    "STYLE": "typed_compile_define",
-    "WRAP": "typed_compile_define",
 }
 CPP_TYPES = {
     "float": "float", "int": "std::int32_t", "uint": "std::uint32_t",
