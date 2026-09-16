@@ -261,6 +261,8 @@ if __package__ in (None, ""):
         dynamic_frame_contract,
         is_dynamic_program,
         transform_source as transform_noise_source)
+    from tools.glslcpp.frontend.dynamic_define_hoist import (
+        transform_source as transform_generic_dynamic_source)
     from tools.glslcpp.frontend.testpattern_profile import (
         KEY as TESTPATTERN_KEY,
         PROFILE as TESTPATTERN_PROFILE,
@@ -635,6 +637,8 @@ else:
         dynamic_frame_contract,
         is_dynamic_program,
         transform_source as transform_noise_source)
+    from .frontend.dynamic_define_hoist import (
+        transform_source as transform_generic_dynamic_source)
     from .frontend.testpattern_profile import (
         KEY as TESTPATTERN_KEY,
         PROFILE as TESTPATTERN_PROFILE,
@@ -764,6 +768,56 @@ else:
         apply_dither_frontend,
         authenticate_dither_frontend)
     from .generate_kernels import GeneratorError, _validate_output_name
+
+# Every program admitted through the generic runtime-define contract: no
+# per-program hand-authenticated carrier (unlike synth/noise:noise's
+# NOISE_DYNAMIC_DEFINES/mutable-global-frame/scalar-XOR/runtime-loop-bound
+# stack), because none of these declare a dynamic loop bound or need a
+# mutable per-pixel frame -- each define is a plain scalar `#if NAME == N`
+# selector, exactly the shape preprocess.py's dynamic-define lowering (and,
+# where a branch declares a local read after the chain closes,
+# dynamic_define_hoist.py's hoist) already handle generically. Every value
+# here is "int": none of these define-backed parameters are float-typed, and
+# the one boolean case in the wider gap (synth/curl's RIDGES) carries its own
+# loop-bound requirement (OCTAVES) and is not part of this table.
+GENERIC_RUNTIME_DEFINE_PROFILE = "runtime-defines-generic-v1"
+GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
+    "classicNoisedeck/caustic:caustic": {"NOISE_TYPE": "int"},
+    "classicNoisedeck/cellRefract:cellRefract": {"KERNEL": "int", "SHAPE": "int"},
+    "classicNoisedeck/kaleido:kaleido": {
+        "DIRECTION": "int", "KERNEL": "int", "LOOP_OFFSET": "int", "METRIC": "int"},
+    "classicNoisedeck/effects:effects": {"EFFECT": "int", "FLIP": "int"},
+    "classicNoisedeck/moodscape:moodscape": {"COLOR_MODE": "int", "NOISE_TYPE": "int"},
+    "classicNoisedeck/noise:noise": {
+        "COLOR_MODE": "int", "LOOP_OFFSET": "int", "METRIC": "int",
+        "NOISE_TYPE": "int", "REFRACT_MODE": "int"},
+    "classicNoisedeck/shapeMixer:shapeMixer": {"LOOP_OFFSET": "int"},
+    "classicNoisedeck/shapes:shapes": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
+    "synth/shape:shape": {"LOOP_A_OFFSET": "int", "LOOP_B_OFFSET": "int"},
+    "filter/emboss:emboss": {"STYLE": "int"},
+    "filter/extrude:extrude": {"DEPTH_SOURCE": "int", "EXTRUDE_TYPE": "int"},
+    "filter/halftone:halftone": {"MODE": "int", "PATTERN": "int"},
+    "filter/pondRipples:pondRipples": {"STYLE": "int", "WRAP": "int"},
+    "filter/stipple:stipple": {"MODE": "int"},
+    "filter/lensFlare:lensFlare": {"LENS_TYPE": "int"},
+    "filter/lowPoly:lowPoly": {"LP_BORDER": "int", "LP_LIGHT": "int"},
+    "filter/morphology:morphA": {"SHAPE": "int"},
+    "filter/morphology:morphB": {"SHAPE": "int"},
+    "filter/mosaicTiles:mosaicTiles": {"MODE": "int"},
+    "filter/oilPaint:oilFlatten": {"MODE": "int"},
+    "filter/oilPaint:oilPost": {"MODE": "int"},
+    "filter/relief:rlBlurH": {"MODE": "int"},
+    "filter/relief:rlBlurV": {"MODE": "int"},
+    "filter/relief:rlShade": {"MODE": "int"},
+    "filter/scatter:scatterJitter": {"MODE": "int"},
+    "filter/scatter:scatterSmooth": {"MODE": "int"},
+    "filter/strokes:stkPost": {"MODE": "int"},
+    "filter/strokes:stkSmear": {"MODE": "int"},
+    "filter/texture:texture": {"MODE": "int"},
+    "filter/wind:wind": {"METHOD": "int"},
+    "filter/hatch:hatch": {"MODE": "int"},
+    "synth/perlin:perlin": {"DIMENSIONS": "int"},
+}
 
 
 def _same_object_sequence(actual, expected) -> bool:
@@ -8220,13 +8274,27 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             key == NOISE_RUNTIME_DEFINE_KEY
             and slice_spec["programs"][index].get(
                 "runtime_define_profile") == NOISE_RUNTIME_DEFINE_PROFILE)
-        parse_source = transform_noise_source(source, key) if dynamic_noise else source
-        dynamic_defines = NOISE_DYNAMIC_DEFINES if dynamic_noise else declared_defines
+        dynamic_generic = (
+            key in GENERIC_DYNAMIC_DEFINE_TYPES
+            and slice_spec["programs"][index].get(
+                "runtime_define_profile") == GENERIC_RUNTIME_DEFINE_PROFILE)
+        if dynamic_noise and dynamic_generic:
+            raise GeneratorError(f"{key}: carries both the noise and the generic "
+                                  f"runtime-define profile")
+        if dynamic_generic and set(GENERIC_DYNAMIC_DEFINE_TYPES[key]) != set(declared_defines):
+            raise GeneratorError(f"{key}: generic runtime-define table disagrees with "
+                                  f"the typed slice's own declared defines")
+        parse_source = (transform_noise_source(source, key) if dynamic_noise
+                        else transform_generic_dynamic_source(source, key) if dynamic_generic
+                        else source)
+        dynamic_defines = (NOISE_DYNAMIC_DEFINES if dynamic_noise
+                           else GENERIC_DYNAMIC_DEFINE_TYPES[key] if dynamic_generic
+                           else declared_defines)
         parsed = parse_program(parse_source, key, dynamic_defines)
         # Keep the immutable authority bytes distinct from the normalized
         # source transform.  The transform is line-preserving, so parser spans
         # continue to refer to the pinned source lines.
-        if dynamic_noise:
+        if dynamic_noise or dynamic_generic:
             parsed["raw_source"] = source
         typed = analyze_program(
             parsed, key,
@@ -9165,7 +9233,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         manifest_program = {
             "capabilities": slice_spec["capabilities"],
             "define_contract": (
-                "runtime-int" if dynamic_noise
+                "runtime-int" if (dynamic_noise or dynamic_generic)
                 else ("default-only" if declared_defines else "none")),
             "compatibility_transform": compatibility_transform or "none",
             "defines": declared_defines,
@@ -9179,6 +9247,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         }
         if dynamic_noise:
             manifest_program["runtime_define_profile"] = NOISE_RUNTIME_DEFINE_PROFILE
+        if dynamic_generic:
+            manifest_program["runtime_define_profile"] = GENERIC_RUNTIME_DEFINE_PROFILE
         if noise_frontend_profile is not None:
             manifest_program["noise_frontend_profile"] = noise_frontend_profile
         if custom_comparer_profile is not None:
