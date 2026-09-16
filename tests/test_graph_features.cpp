@@ -119,11 +119,6 @@ constexpr std::string_view kBitEffectsSource =
     "bitEffects().write(o0)\n"
     "render(o0)\n";
 
-constexpr std::string_view kTextSource =
-    "search synth, filter\n"
-    "solid(color: #3a7).text().write(o0)\n"
-    "render(o0)\n";
-
 constexpr std::string_view kSeededBlurSource =
     "search filter\n"
     "read(o0).blur(radiusX: 2, radiusY: 5).write(o1)\n"
@@ -516,17 +511,33 @@ TEST(graph_executor_rejects_a_forged_or_absent_compile_define) {
 }
 
 TEST(graph_executor_rejects_the_incompatible_text_route_before_binding) {
+  // This used to compile kTextSource directly: filter/text:text's corpus
+  // source diverged from upstream at the a024dc3a authority, so the DSL
+  // compiler itself marked the admission incompatible. At the 0ed489ec
+  // resync text's corpus source now equals upstream (see
+  // docs/port-engineering/resync-0ed489ec/), so it is compatible and no
+  // longer exercises this path. Rather than depend on some other real
+  // program happening to be broken -- a property that can and did change
+  // out from under this test -- forge the incompatibility the same way
+  // graph_executor_rejects_an_unknown_pass_derived_source_before_dispatch
+  // and graph_executor_rejects_a_forged_or_absent_compile_define forge
+  // their admissions: compile a genuinely compatible program, flip its
+  // admission's status on both the authenticated copies the executor
+  // cross-checks, reauthenticate so the forgery is internally consistent,
+  // and confirm the executor still refuses to bind it.
   Renderer renderer;
-  auto plan = renderer.compile(kTextSource, "text.dsl");
-  const auto& admission = snapshot_for(plan, "filter/text").admissions[0];
-  REQUIRE(admission.status == AvailabilityStatus::incompatible);
-  REQUIRE(plan.executable == false);
+  auto plan = renderer.compile(kPerlinSource, "forged-incompatible.dsl");
+  auto& snapshot = snapshot_for(plan, "synth/perlin");
+  REQUIRE(snapshot.admissions[0].status == AvailabilityStatus::compatible);
+  snapshot.admissions[0].status = AvailabilityStatus::incompatible;
+  effect_step(plan, "synth/perlin").passes[0].status = AvailabilityStatus::incompatible;
+  reauthenticate(plan);
   try {
     static_cast<void>(renderer.render(plan, options(7U, 5U)));
     REQUIRE(false);
   } catch (const GraphError& error) {
     REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-    REQUIRE(error.program_key() == "filter/text:text");
+    REQUIRE(error.program_key() == "synth/perlin:perlin");
   }
 }
 
