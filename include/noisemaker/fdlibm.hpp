@@ -30,15 +30,36 @@
 // transcription. See fdlibm-report.md for a case where this cost hours to
 // track down.
 //
-// Scope: this header implements exactly the five functions the C++ runtime
-// needs — expm1, exp, tanh, sin, cos — plus the internal argument-reduction
-// machinery (__ieee754_rem_pio2 / __kernel_rem_pio2 / __kernel_sin /
-// __kernel_cos) that sin/cos require. log and atan are NOT reimplemented
-// here (measured but not found to need replacement in this pass — see the
-// report for exact figures); sqrt is IEEE-754 correctly-rounded and already
-// agrees with V8 exactly; pow is close (measured ~0.04% divergent, small
-// enough it was left alone this pass). If a future measurement finds any of
-// these diverging enough to matter, the same fdlibm port technique applies.
+// Scope: this header implements the functions the C++ runtime needs —
+// expm1, exp, tanh, sin, cos, log, hypot — plus the internal
+// argument-reduction machinery (__ieee754_rem_pio2 / __kernel_rem_pio2 /
+// __kernel_sin / __kernel_cos) that sin/cos require. atan is NOT
+// reimplemented here (measured but not found to need replacement in this
+// pass — see the report for exact figures); sqrt is IEEE-754
+// correctly-rounded and already agrees with V8 exactly; pow is close
+// (measured ~0.04% divergent, small enough it was left alone this pass). If
+// a future measurement finds any of these diverging enough to matter, the
+// same fdlibm port technique applies.
+//
+// log() was added for the worm-overlay port (docs/port-engineering/
+// worm-overlay-parity/): the full-double-domain sweep in fdlibm-report.md
+// measured std::log 2.2565% divergent from V8's Math.log, which is far too
+// high to leave unported given worm-overlay's SeededRng.normal() calls
+// Math.log(u1) on every draw. Transcribed line-for-line from V8's log() in
+// v8_ieee754_reference.cc (itself Sun fdlibm's e_log.c). See
+// docs/port-engineering/worm-overlay-parity/ for the differential evidence
+// (0 divergent across the RNG's actual u1 domain plus a broad adversarial
+// sweep).
+//
+// hypot() was added for the same port: Math.hypot in V8 is NOT part of
+// ieee754.cc (it has no fdlibm ancestor) — it is V8's own scaled,
+// Kahan-compensated sum-of-squares (src/builtins/builtins-math.cc,
+// MathHypot). Platform libm hypot() is usually correctly-rounded per
+// IEEE 754-2008 but implements a *different* algorithm and was measured
+// 17.82% bit-divergent from V8 across a 260k-case sweep (see
+// docs/port-engineering/worm-overlay-parity/hypot-differential-report.md).
+// This header ports V8's actual two-argument algorithm instead of relying
+// on platform hypot.
 //
 // KNOWN RESIDUAL GAP (read before assuming "0 divergences" is unconditional):
 // verified against this repo's actual V8 (Node/macOS-arm64) at 0/403636 for
@@ -75,6 +96,15 @@ double tanh(double x) noexcept;
 // fdlibm uses (exact for all finite double x, not just small ones).
 double sin(double x) noexcept;
 double cos(double x) noexcept;
+
+// Natural logarithm. fdlibm's classic argument-reduction + degree-14 Remez
+// polynomial (see fdlibm.cpp for the method comment).
+double log(double x) noexcept;
+
+// Two-argument Euclidean norm, matching V8's Math.hypot exactly: scaled by
+// the larger magnitude, sum-of-squares accumulated with Kahan compensation.
+// NOT the platform hypot() algorithm — see the header comment above.
+double hypot(double x, double y) noexcept;
 
 }  // namespace fdlibm
 

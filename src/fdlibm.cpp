@@ -39,6 +39,7 @@
 #include <bit>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 
 namespace noisemaker::fdlibm {
 namespace {
@@ -660,6 +661,96 @@ double kernel_sin(double x, double y, int iy) {
   }
 }
 
+// ============================================================
+// log(x): natural logarithm.
+//
+// Method: argument reduction to x = 2^k*(1+f), sqrt(2)/2 < 1+f < sqrt(2);
+// degree-14 Remez polynomial approximation of log(1+f). See
+// v8_ieee754_reference.cc's method comment (reproduced verbatim above the
+// V8 `log` definition) for the full derivation; this is a line-for-line
+// transcription, constants and branch structure unchanged.
+// ============================================================
+double fd_log(double x) {
+  static const double ln2_hi = 6.93147180369123816490e-01,
+                       ln2_lo = 1.90821492927058770002e-10,
+                       two54 = 1.80143985094819840000e+16,
+                       Lg1 = 6.666666666666735130e-01,
+                       Lg2 = 3.999999999940941908e-01,
+                       Lg3 = 2.857142874366239149e-01,
+                       Lg4 = 2.222219843214978396e-01,
+                       Lg5 = 1.818357216161805012e-01,
+                       Lg6 = 1.531383769920937332e-01,
+                       Lg7 = 1.479819860511658591e-01;
+
+  static const double zero = 0.0;
+
+  double hfsq, f, s, z, r, w, t1, t2, dk;
+  std::int32_t k, hx, i, j;
+  std::uint32_t lx;
+
+  hx = static_cast<std::int32_t>(hi_word(x));
+  lx = lo_word(x);
+
+  k = 0;
+  if (hx < 0x00100000) { /* x < 2**-1022  */
+    if (((static_cast<std::uint32_t>(hx) & 0x7fffffffu) | lx) == 0) {
+      return -std::numeric_limits<double>::infinity(); /* log(+-0)=-inf */
+    }
+    if (hx < 0) {
+      return std::numeric_limits<double>::signaling_NaN(); /* log(-#) = NaN */
+    }
+    k -= 54;
+    x *= two54; /* subnormal number, scale up x */
+    hx = static_cast<std::int32_t>(hi_word(x));
+  }
+  if (hx >= 0x7ff00000) return x + x;
+  k += (hx >> 20) - 1023;
+  hx &= 0x000fffff;
+  i = (hx + 0x95f64) & 0x100000;
+  set_high_word(x, static_cast<std::uint32_t>(hx | (i ^ 0x3ff00000))); /* normalize x or x/2 */
+  k += (i >> 20);
+  f = x - 1.0;
+  if ((0x000fffff & (2 + hx)) < 3) { /* -2**-20 <= f < 2**-20 */
+    if (f == zero) {
+      if (k == 0) {
+        return zero;
+      } else {
+        dk = static_cast<double>(k);
+        return dk * ln2_hi + dk * ln2_lo;
+      }
+    }
+    r = f * f * (0.5 - 0.33333333333333333 * f);
+    if (k == 0) {
+      return f - r;
+    } else {
+      dk = static_cast<double>(k);
+      return dk * ln2_hi - ((r - dk * ln2_lo) - f);
+    }
+  }
+  s = f / (2.0 + f);
+  dk = static_cast<double>(k);
+  z = s * s;
+  i = hx - 0x6147a;
+  w = z * z;
+  j = 0x6b851 - hx;
+  t1 = w * (Lg2 + w * (Lg4 + w * Lg6));
+  t2 = z * (Lg1 + w * (Lg3 + w * (Lg5 + w * Lg7)));
+  i |= j;
+  r = t2 + t1;
+  if (i > 0) {
+    hfsq = 0.5 * f * f;
+    if (k == 0)
+      return f - (hfsq - s * (hfsq + r));
+    else
+      return dk * ln2_hi - ((hfsq - (s * (hfsq + r) + dk * ln2_lo)) - f);
+  } else {
+    if (k == 0)
+      return f - s * (f - r);
+    else
+      return dk * ln2_hi - ((s * (f - r) - dk * ln2_lo) - f);
+  }
+}
+
 }  // namespace
 
 // ============================================================
@@ -750,6 +841,44 @@ double cos(double x) noexcept {
         return kernel_sin(y[0], y[1], 1);
     }
   }
+}
+
+double log(double x) noexcept { return fd_log(x); }
+
+// ============================================================
+// hypot(x, y): V8's Math.hypot for exactly two arguments
+// (src/builtins/builtins-math.cc, MathHypot) — scaled, Kahan-compensated
+// sum of squares. This is NOT a fdlibm/Sun algorithm (Math.hypot has no
+// fdlibm ancestor); it is transcribed from V8's own two-argument-general
+// loop specialized to N=2, preserving the exact operation order (the
+// Kahan compensation term is order-sensitive). See fdlibm.hpp and
+// docs/port-engineering/worm-overlay-parity/ for why platform hypot() is
+// not used instead.
+// ============================================================
+double hypot(double x, double y) noexcept {
+  double ax = std::fabs(x);
+  double ay = std::fabs(y);
+  // V8 checks has_infinity before has_nan: Infinity beats NaN (matches the
+  // ECMA-262 Math.hypot spec, step 4.a/4.b ordering).
+  if (std::isinf(ax) || std::isinf(ay)) return std::numeric_limits<double>::infinity();
+  if (std::isnan(ax) || std::isnan(ay)) return std::numeric_limits<double>::quiet_NaN();
+  double values[2] = {ax, ay};
+  double max = ax > ay ? ax : ay;
+  if (max == 0.0) return 0.0;
+  double sum = 0.0;
+  double compensation = 0.0;
+  for (double v : values) {
+    double n = v / max;
+    double summand = n * n;
+    double preliminary = sum + summand;
+    if (std::fabs(sum) >= std::fabs(summand)) {
+      compensation += (sum - preliminary) + summand;
+    } else {
+      compensation += (summand - preliminary) + sum;
+    }
+    sum = preliminary;
+  }
+  return std::sqrt(sum + compensation) * max;
 }
 
 }  // namespace fdlibm
