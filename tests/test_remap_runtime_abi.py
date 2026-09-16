@@ -18,19 +18,26 @@ class RemapRuntimeAbiTests(unittest.TestCase):
 static void install(noisemaker::glsl::Bindings& bindings) {
   noisemaker::glsl::RemapUniformData payload{};
   payload.data[266] = noisemaker::glsl::Vec4(1, 2, 3, 4);
+  payload.data[274] = noisemaker::glsl::Vec4(5, 6, 7, 8);
   bindings.set_uniform("data", payload);
   payload.data[266] = noisemaker::glsl::Vec4(9, 9, 9, 9);
+  payload.data[274] = noisemaker::glsl::Vec4(9, 9, 9, 9);
 }
 int main() {
   using noisemaker::glsl::RemapUniformData;
   static_assert(std::is_copy_constructible_v<RemapUniformData>);
   static_assert(std::is_copy_assignable_v<RemapUniformData>);
   static_assert(std::is_same_v<decltype(RemapUniformData{}.data),
-                               std::array<noisemaker::glsl::Vec4, 267>>);
+                               std::array<noisemaker::glsl::Vec4, 275>>);
   noisemaker::glsl::Bindings bindings;
   install(bindings);
   const auto copy = bindings.get<RemapUniformData>("data");
-  return copy.data[266] == noisemaker::glsl::Vec4(1, 2, 3, 4) ? 0 : 1;
+  // Row 266 is the render extent (unchanged width); row 274 is the eighth
+  // (last) of the zone-bounds rows this lane added at 267..274.
+  return copy.data[266] == noisemaker::glsl::Vec4(1, 2, 3, 4) &&
+                 copy.data[274] == noisemaker::glsl::Vec4(5, 6, 7, 8)
+             ? 0
+             : 1;
 }
 '''
         with tempfile.TemporaryDirectory(prefix="remap-runtime-abi-") as td:

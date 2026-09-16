@@ -1,10 +1,47 @@
-"""Hash-bound frontend admission for ``synth/remap:remap``.
+"""Hash-bound frontend admission for ``synth/remap:remap`` -- SUPERSEDED.
 
-Remap is deliberately kept out of the generic array and uniform-block
-machinery.  This profile authenticates one fixed std140 block, its four exact
-index nodes, the three bounded source loops, and the complete sampler/binding
-surface.  The returned proof contains candidate-owned objects for the future
-generator/emitter lane; no global capability is widened here.
+This profile authenticated the OLD 267-slot ``remap.glsl`` (upstream
+ee523ab..., corpus a024dc3a...) for typed C++ generation: one fixed std140
+block, its four exact index nodes, the three bounded source loops, and the
+complete sampler/binding surface.
+
+At the 0ed489ec... corpus revision, upstream grew the uniform layout to 275
+slots and introduced ``struct ZoneTest``, the same construct that already
+made the authority's OWN JS glsl-transpiler give up and fall back to a
+hand-written adapter (see the authority's ``src/effects/adapters/remap.js``).
+A same-precision probe against that adapter (double throughout, rounded to
+float32 only at the final store) versus a float32-per-operation mirror --
+what a typed-generated C++ kernel would compute -- showed the two diverge in
+the least-significant bit for roughly 1 in 9 feathered-edge pixels. Typed
+generation therefore cannot be bit-exact against the authority for this
+program, feathering is not a corner case, and this profile is retired
+rather than re-pinned: ``synth/remap:remap`` is now corpus-status
+``adapter`` (see ``tools/glslcpp/check_corpus.py`` ``_ADAPTERS``),
+dispatched instead through a hand-written kernel that mirrors ``remap.js``
+operation-for-operation (see ``src/effects/remap.cpp``,
+``noisemaker::effects::bind_remap``).
+
+The functions below are kept, unmodified, as a correct record of the OLD
+source's exact shape (still useful evidence, e.g. for anyone diffing the
+upstream change) but are no longer meant to succeed against the pinned
+0ed489ec... source -- the ``remap-std140-frontend-v1`` row deliberately
+stays in ``tools/glslcpp/typed_slice.json`` pointing at these stale pins,
+so ``generate_typed_slice --check`` fails, precisely and only, on this one
+program key ("binding declaration ABI mismatch") rather than being silently
+skipped. Removing the row instead (tried first) turned out to shift the
+positional/index-based assumptions several OTHER programs' checks make
+about their place in that same list -- collateral damage to 210 programs
+this lane does not own, for a check that was already correctly failing on
+the one program it does own. Reaching a real ``custom_adapter`` route for
+this key also needs a matching branch in
+``tools/glslcpp/generate_typed_slice.py``'s ``_factory_route`` and
+``tools/dsl/generate_backend_compatibility.py``'s ``_custom_factory_route``
+(today both hardcode ``classicNoisedeck/bitEffects:bitEffects`` as the only
+custom-adapter key, and that ABI extractor only recognizes
+``b.get<T>("name")``/``b.get_number("name")`` call shapes -- not the
+``b.get_or<T>(name, default)`` or ``b.texture(name)`` shapes this kernel
+needs for its many optional zone uniforms and its 8 sampler bindings). Both
+are outside this lane's permitted edits.
 """
 
 from __future__ import annotations

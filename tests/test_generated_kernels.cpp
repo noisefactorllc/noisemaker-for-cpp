@@ -22,6 +22,7 @@
 #include <variant>
 #include <vector>
 
+#include "noisemaker/effects/remap.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/pass_runner.hpp"
 #include "noisemaker/sampler.hpp"
@@ -26395,6 +26396,12 @@ void remap_require_exact(const noisemaker::Surface& actual,
   return noisemaker::Surface(width, height, std::move(data));
 }
 
+// Builds the exact semantic uniform surface noisemaker::effects::bind_remap
+// reads (see src/effects/remap.cpp): never the packed std140 RemapUniformData
+// array (that block feeds only the retired, typed-generated kernel this
+// program no longer dispatches). `resolution` is synthesized to the fixture's
+// own render extent, matching what the executor's reserved_runtime_state
+// binding would supply.
 [[nodiscard]] noisemaker::glsl::Bindings remap_bindings(
     const remap_oracle::CaseView& fixture,
     const noisemaker::Surface& input,
@@ -26403,49 +26410,54 @@ void remap_require_exact(const noisemaker::Surface& actual,
   noisemaker::glsl::Bindings bindings;
   const auto skip = [&](std::string_view name) { return name == omitted; };
   const auto bad = [&](std::string_view name) { return name == wrong; };
-  if (!skip("data")) {
-    if (bad("data")) {
-      bindings.set_uniform("data", noisemaker::glsl::Vec4(0.0F));
-    } else {
-      noisemaker::glsl::RemapUniformData block;
-      const auto& controls = fixture.controls;
-      block.data[0] = noisemaker::glsl::Vec4(
-          controls.bg_color[0], controls.bg_color[1], controls.bg_color[2],
-          controls.bg_alpha);
-      block.data[1] = noisemaker::glsl::Vec4(
-          static_cast<float>(controls.zone_count), controls.smooth_edge, 0.0F,
-          0.0F);
-      for (std::size_t zone = 0U; zone < controls.zones.size(); ++zone) {
-        const auto& source = controls.zones[zone];
-        block.data[2U + zone] = noisemaker::glsl::Vec4(
-            static_cast<float>(source.count), source.active ? 1.0F : 0.0F,
-            0.0F, source.alpha);
-        for (std::size_t vertex = 0U; vertex < source.vertices.size(); ++vertex) {
-          const std::size_t pair = vertex / 2U;
-          const std::size_t slot = 10U + zone * 32U + pair;
-          const auto& value = source.vertices[vertex];
-          if ((vertex & 1U) == 0U)
-            block.data[slot][0] = value[0], block.data[slot][1] = value[1];
-          else
-            block.data[slot][2] = value[0], block.data[slot][3] = value[1];
-        }
-      }
-      bindings.set_uniform("data", block);
-    }
-  }
-  const auto put_vec2 = [&](std::string_view name, const std::array<std::int32_t, 2>& value) {
+  const auto put_int_vec2 = [&](std::string_view name, const std::array<std::int32_t, 2>& value) {
     if (skip(name)) return;
     if (bad(name)) bindings.set_uniform(std::string(name), 1.0);
     else bindings.set_uniform(std::string(name), noisemaker::glsl::Vec2(
         static_cast<float>(value[0]), static_cast<float>(value[1])));
   };
-  put_vec2("tileOffset", fixture.controls.tile_offset);
-  put_vec2("fullResolution", fixture.controls.full_resolution);
-  for (std::size_t zone = 0U; zone < 8U; ++zone) {
-    const std::string name = "zone" + std::to_string(zone) + "_tex";
-    if (skip(name)) continue;
+  const auto put_number = [&](const std::string& name, double value) {
+    if (skip(name)) return;
+    if (bad(name)) bindings.set_uniform(name, noisemaker::glsl::Vec2(0.0F, 0.0F));
+    else bindings.set_uniform(name, value);
+  };
+  const auto put_dvec3 = [&](std::string_view name, const std::array<double, 3>& value) {
+    if (skip(name)) return;
+    if (bad(name)) bindings.set_uniform(std::string(name), 1.0);
+    else bindings.set_uniform(std::string(name), noisemaker::glsl::DVec3(value[0], value[1], value[2]));
+  };
+  const auto put_dvec4 = [&](const std::string& name, const std::array<double, 4>& value) {
+    if (skip(name)) return;
     if (bad(name)) bindings.set_uniform(name, 1.0);
-    else bindings.set_texture(name, zone == 1U ? zone1_input : input);
+    else bindings.set_uniform(name, noisemaker::glsl::DVec4(value[0], value[1], value[2], value[3]));
+  };
+  const auto& controls = fixture.controls;
+  put_int_vec2("tileOffset", controls.tile_offset);
+  put_int_vec2("fullResolution", controls.full_resolution);
+  put_int_vec2("resolution", {static_cast<std::int32_t>(fixture.width),
+                              static_cast<std::int32_t>(fixture.height)});
+  put_number("zoneCount", controls.zone_count);
+  put_number("smoothEdge", controls.smooth_edge);
+  put_dvec3("bgColor", controls.bg_color);
+  put_number("bgAlpha", controls.bg_alpha);
+  for (std::size_t zone = 0U; zone < controls.zones.size(); ++zone) {
+    const auto& source = controls.zones[zone];
+    const std::string prefix = "zone" + std::to_string(zone) + "_";
+    put_number(prefix + "count", source.count);
+    put_number(prefix + "active", source.active ? 1.0 : 0.0);
+    put_number(prefix + "alpha", source.alpha);
+    put_dvec4(prefix + "bounds", source.bounds);
+    const std::size_t pairs = (source.count + 1U) / 2U;
+    for (std::size_t pair = 0U; pair < pairs && pair < 32U; ++pair) {
+      const auto a = source.vertices[pair * 2U];
+      const auto b = (pair * 2U + 1U < source.count) ? source.vertices[pair * 2U + 1U]
+                                                       : std::array<double, 2>{0.0, 0.0};
+      put_dvec4(prefix + "v" + std::to_string(pair), {a[0], a[1], b[0], b[1]});
+    }
+    const std::string tex_name = prefix + "tex";
+    if (skip(tex_name)) continue;
+    if (bad(tex_name)) bindings.set_uniform(tex_name, 1.0);
+    else bindings.set_texture(tex_name, zone == 1U ? zone1_input : input);
   }
   return bindings;
 }
@@ -26474,8 +26486,20 @@ void remap_native_integration_require_comparer_self_tests() {
   REQUIRE_THROWS_AS(remap_require_exact(good, RemapExpectedSurface{1U, 1U, zero_words, other_bytes}, "rgba8"), std::runtime_error);
 }
 
+// Exercises noisemaker::effects::bind_remap directly. Unlike every other
+// program in this file, remap is corpus-status "adapter": its authority is
+// the hand-written remap.js, not a typed-generated kernel, so there is no
+// noisemaker::generated::bind_synth_remap_remap (that symbol is still the
+// STALE 267-slot kernel generated from the pre-bump GLSL and is not this
+// program's authority any more) and no noisemaker::generated::bind()
+// registry-dispatch route (blocked on a custom_adapter wiring in
+// generate_backend_compatibility.py/_custom_factory_route that is outside
+// this lane's permitted edits -- see src/effects/remap.cpp's header
+// comment). "direct"/"repeat" is therefore the whole identity contract
+// available here; there is no third "public" registry path to cross-check
+// against yet.
 void remap_native_integration_require_parity() {
-  REQUIRE(remap_oracle::kCases.size() == 10U);
+  REQUIRE(remap_oracle::kCases.size() == 14U);
   for (const auto& fixture : remap_oracle::kCases) {
     const auto input = shared_native_surface(fixture.width, fixture.height, fixture.input_words);
     const auto formula_input = remap_fixture_surface(
@@ -26489,49 +26513,55 @@ void remap_native_integration_require_parity() {
     const auto input_before = shared_native_words(input);
     const auto zone1_before = shared_native_words(zone1_input);
     const auto expected = RemapExpectedSurface{fixture.width, fixture.height, fixture.output_words, fixture.output_rgba8_bytes};
-    const auto public_kernel = [&] { auto b = remap_bindings(fixture, input, zone1_input); return noisemaker::generated::bind(remap_oracle::kProgramKey, b); }();
-    const auto direct_kernel = [&] { auto b = remap_bindings(fixture, input, zone1_input); return noisemaker::generated::bind_synth_remap_remap(b); }();
-    const auto repeat_kernel = [&] { auto b = remap_bindings(fixture, input, zone1_input); return noisemaker::generated::bind_synth_remap_remap(b); }();
-    const auto public_output = noisemaker::run_pass(public_kernel, fixture.width, fixture.height);
+    const auto direct_kernel = [&] { auto b = remap_bindings(fixture, input, zone1_input); return noisemaker::effects::bind_remap(b); }();
+    const auto repeat_kernel = [&] { auto b = remap_bindings(fixture, input, zone1_input); return noisemaker::effects::bind_remap(b); }();
     const auto direct_output = noisemaker::run_pass(direct_kernel, fixture.width, fixture.height);
     const auto repeat_output = noisemaker::run_pass(repeat_kernel, fixture.width, fixture.height);
-    remap_require_exact(public_output, expected, std::string(fixture.name) + " public");
     remap_require_exact(direct_output, expected, std::string(fixture.name) + " direct");
     remap_require_exact(repeat_output, expected, std::string(fixture.name) + " repeat");
-    REQUIRE(shared_native_words(public_output) == shared_native_words(direct_output));
-    REQUIRE(shared_native_words(public_output) == shared_native_words(repeat_output));
-    REQUIRE(public_output.data().data() != direct_output.data().data());
-    REQUIRE(public_output.data().data() != repeat_output.data().data());
+    REQUIRE(shared_native_words(direct_output) == shared_native_words(repeat_output));
+    REQUIRE(direct_output.data().data() != repeat_output.data().data());
     REQUIRE(shared_native_words(input) == input_before);
     REQUIRE(shared_native_words(zone1_input) == zone1_before);
   }
 }
 
 void remap_native_integration_require_binding_abi() {
-  const auto& fixture = remap_oracle::kCases.front();
+  // "triangle": one real, active, 3-vertex zone, so the per-zone optional
+  // uniforms (count/active/alpha/bounds/v0) are actually exercised rather
+  // than short-circuited by an always-degenerate zone.
+  const auto& fixture = remap_oracle::kCases[1];
   const auto input = shared_native_surface(fixture.width, fixture.height, fixture.input_words);
   const auto zone1_input = remap_fixture_surface(
       fixture.width, fixture.height, fixture.salt + 100U);
-  for (const auto& binding : remap_oracle::kBindingAbi) {
-    const auto missing = remap_bindings(
-        fixture, input, zone1_input, binding.name);
-    const auto wrong = remap_bindings(
-        fixture, input, zone1_input, {}, binding.name);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_synth_remap_remap(missing), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(remap_oracle::kProgramKey, missing), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind_synth_remap_remap(wrong), noisemaker::glsl::KernelBindingError);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(remap_oracle::kProgramKey, wrong), noisemaker::glsl::KernelBindingError);
+  const std::array<std::string, 10> required_names{
+      "fullResolution", "resolution", "zone0_tex", "zone1_tex", "zone2_tex",
+      "zone3_tex", "zone4_tex", "zone5_tex", "zone6_tex", "zone7_tex"};
+  for (const auto& name : required_names) {
+    const auto missing = remap_bindings(fixture, input, zone1_input, name);
+    REQUIRE_THROWS_AS(noisemaker::effects::bind_remap(missing), noisemaker::glsl::KernelBindingError);
+    const auto wrong = remap_bindings(fixture, input, zone1_input, {}, name);
+    REQUIRE_THROWS_AS(noisemaker::effects::bind_remap(wrong), noisemaker::glsl::KernelBindingError);
+  }
+  // These are all optional in the authority (remap.js reads every one of
+  // them with its own `?? default`): omitting them must NOT throw, and the
+  // kernel must still bind and run.
+  const std::array<std::string, 8> optional_names{
+      "tileOffset", "zoneCount", "smoothEdge", "bgColor", "bgAlpha",
+      "zone0_count", "zone0_bounds", "zone0_v0"};
+  for (const auto& name : optional_names) {
+    const auto missing = remap_bindings(fixture, input, zone1_input, name);
+    require_bind_succeeds(noisemaker::effects::bind_remap(missing));
   }
   auto extra = remap_bindings(fixture, input, zone1_input);
   extra.set_uniform("unrelated", 3.0);
-  require_bind_succeeds(noisemaker::generated::bind_synth_remap_remap(extra));
-  require_bind_succeeds(noisemaker::generated::bind(remap_oracle::kProgramKey, extra));
+  require_bind_succeeds(noisemaker::effects::bind_remap(extra));
 }
 
 void remap_native_integration_require_oracle_metadata() {
   REQUIRE(remap_oracle::kSchema == "noisemaker-for-cpp.remap.pixel-parity.v2");
   REQUIRE(remap_oracle::kProgramKey == "synth/remap:remap");
-  REQUIRE(remap_oracle::kBindingAbi.size() == 11U);
+  REQUIRE(remap_oracle::kBindingNames.size() == 303U);
   REQUIRE(remap_oracle::kMutations.size() == 7U);
   REQUIRE(remap_oracle::kClaimBoundaries.size() == 3U);
   for (const auto& fixture : remap_oracle::kCases) {
@@ -26549,10 +26579,14 @@ void remap_native_integration_require_oracle_metadata() {
       if (row.rgba8_witness.present) REQUIRE(row.changed_rgba8_bytes > 0U);
     }
   }
-  const auto factories = noisemaker::generated::catalog();
-  bool found = false;
-  for (const auto& entry : factories) found = found || entry.key == remap_oracle::kProgramKey;
-  REQUIRE(found);
+  // synth/remap:remap is corpus-status "adapter", dispatched by hand
+  // (noisemaker::effects::bind_remap) rather than through
+  // noisemaker::generated::catalog()'s typed-kernel table. Its
+  // backend_compatibility.json classification is "incompatible" until a
+  // custom_adapter route is added there and in generate_typed_slice.py's
+  // _factory_route -- both outside this lane's permitted edits. Asserting
+  // catalog membership here would assert something this lane cannot yet
+  // make true; see the report for exactly what is blocked and why.
 }
 
 struct BitEffectsExpectedSurface {

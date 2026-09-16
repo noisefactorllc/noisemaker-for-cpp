@@ -30,6 +30,7 @@ _ADAPTERS = frozenset({
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
     "synth/julia:julia",
+    "synth/remap:remap",
 })
 _WINDOWS_DEVICES = frozenset({"CON", "PRN", "AUX", "NUL", "CLOCK$",
     *(f"COM{number}" for number in range(1, 10)),

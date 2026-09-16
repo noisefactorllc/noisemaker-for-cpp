@@ -353,6 +353,21 @@ TEST(graph_executor_fails_closed_on_an_unproduced_secondary_sampler_route) {
 TEST(graph_executor_binds_every_declared_sampler_of_a_wide_route) {
   // remap declares eight sampler routes, all fed by unbound surface
   // parameters. The authority binds its 1x1 empty surface for each.
+  //
+  // KNOWN FAILING as of the 0ed489ec.../61aa869 authority bump, for a reason
+  // upstream of this lane: synth/remap:remap is classified "incompatible" in
+  // src/effects/generated/backend_compatibility.json (its pinned source
+  // changed and the retired typed-generated kernel no longer matches it), so
+  // the DSL/graph pipeline now refuses to compile or dispatch ANY remap pass
+  // at all -- "pass is not executable"/"pass is not compatible" -- for every
+  // remap DSL program regardless of what this test asserts. Reaching
+  // "compatible" needs a custom_adapter route added to
+  // tools/glslcpp/generate_typed_slice.py's _factory_route and
+  // tools/dsl/generate_backend_compatibility.py's _custom_factory_route
+  // (both outside this lane's permitted edits). The standalone kernel this
+  // lane delivers (noisemaker::effects::bind_remap, oracle-verified in
+  // tests/test_generated_kernels.cpp) does not depend on that route and is
+  // unaffected.
   Renderer renderer;
   auto plan = renderer.compile(kRemapSource, "remap.dsl");
   const auto& admission = snapshot_for(plan, "synth/remap").admissions[0];
@@ -410,6 +425,12 @@ TEST(graph_executor_resolves_typed_compile_define_bindings_from_owned_parameters
 }
 
 TEST(graph_executor_owns_the_remap_uniform_block_and_canonical_defaults) {
+  // KNOWN FAILING: see the comment on
+  // graph_executor_binds_every_declared_sampler_of_a_wide_route above --
+  // synth/remap:remap is "incompatible" pending a custom_adapter route this
+  // lane cannot add. The 275-row layout and bounds-row assertions below
+  // (rows 267..274, added in this lane) are otherwise ready for when that
+  // lands.
   Renderer renderer;
   auto plan = renderer.compile(kRemapSource, "remap-uniforms.dsl");
   const auto inputs = options(13U, 4U);
@@ -425,6 +446,16 @@ TEST(graph_executor_owns_the_remap_uniform_block_and_canonical_defaults) {
   REQUIRE(block.data[265][0] == 0.0F);
   REQUIRE(block.data[266][0] == 13.0F);
   REQUIRE(block.data[266][1] == 4.0F);
+  // Rows 267..274 are the eight per-zone bounds rows upstream added; with no
+  // zone{N}_bounds parameter bound, every one of the eight defaults to the
+  // authority's [0, 0, 1, 1] (a box that never rejects a canvas pixel).
+  for (std::size_t zone = 0U; zone < 8U; ++zone) {
+    const auto& bounds = block.data[267U + zone];
+    REQUIRE(bounds[0] == 0.0F);
+    REQUIRE(bounds[1] == 0.0F);
+    REQUIRE(bounds[2] == 1.0F);
+    REQUIRE(bounds[3] == 1.0F);
+  }
 }
 
 TEST(graph_executor_rejects_an_unknown_pass_derived_source_before_dispatch) {
@@ -591,8 +622,8 @@ TEST(graph_executor_preflights_before_copying_caller_owned_surfaces) {
 
 TEST(graph_generic_uniform_materializer_supports_all_value_owned_abi_shapes) {
   std::vector<PlanValue> remap;
-  remap.reserve(267U);
-  for (std::size_t index = 0; index < 267U; ++index) {
+  remap.reserve(275U);
+  for (std::size_t index = 0; index < 275U; ++index) {
     remap.push_back(PlanValue::array_value({
         PlanValue::number_value(static_cast<double>(index)),
         PlanValue::number_value(1.0), PlanValue::number_value(2.0),
@@ -618,7 +649,7 @@ TEST(graph_generic_uniform_materializer_supports_all_value_owned_abi_shapes) {
       {"count", "int", "effect_parameter", "count", {}, "std::int32_t"},
       {"offset", "ivec2", "effect_parameter", "offset", {}, "glsl::IVec2"},
       {"direction", "vec4", "effect_parameter", "direction", {}, "glsl::Vec4"},
-      {"data", "vec4[267]", "effect_parameter", "data", {}, "vec4[267]"},
+      {"data", "vec4[275]", "effect_parameter", "data", {}, "vec4[275]"},
   };
 
   EffectStep step;
@@ -639,7 +670,7 @@ TEST(graph_generic_uniform_materializer_supports_all_value_owned_abi_shapes) {
   REQUIRE(bindings.get<std::int32_t>("count") == -3);
   REQUIRE(bindings.get<glsl::IVec2>("offset")[0] == 7);
   REQUIRE(bindings.get<glsl::Vec4>("direction")[3] == noisemaker::f32(0.4));
-  REQUIRE(bindings.get<glsl::RemapUniformData>("data").data[266][0] == noisemaker::f32(266.0));
+  REQUIRE(bindings.get<glsl::RemapUniformData>("data").data[274][0] == noisemaker::f32(274.0));
 
   // A uniform must never carry a sampler's resource route, and a duplicate
   // ABI name is rejected before any value is bound.
@@ -695,6 +726,16 @@ TEST(graph_executor_binds_the_render_seed_over_a_defaulted_effect_seed) {
 TEST(graph_executor_publishes_a_bound_zone_surface_into_the_remap_block) {
   // A bound zone surface publishes its color-mode flag, so `zone0_active` is
   // 1 and the rendered bytes equal the authority exactly.
+  //
+  // KNOWN FAILING: see the comment on
+  // graph_executor_binds_every_declared_sampler_of_a_wide_route above --
+  // synth/remap:remap is "incompatible" pending a custom_adapter route this
+  // lane cannot add. The expected rgba8 hash below is the OLD (267-row,
+  // typed-generated-kernel) authority's output; once the custom_adapter
+  // route lands and actually dispatches noisemaker::effects::bind_remap for
+  // this pass, that hash must be recomputed against the real authority
+  // (remap.js) rather than assumed equal -- do not carry it forward
+  // unverified.
   Renderer renderer;
   const auto source =
       "search synth\n"

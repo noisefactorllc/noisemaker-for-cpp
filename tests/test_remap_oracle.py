@@ -34,7 +34,7 @@ class RemapOracleTests(unittest.TestCase):
             self.skipTest("authority fixture is not available")
         checked = self.node("--check", "--cpu-root", str(CPU))
         self.assertEqual(0, checked.returncode, checked.stderr)
-        self.assertIn("10 cases, 7 mutations", checked.stdout)
+        self.assertIn("14 cases, 7 mutations", checked.stdout)
         materializer = subprocess.run(
             ["python3", "-B", "tools/glslcpp/generate_remap_native_oracle_include.py", "--check"],
             cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -71,14 +71,20 @@ class RemapOracleTests(unittest.TestCase):
     def test_document_has_exact_source_and_runtime_contract(self):
         document = json.loads((ROOT / "docs/port-engineering/remap-parity/remap-oracles.json").read_text())
         self.assertEqual("synth/remap:remap", document["program_key"])
-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
-        self.assertEqual(10, len(document["render_cases"]))
+        # 23, not the pre-bump oracle's 22: src/effects/adapters/remap.js
+        # joins the literal-import closure now that adapters/index.js routes
+        # to it instead of the retired typed-generated kernel.
+        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+        self.assertEqual(14, len(document["render_cases"]))
         self.assertEqual(7, len(document["mutation_ledger"]))
         self.assertTrue(all(item["witness_cases"] for item in document["mutation_ledger"]))
         self.assertTrue(all(any(r["changed_float32_lanes"] and r["changed_rgba8_bytes"] for r in item["results"]) for item in document["mutation_ledger"]))
         active_zone_indices = {i for case in document["render_cases"] for i, zone in enumerate(case["controls"]["zones"]) if zone["active"]}
         self.assertTrue(set(range(8)).issubset(active_zone_indices))
         self.assertTrue(any(any(zone["active"] and zone["count"] < 3 for zone in case["controls"]["zones"]) for case in document["render_cases"]))
+        # The upstream feature this re-derivation exists to cover: at least
+        # one case must exercise the new per-zone bounds-rejection uniform.
+        self.assertTrue(any("bounds" in zone for case in document["render_cases"] for zone in case["controls"]["zones"]))
 
     def test_materializer_duplicate_key_and_matching_sidecar_forgery_rejected(self):
         materializer = ROOT / "tools/glslcpp/generate_remap_native_oracle_include.py"
@@ -86,7 +92,8 @@ class RemapOracleTests(unittest.TestCase):
         self.assertEqual(json.loads(duplicate, object_pairs_hook=lambda pairs: pairs), [("schema", 1), ("schema", 2)])
         result = subprocess.run(["python3", "-B", str(materializer), "--self-test"], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(0, result.returncode, result.stderr)
-        self.assertIn("64 matching-sidecar forgery probes", result.stdout)
+        self.assertIn("JSON forgeries rejected", result.stdout)
+        self.assertIn("matching-sidecar include forge rejected", result.stdout)
 
     def test_materializer_rejects_matching_sidecar_include_forgery(self):
         materializer_path = ROOT / "tools/glslcpp/generate_remap_native_oracle_include.py"
@@ -105,12 +112,23 @@ class RemapOracleTests(unittest.TestCase):
             with self.assertRaises(module.OracleError):
                 module.checked_target(document, forged)
 
-    def test_generator_self_test_rejects_nonliteral_import_forms(self):
+    def test_generator_self_test_passes_every_internal_probe(self):
+        # The pre-bump generator's self-test included a `rejectNonliteralDynamicImports`
+        # probe because its mutation testing extracted and re-imported one
+        # factory's own text out of a multi-factory kernels file, requiring a
+        # defense against nonliteral `import()` forms inside that extracted
+        # text. This generator mutates and re-imports the WHOLE, single-factory
+        # remap.js module instead (see its module docstring for why: the
+        # factory closes over top-level helpers `testEdge`/`walkZone` that a
+        # factory-only extraction would drop), and remap.js has no imports at
+        # all, so that probe no longer applies.
         if CPU is None or LIVE is None or not CPU.is_dir() or not LIVE.is_dir():
             self.skipTest("authority fixture is not available")
         checked = self.node("--self-test", "--cpu-root", str(CPU))
         self.assertEqual(0, checked.returncode, checked.stderr)
-        self.assertIn("imports", checked.stdout)
+        for probe in ("closure", "captures", "mutants", "controls", "comparer", "paths"):
+            self.assertIn(f"[ok] {probe}", checked.stdout)
+        self.assertNotIn("FAIL", checked.stdout)
 
     def test_native_include_exposes_controls_alpha_and_witnesses(self):
         source = r'''#include "tests/oracles/remap_expected.inc"

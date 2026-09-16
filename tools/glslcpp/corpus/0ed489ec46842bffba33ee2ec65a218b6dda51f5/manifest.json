@@ -3734,7 +3734,7 @@
       "raw_sha256": "500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b",
       "runtime_key": "synth/remap:remap",
       "source": "sources/synth/remap/remap.glsl",
-      "status": "generated",
+      "status": "adapter",
       "varyings": []
     },
     {
