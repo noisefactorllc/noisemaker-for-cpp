@@ -62,9 +62,9 @@ class ExecutableCorpusTest(unittest.TestCase):
         self.assertGreater(manifest["counts"]["admitted"], 0)
         self.assertGreater(manifest["counts"]["excluded"], 0)
         self.assertTrue(any(r["effectId"] == "filter/blur" and r["recordKind"] == "admitted" for r in records))
-        text = next(r for r in records if r["effectId"] == "filter/text")
-        self.assertEqual(text["recordKind"], "excluded")
-        self.assertEqual(text["firstFailure"]["code"], "source_incompatible")
+        feedback = next(r for r in records if r["effectId"] == "filter/feedback")
+        self.assertEqual(feedback["recordKind"], "excluded")
+        self.assertEqual(feedback["firstFailure"]["code"], "unsupported_pass")
         for record in records:
             self.assertEqual(record["sourceSha256"], hashlib.sha256(record["source"].encode()).hexdigest())
             self.assertEqual(record["options"]["width"], 17)

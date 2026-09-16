@@ -47,7 +47,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             document = json.loads(output.read_text())
             self.assertEqual("noisemaker-cpp.cpu-effect-catalog.v1", document["schema"])
-            self.assertEqual(205, len(document["records"]))
+            self.assertEqual(208, len(document["records"]))
             self.assertEqual("string", document["records"][0]["id"]["$type"])
             self.assertEqual("synth3d/shape3d", load_export(output)[-1]["id"])
             first = load_export(output)[0]
@@ -71,11 +71,11 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
 
         passes = [current_pass for effect in records for current_pass in effect["passes"]]
         blends = [current_pass["blend"] for current_pass in passes if "blend" in current_pass]
-        self.assertEqual(8, len(blends))
-        self.assertEqual(6, sum(isinstance(value, bool) for value in blends))
-        self.assertEqual(2, sum(isinstance(value, list) for value in blends))
+        self.assertEqual(16, len(blends))
+        self.assertEqual(12, sum(isinstance(value, bool) for value in blends))
+        self.assertEqual(4, sum(isinstance(value, list) for value in blends))
         self.assertEqual(
-            [["one", "one"], ["ONE", "ONE_MINUS_SRC_ALPHA"]],
+            [["one", "one"], ["ONE", "ONE_MINUS_SRC_ALPHA"], ["ONE", "ONE_MINUS_SRC_ALPHA"], ["ONE", "ONE_MINUS_SRC_ALPHA"]],
             [value for value in blends if isinstance(value, list)],
         )
 
@@ -91,7 +91,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             for dimension in (texture.get("width"), texture.get("height"))
         ))
         self.assertEqual(4, sum("format" not in texture for texture in textures))
-        self.assertEqual(100, sum("format" in texture for texture in textures))
+        self.assertEqual(108, sum("format" in texture for texture in textures))
         self.assertEqual(
             0,
             sum("outputTex" in effect for effect in records),
@@ -130,14 +130,14 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(first_bytes, (out / "effect_catalog.cpp").read_bytes())
             self.assertEqual(first_provenance, (out / "effect_catalog.provenance.json").read_bytes())
             provenance = json.loads(first_provenance)
-            self.assertEqual(205, provenance["counts"]["definitions"])
-            self.assertEqual(305, provenance["counts"]["passes"])
-            self.assertEqual(295, provenance["counts"]["reference_program_keys"])
-            self.assertEqual(210, provenance["counts"]["compatible_programs"])
-            self.assertEqual(1, provenance["counts"]["incompatible_programs"])
-            self.assertEqual(93, provenance["counts"]["missing_passes"])
+            self.assertEqual(208, provenance["counts"]["definitions"])
+            self.assertEqual(344, provenance["counts"]["passes"])
+            self.assertEqual(304, provenance["counts"]["reference_program_keys"])
+            self.assertEqual(211, provenance["counts"]["compatible_programs"])
+            self.assertEqual(0, provenance["counts"]["incompatible_programs"])
+            self.assertEqual(132, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
-            self.assertEqual("0f603fa04e4a479b513affe58251101aeacf122de46d521698dfc54c95fd02af", provenance["normalized_record_stream_sha256"])
+            self.assertEqual("2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()

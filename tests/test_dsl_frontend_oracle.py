@@ -25,7 +25,7 @@ COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
 COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
 COMPILER_ORACLE_JS = ORACLE_JS
 COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
-COMPILER_EXPECTED_SHA256 = "ea062722e8ae2ccbfa2842fe9709f16bd0a22ac0c2a954cff77386025bbed42e"
+COMPILER_EXPECTED_SHA256 = "f049d03aed10dc807195d7cf5641e62fb58b3fef9fc5bd5aef77af6255356884"
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
 
 
@@ -94,7 +94,7 @@ class DslFrontendOracleTest(unittest.TestCase):
         js = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--list", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES)], check=True, capture_output=True, text=True).stdout
         native = subprocess.run([str(cpp), "--list", "--mode", "catalog_records"], check=True, capture_output=True, text=True).stdout
         self.assertEqual(js, native)
-        self.assertEqual(len(json.loads(js)), 205)
+        self.assertEqual(len(json.loads(js)), 208)
 
     def test_checked_compiler_stream_matches_node_cpp_and_is_deterministic(self) -> None:
         cpu_root = require_cpu_root(self)

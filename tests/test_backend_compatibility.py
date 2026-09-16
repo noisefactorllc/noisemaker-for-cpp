@@ -51,9 +51,9 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5", document["authority"]["upstream_revision"])
         self.assertEqual("cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6", document["authority"]["upstream_tree"])
         self.assertEqual("4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812", document["authority"]["source_lock_sha256"])
-        self.assertEqual(205, document["counts"]["raw_exact"])
-        self.assertEqual(6, document["counts"]["semantic_exact"])
-        self.assertEqual(["filter/text:text"], document["counts"]["incompatible_keys"])
+        self.assertEqual(212, document["counts"]["raw_exact"])
+        self.assertEqual(0, document["counts"]["semantic_exact"])
+        self.assertEqual([], document["counts"]["incompatible_keys"])
         bit = next(row for row in document["canonical_programs"]
                    if row["program_key"] == "classicNoisedeck/bitEffects:bitEffects")
         self.assertEqual("noisemaker::effects::bind_bit_effects", bit["factory"]["canonical"])
