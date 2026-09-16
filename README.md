@@ -5,7 +5,7 @@
 
 # noisemaker-for-cpp
 
-> This package supports the "Export Shader Pipeline" feature in Noisedeck.app. The feature runs shader compositions on other platforms. Noise Factor derives this package from the upstream Noisemaker Engine project and tests it for pixel-level parity.
+> This package supports the "Export Shader Pipeline" feature in Noisedeck.app. The feature runs shader compositions on other platforms. Noise Factor derives this package from the upstream Noisemaker Engine project. It is not yet at full parity with `noisemaker-for-cpu`: see [Coverage](#coverage) for the measured gap.
 
 A C++20 CPU port of the [Noisemaker](https://noisemaker.app) shader engine.
 
@@ -40,27 +40,33 @@ differs by a single byte. CI runs that check on every push.
 
 ## Coverage
 
-This port is **in progress**. Coverage against the pinned corpus revision
-`a024dc3a960cc44af454abc7aebce50456c194e6`:
+This port is **in progress** and is measured against a pinned JavaScript authority,
+`noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which itself pins the
+upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that
+exact authority commit; it does not follow the authority's `main`.
 
 | | Count | Derived from |
 |---|---:|---|
-| Corpus programs | 212 | the `programs` array in `tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/manifest.json` |
-| Ported into the typed slice | 211 | the `programs` array in `src/typed_generated/typed_manifest.json` |
-| Corpus programs outside the typed slice | 1 | set difference of the two arrays above: `filter/wormhole:deposit`, which is ported separately as a scatter pass in `src/effects/scatter/wormhole.cpp` |
+| Effect definitions in the authority | 208 | `counts.definitions` in `src/effects/generated/effect_catalog.provenance.json` |
+| Effects this port can execute | 167 | `counts.executable_definitions` in the same file |
+| Effects with at least one unported pass | 41 | `counts.incomplete_definitions` in the same file |
+| Effects listed by this port's export kit | 160 | `export-kit/compat-effects.json` |
+| Effects listed by the authority's export kit | 205 | `export-kit/compat-effects.json` in the authority checkout |
+| Corpus programs | 212 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
+| Typed-slice programs | 211 | the `programs` array in `src/typed_generated/typed_manifest.json` |
 | Catalog entries | 213 | `kCatalog` in `src/typed_generated/typed_slice.cpp`: the 211 typed program keys, plus a second, earlier-generation factory registered under `filter/invert:inv` and under `synth/solid:solid` |
 
-You can derive the corpus and typed counts from a clean checkout without external state. `python -m tools.glslcpp.check_semantics --check` prints the corpus count. `python -m tools.glslcpp.generate_typed_slice --check` prints the typed count.
+Where the authority runs a hand-written adapter instead of its generated kernel, this port either routes the program to a hand-written C++ kernel (the `custom_adapter` routes) or proves its generated kernel equivalent to the adapter with an oracle package under `docs/port-engineering/`.
 
-Every program in the pinned corpus is therefore compiled and bound. The port is not finished. Parity verification, the DSL graph executor, and an open defect queue still need work. The live list of remaining
-work is the top block of
+The remaining effects need runtime features this executor does not have yet: iterated simulations, particle groups, volume atlases, multi-render-target passes, and loop regions. The live list of remaining work is the top block of
 [`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
 
 The corpus itself is vendored, not authored here. Its GLSL sources under
 `tools/glslcpp/corpus/` come from
 [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at
-revision `a024dc3a960cc44af454abc7aebce50456c194e6`, and are MIT-licensed
-there.
+revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`, and are MIT-licensed
+there. The earlier `a024dc3a960cc44af454abc7aebce50456c194e6` corpus is kept as frozen
+evidence for the oracle packages that cite it.
 
 ### Parity and its documented exceptions
 
@@ -255,4 +261,4 @@ MIT. See [LICENSE](LICENSE).
 
 The vendored GLSL corpus under `tools/glslcpp/corpus/` is MIT-licensed source
 from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker),
-pinned at revision `a024dc3a960cc44af454abc7aebce50456c194e6`.
+pinned at revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.

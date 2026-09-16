@@ -1,0 +1,35 @@
+name: Authority drift
+
+# CI proves parity against one pinned noisemaker-for-cpu commit. This workflow
+# fails whenever noisemaker-for-cpu's default branch behaves differently from
+# that pin, so a stale port cannot stay green.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: noisefactorllc/noisemaker-for-cpu
+          path: cpu-authority-live
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Compare the pinned authority with the live authority
+        run: |
+          mv "$GITHUB_WORKSPACE/cpu-authority-live" "$RUNNER_TEMP/cpu-authority-live"
+          python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority-live"
