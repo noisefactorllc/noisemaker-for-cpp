@@ -181,10 +181,12 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
   } else if (key == "filter/lensFlare:lensFlare") {
     uniform("brightness", 137.0f); uniform("centerX", 0.29f); uniform("centerY", 0.61f);
     uniform("tint", noisemaker::glsl::Vec3(0.83f, 0.94f, 0.71f));
+    uniform("LENS_TYPE", std::int32_t(0));
   } else if (key == "filter/mosaicTiles:mosaicTiles") {
     uniform("tileSize", 4.7f); uniform("groutWidth", 22.0f); uniform("relief", 58.0f);
     uniform("maxOffset", 31.0f); uniform("gapFill", std::int32_t(2));
     uniform("backgroundColor", noisemaker::glsl::Vec3(0.12f, 0.34f, 0.56f)); uniform("seed", std::int32_t(7));
+    uniform("MODE", std::int32_t(0));
   } else if (key == "filter/photocopy:pcCombine") {
     texture("blurTex", blur); uniform("darkness", 68.0f);
     uniform("inkColor", noisemaker::glsl::Vec3(0.08f, 0.17f, 0.29f));
@@ -194,10 +196,12 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
     uniform("balance", 44.0f); uniform("graininess", 36.0f);
     uniform("inkColor", noisemaker::glsl::Vec3(0.09f, 0.18f, 0.27f));
     uniform("paperColor", noisemaker::glsl::Vec3(0.92f, 0.79f, 0.63f));
+    uniform("MODE", std::int32_t(0));
   } else if (key == "filter/ridge:ridge") {
     uniform("level", 0.42f);
   } else if (key == "filter/scatter:scatterJitter") {
     uniform("radius", 2.7f); uniform("seed", std::int32_t(11));
+    uniform("MODE", std::int32_t(0));
   } else if (key == "filter/simpleAberration:chromaticAberration") {
     uniform("displacement", 0.037f);
   } else if (key == "filter/text:text") {
@@ -1887,7 +1891,7 @@ struct Task15Binding {
   Task15BindingType type;
 };
 
-constexpr std::array<Task15Binding, 235> kTask15Bindings{{
+constexpr std::array<Task15Binding, 240> kTask15Bindings{{
     {"filter/chrome:chBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar},
@@ -1938,10 +1942,12 @@ constexpr std::array<Task15Binding, 235> kTask15Bindings{{
     {"filter/morphology:morphA", "resolution", Task15BindingType::vec2},
     {"filter/morphology:morphA", "mode", Task15BindingType::integer},
     {"filter/morphology:morphA", "radius", Task15BindingType::scalar},
+    {"filter/morphology:morphA", "SHAPE", Task15BindingType::integer},
     {"filter/morphology:morphB", "inputTex", Task15BindingType::sampler},
     {"filter/morphology:morphB", "resolution", Task15BindingType::vec2},
     {"filter/morphology:morphB", "mode", Task15BindingType::integer},
     {"filter/morphology:morphB", "radius", Task15BindingType::scalar},
+    {"filter/morphology:morphB", "SHAPE", Task15BindingType::integer},
     {"filter/normalize:reduce", "tileOffset", Task15BindingType::vec2},
     {"filter/normalize:reduce", "fullResolution", Task15BindingType::vec2},
     {"filter/normalize:reduce", "inputTex", Task15BindingType::sampler},
@@ -1979,9 +1985,11 @@ constexpr std::array<Task15Binding, 235> kTask15Bindings{{
     {"filter/relief:rlBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/relief:rlBlurH", "resolution", Task15BindingType::vec2},
     {"filter/relief:rlBlurH", "smoothness", Task15BindingType::scalar},
+    {"filter/relief:rlBlurH", "MODE", Task15BindingType::integer},
     {"filter/relief:rlBlurV", "inputTex", Task15BindingType::sampler},
     {"filter/relief:rlBlurV", "resolution", Task15BindingType::vec2},
     {"filter/relief:rlBlurV", "smoothness", Task15BindingType::scalar},
+    {"filter/relief:rlBlurV", "MODE", Task15BindingType::integer},
     {"filter/reverb:reverb", "tileOffset", Task15BindingType::vec2},
     {"filter/reverb:reverb", "fullResolution", Task15BindingType::vec2},
     {"filter/reverb:reverb", "inputTex", Task15BindingType::sampler},
@@ -1992,6 +2000,7 @@ constexpr std::array<Task15Binding, 235> kTask15Bindings{{
     {"filter/scatter:scatterSmooth", "inputTex", Task15BindingType::sampler},
     {"filter/scatter:scatterSmooth", "resolution", Task15BindingType::vec2},
     {"filter/scatter:scatterSmooth", "smoothness", Task15BindingType::scalar},
+    {"filter/scatter:scatterSmooth", "MODE", Task15BindingType::integer},
     {"filter/stamp:stBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/stamp:stBlurH", "resolution", Task15BindingType::vec2},
     {"filter/stamp:stBlurH", "smoothness", Task15BindingType::scalar},
@@ -2166,9 +2175,9 @@ TEST(typed_task15_every_required_uniform_and_sampler_fails_closed) {
     REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, wrong),
                       noisemaker::glsl::KernelBindingError);
   }
-  REQUIRE(kTask15Bindings.size() == 235U);
+  REQUIRE(kTask15Bindings.size() == 240U);
   REQUIRE(sampler_count == 46U);
-  REQUIRE(uniform_count == 189U);
+  REQUIRE(uniform_count == 194U);
 }
 
 struct Task15OracleCase {
@@ -2267,7 +2276,7 @@ struct Task15OracleUniform {
   std::array<double, 3> value;
 };
 
-constexpr std::array<Task15OracleUniform, 189> kTask15OracleUniforms{{
+constexpr std::array<Task15OracleUniform, 194> kTask15OracleUniforms{{
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
     {"filter/chrome:chBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
@@ -2309,9 +2318,11 @@ constexpr std::array<Task15OracleUniform, 189> kTask15OracleUniforms{{
     {"filter/morphology:morphA", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/morphology:morphA", "mode", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/morphology:morphA", "radius", Task15BindingType::scalar, {4.0, 0.0, 0.0}},
+    {"filter/morphology:morphA", "SHAPE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/morphology:morphB", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/morphology:morphB", "mode", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/morphology:morphB", "radius", Task15BindingType::scalar, {4.0, 0.0, 0.0}},
+    {"filter/morphology:morphB", "SHAPE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/normalize:reduce", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
     {"filter/normalize:reduce", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
     {"filter/normalize:reduceMinmax", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
@@ -2338,8 +2349,10 @@ constexpr std::array<Task15OracleUniform, 189> kTask15OracleUniforms{{
     {"filter/plasticWrap:pwBlurV", "detail", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
     {"filter/relief:rlBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/relief:rlBlurH", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
+    {"filter/relief:rlBlurH", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/relief:rlBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/relief:rlBlurV", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
+    {"filter/relief:rlBlurV", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/reverb:reverb", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
     {"filter/reverb:reverb", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
     {"filter/reverb:reverb", "iterations", Task15BindingType::integer, {3.0, 0.0, 0.0}},
@@ -2348,6 +2361,7 @@ constexpr std::array<Task15OracleUniform, 189> kTask15OracleUniforms{{
     {"filter/reverb:reverb", "wrap", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
     {"filter/scatter:scatterSmooth", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/scatter:scatterSmooth", "smoothness", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
+    {"filter/scatter:scatterSmooth", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/stamp:stBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/stamp:stBlurH", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
     {"filter/stamp:stBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
