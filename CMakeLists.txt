@@ -26,6 +26,7 @@ add_library(noisemaker-cpu
   src/effects/bit_effects.cpp
   src/effects/remap.cpp
   src/effects/cpu/worm_overlay.cpp
+  src/effects/snow.cpp
   src/generated/synth_solid.cpp
   src/generated/filter_invert.cpp
   src/typed_generated/typed_slice.cpp
@@ -142,6 +143,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_resources.cpp
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
+  tests/test_snow_kernel.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE

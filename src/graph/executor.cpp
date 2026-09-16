@@ -748,15 +748,31 @@ void authenticate_palette_override(const EffectStep& step,
 // byte-exact and removed -- see the digit-extraction field comment on
 // `emitted_testpattern_digit_extraction_declarations` in emit_typed_cpp.py
 // and tests/test_testpattern_emitter_regression.py.
+//
+// `filter/snow:snow` was the last real entry -- the authority's own
+// hand-written CPU adapter (src/effects/adapters/snow.js), unmatched by the
+// typed kernel emitted from the *GLSL* it replaces -- until it too was
+// proven byte-exact against that adapter and wired to a hand-written C++
+// port (src/effects/snow.cpp) instead; see
+// docs/port-engineering/snow-parity/ and tests/test_snow_kernel.cpp.
+//
+// The one remaining entry is not a real program: no corpus source can ever
+// produce this `program_key`. It is a permanent, reserved test sentinel so
+// `graph_executor_fails_closed_on_a_measured_parity_exclusion` (in
+// tests/test_graph_features.cpp) can keep proving this refusal path
+// without depending on some other real program still happening to be
+// excluded here -- exactly the situation that emptied this array once
+// snow and testPattern were both closed. Never remove it; only ever
+// remove a *real* exclusion above it.
 struct MeasuredParityExclusion {
   std::string_view program_key;
   std::string_view reason;
 };
 
 constexpr std::array<MeasuredParityExclusion, 1> kMeasuredParityExclusions = {{
-    {"filter/snow:snow",
-     "the authority executes a hand-written CPU adapter for this program and the"
-     " emitted typed kernel is measured divergent (499 of 748 RGBA8 bytes at 17x11)"},
+    {"__measured_parity_test_sentinel__/neverReal:neverReal",
+     "test-only sentinel: proves the executor fails closed on a measured"
+     " parity exclusion without depending on a real divergent program"},
 }};
 
 void authenticate_measured_parity(const EffectStep& step,

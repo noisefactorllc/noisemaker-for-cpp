@@ -1,6 +1,7 @@
 #include "test_harness.hpp"
 
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/snow.hpp"
 #include "noisemaker/graph/executor.hpp"
 #include "noisemaker/renderer.hpp"
 
@@ -229,6 +230,16 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   REQUIRE(bit_effects->route_kind == "custom_adapter");
   REQUIRE(bit_effects->bind == &noisemaker::effects::bind_bit_effects);
 
+  // filter/snow:snow: a second hand-written custom adapter, following the
+  // exact same bitEffects row shape (only canonical_factory, route_kind,
+  // and bind change; every ABI/source hash stays the GLSL-declared one --
+  // see src/effects/snow.cpp and the field comment on
+  // kMeasuredParityExclusions above).
+  const auto* snow = canonical_route("filter/snow:snow", "noisemaker::effects::bind_snow");
+  REQUIRE(snow != nullptr);
+  REQUIRE(snow->route_kind == "custom_adapter");
+  REQUIRE(snow->bind == &noisemaker::effects::bind_snow);
+
   // The source-incompatible row stays present for inspection; execution
   // rejects it on admission status, not by absence from the table.
   REQUIRE(canonical_route("filter/text:text", "bind_filter_text_text") != nullptr);
@@ -242,9 +253,6 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  // synth/remap:remap moved from typed_emitter to custom_adapter (see
-  // src/effects/remap.cpp): its GLSL cannot be typed-lowered, so it joins
-  // classicNoisedeck/bitEffects:bitEffects as the second custom_adapter route.
   REQUIRE(typed_emitter == 209U);
   REQUIRE(custom_adapter == 2U);
 }
@@ -997,39 +1005,58 @@ TEST(graph_executor_fails_closed_on_an_unported_palette_override) {
 }
 
 TEST(graph_executor_fails_closed_on_a_measured_parity_exclusion) {
-  // `filter/snow:snow` is measured not byte-equivalent to the authority's
-  // own execution: the authority runs a hand-written CPU adapter for it,
-  // and the emitted typed kernel (compiled from the *GLSL*, which the
-  // authority never executes for this program) disagrees with that
-  // adapter. It is refused with the measured reason rather than dispatched
-  // to wrong bytes.
+  // Both real entries `kMeasuredParityExclusions` once named --
+  // `filter/snow:snow` (a hand-written-adapter mismatch) and
+  // `synth/testPattern:testPattern` (a grid-boundary digit-extraction
+  // divergence; see tests/test_testpattern_emitter_regression.py and the
+  // field comment on `emitted_testpattern_digit_extraction_declarations`
+  // in emit_typed_cpp.py) -- are now proven byte-exact and gone, so this
+  // test cannot depend on either any more.
   //
-  // `synth/testPattern:testPattern` used to be a second such key -- a
-  // grid-boundary digit-extraction divergence, not an adapter mismatch --
-  // until it was proven byte-exact and removed; see
-  // tests/test_testpattern_emitter_regression.py and the field comment on
-  // `emitted_testpattern_digit_extraction_declarations` in
-  // emit_typed_cpp.py. Forging a *different* compiled program's identity to
-  // masquerade as an excluded key (the pattern
-  // graph_executor_rejects_the_incompatible_text_route_before_binding uses
-  // for `status`) does not work for this one check: `identity.program_key`
-  // is independently re-derived from the compiled effect/pass definition
-  // and cross-checked (`validate_pass_identity_and_output`), so forging
-  // only the admission's copy trips THAT check instead ("pass identity
-  // differs from owned definition") before this one is ever reached. This
-  // still depends on `filter/snow:snow` remaining excluded; if a future
-  // change ports snow too, replace this key with whatever real program
-  // `kMeasuredParityExclusions` still names, or give the two of them a
-  // registry-level test double.
+  // Forging a *different* compiled program's `identity.program_key` to
+  // masquerade as an excluded key, the way
+  // graph_executor_rejects_the_incompatible_text_route_before_binding
+  // forges `status`, does not work if it goes through `renderer.render()`:
+  // that path re-derives `identity.program_key` from the compiled
+  // effect/pass definition and cross-checks it
+  // (`validate_pass_identity_and_output`) before any binding is attempted,
+  // so forging only the admission's copy trips THAT check instead ("pass
+  // identity differs from owned definition").
+  //
+  // `bind_factory_route` (declared in executor.hpp for exactly this kind of
+  // seam) sits BELOW that whole-plan check, so this drives it directly: a
+  // real, unmodified, successfully-compiled perlin admission/bindings pair
+  // (proving every other authenticate_* step it must first pass is
+  // satisfied unchanged), a hand-copied route descriptor that matches it
+  // field for field, and only the one pair of `program_key`s -- the
+  // admission's and the local route's -- moved together to the frozen test
+  // sentinel `kMeasuredParityExclusions` reserves for exactly this.
   Renderer renderer;
+  auto plan = renderer.compile(kPerlinSource, "measured-parity-sentinel.dsl");
+  const auto inputs = options(7U, 5U);
+  const auto bindings = bind_compiled_pass(plan, "synth/perlin", 0U, inputs, 7U, 5U);
+
+  const std::string sentinel_key =
+      "__measured_parity_test_sentinel__/neverReal:neverReal";
+  const auto* real_route =
+      canonical_route("synth/perlin:perlin", "bind_synth_perlin_perlin");
+  REQUIRE(real_route != nullptr);
+  FactoryRouteDescriptor sentinel_route = *real_route;
+  sentinel_route.program_key = sentinel_key;
+  const std::array<FactoryRouteDescriptor, 1> routes{{sentinel_route}};
+
+  auto& snapshot = snapshot_for(plan, "synth/perlin");
+  auto admission = snapshot.admissions[0];
+  admission.identity.program_key = sentinel_key;
+  const auto& step = effect_step(plan, "synth/perlin");
+
   try {
-    static_cast<void>(renderer.render(
-        "search synth, filter\nsolid(color: #3a7).snow().write(o0)\nrender(o0)\n",
-        options(8U, 8U), "parity.dsl"));
+    static_cast<void>(bind_factory_route(step, admission, snapshot.definition,
+                                         bindings, routes));
     REQUIRE(false);
   } catch (const GraphError& error) {
     REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-    REQUIRE(error.detail().find("measured divergent") != std::string_view::npos);
+    REQUIRE(error.detail().find("measured parity exclusion") != std::string_view::npos);
   }
 }
 
