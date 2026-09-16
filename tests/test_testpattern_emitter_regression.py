@@ -50,8 +50,17 @@ class TestPatternEmitterRegressionTests(unittest.TestCase):
             "std::int32_t(31695)}};",
             rendered,
         )
+        # `digits` is `double`, not `std::int32_t`: the authority's own DSL
+        # compiler never resolves `temp /= 10` (inside this same function's
+        # digit-extraction loop) to `int`, so canonical-kernels.js emits
+        # plain, untyped `temp /= 10;` -- real JS division, not
+        # `$rt.intDivide`. `digits[]` and the digit read back out of it can
+        # therefore carry a fractional JS Number forward exactly like the
+        # authority does; see the field comment on
+        # `emitted_testpattern_digit_extraction_declarations` in
+        # emit_typed_cpp.py.
         self.assertIn(
-            "[[maybe_unused]] std::array<std::int32_t, 3> digits{};",
+            "[[maybe_unused]] std::array<double, 3> digits{};",
             rendered,
         )
         self.assertIn(
@@ -62,6 +71,58 @@ class TestPatternEmitterRegressionTests(unittest.TestCase):
         self.assertNotIn("std::array<int,", rendered)
         self.assertNotIn("std::array<float,", rendered)
         self.assertNotIn("std::vector", rendered)
+
+    def test_digit_extraction_stays_an_untyped_js_number(self):
+        """Root-cause regression for the grid-boundary divergence.
+
+        canonical-kernels.js's `renderNumber` extracts digits with
+        `digits[i] = temp % 10; temp /= 10;` where `temp` is a GLSL `int`
+        the authority's own compiler (src/csl/codegen.js:67,124,131) never
+        resolves to `int` at this one compound-assign site -- so it emits
+        plain, untyped `temp /= 10;`: real (non-truncating) JS division,
+        not `$rt.intDivide`. A previously-emitted `std::int32_t temp`
+        truncated that remainder away every iteration, so a two-or-more
+        digit cell number that should fail to render (e.g. 11, whose
+        `GLYPH[1.1]` is a JS `undefined`, and every bitwise op on
+        `undefined` coerces to zero) instead rendered its second digit for
+        real -- measured divergent at exactly the two grid-boundary pixels
+        the frozen `kMeasuredParityExclusions` reason names.
+        """
+        rendered = _render(_program())
+        self.assertIn("[[maybe_unused]] double temp = number;", rendered)
+        self.assertIn(
+            "digits[static_cast<std::size_t>(i)] = "
+            "std::fmod(static_cast<double>(temp), "
+            "static_cast<double>(std::int32_t(10)));",
+            rendered,
+        )
+        # Plain double division: `temp / std::int32_t(10)` with `temp`
+        # `double` promotes the int literal, no truncating helper involved.
+        self.assertIn("temp = (temp / std::int32_t(10));", rendered)
+        self.assertNotIn("glsl::integer_mod(temp,", rendered)
+        # The digit read back out of `digits[]` is `double`, and the one
+        # call site that reads it (`sampleGlyph`) is guarded so a
+        # fractional digit can only ever take the `false` branch --
+        # `sampleGlyph` itself stays untouched (still `std::int32_t digit`).
+        self.assertIn(
+            "[[maybe_unused]] double digit = digits[static_cast<std::size_t>"
+            "(((numDigits - std::int32_t(1)) - d))];",
+            rendered,
+        )
+        self.assertIn(
+            "return ((std::trunc(digit) == (digit)) ? "
+            "sampleGlyph(state, context, static_cast<std::int32_t>(digit), "
+            "gx, gy) : false);",
+            rendered,
+        )
+        self.assertIn(
+            "bool sampleGlyph([[maybe_unused]] const State& state, "
+            "[[maybe_unused]] const glsl::PixelContext& context, "
+            "[[maybe_unused]] std::int32_t digit, "
+            "[[maybe_unused]] std::int32_t x, [[maybe_unused]] std::int32_t y) "
+            "noexcept {",
+            rendered,
+        )
 
     def test_all_four_authenticated_indexes_are_range_casts(self):
         rendered = _render(_program())

@@ -10,8 +10,7 @@
     "classicNoisedeck/shapes": "parameter palette selects palette entry 46 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
     "filter/median": "parameter radius requests compile define RADIUS=3 but the generated route bakes RADIUS=2",
     "filter/snow": "the authority executes a hand-written CPU adapter for this program and the emitted typed kernel is measured divergent (499 of 748 RGBA8 bytes at 17x11)",
-    "filter/wormhole": "scatter is not enabled in Task 6",
-    "synth/testPattern": "the emitted typed kernel is measured divergent from the authority at grid boundaries (2 pixels, 6 of 748 RGBA8 bytes at 17x11)"
+    "filter/wormhole": "scatter is not enabled in Task 6"
   },
   "authorityRefused": [
     "filter/lighting",

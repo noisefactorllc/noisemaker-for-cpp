@@ -997,20 +997,39 @@ TEST(graph_executor_fails_closed_on_an_unported_palette_override) {
 }
 
 TEST(graph_executor_fails_closed_on_a_measured_parity_exclusion) {
-  // Two program keys are measured not byte-equivalent to the authority's own
-  // execution. They are refused with the measured reason rather than
-  // dispatched to wrong bytes.
+  // `filter/snow:snow` is measured not byte-equivalent to the authority's
+  // own execution: the authority runs a hand-written CPU adapter for it,
+  // and the emitted typed kernel (compiled from the *GLSL*, which the
+  // authority never executes for this program) disagrees with that
+  // adapter. It is refused with the measured reason rather than dispatched
+  // to wrong bytes.
+  //
+  // `synth/testPattern:testPattern` used to be a second such key -- a
+  // grid-boundary digit-extraction divergence, not an adapter mismatch --
+  // until it was proven byte-exact and removed; see
+  // tests/test_testpattern_emitter_regression.py and the field comment on
+  // `emitted_testpattern_digit_extraction_declarations` in
+  // emit_typed_cpp.py. Forging a *different* compiled program's identity to
+  // masquerade as an excluded key (the pattern
+  // graph_executor_rejects_the_incompatible_text_route_before_binding uses
+  // for `status`) does not work for this one check: `identity.program_key`
+  // is independently re-derived from the compiled effect/pass definition
+  // and cross-checked (`validate_pass_identity_and_output`), so forging
+  // only the admission's copy trips THAT check instead ("pass identity
+  // differs from owned definition") before this one is ever reached. This
+  // still depends on `filter/snow:snow` remaining excluded; if a future
+  // change ports snow too, replace this key with whatever real program
+  // `kMeasuredParityExclusions` still names, or give the two of them a
+  // registry-level test double.
   Renderer renderer;
-  for (const auto* source : {
-           "search synth, filter\nsolid(color: #3a7).snow().write(o0)\nrender(o0)\n",
-           "search synth\ntestPattern().write(o0)\nrender(o0)\n"}) {
-    try {
-      static_cast<void>(renderer.render(source, options(8U, 8U), "parity.dsl"));
-      REQUIRE(false);
-    } catch (const GraphError& error) {
-      REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-      REQUIRE(error.detail().find("measured divergent") != std::string_view::npos);
-    }
+  try {
+    static_cast<void>(renderer.render(
+        "search synth, filter\nsolid(color: #3a7).snow().write(o0)\nrender(o0)\n",
+        options(8U, 8U), "parity.dsl"));
+    REQUIRE(false);
+  } catch (const GraphError& error) {
+    REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
+    REQUIRE(error.detail().find("measured divergent") != std::string_view::npos);
   }
 }
 

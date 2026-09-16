@@ -1483,6 +1483,25 @@ class _Emitter:
         init=False, default=None)
     emitted_testpattern_bitwise: list[TypedExpression] = field(
         init=False, default_factory=list)
+    # The authority's own DSL compiler fails to resolve `temp`'s GLSL `int`
+    # type at `temp /= 10` inside `renderNumber`'s digit-extraction loop (see
+    # `src/csl/codegen.js:67,124,131` -- the `/=` int fast path requires
+    # `node.resolvedType === 'int'`, which this one compound-assign site
+    # never gets). `canonical-kernels.js` therefore emits plain, untyped
+    # `temp /= 10;`: real (non-truncating) JS division, so `temp` and the
+    # `digits[]` it feeds carry a fractional remainder forward, and reading a
+    # fractional index out of the sibling `GLYPH` table (in `sampleGlyph`)
+    # is a JS `undefined`, which every bitwise op on it coerces to zero --
+    # never a set bit. `digits`/`temp`/this one `%`/the one call site that
+    # reads a digit back out are therefore emitted as untyped JS Numbers
+    # (`double`), exactly like the analogous SpookyTicker Number quirk above,
+    # scoped to these named symbols in this one authenticated program.
+    emitted_testpattern_digit_extraction_declarations: list[object] = field(
+        init=False, default_factory=list)
+    emitted_testpattern_digit_extraction_remainder: TypedExpression | None = field(
+        init=False, default=None)
+    emitted_testpattern_digit_extraction_call: TypedExpression | None = field(
+        init=False, default=None)
     authorized_remap_proof: object | None = field(init=False, default=None)
     emitted_remap_indexes: list[TypedExpression] = field(
         init=False, default_factory=list)
@@ -1812,6 +1831,9 @@ class _Emitter:
         self.authorized_testpattern_glyph_shift = None
         self.authorized_testpattern_glyph_mask = None
         self.emitted_testpattern_bitwise = []
+        self.emitted_testpattern_digit_extraction_declarations = []
+        self.emitted_testpattern_digit_extraction_remainder = None
+        self.emitted_testpattern_digit_extraction_call = None
         self.authorized_remap_proof = None
         self.emitted_remap_indexes = []
         self.emitted_remap_loops = []
@@ -5405,6 +5427,32 @@ class _Emitter:
         self.emitted_testpattern_indexes.append(value)
         return True
 
+    def _testpattern_digit_extraction_declaration(self, declaration) -> bool:
+        """`temp` and the digit read back out of `digits[]` stay JS Numbers.
+
+        Scoped to exactly the two scalar locals the authority's own
+        compiler leaves untyped in `renderNumber` (see the field comment
+        above): symbol 73 (`temp`) and symbol 81 (`digit`). Both are
+        GLSL `int` in the source and in this frontend's own type-check, so
+        this is an emission-only deviation, not a widening of the type
+        vocabulary -- it fires only inside this one authenticated program.
+        """
+        proof = self.authorized_testpattern_proof
+        if (proof is None or self.current_function_name != "renderNumber"
+                or declaration.type.display() != "int"
+                or declaration.symbol is None):
+            return False
+        if declaration.symbol.id not in (73, 81):
+            return False
+        if any(declaration is item
+               for item in self.emitted_testpattern_digit_extraction_declarations):
+            raise _error(
+                self.program, declaration,
+                "authenticated Test Pattern digit-extraction declaration "
+                "emitted twice")
+        self.emitted_testpattern_digit_extraction_declarations.append(declaration)
+        return True
+
     def _remap_index(self, value: TypedExpression) -> bool:
         proof = self.authorized_remap_proof
         if proof is None:
@@ -7280,6 +7328,24 @@ class _Emitter:
                     f"(static_cast<double>({left}) / "
                     f"static_cast<double>({right}))")
             if value.operator == "%":
+                testpattern = self.authorized_testpattern_proof
+                if (testpattern is not None
+                        and self.current_function_name == "renderNumber"
+                        and value.type.display() == "int"
+                        and left_type == "int" and right_type == "int"
+                        and value.children[0].kind == "id"
+                        and value.children[0].symbol_id == 73
+                        and value.children[1].kind == "literal"
+                        and value.children[1].literal_value == 10):
+                    if self.emitted_testpattern_digit_extraction_remainder is not None:
+                        raise _error(
+                            self.program, value,
+                            "authenticated Test Pattern digit-extraction "
+                            "remainder emitted twice")
+                    self.emitted_testpattern_digit_extraction_remainder = value
+                    return (
+                        f"std::fmod(static_cast<double>({left}), "
+                        f"static_cast<double>({right}))")
                 osd = self.authorized_osd_proof
                 if (osd is not None
                         and any(value is item for item in osd.hash_modulo_nodes)):
@@ -7388,6 +7454,37 @@ class _Emitter:
             return f"({condition} ? {yes} : {no})"
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
+            testpattern = self.authorized_testpattern_proof
+            if (testpattern is not None and value.kind == "call"
+                    and value.callee == "sampleGlyph"
+                    and self.current_function_name == "renderNumber"
+                    and len(value.children) == 3
+                    and value.children[0].kind == "id"
+                    and value.children[0].symbol_id == 81
+                    and value.children[0].type.display() == "int"):
+                if self.emitted_testpattern_digit_extraction_call is not None:
+                    raise _error(
+                        self.program, value,
+                        "authenticated Test Pattern digit-extraction call "
+                        "emitted twice")
+                self.emitted_testpattern_digit_extraction_call = value
+                # `digit` is the JS Number read back out of `digits[]`
+                # (see the field comment above `_testpattern_index`):
+                # non-integral exactly when the authority's own compiler's
+                # missed `int` resolution let a fractional remainder survive
+                # this many `temp /= 10` steps. JS then indexes `GLYPH` with
+                # that fractional Number, which is always a miss --
+                # `GLYPH[1.1]` is `undefined`, and every bitwise op on
+                # `undefined` coerces it to zero, so `sampleGlyph` can only
+                # ever return `false` for a non-integral digit. Reproduce
+                # that unconditionally at the call site instead of widening
+                # `sampleGlyph` itself to a JS-Number parameter.
+                digit_expr, gx_expr, gy_expr = arguments
+                return (
+                    f"((std::trunc({digit_expr}) == ({digit_expr})) ? "
+                    f"sampleGlyph(state, context, "
+                    f"static_cast<std::int32_t>({digit_expr}), {gx_expr}, "
+                    f"{gy_expr}) : false)")
             if value is self.authorized_fractal_julia_call:
                 if (self.current_function_name != "main"
                         or value.kind != "call"
@@ -8323,9 +8420,15 @@ class _Emitter:
                                 raise _error(
                                     self.program, declaration,
                                     "malformed Test Pattern digits declaration")
+                            # `double`, not `std::int32_t`: see the digit-
+                            # extraction field comment. `temp % 10` and
+                            # `temp /= 10` both stay real (JS Number)
+                            # arithmetic here, so a store can carry a
+                            # fractional remainder forward exactly like the
+                            # authority does.
                             lines.append(
                                 f"{indent}[[maybe_unused]] "
-                                f"std::array<std::int32_t, 3> {emitted_name}{{}};")
+                                f"std::array<double, 3> {emitted_name}{{}};")
                         elif declaration.symbol.name == "colors":
                             colors_initializer = next(
                                 (item for item in proof.consumed_objects
@@ -8460,6 +8563,8 @@ class _Emitter:
                     declaration_type = "glsl::BVec3"
                 else:
                     declaration_type = self.local_type(declaration.type)
+                if self._testpattern_digit_extraction_declaration(declaration):
+                    declaration_type = "double"
                 if self._osd_js_number_declaration(declaration):
                     declaration_type = "double"
                     if declaration.symbol.name in {"glyph_idx", "gx", "gy"}:

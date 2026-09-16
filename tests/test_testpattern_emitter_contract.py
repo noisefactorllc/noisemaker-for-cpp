@@ -39,8 +39,13 @@ class TestPatternEmitterLoweringTests(unittest.TestCase):
             "const std::array<std::int32_t, 10> GLYPH = "
             "std::array<std::int32_t, 10>{{",
             rendered)
+        # `double`, not `std::int32_t` -- see the field comment on
+        # `emitted_testpattern_digit_extraction_declarations` in
+        # emit_typed_cpp.py: the authority's own compiler leaves `temp`
+        # untyped at `temp /= 10`, so `digits[]` must be able to carry the
+        # same fractional remainder forward.
         self.assertIn(
-            "std::array<std::int32_t, 3> digits{};", rendered)
+            "std::array<double, 3> digits{};", rendered)
         self.assertIn(
             "std::array<glsl::Vec3, 8> colors = "
             "std::array<glsl::Vec3, 8>{{", rendered)

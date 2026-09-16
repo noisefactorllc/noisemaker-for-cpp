@@ -742,18 +742,21 @@ void authenticate_palette_override(const EffectStep& step,
 // with their adapter byte-for-byte. These do not, so they are refused with the
 // measured reason rather than dispatched to wrong bytes. Closing them needs a
 // compatibility reclassification plus a C++ adapter port.
+//
+// `synth/testPattern:testPattern` was the twelfth entry here (a grid-boundary
+// digit-extraction divergence, not an adapter mismatch) until it was proven
+// byte-exact and removed -- see the digit-extraction field comment on
+// `emitted_testpattern_digit_extraction_declarations` in emit_typed_cpp.py
+// and tests/test_testpattern_emitter_regression.py.
 struct MeasuredParityExclusion {
   std::string_view program_key;
   std::string_view reason;
 };
 
-constexpr std::array<MeasuredParityExclusion, 2> kMeasuredParityExclusions = {{
+constexpr std::array<MeasuredParityExclusion, 1> kMeasuredParityExclusions = {{
     {"filter/snow:snow",
      "the authority executes a hand-written CPU adapter for this program and the"
      " emitted typed kernel is measured divergent (499 of 748 RGBA8 bytes at 17x11)"},
-    {"synth/testPattern:testPattern",
-     "the emitted typed kernel is measured divergent from the authority at grid"
-     " boundaries (2 pixels, 6 of 748 RGBA8 bytes at 17x11)"},
 }};
 
 void authenticate_measured_parity(const EffectStep& step,

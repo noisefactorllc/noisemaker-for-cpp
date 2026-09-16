@@ -30186,10 +30186,10 @@ struct State final : KernelState {
   if ((glsl::swizzle<1>(cellUV) < startY) || (glsl::swizzle<1>(cellUV) >= (static_cast<double>(startY) + static_cast<double>(glyphHeight)))) {
     return false;
   }
-  [[maybe_unused]] std::array<std::int32_t, 3> digits{};
-  [[maybe_unused]] std::int32_t temp = number;
+  [[maybe_unused]] std::array<double, 3> digits{};
+  [[maybe_unused]] double temp = number;
   for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(3)); ++i) {
-    digits[static_cast<std::size_t>(i)] = glsl::integer_mod(temp, std::int32_t(10));
+    digits[static_cast<std::size_t>(i)] = std::fmod(static_cast<double>(temp), static_cast<double>(std::int32_t(10)));
     temp = (temp / std::int32_t(10));
   }
   for ([[maybe_unused]] std::int32_t d = std::int32_t(0); (d < numDigits); ++d) {
@@ -30199,8 +30199,8 @@ struct State final : KernelState {
       [[maybe_unused]] double localY = (static_cast<double>((static_cast<double>(glsl::swizzle<1>(cellUV)) - static_cast<double>(startY))) / static_cast<double>(glyphHeight));
       [[maybe_unused]] std::int32_t gx = glsl::detail::glsl_int_cast((static_cast<double>(localX) * static_cast<double>(static_cast<float>(3.0))));
       [[maybe_unused]] std::int32_t gy = glsl::detail::glsl_int_cast((static_cast<double>(localY) * static_cast<double>(static_cast<float>(5.0))));
-      [[maybe_unused]] std::int32_t digit = digits[static_cast<std::size_t>(((numDigits - std::int32_t(1)) - d))];
-      return sampleGlyph(state, context, digit, gx, gy);
+      [[maybe_unused]] double digit = digits[static_cast<std::size_t>(((numDigits - std::int32_t(1)) - d))];
+      return ((std::trunc(digit) == (digit)) ? sampleGlyph(state, context, static_cast<std::int32_t>(digit), gx, gy) : false);
     }
   }
   return false;
