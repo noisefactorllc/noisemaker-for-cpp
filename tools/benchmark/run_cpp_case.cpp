@@ -38,7 +38,7 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
                " --width N --height N --time D --frame N --seed D"
                " --rgba8-output ABS --metadata-output ABS"
                " [--record-id STRING] [--repo-root ABS]"
-               " [--plan-relation-output ABS]\n";
+               " [--plan-relation-output ABS] [--float32-output ABS]\n";
   std::exit(nb::kExitUsage);
 }
 
@@ -83,6 +83,10 @@ int main(int argc, char** argv) {
   const auto record_id = argument(args, "--record-id", false);
   const auto repo_root = argument(args, "--repo-root", false);
   const auto relation_output = argument(args, "--plan-relation-output", false);
+  // Additive and opt-in, for tools/parity/sweep.py: the pre-quantization
+  // float32 surface backing `to_rgba8()`, raw and untouched -- top-down RGBA
+  // float32, width*height*4*4 bytes. Absent, behavior is unchanged.
+  const auto float32_output = argument(args, "--float32-output", false);
   for (const auto* path : {&source_path, &raw_output, &metadata_output}) {
     if (path->empty() || path->front() != '/') usage("absolute paths are required");
   }
@@ -92,6 +96,9 @@ int main(int argc, char** argv) {
     }
     if (!relation_output.empty()) {
       nb::require_external_output_path(relation_output, repo_root);
+    }
+    if (!float32_output.empty()) {
+      nb::require_external_output_path(float32_output, repo_root);
     }
   } catch (const nb::CaseContractError& error) {
     std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";
@@ -113,6 +120,7 @@ int main(int argc, char** argv) {
   options.seed = number(argument(args, "--seed"), "--seed");
 
   std::vector<std::uint8_t> bytes;
+  std::vector<std::uint8_t> float32_bytes;
   std::size_t width = 0;
   std::size_t height = 0;
   std::string relation_document;
@@ -123,6 +131,11 @@ int main(int argc, char** argv) {
     bytes = result.surface.to_rgba8();
     width = result.surface.width();
     height = result.surface.height();
+    if (!float32_output.empty()) {
+      const auto surface_data = result.surface.data();
+      const auto* begin = reinterpret_cast<const std::uint8_t*>(surface_data.data());
+      float32_bytes.assign(begin, begin + surface_data.size() * sizeof(float));
+    }
     if (!relation_output.empty()) {
       const auto relation = nb::project_relation(
           plan, result, record_id.empty() ? source_path : record_id, actual_sha256,
@@ -149,6 +162,7 @@ int main(int argc, char** argv) {
   try {
     nb::write_raw_rgba8(raw_output, bytes);
     if (!relation_output.empty()) nb::write_text_file(relation_output, relation_document);
+    if (!float32_output.empty()) nb::write_raw_rgba8(float32_output, float32_bytes);
     nb::write_text_file(metadata_output, metadata);
   } catch (const nb::CaseContractError& error) {
     std::cerr << "noisemaker-dsl-cpu-case: " << error.what() << "\n";

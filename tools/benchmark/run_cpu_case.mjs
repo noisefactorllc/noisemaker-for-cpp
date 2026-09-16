@@ -5,7 +5,7 @@ import path from 'node:path'
 import process from 'node:process'
 import { importCpu, sha256, EXPECTED, AUTHORITY_LEDGER_ENV } from '../dsl/corpus_authority.mjs'
 
-function usage(message) { if (message) console.error(`run_cpu_case: ${message}`); console.error(`usage: node run_cpu_case.mjs --cpu-root ABS --case FILE --rgba8-output ABS --metadata-output ABS [--expectation-output ABS] [--plan-relation-output ABS] [--authority-ledger ABS]\n  the CPU authority ledger comes from --authority-ledger, ${AUTHORITY_LEDGER_ENV}, or the ledger packaged with --cpu-root`); process.exit(2) }
+function usage(message) { if (message) console.error(`run_cpu_case: ${message}`); console.error(`usage: node run_cpu_case.mjs --cpu-root ABS --case FILE --rgba8-output ABS --metadata-output ABS [--expectation-output ABS] [--plan-relation-output ABS] [--float32-output ABS] [--authority-ledger ABS]\n  the CPU authority ledger comes from --authority-ledger, ${AUTHORITY_LEDGER_ENV}, or the ledger packaged with --cpu-root`); process.exit(2) }
 const args = process.argv.slice(2)
 function arg(name) { const index = args.indexOf(name); return index < 0 ? null : args[index + 1] ?? usage(`${name} requires a value`) }
 const cpuRoot = arg('--cpu-root'); const caseArg = arg('--case'); const rawArg = arg('--rgba8-output'); const metadataArg = arg('--metadata-output')
@@ -13,10 +13,15 @@ const expectationArg = arg('--expectation-output'); const ledgerArg = arg('--aut
 // Additive and opt-in: absent, every byte this runner writes and prints is
 // exactly what the frozen parity lane already validates.
 const relationArg = arg('--plan-relation-output')
+// Additive and opt-in, for tools/parity/sweep.py: the pre-quantization
+// float32 surface backing `toRgba8()`, raw and untouched -- top-down RGBA
+// float32, width*height*4*4 bytes. Absent, behavior is unchanged.
+const float32Arg = arg('--float32-output')
 if (!cpuRoot || !path.isAbsolute(cpuRoot) || !caseArg || !rawArg || !metadataArg || ![rawArg, metadataArg].every((value) => path.isAbsolute(value))) usage('absolute CPU root, case, raw output, and metadata output are required')
 if (expectationArg && !path.isAbsolute(expectationArg)) usage('--expectation-output must be absolute')
 if (ledgerArg && !path.isAbsolute(ledgerArg)) usage('--authority-ledger must be absolute')
 if (relationArg && !path.isAbsolute(relationArg)) usage('--plan-relation-output must be absolute')
+if (float32Arg && !path.isAbsolute(float32Arg)) usage('--float32-output must be absolute')
 const record = JSON.parse(fs.readFileSync(caseArg, 'utf8'))
 if (record.recordKind !== 'admitted') throw new Error('CPU runner refuses excluded corpus records')
 if (sha256(Buffer.from(record.source)) !== record.sourceSha256) throw new Error('case source sha256 mismatch')
@@ -29,15 +34,36 @@ for (const seed of record.seedSurfaces ?? []) {
   const bytes = Uint8Array.from(Buffer.from(seed.rgba8, 'hex'))
   seedSurfaces[seed.name] = api.Surface.fromRgba8(seed.width, seed.height, bytes)
 }
-const options = { ...record.options, seedSurfaces: Object.keys(seedSurfaces).length ? seedSurfaces : undefined }
+// Distinct from seedSurfaces above: `definition.externalTexture`-declared
+// effects (filter/text, synth/media) read `renderOptions.externalTextures`,
+// not a named oN surface (renderer.js buildBindings ~line 300; the same
+// bin/noisemaker-cpu.js loadExternalTextures pattern, inlined here since
+// this runner has no image-file loader of its own).
+const externalTextures = {}
+for (const seed of record.externalTextures ?? []) {
+  if (!seed.rgba8) throw new Error(`external texture ${seed.name} is missing raw RGBA8 bytes`)
+  const bytes = Uint8Array.from(Buffer.from(seed.rgba8, 'hex'))
+  externalTextures[seed.name] = api.Surface.fromRgba8(seed.width, seed.height, bytes)
+}
+const options = {
+  ...record.options,
+  seedSurfaces: Object.keys(seedSurfaces).length ? seedSurfaces : undefined,
+  externalTextures: Object.keys(externalTextures).length ? externalTextures : undefined,
+}
 const result = renderer.render(record.source, options)
 const bytes = Buffer.from(result.toRgba8())
 const rawOutput = path.resolve(rawArg); const metadataOutput = path.resolve(metadataArg)
 const outputs = [rawOutput, metadataOutput]
 if (expectationArg) outputs.push(path.resolve(expectationArg))
 if (relationArg) outputs.push(path.resolve(relationArg))
+if (float32Arg) outputs.push(path.resolve(float32Arg))
 for (const output of outputs) { if (fs.existsSync(output) && fs.lstatSync(output).isSymbolicLink()) throw new Error(`output must not be a symlink: ${output}`); fs.mkdirSync(path.dirname(output), { recursive: true }) }
 fs.writeFileSync(rawOutput, bytes)
+if (float32Arg) {
+  const surfaceData = result.surface.data
+  const floatBytes = Buffer.from(surfaceData.buffer, surfaceData.byteOffset, surfaceData.byteLength)
+  fs.writeFileSync(path.resolve(float32Arg), floatBytes)
+}
 const metadata = { schema: 'noisemaker-cpp.dsl-cpu-run.v1', id: record.id, sourceSha256: record.sourceSha256, width: result.width, height: result.height, format: 'rgba8', orientation: 'top-down', rgba8Sha256: sha256(bytes), byteLength: bytes.length, planSha256: record.plan?.cpuPlanSha256 ?? null }
 fs.writeFileSync(metadataOutput, `${JSON.stringify(metadata, null, 2)}\n`)
 if (expectationArg) {
