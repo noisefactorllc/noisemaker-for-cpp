@@ -2,7 +2,6 @@
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
   "byteExactCount": 155,
   "executorRefused": {
-    "filter/median": "parameter radius requests compile define RADIUS=3 but the generated route bakes RADIUS=2",
     "filter/wormhole": "scatter is not enabled in Task 6"
   },
   "authorityRefused": [

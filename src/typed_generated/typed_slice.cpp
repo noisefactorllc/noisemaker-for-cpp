@@ -2,6 +2,7 @@
 // Revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/remap.hpp"
 #include "noisemaker/effects/snow.hpp"
 
@@ -14450,10 +14451,20 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }
 }  // namespace typed_75
 
+// Was: the typed kernel emitted from median.glsl, compiled for exactly one
+// RADIUS value (2, this row's "default-only" bake). The authority never
+// dispatches that GLSL program at all -- it always runs its own hand-written
+// CPU adapter (src/effects/adapters/median.js), which reads RADIUS as an
+// ordinary runtime binding, not a compile-time define, so it correctly
+// serves every allowed radius (1, 2, 3) from one bound kernel. This now
+// trampolines to the hand-written port of that adapter
+// (noisemaker::effects::bind_median, src/effects/median.cpp) instead of the
+// dead typed_75::pixel body above, which no other row now references. See
+// docs/port-engineering/median-parity/ for the oracle proving the two agree
+// byte-for-byte, and this row's now-"custom_adapter" metadata below (in
+// kCanonicalRoutes) for how RADIUS reaches `bindings` at all.
 BoundKernel bind_filter_median_median(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_75::State>(&bindings.texture("inputTex"), bindings.get_number("threshold"), 2);
-  (void)bindings;
-  return BoundKernel(state, &typed_75::pixel);
+  return noisemaker::effects::bind_median(bindings);
 }
 
 // Typed IR program: filter/morphology:morphA
@@ -30570,7 +30581,29 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/lightLeak:lightLeak", "bind_filter_lightLeak_lightLeak", "bind_filter_lightLeak_lightLeak", "typed_emitter", "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb", "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "1a99c191af1f355aa957a603238f4ab877d3fffe587532162fee0d4fd3d38938", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lightLeak_lightLeak},
     {"filter/lighting:lighting", "bind_filter_lighting_lighting", "bind_filter_lighting_lighting", "typed_emitter", "a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f", "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "97e787e0be2a7de850bd7863ddfbb1e206052bf42e6870be94f03aa84abb8ecc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lighting_lighting},
     {"filter/lowPoly:lowPoly", "bind_filter_lowPoly_lowPoly", "bind_filter_lowPoly_lowPoly", "typed_emitter", "2f6a184ef4d372ebf811eaa59420bbce66fa25702e23a278557521679ce7b2f5", "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2", "default-only", "LP_BORDER=0;LP_LIGHT=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "610015e9e8725f4790888d33bd984a88c594363b99a4631219ccdbedd4549c4b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lowPoly_lowPoly},
-    {"filter/median:median", "bind_filter_median_median", "bind_filter_median_median", "typed_emitter", "95e869c02fe2645f4a1b5af5a7446b3f2bacb888f2c965bc272ba56b10666e5d", "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e", "default-only", "RADIUS=2", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "75b868408b85dbb7516023bfcdd87707f1a59917ac356602fe70ec9bffb4cfc3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_median_median},
+    // filter/median:median is now a custom_adapter route, exactly like
+    // synth/remap:remap (see src/effects/median.cpp / bind_median): the
+    // authority's own hand-written adapter is the ground truth, never the
+    // typed kernel median.glsl would have emitted. canonical_factory now
+    // names the real hand-written factory; the bind pointer stays the
+    // generated `bind_filter_median_median` symbol above (unchanged
+    // identity, now a one-line trampoline into bind_median) so every
+    // existing reference to that symbol (kCatalog above, and
+    // tests/test_generated_kernels.cpp's direct calls and `entry->bind`
+    // pointer-identity check) keeps working unmodified. define_contract
+    // moves from "default-only" (one baked RADIUS value) to "none": RADIUS
+    // is a real runtime compile-define binding now, not a baked constant --
+    // see MEDIAN_KEY's binding_abi in effect_catalog.cpp's canonical row and
+    // tools/glslcpp/frontend/median_profile.py's declared ABI. Only
+    // compile_define_abi_sha256 actually changes among the anchored
+    // hashes: sampler/uniform/output/extent are byte-identical to the old
+    // row (inputTex/threshold/the single Vec4 output never changed), and
+    // this hash is sha256("defines\x1e" "RADIUS\x1fstd::int32_t\x1fcustom_adapter\x1f" "\x1e"),
+    // matching src/effects/registry.cpp's compile-define extraction (any
+    // binding_abi.uniforms entry whose name is not already in the row's
+    // top-level "uniforms" list) and src/graph/executor.cpp's
+    // binding_abi_sections defines-section format exactly.
+    {"filter/median:median", "noisemaker::effects::bind_median", "bind_filter_median_median", "custom_adapter", "95e869c02fe2645f4a1b5af5a7446b3f2bacb888f2c965bc272ba56b10666e5d", "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "75b868408b85dbb7516023bfcdd87707f1a59917ac356602fe70ec9bffb4cfc3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "6219cd38392877a2f1468525572f40925e48e809bc0605fcccfda6cbea2cc6a8", &bind_filter_median_median},
     {"filter/morphology:morphA", "bind_filter_morphology_morphA", "bind_filter_morphology_morphA", "typed_emitter", "9c9b20313b5a112d7684d34ee3f62cb49d04c34aa75f0c846dc9443c6380ba70", "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672", "default-only", "SHAPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "9ed81cc165aae1f0da4499914a70bfcda1fd8927454f838eb534b15a80149e3a", "3aaf45187fe03053c72d9ee0ee1dfa4ef13172c15245856c31d2df7f67201dcd", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphA},
     {"filter/morphology:morphB", "bind_filter_morphology_morphB", "bind_filter_morphology_morphB", "typed_emitter", "68818a6c62f0b9960aacd671a8dce1622c6860df44b3c1381abf47447a6504b5", "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672", "default-only", "SHAPE=0", "d7404f7435df426aec9acb598f5d635c0a81db7786285d816827e5c8db87625f", "9ed81cc165aae1f0da4499914a70bfcda1fd8927454f838eb534b15a80149e3a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphB},
     {"filter/mosaicTiles:mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "typed_emitter", "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47", "192ddcb0d8eec39b4fe7bf72dcbae905f188551257766ff9c3c8cfd8e5e4a526", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "66cc16111f4e77a5753124f56a4aa46c8b14042413659b076cc7b09367809a2b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_mosaicTiles_mosaicTiles},

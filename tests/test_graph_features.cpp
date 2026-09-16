@@ -1089,10 +1089,16 @@ TEST(graph_executor_refuses_a_step_that_omits_a_guarded_parameter) {
       static_cast<void>(renderer.render(plan, options(8U, 8U)));
       REQUIRE(false);
     } catch (const GraphError& error) {
+      // filter/median:median is now a custom_adapter route (see
+      // src/effects/median.cpp / noisemaker::effects::bind_median): RADIUS
+      // is a real compile-define binding materialized straight from the
+      // step's own "radius" parameter, not a default-only typed-emitter
+      // bake, so an omitted parameter fails closed one step earlier now --
+      // in materialize_compile_defines, not authenticate_compile_define_parameters
+      // (which returns immediately for any custom_adapter route). Same
+      // guard, same error code, different message.
       REQUIRE(error.code() == GraphErrorCode::missing_binding);
-      REQUIRE(error.detail() ==
-              "parameter radius backs compile define RADIUS but the step carries no "
-              "value for it");
+      REQUIRE(error.detail() == "compile define has no owning parameter");
     }
   }
   {
