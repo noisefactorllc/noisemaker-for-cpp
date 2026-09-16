@@ -101,7 +101,7 @@ TEST(dsl_compiler_merges_named_partials_in_stable_key_order) {
   REQUIRE(step.params[1].value.number == 7.0);
 }
 
-TEST(dsl_compiler_preserves_scatter_and_rejects_source_incompatible_text) {
+TEST(dsl_compiler_preserves_scatter_and_rejects_an_unavailable_program) {
   noisemaker::effects::EffectRegistry registry(noisemaker::effects::effect_catalog());
   const auto scatter = noisemaker::dsl::compile(
       "search filter\nread(o0).wormhole().write(o1)\nrender(o1)\n", registry);
@@ -109,11 +109,11 @@ TEST(dsl_compiler_preserves_scatter_and_rejects_source_incompatible_text) {
   bool saw_scatter = false;
   for (const auto& pass : scatter.availability) saw_scatter |= pass.status == noisemaker::graph::AvailabilityStatus::scatter;
   REQUIRE(saw_scatter);
-  const auto text = noisemaker::dsl::compile(
-      "search filter\nread(o0).text().write(o1)\nrender(o1)\n", registry);
-  REQUIRE(!text.executable);
+  const auto missing = noisemaker::dsl::compile(
+      "search synth3d, render\nnoise3d(volumeSize: 16).render3d().write(o1)\nrender(o1)\n", registry);
+  REQUIRE(!missing.executable);
   REQUIRE_THROWS_AS(noisemaker::dsl::compile(
-      "search filter\nread(o0).text().write(o1)\nrender(o1)\n", registry,
+      "search synth3d, render\nnoise3d(volumeSize: 16).render3d().write(o1)\nrender(o1)\n", registry,
       {.require_executable = true}), noisemaker::dsl::DslError);
 }
 

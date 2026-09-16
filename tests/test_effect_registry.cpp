@@ -118,10 +118,10 @@ TEST(effect_registry_joins_repeated_reference_keys_by_structural_identity) {
   REQUIRE(registry.admission(*loop_end, 1).identity.program_key == "render/loopEnd:copy");
   const auto* billboard = registry.get("render", "pointsBillboardRender");
   REQUIRE(billboard != nullptr);
-  REQUIRE(registry.admission(*billboard, 2).identity.program_key == "render/pointsBillboardRender:deposit");
-  REQUIRE(registry.admission(*billboard, 3).identity.program_key == "render/pointsBillboardRender:deposit");
-  const auto additive = registry.admission(*billboard, 2);
-  const auto alpha = registry.admission(*billboard, 3);
+  REQUIRE(registry.admission(*billboard, 31).identity.program_key == "render/pointsBillboardRender:deposit");
+  REQUIRE(registry.admission(*billboard, 34).identity.program_key == "render/pointsBillboardRender:deposit");
+  const auto additive = registry.admission(*billboard, 31);
+  const auto alpha = registry.admission(*billboard, 34);
   REQUIRE(additive.authority_pass.blend_kind == "boolean");
   REQUIRE(additive.authority_pass.blend);
   REQUIRE(alpha.authority_pass.blend_kind == "factors");
@@ -136,7 +136,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "a024dc3a960cc44af454abc7aebce50456c194e6");
+  REQUIRE(provenance.corpus_revision == "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");
@@ -166,7 +166,7 @@ TEST(effect_registry_preserves_complete_alias_census) {
   const auto& catalog = noisemaker::effects::effect_catalog();
   std::size_t aliases = 0;
   for (const auto& effect : catalog.definitions) aliases += effect.parameter_aliases.size();
-  REQUIRE(catalog.definitions.size() == 205);
+  REQUIRE(catalog.definitions.size() == 208);
   REQUIRE(aliases == 84);
 }
 

@@ -4,7 +4,7 @@
 
 TEST(effect_catalog_is_ordered_and_lookup_is_secondary) {
   const auto& catalog = noisemaker::effects::effect_catalog();
-  REQUIRE(catalog.definitions.size() == 205);
+  REQUIRE(catalog.definitions.size() == 208);
   REQUIRE(catalog.definitions.front().id == "classicNoisedeck/bitEffects");
   REQUIRE(catalog.definitions.back().id == "synth3d/shape3d");
   REQUIRE(catalog.find("filter/blur") != nullptr);
@@ -68,7 +68,7 @@ TEST(effect_catalog_retains_closed_blend_forms) {
 
   const auto* billboard = catalog.find("render/pointsBillboardRender");
   REQUIRE(billboard != nullptr);
-  const auto* alpha = pass_named(billboard, "deposit_alpha");
+  const auto* alpha = pass_named(billboard, "deposit_alpha_0");
   REQUIRE(alpha != nullptr);
   REQUIRE(alpha->blend.has_value());
   REQUIRE(alpha->blend->kind == noisemaker::effects::BlendKind::factors);
@@ -115,5 +115,5 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "7df157b1b992ca7db6d68d63f928042eb4073c9dbf891ecf4729fe00976f0e67");
+  REQUIRE(provenance.generated_payload_sha256 == "300b57990d05bad9e4150998df7ef8c6bc219c719bb4e2ac82514e1ff9195e34");
 }
