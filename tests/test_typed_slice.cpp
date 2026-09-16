@@ -236,10 +236,28 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
   return noisemaker::Surface::from_rgba8(width, height, bytes);
 }
 
+// A deliberately translucent baseTex fixture (constant low alpha, distinct
+// from every other fixture's near-opaque coverage) for the mixer/alphaMask
+// mask-mode branch: `mix(background, color1, maskVal)` blends through the
+// base's own coverage, so a fully-opaque base would never exercise that.
+[[nodiscard]] noisemaker::Surface translucent_base_source() {
+  constexpr std::size_t width = 4U;
+  constexpr std::size_t height = 3U;
+  std::vector<std::uint8_t> bytes(width * height * 4U);
+  for (std::size_t y = 0; y < height; ++y) for (std::size_t x = 0; x < width; ++x) {
+    const std::size_t i = (y * width + x) * 4U;
+    bytes[i] = static_cast<std::uint8_t>(60U + 13U * x + 9U * y);
+    bytes[i + 1U] = static_cast<std::uint8_t>(90U + 17U * x + 5U * y);
+    bytes[i + 2U] = static_cast<std::uint8_t>(150U + 3U * x + 7U * y);
+    bytes[i + 3U] = 96U;
+  }
+  return noisemaker::Surface::from_rgba8(width, height, bytes);
+}
+
 void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_view key,
                               const noisemaker::Surface& input, const noisemaker::Surface& blur,
-                              const noisemaker::Surface& tex, float polygon_smoothing = 0.12f,
-                              std::string_view skip = {}) {
+                              const noisemaker::Surface& tex, const noisemaker::Surface& base,
+                              float polygon_smoothing = 0.12f, std::string_view skip = {}) {
   const auto uniform = [&](std::string_view name, noisemaker::glsl::UniformValue value) {
     if (name != skip) bindings.set_uniform(std::string(name), std::move(value));
   };
@@ -270,7 +288,13 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
   } else if (key == "filter/vignette:vignette") {
     uniform("vignetteBrightness", 0.21f); uniform("alpha", 0.81f);
   } else if (key == "mixer/alphaMask:alphaMask") {
-    texture("tex", tex); uniform("mixAmt", 47.0f); uniform("maskMode", false);
+    // baseTex is unconditionally required at bind time (the generated
+    // typed-slice constructor resolves every declared sampler eagerly),
+    // even though the pixel body only samples it inside the `maskMode`
+    // branch. See mixer/alphaMask/glsl/alphaMask.glsl upstream commit
+    // 0ed489ec46842bffba33ee2ec65a218b6dda51f5.
+    texture("tex", tex); texture("baseTex", base);
+    uniform("mixAmt", 47.0f); uniform("maskMode", false);
   } else if (key == "mixer/applyMode:applyMode") {
     texture("tex", tex); uniform("mode", std::int32_t(1)); uniform("mixAmt", 47.0f);
   } else if (key == "mixer/thresholdMix:thresholdMix") {
@@ -296,9 +320,11 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
   const noisemaker::Surface edge_input = glowing_edge_source();
   const noisemaker::Surface blur = source(3U, 5U, 11U);
   const noisemaker::Surface tex = source(7U, 2U, 23U);
+  const noisemaker::Surface base = source(4U, 3U, 59U);
+  const noisemaker::Surface translucent_base = translucent_base_source();
   const noisemaker::Surface& input = key == "filter/glowingEdge:glowingEdge" ? edge_input : regular_input;
   noisemaker::glsl::Bindings bindings;
-  populate_task10_bindings(bindings, key, input, blur, tex, polygon_smoothing);
+  populate_task10_bindings(bindings, key, input, blur, tex, base, polygon_smoothing);
   if (variant == "channel0") bindings.set_uniform("channel", std::int32_t(0));
   else if (variant == "channel1") bindings.set_uniform("channel", std::int32_t(1));
   else if (variant == "channel3") bindings.set_uniform("channel", std::int32_t(3));
@@ -315,6 +341,10 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
   else if (variant == "zeroBlend") bindings.set_uniform("blend", 0.0f);
   else if (variant == "luminance") bindings.set_uniform("colorMode", 0.0f);
   else if (variant == "maskReturn") bindings.set_uniform("maskMode", true);
+  else if (variant == "maskTranslucentBase") {
+    bindings.set_uniform("maskMode", true);
+    bindings.set_texture("baseTex", translucent_base);
+  }
   else if (variant == "alphaNegative") bindings.set_uniform("mixAmt", -37.0f);
   else if (variant == "brightnessNegative") {
     bindings.set_uniform("mode", std::int32_t(0)); bindings.set_uniform("mixAmt", -47.0f);
@@ -428,7 +458,7 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
       {"filter/seamless:seamless", "95627615549b377e800f657471499a978d7c445c1a35cfc9ac9915e4bdf73bf0", "90255d926242b26be8853e926acca831507d557afe72a00016c9e134a772dea2", {0x3e8f1222U,0x3eb5fd45U,0x3ee73c4fU,0x3f800000U,0x3ef0e420U,0x3eca102eU,0x3f607f02U,0x3f800000U,0x3eb91a13U,0x3ec4e750U,0x3f2040d9U,0x3f800000U}},
       {"filter/sine:sine", "73b6f26c811b0a8676d475bd8eed36917f3ab0d914f87da8f50da49a0d197014", "6f09375716db998f9df1655f106383dde3444800b8e1242a5390f01be0b916d9", {0x3f36edbcU,0x3f6af852U,0x3f1e4797U,0x3f7afafbU,0x3e8af2fcU,0x3f6d7d57U,0x3f5cff8aU,0x3f35b5b6U,0x3e90dd22U,0x3e650b52U,0x3f7727f2U,0x3ea8a8a9U}},
       {"filter/vignette:vignette", "94a2b6f3415386e718d1d3ba3922cb4126241a5797e426b2159e07385e042e75", "03f0b8e7644def6fbf6fa486b93646041c870baff6684fb98ff8171f3d56dab7", {0x3dc6ddf3U,0x3e110c83U,0x3da4a7caU,0x3f7afafbU,0x3eb7080eU,0x3e6f5ee4U,0x3f24f08eU,0x3f35b5b6U,0x3eeae795U,0x3ee690f7U,0x3e5e860dU,0x3ea8a8a9U}},
-      {"mixer/alphaMask:alphaMask", "7d32bb110d9181320c62787b1014acc5dc4b163ce451503889fb796ca4852661", "bf47b573aca6724cdbcc77923827a042542265ed995f492904a4f3887923f92b", {0x3e0fe133U,0x3efabf1eU,0x3ef95b24U,0x3f7afafbU,0x3efa07e3U,0x3f0c5ca8U,0x3f1193a0U,0x3f35b5b6U,0x3f71a4d8U,0x3db858c6U,0x3e8ab45aU,0x3f5ddddeU}},
+      {"mixer/alphaMask:alphaMask", "cd459701e88a9422cbf042e08013043760e6ef2d6566dde1f1d0c4fd0410cfb7", "b352155bb35bb1b39d427784164f2edfe75e8d9373161a2209d98feb4b967032", {0x3e3926fbU,0x3f22910dU,0x3f234fa2U,0x3f4889cbU,0x3f55704eU,0x3f628f41U,0x3f83c258U,0x3efcbb80U,0x3f818c4dU,0x3dbf284aU,0x3e94a2faU,0x3f63d371U}},
       {"mixer/applyMode:applyMode", "7aeee2945e2264b2706af1000de073f87afa3de89fb58b74d7d45c5e489fc462", "901503d50bab78d19f2bdd7f32efd5a6166653885a965813a1a12b735c9517e5", {0x3dc01c46U,0x3eaff106U,0x3eb6cb47U,0x3f7afafbU,0x3efb291fU,0x3f4760fbU,0x3ea6022bU,0x3f35b5b6U,0x3f4f0f0fU,0x3e0ff65cU,0x3e9cc8c2U,0x3f5ddddeU}},
       {"mixer/thresholdMix:thresholdMix", "f6e338ca581f3243524f124f3db407c3e0a56c42d9563eaba6901f48eb373712", "9499f26e19394e0bd91fad082d820362851877598640cfbdf87f9719ffa62b7e", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f088889U,0x3f3cbcbdU,0x3f50d0d1U,0x3ed82d83U,0x3f76f6f7U,0x3f27a7a8U,0x3e64e4e5U,0x3f022cd8U}},
       {"synth/polygon:shape", "17c3ee338cf903cacfcf422df124a54bc7d9b8497339fca260fe3b8e435b011f", "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c", {0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U,0x3dedfa44U,0x3f1b1c43U,0x3e83bcd3U,0x3f547ae1U,0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U}},
@@ -478,7 +508,7 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
 
 TEST(typed_control_flow_slice_external_branch_oracles_cover_every_arm) {
   struct Fixture { std::string_view key; std::string_view variant; std::string_view floats; std::string_view rgba; };
-  constexpr std::array<Fixture, 23> fixtures{{
+  constexpr std::array<Fixture, 24> fixtures{{
       {"filter/channel:channel", "channel0", "f06aad98061e763aeaaeb3642a7c6f6193c325fa6ae2f718a8904358e5778d00", "f8956632116fec613352479918e6907d8735e45021a48503cc08bb2c773cc5f6"},
       {"filter/channel:channel", "channel1", "7188cfe8d07b5c3ecf55d2c2dd4f2e421d6bbc50c019b6132673a3363dfc9b6c", "c29398951217bef5ae55ea839afb45b41a80459ea27eb5fcc12807d36cb83361"},
       {"filter/channel:channel", "channel3", "05b55b15d8e517d4d2a0370f61a2a69338092d1228995929b7db7cadd4377677", "b4d9bf4bf793c1a8c0169e66f270a626162fe24aaaf59f8e5eb62027e09b58ab"},
@@ -495,8 +525,9 @@ TEST(typed_control_flow_slice_external_branch_oracles_cover_every_arm) {
       {"filter/seamless:seamless", "zeroBlend", "43633d6a9d949ac1d965090c18be1e4709a35cc680f0348e2ee0bf735c7f7672", "002a6dc460f3a727c0ed3cd108dcad1f1bb6bc925acdd86cba0006dbb834b862"},
       {"filter/sine:sine", "luminance", "1361edb9630997113f9d535468ef0caf947c86d7e6c57be87066cb6d384c8d3f", "ecc2703ea467bb15781f2d5f5688befde66441b5e2d0ac1972a206bc06129cbc"},
       {"filter/vignette:vignette", "fullResolutionZero", "2da1d72b224dac747a3cb700bceed7447e7843ce3b94a58c5bf5efff8f82e92c", "65daf291de28c048faf144e018b39b2ff6082c1c993b280154e961e1f02ece79"},
-      {"mixer/alphaMask:alphaMask", "maskReturn", "32f419f5aa78ef7d141a55987830d63c2e54572b2186933f758d148914ca701e", "40ac299412b2a65053a0174a978036379495780ea1d38970bbf84c2d32633d93"},
-      {"mixer/alphaMask:alphaMask", "alphaNegative", "46c4fde02a2fef009e5c3096c80ec118d87985e9110a8ae8b58c2790798a2809", "e8d9a5f791aab677a0fa458ec31ba9150664840298e469e93d015b30115d7277"},
+      {"mixer/alphaMask:alphaMask", "maskReturn", "1e40268f582f1a95e9b4d7963900b72027f48a2dcba73372d1ee33ad2a32b877", "f5ab5871ccab6489846aac701b44eee7efb15d1023abcede7ba5c0b5415b8722"},
+      {"mixer/alphaMask:alphaMask", "maskTranslucentBase", "d6dab4da6a60c5dd8a27fd5defaa6862fa0f3764037bb8b8e5328f607259f92b", "33ddffd6c473b2acd0d067cc8d75648a911b8347a407d0534cab8fa95078b614"},
+      {"mixer/alphaMask:alphaMask", "alphaNegative", "594438d9e093edc81819ed52ced98f6c35d7678b34298a2bf1e27b49447d264e", "290e9f41f11f4200c75792050f53987b7b0757246663b625602b9bd02c12abb8"},
       {"mixer/applyMode:applyMode", "brightnessNegative", "f423203707503dcc17cd0527109c103f90cc08445bf6ec59923c2634d99c6b24", "a06677e876ad65595f255ab53c23c6894f65ebba637d750459257a7b51b308c0"},
       {"mixer/applyMode:applyMode", "saturation", "437d09a1c541faa2e055b059738dfde5385b318fca5ad562aa8afbd4e1ab0fc8", "935faeac913cea75f60785751cdbdbfcde1a9b23b5d0cf493d5d14cb1fd31999"},
       {"mixer/thresholdMix:thresholdMix", "luminanceHard", "db401328e3c93cfb1de2e15d37f2164f3f8c6253a348fba2fbacb1a5bffa48ca", "8af374ab1f9d8e59a3642d59639a613fd32d0dbbcbbfbd81d56a8aca006e3683"},
@@ -534,9 +565,10 @@ TEST(typed_control_flow_slice_each_signature_rejects_wrong_binding_type) {
   const noisemaker::Surface input = source(5U, 3U, 1U);
   const noisemaker::Surface blur = source(3U, 5U, 11U);
   const noisemaker::Surface tex = source(7U, 2U, 23U);
+  const noisemaker::Surface base = source(4U, 3U, 59U);
   for (const Fixture& fixture : fixtures) {
     noisemaker::glsl::Bindings bindings;
-    populate_task10_bindings(bindings, fixture.key, input, blur, tex);
+    populate_task10_bindings(bindings, fixture.key, input, blur, tex, base);
     bindings.set_uniform(std::string(fixture.uniform), fixture.wrong);
     REQUIRE_THROWS_AS(noisemaker::generated::bind(fixture.key, bindings), noisemaker::glsl::KernelBindingError);
   }
@@ -544,17 +576,19 @@ TEST(typed_control_flow_slice_each_signature_rejects_wrong_binding_type) {
 
 TEST(typed_control_flow_slice_secondary_samplers_are_required) {
   struct Fixture { std::string_view key; std::string_view sampler; };
-  constexpr std::array<Fixture, 5> fixtures{{
+  constexpr std::array<Fixture, 6> fixtures{{
       {"filter/highPass:hpCombine", "blurTex"}, {"filter/plasticWrap:pwSpec", "blurTex"},
-      {"mixer/alphaMask:alphaMask", "tex"}, {"mixer/applyMode:applyMode", "tex"},
+      {"mixer/alphaMask:alphaMask", "tex"}, {"mixer/alphaMask:alphaMask", "baseTex"},
+      {"mixer/applyMode:applyMode", "tex"},
       {"mixer/thresholdMix:thresholdMix", "tex"},
   }};
   const noisemaker::Surface input = source(5U, 3U, 1U);
   const noisemaker::Surface blur = source(3U, 5U, 11U);
   const noisemaker::Surface tex = source(7U, 2U, 23U);
+  const noisemaker::Surface base = source(4U, 3U, 59U);
   for (const Fixture& fixture : fixtures) {
     noisemaker::glsl::Bindings bindings;
-    populate_task10_bindings(bindings, fixture.key, input, blur, tex, 0.12f, fixture.sampler);
+    populate_task10_bindings(bindings, fixture.key, input, blur, tex, base, 0.12f, fixture.sampler);
     REQUIRE_THROWS_AS(noisemaker::generated::bind(fixture.key, bindings), noisemaker::glsl::KernelBindingError);
   }
 }
@@ -757,25 +791,25 @@ TEST(typed_task11_all_ninety_four_external_oracles_are_exact_and_repeatable) {
     {"filter/outline:outlineValueMap", "grayscale", "17137e5da9dba3919e6fc1a42221ddfd166388e8059fc671b73e04ea354041f2", "c6ded0a7986409c32fd2cea123458989295584a3857f5e856a6ccc0870d40eb1", {0x3df8f8f9U,0x3df8f8f9U,0x3df8f8f9U,0x3f41c1c2U,0x3ed0d0d1U,0x3ed0d0d1U,0x3ed0d0d1U,0x3f189899U,0x3efcfcfdU,0x3efcfcfdU,0x3efcfcfdU,0x3f0a8a8bU}},
     {"filter/spatter:spatter", "primary", "f106b4d60c9e1b0ce579b25adcadb918f220d94bf62ea73a615ccd06dc1c3143", "2270dc9fe831c33940eb09df5ac36a0d97d8cd9793449e21924298df6b599cd4", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3f1372a8U,0x3e5bc316U,0x3e00341fU,0x3ea8a8a9U}},
     {"filter/spatter:spatter", "fallbackResolution", "50439a305aa93b986840fe29f7732b31d4694adfc7addeaf64167d6cc4008f6c", "4314515902999d5f9ae734fc41592f1e76cd9d909e17f8b06efaa072e7c7187c", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb6cd06U,0x3da32d37U,0x3ee9ea53U,0x3f35b5b6U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
-    {"filter/tint:colorize", "mode0", "d943408565025ec93b59fed744cbc7407efe108776b650af43eb5f711093cdf0", "ea6d7456750550b923b42ac58699b43eb16ddf37f80e7e83ffff22532c211120", {0x3df2d62aU,0x3ef128f8U,0x3f066875U,0x3f7afafbU,0x3e83aa94U,0x3f052b50U,0x3f53166aU,0x3f35b5b6U,0x3eb54293U,0x3f2d39c5U,0x3f197b88U,0x3ea8a8a9U}},
-    {"filter/tint:colorize", "mode1", "c449315bf1455a8d6f3e656564ccdd3076f2fd5a873307ca648cd38d20af73d3", "28957404e858969a8c81309e757c3db69c899c6b8d4693c18d79b924467b78af", {0x3cc82103U,0x3dbc2501U,0x3cc92d1eU,0x3f7afafbU,0x3e4bfa43U,0x3e491ebaU,0x3f3ace78U,0x3f35b5b6U,0x3ea48773U,0x3f076e80U,0x3e4cc4c8U,0x3ea8a8a9U}},
-    {"filter/tint:colorize", "mode2", "ece4139d0a0a3b0e2f816c0340cb5edd7f639b9b5cde0113ce0393dfe152df8c", "9e00b953b553b6d83198b6b479dd0ee5e4e18c18ee3230404070cf10d818eab9", {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x3df1eae3U,0x3f442d43U,0x3f277441U,0x3f5ededfU,0x3f0530ddU,0x3ef174ceU,0x3f34b4b5U,0x3ecacacbU}},
-    {"mixer/blendMode:blendMode", "mode0", "5d67858d1b1300ee8c641358f85ea0800536206c19de4f3a109117da19fdb23c", "b952c8b2156aca097681a3f189985a521263a432841ea5b532b8dbe23160fab2", {0x3ddfdba5U,0x3ea5df19U,0x3e7bbb49U,0x3f7bd937U,0x3f025d81U,0x3ebeb323U,0x3f5917a6U,0x3f3c39baU,0x3f59b6e7U,0x3f2e3b8cU,0x3ebf2fd4U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode1", "eb9158e28951ccfa4703c72ce57280b889cea2407fc1a3d555f58f2badf0c537", "b21e0c6854707d9d7073cb7188006f998ba04ba7ac05670a77b6ba766f9e30b0", {0x3d08970cU,0x3d9859b4U,0x3c9318d1U,0x3f7bd937U,0x3eaf7f8dU,0x3e4d4cc2U,0x3f452e76U,0x3f3c39baU,0x3f29fc6eU,0x3e983b0cU,0x3dcfd5fbU,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode2", "e5eb5f978953a3bef31e0758369fea8480d07bab4fa45bb5eab6fe61979fac2b", "0662ddff5b427f2cf1a4c1f14eadb42389b2a7be3d06d4df1784c7f0f51ab795", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7bd937U,0x3ed4d4d5U,0x3e78f8f9U,0x3f3eda81U,0x3f3c39baU,0x3f2babacU,0x3ea562d4U,0x3e64e4e5U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode3", "b6081b8afc898213e2133a91f839f7a79b153bbd1957964c1496b5f908e4bb36", "841fe893c0fd61fa0e2b257cb098a0c2e410e8ecf9910621491eb82273c291a5", {0x3d97a1e0U,0x3e7b2efeU,0x3e684945U,0x3f7bd937U,0x3eba1071U,0x3e9306ecU,0x3f3e262dU,0x3f3c39baU,0x3eee191bU,0x3f2113c4U,0x3e046bd9U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode4", "3733abfe0f847632dd8da9f41fd6ebef98b7aee1e3405cb87053abda6b769dbe", "7825df965f3b4ef0f5a21d8cfb0667b797c670a7693404960504db36ddcdfb7a", {0x3d5f771aU,0x3e32e371U,0x3d330ccaU,0x3f7bd937U,0x3eff7f71U,0x3eb9c22aU,0x3f5917a6U,0x3f3c39baU,0x3f59b6e7U,0x3f2c2ce6U,0x3e8a1759U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode5", "a2cb5a0fa19cc0531ca2a75f28404f7b9bed85ff893c930636f24cdbc9e22506", "19158647faa4c4c03267a821a9c9c803591859e7948141400e2ded5d2443d364", {0x3dd3adc4U,0x3e8d6342U,0x3e6f744dU,0x3f7bd937U,0x3edce892U,0x3e9e8077U,0x3f4507b7U,0x3f3c39baU,0x3efb54b2U,0x3f259dfbU,0x3e9ce130U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode6", "4bdc0f6f4cb81ce45bffe2a7f85f4212090c62592e8478caaadf84e8e9fec033", "4385135c13f9824deeaa2a7cec4f019a02849db7df042320a15b10b360d02e31", {0x3d20f2d0U,0x3e3828e0U,0x3ded3affU,0x3f7bd937U,0x3ed85474U,0x3e9cbda7U,0x3f4aa39bU,0x3f3c39baU,0x3f5676dcU,0x3ea9762eU,0x3e2c8846U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode7", "cb79424d50498166da27202ddb6caa73a3280f25620c1e9caa5f6609735e9edf", "30b600e80768e1188ad59c115f7679d8b4f0e7b00e7b5dfb613a48758b33d68f", {0x3dbbbec3U,0x3e91bb4cU,0x3e720247U,0x3f7bd937U,0x3edf65b9U,0x3ea8dd07U,0x3f50d0d1U,0x3f3c39baU,0x3f54c7fbU,0x3f27a7a8U,0x3e80b2e0U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode8", "7faa43d7d4f60bc40b5bf80b9a0b5928e00c38ad48b12961bc54c2320612631f", "36b3da46e2b1988ccb0a2c510335ba042ce28616c46ebc2e6e1595e751d4f857", {0x3d921396U,0x3e4bf586U,0x3e070f31U,0x3f7bd937U,0x3eda1d47U,0x3e92acc2U,0x3f47d5a9U,0x3f3c39baU,0x3f4039d4U,0x3efa5912U,0x3e732553U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode9", "7d6b4a78f0e82da30a330dcd88cd8904c4e3fb30481ef9753e6397d0ea611f76", "8f6f04de7b7cbdc578b6d2f48c7ab3f6772bfbe134d006abe530de4b286a1b73", {0x3d14c4eeU,0x3dc95161U,0x3cc434bfU,0x3f7bd937U,0x3ec368c5U,0x3e6d7f6dU,0x3f3b69bcU,0x3f3c39baU,0x3f285cc7U,0x3ea0d89dU,0x3e0a39a2U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode10", "c356e1ebb6e5f0963f181e2651da9e2d3cbb8d1009a05139065ff8ff121a41fd", "ff1934c1b22ccc5eb117c862c7ea27ad5028121ec3b7cd9bff24fb30c2ee6a56", {0x3ddfdba5U,0x3ea5df19U,0x3e7bbb49U,0x3f7bd937U,0x3f025d81U,0x3ebeb323U,0x3f4eb3d6U,0x3f3c39baU,0x3f00ea63U,0x3f2e3b8cU,0x3ebf2fd4U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode11", "31e7d51b403e63d5f3a4a81144fca30dd6d0468941b9698b6267ce4897a65fb8", "2f314d43020e020e4723aafd0b8b5e18c2fec5897883301c768c8dfeddcceb81", {0x3d20f2d0U,0x3dfa490dU,0x3cf550acU,0x3f7bd937U,0x3ed751fcU,0x3e86d90cU,0x3f4f6b86U,0x3f3c39baU,0x3f5676dcU,0x3ef7eab2U,0x3e2c8846U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode12", "339fe5e2283dd5cf1d00be4b86d76af2b2ebf1f9232d889f9646f1da210b7217", "8364f89fe958a62a8d9bf69149eaf0fe76b737a8a15cc82787fb4ba2a377a7c5", {0x3ead54caU,0x3e7f59b4U,0x3e1eabecU,0x3f7bd937U,0x3efebe3bU,0x3e941568U,0x3f472155U,0x3f3c39baU,0x3f309a97U,0x3f02edf0U,0x3f1ea131U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode13", "376f3956dc379666f04a16542d10e32fbd21c0eb7660e95921514786d1ea5445", "f1d1678ec608592958197f302ff938bdf63b37c2bdc9cc4ab39c5ff67beb7341", {0x3dd9c4b4U,0x3e99a12eU,0x3e7597ccU,0x3f7bd937U,0x3ef0d1c9U,0x3eae99cdU,0x3f544196U,0x3f3c39baU,0x3f5816e1U,0x3f29ecc3U,0x3eae0882U,0x3f03320bU}},
-    {"mixer/blendMode:blendMode", "mode14", "81f4a72f8177c7f9dbd5ca8c288b1e0372f1a090a52f832809531a587e7e061b", "07de88905801b6e02f4e0d13c426acc127f50f9390e38d7921fcc741ee177449", {0x3d9378d3U,0x3e82b0bcU,0x3e4681e1U,0x3f7d0186U,0x3eddde1fU,0x3ea68de1U,0x3f427526U,0x3f44e9bfU,0x3f5a8c73U,0x3ea06464U,0x3e555780U,0x3f41aeffU}},
-    {"mixer/blendMode:blendMode", "mode15", "102a0276385bc6c1ead16eac4c0051cef0f0cda370db08cafdc81e9783a4c14a", "756247adbd61445b4c914e674005dcb0f401bb65e5975b4b21b1f1f07d764a1d", {0x3d08970cU,0x3d9859b4U,0x3c9318d1U,0x3f7bd937U,0x3eaf7f8dU,0x3e4d4cc2U,0x3f3e262dU,0x3f3c39baU,0x3e9be07cU,0x3f2113c4U,0x3dcfd5fbU,0x3f03320bU}},
+    {"filter/tint:colorize", "mode0", "aff281c01b0fffe08479d978fd1d3d1da6889ab9683cf48b05cdaa66afa1761b", "781d9cfac8befe7dd4fd2afa5fddc51a517a99043b6953877d66a0082796e87c", {0x3deeda60U,0x3eecdd81U,0x3f03d32fU,0x3f7afafbU,0x3e69dab3U,0x3ecac694U,0x3f228ebeU,0x3f35b5b6U,0x3e21a483U,0x3e883e1bU,0x3e82481eU,0x3ea8a8a9U}},
+    {"filter/tint:colorize", "mode1", "db04d41246e0985fe76dc26d8979b3f0e8beeb97e52e35bb6d99808fc7b15cf6", "82e38f492645d1a4b3d53548f6e13c3ea45e27635327942874668589c38e4d85", {0x3cc82103U,0x3dbc2501U,0x3cc92d1eU,0x3f7afafbU,0x3e4bfa43U,0x3e491ebaU,0x3f228ebeU,0x3f35b5b6U,0x3e21a483U,0x3e883e1bU,0x3e4cc4c7U,0x3ea8a8a9U}},
+    {"filter/tint:colorize", "mode2", "04c9eef319ed883cc4c06e5aaf499f904cec0395b9f3d4d58638e63cd3ddfc96", "fba3769da35e84e822d6c232b6d06bcb5274f138d8fb1a5e03fad67a20e58aa1", {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x3d4ada88U,0x3f4081ddU,0x3f277441U,0x3f5ededfU,0x3e9d0db1U,0x3e8cd122U,0x3ecacacbU,0x3ecacacbU}},
+    {"mixer/blendMode:blendMode", "mode0", "ea87899c030cceb2e2528b0c46eaf985b625d711c702fe2f0de4825db5aac4c8", "c23eb08bea0f5b812986d86bbbfc1257bf646adc08687a154c98b245db6bc69b", {0x3e20fd26U,0x3ed78d29U,0x3ebace62U,0x3f7cb772U,0x3f1095adU,0x3eeb68c2U,0x3f5f842cU,0x3f42bdbeU,0x3f645150U,0x3efe7f58U,0x3ecafe32U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode1", "2ed6d991094c7a92e00779d610abcc4a16bd91c2a28f5f4655cfb0730bf78f86", "1218c3992fa95593198d8a4db3d524560c053f9d9666d9c0d84ad702808e79b2", {0x3d111f47U,0x3e19d976U,0x3da03d81U,0x3f7cb772U,0x3f09b089U,0x3edb94b2U,0x3f62b377U,0x3f42bdbeU,0x3f87946cU,0x40714836U,0x3e5eac70U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode2", "3a78474379d709ae3f75d64464f8c970c2997806b738dae77b1393fe4cc9be25", "9b4e23c9ec307a2c2e236ab890216674439fdafc029c8f69c5ad07360312ac13", {0x3d59590cU,0x3df8499bU,0x3d10629bU,0x3f7cb772U,0x3f036090U,0x3ec17f5cU,0x3f64455fU,0x3f42bdbeU,0x3f6986b6U,0x3ea768f2U,0x3e8c813eU,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode3", "4ad585f019dbdc8e363ecdc4ea0170805d8664afc36bcbab1c662231a5daf991", "8ae7b1bca6a5198f3d96ac6960e9fc27e0d269d0d53fcd5735e85d143911e6bd", {0x3df9c088U,0x3ed6037eU,0x3ecffcddU,0x3f7cb772U,0x3f1b193cU,0x3f1f4faeU,0x3f4a99a1U,0x3f42bdbeU,0x3f60c0e4U,0x3f2a3e8cU,0x3e90a826U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode4", "0e29ea4927b97203b4b9e64381b50668dabde31720cb3d0626f39d0b26e52ffd", "037b749d306552bbddb2565476bc0f054b25fc469de7d11f8cada6699743f20d", {0x3d795d8bU,0x3ed78d29U,0x3ebace62U,0x3f7cb772U,0x3f1095adU,0x3eeb68c2U,0x3f5f842cU,0x3f42bdbeU,0x3f645150U,0x3efe7f58U,0x3ecacafaU,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode5", "e44dd9403ce7df09f3f5d7bbc6faca4a1999a7445564676d5a2019ea552fee88", "db6d030f893ffdd318d9cf28cffca1c981da72c279fa264b38df64762bd32c5d", {0x3e15e5a6U,0x3ed1b2adU,0x3ece8784U,0x3f7cb772U,0x3ef1d738U,0x3ef6a7a0U,0x3f267cbfU,0x3f42bdbeU,0x3eed2ce8U,0x3f254db9U,0x3ea36861U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode6", "c60c1e35e21cdf766d6f69c171d1169b989ee4141d57140a091cd3a17473dbd7", "d8d668ba11b14c6e90437161e2be02a2b5a059e55fc9e5b9f671fb2306d9d14c", {0x3d3d7d48U,0x3ef8709bU,0x3eed6f00U,0x3f7cb772U,0x3f28c473U,0x3f3ac538U,0x3f5ad41dU,0x3f42bdbeU,0x3f598747U,0x3eb64aa7U,0x3e96ec09U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode7", "7e0cbfc0a54413c9bbc340ee9f8fc4904e306321338a05304a0a660b91f88109", "7d3e840db438e5a5d2af59851d1bccc6236de77a7c9e7fd3f8e4a248ddcca755", {0x3e0eeeb5U,0x3eea274bU,0x3ed4d95eU,0x3f7cb772U,0x3f2dc3e0U,0x3f2a3abcU,0x3f6f3a96U,0x3f42bdbeU,0x3f8a00c2U,0x3f2cbe94U,0x3eadd32cU,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode8", "b006434458d85c96ee56d3766e2604b1f81481d1cab85cb21521fac181126769", "af16a25f92129f219a9b82bad47dfe3284b944f32041b4bf71b0a3d87de9bec9", {0x3dc322e9U,0x3e9230c3U,0x3e62e76cU,0x3f7bd937U,0x3f0c1725U,0x3ee878faU,0x3f6005b3U,0x3f3c39baU,0x3f4a9931U,0x3efb5c21U,0x3e7ef3b0U,0x3f03320bU}},
+    {"mixer/blendMode:blendMode", "mode9", "f92df4b29ffd009a22d278139c8d14bae0e8655eb1efebc63102edc3f9f66deb", "97f1e3c6458e510b1c6c40845820240a4885445b45a2d0a7addd66209a8ac78a", {0x3d274e47U,0x3e00759eU,0x3d163803U,0x3f7cb772U,0x3f147760U,0x3ee57b3aU,0x3f7653d0U,0x3f42bdbeU,0x3f8f4df7U,0x3eac59c5U,0x3e832120U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode10", "d8e609ac7316862d2b510309ca233b0fa3857d3bbbaa981d3037bce3e04858e0", "f0b20b51188566289cd6ec7dcc3a7d102ba050d93b7e226c25811575b75ef48a", {0x3e20fd26U,0x3eb0cf3bU,0x3e9be6e6U,0x3f7cb772U,0x3ec179acU,0x3e590be2U,0x3f2b2ccdU,0x3f42bdbeU,0x3f01607dU,0x3e9e8179U,0x3ecafe32U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode11", "f9acef2af90a06c73469cca7672e1f864671be3d20b7dc1de6cae64ce9df58fe", "39315f6c71ae14628393905df82e42199f5622cc5e3cda1926717584fca2cd8d", {0x3d3d7d48U,0x3e2d0e08U,0x3d42f172U,0x3f7cb772U,0x3f28c473U,0x3f0fa699U,0x3f5ad41dU,0x3f42bdbeU,0x3f598747U,0x3f554ca8U,0x3ea2f9e5U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode12", "444b8bb63460f242a67c539af2c48b5481648c4e4b2bb6c851221e383a481554", "a47f7b85af947ed4d7a135cc28ded70a9e3ce96e276172b5fd387404dbafc9e5", {0x3e93763fU,0x3dade116U,0xbc7fd50dU,0x3f7cb772U,0x3ecc64bbU,0x3e30e54dU,0x3f548ef5U,0x3f42bdbeU,0x3f39d682U,0x3e18d646U,0x3eaa1abfU,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode13", "eaef03a2c06a41887804ec3d216fc113edd4ddcac438e09d26f11eff6a4031f3", "a60bdaea3e17c405810ccee64e62f8dfbc2262d13c4720ebef64ae0a5078c5fc", {0x3e1b7166U,0x3ee7fee3U,0x3ed41eb1U,0x3f7cb772U,0x3f1cad10U,0x3f183ccdU,0x3f5d2c24U,0x3f42bdbeU,0x3f5eec4cU,0x3f2a462aU,0x3eb73349U,0x3f320fc2U}},
+    {"mixer/blendMode:blendMode", "mode14", "079d0f5c5aa7b6937acd947cf6a79471b7cebdb567f8eefda690d4785b60b30d", "e1d3075fdd072cd4a8c7a6b2c52bdccfe37bb09fea813067c3f16b9baf045f3b", {0x3de842b7U,0x3ee88a73U,0x3ec02d63U,0x3f7dbc7bU,0x3f3f4bd0U,0x3f47caf2U,0x3f73c320U,0x3f4a6500U,0x3f8a5570U,0x3f3122f3U,0x3eb1a58bU,0x3f691c50U}},
+    {"mixer/blendMode:blendMode", "mode15", "05a23f5cf81db40f28885fe71ef6c31ea1ebbe4d3fe7e6b04a25da9b98774e00", "eafac90c37b5acf6bedb8478d08951a02e148f2072669b91582da75f1d784d7d", {0x3d111f47U,0x3da7ba67U,0x3cd2fd27U,0x3f7cb772U,0x3ee16bd8U,0x3eaba940U,0x3f3fa46bU,0x3f42bdbeU,0x3f60c0e4U,0x3f2a3e8cU,0x3e90a826U,0x3f320fc2U}},
     {"mixer/centerMask:centerMask", "shape0", "73b27171063874cb33dd4b58b71a34cb916cdd6103f11bd0a8818eec5cfe1ca8", "fb2f4443eee54ea948b457ce3649677221ec44f45953624cc15fddfba05b9373", {0x3e2a86acU,0x3f1ad27cU,0x3f20b166U,0x3f7afafbU,0x3f088855U,0x3f3cbc9cU,0x3ed4d52cU,0x3f27a7a8U,0x3f771314U,0x3d504000U,0x3e887ee1U,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "shape1", "830d2f34232ce8fb7c0b5a8b1ca4a41139a469bb16fb8ff9648b653b6575a9bf", "fee8357930b2f502a39de599779e8c8bfd1ff84c8077850164c723f0fd634076", {0x3e2b6ebaU,0x3f1b2758U,0x3f2116c2U,0x3f7afafbU,0x3f088880U,0x3f3cbcb7U,0x3ed4d4e4U,0x3f27a7a8U,0x3f77138eU,0x3d50836aU,0x3e886d3fU,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "shape2", "53c985d87b0eac145c184c808732caf89a9bc050f10b0f085994e51bb5bad414", "7d623d76815a34177e50522b0e9bd68c715ebea5f1ee6653677ea59400881fb0", {0x3e264ee4U,0x3f1947a2U,0x3f1ed9c3U,0x3f7afafbU,0x3f0887b7U,0x3f3cbc35U,0x3ed4d636U,0x3f27a7a8U,0x3f770a46U,0x3d4b65d5U,0x3e89c3c8U,0x3f5ddddeU}},
@@ -795,32 +829,32 @@ TEST(typed_task11_all_ninety_four_external_oracles_are_exact_and_repeatable) {
     {"mixer/centerMask:centerMask", "blend12", "1aeda69548f51d92bd9977a6c15380ee0e6cdd96d6f757531f4bb6d4e2d00b5e", "f8280e6463bfee3f320b3bee1f70778cc999c4d596a3fff991c503c803667297", {0x3e50c40aU,0x3f1a51a2U,0x3f1ea826U,0x3f7afafbU,0x3f088c02U,0x3f3cbbacU,0x3ed4dda2U,0x3f27a7a8U,0x3f73b155U,0x3d834726U,0x3e9d9a68U,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "blend13", "cefabaeffe378c100461868731f6b377e5f86839250633926aac9480ebd0285d", "de9fe75087ade4eb6229b313f14f19f0c1627f0518601ef71106bbfc4d1beca4", {0x3e2ed158U,0x3f1c2bf1U,0x3f21c262U,0x3f7afafbU,0x3f088a86U,0x3f3cbdeeU,0x3ed4dd7eU,0x3f27a7a8U,0x3f774390U,0x3d9f7e37U,0x3e90a635U,0x3f5ddddeU}},
     {"mixer/centerMask:centerMask", "blend15", "bffcfca7b3058ce9271326024127de295e50c5feb18407832a77fd22dfff7a91", "6776de4da65e05bdf73267c3cea164f5820516df7be227ba8cf5d49c2da7a106", {0x3e2a18b9U,0x3f1a2b8fU,0x3f2148cbU,0x3f7afafbU,0x3f088446U,0x3f3cb833U,0x3ed4cb03U,0x3f27a7a8U,0x3f6e7cbbU,0x3d373c00U,0x3e86e5baU,0x3f5ddddeU}},
-    {"synth/media:mediaInput", "position0", "512025f5b5e2b16202acae068c540742c835e2738bfbae6f54fd64a865f90331", "de41efcd1fe37a46ee8a65eb1334935c0bd7be60d06a963efe9b30b9e5c46daf", {0x4022067bU,0x3fe95103U,0x40000000U,0x3e9e9e9fU,0x3d124924U,0x3f7cf3cfU,0x3f461862U,0x3ea8a8a9U,0x3f32564bU,0x3e7d1fa4U,0x4023f47eU,0x3eb2b2b3U}},
-    {"synth/media:mediaInput", "position1", "5d54c7e0539377a8a47401951a0f44e2db6d3416c6a689d02dbb691e29feabbf", "fe312349954c70c1eb9f3934dab27944e4379a5aef79d543fbad20b9d5ec6789", {0x3e8f4696U,0x3f460ec0U,0x3f33183bU,0x3f73f3f4U,0x3f0318c6U,0x3f0318c6U,0x3e9ef7beU,0x3f78f8f9U,0x3f3c349eU,0x3e8590b3U,0x3f72d88aU,0x3f7dfdfeU}},
-    {"synth/media:mediaInput", "position2", "a5f5785193c889dd233568f3c059ad0ab5b24e371418efbfb549cd39cadef9cc", "1e6a6e569fa19c868bcad1fad139d4c98746040ba63a545368d80caeccafb85f", {0x3fdeffffU,0x3ff2ffffU,0x3ff8ffffU,0x3f008081U,0x3e482e32U,0x3faf286bU,0x3f9622a5U,0x3f058586U,0x3f1dae60U,0x3f6076b9U,0x3ee9bd37U,0x3f0a8a8bU}},
-    {"synth/media:mediaInput", "position3", "6682585c9bcee2860fc8a74684d79cffb0592e23d9d55a3cebf39c71eb9c01ea", "1cbc81d8e20096f7535f3c36fdc9ce82642e132c493a1a920a7bfe9f37af142b", {0x3f8ae035U,0x3ea751fcU,0x3f48c8c8U,0x3f19999aU,0x3fb6474aU,0x3fc67b23U,0x3e2efcc2U,0x3f1e9e9fU,0x3e2fe6dfU,0x3f907da5U,0x3f9533d4U,0x3f23a3a4U}},
-    {"synth/media:mediaInput", "position4", "d265ac74abeb0174b8089a161abbb64310197a86b934cd4dbd36abaa57c2fd37", "d12699ea4e6b0fd408cffa9df747a63672f28379b54c6ec006571f10bbd55fd7", {0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "position5", "6cd2cbb26c447feccd43a0e60de0e7901106fb7a7036c4aa0372358ebf429531", "d7bf04bdb038a4fb47b1e17aa68a2c05b4e7e7ba90c334926aa6debebe0eccec", {0x3f6f8656U,0x3f3cd4eaU,0x3f85b3f6U,0x3f4acacbU,0x3f995a48U,0x3ed9a96eU,0x3f11eeb0U,0x3f4fcfd0U,0x3e7656f2U,0x3e026a44U,0x3df1826aU,0x3f54d4d5U}},
-    {"synth/media:mediaInput", "position6", "064eedf3dd82d71640df6244fe870690388a2e601454ae2a44a24ffb87718b34", "06265073c8a79fcc51684b1a89a3bc4e2a54c61432dd04cb40db1f2751921455", {0x3f09ae41U,0x3e4e8561U,0x3d4e8561U,0x3eeeeeefU,0x3f7def7cU,0x3fe21084U,0x3fae739dU,0x3ef8f8f9U,0x3df5c28fU,0x3eae147bU,0x3f0f5c29U,0x3f35c28fU}},
-    {"synth/media:mediaInput", "position7", "dce268e662dedf47d4f5427bd310dbdc849ece9c071da9e2783d9e238dfbcd0b", "4a37e49739b5512f633ed3925d884bbe658a46e3a1e4bf38c0a84f7f947fb394", {0x40ded098U,0x40212f69U,0x3f2aaaabU,0x3dd8d8d9U,0x40f6ffffU,0x3e5fffffU,0x40b50000U,0x3e008081U,0x3df5c28fU,0x3eae147bU,0x3f0f5c29U,0x3f35c28fU}},
-    {"synth/media:mediaInput", "position8", "d3ff133753bc2994ef73106a59788d90623bbbeab767b8d51b295cb615a0762e", "7270fddcdf5ef1c8bd2997dabcb16d7e487806aa7d4bbad2ab38946694793f1f", {0x3f049249U,0x3f3b6db7U,0x3f13cf3dU,0x3f28a8a9U,0x3f580bd7U,0x3eb77dc7U,0x3cbd6911U,0x3f2dadaeU,0x3df5c28fU,0x3eae147bU,0x3f0f5c29U,0x3f35c28fU}},
-    {"synth/media:mediaInput", "tiling1", "271e439a5e5442f51af8603ecb70fc9195724b525c985ca7a31e8eacd2d127a2", "a82a2c5753240e23def8bdaee227e34fa1dce9be4326d3e30c57883ad3f77935", {0x3df5c28fU,0x3eae147bU,0x3f0f5c29U,0x3f35c28fU,0x3fc27628U,0x3fa9d89eU,0x40980000U,0x3e50d0d1U,0x40bb13b1U,0x40af96f9U,0x40520d21U,0x3e1c9c9dU}},
-    {"synth/media:mediaInput", "tiling2", "37670cbf2ca6c53f0295daa65d7bf0aaa014bd8876974e8a596211661a62ce3e", "1bc50b99cd6e2fce4e7d25b52c3343f525dd3273241148f5b3dd7cf20fc82471", {0x3f8b29adU,0x3f5aca6bU,0x3f83b88fU,0x3f2cacadU,0x3fc27628U,0x3fa9d89eU,0x40980000U,0x3e50d0d1U,0x40bb13b1U,0x40af96f9U,0x40520d21U,0x3e1c9c9dU}},
-    {"synth/media:mediaInput", "tiling3", "d53a6ab4a2203129fb92c74b29f808893a7132ebc2f52e8bf25918805e469589", "ca1537f642bce55f89dfb4e8e4ef7b7ca1eaf84e62dac490f30305b7ceb78bc8", {0x3df5c28fU,0x3eae147bU,0x3f0f5c29U,0x3f35c28fU,0x3fc27628U,0x3fa9d89eU,0x40980000U,0x3e50d0d1U,0x40bb13b1U,0x40af96f9U,0x40520d21U,0x3e1c9c9dU}},
-    {"synth/media:mediaInput", "flip1", "a2d42c5904c8ed663ba030b9190508bc8b421f0dffea5279edcd2bad2b017a15", "207eb7434f4fe18dba9762dceb0cf4b617c9a763515ac0714c03c56e4dd58986", {0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U}},
-    {"synth/media:mediaInput", "flip2", "dd48034fe9bed59bcd2b260c3448a308ccb06b26da051409a54ce77ec4cfc801", "02bdba6820c9945a06ea0868df598b8d5916d4b3b43faac1417f3af643b9b3b8", {0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip3", "3c82bb5a87fc0a4dc7e4ef9e99841c3984303fd705ce60b4b1036179b5b0d408", "022cdf98d6efe10a996524bf294e1a7d7b8c87c19358c3feedd6e474d854ac77", {0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip11", "9f397166eca9f343d59760e2679017e5d716457f5f3c282ed5b15d496e5a3cb7", "278eeed0ebf765e7e0f0efb3aeddb1c8d1e560c0b493912c52b7b0582b3ec29b", {0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip12", "cdf21fae85ca78a566719b978199bdb1b1738e069cdb75aaa9489e85e2f9ef97", "ab4fad538485f56fab55b0295b5bdc76097c10bd171870820030332cdc068107", {0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "flip13", "e5f39ee530b2477e427a9b87e23337674fa868bd7c92358cbf6fa956b8785413", "7c478aabebb382e0c000bc8d6dda59e614b4fa00dee577703411266ac2141520", {0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip14", "54117880e55288379acb6eb906ae4f8e22a8c40d1a761e74402339bef9fde7a4", "fc4e5022caec541600f37d3c92b3018fce470ceb7d9c4f1d44f9a2b1a907f827", {0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "flip15", "b43299dae1f456731538fe936046efa98100367c5808beaf2224bb46d173969c", "2e2fb1bdb52d7a82ba35dbdc49f1e8a4b04b3eb632580a7e67ba718590cb41bd", {0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U}},
-    {"synth/media:mediaInput", "flip16", "af74f97b4c18c12fc2dbb41dcde1812103755cdb504d71fd74364a147dbbfa03", "80d82ee5cef31b4011d6ff3d2e189e5231283a8ebb7cafb4f5a29d6a9b081d31", {0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f87f633U,0x3f466e3eU,0x3e892fc5U,0x3f51d1d2U}},
-    {"synth/media:mediaInput", "flip17", "b14b206a2bd7f92c99969b70c35a26b30149d05287e3a9bd9ca82be3a0f96585", "c06cc2c5c49ef97174fb2188378fbf6ca04322b10117a3394c93a772905ff3ef", {0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x3f9d5185U,0x3f64d3aaU,0x3dfbb5a2U,0x3f33b3b4U}},
-    {"synth/media:mediaInput", "flip18", "eef3575d2818f3d32e29665aa509ac8e80b4474e7c6705748d3b86642e9730f4", "fab5e43463e2562c0e744cec7c55c3e1065d0c19c62f50ff1e5d53e42c04da6d", {0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU}},
-    {"synth/media:mediaInput", "outOfBounds", "dc332bda86b5c5f451ce3844867e9f62a2af15ab683b6e5da859165bab81b572", "12ef692d6c495ab4b84876af5c2ce27c1b5380afac731adb8c81dad74bcabf72", {0x3cf5c28fU,0x3f11eb85U,0x3f68f5c3U,0x3f2147aeU,0x3cf5c28fU,0x3f11eb85U,0x3f68f5c3U,0x3f2147aeU,0x3cf5c28fU,0x3f11eb85U,0x3f68f5c3U,0x3f2147aeU}},
-    {"synth/media:mediaInput", "transparent", "255aa0eeba6b02ace941c1378f9260e4fca0327d50fc2fd68e66be10b8a262cf", "2d266b9690f8fca32871c0b04cf1df5d37c9216129b144c051ab11dee4a57bb5", {0x3f53d3d4U,0x3e149495U,0x3f0f8f90U,0x00000000U,0x3f53d3d4U,0x3e149495U,0x3f0f8f90U,0x00000000U,0x3f53d3d4U,0x3e149495U,0x3f0f8f90U,0x00000000U}},
-    {"synth/media:mediaInput", "scaleZeroGuard", "d265ac74abeb0174b8089a161abbb64310197a86b934cd4dbd36abaa57c2fd37", "d12699ea4e6b0fd408cffa9df747a63672f28379b54c6ec006571f10bbd55fd7", {0x3f0eb044U,0x3fc53ef4U,0x400a7de7U,0x3e74f4f5U,0x3fb45d17U,0x3f000000U,0x3f1745d1U,0x3e848485U,0x4009039bU,0x404d8568U,0x403615a2U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "position0", "7a017bfcfea5f06f95e68a4ab4ca18bd1f26808a448152cfc7479794a2941295", "4943747335a017fc908706cae2864f9a6e23f3b19f5ea1c729584a1b4ddf8081", {0x3e78d0a8U,0x3e332599U,0x3e44905cU,0x3e9e9e9eU,0x3b7dfb04U,0x3ddb9652U,0x3dabf743U,0x3ea8a8a8U,0x3dadcae7U,0x3cf6ac69U,0x3e9fc6ecU,0x3eb2b2b1U}},
+    {"synth/media:mediaInput", "position1", "7e0a0ee1e71ad423db61b514860e8ef097c6879ff91cd1ab51b570941b9f65e8", "fe825ea63ffe458ecb589f996d47fa4c4a24378ddae225398bdf584d735aec2e", {0x3e821bb6U,0x3f33db02U,0x3f22a2a3U,0x3f73f3f4U,0x3ef7ff06U,0x3ef7ff07U,0x3e965c22U,0x3f78f8f8U,0x3f3943cfU,0x3e837a74U,0x3f6f0d24U,0x3f7dfdfdU}},
+    {"synth/media:mediaInput", "position2", "ab0582c53646c15ab662cbeeea9dc60254ace870c63bdde0075397e19e217e36", "8d037480d30162ea2458bb3ed9ebf4ef5c3d7a6d3aeb0c1a0519e12e0b70b4ad", {0x3ee0c0a1U,0x3ef4e8dcU,0x3efaf4eeU,0x3f008081U,0x3d59d2ceU,0x3ebe9873U,0x3ea35e1aU,0x3f058585U,0x3e38b8b9U,0x3e837a72U,0x3e08e94aU,0x3f0a8a8aU}},
+    {"synth/media:mediaInput", "position3", "21e86b9ce0ea961221fe0ecbe9fdcce83dbb7abf5afa0f0af0fa61001a728114", "0ad0fb9049a115cd1bc0e7469f451b77ea6101e8b56b600743b8652d1ae57546", {0x3ec7fb2eU,0x3df0f0f4U,0x3e909091U,0x3f199999U,0x3f0bf55eU,0x3f186630U,0x3d865c33U,0x3f1e9e9eU,0x3d8fbeefU,0x3eec2763U,0x3ef3dac3U,0x3f23a3a4U}},
+    {"synth/media:mediaInput", "position4", "79a63249576cf470127d6ac47cde2a7f9f6f48bb728eac3053d0bee9cd9d13b4", "8908965b141611865971e4bea0e24e9dc0169c60d7854226a2ac3150e52ff5cb", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "position5", "7127bbd8954faa1666bf95d0250ab17051aace5512357af087d054da86524755", "b7a446e81a7630c4bb29b5366d0ce81315490cf833915b60179ecb89401ec498", {0x3f164e06U,0x3eecfd0eU,0x3f27ccf2U,0x3f4acacaU,0x3f4a1b67U,0x3e8f6e4fU,0x3ec053e8U,0x3f4fcfcfU,0x3e2a43deU,0x3db447dcU,0x3da6ed34U,0x3f54d4d5U}},
+    {"synth/media:mediaInput", "position6", "ccb8e44755b57644bd2d75756355615ad790672d3bc873baa44cc0a951a8ce29", "52cd7d49a0f7937b64cef671fa6f64ac283d24c7d50d7bed3f1a735b77919bae", {0x3defdecfU,0x3d33e71bU,0x3c33e71bU,0x3eeeeeefU,0x3e702f6fU,0x3ed5d2d0U,0x3ea5015eU,0x3ef8f8f9U,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
+    {"synth/media:mediaInput", "position7", "80ddaea3c05f47448467c8828c572a364d70fa30054a323e10071b90c8eb450f", "f9f67a594af5dadc97827184242d4c2119f2f014f8337a49cdacb13751c53364", {0x3d9fdf1fU,0x3ce74db5U,0x3bf4e8deU,0x3dd8d8d9U,0x3df8f0eaU,0x3b61c2a5U,0x3db66c23U,0x3e008081U,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
+    {"synth/media:mediaInput", "position8", "c2d5d15d0951a0df47fc7aef500a169d19c5c14bc541143b9e46fb570e8f4fee", "ce0c65440fb4de43fce82e67720de16785adc85274259ebd58c00cfe586fefe9", {0x3e662b72U,0x3ea2b4c7U,0x3e805020U,0x3f28a8a9U,0x3ec6e0fcU,0x3e28e92aU,0x3c2e5c0bU,0x3f2dadaeU,0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU}},
+    {"synth/media:mediaInput", "tiling1", "321654c959a0b3e5e3a80f86c2432256303f6d54ac84c32d19b40555a9e8c115", "a929540fdf2a0fd49bf4fa648b74474eb9b34c9a568a73add6ee5ca8324afb11", {0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU,0x3d36f53cU,0x3d573da8U,0x3e0613abU,0x3e34b4bfU,0x3e4447beU,0x3e25a6a0U,0x3dd1114bU,0x3e66e6d8U}},
+    {"synth/media:mediaInput", "tiling2", "706121da4dfdc9172093acf18480cd4f454d6e96b5683fe8f80d4f6775396aae", "bf5f5cea18b1db259079896522326b15f10d4be7ae6ce775cde5504ab684d702", {0x3efd4187U,0x3ec71565U,0x3eefb67eU,0x3f2cacadU,0x3d36f53cU,0x3d573da8U,0x3e0613abU,0x3e34b4bfU,0x3e4447beU,0x3e25a6a0U,0x3dd1114bU,0x3e66e6d8U}},
+    {"synth/media:mediaInput", "tiling3", "4bcecbd6387f2e22da281d47ef748659bd7c4654226df3b8bf6efbb631559f54", "a41353510851eac59884c121ef77084037fac899921f649f85efd965dab16903", {0x3dae7d56U,0x3e77318fU,0x3ecb923aU,0x3f35c28fU,0x3d36f53cU,0x3d573da8U,0x3e0613abU,0x3e34b4bfU,0x3e4447beU,0x3e25a6a0U,0x3dd1114bU,0x3e66e6d8U}},
+    {"synth/media:mediaInput", "flip1", "99c2768de0f2c2dfeebe2b192ab5c9bf36a44e23edfbd3389937951d72fb1734", "4313513ab6f7fb8f56fd9eb0df720fd0df127826672debe19755e8e0b5679226", {0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U}},
+    {"synth/media:mediaInput", "flip2", "f66bbcee14341bf6f44292ef0d356faf87be1d06fbed479f5cd59092d12ed3d8", "9ac9e7ec94b9756868055029793e34266a4641d4d62b699d76bce89b1a67ce54", {0x3f1b0978U,0x3ee18224U,0x3d780f29U,0x3f33b3b3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
+    {"synth/media:mediaInput", "flip3", "67885b9a48e60b798ba19701433e474f885db1ef7ae9015d8ca0fe5364eb5122", "d037da9dc014534adabb63edef333df1b8338a5e0ce374e6f544cdc7f6d89031", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
+    {"synth/media:mediaInput", "flip11", "a04a511a644d34feb070431c196bfe4f927a889527eb5e2e0aec26f702bf7b7d", "eb969ec2d498fa7aaec87612447500fe15e29779c5c1fb7d372866d209bd82a3", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
+    {"synth/media:mediaInput", "flip12", "2c75ba01b02db27244d8fb63f4bf946d6809ba72563cb2d38c56515140364479", "84c1bb2dd76b89464282fb24544d769cb7039b0a52594824eec7a1ef0d9cc46c", {0x3f1b0978U,0x3ee18224U,0x3d780f29U,0x3f33b3b3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "flip13", "f0caee5a281796550a11b033b9f846a3ba0629e83949b58b992eda32e852185a", "169d45be3448219e3bafe9e117796f478b2a585e6258c2630c74d4ca6ee4e894", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
+    {"synth/media:mediaInput", "flip14", "48657546fb761c1a36158aa3eb2922e9c8087e05484fd36a96e0f11d7efeaf05", "036f1ad0c443124e78760c1706cda5698cd1be03f10880b878649280d9294a90", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "flip15", "2554d23b6b535299f14380543f47da9681f8974e1b9a43862d82ab4a28ae4f87", "15e335c7d5f1fc8731818d6ae0e1539e63ebca0daf62e8cf5dc382af7530e2ae", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3d02a4c7U,0x3db4987dU,0x3dfd9a38U,0x3e74f4f5U}},
+    {"synth/media:mediaInput", "flip16", "aa6e94a5532ae64c72d41cd958814c6a885981f1cd51689e053cee3f6627e58f", "da4fb289cdb043d5e5ec67142974b300d6867089a26cecafa510ae0c2a149221", {0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3f36aa9fU,0x3f054c13U,0x3e384fe8U,0x3f51d1d2U}},
+    {"synth/media:mediaInput", "flip17", "64069d1a07344d4a989da31346480cbc2cc84a28704eafd6de149d82c6d995c3", "ee7922a21dd36cccb47ba5671d8d0c47d4ec9dc8ff3ca7e0d532ea2ce1446c3f", {0x3f1b0978U,0x3ee18224U,0x3d780f29U,0x3f33b3b3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3f1b0978U,0x3ee18224U,0x3d780f27U,0x3f33b3b4U}},
+    {"synth/media:mediaInput", "flip18", "79be76bef18edfb1932b6b27673a7a8e6149c56d42e14f8ce03c4ba9f7b72d79", "67585c6eb1f30b50fcd0b744c3ef074b869fab092538ae302e6b67f0d8aad2df", {0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU,0x3dc151e3U,0x3d0931dcU,0x3d2223a6U,0x3e848485U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
+    {"synth/media:mediaInput", "outOfBounds", "fbd8055e725662d2d4d00c10fc63ad326d5f090d155293283a980a561cbb2ff7", "3b0002e018b563c702998518b7ea94d251abf6181a0d2d94cf02b19dcef64ad2", {0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU,0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU,0x3c9ad42cU,0x3eb7dbf4U,0x3f12c3caU,0x3f2147aeU}},
+    {"synth/media:mediaInput", "transparent", "738c079dff6c9b77a0891ac42db1cabcab933a672b14aed8ecfcf94c0e77bb40", "24045c10c12a89f4c11e3b88ea34558fcdf926a8c1008cd08cc33bc71407c774", {0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U,0x00000000U}},
+    {"synth/media:mediaInput", "scaleZeroGuard", "79a63249576cf470127d6ac47cde2a7f9f6f48bb728eac3053d0bee9cd9d13b4", "8908965b141611865971e4bea0e24e9dc0169c60d7854226a2ac3150e52ff5cb", {0x3d02a4c6U,0x3db4987cU,0x3dfd9a36U,0x3e74f4f3U,0x3dc151e0U,0x3d0931dcU,0x3d2223a4U,0x3e848483U,0x3e29f33eU,0x3e7eecdcU,0x3e61dad5U,0x3e8e8e8fU}},
   }};
   constexpr std::array<std::size_t, 3> pixels{0U, 17U, 34U};
   for (const Task11Case& fixture : fixtures) {
