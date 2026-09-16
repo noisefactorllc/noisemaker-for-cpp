@@ -2,12 +2,6 @@
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
   "byteExactCount": 155,
   "executorRefused": {
-    "classicNoisedeck/cellNoise": "parameter palette selects palette entry 32 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
-    "classicNoisedeck/colorLab": "parameter palette selects palette entry 46 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
-    "classicNoisedeck/fractal": "parameter palette selects palette entry 12 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
-    "classicNoisedeck/noise": "parameter palette selects palette entry 2 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
-    "classicNoisedeck/shapeMixer": "parameter palette selects palette entry 41 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
-    "classicNoisedeck/shapes": "parameter palette selects palette entry 46 and the authority overrides the palette uniforms from its built-in table, which this port has not ported",
     "filter/median": "parameter radius requests compile define RADIUS=3 but the generated route bakes RADIUS=2",
     "filter/wormhole": "scatter is not enabled in Task 6"
   },

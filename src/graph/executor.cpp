@@ -3,6 +3,7 @@
 #include "noisemaker/effects/cpu/worm_overlay.hpp"
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
+#include "noisemaker/graph/generated/classic_noisedeck_palette_table.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/pass_runner.hpp"
 #include "noisemaker/texture_format.hpp"
@@ -707,31 +708,77 @@ void validate_pass_identity_and_output(
 //                  ? paletteData[paletteIndex - 1] : null
 //                if (entry) { uniforms.paletteAmp = entry.slice(0, 3); ... }
 //
-// This port has not yet ported `paletteData` (55 x 16 authority values), so it
-// would bind the plan's own palette uniforms instead. That is invisible at
-// settings whose kernel ignores them and wrong everywhere else, so the route
-// is refused rather than rendered from the wrong values.
+// `paletteData` (55 x 16 authority values) is ported at
+// include/noisemaker/graph/generated/classic_noisedeck_palette_table.hpp,
+// mechanically derived from the authority by
+// docs/port-engineering/palette-override/generate_classic_noisedeck_palette_table.mjs.
+// This function is left owning only the shape check the authority itself
+// performs unconditionally (a compiled plan always carries a value for a
+// declared palette parameter; a hand-built one must not be able to skip that
+// by omission) -- the override itself is applied by
+// apply_classic_noisedeck_palette_override() below, once real uniform
+// bindings exist to overwrite.
 void authenticate_palette_override(const EffectStep& step,
                                    const PassAdmission& admission,
                                    const effects::EffectDefinition& definition) {
   if (definition.name_space != "classicNoisedeck") return;
   for (const auto& declared : definition.parameters) {
     if (declared.type != "palette") continue;
-    const auto* selected = parameter(step, declared.name);
-    if (selected == nullptr) {
-      // As above: unreachable from a compiled plan, refused anyway so the
-      // guard cannot be sidestepped by omission.
+    if (parameter(step, declared.name) == nullptr) {
+      // Unreachable from a compiled plan (it always materializes the
+      // declared default), refused anyway so the guard cannot be sidestepped
+      // by omission.
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "parameter " + declared.name +
                               " selects the palette but the step carries no value for it");
     }
-    const double index = plan_number(selected);
+  }
+}
+
+// Applies the authority's classicNoisedeck palette override to already
+// materialized uniform bindings, mirroring renderer.js's buildBindings()
+// exactly: entry.slice(0,3)/(4,7)/(8,11)/(12,15) become
+// paletteAmp/paletteFreq/paletteOffset/palettePhase, and paletteMode is
+// entry[3] with the authority's 0->3 (rgb) remap. An index that is not a
+// positive integer, or is out of the table's range, selects no entry --
+// exactly like `paletteData[paletteIndex - 1]` being `undefined` in JS -- so
+// the plan's own (already-bound) palette uniforms are left untouched.
+//
+// The table stores full authority double precision and is narrowed to
+// float32 here, at construction of the Vec3/int32 uniform the generated
+// kernel actually reads -- the same single narrowing point the authority's
+// own Vec3-shaped GLSL uniform binding performs.
+void apply_classic_noisedeck_palette_override(
+    glsl::Bindings& bindings, const EffectStep& step,
+    const effects::EffectDefinition& definition) {
+  if (definition.name_space != "classicNoisedeck") return;
+  for (const auto& declared : definition.parameters) {
+    if (declared.type != "palette") continue;
+    const double index = plan_number(parameter(step, declared.name));
     if (!std::isfinite(index) || std::trunc(index) != index || index <= 0.0) return;
-    throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
-                        "parameter " + declared.name + " selects palette entry " +
-                            number_text(index) +
-                            " and the authority overrides the palette uniforms from its"
-                            " built-in table, which this port has not ported");
+    const auto& table = palette_table::kClassicNoisedeckPaletteTable;
+    const auto row = static_cast<std::size_t>(index) - 1U;
+    if (row >= table.size()) return;
+    const auto& entry = table[row];
+    bindings.set_uniform("paletteAmp",
+                         glsl::Vec3(noisemaker::f32(entry.amp[0]),
+                                    noisemaker::f32(entry.amp[1]),
+                                    noisemaker::f32(entry.amp[2])));
+    bindings.set_uniform("paletteFreq",
+                         glsl::Vec3(noisemaker::f32(entry.freq[0]),
+                                    noisemaker::f32(entry.freq[1]),
+                                    noisemaker::f32(entry.freq[2])));
+    bindings.set_uniform("paletteOffset",
+                         glsl::Vec3(noisemaker::f32(entry.offset[0]),
+                                    noisemaker::f32(entry.offset[1]),
+                                    noisemaker::f32(entry.offset[2])));
+    bindings.set_uniform("palettePhase",
+                         glsl::Vec3(noisemaker::f32(entry.phase[0]),
+                                    noisemaker::f32(entry.phase[1]),
+                                    noisemaker::f32(entry.phase[2])));
+    bindings.set_uniform("paletteMode",
+                         static_cast<std::int32_t>(entry.mode == 0 ? 3 : entry.mode));
+    return;
   }
 }
 
@@ -2201,6 +2248,8 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                                                          binding_context);
             materialize_sampler_bindings(bindings, admission, binding_context,
                                          step, pass);
+            apply_classic_noisedeck_palette_override(bindings, step,
+                                                     snapshot.definition);
             auto kernel = bind_factory_route(step, admission, snapshot.definition,
                                              bindings);
             // Render and quantize off-route.  A failed factory or kernel must

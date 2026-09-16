@@ -980,25 +980,32 @@ TEST(graph_executor_honors_runtime_and_adapter_compile_defines_exactly) {
           "d7e1f80a6402b56b58d45158bc9286e9b67535cb9b89264edf253b8593ba72d3");
 }
 
-TEST(graph_executor_fails_closed_on_an_unported_palette_override) {
+TEST(graph_executor_applies_the_ported_classic_noisedeck_palette_override) {
   // buildBindings() overrides a classicNoisedeck effect's palette uniforms
-  // from the authority's built-in table whenever the palette parameter selects
-  // an entry. That table is not ported, so the route is refused instead of
-  // being rendered from the plan's own palette values.
+  // from the authority's built-in table whenever the palette parameter
+  // selects an entry. That table is now ported
+  // (include/noisemaker/graph/generated/classic_noisedeck_palette_table.hpp),
+  // so a valid selection dispatches and renders from the table -- it is no
+  // longer refused.
   Renderer renderer;
-  try {
-    static_cast<void>(renderer.render(
-        "search classicNoisedeck\nshapes(palette: 46).write(o0)\nrender(o0)\n",
-        options(8U, 8U), "palette.dsl"));
-    REQUIRE(false);
-  } catch (const GraphError& error) {
-    REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-    REQUIRE(error.detail() ==
-            "parameter palette selects palette entry 46 and the authority overrides "
-            "the palette uniforms from its built-in table, which this port has not "
-            "ported");
-  }
-  // Palette entry 0 selects no table entry, so the effect still dispatches.
+  // Palette entry 0 selects no table entry (unchanged): the plan's own
+  // palette uniforms are used, matching `paletteData[paletteIndex - 1]`
+  // never being consulted when `paletteIndex <= 0`.
+  REQUIRE(renderer.render(
+              "search classicNoisedeck\nshapes(palette: 0).write(o0)\nrender(o0)\n",
+              options(8U, 8U), "palette.dsl").width() == 8U);
+  // Palette entry 46 selects a real table row and must render -- the value
+  // is pinned against the JS authority via the corpus/oracle lanes
+  // (docs/port-engineering/palette-override/), not re-derived here; this is
+  // a regression pin against silent drift.
+  REQUIRE(rgba8_sha256(renderer.render(
+              "search classicNoisedeck\nshapes(palette: 46).write(o0)\nrender(o0)\n",
+              options(8U, 8U), "palette.dsl")) ==
+          "c623ebc0ff70a67ac65a43d0fd69bb63ef8a9759f3bdd01d59462d02081318b0");
+  // An index a compiled plan could never carry (out of the table's 1..55
+  // range, e.g. from a hand-built plan) selects no entry either, exactly
+  // like the authority's own out-of-bounds `paletteData[...]` access being
+  // `undefined`: the effect still dispatches, from the plan's own uniforms.
   REQUIRE(renderer.render(
               "search classicNoisedeck\nshapes(palette: 0).write(o0)\nrender(o0)\n",
               options(8U, 8U), "palette.dsl").width() == 8U);

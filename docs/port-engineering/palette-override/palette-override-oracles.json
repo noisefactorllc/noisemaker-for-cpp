@@ -1,0 +1,1167 @@
+{
+  "schema": "noisemaker-for-cpu.classic-noisedeck-palette-override.pixel-parity.v1",
+  "width": 17,
+  "height": 11,
+  "cases": [
+    {
+      "name": "cellNoise/entry-0",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 0, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "7c634d8b4bae67abf9e811a6b4f3835483422f9dd830bd31180549a1bad8c75c",
+      "f32_sha256": "c12302ebe57e6ada1545b04cdca6fed3e174f546b41c1467d50cd51f04584238",
+      "first_rgba8_bytes": [
+        140,
+        140,
+        140,
+        255,
+        43,
+        43,
+        43,
+        255,
+        116,
+        116,
+        116,
+        255,
+        57,
+        57,
+        57,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/entry-1",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 0, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "7c634d8b4bae67abf9e811a6b4f3835483422f9dd830bd31180549a1bad8c75c",
+      "f32_sha256": "c12302ebe57e6ada1545b04cdca6fed3e174f546b41c1467d50cd51f04584238",
+      "first_rgba8_bytes": [
+        140,
+        140,
+        140,
+        255,
+        43,
+        43,
+        43,
+        255,
+        116,
+        116,
+        116,
+        255,
+        57,
+        57,
+        57,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/entry-28",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 0, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "7c634d8b4bae67abf9e811a6b4f3835483422f9dd830bd31180549a1bad8c75c",
+      "f32_sha256": "c12302ebe57e6ada1545b04cdca6fed3e174f546b41c1467d50cd51f04584238",
+      "first_rgba8_bytes": [
+        140,
+        140,
+        140,
+        255,
+        43,
+        43,
+        43,
+        255,
+        116,
+        116,
+        116,
+        255,
+        57,
+        57,
+        57,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/entry-32",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 0, palette: 32).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "7c634d8b4bae67abf9e811a6b4f3835483422f9dd830bd31180549a1bad8c75c",
+      "f32_sha256": "c12302ebe57e6ada1545b04cdca6fed3e174f546b41c1467d50cd51f04584238",
+      "first_rgba8_bytes": [
+        140,
+        140,
+        140,
+        255,
+        43,
+        43,
+        43,
+        255,
+        116,
+        116,
+        116,
+        255,
+        57,
+        57,
+        57,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/entry-55",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 0, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "7c634d8b4bae67abf9e811a6b4f3835483422f9dd830bd31180549a1bad8c75c",
+      "f32_sha256": "c12302ebe57e6ada1545b04cdca6fed3e174f546b41c1467d50cd51f04584238",
+      "first_rgba8_bytes": [
+        140,
+        140,
+        140,
+        255,
+        43,
+        43,
+        43,
+        255,
+        116,
+        116,
+        116,
+        255,
+        57,
+        57,
+        57,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/palette-colorMode-entry-32",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 2, palette: 32).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "984de34f9bddf4f553bd03dcf6611b78d3424395b7719ad1d2a069702e709572",
+      "f32_sha256": "8fa3cf2e8a65cfbf0ba3ccd74244c6526a893e2cd4e73c8e83c28581d2a2d506",
+      "first_rgba8_bytes": [
+        60,
+        0,
+        93,
+        255,
+        255,
+        92,
+        255,
+        255,
+        121,
+        0,
+        137,
+        255,
+        255,
+        52,
+        255,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/palette-colorMode-entry-55",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 50, speed: 1, colorMode: 2, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "c1680211bff2a4649e55685d1eef1ebe290d8670016e4eb3d026b7ba3ba63407",
+      "f32_sha256": "f75c0eb0c4bdb491fbaf0180fe69b96040ff2174ee9a40e79d14c0b27ecf4f5d",
+      "first_rgba8_bytes": [
+        255,
+        151,
+        0,
+        255,
+        41,
+        175,
+        159,
+        255,
+        255,
+        249,
+        86,
+        255,
+        93,
+        230,
+        177,
+        255
+      ]
+    },
+    {
+      "name": "cellNoise/non-default-other-params",
+      "effect": "cellNoise",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).cellNoise(shape: 0, scale: 75, cellScale: 87, smooth: 11, paletteMode: 4, seed: 1, tex: none, texInfluence: 2, texIntensity: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, variation: 80, speed: 3, colorMode: 2, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2170337908
+      },
+      "rgba8_sha256": "e4475f884745473568257fb18ec92ffd169ebec5299223811e9d786c09914c9c",
+      "f32_sha256": "21434f1fa0fe074d291250b10d738eaf7b95bcbc3e3e536757f8eaa6dc6f32d8",
+      "first_rgba8_bytes": [
+        31,
+        161,
+        152,
+        255,
+        255,
+        79,
+        0,
+        255,
+        232,
+        255,
+        155,
+        255,
+        255,
+        212,
+        49,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/entry-0",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 2, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "824575c2f6d7b1a96d6cd7827c7c94dd79bd79865a920b8b614b7a4ebcf17737",
+      "f32_sha256": "114c6678eb4a1599c7f63584367e469a1b046e503758540502e3d84872682b0b",
+      "first_rgba8_bytes": [
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/entry-1",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 2, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "824575c2f6d7b1a96d6cd7827c7c94dd79bd79865a920b8b614b7a4ebcf17737",
+      "f32_sha256": "114c6678eb4a1599c7f63584367e469a1b046e503758540502e3d84872682b0b",
+      "first_rgba8_bytes": [
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/entry-28",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 2, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "824575c2f6d7b1a96d6cd7827c7c94dd79bd79865a920b8b614b7a4ebcf17737",
+      "f32_sha256": "114c6678eb4a1599c7f63584367e469a1b046e503758540502e3d84872682b0b",
+      "first_rgba8_bytes": [
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/entry-46",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 2, palette: 46).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "824575c2f6d7b1a96d6cd7827c7c94dd79bd79865a920b8b614b7a4ebcf17737",
+      "f32_sha256": "114c6678eb4a1599c7f63584367e469a1b046e503758540502e3d84872682b0b",
+      "first_rgba8_bytes": [
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/entry-55",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 2, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "824575c2f6d7b1a96d6cd7827c7c94dd79bd79865a920b8b614b7a4ebcf17737",
+      "f32_sha256": "114c6678eb4a1599c7f63584367e469a1b046e503758540502e3d84872682b0b",
+      "first_rgba8_bytes": [
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255,
+        51,
+        170,
+        119,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/palette-colorMode-entry-46",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 4, palette: 46).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "0e8ff405a54b7d9231c5ff987a1cb191e86da44490ad7fd06006f13678adae8f",
+      "f32_sha256": "585bf755e8c7e4a50105b07fd20f7f6c032be8a71da50af3d746ba8885bdd82e",
+      "first_rgba8_bytes": [
+        255,
+        121,
+        0,
+        255,
+        255,
+        121,
+        0,
+        255,
+        255,
+        121,
+        0,
+        255,
+        255,
+        121,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/palette-colorMode-entry-55",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 0, brightness: 0, contrast: 50, hueRange: 100, colorMode: 4, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "5eb7757d491ef82b0a90a411f5e410c0df1cd11213c715a3397fd6d99a8c2747",
+      "f32_sha256": "2dda1f5922bf816e574f128066cbac1bf1f32afa756329f11b2b0c9593446761",
+      "first_rgba8_bytes": [
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "colorLab/non-default-other-params",
+      "effect": "colorLab",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).colorLab(paletteMode: 0, saturation: 0, invert: false, levels: 0, dither: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 40, brightness: 15, contrast: 70, hueRange: 100, colorMode: 4, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 168746864
+      },
+      "rgba8_sha256": "93404985e83ac6ccff4e999e1f94016df16dcbfd1d88fe8ad35a44024ef3a7a1",
+      "f32_sha256": "5f567922a767002974544d964902a01656ce70de64a42e78a303afeca905d2b6",
+      "first_rgba8_bytes": [
+        255,
+        255,
+        0,
+        255,
+        255,
+        255,
+        0,
+        255,
+        255,
+        255,
+        0,
+        255,
+        255,
+        255,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "fractal/entry-0",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 0, offsetX: 70, offsetY: 50, colorMode: 4, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "9809e4825d97297f43d92391d0cb3f221a3ab874d53e15a5ef100682d97a1405",
+      "f32_sha256": "751c4be5101eae976d284aa7853e0e16ed53bba760c0709900752eba7a37bb80",
+      "first_rgba8_bytes": [
+        128,
+        128,
+        128,
+        255,
+        128,
+        128,
+        128,
+        255,
+        119,
+        119,
+        119,
+        255,
+        104,
+        104,
+        104,
+        255
+      ]
+    },
+    {
+      "name": "fractal/entry-1",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 0, offsetX: 70, offsetY: 50, colorMode: 4, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "176b486a0e75dcfc6d39057ca6bd743ff79bee0011a4270faf4c7694c6e5100e",
+      "f32_sha256": "e166056e4f22040130adf52bcaf744fee2186b5a5abf808a9b00202166d85cbc",
+      "first_rgba8_bytes": [
+        49,
+        127,
+        167,
+        255,
+        49,
+        127,
+        167,
+        255,
+        47,
+        139,
+        173,
+        255,
+        44,
+        165,
+        183,
+        255
+      ]
+    },
+    {
+      "name": "fractal/entry-12",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 0, offsetX: 70, offsetY: 50, colorMode: 4, palette: 12).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "6afb87b0ed5b691df80e35692e4759f0fbee6e48ccd70e14c197ffee91cc0f5d",
+      "f32_sha256": "8e3bc25513d8dc845a27010b15495aa8ed7453468e54a126dc39a963a23581dd",
+      "first_rgba8_bytes": [
+        9,
+        9,
+        9,
+        255,
+        9,
+        9,
+        9,
+        255,
+        15,
+        15,
+        15,
+        255,
+        27,
+        27,
+        27,
+        255
+      ]
+    },
+    {
+      "name": "fractal/entry-28",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 0, offsetX: 70, offsetY: 50, colorMode: 4, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "1921d263d8407cea17f56d0b0c250377f73c086aea1057190f6f70a2bb656a78",
+      "f32_sha256": "0fe95a4b24772c71fd4718c56e41169c88a3a19cd92e2449dbf1f50767e89965",
+      "first_rgba8_bytes": [
+        0,
+        2,
+        51,
+        255,
+        0,
+        2,
+        51,
+        255,
+        0,
+        0,
+        50,
+        255,
+        0,
+        0,
+        47,
+        255
+      ]
+    },
+    {
+      "name": "fractal/entry-55",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 0, offsetX: 70, offsetY: 50, colorMode: 4, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "505dc40b226912a331a699144439f09c6c4faceda6c3027d4330fbb518936401",
+      "f32_sha256": "3580b32bcba69de591898903bf20d5a944f3e05a46199246ebfbd58d5f56e35b",
+      "first_rgba8_bytes": [
+        255,
+        208,
+        45,
+        255,
+        255,
+        208,
+        45,
+        255,
+        255,
+        197,
+        36,
+        255,
+        255,
+        175,
+        17,
+        255
+      ]
+    },
+    {
+      "name": "fractal/non-default-other-params",
+      "effect": "fractal",
+      "source": "search classicNoisedeck\nfractal(type: 0, symmetry: 0, zoomAmt: 0, speed: 30, centerX: 0, centerY: 0, mode: 0, iterations: 50, paletteMode: 0, hueRange: 100, levels: 0, bgColor: #000000, bgAlpha: 100, cutoff: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, rotation: 45, offsetX: 20, offsetY: 85, colorMode: 4, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3956202905
+      },
+      "rgba8_sha256": "fc3b76ffb53646b02361e347b5bc6badfb79ebdc83141326f4a57d74cb203a0b",
+      "f32_sha256": "04511daf4e9cd9b90a10af420c9c6425ec215e33dd86b00191f9a9be88edccb9",
+      "first_rgba8_bytes": [
+        0,
+        2,
+        51,
+        255,
+        0,
+        2,
+        51,
+        255,
+        0,
+        0,
+        50,
+        255,
+        0,
+        0,
+        50,
+        255
+      ]
+    },
+    {
+      "name": "noise/entry-0",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 179, hueRange: 25, kaleido: 1, colorMode: 6, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965",
+      "f32_sha256": "209fbe3a41634760bff9b75539e79dbca3a463192bac3377ac3a9bf116d02fbc",
+      "first_rgba8_bytes": [
+        25,
+        169,
+        174,
+        255,
+        3,
+        22,
+        68,
+        255,
+        22,
+        98,
+        160,
+        255,
+        28,
+        53,
+        97,
+        255
+      ]
+    },
+    {
+      "name": "noise/entry-1",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 179, hueRange: 25, kaleido: 1, colorMode: 6, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965",
+      "f32_sha256": "209fbe3a41634760bff9b75539e79dbca3a463192bac3377ac3a9bf116d02fbc",
+      "first_rgba8_bytes": [
+        25,
+        169,
+        174,
+        255,
+        3,
+        22,
+        68,
+        255,
+        22,
+        98,
+        160,
+        255,
+        28,
+        53,
+        97,
+        255
+      ]
+    },
+    {
+      "name": "noise/entry-2",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 179, hueRange: 25, kaleido: 1, colorMode: 6, palette: 2).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965",
+      "f32_sha256": "209fbe3a41634760bff9b75539e79dbca3a463192bac3377ac3a9bf116d02fbc",
+      "first_rgba8_bytes": [
+        25,
+        169,
+        174,
+        255,
+        3,
+        22,
+        68,
+        255,
+        22,
+        98,
+        160,
+        255,
+        28,
+        53,
+        97,
+        255
+      ]
+    },
+    {
+      "name": "noise/entry-28",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 179, hueRange: 25, kaleido: 1, colorMode: 6, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965",
+      "f32_sha256": "209fbe3a41634760bff9b75539e79dbca3a463192bac3377ac3a9bf116d02fbc",
+      "first_rgba8_bytes": [
+        25,
+        169,
+        174,
+        255,
+        3,
+        22,
+        68,
+        255,
+        22,
+        98,
+        160,
+        255,
+        28,
+        53,
+        97,
+        255
+      ]
+    },
+    {
+      "name": "noise/entry-55",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 179, hueRange: 25, kaleido: 1, colorMode: 6, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "30a26e6596142279a4bd9ffbae60e53788cdb6e257fd192182d5e13c60af3965",
+      "f32_sha256": "209fbe3a41634760bff9b75539e79dbca3a463192bac3377ac3a9bf116d02fbc",
+      "first_rgba8_bytes": [
+        25,
+        169,
+        174,
+        255,
+        3,
+        22,
+        68,
+        255,
+        22,
+        98,
+        160,
+        255,
+        28,
+        53,
+        97,
+        255
+      ]
+    },
+    {
+      "name": "noise/non-default-other-params",
+      "effect": "noise",
+      "source": "search classicNoisedeck\nnoise(type: 10, octaves: 2, xScale: 75, yScale: 75, ridges: false, wrap: true, seed: 1, refractMode: 2, refractAmt: 0, loopOffset: 300, loopScale: 75, speed: 25, metric: 0, paletteMode: 3, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, hueRotation: 60, hueRange: 90, kaleido: 3, colorMode: 6, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2396922987
+      },
+      "rgba8_sha256": "3115c5bed189bf93611e9978a11b9796cdac4cb8c5464945bb98a4f6f1dc2393",
+      "f32_sha256": "1600f10ee069b240f0be8d65746b19b149c7ebd2454bc152ef6d6148f7aedd83",
+      "first_rgba8_bytes": [
+        158,
+        44,
+        44,
+        255,
+        83,
+        34,
+        26,
+        255,
+        43,
+        71,
+        58,
+        255,
+        37,
+        61,
+        47,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/entry-0",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 80, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "a1323601bb078a54cf9146bbe61c9ce26d95563e0991e2eea155b04adbbe5126",
+      "f32_sha256": "0787bcb3d3f1faff68f5cfb7abd663aa9639a780117bc3912aad9df13046db8e",
+      "first_rgba8_bytes": [
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/entry-1",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 80, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "9ca49a82e704f5991eddc9c90372af71de1fb950f8fb970610c326267e6b4ef1",
+      "f32_sha256": "a992adbdcd2634db45ff6ace43de0398b48b25106e5ea4a2ef1d6b7aa7752cdc",
+      "first_rgba8_bytes": [
+        101,
+        255,
+        226,
+        255,
+        101,
+        255,
+        226,
+        255,
+        101,
+        255,
+        226,
+        255,
+        101,
+        255,
+        226,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/entry-28",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 80, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "c859e7b397648d68baf59f5d44de68a0fc8848d0a8fe63120224eb8a120e7f01",
+      "f32_sha256": "f0ae6300c0cc525708627c6b24a136d3651174c036f9eaad8d858842ef57033f",
+      "first_rgba8_bytes": [
+        18,
+        0,
+        31,
+        255,
+        18,
+        0,
+        31,
+        255,
+        18,
+        0,
+        31,
+        255,
+        18,
+        0,
+        31,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/entry-41",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 80, palette: 41).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "a1323601bb078a54cf9146bbe61c9ce26d95563e0991e2eea155b04adbbe5126",
+      "f32_sha256": "0787bcb3d3f1faff68f5cfb7abd663aa9639a780117bc3912aad9df13046db8e",
+      "first_rgba8_bytes": [
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255,
+        185,
+        26,
+        50,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/entry-55",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 80, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "5eb7757d491ef82b0a90a411f5e410c0df1cd11213c715a3397fd6d99a8c2747",
+      "f32_sha256": "2dda1f5922bf816e574f128066cbac1bf1f32afa756329f11b2b0c9593446761",
+      "first_rgba8_bytes": [
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "shapeMixer/non-default-other-params",
+      "effect": "shapeMixer",
+      "source": "search synth, classicNoisedeck\nsolid(color: #3a7).shapeMixer(tex: none, blendMode: 2, wrap: true, seed: 1, animate: 1, paletteMode: 0, levels: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopOffset: 10, loopScale: 40, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 3115229185
+      },
+      "rgba8_sha256": "5eb7757d491ef82b0a90a411f5e410c0df1cd11213c715a3397fd6d99a8c2747",
+      "f32_sha256": "2dda1f5922bf816e574f128066cbac1bf1f32afa756329f11b2b0c9593446761",
+      "first_rgba8_bytes": [
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255,
+        248,
+        8,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "shapes/entry-0",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 1, speedA: 50, palette: 0).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "8e745563ee031e3a77885b8d01fa929b4c0f2bdf70c6b3bd74664d480decc868",
+      "f32_sha256": "1ad171c2409b55ba9f7eebbe580e9dd08ce144efbb4e218ab3b695e989a34189",
+      "first_rgba8_bytes": [
+        255,
+        156,
+        88,
+        255,
+        85,
+        128,
+        214,
+        255,
+        146,
+        237,
+        255,
+        255,
+        119,
+        41,
+        106,
+        255
+      ]
+    },
+    {
+      "name": "shapes/entry-1",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 1, speedA: 50, palette: 1).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "36630fccc8aabca9c6e84553adecf2dddfa856b35fc117e6a052ca85952acfcc",
+      "f32_sha256": "029ccd01e9989cfb0d6c55413d45b18c67aa5b939d7ebc77d4f5c93543ccc753",
+      "first_rgba8_bytes": [
+        255,
+        255,
+        154,
+        255,
+        86,
+        59,
+        128,
+        255,
+        242,
+        36,
+        55,
+        255,
+        47,
+        221,
+        202,
+        255
+      ]
+    },
+    {
+      "name": "shapes/entry-28",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 1, speedA: 50, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "8a75794338f2cb2c407090c016724b696bc5a5b08f46ebb849d6dfc84709d16d",
+      "f32_sha256": "2e16a4b5b68f3c143d66ab87a4d8006f0f7f4f9cf81ca6caac3076785d17cd77",
+      "first_rgba8_bytes": [
+        255,
+        53,
+        38,
+        255,
+        19,
+        34,
+        61,
+        255,
+        175,
+        106,
+        73,
+        255,
+        0,
+        0,
+        41,
+        255
+      ]
+    },
+    {
+      "name": "shapes/entry-46",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 1, speedA: 50, palette: 46).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "cc5688ad75b8d1afef279227a4fa1cb4454a830a0a2000bae2c2bc570790c917",
+      "f32_sha256": "0b39bb32ead33dd6dc46c672e75c69139d5ffceb56d8b8c56bbd83dacf8cc7d0",
+      "first_rgba8_bytes": [
+        53,
+        94,
+        159,
+        255,
+        255,
+        243,
+        0,
+        255,
+        229,
+        255,
+        0,
+        255,
+        255,
+        173,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "shapes/entry-55",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 1, speedA: 50, palette: 55).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "79d35eabf5a88db7a4231903cef11ad34a7ba80184f99bcb485c14ab8021ac48",
+      "f32_sha256": "5c568bd0bcb35ce26f0c05e7faaf2d3b4e9f7f41db396ffac41ebc0e42c5cfe1",
+      "first_rgba8_bytes": [
+        14,
+        0,
+        0,
+        255,
+        255,
+        255,
+        104,
+        255,
+        160,
+        255,
+        179,
+        255,
+        255,
+        126,
+        0,
+        255
+      ]
+    },
+    {
+      "name": "shapes/non-default-other-params",
+      "effect": "shapes",
+      "source": "search classicNoisedeck\nshapes(loopBOffset: 30, loopBScale: 1, speedB: 50, seed: 1, wrap: true, paletteMode: 0, cyclePalette: 1, rotatePalette: 0, repeatPalette: 1, loopAOffset: 40, loopAScale: 2, speedA: 80, palette: 28).write(o0)\nrender(o0)\n",
+      "options": {
+        "time": 0.25,
+        "seed": 2214277204
+      },
+      "rgba8_sha256": "241c81f17a56cf58dcd29d8e10b664101da5cc55dde24796004753940b343930",
+      "f32_sha256": "054d19af71cdfe49179b9dbc89c2ff4dc1fc45d9509f23914841f56954fe16f7",
+      "first_rgba8_bytes": [
+        218,
+        26,
+        33,
+        255,
+        250,
+        127,
+        74,
+        255,
+        255,
+        135,
+        70,
+        255,
+        11,
+        29,
+        59,
+        255
+      ]
+    }
+  ]
+}
