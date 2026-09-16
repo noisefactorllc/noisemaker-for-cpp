@@ -17,6 +17,7 @@ add_library(noisemaker-cpu
   src/surface.cpp
   src/numeric.cpp
   src/fdlibm.cpp
+  src/fdlibm_off.cpp
   src/sampler.cpp
   src/texture_format.cpp
   src/png.cpp
@@ -78,6 +79,31 @@ set_source_files_properties(
 target_compile_options(noisemaker-cpu PUBLIC
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-ffp-contract=off>
 )
+# fdlibm.cpp is the one file that must NOT build under -ffp-contract=off.
+# It is a line-for-line transcription of V8's own src/base/ieee754.cc, and
+# V8's shipped binary on FMA-capable hardware (arm64 NEON always has FMA;
+# x86-64 needs -mfma) contains FMA-contracted arithmetic in exactly these
+# polynomial evaluations -- reproducing V8's bits exactly therefore
+# requires reproducing that contraction, not disabling it. Overriding the
+# PUBLIC -ffp-contract=off above with a per-source COMPILE_OPTIONS is safe
+# here specifically because this project's baseline has no -march/-mfma
+# anywhere (grep this file): on x86-64 without -mfma there is no hardware
+# fused-multiply-add instruction for -ffp-contract=fast to select, so on
+# that architecture the flag is a byte-for-byte no-op and this TU compiles
+# identically to -ffp-contract=off -- matching V8's own x86-64 binary,
+# which is equally built at the ordinary (non-FMA) baseline. On arm64 the
+# flag lets the backend fuse, matching V8's own arm64 binary. Both halves
+# of that claim are verified by exhaustive differential testing on both
+# architectures, not assumed -- see
+# docs/port-engineering/v8-math/v8-math-report.md. A per-source
+# COMPILE_OPTIONS is appended after the target-level flags in the compiler
+# invocation, and the LAST occurrence of a repeated -ffp-contract= flag
+# wins for both Clang and GCC, so this override is effective; the pinning
+# test in tests/test_fdlibm_contract_pin.cpp fails loudly (by comparing
+# this TU's actual codegen behavior, not just re-reading this comment) if
+# a future refactor ever changes that.
+set_source_files_properties(src/fdlibm.cpp PROPERTIES COMPILE_OPTIONS
+  "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-ffp-contract=fast>")
 # Warnings stay PRIVATE: they are this project's discipline, not a consumer's.
 target_compile_options(noisemaker-cpu PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror>
@@ -144,6 +170,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
   tests/test_snow_kernel.cpp
+  tests/test_fdlibm_contract_pin.cpp
 )
 target_link_libraries(noisemaker-cpu-tests PRIVATE noisemaker-cpu ZLIB::ZLIB)
 target_compile_options(noisemaker-cpu-tests PRIVATE

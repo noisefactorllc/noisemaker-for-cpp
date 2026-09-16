@@ -50,27 +50,37 @@ template <std::size_t N, class Function>
 }  // namespace detail
 
 [[nodiscard]] inline float abs(double value) { return noisemaker::f32(std::fabs(value)); }
-[[nodiscard]] inline float atan(double value) { return noisemaker::f32(std::atan(value)); }
-[[nodiscard]] inline float atan(double y, double x) { return noisemaker::f32(std::atan2(y, x)); }
-// cos/exp/sin/tanh route through noisemaker::fdlibm — a bit-exact port of the
-// fdlibm routines V8 itself uses for Math.cos/exp/sin/tanh (V8's
-// src/base/ieee754.cc), rather than the platform std:: implementation.
-// std:: is "accurate" but not required to be correctly-rounded and measurably
-// disagrees with V8 in the last bit on a large fraction of doubles (measured:
-// tanh 4.27%, exp 5.81%, sin 2.71%, cos 2.64% divergent over a 403k-point
-// adversarial sweep — see noisemaker-for-cpp-sdd/fdlibm/fdlibm-report.md).
-// The fdlibm port reduces that to 0.008%-0.39% (worst case 3 ULP) under this
-// project's mandatory -ffp-contract=off; see the report for the diagnosed
-// root cause of that residual (traced to V8's own binary containing
-// FMA-contracted arithmetic on FMA-capable hardware, not a port defect) and
-// why hand-placed std::fma() was deliberately not used to chase it further.
+[[nodiscard]] inline float atan(double value) { return noisemaker::f32(noisemaker::fdlibm::atan(value)); }
+[[nodiscard]] inline float atan(double y, double x) { return noisemaker::f32(noisemaker::fdlibm::atan2(y, x)); }
+[[nodiscard]] inline float asin(double value) { return noisemaker::f32(noisemaker::fdlibm::asin(value)); }
+[[nodiscard]] inline float acos(double value) { return noisemaker::f32(noisemaker::fdlibm::acos(value)); }
+[[nodiscard]] inline float tan(double value) { return noisemaker::f32(noisemaker::fdlibm::tan(value)); }
+// atan/atan2/asin/acos/tan/cos/exp/log/log2/pow/tanh all route through
+// noisemaker::fdlibm -- the single math layer that reproduces V8's Math.*
+// bit-for-bit on both arm64 and x86-64. See include/noisemaker/fdlibm.hpp
+// for the per-function provenance (which come from V8's own
+// src/base/ieee754.cc fdlibm port, which from V8's live math::pow
+// wrapper) and docs/port-engineering/v8-math/v8-math-report.md for the
+// differential evidence. std:: is "accurate" but not required to be
+// correctly-rounded and measurably disagrees with V8 in the last bit on a
+// large fraction of doubles -- do not reintroduce a bare std:: call for
+// any transcendental; tests/test_no_raw_transcendentals.py greps for one
+// reappearing on a render path.
 // Math.ceil and std::ceil agree on every finite double, so this needs no
-// fdlibm shim -- unlike cos/exp/sin/tanh above.
+// fdlibm shim -- unlike the transcendentals above. Same for sqrt below
+// (IEEE-754 correctly-rounded on both sides already).
 [[nodiscard]] inline float ceil(double value) { return noisemaker::f32(std::ceil(value)); }
 [[nodiscard]] inline float cos(double value) { return noisemaker::f32(noisemaker::fdlibm::cos(value)); }
 [[nodiscard]] inline float exp(double value) { return noisemaker::f32(noisemaker::fdlibm::exp(value)); }
 [[nodiscard]] inline float floor(double value) { return noisemaker::f32(std::floor(value)); }
-[[nodiscard]] inline float pow(double base, double exponent) { return noisemaker::f32(std::pow(base, exponent)); }
+[[nodiscard]] inline float log(double value) { return noisemaker::f32(noisemaker::fdlibm::log(value)); }
+[[nodiscard]] inline float log2(double value) { return noisemaker::f32(noisemaker::fdlibm::log2(value)); }
+[[nodiscard]] inline float pow(double base, double exponent) { return noisemaker::f32(noisemaker::fdlibm::pow(base, exponent)); }
+// GLSL's exp2(x) is Math.pow(2, x) in the authority (glsl-runtime.js), NOT
+// a dedicated exp2 Math builtin -- route through the same pow() wrapper
+// above so the y==2/y==0.5 special cases and std::pow fallback match V8
+// identically.
+[[nodiscard]] inline float exp2(double value) { return glsl::pow(2.0, value); }
 [[nodiscard]] inline float radians(double degrees) { return noisemaker::f32(degrees * 0.017453292519943295); }
 [[nodiscard]] inline float sign(double value) {
   return value > 0.0 ? 1.0f : (value < 0.0 ? -1.0f : 0.0f);
@@ -89,9 +99,15 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> name(const Vec<N,floa
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> name(const FloatExpr<N>& value) { return glsl::name(Vec<N,float>(value)); }
 NOISEMAKER_GLSL_UNARY_VECTOR(abs)
 NOISEMAKER_GLSL_UNARY_VECTOR(atan)
+NOISEMAKER_GLSL_UNARY_VECTOR(asin)
+NOISEMAKER_GLSL_UNARY_VECTOR(acos)
+NOISEMAKER_GLSL_UNARY_VECTOR(tan)
 NOISEMAKER_GLSL_UNARY_VECTOR(cos)
 NOISEMAKER_GLSL_UNARY_VECTOR(exp)
+NOISEMAKER_GLSL_UNARY_VECTOR(exp2)
 NOISEMAKER_GLSL_UNARY_VECTOR(floor)
+NOISEMAKER_GLSL_UNARY_VECTOR(log)
+NOISEMAKER_GLSL_UNARY_VECTOR(log2)
 NOISEMAKER_GLSL_UNARY_VECTOR(radians)
 NOISEMAKER_GLSL_UNARY_VECTOR(sign)
 NOISEMAKER_GLSL_UNARY_VECTOR(sin)

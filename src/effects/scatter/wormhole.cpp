@@ -8,6 +8,7 @@
 #include <stdexcept>
 
 #include "noisemaker/effects/scatter/registry.hpp"
+#include "noisemaker/fdlibm.hpp"
 
 namespace noisemaker::scatter::wormhole {
 namespace {
@@ -28,9 +29,9 @@ constexpr double kPi = 3.141592653589793;  // identical double to JS Math.PI
   const double m = add(add(mul(f32r(0.2119034982), r), mul(f32r(0.6806995451), g)), mul(f32r(0.1073969566), b));
   const double s = add(add(mul(f32r(0.0883024619), r), mul(f32r(0.2817188376), g)), mul(f32r(0.6299787005), b));
   const double exponent = divd(1.0, 3.0);
-  const double lr = f32r(std::pow(std::max(l, 0.0), exponent));
-  const double mr = f32r(std::pow(std::max(m, 0.0), exponent));
-  const double sr = f32r(std::pow(std::max(s, 0.0), exponent));
+  const double lr = f32r(fdlibm::pow(std::max(l, 0.0), exponent));
+  const double mr = f32r(fdlibm::pow(std::max(m, 0.0), exponent));
+  const double sr = f32r(fdlibm::pow(std::max(s, 0.0), exponent));
   return add(add(mul(f32r(0.2104542553), lr), mul(f32r(0.793617785), mr)), mul(f32r(-0.0040720468), sr));
 }
 
@@ -65,12 +66,12 @@ constexpr double kPi = 3.141592653589793;  // identical double to JS Math.PI
   const double sign = ((bits & 0x8000u) == 0u) ? 1.0 : -1.0;
   const int exponent = (bits >> 10) & 0x1f;
   const int fraction = bits & 0x3ff;
-  if (exponent == 0) return static_cast<float>(sign * static_cast<double>(fraction) * std::pow(2.0, -24.0));
+  if (exponent == 0) return static_cast<float>(sign * static_cast<double>(fraction) * fdlibm::pow(2.0, -24.0));
   if (exponent == 0x1f) {
     if (fraction == 0) return sign > 0.0 ? std::numeric_limits<float>::infinity() : -std::numeric_limits<float>::infinity();
     return std::numeric_limits<float>::quiet_NaN();
   }
-  return static_cast<float>(sign * (1.0 + static_cast<double>(fraction) / 1024.0) * std::pow(2.0, static_cast<double>(exponent - 15)));
+  return static_cast<float>(sign * (1.0 + static_cast<double>(fraction) / 1024.0) * fdlibm::pow(2.0, static_cast<double>(exponent - 15)));
 }
 // A real rgba16f store: truncating (round-toward-zero mantissa truncation,
 // not round-to-nearest), matching texture-format.js's
@@ -131,8 +132,8 @@ void run_deposit(const Surface& input, Surface& destination, const Uniforms& uni
 
       const double lightness = oklab_lightness(input_data[source_offset], input_data[source_offset + 1], input_data[source_offset + 2]);
       const double angle = add(mul(mul(lightness, f32r(kTau)), f32r(kink)), rotation);
-      const double offset_x = mul(add(f32r(std::cos(angle)), 1.0), f32r(pixel_stride));
-      const double offset_y = mul(add(f32r(std::sin(angle)), 1.0), f32r(pixel_stride));
+      const double offset_x = mul(add(f32r(fdlibm::cos(angle)), 1.0), f32r(pixel_stride));
+      const double offset_y = mul(add(f32r(fdlibm::sin(angle)), 1.0), f32r(pixel_stride));
 
       std::int64_t destination_x = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_x), offset_x)));
       std::int64_t destination_y = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_y), offset_y)));

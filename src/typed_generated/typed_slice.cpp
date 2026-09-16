@@ -3357,7 +3357,7 @@ struct State final : KernelState {
     [[maybe_unused]] const double m = (m1 * m1 * m1);
     [[maybe_unused]] const double s = (s1 * s1 * s1);
     [[maybe_unused]] const auto linear_to_srgb_number = [](double value) noexcept {
-      return value <= 0.0031308 ? value * 12.92 : 1.055 * std::pow(value, 1.0 / 2.4) - 0.055;
+      return value <= 0.0031308 ? value * 12.92 : 1.055 * noisemaker::fdlibm::pow(value, 1.0 / 2.4) - 0.055;
     };
     adapter_color[0] = noisemaker::f32(linear_to_srgb_number(4.0767245293 * l - 3.3072168827 * m + 0.2307590544 * s));
     adapter_color[1] = noisemaker::f32(linear_to_srgb_number(-1.2681437731 * l + 2.6093323231 * m - 0.341134429 * s));
@@ -15948,7 +15948,7 @@ struct PaletteEntry final {
     double value) noexcept {
   return value <= 0.0031308
       ? value * 12.92
-      : (1.055 * std::pow(value, 1.0 / 2.4)) - 0.055;
+      : (1.055 * noisemaker::fdlibm::pow(value, 1.0 / 2.4)) - 0.055;
 }
 
 struct State final : KernelState {
@@ -26221,7 +26221,7 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
     iteration = static_cast<double>(julia_f32(iteration + 1.0));
     if (frequency > 0.0) {
       const float stripeAngle = julia_f32(
-          frequency * std::atan2(static_cast<double>(imHigh),
+          frequency * noisemaker::fdlibm::atan2(static_cast<double>(imHigh),
                                  static_cast<double>(reHigh)));
       const float stripeHalf = julia_f32(
           0.5 * noisemaker::fdlibm::sin(static_cast<double>(stripeAngle)));
@@ -26230,12 +26230,12 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
       stripeCount = julia_add(stripeCount, 1.0F);
     }
     double trapDistance = 0.0;
-    if (trapShape == 0) trapDistance = std::hypot(static_cast<double>(reHigh),
+    if (trapShape == 0) trapDistance = noisemaker::fdlibm::hypot(static_cast<double>(reHigh),
                                                    static_cast<double>(imHigh));
     else if (trapShape == 1) trapDistance = julia_number_min(
         std::fabs(static_cast<double>(reHigh)),
         std::fabs(static_cast<double>(imHigh)));
-    else trapDistance = std::fabs(std::hypot(static_cast<double>(reHigh),
+    else trapDistance = std::fabs(noisemaker::fdlibm::hypot(static_cast<double>(reHigh),
                                               static_cast<double>(imHigh)) - 1.0);
     trapMin = julia_number_min(trapMin, trapDistance);
     period += 1;
@@ -26244,7 +26244,7 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
       slowX = static_cast<double>(reHigh);
       slowY = static_cast<double>(imHigh);
     }
-    else if (std::hypot(static_cast<double>(reHigh) - static_cast<double>(slowX),
+    else if (noisemaker::fdlibm::hypot(static_cast<double>(reHigh) - static_cast<double>(slowX),
                        static_cast<double>(imHigh) - static_cast<double>(slowY)) < 1e-10) {
       iteration = static_cast<double>(maxIterations);
       break;
@@ -26263,8 +26263,8 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
 [[nodiscard]] double outputSmoothIteration(const JuliaResultNative& r,
                                            double maxIter) noexcept {
   if (r.iter >= maxIter) return 0.0;
-  const double logMagnitude = std::log(r.zMag2) * 0.5;
-  const double nu = std::log(logMagnitude / 0.6931471805599453)
+  const double logMagnitude = noisemaker::fdlibm::log(r.zMag2) * 0.5;
+  const double nu = noisemaker::fdlibm::log(logMagnitude / 0.6931471805599453)
                     / 0.6931471805599453;
   return julia_clamp((r.iter + 1.0 - nu) / maxIter);
 }
@@ -26274,7 +26274,7 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
   const double magnitude = std::sqrt(r.zMag2);
   const double derivative = std::sqrt(r.dzMag2);
   if (derivative < 1e-10) return 0.0;
-  return julia_clamp(std::log(2.0 * magnitude * std::log(magnitude)
+  return julia_clamp(noisemaker::fdlibm::log(2.0 * magnitude * noisemaker::fdlibm::log(magnitude)
                               / derivative + 1.0) * 2.0);
 }
 [[nodiscard]] double outputStripeAverage(const JuliaResultNative& r,
@@ -26283,8 +26283,8 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
   const double average = r.stripeSum / r.stripeCount;
   const double previous = r.stripeCount > 1.0
       ? (r.stripeSum - r.stripeLast) / (r.stripeCount - 1.0) : average;
-  const double logMagnitude = std::log(r.zMag2) * 0.5;
-  const double nu = std::log(logMagnitude / 0.6931471805599453)
+  const double logMagnitude = noisemaker::fdlibm::log(r.zMag2) * 0.5;
+  const double nu = noisemaker::fdlibm::log(logMagnitude / 0.6931471805599453)
                     / 0.6931471805599453;
   const double amount = julia_clamp(1.0 - nu + std::floor(nu));
   const double mixed = previous * (1.0 - amount) + average * amount;
@@ -26315,12 +26315,12 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
   const double up = iterateSmooth(state, fragX, fragY + 1.0,
                                   c, maxIterations, zoom);
   double nx = right - base; double ny = up - base; double nz = 0.05;
-  double magnitude = std::hypot(nx, ny, nz);
+  double magnitude = noisemaker::fdlibm::hypot(nx, ny, nz);
   nx /= magnitude; ny /= magnitude; nz /= magnitude;
   const double rad = angle * 6.28318530718 / 360.0;
   double lx = noisemaker::fdlibm::cos(rad);
   double ly = noisemaker::fdlibm::sin(rad); double lz = 0.7;
-  magnitude = std::hypot(lx, ly, lz);
+  magnitude = noisemaker::fdlibm::hypot(lx, ly, lz);
   lx /= magnitude; ly /= magnitude; lz /= magnitude;
   return julia_clamp(julia_number_max(nx * lx + ny * ly + nz * lz, 0.0));
 }
@@ -26329,9 +26329,9 @@ void transformCoords(const State& state, double fragX, double fragY, double zoom
   if (state.zoomSpeed > 0.0) {
     const double phase = 0.5 * (1.0 - noisemaker::fdlibm::cos(
         state.time * state.zoomSpeed * 6.28318530718));
-    return std::pow(10.0, state.zoomDepth * phase);
+    return noisemaker::fdlibm::pow(10.0, state.zoomDepth * phase);
   }
-  return std::pow(10.0, state.zoomDepth);
+  return noisemaker::fdlibm::pow(10.0, state.zoomDepth);
 }
 
 void main(const State& state, const glsl::PixelContext& context,
@@ -26814,8 +26814,8 @@ void mandelbrot_df64([[maybe_unused]] const State& state, [[maybe_unused]] const
   trapMin = trap;
   [[maybe_unused]] double mag2 = glsl::dot(z_final, z_final);
   if ((i < float(maxIter)) && (mag2 > static_cast<float>(1.0))) {
-    [[maybe_unused]] double log_zn = (static_cast<double>(noisemaker::f32(std::log(mag2))) * static_cast<double>(static_cast<float>(0.5)));
-    [[maybe_unused]] double nu = (static_cast<double>(noisemaker::f32(std::log((static_cast<double>(log_zn) / static_cast<double>(LOG2))))) / static_cast<double>(LOG2));
+    [[maybe_unused]] double log_zn = (static_cast<double>(glsl::log(mag2)) * static_cast<double>(static_cast<float>(0.5)));
+    [[maybe_unused]] double nu = (static_cast<double>(glsl::log((static_cast<double>(log_zn) / static_cast<double>(LOG2)))) / static_cast<double>(LOG2));
     smoothIter = (static_cast<double>((static_cast<double>(i) + static_cast<double>(static_cast<float>(1.0)))) - static_cast<double>(nu));
   } else {
     smoothIter = i;
@@ -26831,7 +26831,7 @@ void mandelbrot_df64([[maybe_unused]] const State& state, [[maybe_unused]] const
   if (dmag == static_cast<float>(0.0)) {
     return static_cast<float>(0.0);
   }
-  [[maybe_unused]] double dist = (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(mag))) * static_cast<double>(noisemaker::f32(std::log(mag))))) / static_cast<double>(dmag));
+  [[maybe_unused]] double dist = (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(mag))) * static_cast<double>(glsl::log(mag)))) / static_cast<double>(dmag));
   return glsl::clamp((static_cast<double>(glsl::sqrt((static_cast<double>(dist) * static_cast<double>(float(maxIter))))) * static_cast<double>(static_cast<float>(0.5))), static_cast<float>(0.0), static_cast<float>(1.0));
 }
 
@@ -27605,7 +27605,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double smoothIter = iter;
   if (((convergedRoot >= std::int32_t(0)) && (convergeDist > static_cast<float>(0.0))) && (convergeDist < state.tolerance)) {
-    smoothIter = (static_cast<double>(iter) - static_cast<double>(noisemaker::f32(std::log2((static_cast<double>(noisemaker::f32(std::log(convergeDist))) / static_cast<double>(noisemaker::f32(std::log(state.tolerance))))))));
+    smoothIter = (static_cast<double>(iter) - static_cast<double>(glsl::log2((static_cast<double>(glsl::log(convergeDist)) / static_cast<double>(glsl::log(state.tolerance))))));
   }
   [[maybe_unused]] double value = static_cast<float>(0.0);
   [[maybe_unused]] double maxIterF = float(maxIter);

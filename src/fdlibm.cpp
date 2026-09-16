@@ -1,10 +1,10 @@
 // fdlibm.cpp — implementation. See fdlibm.hpp for why this exists.
 //
 // This is a line-for-line transcription of V8's src/base/ieee754.cc
-// (checked against a fresh fetch of that file, commit reachable from
-// https://github.com/v8/v8/blob/master/src/base/ieee754.cc as of
-// 2026-08-12; a verbatim copy is kept alongside this file as
-// v8_ieee754_reference.cc for audit), which is itself adapted from Sun
+// (checked against a fresh fetch of the EXACT V8 tag this environment's
+// Node reports -- 14.6.202.33-node.19 -- see
+// docs/port-engineering/v8-math/v8_ieee754_reference.cc, and the pow/hypot
+// provenance notes in fdlibm.hpp), which is itself adapted from Sun
 // Microsystems' fdlibm:
 //
 // ====================================================
@@ -20,11 +20,14 @@
 // under a BSD-style license (V8 is BSD-licensed; the fdlibm portions carry
 // the original Sun notice above per V8's own file header).
 //
-// Only the pieces the C++ runtime needs are ported: expm1, exp, tanh, sin,
-// cos, and the internal argument-reduction machinery sin/cos require
-// (__ieee754_rem_pio2, __kernel_rem_pio2, __kernel_sin, __kernel_cos).
-// V8's own __kernel_tan / tan / other transcendentals are not ported —
-// they were not in scope for this pass (see fdlibm-report.md).
+// Ported: expm1, exp, tanh, sin, cos, tan, asin, acos, atan, atan2, log,
+// log2, pow (V8's live math::pow wrapper, not the retired fdlibm pow), and
+// hypot (V8's own Torque algorithm, not an fdlibm one) -- plus the internal
+// argument-reduction machinery sin/cos/tan require (__ieee754_rem_pio2,
+// __kernel_rem_pio2, __kernel_sin, __kernel_cos, __kernel_tan) and log2's
+// k_log1p kernel. See fdlibm.hpp for the per-function provenance (which of
+// these come from base::ieee754::*, which from v8::internal::math::*, and
+// which from a Torque builtin).
 //
 // Word-access macros are translated to functions using std::bit_cast
 // (C++20), which is well-defined (no strict-aliasing UB) and produces
@@ -32,7 +35,8 @@
 // else — branch structure, operator order, constant tables — is preserved
 // exactly, because THAT is what determines the exact output bits.
 //
-// Compile with -ffp-contract=off. See fdlibm.hpp for why.
+// Compile this translation unit with -ffp-contract=fast (scoped in
+// CMakeLists.txt to just this one file). See fdlibm.hpp for why.
 
 #include "noisemaker/fdlibm.hpp"
 
@@ -662,6 +666,398 @@ double kernel_sin(double x, double y, int iy) {
 }
 
 // ============================================================
+// __kernel_tan(x, y, iy): tangent on [-pi/4, pi/4] (plus the low-order
+// correction y and the "which half" flag iy), exactly as
+// v8_ieee754_reference.cc's __kernel_tan.
+// ============================================================
+double kernel_tan(double x, double y, int iy) {
+  static const double T[] = {
+      3.33333333333334091986e-01,  1.33333333333201242699e-01,
+      5.39682539762260521377e-02,  2.18694882948595424599e-02,
+      8.86323982359930005737e-03,  3.59207910759131235356e-03,
+      1.45620945432529025516e-03,  5.88041240820264096874e-04,
+      2.46463134818469906812e-04,  7.81794442939557092300e-05,
+      7.14072491382608190305e-05,  -1.85586374855275456654e-05,
+      2.59073051863633712884e-05,  1.00000000000000000000e+00,
+      7.85398163397448278999e-01,  3.06161699786838301793e-17,
+  };
+  static const double& one = T[13];
+  static const double& pio4 = T[14];
+  static const double& pio4lo = T[15];
+
+  double z, r, v, w, s;
+  std::int32_t ix, hx;
+
+  hx = static_cast<std::int32_t>(hi_word(x));
+  ix = hx & 0x7fffffff;
+  if (ix < 0x3e300000) {
+    if (static_cast<int>(x) == 0) {
+      std::uint32_t low = lo_word(x);
+      if (((static_cast<std::uint32_t>(ix) | low) | static_cast<std::uint32_t>(iy + 1)) == 0) {
+        return one / std::fabs(x);
+      } else {
+        if (iy == 1) {
+          return x;
+        } else {
+          double a, t;
+          z = w = x + y;
+          set_low_word(z, 0);
+          v = y - (z - x);
+          t = a = -one / w;
+          set_low_word(t, 0);
+          s = one + t * z;
+          return t + a * (s + t * v);
+        }
+      }
+    }
+  }
+  if (ix >= 0x3fe59428) {
+    if (hx < 0) {
+      x = -x;
+      y = -y;
+    }
+    z = pio4 - x;
+    w = pio4lo - y;
+    x = z + w;
+    y = 0.0;
+  }
+  z = x * x;
+  w = z * z;
+  r = T[1] + w * (T[3] + w * (T[5] + w * (T[7] + w * (T[9] + w * T[11]))));
+  v = z * (T[2] + w * (T[4] + w * (T[6] + w * (T[8] + w * (T[10] + w * T[12])))));
+  s = z * x;
+  r = y + z * (s * (r + v) + y);
+  r += T[0] * s;
+  w = x + r;
+  if (ix >= 0x3fe59428) {
+    v = iy;
+    return (1 - ((hx >> 30) & 2)) * (v - 2.0 * (x - (w * w / (w + v) - r)));
+  }
+  if (iy == 1) {
+    return w;
+  } else {
+    double a, t;
+    z = w;
+    set_low_word(z, 0);
+    v = r - (z - x);
+    t = a = -1.0 / w;
+    set_low_word(t, 0);
+    s = 1.0 + t * z;
+    return t + a * (s + t * v);
+  }
+}
+
+// ============================================================
+// asin(x) / acos(x): shared R(z) rational-polynomial kernel, exactly as
+// v8_ieee754_reference.cc.
+// ============================================================
+double fd_asin(double x) {
+  static const double one = 1.00000000000000000000e+00,
+                       huge = 1.000e+300,
+                       pio2_hi = 1.57079632679489655800e+00,
+                       pio2_lo = 6.12323399573676603587e-17,
+                       pio4_hi = 7.85398163397448278999e-01,
+                       pS0 = 1.66666666666666657415e-01,
+                       pS1 = -3.25565818622400915405e-01,
+                       pS2 = 2.01212532134862925881e-01,
+                       pS3 = -4.00555345006794114027e-02,
+                       pS4 = 7.91534994289814532176e-04,
+                       pS5 = 3.47933107596021167570e-05,
+                       qS1 = -2.40339491173441421878e+00,
+                       qS2 = 2.02094576023350569471e+00,
+                       qS3 = -6.88283971605453293030e-01,
+                       qS4 = 7.70381505559019352791e-02;
+
+  double t, w, p, q, c, r, s;
+  std::int32_t hx, ix;
+
+  t = 0;
+  hx = static_cast<std::int32_t>(hi_word(x));
+  ix = hx & 0x7fffffff;
+  if (ix >= 0x3ff00000) {
+    std::uint32_t lx = lo_word(x);
+    if (((static_cast<std::uint32_t>(ix) - 0x3ff00000u) | lx) == 0) {
+      return x * pio2_hi + x * pio2_lo;
+    }
+    return std::numeric_limits<double>::signaling_NaN();
+  } else if (ix < 0x3fe00000) {
+    if (ix < 0x3e400000) {
+      if (huge + x > one) return x;
+    } else {
+      t = x * x;
+    }
+    p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
+    q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));
+    w = p / q;
+    return x + x * w;
+  }
+  w = one - std::fabs(x);
+  t = w * 0.5;
+  p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
+  q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));
+  s = std::sqrt(t);
+  if (ix >= 0x3fef3333) {
+    w = p / q;
+    t = pio2_hi - (2.0 * (s + s * w) - pio2_lo);
+  } else {
+    w = s;
+    set_low_word(w, 0);
+    c = (t - w * w) / (s + w);
+    r = p / q;
+    p = 2.0 * s * r - (pio2_lo - 2.0 * c);
+    q = pio4_hi - 2.0 * w;
+    t = pio4_hi - (p - q);
+  }
+  if (hx > 0)
+    return t;
+  else
+    return -t;
+}
+
+double fd_acos(double x) {
+  static const double one = 1.00000000000000000000e+00,
+                       pi = 3.14159265358979311600e+00,
+                       pio2_hi = 1.57079632679489655800e+00,
+                       pio2_lo = 6.12323399573676603587e-17,
+                       pS0 = 1.66666666666666657415e-01,
+                       pS1 = -3.25565818622400915405e-01,
+                       pS2 = 2.01212532134862925881e-01,
+                       pS3 = -4.00555345006794114027e-02,
+                       pS4 = 7.91534994289814532176e-04,
+                       pS5 = 3.47933107596021167570e-05,
+                       qS1 = -2.40339491173441421878e+00,
+                       qS2 = 2.02094576023350569471e+00,
+                       qS3 = -6.88283971605453293030e-01,
+                       qS4 = 7.70381505559019352791e-02;
+
+  double z, p, q, r, w, s, c, df;
+  std::int32_t hx, ix;
+  hx = static_cast<std::int32_t>(hi_word(x));
+  ix = hx & 0x7fffffff;
+  if (ix >= 0x3ff00000) {
+    std::uint32_t lx = lo_word(x);
+    if (((static_cast<std::uint32_t>(ix) - 0x3ff00000u) | lx) == 0) {
+      if (hx > 0)
+        return 0.0;
+      else
+        return pi + 2.0 * pio2_lo;
+    }
+    return std::numeric_limits<double>::signaling_NaN();
+  }
+  if (ix < 0x3fe00000) {
+    if (ix <= 0x3c600000) return pio2_hi + pio2_lo;
+    z = x * x;
+    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
+    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    r = p / q;
+    return pio2_hi - (x - (pio2_lo - x * r));
+  } else if (hx < 0) {
+    z = (one + x) * 0.5;
+    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
+    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    s = std::sqrt(z);
+    r = p / q;
+    w = r * s - pio2_lo;
+    return pi - 2.0 * (s + w);
+  } else {
+    z = (one - x) * 0.5;
+    s = std::sqrt(z);
+    df = s;
+    set_low_word(df, 0);
+    c = (z - df * df) / (s + df);
+    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
+    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    r = p / q;
+    w = r * s + c;
+    return 2.0 * (df + w);
+  }
+}
+
+// ============================================================
+// atan(x)
+// ============================================================
+double fd_atan(double x) {
+  static const double atanhi[] = {
+      4.63647609000806093515e-01,
+      7.85398163397448278999e-01,
+      9.82793723247329054082e-01,
+      1.57079632679489655800e+00,
+  };
+  static const double atanlo[] = {
+      2.26987774529616870924e-17,
+      3.06161699786838301793e-17,
+      1.39033110312309984516e-17,
+      6.12323399573676603587e-17,
+  };
+  static const double aT[] = {
+      3.33333333333329318027e-01,  -1.99999999998764832476e-01,
+      1.42857142725034663711e-01,  -1.11111104054623557880e-01,
+      9.09088713343650656196e-02,  -7.69187620504482999495e-02,
+      6.66107313738753120669e-02,  -5.83357013379057348645e-02,
+      4.97687799461593236017e-02,  -3.65315727442169155270e-02,
+      1.62858201153657823623e-02,
+  };
+  static const double one = 1.0, huge = 1.0e300;
+
+  double w, s1, s2, z;
+  std::int32_t ix, hx, id;
+
+  hx = static_cast<std::int32_t>(hi_word(x));
+  ix = hx & 0x7fffffff;
+  if (ix >= 0x44100000) {
+    std::uint32_t low = lo_word(x);
+    if (ix > 0x7ff00000 || (ix == 0x7ff00000 && (low != 0))) return x + x;
+    if (hx > 0)
+      return atanhi[3] + atanlo[3];
+    else
+      return -atanhi[3] - atanlo[3];
+  }
+  if (ix < 0x3fdc0000) {
+    if (ix < 0x3e400000) {
+      if (huge + x > one) return x;
+    }
+    id = -1;
+  } else {
+    x = std::fabs(x);
+    if (ix < 0x3ff30000) {
+      if (ix < 0x3fe60000) {
+        id = 0;
+        x = (2.0 * x - one) / (2.0 + x);
+      } else {
+        id = 1;
+        x = (x - one) / (x + one);
+      }
+    } else {
+      if (ix < 0x40038000) {
+        id = 2;
+        x = (x - 1.5) / (one + 1.5 * x);
+      } else {
+        id = 3;
+        x = -1.0 / x;
+      }
+    }
+  }
+  z = x * x;
+  w = z * z;
+  s1 = z * (aT[0] +
+            w * (aT[2] + w * (aT[4] + w * (aT[6] + w * (aT[8] + w * aT[10])))));
+  s2 = w * (aT[1] + w * (aT[3] + w * (aT[5] + w * (aT[7] + w * aT[9]))));
+  if (id < 0) {
+    return x - x * (s1 + s2);
+  } else {
+    z = atanhi[id] - ((x * (s1 + s2) - atanlo[id]) - x);
+    return (hx < 0) ? -z : z;
+  }
+}
+
+// ============================================================
+// atan2(y, x)
+//
+// Classification pre-checks below (isnan/isinf/==0.0/==1.0/signbit) are a
+// behavior-preserving restatement of V8's raw-bit-pattern tests (which use
+// NegateWithWraparound/SubWithWraparound purely to dodge C89-era
+// signed-overflow UB around the sign/NaN/zero classification, not to
+// affect any rounded result) -- verified equivalent by hand, one branch at
+// a time, against v8_ieee754_reference.cc. The numeric formula itself (the
+// k=(iy-ix)>>20 magnitude threshold, the atan(fabs(y/x)) call, and the
+// pi/pi_lo combination in the final switch) is untouched and still keyed
+// off the exact exponent words via hi_word(), because THAT is what
+// determines the output bits.
+// ============================================================
+double fd_atan2(double y, double x) {
+  static const double zero = 0.0,
+                       pi_o_4 = 7.8539816339744827900e-01,
+                       pi_o_2 = 1.5707963267948965580e+00,
+                       pi = 3.1415926535897931160e+00;
+  static const volatile double pi_lo = 1.2246467991473531772e-16;
+  static const volatile double tiny = 1.0e-300;
+
+  if (std::isnan(x) || std::isnan(y)) return x + y;
+
+  if (x == 1.0) return fd_atan(y);
+
+  const std::int32_t hx = static_cast<std::int32_t>(hi_word(x));
+  const std::int32_t ix = static_cast<std::int32_t>(hi_word(x) & 0x7fffffffu);
+  const std::int32_t iy = static_cast<std::int32_t>(hi_word(y) & 0x7fffffffu);
+  int m = (std::signbit(y) ? 1 : 0) | (std::signbit(x) ? 2 : 0);
+
+  if (y == 0.0) {
+    switch (m) {
+      case 0:
+      case 1:
+        return y;
+      case 2:
+        return pi + tiny;
+      default:
+        return -pi - tiny;
+    }
+  }
+  if (x == 0.0) return std::signbit(y) ? -pi_o_2 - tiny : pi_o_2 + tiny;
+
+  if (std::isinf(x)) {
+    if (std::isinf(y)) {
+      switch (m) {
+        case 0:
+          return pi_o_4 + tiny;
+        case 1:
+          return -pi_o_4 - tiny;
+        case 2:
+          return 3.0 * pi_o_4 + tiny;
+        default:
+          return -3.0 * pi_o_4 - tiny;
+      }
+    } else {
+      switch (m) {
+        case 0:
+          return zero;
+        case 1:
+          return -zero;
+        case 2:
+          return pi + tiny;
+        default:
+          return -pi - tiny;
+      }
+    }
+  }
+  if (std::isinf(y)) return std::signbit(y) ? -pi_o_2 - tiny : pi_o_2 + tiny;
+
+  double z;
+  const std::int32_t k = (iy - ix) >> 20;
+  if (k > 60) {
+    z = pi_o_2 + 0.5 * pi_lo;
+    // |y/x| > 2**60: x's sign is numerically irrelevant at this ratio, so
+    // fdlibm forces the case-2/3 pi-combination branches off entirely
+    // here (this line was dropped in an earlier draft of this port and
+    // is exactly what the differential harness caught: dropping it made
+    // ~10% of adversarial atan2 pairs 1 ULP off, not a rounding-mode
+    // artifact at all).
+    m &= 1;
+  } else if (hx < 0 && k < -60) {
+    z = 0.0;
+  } else {
+    z = fd_atan(std::fabs(y / x));
+  }
+  switch (m) {
+    case 0:
+      return z;
+    case 1:
+      return -z;
+    case 2:
+      return pi - (z - pi_lo);
+    default:
+      return (z - pi_lo) - pi;
+  }
+}
+
+// log2() is NOT defined in this TU -- see src/fdlibm_log2.cpp. Its
+// combined-precision Dekker-style summation (val_hi/val_lo/w below) is
+// actively BROKEN by FMA contraction (verified: 0/50000 divergent from V8
+// under -ffp-contract=off, but 108/50000 under -ffp-contract=fast, the
+// opposite direction from every other function in this file), so it
+// cannot share this TU's -ffp-contract=fast override. See that file's
+// header comment and docs/port-engineering/v8-math/v8-math-report.md.
+
+// ============================================================
 // log(x): natural logarithm.
 //
 // Method: argument reduction to x = 2^k*(1+f), sqrt(2)/2 < 1+f < sqrt(2);
@@ -742,12 +1138,17 @@ double fd_log(double x) {
     if (k == 0)
       return f - (hfsq - s * (hfsq + r));
     else
-      return dk * ln2_hi - ((hfsq - (s * (hfsq + r) + dk * ln2_lo)) - f);
+      // std::fma here (not s*(hfsq+r) + dk*ln2_lo) reproduces V8's actual
+      // arm64 binary bit-for-bit -- verified by differential bisection
+      // against Math.log (see docs/port-engineering/v8-math/), not
+      // assumed. Ambient -ffp-contract alone (either setting) does not
+      // reach this fusion for this expression shape.
+      return dk * ln2_hi - ((hfsq - std::fma(s, hfsq + r, dk * ln2_lo)) - f);
   } else {
     if (k == 0)
       return f - s * (f - r);
     else
-      return dk * ln2_hi - ((s * (f - r) - dk * ln2_lo) - f);
+      return dk * ln2_hi - ((std::fma(s, f - r, -(dk * ln2_lo))) - f);
   }
 }
 
@@ -844,41 +1245,65 @@ double cos(double x) noexcept {
 }
 
 double log(double x) noexcept { return fd_log(x); }
+// log2() lives in src/fdlibm_log2.cpp, compiled without this TU's
+// -ffp-contract=fast override -- see the comment above where k_log1p/
+// fd_log2 used to live in this file, and fdlibm_log2.cpp's header.
+double tan(double x) noexcept {
+  double y[2], z = 0.0;
+  std::int32_t n, ix;
+
+  ix = static_cast<std::int32_t>(hi_word(x));
+  ix &= 0x7fffffff;
+  if (ix <= 0x3fe921fb) {
+    return kernel_tan(x, z, 1);
+  } else if (ix >= 0x7ff00000) {
+    return x - x;
+  } else {
+    n = ieee754_rem_pio2(x, y);
+    return kernel_tan(y[0], y[1], 1 - ((n & 1) << 1));
+  }
+}
+double asin(double x) noexcept { return fd_asin(x); }
+double acos(double x) noexcept { return fd_acos(x); }
+double atan(double x) noexcept { return fd_atan(x); }
+double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 
 // ============================================================
-// hypot(x, y): V8's Math.hypot for exactly two arguments
-// (src/builtins/builtins-math.cc, MathHypot) — scaled, Kahan-compensated
-// sum of squares. This is NOT a fdlibm/Sun algorithm (Math.hypot has no
-// fdlibm ancestor); it is transcribed from V8's own two-argument-general
-// loop specialized to N=2, preserving the exact operation order (the
-// Kahan compensation term is order-sensitive). See fdlibm.hpp and
-// docs/port-engineering/worm-overlay-parity/ for why platform hypot() is
-// not used instead.
+// pow(x, y): V8's LIVE Math.pow (v8::internal::math::pow,
+// src/numbers/ieee754.cc, active whenever `use_std_math_pow` is true --
+// the default on every platform except AIX; confirmed active on this
+// build both by reading the flag default and empirically, see fdlibm.hpp).
+// NOT V8's retired base::ieee754::legacy::pow.
+//
+// The final `else` branch is a literal std::pow(x, y) call, on purpose:
+// V8's own math::pow falls back to std::pow too, and since that resolves
+// to the OS's shared libm symbol on both sides (this binary and the V8
+// process it must match both dynamically link the same `pow` from the
+// same OS on the same machine), no algorithm needs porting for that
+// branch -- calling std::pow here IS calling exactly what V8 calls.
 // ============================================================
-double hypot(double x, double y) noexcept {
-  double ax = std::fabs(x);
-  double ay = std::fabs(y);
-  // V8 checks has_infinity before has_nan: Infinity beats NaN (matches the
-  // ECMA-262 Math.hypot spec, step 4.a/4.b ordering).
-  if (std::isinf(ax) || std::isinf(ay)) return std::numeric_limits<double>::infinity();
-  if (std::isnan(ax) || std::isnan(ay)) return std::numeric_limits<double>::quiet_NaN();
-  double values[2] = {ax, ay};
-  double max = ax > ay ? ax : ay;
-  if (max == 0.0) return 0.0;
-  double sum = 0.0;
-  double compensation = 0.0;
-  for (double v : values) {
-    double n = v / max;
-    double summand = n * n;
-    double preliminary = sum + summand;
-    if (std::fabs(sum) >= std::fabs(summand)) {
-      compensation += (sum - preliminary) + summand;
-    } else {
-      compensation += (summand - preliminary) + sum;
-    }
-    sum = preliminary;
+double pow(double x, double y) noexcept {
+  if (std::isnan(y)) {
+    return std::numeric_limits<double>::quiet_NaN();
   }
-  return std::sqrt(sum + compensation) * max;
+  if (std::isinf(y) && (x == 1.0 || x == -1.0)) {
+    return std::numeric_limits<double>::quiet_NaN();
+  }
+  // std::pow distinguishes signaling/quiet NaN; JS doesn't, and any NaN
+  // canonicalizes to the same bit pattern once it crosses back into a JS
+  // Number, so no explicit canonicalization of x is needed here.
+  if (y == 2.0) {
+    return x * x;
+  } else if (y == 0.5) {
+    if (std::isinf(x)) return std::numeric_limits<double>::infinity();
+    return std::sqrt(x + 0.0);
+  }
+  return std::pow(x, y);
 }
+
+// hypot() (2/3/N-arg) lives in src/fdlibm_off.cpp -- Math.hypot is a
+// Torque builtin lowered directly by V8's own JIT backend, unrelated to
+// this TU's -ffp-contract=fast override, and measured to need the plain
+// (unfused) formula. See fdlibm_off.cpp's header comment.
 
 }  // namespace fdlibm

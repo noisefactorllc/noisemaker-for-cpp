@@ -1,6 +1,7 @@
 #include "noisemaker/graph/executor.hpp"
 
 #include "noisemaker/effects/cpu/worm_overlay.hpp"
+#include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/pass_runner.hpp"
@@ -471,8 +472,8 @@ struct BindingAbiSections {
       // example volumeSize default 1024 for a 32^2 atlas). Apply the power
       // only to a normalized parameter override.
       if (const auto* bound = parameter(step, expression.parameter); bound != nullptr) {
-        value = std::pow(number(*bound, expression.parameter),
-                         static_cast<double>(expression.power));
+        value = noisemaker::fdlibm::pow(number(*bound, expression.parameter),
+                                        static_cast<double>(expression.power));
       } else {
         value = expression.default_value;
       }
