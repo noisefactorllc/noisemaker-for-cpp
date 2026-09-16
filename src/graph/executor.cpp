@@ -1067,15 +1067,15 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 
 [[nodiscard]] std::size_t vector_width(std::string_view cpp_type) noexcept {
   if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2") return 2U;
-  if (cpp_type == "glsl::Vec3" || cpp_type == "glsl::IVec3") return 3U;
-  if (cpp_type == "glsl::Vec4" || cpp_type == "glsl::IVec4") return 4U;
+  if (cpp_type == "glsl::Vec3" || cpp_type == "glsl::IVec3" || cpp_type == "glsl::DVec3") return 3U;
+  if (cpp_type == "glsl::Vec4" || cpp_type == "glsl::IVec4" || cpp_type == "glsl::DVec4") return 4U;
   return 0U;
 }
 
 void validate_uniform_abi_shape(const EffectStep& step,
                                 const PassAdmission& admission,
                                 const CompatibilityBinding& abi) {
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 8>
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 10>
       kTypes = {{{"float", "float"},
                  {"double", "double"},
                  {"int", "std::int32_t"},
@@ -1083,7 +1083,9 @@ void validate_uniform_abi_shape(const EffectStep& step,
                  {"bool", "bool"},
                  {"vec2", "glsl::Vec2"},
                  {"vec3", "glsl::Vec3"},
-                 {"vec4", "glsl::Vec4"}}};
+                 {"vec4", "glsl::Vec4"},
+                 {"dvec3", "glsl::DVec3"},
+                 {"dvec4", "glsl::DVec4"}}};
   bool known = false;
   for (const auto& [type, cpp_type] : kTypes) {
     if (abi.type == type && abi.cpp_type == cpp_type) {
@@ -1182,6 +1184,21 @@ void validate_uniform_abi_shape(const EffectStep& step,
   if (width != 0U) {
     if (value.kind != PlanValue::Kind::array || value.array.size() != width) {
       return fail("vector has the wrong width");
+    }
+    // DVec3/DVec4 (remap's zone geometry/color/bounds ABI) keep the plan
+    // value's full double precision -- unlike Vec2/Vec3/Vec4, which round to
+    // float32 below matching GLSL's mandated per-lane float semantics. The
+    // authority's semantic $bindings are plain, unrounded JS doubles; a
+    // float32 lane here would silently reintroduce exactly the divergence
+    // that ruled out typed generation for this program (see remap.cpp).
+    if (cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
+      std::array<double, 4> d{};
+      for (std::size_t index = 0; index < width; ++index) {
+        if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
+        d[index] = value.array[index].number;
+      }
+      if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
+      return glsl::DVec4(d[0], d[1], d[2], d[3]);
     }
     std::array<float, 4> f{};
     std::array<std::int32_t, 4> i{};

@@ -271,7 +271,11 @@ if __package__ in (None, ""):
         KEY as REMAP_KEY,
         PROFILE as REMAP_PROFILE,
         ALLOWED_ROW_FIELDS as REMAP_ALLOWED_ROW_FIELDS,
+        CUSTOM_ADAPTER_FACTORY as REMAP_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as REMAP_CUSTOM_ADAPTER_SOURCE,
         authenticate_remap_frontend,
+        custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi,
         preflight_remap_bindings)
     from tools.glslcpp.frontend.mutable_global_array_profile import (
         CELLREFRACT_KEY as MUTABLE_GLOBAL_ARRAY_CELLREFRACT_KEY,
@@ -630,7 +634,11 @@ else:
         KEY as REMAP_KEY,
         PROFILE as REMAP_PROFILE,
         ALLOWED_ROW_FIELDS as REMAP_ALLOWED_ROW_FIELDS,
+        CUSTOM_ADAPTER_FACTORY as REMAP_CUSTOM_ADAPTER_FACTORY,
+        CUSTOM_ADAPTER_SOURCE as REMAP_CUSTOM_ADAPTER_SOURCE,
         authenticate_remap_frontend,
+        custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
+        verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi,
         preflight_remap_bindings)
     from .frontend.mutable_global_array_profile import (
         CELLREFRACT_KEY as MUTABLE_GLOBAL_ARRAY_CELLREFRACT_KEY,
@@ -1511,8 +1519,14 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == NOISE_RUNTIME_DEFINE_KEY else
                     set(testpattern_allowed_row_fields(key))
                     if key == TESTPATTERN_KEY else
-                    set(REMAP_ALLOWED_ROW_FIELDS[key])
-                    if key == REMAP_KEY else
+                    # synth/remap:remap is a custom_adapter route (see
+                    # _factory_route): its row is bare -- {"defines",
+                    # "program_key"}, the same shape as an ordinary program --
+                    # and falls through to the default arm at the bottom of
+                    # this chain. No REMAP_KEY-specific row shape is admitted
+                    # any more; REMAP_ALLOWED_ROW_FIELDS/remap_profile describe
+                    # only the retired typed-generation attempt, still used by
+                    # tests against the frozen pre-bump corpus.
                     set(mutable_global_frame_allowed_row_fields(key))
                     if key in MUTABLE_GLOBAL_FRAME_KEYS else
                     # Same allowlist-by-accessor discipline as the frame arm
@@ -1927,7 +1941,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     if testpattern_profiles != [
             (TESTPATTERN_KEY, TESTPATTERN_PROFILE, {})]:
         raise GeneratorError("typed slice Test Pattern frontend profile drift")
-    if remap_profiles != [(REMAP_KEY, REMAP_PROFILE, {})]:
+    # No row carries "remap_profile" any more: synth/remap:remap is a
+    # custom_adapter route (its GLSL cannot be typed-lowered -- see
+    # remap.cpp), not typed-generated, so it never enters this census.
+    if remap_profiles != []:
         raise GeneratorError("typed slice Remap frontend profile drift")
     # Its own NAMED census with its own message since the effects row
     # (design §4.5): a clause in the big `or` chain above would report this
@@ -2374,11 +2391,51 @@ def _compatibility_source_hashes(
         raise GeneratorError(f"invalid authenticated compatibility source projection: {error}") from error
 
 
+# Custom-adapter routes: a program key whose authority is a hand-written
+# C++ factory, not a typed-generated kernel. Each entry names the factory
+# source file and the canonical (dispatched) factory function; bit_effects's
+# ABI is regex-scraped from its literal `b.get<T>("name")` text below (it has
+# none of remap's runtime-built names), remap's is declared explicitly (see
+# tools/glslcpp/frontend/remap_profile.py's module docstring for why).
+_CUSTOM_ADAPTER_FACTORIES: dict[str, str] = {
+    BIT_EFFECTS_KEY: "noisemaker::effects::bind_bit_effects",
+    REMAP_KEY: REMAP_CUSTOM_ADAPTER_FACTORY,
+}
+
+
+def _remap_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / REMAP_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise GeneratorError(f"{key}: custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_remap\s*\([^)]*\)", source):
+        raise GeneratorError(f"{key}: custom factory identity missing")
+    try:
+        remap_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise GeneratorError(f"{key}: {error}") from error
+    calls = list(remap_custom_adapter_binding_abi())
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": REMAP_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha256(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     emitted = "bind_" + key.replace("/", "_").replace(":", "_")
-    if key != BIT_EFFECTS_KEY:
+    if key not in _CUSTOM_ADAPTER_FACTORIES:
         return {"kind": "typed_emitter", "factory": emitted,
                 "source": "src/typed_generated/typed_slice.cpp"}
+    if key == REMAP_KEY:
+        return _remap_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
     source = source_path.read_text(encoding="utf-8")
     calls = []
@@ -3013,6 +3070,16 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     if unknown: raise GeneratorError(f"{typed.key}: unknown capability {unknown[0]}")
     if capabilities != APPROVED_CAPABILITIES:
         raise GeneratorError(f"{typed.key}: typed capability vocabulary mismatch")
+    if typed.key == REMAP_KEY:
+        # synth/remap:remap is a custom_adapter route: its GLSL (`struct
+        # ZoneTest`, bvec2 relational builtins) is never lowered by this
+        # generic node-capability walk, and its real authority is the
+        # hand-written noisemaker::effects::bind_remap. Nothing below this
+        # point applies -- every other per-node check here exists to prove
+        # an EMITTED body only touches approved constructs, and no body is
+        # emitted for this key (see emit_typed_cpp.render_typed_cpp's own
+        # REMAP_KEY branch).
+        return
     authorized_fractal_frontend_proof = None
     authorized_julia_frontend_proof = None
     authorized_distortion_frontend_proof = None
@@ -3618,8 +3685,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             None)
         if authorized_remap_data_declaration is None:
             raise GeneratorError(f"{typed.key}: Remap data declaration identity mismatch")
-    elif typed.key == REMAP_KEY:
-        raise GeneratorError(f"{typed.key}: exact Remap frontend proof carrier required")
+    # No `elif typed.key == REMAP_KEY: raise` any more: see the matching
+    # comment where remap_frontend_proof is computed, above.
     authorized_varyings: tuple[object, ...] = ()
     authorized_texture_frontend_nodes: tuple[TypedExpression, ...] = ()
     visited_texture_frontend_nodes: list[TypedExpression] = []
@@ -8162,9 +8229,12 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             if authorized_remap_proof.binding_preflight is not binding_preflight:
                 raise GeneratorError(
                     f"{key}: Remap binding proof identity mismatch")
-        elif key == REMAP_KEY:
-            raise GeneratorError(
-                f"{key}: exact Remap frontend profile carrier required")
+        # No `elif key == REMAP_KEY: raise` any more: synth/remap:remap is a
+        # custom_adapter route now (its GLSL cannot be typed-lowered -- see
+        # remap.cpp) and carries no "remap_profile" row field. Body
+        # generation for it is skipped entirely below (search REMAP_KEY in
+        # the render_typed_cpp call site), so no frontend proof is required
+        # here either.
         moodscape_frontend_profile = slice_spec["programs"][index].get(
             "moodscape_frontend_profile")
         if moodscape_frontend_profile is not None:
@@ -9173,12 +9243,12 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         "#include <cstdint>", "#include <memory>", "#include <stdexcept>"])
     cpp = ["// Generated by typed GLSL IR emitter. Do not edit.", f"// Revision: {slice_spec['revision']}",
            "#include \"noisemaker/generated/catalog.hpp\"",
-           "#include \"noisemaker/effects/bit_effects.hpp\"", "", *standard_headers,
+           "#include \"noisemaker/effects/bit_effects.hpp\"",
+           "#include \"noisemaker/effects/remap.hpp\"", "", *standard_headers,
            "", "#include \"noisemaker/sampler.hpp\"", "", "namespace noisemaker::generated {"]
     cpp.extend(bodies)
     factories = [(item["program_key"],
-                  "noisemaker::effects::bind_bit_effects"
-                  if item["program_key"] == BIT_EFFECTS_KEY else item["factory"])
+                  _CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]))
                  for item in manifest_programs]
     factories.extend((("filter/invert:inv", "bind_filter_invert"), ("synth/solid:solid", "bind_synth_solid")))
     factories.sort()
@@ -9187,9 +9257,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
     canonical_routes = sorted(
         (_factory_route_descriptor(
             item,
-            bind_factory=("noisemaker::effects::bind_bit_effects"
-                          if item["program_key"] == BIT_EFFECTS_KEY
-                          else item["factory"]),
+            bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
             source_sha256=admission_source_hashes[item["program_key"]],
             compatibility_row=compatibility_rows.get(item["program_key"]))
          for item in manifest_programs),

@@ -2,6 +2,7 @@
 // Revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/remap.hpp"
 
 #include <algorithm>
 #include <array>
@@ -28904,188 +28905,9 @@ BoundKernel bind_synth_polygon_shape(const glsl::Bindings& bindings) {
 }
 
 // Typed IR program: synth/remap:remap
-// Source SHA-256: e70bb491b2838bc2e5632a458fb2aeb5488d772d734b6e4caf7958afa9737e7f
-namespace typed_205 {
-[[nodiscard]] inline std::size_t remap_data_index(std::int64_t index) noexcept {
-  if (index < 0 || index >= 267) return 0U;
-  return static_cast<std::size_t>(index);
-}
-
-struct State final : KernelState {
-  State(glsl::RemapUniformData data_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* zone0_tex_value, const Surface* zone1_tex_value, const Surface* zone2_tex_value, const Surface* zone3_tex_value, const Surface* zone4_tex_value, const Surface* zone5_tex_value, const Surface* zone6_tex_value, const Surface* zone7_tex_value) : data(data_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), zone0_tex(zone0_tex_value), zone1_tex(zone1_tex_value), zone2_tex(zone2_tex_value), zone3_tex(zone3_tex_value), zone4_tex(zone4_tex_value), zone5_tex(zone5_tex_value), zone6_tex(zone6_tex_value), zone7_tex(zone7_tex_value) {}
-  glsl::RemapUniformData data;
-  glsl::Vec2 tileOffset;
-  glsl::Vec2 fullResolution;
-  const Surface* zone0_tex;
-  const Surface* zone1_tex;
-  const Surface* zone2_tex;
-  const Surface* zone3_tex;
-  const Surface* zone4_tex;
-  const Surface* zone5_tex;
-  const Surface* zone6_tex;
-  const Surface* zone7_tex;
-};
-
-[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
-  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
-}
-[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
-  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
-  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
-}
-[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
-  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
-}
-
-[[nodiscard]] double distToZoneEdge([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p, [[maybe_unused]] std::int32_t zoneIdx) noexcept;
-[[nodiscard]] glsl::Vec2 getVert([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t zoneIdx, [[maybe_unused]] std::int32_t vertIdx) noexcept;
-[[nodiscard]] std::int32_t getZoneActive([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept;
-[[nodiscard]] double getZoneAlpha([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept;
-[[nodiscard]] std::int32_t getZoneCount([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept;
-[[nodiscard]] glsl::Vec4 getZoneMeta([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept;
-[[nodiscard]] glsl::Vec4 getZonePack([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t zoneIdx, [[maybe_unused]] std::int32_t pairIdx) noexcept;
-[[nodiscard]] bool pointInZone([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p, [[maybe_unused]] std::int32_t zoneIdx) noexcept;
-[[nodiscard]] glsl::Vec4 sampleZone([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z, [[maybe_unused]] glsl::Vec2 uv) noexcept;
-
-[[nodiscard]] double distToZoneEdge([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p, [[maybe_unused]] std::int32_t zoneIdx) noexcept {
-  [[maybe_unused]] std::int32_t n = getZoneCount(state, context, zoneIdx);
-  if (n < std::int32_t(3)) {
-    return static_cast<float>(1e9);
-  }
-  [[maybe_unused]] double d = static_cast<float>(1e9);
-  [[maybe_unused]] glsl::Vec2 prev = getVert(state, context, zoneIdx, (n - std::int32_t(1)));
-  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(64)); ++i) {
-    if (i >= n) {
-      break;
-    }
-    [[maybe_unused]] glsl::Vec2 cur = getVert(state, context, zoneIdx, i);
-    [[maybe_unused]] glsl::Vec2 ab = (cur - prev);
-    [[maybe_unused]] double len2 = glsl::component_max(glsl::dot(ab, ab), static_cast<float>(1e-9));
-    [[maybe_unused]] double t = glsl::clamp((static_cast<double>(glsl::dot((p - prev), ab)) / static_cast<double>(len2)), static_cast<float>(0.0), static_cast<float>(1.0));
-    [[maybe_unused]] glsl::Vec2 closest = (prev + (t * ab));
-    d = glsl::component_min(d, glsl::length((p - closest)));
-    prev = glsl::Vec2(cur);
-  }
-  return d;
-}
-
-[[nodiscard]] glsl::Vec2 getVert([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t zoneIdx, [[maybe_unused]] std::int32_t vertIdx) noexcept {
-  [[maybe_unused]] glsl::Vec4 packed = getZonePack(state, context, zoneIdx, (vertIdx / std::int32_t(2)));
-  return ((glsl::integer_mod(vertIdx, std::int32_t(2)) == std::int32_t(0)) ? glsl::Vec2(glsl::swizzle<0, 1>(packed)) : glsl::Vec2(glsl::swizzle<2, 3>(packed)));
-}
-
-[[nodiscard]] std::int32_t getZoneActive([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept {
-  return glsl::detail::glsl_int_cast((static_cast<double>(glsl::swizzle<1>(getZoneMeta(state, context, z))) + static_cast<double>(static_cast<float>(0.5))));
-}
-
-[[nodiscard]] double getZoneAlpha([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept {
-  return glsl::swizzle<3>(getZoneMeta(state, context, z));
-}
-
-[[nodiscard]] std::int32_t getZoneCount([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept {
-  return glsl::detail::glsl_int_cast(glsl::swizzle<0>(getZoneMeta(state, context, z)));
-}
-
-[[nodiscard]] glsl::Vec4 getZoneMeta([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z) noexcept {
-  return state.data.data[remap_data_index(static_cast<std::int64_t>((std::int32_t(2) + z)))];
-}
-
-[[nodiscard]] glsl::Vec4 getZonePack([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t zoneIdx, [[maybe_unused]] std::int32_t pairIdx) noexcept {
-  return state.data.data[remap_data_index(static_cast<std::int64_t>(((std::int32_t(10) + (zoneIdx * std::int32_t(32))) + pairIdx)))];
-}
-
-[[nodiscard]] bool pointInZone([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p, [[maybe_unused]] std::int32_t zoneIdx) noexcept {
-  [[maybe_unused]] std::int32_t n = getZoneCount(state, context, zoneIdx);
-  if (n < std::int32_t(3)) {
-    return false;
-  }
-  [[maybe_unused]] bool inside = false;
-  [[maybe_unused]] glsl::Vec2 prev = getVert(state, context, zoneIdx, (n - std::int32_t(1)));
-  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(64)); ++i) {
-    if (i >= n) {
-      break;
-    }
-    [[maybe_unused]] glsl::Vec2 cur = getVert(state, context, zoneIdx, i);
-    [[maybe_unused]] bool crosses = ((glsl::swizzle<1>(cur) > glsl::swizzle<1>(p)) != (glsl::swizzle<1>(prev) > glsl::swizzle<1>(p)));
-    if (crosses) {
-      [[maybe_unused]] double xCross = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(prev)) - static_cast<double>(glsl::swizzle<0>(cur)))) * static_cast<double>((static_cast<double>(glsl::swizzle<1>(p)) - static_cast<double>(glsl::swizzle<1>(cur)))))) / static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<1>(prev)) - static_cast<double>(glsl::swizzle<1>(cur)))) + static_cast<double>(static_cast<float>(1e-9)))))) + static_cast<double>(glsl::swizzle<0>(cur)));
-      if (glsl::swizzle<0>(p) < xCross) {
-        inside = (!inside);
-      }
-    }
-    prev = glsl::Vec2(cur);
-  }
-  return inside;
-}
-
-[[nodiscard]] glsl::Vec4 sampleZone([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t z, [[maybe_unused]] glsl::Vec2 uv) noexcept {
-  if (z == std::int32_t(0)) {
-    return sample_texture(*state.zone0_tex, uv);
-  }
-  if (z == std::int32_t(1)) {
-    return sample_texture(*state.zone1_tex, uv);
-  }
-  if (z == std::int32_t(2)) {
-    return sample_texture(*state.zone2_tex, uv);
-  }
-  if (z == std::int32_t(3)) {
-    return sample_texture(*state.zone3_tex, uv);
-  }
-  if (z == std::int32_t(4)) {
-    return sample_texture(*state.zone4_tex, uv);
-  }
-  if (z == std::int32_t(5)) {
-    return sample_texture(*state.zone5_tex, uv);
-  }
-  if (z == std::int32_t(6)) {
-    return sample_texture(*state.zone6_tex, uv);
-  }
-  return sample_texture(*state.zone7_tex, uv);
-}
-
-void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
-  const auto& state = static_cast<const State&>(kernel_base);
-  (void)state;
-  (void)context;
-  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 globalScreen = ((glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset) / state.fullResolution);
-  [[maybe_unused]] glsl::Vec2 p = glsl::FloatExpr<2>(glsl::swizzle<0>(globalScreen), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(globalScreen))));
-  [[maybe_unused]] glsl::Vec2 sampleUv = (globalCoord / state.fullResolution);
-  [[maybe_unused]] glsl::Vec4 header = state.data.data[remap_data_index(static_cast<std::int64_t>(std::int32_t(0)))];
-  [[maybe_unused]] glsl::Vec4 controls = state.data.data[remap_data_index(static_cast<std::int64_t>(std::int32_t(1)))];
-  [[maybe_unused]] glsl::Vec3 bgColor = glsl::swizzle<0, 1, 2>(header);
-  [[maybe_unused]] double bgAlpha = glsl::swizzle<3>(header);
-  [[maybe_unused]] std::int32_t activeCount = glsl::component_min(glsl::detail::glsl_int_cast(glsl::swizzle<0>(controls)), std::int32_t(8));
-  [[maybe_unused]] double smoothEdge = glsl::swizzle<1>(controls);
-  [[maybe_unused]] glsl::Vec4 result = glsl::Vec4(bgColor, bgAlpha);
-  for ([[maybe_unused]] std::int32_t z = std::int32_t(0); (z < std::int32_t(8)); ++z) {
-    if (z >= activeCount) {
-      break;
-    }
-    if (getZoneActive(state, context, z) == std::int32_t(0)) {
-      continue;
-    }
-    if (!pointInZone(state, context, p, z)) {
-      continue;
-    }
-    [[maybe_unused]] glsl::Vec4 src = sampleZone(state, context, z, sampleUv);
-    [[maybe_unused]] double zAlpha = getZoneAlpha(state, context, z);
-    [[maybe_unused]] double edgeWidth = (static_cast<double>(smoothEdge) * static_cast<double>(static_cast<float>(0.05)));
-    [[maybe_unused]] double edge = ((edgeWidth > static_cast<float>(0.0)) ? glsl::smoothstep(static_cast<float>(0.0), edgeWidth, distToZoneEdge(state, context, p, z)) : static_cast<float>(1.0));
-    [[maybe_unused]] double a = (static_cast<double>(zAlpha) * static_cast<double>(edge));
-    result = glsl::Vec4(glsl::Vec4(glsl::mix(glsl::swizzle<0, 1, 2>(result), glsl::swizzle<0, 1, 2>(src), a), glsl::component_max(glsl::swizzle<3>(result), (static_cast<double>(glsl::swizzle<3>(src)) * static_cast<double>(a)))));
-  }
-  output = glsl::Vec4(result);
-}
-}  // namespace typed_205
-
-BoundKernel bind_synth_remap_remap(const glsl::Bindings& bindings) {
-  const auto data = bindings.get<glsl::RemapUniformData>("data");
-  const auto state = std::make_shared<typed_205::State>(data, bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("zone0_tex"), &bindings.texture("zone1_tex"), &bindings.texture("zone2_tex"), &bindings.texture("zone3_tex"), &bindings.texture("zone4_tex"), &bindings.texture("zone5_tex"), &bindings.texture("zone6_tex"), &bindings.texture("zone7_tex"));
-  (void)bindings;
-  return BoundKernel(state, &typed_205::pixel);
-}
+// Source SHA-256: 500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b
+// custom_adapter route: no typed kernel body generated;
+// see noisemaker::effects::bind_remap (src/effects/remap.cpp).
 
 // Typed IR program: synth/sacredGeometry:sacredGeometry
 // Source SHA-256: 24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de
@@ -30654,7 +30476,7 @@ constexpr std::array<KernelFactory, 213> kCatalog{{
     {"synth/pattern:pattern", &bind_synth_pattern_pattern},
     {"synth/perlin:perlin", &bind_synth_perlin_perlin},
     {"synth/polygon:shape", &bind_synth_polygon_shape},
-    {"synth/remap:remap", &bind_synth_remap_remap},
+    {"synth/remap:remap", &noisemaker::effects::bind_remap},
     {"synth/sacredGeometry:sacredGeometry", &bind_synth_sacredGeometry_sacredGeometry},
     {"synth/shape:shape", &bind_synth_shape_shape},
     {"synth/solid:solid", &bind_synth_solid},
@@ -30869,7 +30691,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"synth/pattern:pattern", "bind_synth_pattern_pattern", "bind_synth_pattern_pattern", "typed_emitter", "d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c", "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "41a153e2a3e285f7855a5c6e7f7ec5892f31b122b05f82f960d95cd3ba9c6160", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_pattern_pattern},
     {"synth/perlin:perlin", "bind_synth_perlin_perlin", "bind_synth_perlin_perlin", "typed_emitter", "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318", "73be9fbfb9dd7baa65e8fc7f506c4dfbd72c3f5659b507374a1b92acb3aeb00c", "default-only", "DIMENSIONS=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "31488d870b6b9ef9a3f8b1427a0ff071617c444b7bd4ae8f266bace98f877c3d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_perlin_perlin},
     {"synth/polygon:shape", "bind_synth_polygon_shape", "bind_synth_polygon_shape", "typed_emitter", "e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6", "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "3c9688bb845f09d356d13fc9d25dbfa7f164e427a087a46c39a99db21c64d1a5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_polygon_shape},
-    {"synth/remap:remap", "bind_synth_remap_remap", "bind_synth_remap_remap", "typed_emitter", "500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b", "a1b31a4ecb6ffa7ba3bb952c67a2a5b48514bd9e0be26fb5ef4eda9cf2f6cc94", "none", "", "120eccceff26846478df36969e985883ca75f0f9eabae9921028a04db69014e1", "aa7a7c0aff3dedb4259de3206ce51dd6fbc086b260508bd344f0a36f69f7630e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_remap_remap},
+    {"synth/remap:remap", "noisemaker::effects::bind_remap", "bind_synth_remap_remap", "custom_adapter", "500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b", "b73a352c896eee8c0b00da621f29063d302efce117485deebb16b7b7a5daf179", "none", "", "120eccceff26846478df36969e985883ca75f0f9eabae9921028a04db69014e1", "21857846a27ae69201d44fe1f2ead9aa18cf5d400f8d5ef537b78f58aad4c505", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &noisemaker::effects::bind_remap},
     {"synth/sacredGeometry:sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "typed_emitter", "24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de", "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "0d028d1143e9884cd32202e866ca163c71d4d785cf51012323d9dbefe5104649", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_sacredGeometry_sacredGeometry},
     {"synth/shape:shape", "bind_synth_shape_shape", "bind_synth_shape_shape", "typed_emitter", "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f", "3c09c2bd90e980371877a4df8ba5e58da7ec268c969fcfa5dbfcbc2935c7e72c", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "d3a81ad52cfb64f8c00b5d6d617a3bfb1d50fa74ddc569ae4614d0013209561e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_shape_shape},
     {"synth/solid:solid", "bind_synth_solid_solid", "bind_synth_solid_solid", "typed_emitter", "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c", "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "cc89f98fbec0177fcfccaaaa99e51d407c860fe4396fb1830994c676debb2951", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_solid_solid},

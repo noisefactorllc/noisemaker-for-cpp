@@ -21,32 +21,41 @@ dispatched instead through a hand-written kernel that mirrors ``remap.js``
 operation-for-operation (see ``src/effects/remap.cpp``,
 ``noisemaker::effects::bind_remap``).
 
-The functions below are kept, unmodified, as a correct record of the OLD
-source's exact shape (still useful evidence, e.g. for anyone diffing the
-upstream change) but are no longer meant to succeed against the pinned
-0ed489ec... source -- the ``remap-std140-frontend-v1`` row deliberately
-stays in ``tools/glslcpp/typed_slice.json`` pointing at these stale pins,
-so ``generate_typed_slice --check`` fails, precisely and only, on this one
-program key ("binding declaration ABI mismatch") rather than being silently
-skipped. Removing the row instead (tried first) turned out to shift the
-positional/index-based assumptions several OTHER programs' checks make
-about their place in that same list -- collateral damage to 210 programs
-this lane does not own, for a check that was already correctly failing on
-the one program it does own. Reaching a real ``custom_adapter`` route for
-this key also needs a matching branch in
+The ``authenticate_remap_frontend``/``preflight_remap_bindings`` functions
+below are kept, unmodified, as a correct record of the OLD source's exact
+shape (useful evidence for anyone diffing the upstream change) but no longer
+run against the pinned 0ed489ec... source: ``tools/glslcpp/typed_slice.json``'s
+remap row no longer carries a ``remap_profile`` field at all (a bare
+``{"defines": {}, "program_key": "synth/remap:remap"}``, the same shape as an
+ordinary program), and ``generate_typed_slice.py``'s per-program pipeline
+(the frontend-proof gates, ``validate_capabilities``, and
+``emit_typed_cpp.render_typed_cpp``) each carry their own early return for
+this program key -- no typed body is generated, and none of the generic
+capability machinery (which does not know ``struct ZoneTest`` or bvec2
+relational builtins) is ever asked to accept remap's GLSL. Removing the row
+entirely (tried first) instead shifted positional/index-based assumptions
+several OTHER programs' checks make about their place in that same list --
+collateral damage this lane does not own; clearing just the one field, in
+place, does not.
+
+``custom_adapter_binding_abi``/``verify_custom_adapter_binding_abi`` below
+are the NEW admission surface: the real route now taken.
 ``tools/glslcpp/generate_typed_slice.py``'s ``_factory_route`` and
 ``tools/dsl/generate_backend_compatibility.py``'s ``_custom_factory_route``
-(today both hardcode ``classicNoisedeck/bitEffects:bitEffects`` as the only
-custom-adapter key, and that ABI extractor only recognizes
-``b.get<T>("name")``/``b.get_number("name")`` call shapes -- not the
-``b.get_or<T>(name, default)`` or ``b.texture(name)`` shapes this kernel
-needs for its many optional zone uniforms and its 8 sampler bindings). Both
-are outside this lane's permitted edits.
+both generalized their bit_effects-only hardcode into a small table and call
+``custom_adapter_binding_abi()`` for this key's declared ABI -- not
+regex-scraped the way bit_effects.cpp's literal ``b.get<T>("name")`` calls
+are, since ``bind_remap`` builds names at runtime
+(``"zone" + std::to_string(zone) + "_count"``, ...). Both generators call
+``verify_custom_adapter_binding_abi`` to fail closed if that declaration
+ever drifts from ``include/noisemaker/effects/remap.hpp``'s own exported
+``kBindingAbi`` contract table.
 """
 
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import Mapping
 from typing import NamedTuple
 
@@ -387,6 +396,59 @@ def authenticate_remap_frontend(program: TypedProgram, source_hash: str | None,
                          preflight, SOURCE_CONSTANTS, tuple(unique))
 
 
+# --- custom_adapter route (the NEW admission surface; see module docstring) ---
+
+CUSTOM_ADAPTER_SOURCE = "src/effects/remap.cpp"
+CUSTOM_ADAPTER_HEADER = "include/noisemaker/effects/remap.hpp"
+CUSTOM_ADAPTER_FACTORY = "noisemaker::effects::bind_remap"
+_MAX_ZONES = 8
+_MAX_PAIRS = 32
+
+
+def custom_adapter_binding_abi() -> tuple[dict[str, str], ...]:
+    """The explicit, hand-declared ABI for ``bind_remap``'s binding surface.
+
+    In the exact order ``bind_remap()`` (``src/effects/remap.cpp``) reads
+    them. Not regex-scraped: ``bind_remap`` builds names at runtime
+    (``"zone" + std::to_string(zone) + "_count"``, ...), so there is no
+    literal ``b.get<T>("name")`` text to scrape the way the bit_effects.cpp
+    route does. Cross-checked against ``remap.hpp``'s own exported
+    ``kBindingAbi`` table by ``verify_custom_adapter_binding_abi`` below --
+    the two are meant to be kept in lockstep by hand; a mismatch there is
+    the generator's signal that one drifted without the other.
+    """
+    names: list[tuple[str, str]] = [
+        ("tileOffset", "glsl::Vec2"), ("fullResolution", "glsl::Vec2"),
+        ("resolution", "glsl::Vec2"), ("zoneCount", "double"),
+        ("smoothEdge", "double"), ("bgColor", "glsl::DVec3"), ("bgAlpha", "double"),
+    ]
+    for zone in range(_MAX_ZONES):
+        names += [(f"zone{zone}_count", "double"), (f"zone{zone}_active", "double"),
+                  (f"zone{zone}_alpha", "double"), (f"zone{zone}_bounds", "glsl::DVec4")]
+        names += [(f"zone{zone}_v{pair}", "glsl::DVec4") for pair in range(_MAX_PAIRS)]
+        names.append((f"zone{zone}_tex", "sampler2D"))
+    return tuple({"name": name, "cpp_type": cpp_type, "source": "custom_adapter"}
+                 for name, cpp_type in names)
+
+
+def verify_custom_adapter_binding_abi(repository) -> None:
+    """Fail closed if ``remap.hpp``'s exported ``kBindingAbi`` table drifts
+    from ``custom_adapter_binding_abi()``.
+    """
+    import pathlib
+    header_path = pathlib.Path(repository) / CUSTOM_ADAPTER_HEADER
+    header = header_path.read_text(encoding="utf-8")
+    pairs = re.findall(r'\{"([^"]+)",\s*"([^"]+)"\}', header)
+    if not pairs:
+        raise ValueError(f"{CUSTOM_ADAPTER_HEADER}: exported binding ABI table not found")
+    exported = {(name, cpp_type) for name, cpp_type in pairs}
+    expected = {(item["name"], item["cpp_type"]) for item in custom_adapter_binding_abi()}
+    if exported != expected:
+        raise ValueError(
+            f"{CUSTOM_ADAPTER_HEADER}: exported binding ABI table drifted "
+            "from custom_adapter_binding_abi()'s declaration")
+
+
 __all__ = (
     "KEY", "REMAP_KEY", "PROFILE", "REMAP_PROFILE", "KEYS", "PROFILES",
     "PREPARED_KEYS", "PREPARED_PROFILES", "REQUIRED_COMPANION_PROFILES",
@@ -396,4 +458,6 @@ __all__ = (
     "NORMALIZED_SHA256", "FUNCTIONS_SHA256", "WHOLE_SHA256",
     "INTERFACE_SHA256", "BindingPreflight", "IndexRecord", "LoopRecord",
     "FrontendProof", "preflight_remap_bindings", "authenticate_remap_frontend",
+    "CUSTOM_ADAPTER_SOURCE", "CUSTOM_ADAPTER_HEADER", "CUSTOM_ADAPTER_FACTORY",
+    "custom_adapter_binding_abi", "verify_custom_adapter_binding_abi",
 )

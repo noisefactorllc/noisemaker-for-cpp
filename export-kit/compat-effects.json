@@ -108,6 +108,7 @@
   "filter/strokes",
   "filter/tetraColorArray",
   "filter/tetraCosine",
+  "filter/text",
   "filter/texture",
   "filter/threshold",
   "filter/tile",

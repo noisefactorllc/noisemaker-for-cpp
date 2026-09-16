@@ -1109,8 +1109,7 @@
     },
     {
       "defines": {},
-      "program_key": "synth/remap:remap",
-      "remap_profile": "remap-std140-frontend-v1"
+      "program_key": "synth/remap:remap"
     },
     {
       "defines": {},

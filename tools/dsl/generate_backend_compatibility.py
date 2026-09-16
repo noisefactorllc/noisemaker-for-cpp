@@ -27,6 +27,12 @@ if __package__ in (None, ""):
 
 from tools.glslcpp import check_corpus, check_semantics, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
+from tools.glslcpp.frontend.remap_profile import (
+    KEY as REMAP_KEY,
+    CUSTOM_ADAPTER_FACTORY as REMAP_CUSTOM_ADAPTER_FACTORY,
+    CUSTOM_ADAPTER_SOURCE as REMAP_CUSTOM_ADAPTER_SOURCE,
+    custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
+    verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi)
 from tools.glslcpp.frontend.lexer import tokenize
 from tools.glslcpp.frontend.preprocess import normalize
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -424,6 +430,47 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
     return {"unresolved": unresolved}, uniforms, samplers
 
 
+_REMAP_GLSL_TYPE_BY_CPP_TYPE = {
+    "double": "double", "glsl::Vec2": "vec2", "glsl::DVec3": "dvec3", "glsl::DVec4": "dvec4",
+}
+
+
+def _remap_top_level_binding_abi() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+    """The real dispatch-time ABI for synth/remap:remap's custom_adapter route.
+
+    Every name in remap_custom_adapter_binding_abi(), classified by its real
+    executor source: tileOffset/fullResolution/resolution are
+    reserved_runtime_state (exactly as the authority binds them -- see
+    src/csl/glsl-kernel.js createCanonicalBindings); zone{N}_tex is a
+    resource (sampler), matching the effect's own declared `zone{N}_tex`
+    surface parameter and its `pass.inputs` route; every other name is an
+    effect_parameter, matching a declared DSL parameter of the same name
+    (zone{N}_active is the one exception: it is never an authored
+    parameter, only the color-mode flag `zone{N}_tex` publishes when bound --
+    source_name points at zone{N}_tex, exactly as
+    src/graph/executor.cpp's bound_uniform_value() resolves any surface
+    parameter's colorModeUniform).
+    """
+    reserved = {"tileOffset", "fullResolution", "resolution"}
+    uniforms: list[dict[str, Any]] = []
+    samplers: list[dict[str, Any]] = []
+    for item in remap_custom_adapter_binding_abi():
+        name, cpp_type = item["name"], item["cpp_type"]
+        if cpp_type == "sampler2D":
+            samplers.append({"name": name, "type": "sampler2D", "cpp_type": "const Surface&",
+                             "source": "resource", "resource": name})
+            continue
+        glsl_type = _REMAP_GLSL_TYPE_BY_CPP_TYPE[cpp_type]
+        if name in reserved:
+            uniforms.append({"name": name, "type": glsl_type, "cpp_type": cpp_type,
+                             "source": "reserved_runtime_state", "source_name": name})
+            continue
+        source_name = name[: -len("active")] + "tex" if name.endswith("_active") else name
+        uniforms.append({"name": name, "type": glsl_type, "cpp_type": cpp_type,
+                         "source": "effect_parameter", "source_name": source_name})
+    return {"unresolved": []}, uniforms, samplers
+
+
 def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any]], defines: dict[str, Any], effect: dict[str, Any], entry: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
     key = entry["program_key"]
     current_pass = _pass_index(effect, key)
@@ -460,7 +507,17 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         transform = typed_record.get("compatibility_transform", "none")
     else:
         transform = "none"
-    abi, uniforms, samplers = _binding_abi(effect, current_pass, typed_record)
+    if key == REMAP_KEY:
+        # _binding_abi's generic logic classifies remap.glsl's own DECLARED
+        # interface (the packed std140 `data[275]` array, tileOffset,
+        # fullResolution, zone{N}_tex) -- the ABI the retired typed-generation
+        # path needed. bind_remap (the real, dispatched factory) never reads
+        # that array; it reads the semantic names declared in
+        # remap_custom_adapter_binding_abi() directly. This is the actual
+        # dispatch-time ABI PassAdmission/resolve_uniform materializes.
+        abi, uniforms, samplers = _remap_top_level_binding_abi()
+    else:
+        abi, uniforms, samplers = _binding_abi(effect, current_pass, typed_record)
     typed_abi = typed_record["typed_abi"]
     physical_outputs = list(typed_abi["outputs"])
     logical_outputs = list(current_pass.get("outputs", {}).values())
@@ -664,9 +721,45 @@ def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]])
     return result
 
 
+# Custom-adapter routes this generator recognizes. bit_effects's ABI is
+# regex-scraped from its literal `b.get<T>("name")` text (see below); remap's
+# is declared explicitly by tools/glslcpp/frontend/remap_profile.py, since
+# bind_remap builds its names at runtime and has no such literal text to
+# scrape (see that module's docstring for the full rationale).
+_CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY})
+
+
+def _remap_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / REMAP_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise CompatibilityError("custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_remap\s*\([^)]*\)", source):
+        raise CompatibilityError(f"{key}: custom factory identity missing")
+    try:
+        remap_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise CompatibilityError(f"{key}: {error}") from error
+    calls = list(remap_custom_adapter_binding_abi())
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": REMAP_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
-    if key != "classicNoisedeck/bitEffects:bitEffects":
+    if key not in _CUSTOM_ADAPTER_KEYS:
         raise CompatibilityError(f"unknown custom factory route: {key}")
+    if key == REMAP_KEY:
+        return _remap_custom_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
     if source_path.is_symlink() or not source_path.is_file():
         raise CompatibilityError("custom factory source missing")

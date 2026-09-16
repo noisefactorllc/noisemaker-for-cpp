@@ -242,8 +242,11 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  REQUIRE(typed_emitter == 210U);
-  REQUIRE(custom_adapter == 1U);
+  // synth/remap:remap moved from typed_emitter to custom_adapter (see
+  // src/effects/remap.cpp): its GLSL cannot be typed-lowered, so it joins
+  // classicNoisedeck/bitEffects:bitEffects as the second custom_adapter route.
+  REQUIRE(typed_emitter == 209U);
+  REQUIRE(custom_adapter == 2U);
 }
 
 TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {
@@ -424,37 +427,42 @@ TEST(graph_executor_resolves_typed_compile_define_bindings_from_owned_parameters
   REQUIRE(renderer.render(explicit_plan, inputs).pass_count() == 1U);
 }
 
-TEST(graph_executor_owns_the_remap_uniform_block_and_canonical_defaults) {
-  // KNOWN FAILING: see the comment on
-  // graph_executor_binds_every_declared_sampler_of_a_wide_route above --
-  // synth/remap:remap is "incompatible" pending a custom_adapter route this
-  // lane cannot add. The 275-row layout and bounds-row assertions below
-  // (rows 267..274, added in this lane) are otherwise ready for when that
-  // lands.
+TEST(graph_executor_owns_the_remap_semantic_bindings_and_canonical_defaults) {
+  // synth/remap:remap is a custom_adapter route (see src/effects/remap.cpp):
+  // its dispatch-time ABI is bind_remap's own semantic uniform surface
+  // (zoneCount, smoothEdge, bgColor, bgAlpha, zone{N}_*), never the retired
+  // packed std140 `data[275]` array -- that array is no longer part of this
+  // program's admission at all (nothing declares a "data" uniform for it
+  // any more), so it is unreachable through bind_compiled_pass.
   Renderer renderer;
   auto plan = renderer.compile(kRemapSource, "remap-uniforms.dsl");
   const auto inputs = options(13U, 4U);
   const auto bindings = bind_compiled_pass(plan, "synth/remap", 0U, inputs, 13U, 4U);
-  const auto& block = bindings.get<glsl::RemapUniformData>("data");
-  // Row 0 is the background color/alpha, row 1 carries the zone count and the
-  // authority's 0.04 smooth-edge fallback, and the final row carries the
-  // render extent supplied by the caller.
-  REQUIRE(block.data[0][3] == 1.0F);
-  REQUIRE(block.data[1][0] == 0.0F);
-  REQUIRE(block.data[1][1] == noisemaker::f32(0.04));
-  REQUIRE(block.data[2][3] == 1.0F);
-  REQUIRE(block.data[265][0] == 0.0F);
-  REQUIRE(block.data[266][0] == 13.0F);
-  REQUIRE(block.data[266][1] == 4.0F);
-  // Rows 267..274 are the eight per-zone bounds rows upstream added; with no
-  // zone{N}_bounds parameter bound, every one of the eight defaults to the
+  REQUIRE(bindings.get_or<double>("zoneCount", -1.0) == 0.0);
+  REQUIRE(bindings.get_or<double>("smoothEdge", -1.0) == 0.04);
+  REQUIRE(bindings.get_or<double>("bgAlpha", -1.0) == 1.0);
+  const auto bg_color = bindings.get_or<glsl::DVec3>("bgColor", glsl::DVec3(-1.0, -1.0, -1.0));
+  REQUIRE(bg_color[0] == 0.0);
+  REQUIRE(bg_color[1] == 0.0);
+  REQUIRE(bg_color[2] == 0.0);
+  REQUIRE(bindings.get<glsl::Vec2>("fullResolution") == glsl::Vec2(13.0F, 4.0F));
+  REQUIRE(bindings.get<glsl::Vec2>("resolution") == glsl::Vec2(13.0F, 4.0F));
+  // No zone{N}_tex is bound (kRemapSource wires none), so every zone's
+  // colorModeUniform-derived `active` flag reads the authority's unbound
+  // default: 0.
+  for (std::size_t zone = 0U; zone < 8U; ++zone) {
+    const auto name = "zone" + std::to_string(zone) + "_active";
+    REQUIRE(bindings.get_or<double>(name, -1.0) == 0.0);
+  }
+  // No zone{N}_bounds is bound either; every zone defaults to the
   // authority's [0, 0, 1, 1] (a box that never rejects a canvas pixel).
   for (std::size_t zone = 0U; zone < 8U; ++zone) {
-    const auto& bounds = block.data[267U + zone];
-    REQUIRE(bounds[0] == 0.0F);
-    REQUIRE(bounds[1] == 0.0F);
-    REQUIRE(bounds[2] == 1.0F);
-    REQUIRE(bounds[3] == 1.0F);
+    const auto name = "zone" + std::to_string(zone) + "_bounds";
+    const auto bounds = bindings.get_or<glsl::DVec4>(name, glsl::DVec4(-1.0, -1.0, -1.0, -1.0));
+    REQUIRE(bounds[0] == 0.0);
+    REQUIRE(bounds[1] == 0.0);
+    REQUIRE(bounds[2] == 1.0);
+    REQUIRE(bounds[3] == 1.0);
   }
 }
 
@@ -724,18 +732,14 @@ TEST(graph_executor_binds_the_render_seed_over_a_defaulted_effect_seed) {
 }
 
 TEST(graph_executor_publishes_a_bound_zone_surface_into_the_remap_block) {
-  // A bound zone surface publishes its color-mode flag, so `zone0_active` is
-  // 1 and the rendered bytes equal the authority exactly.
-  //
-  // KNOWN FAILING: see the comment on
-  // graph_executor_binds_every_declared_sampler_of_a_wide_route above --
-  // synth/remap:remap is "incompatible" pending a custom_adapter route this
-  // lane cannot add. The expected rgba8 hash below is the OLD (267-row,
-  // typed-generated-kernel) authority's output; once the custom_adapter
-  // route lands and actually dispatches noisemaker::effects::bind_remap for
-  // this pass, that hash must be recomputed against the real authority
-  // (remap.js) rather than assumed equal -- do not carry it forward
-  // unverified.
+  // A bound zone surface publishes its color-mode flag through the generic
+  // bound_uniform_value() mechanism, so `zone0_active` reads 1 (bound) while
+  // `zone1_active` -- never bound, since zoneCount: 1 -- reads the authority's
+  // unbound default of 0. This is the native end-to-end proof: the rendered
+  // bytes are compared against a hash captured directly from the JS
+  // authority (node tools/benchmark/run_cpu_case.mjs against
+  // .nm-cpp-work/authority/61aa869) for this exact source/options, not
+  // assumed equal to any prior kernel's output.
   Renderer renderer;
   const auto source =
       "search synth\n"
@@ -746,9 +750,8 @@ TEST(graph_executor_publishes_a_bound_zone_surface_into_the_remap_block) {
   auto inputs = options(6U, 4U);
   inputs.seed = 3.0;
   const auto bindings = bind_compiled_pass(plan, "synth/remap", 0U, inputs, 6U, 4U);
-  const auto& block = bindings.get<glsl::RemapUniformData>("data");
-  REQUIRE(block.data[2][1] == 1.0F);
-  REQUIRE(block.data[3][1] == 0.0F);
+  REQUIRE(bindings.get_or<double>("zone0_active", -1.0) == 1.0);
+  REQUIRE(bindings.get_or<double>("zone1_active", -1.0) == 0.0);
   REQUIRE(rgba8_sha256(renderer.render(plan, inputs)) ==
           "8a9c935c59f4b61cd6baaf7cb0413e1e0671418073528aefde032fd5078bba45");
 }

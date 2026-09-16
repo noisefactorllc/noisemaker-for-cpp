@@ -14,44 +14,23 @@
 
 // Hand-written CPU kernel for synth/remap:remap.
 //
-// Route rationale (see include/noisemaker/effects/remap.hpp for the short
-// version): the new upstream remap.glsl introduces `struct ZoneTest { bool
-// inside; float d2; }`, the same construct that already made the
-// authority's own JS glsl-transpiler give up (see the authority's
-// src/effects/adapters/remap.js header comment) and fall back to a
-// hand-written adapter. Unlike the corpus's other three corpus-status
-// "adapter" programs (synth/julia, classicNoisedeck/fractal,
-// filter/palette, filter/historicPalette), whose JS adapters are faithful
-// float32 mirrors of their GLSL (explicit Math.fround at every point that
-// matters) and so remain typed-generation-compatible, remap.js has zero
-// Math.fround calls anywhere in its body: every intermediate (edge tests,
-// squared distances, smoothstep, premultiplied compositing) is plain
-// double-precision JS-number math, rounded to float32 only once, by the
-// Float32Array store the runtime writes `out[]` into.
+// Why hand-written, not typed-generated: the authority's own adapter
+// (src/effects/adapters/remap.js) computes in plain double precision and
+// rounds to float32 only once, at the final output store -- it has no
+// Math.fround calls anywhere. Typed generation rounds to float32 after
+// every operation instead (GLSL's mandated per-op float semantics), and an
+// empirical double-vs-float32-per-op probe on a feathered edge found the
+// two disagree in the last mantissa bit for ~11.65% of feather-touched
+// pixels. Feathering is core functionality, not a corner case, so typed
+// generation cannot be bit-exact here. This kernel instead mirrors
+// remap.js operation-for-operation in `double`, rounding only at the four
+// `out[]` writes -- see docs/port-engineering/remap-parity/ for the oracle
+// that proves it.
 //
-// A typed-generated C++ kernel necessarily rounds to float32 after every
-// operation, mirroring GLSL's mandated per-operation float semantics --
-// that is what "typed generation" means. Double rounding (compute in wide
-// precision, round once) is not in general equal to single rounding after
-// every step. An empirical probe (double-throughout vs. float32-per-op,
-// same operation order, a diagonal-edged feathered triangle over ~64k
-// pixels) found the two disagree in the last mantissa bit for about 11.65%
-// of pixels touched by the distance/smoothstep math -- and feathering
-// (smoothEdge > 0) is core, documented functionality, not a corner case.
-// Typed generation therefore cannot be bit-exact against this authority for
-// this program. This kernel instead mirrors remap.js operation-for-
-// operation: plain `double` throughout, `noisemaker::f32()` applied only at
-// the four `out[]` writes at the very end, exactly where the authority's
-// Float32Array store rounds.
-//
-// Every uniform below is read directly from `Bindings` at bind time (never
-// per pixel), matching `src/effects/bit_effects.cpp`'s State pattern. Zone
-// geometry, bounds and color are read as `glsl::DVec3`/`glsl::DVec4`
-// (double lanes), not `Vec3`/`Vec4` (float lanes): the authority's semantic
-// bindings are plain, unrounded JS numbers (`$bindings.zone{N}_bounds`,
-// `...v{pair}`, `.bgColor`, ...), authored at arbitrary precision -- a
-// float32-lane read would silently round them on the way in and reintroduce
-// exactly the divergence the double-precision body is trying to avoid.
+// Zone geometry/bounds/color are read as glsl::DVec3/DVec4 (double lanes),
+// not Vec3/Vec4 (float lanes): the authority's semantic bindings are
+// unrounded JS doubles, and a float32 lane would silently reintroduce the
+// same divergence.
 namespace noisemaker::effects {
 namespace {
 

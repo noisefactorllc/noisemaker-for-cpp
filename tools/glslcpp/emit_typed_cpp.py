@@ -11834,6 +11834,21 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 f"// Source SHA-256: {source_hash}\n" +
                 _render_dither_typed_cpp(program, source_hash, namespace, factory,
                                          dither_frontend_profile))
+    if program.key == REMAP_KEY:
+        # synth/remap:remap is a custom_adapter route (see
+        # tools/glslcpp/generate_typed_slice.py's _factory_route and
+        # src/effects/remap.cpp): its GLSL introduces `struct ZoneTest` and
+        # bvec2 relational builtins the generic emitter below does not lower,
+        # and its real authority is the hand-written
+        # noisemaker::effects::bind_remap, not a typed-generated kernel. No
+        # body is generated here at all -- no State struct, no pixel
+        # function, no bind_* symbol -- because nothing downstream (the
+        # 2-field and full canonical-route tables in generate_typed_slice.py)
+        # references one for this program key any more.
+        return (f"// Typed IR program: {program_key}\n"
+                f"// Source SHA-256: {source_hash}\n"
+                "// custom_adapter route: no typed kernel body generated;\n"
+                "// see noisemaker::effects::bind_remap (src/effects/remap.cpp).\n")
     emitter = _Emitter(program, source_hash, numeric_literal_contract,
                        compatibility_transform,
                        custom_comparer_profile,

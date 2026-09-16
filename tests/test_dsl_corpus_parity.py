@@ -51,7 +51,7 @@ class CorpusParityTest(unittest.TestCase):
         self.assertIsNotNone(node, "node is required for the authority runner")
         corpus = load_corpus()
         records = [item for item in corpus["records"] if item["recordKind"] == "admitted"]
-        self.assertEqual(len(records), 166)
+        self.assertEqual(len(records), 167)
         expected_exclusions = json.loads(EXCLUSIONS.read_text(encoding="utf-8"))
 
         exact: list[str] = []
