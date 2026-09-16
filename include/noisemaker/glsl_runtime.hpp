@@ -71,6 +71,10 @@ template <std::size_t N, class Function>
 // (IEEE-754 correctly-rounded on both sides already).
 [[nodiscard]] inline float ceil(double value) { return noisemaker::f32(std::ceil(value)); }
 [[nodiscard]] inline float cos(double value) { return noisemaker::f32(noisemaker::fdlibm::cos(value)); }
+// glsl-runtime.js: `degrees: unary((value) => value * RAD_TO_DEG)` with
+// RAD_TO_DEG = 180 / Math.PI, i.e. one double product then F32 -- the exact
+// mirror of radians() below and its DEG_TO_RAD = Math.PI / 180.
+[[nodiscard]] inline float degrees(double radians) { return noisemaker::f32(radians * 57.29577951308232); }
 [[nodiscard]] inline float exp(double value) { return noisemaker::f32(noisemaker::fdlibm::exp(value)); }
 [[nodiscard]] inline float floor(double value) { return noisemaker::f32(std::floor(value)); }
 [[nodiscard]] inline float log(double value) { return noisemaker::f32(noisemaker::fdlibm::log(value)); }
@@ -103,6 +107,7 @@ NOISEMAKER_GLSL_UNARY_VECTOR(asin)
 NOISEMAKER_GLSL_UNARY_VECTOR(acos)
 NOISEMAKER_GLSL_UNARY_VECTOR(tan)
 NOISEMAKER_GLSL_UNARY_VECTOR(cos)
+NOISEMAKER_GLSL_UNARY_VECTOR(degrees)
 NOISEMAKER_GLSL_UNARY_VECTOR(exp)
 NOISEMAKER_GLSL_UNARY_VECTOR(exp2)
 NOISEMAKER_GLSL_UNARY_VECTOR(floor)

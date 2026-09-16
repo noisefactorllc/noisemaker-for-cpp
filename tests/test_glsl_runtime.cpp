@@ -398,6 +398,29 @@ TEST(glsl_pixel_context_defaults_to_zero) {
 // Task 31 (Curl): tanh on vec3 and GLSL mod at vec3/vec4-by-scalar widths.
 // GLSL mod is x - y*floor(x/y) (sign of y), NOT C fmod (sign of x); the
 // negative-operand rows below are where a naive fmod port breaks.
+// degrees(): expected bits come from the authority's own adapter,
+// Math.fround(x * (180 / Math.PI)), evaluated in Node over float32 inputs that
+// include signed values, a tiny value, 65504, 1e30, and values landing exactly
+// on 1, 180 and 360 degrees.
+TEST(glsl_degrees_matches_the_authority_unary_adapter_bit_for_bit) {
+  using namespace noisemaker::glsl;
+  struct Case { std::uint32_t input; std::uint32_t expected; };
+  constexpr std::array<Case, 12> cases{{
+      {0x00000000U, 0x00000000U}, {0x3f800000U, 0x42652ee1U}, {0xbf800000U, 0xc2652ee1U},
+      {0x3f000000U, 0x41e52ee1U}, {0x40490fdbU, 0x43340000U}, {0xc02df854U, 0xc31bbeffU},
+      {0x33d6bf95U, 0x36c040b3U}, {0x477fe000U, 0x4a65123bU}, {0x7149f2caU, 0x7434cb2aU},
+      {0x3c8efa35U, 0x3f800000U}, {0x40c90fdbU, 0x43b40000U}, {0x42f6e979U, 0x45dd0c10U},
+  }};
+  for (const Case& item : cases) {
+    const float input = noisemaker::uint_bits_to_float(item.input);
+    REQUIRE(noisemaker::float_bits_to_uint(degrees(input)) == item.expected);
+  }
+  const Vec3 lanes = degrees(Vec3(noisemaker::uint_bits_to_float(0x3f800000U),
+                                  noisemaker::uint_bits_to_float(0x40490fdbU),
+                                  noisemaker::uint_bits_to_float(0xc02df854U)));
+  require_vector_bits(lanes, {0x42652ee1U, 0x43340000U, 0xc31bbeffU});
+}
+
 TEST(glsl_tanh_vec3_and_wide_mod_match_glsl_semantics) {
   using namespace noisemaker::glsl;
   const Vec3 t = tanh(Vec3(0.0f, 1.0f, -1.0f));

@@ -548,8 +548,11 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
                 "35bc343afc6ddda237a7d27601b214abdcd5fe668d0dc1d6d5aebd03ad5f7fba"),
             "validator-builtins": (tuple(sorted(generate_typed_slice._BUILTINS)), 25,
                 "97358ee6a1b503ff8aed40f3aa104136704e2b528f7d2aadb32a24bd53ebe4b7"),
-            "emitter-builtins": (emit_typed_cpp._BUILTIN_NAMES, 22,
-                "664d62a0dd0e600ac1e6e0c95387a54d6cf72369742401bf68faa4245e5cea64"),
+            # 22 -> 23: `degrees`, mirroring `radians` exactly (glsl-runtime.js's
+            # unary adapter, value * (180 / Math.PI) then F32); the validator's
+            # own admission is gated separately by the capability vocabulary.
+            "emitter-builtins": (emit_typed_cpp._BUILTIN_NAMES, 23,
+                "717c07056812c0378ac0e3d8a7f6d3c1a90abd9bafa004bfcd374bbd2cc16f74"),
         }
         for name, (value, count, digest) in values.items():
             with self.subTest(name=name):
