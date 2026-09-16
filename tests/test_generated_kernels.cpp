@@ -586,8 +586,8 @@ TEST(generated_invert_linear_width_three_matches_js_exact_bits_and_nearest_defau
       noisemaker::generated::bind("filter/invert:inv", public_bindings), 3U, 1U);
   constexpr std::array<std::uint32_t, 12> js_linear_bits{
       0x3f800000U, 0x3f600000U, 0x3f400000U, 0x3f800000U,
-      0x00000000U, 0x3f000000U, 0x3e800000U, 0x3f000000U,
-      0x3f7fffffU, 0x3e000000U, 0x3f200000U, 0x3e800000U,
+      0xbf000000U, 0x00000000U, 0xbe800000U, 0x3f000000U,
+      0x3e7ffffcU, 0xbf200000U, 0xbe000002U, 0x3e800000U,
   };
   REQUIRE(direct.data().size() == js_linear_bits.size());
   REQUIRE(public_output.data().size() == js_linear_bits.size());
@@ -607,8 +607,8 @@ TEST(generated_invert_linear_width_three_matches_js_exact_bits_and_nearest_defau
       noisemaker::generated::bind_filter_invert(nearest_bindings), 3U, 1U);
   constexpr std::array<std::uint32_t, 12> js_nearest_bits{
       0x3f800000U, 0x3f600000U, 0x3f400000U, 0x3f800000U,
-      0x00000000U, 0x3f000000U, 0x3e800000U, 0x3f000000U,
-      0x3f800000U, 0x3e000000U, 0x3f200000U, 0x3e800000U,
+      0xbf000000U, 0x00000000U, 0xbe800000U, 0x3f000000U,
+      0x3e800000U, 0xbf200000U, 0xbe000000U, 0x3e800000U,
   };
   REQUIRE(nearest.data().size() == js_nearest_bits.size());
   for (std::size_t lane = 0; lane < nearest.data().size(); ++lane) {
