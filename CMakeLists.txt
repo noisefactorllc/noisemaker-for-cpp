@@ -25,6 +25,7 @@ add_library(noisemaker-cpu
   src/pass_runner.cpp
   src/effects/bit_effects.cpp
   src/effects/remap.cpp
+  src/effects/cpu/worm_overlay.cpp
   src/generated/synth_solid.cpp
   src/generated/filter_invert.cpp
   src/typed_generated/typed_slice.cpp
@@ -132,6 +133,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
   tests/test_scatter_wormhole.cpp
+  tests/test_worm_overlay.cpp
   tests/test_effect_catalog.cpp
   tests/test_dsl_lexer.cpp
   tests/test_dsl_parser.cpp
