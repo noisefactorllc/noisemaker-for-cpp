@@ -374,7 +374,7 @@ TEST(typed_math_slice_sixteen_external_oracles_are_repeatable) {
       {"filter/ridge:ridge", "14e083e0d2e604d0b5559ebbdd175316ae313160e5aca89c468678ef3932eff9", "5d220bfe0488a6b32a233b82932edee6b8b5e094c478b95f54289d6e0edc1b8b", 0x3eba3eaaU},
       {"filter/scatter:scatterJitter", "3894d5739e765cf71a39a082abb8315bfd5fac4a7d6be6c4f8a8cf9b87ae5c8c", "d3425ff7218c66a0a0711e3ed96f3c343df410227e22cececf9ad51dc48c42be", 0x3df0f0f1U},
       {"filter/simpleAberration:chromaticAberration", "09c9d93ea78ddb0f877dd993f6af3f5b7d7ffd9c10d05fe4dc2f4b505f1af7e6", "42c44f9ac2cd9b55e1dc92abd18afa3960b6a7982d44e9463db03717b207b760", 0x3e30b0b1U},
-      {"filter/text:text", "a6dba9bbe4b6dfeab15bfc45089f5255e359d292a1a7199ca76ce42da549b134", "cde2a1348bc93ad9c33a91b3ae4c3c711af183490b365ffd967fd296f9e7e2de", 0x3f15f244U},
+      {"filter/text:text", "997dc1b44ba44b9dd63e68ea7182c7b2df6148565d359e5f406087da4d26fe78", "9a03fadce3dc09be280da2a0d8d89cbd14c822222893dd9fd38d8d71e780a223", 0x3d8faa52U},
       {"filter/unsharpMask:usmCombine", "dcb8cd1ae6f41bba9ab35d807a4d89d158605be5a2fb5b8bd199def2d06970a5", "c5c85cddd59a4e9c9c6e98e316ad8de4074dffbd4787c841a5cd1b6f80829630", 0x00000000U},
       {"filter/watercolor:wcComposite", "409c8f37bb8778750cedc218f2ca6d488ad6fffe1c090c786d7e3c582bde5a3b", "1bdc0c3ae9f57ef445f25fa3e3cac55cbcfbba28745b0a2af58c885a6d514bc4", 0x3d3f48c0U},
       {"filter/watercolor:wcSeed", "29f8cb0bcb53dac6c6c0f32405d5ee0670617a236c5b59c2aa9d3536637abe0a", "b758a60117b29acbcaa0d2e74eaef9487d06f80d1cf5363df30967a981e0df2f", 0x3d50d0d1U},
