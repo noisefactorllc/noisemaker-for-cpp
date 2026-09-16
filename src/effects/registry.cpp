@@ -125,7 +125,12 @@ void required_binding_array(const Value& value, const std::string& context, bool
     } else {
       nonempty_string(required_field(item.object, "name", ValueKind::string, context), context + ".name");
       const auto& type = required_field(item.object, "type", ValueKind::string, context);
-      const std::array<std::string_view, 8> allowed_types = {"float", "int", "bool", "vec2", "vec3", "vec4", "ivec2", "vec4[267]"};
+      // "vec4[267]" stays allowed for the not-yet-regenerated compatibility
+      // document (still declares Remap's retired packed uniform at its old
+      // width); "vec4[275]" is the new width the executor and corpus now
+      // use (see glsl::RemapUniformData). Additive on purpose: nothing here
+      // may reject the stale generated document this lane does not own.
+      const std::array<std::string_view, 9> allowed_types = {"float", "int", "bool", "vec2", "vec3", "vec4", "ivec2", "vec4[267]", "vec4[275]"};
       if (std::find(allowed_types.begin(), allowed_types.end(), type.string) == allowed_types.end())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": uniform type");
       const auto& source = required_field(item.object, "source", ValueKind::string, context);

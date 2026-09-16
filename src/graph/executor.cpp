@@ -1092,7 +1092,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
     }
   }
   known = known || (abi.type == "ivec2" && abi.cpp_type == "glsl::IVec2") ||
-          (abi.type == "vec4[267]" && abi.cpp_type == "vec4[267]");
+          (abi.type == "vec4[275]" && abi.cpp_type == "vec4[275]");
   if (!known || abi.name.empty() || abi.source_name.empty()) {
     throw binding_error(step, admission, GraphErrorCode::binding_type,
                         "uniform ABI type or name is unsupported");
@@ -1203,12 +1203,12 @@ void validate_uniform_abi_shape(const EffectStep& step,
     if (cpp_type == "glsl::Vec4") return glsl::Vec4(f[0], f[1], f[2], f[3]);
     if (cpp_type == "glsl::IVec2") return glsl::IVec2(i[0], i[1]);
   }
-  if (cpp_type == "vec4[267]") {
-    if (value.kind != PlanValue::Kind::array || value.array.size() != 267U) {
+  if (cpp_type == "vec4[275]") {
+    if (value.kind != PlanValue::Kind::array || value.array.size() != 275U) {
       return fail("remap block has the wrong cardinality");
     }
     glsl::RemapUniformData result;
-    for (std::size_t index = 0; index < 267U; ++index) {
+    for (std::size_t index = 0; index < 275U; ++index) {
       const auto& row = value.array[index];
       if (row.kind != PlanValue::Kind::array || row.array.size() != 4U) {
         return fail("remap block row has the wrong width");
@@ -1289,7 +1289,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
         (abi.cpp_type == "glsl::Vec3" && std::holds_alternative<glsl::Vec3>(resolved)) ||
         (abi.cpp_type == "glsl::Vec4" && std::holds_alternative<glsl::Vec4>(resolved)) ||
         (abi.cpp_type == "glsl::IVec2" && std::holds_alternative<glsl::IVec2>(resolved)) ||
-        (abi.cpp_type == "vec4[267]" && std::holds_alternative<glsl::RemapUniformData>(resolved));
+        (abi.cpp_type == "vec4[275]" && std::holds_alternative<glsl::RemapUniformData>(resolved));
     if (!correct) throw binding_error(step, admission, GraphErrorCode::binding_type, "pass-derived value has the wrong C++ type");
     return resolved;
   }
@@ -1567,9 +1567,15 @@ namespace {
   return glsl::Vec4(lanes[0], lanes[1], lanes[2], lanes[3]);
 }
 
-// The CPU authority's remapUniformData(): a fixed 267-row std140 block built
-// from the effect's own bound uniforms, with the render extent in the last
-// row. Absent optional uniforms use the authority's exact fallbacks.
+// The CPU authority's remapUniformData(): a fixed 275-row std140 block built
+// from the effect's own bound uniforms, with the render extent in row 266 and
+// the eight per-zone bounds rows (added upstream) in rows 267..274. Absent
+// optional uniforms use the authority's exact fallbacks. This packed block
+// feeds only the retired 267/275-row GLSL typed-generation path; the live
+// authority kernel for synth/remap:remap is the hand-written adapter
+// (remap.js / bind_remap()), which reads the same effect uniforms directly
+// and never touches this array. Kept in parity anyway: nothing here may
+// silently drift from remapUniformData() just because it is unused.
 [[nodiscard]] glsl::RemapUniformData remap_uniform_block(
     const effects::EffectDefinition& definition, const EffectStep& step,
     const PassAdmission& admission, std::size_t render_width,
@@ -1586,6 +1592,12 @@ namespace {
     PlanValue owned;
     return derived_vector(bound_uniform_value(definition, step, name, owned),
                           step, admission, name);
+  };
+  const auto bounds_lane = [&](const std::string& name) {
+    PlanValue owned;
+    const auto* bound = bound_uniform_value(definition, step, name, owned);
+    if (bound == nullptr) return glsl::Vec4(0.0F, 0.0F, 1.0F, 1.0F);
+    return derived_vector(bound, step, admission, name);
   };
   glsl::RemapUniformData block;
   glsl::Vec4 background_lanes(0.0F, 0.0F, 0.0F, 0.0F);
@@ -1618,6 +1630,7 @@ namespace {
       block.data[10U + zone * 32U + pair] =
           vector_lane(prefix + "v" + std::to_string(pair));
     }
+    block.data[267U + zone] = bounds_lane(prefix + "bounds");
   }
   block.data[266] = glsl::Vec4(static_cast<float>(render_width),
                                static_cast<float>(render_height), 0.0F, 0.0F);

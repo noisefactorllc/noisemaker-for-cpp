@@ -26,6 +26,12 @@ _BUILTIN_IDS = {name: -(index + 1) for index, name in enumerate((
     "normalize", "notEqual", "packHalf2x16", "pow", "radians", "reflect",
     "refract", "round", "sign", "sin", "smoothstep", "sqrt", "step", "tanh",
     "texelFetch", "texture", "textureLod", "textureSize", "unpackHalf2x16",
+    # Appended, not inserted alphabetically: every other builtin's negative
+    # id is hash-pinned by at least one frontend admission profile
+    # (_ANY_SIGNATURE_ID, _NOTEQUAL_SIGNATURE_ID, REFLECT_SIGNATURE_ID,
+    # _NODE_SIGNATURE_ID for round). Appending keeps every existing id
+    # unchanged; only a brand-new name gets the newly free id.
+    "greaterThan",
 ))}
 
 # Declarative GLSL ES builtin surface.  Names select a reusable signature
@@ -38,7 +44,8 @@ _BUILTIN_FAMILIES = {
     "distance": ("distance",), "dot": ("dot",), "equal": ("relational",),
     "exp": ("unary_float",), "floatBitsToUint": ("float_bits",),
     "floor": ("unary_float",), "fract": ("unary_float",), "fwidth": ("derivative",),
-    "greaterThanEqual": ("relational",), "inversesqrt": ("unary_float",),
+    "greaterThan": ("relational",), "greaterThanEqual": ("relational",),
+    "inversesqrt": ("unary_float",),
     "length": ("length",), "lessThan": ("relational",), "lessThanEqual": ("relational",),
     "log": ("unary_float",), "log2": ("unary_float",), "max": ("minmax",),
     "min": ("minmax",), "mix": ("mix",), "mod": ("mod",),

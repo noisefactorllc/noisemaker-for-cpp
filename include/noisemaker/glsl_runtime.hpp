@@ -252,11 +252,17 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edg
 
 // Remap's std140 block is a fixed ABI, not a generic dynamically-sized array.
 // Keeping the storage owned makes a binding copy-safe: the caller may release
-// or mutate its source object immediately after set_uniform().
+// or mutate its source object immediately after set_uniform(). 275 rows
+// mirrors the authority's remapUniformData() (src/runtime/renderer.js):
+// slots 267..274 are the eight per-zone bounds rows added upstream, default
+// [0,0,1,1]. This packed block still feeds only the retired 267-row GLSL
+// typed-generation path (kept in parity for whatever still reads it); the
+// live authority kernel for synth/remap:remap is the hand-written adapter
+// (remap.js), which never touches this array -- see bind_remap().
 struct RemapUniformData {
-  std::array<Vec4, 267> data{};
+  std::array<Vec4, 275> data{};
 };
-using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
+using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
 class KernelBindingError : public std::runtime_error { public: using std::runtime_error::runtime_error; };
 class Bindings {
  public:

@@ -436,5 +436,14 @@ using Vec2=Vec<2,float>; using Vec3=Vec<3,float>; using Vec4=Vec<4,float>;
 using IVec2=Vec<2,std::int32_t>; using IVec3=Vec<3,std::int32_t>; using IVec4=Vec<4,std::int32_t>;
 using UVec2=Vec<2,std::uint32_t>; using UVec3=Vec<3,std::uint32_t>; using UVec4=Vec<4,std::uint32_t>;
 using BVec2=Vec<2,bool>; using BVec3=Vec<3,bool>; using BVec4=Vec<4,bool>;
+// Double-precision lane vectors. The authority's CPU adapters (see
+// synth/remap:remap's hand-written remap.js) read semantic uniforms as plain
+// JS numbers -- full double precision, never rounded to float32 mid-kernel.
+// A Vec3/Vec4 (float lanes) would silently round zone geometry and color
+// uniforms to float32 on the way in, breaking bit-exactness against that
+// authority for any component that is not already float32-exact (most
+// authored decimals are not). These reuse the existing generic Vec<N,T>
+// template at T=double; no new class, no change to any existing alternative.
+using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
 using Mat2=Mat<2>; using Mat3=Mat<3>; using Mat4=Mat<4>;
 }  // namespace noisemaker::glsl
