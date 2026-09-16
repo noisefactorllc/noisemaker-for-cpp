@@ -883,26 +883,46 @@ TEST(graph_executor_resolves_an_absent_texture_dimension_as_the_render_extent) {
           "a00aa40f8749301bc115f5b3ab96bb1ea7110bdb4a0f2947d82af672d29d1a43");
 }
 
-TEST(graph_executor_fails_closed_on_the_unported_worm_overlay_resource) {
-  // The authority initializes a declared texture with no producer, but
-  // `overlayTex` on these three effects is fed by a dedicated CPU adapter this
-  // port does not implement. Guessing a zero fill would publish wrong bytes,
-  // so the route is refused by name before any allocation.
-  for (const auto* effect : {"scratches", "strayHair", "fibers"}) {
+TEST(graph_executor_renders_the_canonical_worm_overlay_effects_byte_exact) {
+  // `overlayTex` on these three effects is fed by a dedicated CPU adapter
+  // (noisemaker::effects::cpu::render_canonical_worm_overlay, ported from
+  // src/effects/cpu/worm-overlay.js -- see
+  // docs/port-engineering/worm-overlay-parity/ for the oracle and mutation
+  // evidence). None of these DSL calls names `seed` explicitly, so the
+  // authority's `effectParams()` substitutes the render-level seed
+  // (`options(8,8)`'s seed of 17.0) for the effect's own declared default --
+  // these pinned hashes were captured from the live JS authority under that
+  // exact substitution, not the effect's own seed:1 default.
+  struct Case { const char* effect; const char* sha256; };
+  const Case cases[] = {
+      {"scratches", "9050e3f7cec6503fc0f4ec24f906764b625b5262eeb5f3685ae3026cbff4010d"},
+      {"strayHair", "945bd0bc9cfb10d7105e111817c2f2a254536b0eaa19037630a6124bb975c03c"},
+      {"fibers", "a00aa40f8749301bc115f5b3ab96bb1ea7110bdb4a0f2947d82af672d29d1a43"},
+  };
+  for (const auto& kase : cases) {
     Renderer renderer;
     const std::string source = std::string("search synth, filter\n") +
-                               "solid(color: #3a7)." + effect + "().write(o0)\n" +
+                               "solid(color: #3a7)." + kase.effect + "().write(o0)\n" +
                                "render(o0)\n";
-    try {
-      static_cast<void>(renderer.render(source, options(8U, 8U), "worm.dsl"));
-      REQUIRE(false);
-    } catch (const GraphError& error) {
-      REQUIRE(error.code() == GraphErrorCode::unavailable_pass);
-      REQUIRE(error.detail() ==
-              "declared texture requires the canonical CPU worm-overlay adapter");
-      REQUIRE(error.program_key() == "overlayTex");
-    }
+    const auto result = renderer.render(source, options(8U, 8U), "worm.dsl");
+    REQUIRE(rgba8_sha256(result) == kase.sha256);
   }
+}
+
+TEST(graph_executor_worm_overlay_explicit_seed_bypasses_the_render_seed_substitution) {
+  // With `seed` named explicitly in the DSL call, `effectParams()` must NOT
+  // substitute the render-level seed -- the effect's own explicit value
+  // (7) is what reaches `renderCanonicalWormOverlay`, so this render must
+  // differ from an otherwise-identical unbound-seed render (whose effective
+  // seed is 17, the render-level default from `options()`).
+  Renderer renderer;
+  const std::string explicitSource =
+      "search synth, filter\nsolid(color: #3a7).scratches(seed: 7).write(o0)\nrender(o0)\n";
+  const std::string defaultSource =
+      "search synth, filter\nsolid(color: #3a7).scratches().write(o0)\nrender(o0)\n";
+  const auto explicitResult = renderer.render(explicitSource, options(8U, 8U), "worm-explicit.dsl");
+  const auto defaultResult = renderer.render(defaultSource, options(8U, 8U), "worm-default.dsl");
+  REQUIRE(rgba8_sha256(explicitResult) != rgba8_sha256(defaultResult));
 }
 
 

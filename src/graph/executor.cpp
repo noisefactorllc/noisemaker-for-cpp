@@ -1,5 +1,6 @@
 #include "noisemaker/graph/executor.hpp"
 
+#include "noisemaker/effects/cpu/worm_overlay.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/pass_runner.hpp"
@@ -210,13 +211,18 @@ struct BindingAbiSections {
 // The authority's initializeCanonicalResources(): every declared texture that
 // no pass of the effect produces is created up front. The default branch
 // clears it at the declared extent and format; `overlayTex` on three effects
-// instead reads a dedicated CPU worm-overlay adapter that this port does not
-// implement, so that route fails closed instead of guessing a zero fill.
+// instead reads the canonical CPU worm-overlay adapter
+// (noisemaker::effects::cpu::render_canonical_worm_overlay), ported from
+// src/effects/cpu/worm-overlay.js -- see
+// docs/port-engineering/worm-overlay-parity/ for the oracle and mutation
+// evidence. The authority only takes this branch when
+// `renderOptions.oneShot !== 'initial'`; this port's `one_shot` is a single
+// bool with no `'initial'`-shortcut representation and already corresponds
+// to the authority's default (non-`'initial'`) mode, so the adapter always
+// runs here -- there is no remaining zero-fill case to special-case.
 [[nodiscard]] bool is_worm_overlay_resource(std::string_view effect_id,
                                             std::string_view texture) noexcept {
-  return texture == "overlayTex" &&
-         (effect_id == "filter/fibers" || effect_id == "filter/scratches" ||
-          effect_id == "filter/strayHair");
+  return texture == "overlayTex" && effects::cpu::is_worm_overlay_effect(effect_id);
 }
 
 [[nodiscard]] std::unordered_set<std::string> unproduced_declared_textures(
@@ -864,16 +870,12 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::invalid_snapshot, "effect snapshot index is out of range");
         }
         const auto& snapshot = plan.effects[effect.snapshot_index];
-        // Declared textures with no producer are initialized by the executor
-        // before the first pass runs, so they are available routes from the
-        // start of the step.
+        // Declared textures with no producer (including `overlayTex` on the
+        // three worm-overlay effects, now that the adapter is implemented)
+        // are initialized by the executor before the first pass runs, so
+        // they are available routes from the start of the step -- see the
+        // `declared_textures` exemption in the pass.inputs loop below.
         const auto declared_textures = unproduced_declared_textures(snapshot.definition);
-        for (const auto& declared : declared_textures) {
-          if (!is_worm_overlay_resource(snapshot.definition.id, declared)) continue;
-          throw GraphError(GraphErrorCode::unavailable_pass,
-                           "declared texture requires the canonical CPU worm-overlay adapter",
-                           effect.effect.id, 0, {}, declared);
-        }
         for (std::size_t pass_index = 0; pass_index < snapshot.definition.passes.size(); ++pass_index) {
           const auto& pass = snapshot.definition.passes[pass_index];
           const auto& admission = snapshot.admissions[pass_index];
@@ -1972,9 +1974,47 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             continue;
           }
           if (is_worm_overlay_resource(snapshot.definition.id, texture.name)) {
-            throw GraphError(GraphErrorCode::unavailable_pass,
-                             "declared texture requires the canonical CPU worm-overlay adapter",
-                             step.effect.id, 0, {}, texture.name);
+            // renderCanonicalWormOverlay(definition.id, renderOptions.width,
+            // renderOptions.height, params) -- the authority uses the raw
+            // render extent directly, never `canonicalDestination`'s
+            // pass/texture-formula resolution (which this effect's declared
+            // `overlayTex` happens to resolve to the same value for anyway,
+            // since it is declared at `width: "screen", height: "screen"`).
+            // `density` is this effect instance's own bound parameter
+            // (params.density); a missing binding passes through as the
+            // JS-falsy sentinel 0.0, matching `params.density` on an unbound
+            // (`undefined`) parameter.
+            //
+            // `seed` is NOT simply the effect's own parameter: the
+            // authority's `effectParams()` (renderer.js:313-315) substitutes
+            // the render-level seed whenever the step declares a `seed`
+            // parameter that the DSL call did not name explicitly --
+            // `!Object.hasOwn(step.params,'seed') || step.explicitParams.
+            // includes('seed')` keeps the step's own value; otherwise
+            // `{...step.params, seed: renderOptions.seed}`. This is the same
+            // substitution `bound_uniform_value()` above applies to ordinary
+            // pass uniforms sourced from `effect_parameter:seed`, applied
+            // here too since this resource is materialized outside that
+            // uniform-binding path.
+            const auto* seed_param = parameter(step, "seed");
+            const auto* density_param = parameter(step, "density");
+            const bool seed_explicit =
+                std::find(step.explicit_params.begin(), step.explicit_params.end(), "seed") !=
+                step.explicit_params.end();
+            double seed_value = 0.0;
+            if (seed_param != nullptr && seed_param->kind == PlanValue::Kind::number) {
+              seed_value = seed_explicit ? seed_param->number : inputs.seed;
+            }
+            const double density_value =
+                (density_param != nullptr && density_param->kind == PlanValue::Kind::number)
+                    ? density_param->number
+                    : 0.0;
+            noisemaker::Surface overlay = effects::cpu::render_canonical_worm_overlay(
+                snapshot.definition.id, inputs.width, inputs.height, seed_value, density_value);
+            arena.insert(texture.name, std::move(overlay),
+                         resolve_texture_format(texture.format),
+                         ResourceLifetime::declared);
+            continue;
           }
           try {
             const auto width = resolve_dimension(texture.width, step, arena, inputs.width, true);

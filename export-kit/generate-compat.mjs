@@ -17,10 +17,25 @@ assert.ok(guard, 'cannot locate the executor parity exclusions')
 const excludedKeys = [...guard[2].matchAll(/\{\s*"([^"\n]+:[^"\n]+)"/g)].map(match => match[1])
 assert.equal(excludedKeys.length, Number(guard[1]), 'cannot read every executor parity exclusion')
 const excluded = new Set(excludedKeys)
-const overlayGuard = executor.match(/bool is_worm_overlay_resource\([^)]*\)[^{]*\{([^}]+)\}/)
-assert.ok(overlayGuard, 'cannot locate the executor overlay exclusions')
-const overlayEffects = [...overlayGuard[1].matchAll(/effect_id\s*==\s*"([^"]+)"/g)].map(match => match[1])
-assert.ok(overlayEffects.length > 0, 'cannot read executor overlay exclusions')
+// `is_worm_overlay_resource` names the three effects whose `overlayTex` this
+// route recognizes, but naming them is no longer the same as refusing them:
+// once noisemaker::effects::cpu::render_canonical_worm_overlay existed, the
+// executor's two refusal sites were replaced with real resource
+// materialization (src/graph/executor.cpp). So the exclusion below is keyed
+// on the REFUSAL message actually still being present in the executor, not
+// on `is_worm_overlay_resource`'s effect-id list by itself -- if a future
+// change reintroduces a similarly-shaped "adapter not implemented" refusal
+// (for these effects or new ones sharing the helper), this keeps excluding
+// exactly what it names; if not, as today, it excludes nothing here.
+const overlayRefusalPresent = executor.includes(
+  'declared texture requires the canonical CPU worm-overlay adapter')
+let overlayEffects = []
+if (overlayRefusalPresent) {
+  const overlayGuard = executor.match(/bool is_worm_overlay_resource\([^)]*\)[^{]*\{([^}]+)\}/)
+  assert.ok(overlayGuard, 'cannot locate the executor overlay exclusions')
+  overlayEffects = [...overlayGuard[1].matchAll(/effect_id\s*==\s*"([^"]+)"/g)].map(match => match[1])
+  assert.ok(overlayEffects.length > 0, 'cannot read executor overlay exclusions')
+}
 const effects = new Map()
 for (const pass of backend.reference_passes) {
   assert.match(pass.effect_id, /^[A-Za-z0-9_]+\/[A-Za-z0-9_]+$/)
