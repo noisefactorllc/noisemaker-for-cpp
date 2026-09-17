@@ -95,6 +95,22 @@
 > unlanded and still target a base that predates corpus2 (`pysuite` names `06d77bd`); expect the same kind of stale
 > stale-hash-pin conflicts corpus2 had, not silent application.
 >
+> ### acos admitted (this push, after corpus2)
+>
+> `acos` is now a typed builtin (`unary_float` family, same as `cos`/`sin`/`sqrt`; the runtime side —
+> `noisemaker::glsl::acos` over V8-exact fdlibm — already existed). Purely additive: nothing previously vendored used
+> it. It was never the ONLY blocker on any pending program: it closed one of two blockers on
+> `synth3d/flythrough3d:precompute` (still pending on `cross()`/vec3-initializer gaps) and, on `synth3d/fractal3d:precompute`,
+> unmasked the real remaining blocker — a counted-for loop-bound proof — which `pending.json` now records correctly.
+> **Lesson for the rest of frontier-92's single-count blocker classes**: don't trust a census blocker label as the
+> *only* blocker for a program; re-probe after each fix (`corpus_ratchet.py --write` does this) since the census can
+> only report the first error a pipeline stage hits, and earlier fixes can uncover a second, later-stage one. Of the
+> `any`/`isnan`/`lessThan`/etc. cluster still pending: `any` is not a simple table addition like `acos` was —
+> `include/noisemaker/glsl_types.hpp:430` gates it behind a specific authorized node-identity closure
+> (`waves-any-notequal-admission-v1`), the same proof-gated pattern as `log`/`log2`/`ceil`/`mod` in
+> `emit_typed_cpp.py`'s big dispatch (see the comments there before assuming any remaining builtin is a blind
+> table-add).
+>
 > ### Next steps, in order
 >
 > 1. **Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
@@ -107,8 +123,9 @@
 > 3. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
 >    MODE=3 divergences.
 > 4. **Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
->    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs, scalar uint XOR, sampler
->    parameters, vecN % scalar, cross/acos/any/isnan/lessThan/floatBitsToUint, vec4[9], postfix ++, vector index.
+>    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs (10 programs, the single
+>    biggest class — start here), scalar uint XOR, sampler parameters, vecN % scalar, cross/any/isnan/lessThan/
+>    floatBitsToUint (proof-gated, see above), vec4[9], postfix ++, vector index. `acos` is done.
 > 5. **Re-derive the verified kit list** once the above land. Build, run `tools/parity/sweep.py --variants 20` plus
 >    `--define-enum` with `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main>
 >    --sweep <defines>` and `node export-kit/generate-compat.mjs`.
