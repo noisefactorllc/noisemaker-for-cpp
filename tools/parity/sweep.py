@@ -53,15 +53,17 @@ coverage):
   default in every variant. Nothing in the catalog gives this tool a safe
   domain to sample for them, and guessing one (e.g. a huge ``stateSize``) risks
   turning a parity question into a resource-exhaustion question.
-- Only the JS lane can accept an external texture (via the already-supported
-  ``record.seedSurfaces`` -> ``api.Surface.fromRgba8`` path in
-  ``run_cpu_case.mjs``): ``filter/text`` and ``synth/media`` get a small
-  synthetic checkerboard fed to the JS runner. Neither
-  ``noisemaker-dsl-cpu-case`` nor ``noisemaker-render`` has ANY external-image
-  input (no CLI flag, no wiring) -- adding real image decoding and texture
-  wiring to the C++ engine is new engine capability, not a harness need, so
-  this tool does not add it; the C++ side is expected to keep refusing these
-  two (correctly reported as ``cpp_refused_only``, not ``both_refused``).
+- ``filter/text`` and ``synth/media`` (the two ``externalTexture``-declared
+  effects) get a small synthetic checkerboard fed to BOTH lanes from the
+  exact same bytes: the JS runner via the already-supported
+  ``record.externalTextures`` -> ``api.Surface.fromRgba8`` path in
+  ``run_cpu_case.mjs``, and the C++ driver via ``--external-texture
+  NAME=WxH:HEX`` (``tools/benchmark/run_cpp_case.cpp``, wired through
+  ``record_flags`` in ``tools/benchmark/corpus_lane.py``) -- one JSON field,
+  one hex string, no second encoding anywhere in the path. Both drivers
+  decode it with the same construction (``Surface.fromRgba8`` /
+  ``Surface::from_rgba8``), so this is a real byte-exact comparison, not a
+  reclassification of an expected refusal.
 - A chain variant exercises the swept effect plus two deterministically
   chosen helper effects (for the two roles it doesn't itself occupy). A
   divergence or refusal in a chain is reported against the chain (all three
@@ -89,7 +91,7 @@ import subprocess
 import sys
 import time
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -424,15 +426,12 @@ def sanitize(effect_id: str) -> str:
 
 
 # A small deterministic checkerboard fed to effects declaring
-# ``externalTexture`` (filter/text, synth/media). Neither driver accepts a
-# real image file (no CLI flag exists on either side for one -- see the
-# module docstring); this uses the ALREADY-SUPPORTED `record.seedSurfaces`
-# path in run_cpu_case.mjs (api.Surface.fromRgba8) so the JS lane renders
-# instead of refusing. The C++ driver has no equivalent input at all, so it
-# still refuses -- correctly reclassifying these two effects from
-# both_refused (misleadingly implies neither lane can do this) to
-# cpp_refused_only (the true shape: JS can given an image, C++ cannot accept
-# one at all).
+# ``externalTexture`` (filter/text, synth/media) -- identically, to both
+# lanes: the JS runner via ``record.externalTextures`` ->
+# ``api.Surface.fromRgba8`` in run_cpu_case.mjs, the C++ driver via
+# ``--external-texture NAME=WxH:HEX`` (record_flags in corpus_lane.py ->
+# run_cpp_case.cpp). Neither lane refuses this case any more; it is a real
+# byte-exact comparison like every other admitted effect.
 _EXTERNAL_TEXTURE_SIZE = 4
 
 
@@ -718,12 +717,51 @@ def compare_float32(width: int, height: int, expected: bytes, actual: bytes) -> 
             "mismatchCount": mismatch_count, "firstMismatch": first}
 
 
-def _cpp_detail(stdout: str) -> tuple[str, str]:
+_SOURCE_LOCATION_PREFIX = re.compile(r"^\d+:\d+:\s*")
+
+
+def _strip_source_location_prefix(detail: str, source_path: Path) -> str:
+    """Strips a DSL compiler diagnostic's own ``<file>:<line>:<col>: `` prefix.
+
+    ``dsl::DslError::what()`` (and anything the DSL compiler decorates with a
+    source location -- e.g. ``EffectRegistry``'s parameter-validation
+    ``std::invalid_argument``s, rethrown with position context) conventionally
+    leads with exactly that: correct, ordinary compiler behavior for a human
+    reading a real file. Every sweep case's ``--source-file`` is a fresh,
+    disposable scratch path, though, so that prefix is never portable or
+    actionable in a report -- it just buries the real refusal reason under a
+    long, per-case absolute path (this is the "``cpp_reason`` reads as a
+    scratch file path instead of the refusal message" bug: a report skims as
+    the path, even though the real message follows it). ``source_path`` is
+    the exact path this job's own case was compiled from, so the strip is
+    exact, never a guess at what "looks like a path".
+    """
+    prefix = f"{source_path}:"
+    if not detail.startswith(prefix):
+        return detail
+    rest = detail[len(prefix):]
+    match = _SOURCE_LOCATION_PREFIX.match(rest)
+    return rest[match.end():] if match else rest
+
+
+def _cpp_detail(stdout: str, source_path: Path) -> tuple[str, str]:
+    """The driver's actual refusal code and message, JSON-parsed off its
+    stdout (``run_cpp_case.cpp``'s ``refusal_record``:
+    ``{"code": ..., "detail": ...}``) -- ``code`` is the numeric
+    ``GraphErrorCode`` as a string for a structured refusal, or the literal
+    string ``"exception"`` for any other ``std::exception`` (a DSL compile
+    error, most commonly). Never the file path a "cannot parse this as JSON"
+    fallback used to return: a malformed/non-JSON stdout is itself a driver
+    contract violation worth seeing verbatim, so the raw text is kept, just
+    still put through the same source-location strip.
+    """
     try:
         parsed = json.loads(stdout or "{}")
-        return parsed.get("code", ""), parsed.get("detail", "")
+        code = parsed.get("code", "")
+        detail = parsed.get("detail", "")
     except json.JSONDecodeError:
-        return "", stdout.strip()[:300]
+        code, detail = "", stdout.strip()[:300]
+    return code, _strip_source_location_prefix(detail, source_path)
 
 
 def run_job(job_dict: dict) -> dict:
@@ -745,15 +783,14 @@ def run_job(job_dict: dict) -> dict:
             "sourceSha256": source_sha256, "options": options, "plan": None,
         }
         if job.external_texture:
-            # JS-only: run_cpp_case.cpp has no external-texture input at all
-            # (no CLI flag, no wiring), so the C++ side still refuses. This
-            # only changes the JS side from a matching refusal to a real
-            # render, which reclassifies the case as cpp_refused_only
-            # (accurate: JS can do this given an image, C++ cannot accept
-            # one) instead of both_refused (implies neither can). Distinct
-            # from `seedSurfaces` (named oN pre-seeding): externalTexture-
-            # declared effects read `renderOptions.externalTextures` instead
-            # (see run_cpu_case.mjs).
+            # Fed to BOTH lanes from this one field: the JS runner via
+            # run_cpu_case.mjs's `record.externalTextures` ->
+            # `api.Surface.fromRgba8`, and the C++ driver via
+            # `record_flags`' `--external-texture NAME=WxH:HEX` (below, at
+            # `cpp_cmd`) -> `run_cpp_case.cpp`'s `Surface::from_rgba8`.
+            # Distinct from `seedSurfaces` (named oN pre-seeding):
+            # externalTexture-declared effects read
+            # `renderOptions.externalTextures` instead (see run_cpu_case.mjs).
             record["externalTextures"] = [{
                 "name": job.external_texture, "width": _EXTERNAL_TEXTURE_SIZE,
                 "height": _EXTERNAL_TEXTURE_SIZE, "rgba8": synthetic_texture_rgba8_hex(),
@@ -794,7 +831,7 @@ def run_job(job_dict: dict) -> dict:
 
         js_ok = js_rc == 0
         cpp_ok = cpp_rc == 0
-        cpp_code, cpp_detail = _cpp_detail(cpp_out)
+        cpp_code, cpp_detail = _cpp_detail(cpp_out, source_path)
 
         if not js_ok and not cpp_ok:
             result["classification"] = "both_refused"
@@ -1032,6 +1069,9 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20260916)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4)))
     parser.add_argument("--max-seconds-per-case", type=float, default=45.0)
+    parser.add_argument("--timeout-retry-factor", type=float, default=4.0,
+                        help="rerun every timed-out case alone, one at a time, with this multiple of "
+                             "--max-seconds-per-case before reporting it as a timeout (0 disables)")
     parser.add_argument("--no-chains", action="store_true")
     parser.add_argument("--force", action="store_true", help="ignore existing results and rerun everything")
     parser.add_argument("--define-enum", action="store_true",
@@ -1119,6 +1159,22 @@ def main() -> int:
                     if completed % 200 == 0 or completed == len(pending):
                         elapsed = time.monotonic() - started
                         print(f"[sweep] {completed}/{len(pending)} done ({elapsed:.1f}s elapsed)", file=sys.stderr)
+
+        # A parallel sweep on a loaded machine can push an expensive case past its budget. Retry
+        # every timed-out case alone with a longer budget; only a case that times out again is
+        # reported as a timeout, so the gate still fails on a real hang.
+        if args.timeout_retry_factor > 0:
+            rows = load_existing(results_path)
+            retry = [j for j in jobs if rows.get(j.case_id, {}).get("classification") == "timeout"
+                     and not rows[j.case_id].get("timeout_retry")]
+            if retry:
+                print(f"[sweep] retrying {len(retry)} timed-out cases serially", file=sys.stderr)
+                _init_worker(replace(config, timeout=config.timeout * args.timeout_retry_factor))
+                for job in retry:
+                    result = run_job(vars(job))
+                    result["timeout_retry"] = True
+                    sink.write(json.dumps(result) + "\n")
+                    sink.flush()
 
     all_rows = list(load_existing(results_path).values())
     meta = {

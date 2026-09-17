@@ -18,7 +18,9 @@ PACKAGE = ROOT / "docs/port-engineering/arrays/emboss-parity"
 ORACLE = PACKAGE / "emboss-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/emboss181_expected.inc"
 PROGRAM_KEY = "filter/emboss:emboss"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+sys.path.insert(0, str(ROOT / "tools/glslcpp"))
+import check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = check_corpus.REVISION
 EXPECTED_CASES = (
     ("full-frame-default-nonsquare", 9, 6),
     ("general-angle-only", 9, 6),
@@ -113,7 +115,7 @@ def load() -> tuple[dict[str, Any], str]:
     if (provenance.get("authority_commit")
             != "4834b0144ee0524588144a482cca0067b15f68ec"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v24.7.0"
+            or provenance.get("node_version") != "v26.0.0"
             or provenance.get("canonical_factory") != {
                 "name": "canonicalFactory50", "bytes": 8336,
                 "sha256": "72f7faa20dfbbf43cab7762c484d13d43e7f3b3102d0a5a70494ab0ab19fa79f"}

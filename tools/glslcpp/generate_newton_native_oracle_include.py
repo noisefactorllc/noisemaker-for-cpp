@@ -10,18 +10,22 @@ import pathlib
 import re
 import sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = check_corpus.REVISION
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/newton-parity"
 ORACLE = PACKAGE / "newton-oracles.json"
 TARGET = ROOT / "tests/oracles/newton_expected.inc"
 SCHEMA = "noisemaker-for-cpp.newton.pixel-parity.v1"
 KEY = "synth/newton:newton"
-SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/newton/newton.glsl"
+SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/synth/newton/newton.glsl"
 SOURCE_SHA = "603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac"
-FACTORY_SHA = "7e4e95cfd6afa9f89e24920dbb06cd3af6f90f0c83f4329e302f701b78bba7af"
+FACTORY_SHA = "ecd6c15bf91ce96c9a0f1e36691c848129942ad2ec292194c66a78816e5f2df1"
 GENERATOR_RELATIVE = "docs/port-engineering/newton-parity/newton_oracle_generator.mjs"
 MATERIALIZER_RELATIVE = "tools/glslcpp/generate_newton_native_oracle_include.py"
-GENERATOR_SHA = "b7b5bd046b04a9b104215ef88d02a4da67b98b6c93465b0b92878b1c67374eed"
+GENERATOR_SHA = "108c99b3d762b8175559671a8273c1f50ee7a6334fe1fa2bd6649e1a473859a5"
 EXPECTED_BINDING_NAMES = ["resolution", "tileOffset", "fullResolution", "time", "degree", "relaxation", "iterations", "tolerance", "poi", "centerHiX", "centerHiY", "centerLoX", "centerLoY", "zoomSpeed", "zoomDepth", "degreeSpeed", "degreeRange", "relaxSpeed", "relaxRange", "rotation", "outputMode", "invert"]
 EXPECTED_BINDING_ABI = {name: ("Vec2" if name in {"resolution", "tileOffset", "fullResolution"} else "number") for name in EXPECTED_BINDING_NAMES}
 EXPECTED_CLOSURE = {
@@ -32,17 +36,18 @@ EXPECTED_CLOSURE = {
     "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
     "src/effects/adapters/f32-color.js": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046",
     "src/effects/adapters/fractal.js": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29",
-    "src/effects/adapters/index.js": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
     "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
     "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
     "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
+    "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
     "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
     "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
     "src/effects/definition.js": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02",
     "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-    "src/effects/generated/canonical-kernels.js": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+    "src/effects/generated/canonical-kernels.js": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
     "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
-    "src/effects/generated/upstream-snapshot.js": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090",
+    "src/effects/generated/upstream-snapshot.js": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
     "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
     "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
     "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
@@ -69,22 +74,22 @@ EXPECTED_CASE_DIGESTS = {
     "tolerance-axis": ("4e472aa6d3b790eb920cdbcc20bfb1f6cd989e6ff530bee0ae4c18baf25a9e26", "68ce3ccc4770b082b0ca69e38a2dff21faf781a4627e582ab05cc611e6ad5508", "b1afc3dbe46c96d9627c89a90caea13bd4d5768cdc9929dcddb759fc39b5d1fa"),
 }
 MUTATION_EXPECTATIONS = {
-    "cross-lane-assignment": ("cross-lane-assignment", "replace source-order sequential matrix lane writes with swapped lane owners", "(uv[0] = cpu_matrix_assignment_0[0], uv[1] = cpu_matrix_assignment_0[1], uv);", "(uv[0] = cpu_matrix_assignment_0[1], uv[1] = cpu_matrix_assignment_0[0], uv);", "149ab0159311acdd8cca9e53898eabcdea648df6bb7fb24e4752f2939c84f8bf", "60de283bd0993a17990a04714b5d2fb0fe173335ff8544f0867c22e64539dbb6", "fe9413232992cbecd06faac4e30eb7e0184df3327c77201e8f6fa7459284ef9a", 1, False),
-    "df64-cmul-rr-owner": ("out-materialization", "replace df64_cmul real out-owner materialization", "df64_sub(df64_mul(ar, br), df64_mul(ai, bi)).reduce((res,el,i)=>(res[i] = el, res), rr);", "rr.fill(0);", "e89208ecd9ab8332fffdbe4883ad83d6cef61189a6a5f90fa17bff53c20d4b3b", "abf4cef99e6692abbc206f6b09ae63292eb618dee0e848b2c6d177a82aaf343a", "287b1a23216b95b9eb979dc3700bb09528de037a0750913eded3b0ffc23123ea", 1, False),
-    "df64-cmul-ri-owner": ("out-materialization", "replace df64_cmul imaginary out-owner materialization", "df64_add(df64_mul(ar, bi), df64_mul(ai, br)).reduce((res,el,i)=>(res[i] = el, res), ri);", "ri.fill(0);", "8da16872d98cd3143127f4f0e7896c939285713f40494cec23312062f323eb07", "4636913edbd7895e0beaa15d30ef8604dc468ee98fa736cf4c19820611a136c1", "34187e9fd18457c42d46c4d568b9f0b867bfc38564b87a39ac612684c97514f7", 1, False),
-    "transform-re-owner": ("out-materialization", "replace transformCoords real out-owner materialization", "df64_add(uv_re_df, cX_df).reduce((res,el,i)=>(res[i] = el, res), re_df);", "re_df.fill(0);", "c64a4ed2e242a7d5f91cde6bd08b632ef75c166a8f129711ca85b2c3b2cab016", "d8b4046abb0651fd28f0b8374d77fbd53a407a35d690132a0fae69c29631fb46", "3a1f4ca9a56ad9156cc2f50ff01a912f4ae114a57518ba170c3415a28732f83d", 1, False),
-    "transform-im-owner": ("out-materialization", "replace transformCoords imaginary out-owner materialization", "df64_add(uv_im_df, cY_df).reduce((res,el,i)=>(res[i] = el, res), im_df);", "im_df.fill(0);", "02c85b90268647deca65ce6711344bc566a99ed16d03bb68a11f480b9c16da86", "479fc270dd981006542b1dcbdcfe3f626091c75896a4ca0546ae042715ddf147", "17053fbeef23bbaec6883fe062c00b197be578402698c330180039928d08f5f1", 1, False),
-    "cmul-call-materialization": ("out-materialization", "replace df64_cmul power carrier with a zero imaginary owner", "(df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti), [tr, ti] = df64_cmul.__out__, df64_cmul.__return__);", "(df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti), [tr, ti] = [tr, new $runtime.PooledFloat32Array([0, 0])], df64_cmul.__return__);", "ca28e3d43a7c75caf297884c6edc444ae8e14233e7078349e6bc18e6166c8ec1", "7f61da5c2e9554b5ab2a67bd61fd76a1932002d18baf4130418f225ef1061eed", "af283d5b88e2acecdb0301648535cadf8bda18e8c65461dbfc69355e0d9f0ad5", 1, False),
-    "znr-call-materialization": ("out-materialization", "replace df64_cmul result carrier at the z-power owner", "(df64_cmul(pwr, pwi, zr_df, zi_df, znr, zni), [znr, zni] = df64_cmul.__out__, df64_cmul.__return__);", "(df64_cmul(pwr, pwi, zr_df, zi_df, znr, zni), [znr, zni] = [znr, new $runtime.PooledFloat32Array([0, 0])], df64_cmul.__return__);", "85d12836ac2ccaf218c77f5c199394bec3593e3ea6756d93ac5267e5495d60be", "dbb2b5a5d06422d312c2f54e51501cec804ee54a1534e35dee5e35fb3304921d", "459eb412eca382bea083b7f8834e4b377a1a9b0e6b717c5a2897ec153da2235a", 1, False),
-    "transform-call-materialization": ("out-materialization", "replace transformCoords out carrier owner", "(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = transformCoords_df64.__out__, transformCoords_df64.__return__);", "(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = [transformCoords_df64.__out__[0], new $runtime.PooledFloat32Array([0, 0])], transformCoords_df64.__return__);", "bea400d7e4fac3585776e8ccf8414b55772bf4a2aab5ca69a1586747c5e0f1ce", "88330c4f8c159ed29c5d64ac9c90251f0a0327dddcc3b64afcb43e732bff0893", "50c613cbc8a1885a4f8fbfce12b606d9c06009f64a584e0f9f664a9e651f7a8b", 1, False),
-    "iteration-outer-bound": ("control-axis", "shorten Newton iteration bound", "for (var n = 0; n < 500; n++)", "for (var n = 0; n < 1; n++)", "2fa5d3708bc706606f156ddc0d8051c0192db13c897fde90d3af264dc8c99176", "0af2e648612cac1f2b754f89c7d2bf20990bd0260a875d0dfbb6dc0336a29dd3", "e2973c527bfa119510da36ece87b275ee88e924cef9eed5e0f9616af8df55b78", 1, False),
-    "iteration-power-bound": ("control-axis", "shorten repeated-power bound", "for (var j = 0; j < 7; j++)", "for (var j = 0; j < 1; j++)", "517bd559aa3a66d02c27299d99e0cf7c5425159edfb1a777ab8cbe5b6f31f5e5", "44d41ffcb3a2df0da1327c2e879f0881d5df6f96050ad8a7d144461c1c155fc1", "6ebe17d5100dc871be16fbde5054af81c918111c72a3ebecc8eecfed1d14adc2", 1, False),
-    "degree-control-axis": ("control-axis", "offset effective degree control", "var effDegree = degree;", "var effDegree = degree + 1;", "20a4e8ec420365b96d074aaf4ba6db511245709faf9cad3867b05d707fe61e38", "b0079440724d938fbd90857bea3d6f7c121ae7b3bce8835c1b518be0eeea6db2", "b2098e9a99f873ef5cf70087627cb73add1a2fe01a04ed1ff8d2ce24f627233d", 1, False),
-    "relaxation-control-axis": ("control-axis", "offset effective relaxation control", "var effRelax = relaxation;", "var effRelax = relaxation + 0.25;", "57e23f7df06979d948b5d5461c166993457e623a5b4c1c2967a625ca8ebc1ca2", "e78ce08b597c9107f6a686e8fbeceba5c5f84aeec6c274a0ddc510fdfaa3ad57", "aa6e2b9db6243ddb7ee58ab938924e72865eadfb9b1da8de6f9365a2a8338a58", 1, False),
-    "tolerance-control-axis": ("control-axis", "widen convergence tolerance control", "if (d < tolerance) {", "if (d < (tolerance * 2)) {", "2f2f19fee0d0a168d807ca756638258383b824a4753fb9128dda53cb982da0d5", "0e93565ab39d09935a82bc7a85872fbee939ee6aafcea224608509b0c7b9f15c", "a5011986a2856536d102a477155ee0f7dff0195782c6764623bbe6e682ae46e6", 1, False),
-    "rotation-control-axis": ("control-axis", "reverse rotation control", "var angle = (-rot * TAU) / 360;", "var angle = (rot * TAU) / 360;", "8fdfbf563a832b96d431c97cbea608b2641c27c432cf6e3419206e02283f57b7", "a78682a72d8db423b7a0e786da8692ffc8210e028d52d3723e228874748946e2", "24e171f55c8b4557ecb36874211a7950d02d935e3d88b4f23e16b8c92246ea02", 1, False),
-    "invert-control-axis": ("control-axis", "remove inversion control", "value = 1 - value;", "value = value;", "220c9f783a3f9c7ce4ba4fcee7ef7cb10425c6b74f6513c056850879b3d32d51", "b2bbdd0bed7c146e526bf4a47052b71622efdbec0d1480c86864c1b6b911c06a", "0017bd4d26e426b09d1b8efe6c924bf98acb56e51084755dbc4f8c24ecc6b0a0", 1, False),
-    "struct-POIData-declaration": ("struct-declaration", "source-bound POIData declaration probe paired with an executed canonical POI representation mutant", "struct POIData {", "struct POIData { float provenanceWitness;", "36b6b7fe0fbf811c40555409cbacd624785ddf8adc99f882a1027a3ab64c6777", "78716247ad319ac410b49146c19f56a47ebe9ea3fe6460969aff58253343e533", "2a5db915277862905908353078a95ce69f32169705b654a4161973f5d8d731bc", 1, False),
+    "cross-lane-assignment": ("cross-lane-assignment", "replace source-order sequential matrix lane writes with swapped lane owners", "(uv[0] = cpu_matrix_assignment_0[0], uv[1] = cpu_matrix_assignment_0[1], uv);", "(uv[0] = cpu_matrix_assignment_0[1], uv[1] = cpu_matrix_assignment_0[0], uv);", "149ab0159311acdd8cca9e53898eabcdea648df6bb7fb24e4752f2939c84f8bf", "60de283bd0993a17990a04714b5d2fb0fe173335ff8544f0867c22e64539dbb6", "ebd957d97fffa5ef1d65c5a06b15ef1e00c7f788418892616d4de8126ea7b23b", 1, False),
+    "df64-cmul-rr-owner": ("out-materialization", "replace df64_cmul real out-owner materialization", "df64_sub(df64_mul(ar, br), df64_mul(ai, bi)).reduce((res,el,i)=>(res[i] = el, res), rr);", "rr.fill(0);", "e89208ecd9ab8332fffdbe4883ad83d6cef61189a6a5f90fa17bff53c20d4b3b", "abf4cef99e6692abbc206f6b09ae63292eb618dee0e848b2c6d177a82aaf343a", "cd90cdada1918819c99ba6bf83e5c873078cc1e333eead4cf06d397ebcaf794e", 1, False),
+    "df64-cmul-ri-owner": ("out-materialization", "replace df64_cmul imaginary out-owner materialization", "df64_add(df64_mul(ar, bi), df64_mul(ai, br)).reduce((res,el,i)=>(res[i] = el, res), ri);", "ri.fill(0);", "8da16872d98cd3143127f4f0e7896c939285713f40494cec23312062f323eb07", "4636913edbd7895e0beaa15d30ef8604dc468ee98fa736cf4c19820611a136c1", "aa3ca20c2f9ad10a627d49f9f307fdd16d4c8bfe0c1854f99b9014c60e37ad11", 1, False),
+    "transform-re-owner": ("out-materialization", "replace transformCoords real out-owner materialization", "df64_add(uv_re_df, cX_df).reduce((res,el,i)=>(res[i] = el, res), re_df);", "re_df.fill(0);", "c64a4ed2e242a7d5f91cde6bd08b632ef75c166a8f129711ca85b2c3b2cab016", "d8b4046abb0651fd28f0b8374d77fbd53a407a35d690132a0fae69c29631fb46", "7c9fc773d2372a0bb493707e9682bfb8eb729aea392c3b43b8d23984e5500af1", 1, False),
+    "transform-im-owner": ("out-materialization", "replace transformCoords imaginary out-owner materialization", "df64_add(uv_im_df, cY_df).reduce((res,el,i)=>(res[i] = el, res), im_df);", "im_df.fill(0);", "02c85b90268647deca65ce6711344bc566a99ed16d03bb68a11f480b9c16da86", "479fc270dd981006542b1dcbdcfe3f626091c75896a4ca0546ae042715ddf147", "2c1e0bc528af39b28c1e3511716d06a20791389ba132751cd3337805778ccca9", 1, False),
+    "cmul-call-materialization": ("out-materialization", "replace df64_cmul power carrier with a zero imaginary owner", "(df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti), [tr, ti] = df64_cmul.__out__, df64_cmul.__return__);", "(df64_cmul(pwr, pwi, zr_df, zi_df, tr, ti), [tr, ti] = [tr, new $runtime.PooledFloat32Array([0, 0])], df64_cmul.__return__);", "ca28e3d43a7c75caf297884c6edc444ae8e14233e7078349e6bc18e6166c8ec1", "7f61da5c2e9554b5ab2a67bd61fd76a1932002d18baf4130418f225ef1061eed", "358e9e1ac6d960d24698eafaf45a0363e7464ece18de241a9b9c6d211143c714", 1, False),
+    "znr-call-materialization": ("out-materialization", "replace df64_cmul result carrier at the z-power owner", "(df64_cmul(pwr, pwi, zr_df, zi_df, znr, zni), [znr, zni] = df64_cmul.__out__, df64_cmul.__return__);", "(df64_cmul(pwr, pwi, zr_df, zi_df, znr, zni), [znr, zni] = [znr, new $runtime.PooledFloat32Array([0, 0])], df64_cmul.__return__);", "85d12836ac2ccaf218c77f5c199394bec3593e3ea6756d93ac5267e5495d60be", "dbb2b5a5d06422d312c2f54e51501cec804ee54a1534e35dee5e35fb3304921d", "9530fbdadec1ae9c5581e0fcedc21c4693f5c4da2095986f851c0a5ecec591ef", 1, False),
+    "transform-call-materialization": ("out-materialization", "replace transformCoords out carrier owner", "(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = transformCoords_df64.__out__, transformCoords_df64.__return__);", "(transformCoords_df64(globalCoord, new $runtime.PooledFloat32Array([cHi[0], cLo[0]]), new $runtime.PooledFloat32Array([cHi[1], cLo[1]]), zoom, rotation, re_df, im_df), [re_df, im_df] = [transformCoords_df64.__out__[0], new $runtime.PooledFloat32Array([0, 0])], transformCoords_df64.__return__);", "bea400d7e4fac3585776e8ccf8414b55772bf4a2aab5ca69a1586747c5e0f1ce", "88330c4f8c159ed29c5d64ac9c90251f0a0327dddcc3b64afcb43e732bff0893", "e33c03b69b4b3e2118d02cf7d0246d4019e1d7aabc363aea09b9654a8b172743", 1, False),
+    "iteration-outer-bound": ("control-axis", "shorten Newton iteration bound", "for (var n = 0; n < 500; n++)", "for (var n = 0; n < 1; n++)", "2fa5d3708bc706606f156ddc0d8051c0192db13c897fde90d3af264dc8c99176", "0af2e648612cac1f2b754f89c7d2bf20990bd0260a875d0dfbb6dc0336a29dd3", "5bfdd486cf045d21f1e1438124df8571fcca9c73ccb9155abe6167dab869490e", 1, False),
+    "iteration-power-bound": ("control-axis", "shorten repeated-power bound", "for (var j = 0; j < 7; j++)", "for (var j = 0; j < 1; j++)", "517bd559aa3a66d02c27299d99e0cf7c5425159edfb1a777ab8cbe5b6f31f5e5", "44d41ffcb3a2df0da1327c2e879f0881d5df6f96050ad8a7d144461c1c155fc1", "41744eac6a428d9e444e20217fb69ba22c4755c83be85dbd3611c4687588b2e7", 1, False),
+    "degree-control-axis": ("control-axis", "offset effective degree control", "var effDegree = degree;", "var effDegree = degree + 1;", "20a4e8ec420365b96d074aaf4ba6db511245709faf9cad3867b05d707fe61e38", "b0079440724d938fbd90857bea3d6f7c121ae7b3bce8835c1b518be0eeea6db2", "047672229311a507836ee12eb7a88d7f7edb4e31857529baa0e904dbf0c678d2", 1, False),
+    "relaxation-control-axis": ("control-axis", "offset effective relaxation control", "var effRelax = relaxation;", "var effRelax = relaxation + 0.25;", "57e23f7df06979d948b5d5461c166993457e623a5b4c1c2967a625ca8ebc1ca2", "e78ce08b597c9107f6a686e8fbeceba5c5f84aeec6c274a0ddc510fdfaa3ad57", "05ee4f92a9080ae5e39b61d3c0c01b9bb7546a830cfa661c36dfe06000148b93", 1, False),
+    "tolerance-control-axis": ("control-axis", "widen convergence tolerance control", "if (d < tolerance) {", "if (d < (tolerance * 2)) {", "2f2f19fee0d0a168d807ca756638258383b824a4753fb9128dda53cb982da0d5", "0e93565ab39d09935a82bc7a85872fbee939ee6aafcea224608509b0c7b9f15c", "c5115d96a281fce6a36168d5c962f4ecfe9c20f7e9398f613e389ed1d86a4f9d", 1, False),
+    "rotation-control-axis": ("control-axis", "reverse rotation control", "var angle = (-rot * TAU) / 360;", "var angle = (rot * TAU) / 360;", "8fdfbf563a832b96d431c97cbea608b2641c27c432cf6e3419206e02283f57b7", "a78682a72d8db423b7a0e786da8692ffc8210e028d52d3723e228874748946e2", "39366bd075f302cc63aafe95355d266fb97865bc506c34d7109d952dfde2e5b2", 1, False),
+    "invert-control-axis": ("control-axis", "remove inversion control", "value = 1 - value;", "value = value;", "220c9f783a3f9c7ce4ba4fcee7ef7cb10425c6b74f6513c056850879b3d32d51", "b2bbdd0bed7c146e526bf4a47052b71622efdbec0d1480c86864c1b6b911c06a", "105dd475b85818fb8fe3c5bb8e7d8fa5d03927f8e49491f4ecedf7a1671dd081", 1, False),
+    "struct-POIData-declaration": ("struct-declaration", "source-bound POIData declaration probe paired with an executed canonical POI representation mutant", "struct POIData {", "struct POIData { float provenanceWitness;", "36b6b7fe0fbf811c40555409cbacd624785ddf8adc99f882a1027a3ab64c6777", "78716247ad319ac410b49146c19f56a47ebe9ea3fe6460969aff58253343e533", "efe3aec7df355d4ed198536aa9828ed978db660790cd3ff3e849c4aaac4fa641", 1, False),
 }
 STRUCTURAL_FACTORY_EXPECTATION = {
     "factory_anchor": "return {\n  \tcenter: new $runtime.PooledFloat32Array([0, 0, 0, 0]),\n  \tdeg: 3,\n  \tmaxZoom: 7\n  \t};\n  \t};\n  \tif (idx == 2) {",
@@ -134,9 +139,9 @@ def validate(document: dict) -> dict:
     exact(document, top, "document")
     if document["schema"] != SCHEMA or document["schema_version"] != 1 or document["program_key"] != KEY or document["effect_key"] != "synth/newton" or document["runtime_key"] != KEY:
         raise MaterializationError("schema/program identity")
-    if document["corpus_revision"] != "a024dc3a960cc44af454abc7aebce50456c194e6" or document["upstream_revision"] != "117a236679d1db3ab8f0e278230ece277b57564c":
+    if document["corpus_revision"] != CORPUS_REVISION or document["upstream_revision"] != "0ed489ec46842bffba33ee2ec65a218b6dda51f5":
         raise MaterializationError("revision provenance")
-    if document["factory"] != {"name": "canonicalFactory264", "text_sha256": FACTORY_SHA, "public_factory_is_canonical_identity": True, "adapter_own_key": False}:
+    if document["factory"] != {"name": "canonicalFactory272", "text_sha256": FACTORY_SHA, "public_factory_is_canonical_identity": True, "adapter_own_key": False}:
         raise MaterializationError("factory identity/adapter contract")
     if document["runtime_binding_names"] != EXPECTED_BINDING_NAMES or document["runtime_binding_abi"] != EXPECTED_BINDING_ABI or document["canonical_binding_contract"] != {"names": EXPECTED_BINDING_NAMES, "abi": EXPECTED_BINDING_ABI}:
         raise MaterializationError("binding names/ABI contract")
@@ -151,10 +156,10 @@ def validate(document: dict) -> dict:
     if provenance["source"] != {"relative_path": SOURCE, "sha256": SOURCE_SHA}:
         raise MaterializationError("source provenance")
     snapshot = provenance["cpu_snapshot"]
-    if snapshot.get("argument") != "<immutable-cpu-snapshot-root>" or snapshot.get("immutable_snapshot") is not True or snapshot.get("realpath_containment_checked") is not True or snapshot.get("live_checkout_rejected") is not True or snapshot.get("closure_cardinality") != 22:
+    if snapshot.get("argument") != "<immutable-cpu-snapshot-root>" or snapshot.get("immutable_snapshot") is not True or snapshot.get("realpath_containment_checked") is not True or snapshot.get("live_checkout_rejected") is not True or snapshot.get("closure_cardinality") != len(EXPECTED_CLOSURE):
         raise MaterializationError("immutable CPU snapshot contract")
     closure = snapshot.get("import_closure")
-    if not isinstance(closure, list) or {item.get("relative_path"): item.get("sha256") for item in closure} != EXPECTED_CLOSURE or len(closure) != 22 or any(set(item) != {"relative_path", "sha256"} for item in closure):
+    if not isinstance(closure, list) or {item.get("relative_path"): item.get("sha256") for item in closure} != EXPECTED_CLOSURE or len(closure) != len(EXPECTED_CLOSURE) or any(set(item) != {"relative_path", "sha256"} for item in closure):
         raise MaterializationError("import closure contract")
     if provenance["generator"] != {"relative_path": GENERATOR_RELATIVE, "sha256": GENERATOR_SHA}:
         raise MaterializationError("generator provenance")
@@ -193,7 +198,7 @@ def validate(document: dict) -> dict:
         raise MaterializationError("control group")
     if document["source_mutation_contract"] != {"source_relative_path": SOURCE, "source_sha256": SOURCE_SHA, "canonical_factory_text_sha256": FACTORY_SHA, "execution": "each exact factory anchor/replacement is evaluated and executed through bindCanonicalKernel/runPass; struct-POIData-declaration additionally records a source-bound struct probe paired with its executed POI representation mutant"}:
         raise MaterializationError("source mutation contract")
-    if document["claim_boundaries"] != {"absolute_paths": "stable placeholders only", "authority": "unmodified public canonicalFactory264 from immutable CPU snapshot; no local reimplementation or C++ output participates", "adapter": "no adapter owns this key", "mutations": "exact source/factory anchor replacements are executed authority mutations, not uniform perturbations"}:
+    if document["claim_boundaries"] != {"absolute_paths": "stable placeholders only", "authority": "unmodified public canonicalFactory272 from immutable CPU snapshot; no local reimplementation or C++ output participates", "adapter": "no adapter owns this key", "mutations": "exact source/factory anchor replacements are executed authority mutations, not uniform perturbations"}:
         raise MaterializationError("claim boundaries")
     ledger = document["mutation_ledger"]
     if not isinstance(ledger, list) or [item.get("name") for item in ledger] != list(MUTATION_EXPECTATIONS):

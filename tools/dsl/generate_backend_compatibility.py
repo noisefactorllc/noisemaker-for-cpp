@@ -147,16 +147,28 @@ CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
     for program_key in ("classicNoisedeck/noise:noise",)
     for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
-# The only vec3/vec4 uniform NAMES, anywhere in the pinned corpus, that are
-# not sourced from an ordinary DSL effect parameter: filter/normalMap's
-# `uniform vec4 size|motion`, defaulted from createCanonicalBindings()'s own
-# `Float32Array(4)` (PASS_DERIVED_BINDINGS's "canonical_size_default"/
-# "canonical_motion_default" above) because no catalog parameter maps onto
-# either name anywhere in the corpus. Kept as an explicit name list (not
+# The only vec2/vec3/vec4 uniform NAMES, anywhere in the pinned corpus,
+# that are not sourced from an ordinary DSL effect parameter:
+# filter/normalMap's `uniform vec4 size|motion`, defaulted from
+# createCanonicalBindings()'s own `Float32Array(4)`
+# (PASS_DERIVED_BINDINGS's "canonical_size_default"/
+# "canonical_motion_default" above), and every program's own
+# `resolution`/`fullResolution`/`tileOffset` (vec2, `reserved_runtime_state`
+# -- RESERVED_RUNTIME above), because no catalog parameter maps onto any of
+# these five names anywhere in the corpus. `imageSize` (synth/media's own
+# vec2 effect parameter, formerly its own hand-picked
+# `DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS` carrier -- see the file's git
+# history) is NOT in this list: it is an ordinary `source ==
+# "effect_parameter"` vec2 uniform like any other, so the general rule
+# below reaches it on its own, exactly like the five classicNoisedeck
+# palette programs above reach theirs. Kept as an explicit name list (not
 # derived) for the same reason PASS_DERIVED_BINDINGS itself is explicit: an
-# unlisted vec3/vec4 uniform that is genuinely not effect-parameter-sourced
-# must fail closed via `source`, not silently widen.
-DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({"size", "motion"})
+# unlisted vec2/vec3/vec4 uniform that is genuinely not
+# effect-parameter-sourced must fail closed via `source`, not silently
+# widen.
+DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({
+    "size", "motion", "resolution", "fullResolution", "tileOffset",
+})
 # `synth/solid:solid`'s `color` is an ordinary effect-parameter vec3
 # uniform, but this port's frozen, hand-written
 # `src/generated/synth_solid.cpp` legacy factory (dispatched over the typed
@@ -188,17 +200,22 @@ def is_double_vector_uniform(display: str, name: str | None, source: str | None,
     `source == "effect_parameter"` in this generator's own classification
     a few lines above, which is already computed from the authority's own
     catalog metadata (`params`/`paramAliases`/`param_by_uniform`/
-    `param_by_color_mode_uniform`), not guessed from names. `resolution`/
-    `fullResolution`/`tileOffset` (vec2, `reserved_runtime_state`) come from
-    a `Float32Array` instead, but nothing vec2 is in scope here. See
-    `DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES` for the two names this still
-    excludes despite being technically reachable as "effect_parameter" in
-    principle (empirically neither ever is, in this corpus) -- kept as a
-    fail-closed belt alongside the `source` check itself, matching
-    tools/glslcpp/emit_typed_cpp.py's `_is_double_vector_uniform`, which has
-    no `source` to check and relies on this name list alone.
+    `param_by_color_mode_uniform`), not guessed from names. This reaches
+    `synth/media:mediaInput`'s `imageSize` (vec2) exactly the way it
+    reaches every vec3/vec4 effect-parameter uniform: `imageSize` is
+    declared as an ordinary "vec2" catalog param (default `[1024, 1024]`,
+    `uniform: "imageSize"`), the only vec2-typed effect parameter anywhere
+    in the corpus, so this rule generalizes cleanly across all three
+    widths rather than needing a separate carrier list one vec width down.
+    `resolution`/`fullResolution`/`tileOffset` (also vec2, but
+    `reserved_runtime_state`) come from a `Float32Array` instead, never
+    from `source == "effect_parameter"`, so the check above already
+    excludes them on its own -- `DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES`
+    lists them anyway, alongside `size`/`motion`, as a fail-closed belt
+    matching tools/glslcpp/emit_typed_cpp.py's `_is_double_vector_uniform`,
+    which has no `source` to check and relies on this name list alone.
     """
-    return (display in {"vec3", "vec4"} and source == "effect_parameter"
+    return (display in {"vec2", "vec3", "vec4"} and source == "effect_parameter"
             and name not in DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES
             and (program_key, name) not in FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION)
 
@@ -442,7 +459,7 @@ def _cpp_type(display: str, name: str | None = None, source: str | None = None,
         return "glsl::DVec3"
     if (program_key, name) not in CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION \
             and is_double_vector_uniform(display, name, source, program_key):
-        return "glsl::DVec3" if display == "vec3" else "glsl::DVec4"
+        return {"vec2": "glsl::DVec2", "vec3": "glsl::DVec3", "vec4": "glsl::DVec4"}[display]
     if display in CPP_TYPES:
         return CPP_TYPES[display]
     if display.startswith("sampler"):

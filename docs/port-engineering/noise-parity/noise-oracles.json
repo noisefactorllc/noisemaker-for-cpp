@@ -4,8 +4,8 @@
   "program_key": "synth/noise:noise",
   "effect_key": "synth/noise",
   "runtime_key": "synth/noise:noise",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "defines": {
     "NOISE_TYPE": 10,
     "LOOP_OFFSET": 300
@@ -60,8 +60,8 @@
     "wrap": "bool"
   },
   "factory": {
-    "name": "canonicalFactory265",
-    "text_sha256": "392c3be9936855debc0956bc41e4b658896ccdd673674a2ad983101aac521e14",
+    "name": "canonicalFactory273",
+    "text_sha256": "1b3860b7e5580828598f09b2b4c1c085f186367aa489349482f48e3560c36698",
     "public_factory_is_canonical_identity": true
   },
   "exactness_contract": {
@@ -81,7 +81,7 @@
     "first_mismatch": true
   },
   "authority": {
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "oracle": "unmodified public canonical factory from immutable CPU snapshot",
     "live_checkout_rejected": true,
     "symlink_rejected": true,
@@ -117,7 +117,7 @@
       },
       {
         "relative_path": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path": "src/effects/adapters/julia.js",
@@ -130,6 +130,10 @@
       {
         "relative_path": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
@@ -149,7 +153,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -157,7 +161,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -179,17 +183,17 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/noise/noise.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/noise/noise.glsl",
       "bytes": 18131,
       "sha256": "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274"
     },
     "generator": {
       "relative_path": "docs/port-engineering/noise-parity/noise_oracle_generator.mjs",
-      "sha256": "0ab9b64e409b221cd56a7c3abaac055c3b8bffa14fe2613edea35ece0a3a7cd4"
+      "sha256": "87bf86fd731bcf1662df7991d19af1ab25fad932bfdd98f605381da86f49ce35"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_noise_native_oracle_include.py",
-      "sha256": "76bc806191236d84487c87aa6025e63e02753a289540efcfd7f0e7310b5a355b"
+      "sha256": "1dbf1385cbe987a3095cdba732a3d996b21a6f347077111144b499afd0b8ce6f"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },
@@ -3257,7 +3261,7 @@
       "replacement_text": "(globalCoord[0] = gl_FragCoord[0] + tileOffset[0], globalCoord[1] = gl_FragCoord[1] + tileOffset[1] + 1, globalCoord);",
       "anchor_sha256": "6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf",
       "replacement_sha256": "9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f",
-      "mutated_factory_sha256": "4ca2f9194aa0ec93237c408edc8f1e9bf3524dd349175b5a79e44ef0a9382f45",
+      "mutated_factory_sha256": "956834b3b00dc589de17e0adbceefab33baad4b31a73fa7d019bd4295a59f2da",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3457,7 +3461,7 @@
       "replacement_text": "for (var i = 1; i < oct; i++) {",
       "anchor_sha256": "7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb",
       "replacement_sha256": "7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84",
-      "mutated_factory_sha256": "67ead442cf8c65d9ca47c463f50bd8f25d7029618b742abfcc5a5931e75aa845",
+      "mutated_factory_sha256": "bf2080a479b16c4eb860ab63913033fb885b0c46f11f42f9242ad0cd806da2fc",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3657,7 +3661,7 @@
       "replacement_text": "floatBitsToUint(sFrac + 0.125)",
       "anchor_sha256": "8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662",
       "replacement_sha256": "028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29",
-      "mutated_factory_sha256": "e982ad518d46377ad6d831e861cdebe2aff8f95aaa975f6b075111bced84b19e",
+      "mutated_factory_sha256": "445a649aa481f32e64de10a17d770e1e937606c0bbd235608cddcee5b6da0128",
       "rows": [
         {
           "case": "mono-hermite",
@@ -3857,7 +3861,7 @@
       "replacement_text": "var speed = $bindings[\"speed\"] * 2;",
       "anchor_sha256": "d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949",
       "replacement_sha256": "3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43",
-      "mutated_factory_sha256": "3f52538913c93143fedabccc0554fb51d994f0a42db4d78f2654a6f3f8f6008e",
+      "mutated_factory_sha256": "d4a8da6a99d861bf0341b2956fe151e2105b7644608464def35e814f7e78f0c8",
       "rows": [
         {
           "case": "mono-hermite",

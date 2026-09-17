@@ -28,9 +28,15 @@ const schema = 'noisemaker-for-cpp.shapes183.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'classicNoisedeck/shapes:shapes'
 const effectKey = 'classicNoisedeck/shapes'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const upstreamRevisionExpected = '117a236679d1db3ab8f0e278230ece277b57564c'
-const authorityNode = 'v24.7.0'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
+const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const authorityNode = 'v26.0.0'
 const defines = { LOOP_A_OFFSET: 40, LOOP_B_OFFSET: 30 }
 const factoryName = 'canonicalFactory16'
 const factoryTextSha256 = 'a4e1aeaf8cbc3d748517369e054b7ec4a2fd5f70962cbafef61d5e473527c2c3'
@@ -50,8 +56,8 @@ const liveCpuCheckout = process.env.NOISEMAKER_FOR_CPU
 const cpuRootPlaceholder = '<immutable-cpu-snapshot-root>'
 const liveCheckoutPlaceholder = '<live-noisemaker-for-cpu-checkout>'
 const sourceRelative = `tools/glslcpp/corpus/${corpusRevision}/sources/classicNoisedeck/shapes/shapes.glsl`
-const sourceBytesExpected = 21289
-const sourceSha256Expected = '60bc6e76ac9d9f5bc83638fa934b279499559f7733806e462cea16a4cbe85eb0'
+const sourceBytesExpected = 21292
+const sourceSha256Expected = '28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e'
 
 // Exactly eighteen runtime bindings. LOOP_A_OFFSET/LOOP_B_OFFSET are
 // compile-time defines recorded separately and are never counted here.
@@ -71,7 +77,7 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],

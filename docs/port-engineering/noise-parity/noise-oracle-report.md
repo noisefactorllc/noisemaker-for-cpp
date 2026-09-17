@@ -1,10 +1,10 @@
 # synth/noise:noise oracle
 
 - Schema: `noisemaker-for-cpp.synth-noise.pixel-parity.v1`
-- Authority: unmodified public canonicalFactory265 from immutable CPU snapshot.
+- Authority: unmodified public canonicalFactory273 from immutable CPU snapshot.
 - Source: 18131 bytes, SHA-256 `410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274`.
-- Factory: canonicalFactory265, SHA-256 `392c3be9936855debc0956bc41e4b658896ccdd673674a2ad983101aac521e14`.
-- Import closure: exactly 22 literal files with pinned paths and hashes.
+- Factory: canonicalFactory273, SHA-256 `1b3860b7e5580828598f09b2b4c1c085f186367aa489349482f48e3560c36698`.
+- Import closure: exactly 23 literal files with pinned paths and hashes.
 - Comparison: zero tolerance, complete f32 words and RGBA8 bytes; signed zero and NaN payloads significant.
 - Runtime controls: repeatability, distinct output data objects/backing buffers, public/direct identity, input immutability, and input lifetime executed.
 
@@ -32,10 +32,10 @@
 
 ## Exact mutation witnesses
 
-- mutable-global-frame: anchor=6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf, replacement=9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f, factory=4ca2f9194aa0ec93237c408edc8f1e9bf3524dd349175b5a79e44ef0a9382f45, witnesses=19/19
-- runtime-loop-bound: anchor=7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb, replacement=7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84, factory=67ead442cf8c65d9ca47c463f50bd8f25d7029618b742abfcc5a5931e75aa845, witnesses=19/19
-- scalar-uint-xor: anchor=8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662, replacement=028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29, factory=e982ad518d46377ad6d831e861cdebe2aff8f95aaa975f6b075111bced84b19e, witnesses=17/19
-- owner-speed-control: anchor=d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949, replacement=3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43, factory=3f52538913c93143fedabccc0554fb51d994f0a42db4d78f2654a6f3f8f6008e, witnesses=18/19
+- mutable-global-frame: anchor=6c61d1d9c538263fb40b160bdac65d060dc64748197b866f99a2260d84d918bf, replacement=9982c75d15a5cf8c1328acf6b621531d9f8c71c11e06ff2020e65a5f134c7f8f, factory=956834b3b00dc589de17e0adbceefab33baad4b31a73fa7d019bd4295a59f2da, witnesses=19/19
+- runtime-loop-bound: anchor=7dca0229b063ecd50fb6dda61cc202d99f3d036da2a6e46223255650a0e11adb, replacement=7d3c4aa1d382c224e07a00ac2f591072b3edeaa4c20f7364fc5c7e59cad75c84, factory=bf2080a479b16c4eb860ab63913033fb885b0c46f11f42f9242ad0cd806da2fc, witnesses=19/19
+- scalar-uint-xor: anchor=8eeab152f20e4e83c0c8091e649b85d3eafec7b98868f119c4a525ce5d100662, replacement=028c473cf8ed4eae00c330f7c68f0c13cf3cf226d52024901bfdc3a6a783ab29, factory=445a649aa481f32e64de10a17d770e1e937606c0bbd235608cddcee5b6da0128, witnesses=17/19
+- owner-speed-control: anchor=d5773b533941651b0dcb30546a6d1bc4d1648f61f51058a0610f93cc9293e949, replacement=3cfb6c567f23b6ee56ca6e028f219de34f54050bcea85ef424a4502e1c9ddc43, factory=d4a8da6a99d861bf0341b2956fe151e2105b7644608464def35e814f7e78f0c8, witnesses=18/19
 
 ## Prepared mechanism boundary
 

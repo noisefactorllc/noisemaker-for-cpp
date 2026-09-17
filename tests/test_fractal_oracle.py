@@ -20,9 +20,9 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_fractal_native_oracle_include.py"
 ORACLE = PACKAGE / "fractal-oracles.json"
 REPORT = PACKAGE / "fractal-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/fractal_expected.inc"
-EXPECTED_UPSTREAM = "117a236679d1db3ab8f0e278230ece277b57564c"
+EXPECTED_UPSTREAM = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 EXPECTED_AUTHORITY_PROVENANCE = "<external-authority-root>"
-EXPECTED_CLOSURE_SHA256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5"
+EXPECTED_CLOSURE_SHA256 = "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3"
 
 
 def f32_word(value: str) -> str:
@@ -59,7 +59,7 @@ class FractalOracleTests(unittest.TestCase):
         snapshot = doc["provenance"]["cpu_snapshot"]
         self.assertEqual(EXPECTED_AUTHORITY_PROVENANCE, snapshot["root_realpath"])
         self.assertEqual(EXPECTED_CLOSURE_SHA256, snapshot["import_closure_sha256"])
-        self.assertEqual(22, len(snapshot["import_closure"]))
+        self.assertEqual(23, len(snapshot["import_closure"]))
         self.assertEqual("julia:261:5-269:6", doc["claim_boundaries"]["first_blocker_span"])
         cases = {case["name"]: case for case in doc["render_cases"]}
         self.assertEqual(0, cases["julia-distance-mode1"]["bindings"]["type"])

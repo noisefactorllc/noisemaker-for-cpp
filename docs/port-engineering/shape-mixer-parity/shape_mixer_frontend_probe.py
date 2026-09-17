@@ -34,17 +34,19 @@ from tools.glslcpp.frontend.typed_ir import (  # noqa: E402
 )
 
 
-REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+sys.path.insert(0, str(ROOT / "tools/glslcpp"))
+import check_corpus  # noqa: E402  (deliberately late and local)
+REVISION = check_corpus.REVISION
 KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 SOURCE = (ROOT / "tools/glslcpp/corpus" / REVISION
           / "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl")
-RAW_BYTES = 21718
-RAW_SHA256 = "704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4"
+RAW_BYTES = 21721
+RAW_SHA256 = "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
 NORMALIZED_BYTES = 17664
 NORMALIZED_SHA256 = "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8"
 FUNCTIONS_SHA256 = "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd"
 DECLARATIONS_SHA256 = "cdbe1347d245c1feb13b2eacce960131ec035882a086c40b9af3ff43d2f8664a"
-WHOLE_SHA256 = "57ad82d28eb34f2ea014122b03d2333099123d7b51dfe91629035ef5f41634f9"
+WHOLE_SHA256 = "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684"
 INTERFACE_SHA256 = "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d"
 FUNCTION_INVENTORY_SHA256 = "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81"
 BINDING_INVENTORY_SHA256 = "f7700f10ec7dd723ce09e8657e30d0e6aa5ce3a0e34b79cfe1d5bdbb4e3e5730"

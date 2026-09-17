@@ -108,11 +108,14 @@ def validate(document: dict) -> dict:
                    "text_sha256": "547bb6741b27cc12d6ed488cd1bbe12284ab3b916cdaefe1c747a63125523040",
                    "adapter_own_key": True, "public_factory_is_direct_identity": True}:
         raise MaterializationError("factory identity mismatch")
-    if not isinstance(snapshot, dict) or snapshot.get("closure_cardinality") != 22 \
+    # 23 (not 22): src/effects/adapters/index.js now imports adapters/remap.js
+    # at CPU authority 61aa869 (a canonical `synth/remap:remap` adapter added
+    # between e17dd02 and 61aa869).
+    if not isinstance(snapshot, dict) or snapshot.get("closure_cardinality") != 23 \
             or snapshot.get("immutable_snapshot") is not True \
             or snapshot.get("live_checkout_rejected") is not True \
             or snapshot.get("realpath_containment_checked") is not True \
-            or len(snapshot.get("import_closure", [])) != 22:
+            or len(snapshot.get("import_closure", [])) != 23:
         raise MaterializationError("CPU import closure contract mismatch")
     for item in snapshot["import_closure"]:
         if set(item) != {"relative_path", "sha256"} or Path(item["relative_path"]).is_absolute():

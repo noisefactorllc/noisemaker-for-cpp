@@ -1,14 +1,14 @@
 {
   "schema": "noisemaker-for-cpp.bitEffects.pixel-parity.v1",
   "program_key": "classicNoisedeck/bitEffects:bitEffects",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "authority": {
-    "node": "v24.7.0",
+    "node": "v26.0.0",
     "oracle": "unmodified canonical and public factories from immutable snapshot",
     "pinned_files": {
       "canonical_kernels": [
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       ],
       "catalog": [
         "src/effects/catalog.js",
@@ -46,7 +46,7 @@
       },
       {
         "relative_path": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path": "src/effects/adapters/julia.js",
@@ -59,6 +59,10 @@
       {
         "relative_path": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
@@ -78,7 +82,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -86,7 +90,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -112,9 +116,9 @@
     "public_direct_identity": false
   },
   "source": {
-    "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/bitEffects/bitEffects.glsl",
-    "raw_bytes": 12745,
-    "raw_sha256": "03194d61241ec307787d78c9b6d797b520c35c972c938aa701181b8340fa2e40",
+    "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/bitEffects/bitEffects.glsl",
+    "raw_bytes": 12748,
+    "raw_sha256": "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b",
     "normalized_bytes": 8169,
     "normalized_sha256": "70c88967c308368f81a8739296786c3e501005e536e987446bdc9c1dc93b7bb0"
   },
@@ -4634,7 +4638,7 @@
       "name": "rotation-tau",
       "source_anchor": "#define TAU 6.28318530718",
       "source_replacement": "#define TAU 3.14159265359",
-      "mutated_source_sha256": "c61568fbb250d98c225550dd8b9cca3b4e5188825d24a60fab5ce28adf11022f",
+      "mutated_source_sha256": "b749d7b208683e65742d2f293838444eeeaf3bec98c9e63d14704106706b4d6f",
       "factory_anchor": "var angle = rot * 6.2831854820251465;",
       "witness_case": "mode0-formula-0",
       "witness_cases": [
@@ -4752,7 +4756,7 @@
       "name": "temporal-speed-coefficient",
       "source_anchor": "map(abs(speed), 0.0, 100.0, 0.0, 0.333)",
       "source_replacement": "map(abs(speed), 0.0, 100.0, 0.0, 0.5)",
-      "mutated_source_sha256": "92b403730b2b9ad4c87709d5f770fc816dadceb361ce00916dd58743321632af",
+      "mutated_source_sha256": "b24f04df8b5c8e3137869ef9d9d762e29007c3a44f598c579acce50c7e1b3a96",
       "factory_anchor": "map(abs(speed), 0, 100, 0, 0.3330000042915344)",
       "witness_case": "mode0-formula-4",
       "witness_cases": [
@@ -4872,7 +4876,7 @@
       "name": "mask-formula-branch",
       "source_anchor": "#if MASK_FORMULA == 11",
       "source_replacement": "#if MASK_FORMULA == 10",
-      "mutated_source_sha256": "da590c7a4b5ddf52ca18281f4f644622edd4260d7ec551a8efd293f9520bfee1",
+      "mutated_source_sha256": "edb091d2a1c0745128fc9d1957251677dacd0b831a50903f5d3e08d107fdbc96",
       "factory_anchor": "if (MASK_FORMULA == 11)",
       "witness_case": "mode1-mask-10",
       "witness_cases": [
@@ -4990,7 +4994,7 @@
       "name": "jitter-xor-constant",
       "source_anchor": "0x9E3779B9u",
       "source_replacement": "0x9E3779B8u",
-      "mutated_source_sha256": "2c728ccfc40545c8986a6d312a38033c49705d27852935df898c0544b06a29c3",
+      "mutated_source_sha256": "ebb6fed1f2bda057c63b86953679c504f530c54293157fe518210e171f8a17ef",
       "factory_anchor": "2654435769",
       "witness_case": "mode0-formula-4",
       "witness_cases": [

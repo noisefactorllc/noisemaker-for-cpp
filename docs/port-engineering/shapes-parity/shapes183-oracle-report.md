@@ -1,6 +1,6 @@
 # Shapes183 exact-parity oracle
 
-Program `classicNoisedeck/shapes:shapes`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; exact defines
+Program `classicNoisedeck/shapes:shapes`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; exact defines
 `LOOP_A_OFFSET=40`, `LOOP_B_OFFSET=30`.
 
 ## Authority
@@ -9,7 +9,7 @@ This oracle is produced by the unmodified public canonicalFactory16 from an immu
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
 `canonicalFactory16`, its `Function.prototype.toString` SHA-256 is `a4e1aeaf8cbc3d748517369e054b7ec4a2fd5f70962cbafef61d5e473527c2c3`, the adapter
 table does not own the key, all six pinned CPU files match, and every module in the
-22-file import closure resolves by real path beneath the immutable snapshot.
+23-file import closure resolves by real path beneath the immutable snapshot.
 Bare module specifiers other than `node:` builtins are rejected, and the live checkout is refused as
 a `--cpu-root`.
 

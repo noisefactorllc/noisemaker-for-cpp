@@ -40,8 +40,15 @@ const cppRoot = fs.realpathSync(path.resolve(here, '..', '..', '..'))
 const programKey = 'filter/parallax:parallax'
 const factoryName = 'canonicalFactory98'
 const nextFactoryName = 'canonicalFactory99'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
 const sourceRelative =
-  'tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/parallax/parallax.glsl'
+  `tools/glslcpp/corpus/${corpusRevision}/sources/filter/parallax/parallax.glsl`
 const sourceSha256Expected =
   '5ce5dce2ec8e8d7ebd3024c6a5bd5dcb068d0cf322bfd105c4fb3546e1b97642'
 
@@ -69,7 +76,7 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
@@ -618,7 +625,7 @@ const controls = []
 const payload = {
   schema: 'parallax190-oracles-v1',
   program_key: programKey,
-  corpus_revision: 'a024dc3a960cc44af454abc7aebce50456c194e6',
+  corpus_revision: corpusRevision,
   source_sha256: sourceSha256Expected,
   authority: {
     cpu_root_argument: '<immutable-cpu-snapshot-root>',

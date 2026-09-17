@@ -4,11 +4,11 @@
   "program_key": "synth/mandelbrot:mandelbrot",
   "effect_key": "synth/mandelbrot",
   "runtime_key": "synth/mandelbrot:mandelbrot",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
-    "name": "canonicalFactory252",
-    "text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+    "name": "canonicalFactory260",
+    "text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
     "public_factory_is_canonical_identity": true,
     "adapter_own_key": false
   },
@@ -118,7 +118,7 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
     },
     "cpu_snapshot": {
@@ -157,7 +157,7 @@
         },
         {
           "relative_path": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path": "src/effects/adapters/julia.js",
@@ -170,6 +170,10 @@
         {
           "relative_path": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path": "src/effects/adapters/snow.js",
@@ -189,7 +193,7 @@
         },
         {
           "relative_path": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path": "src/effects/generated/kernels.js",
@@ -197,7 +201,7 @@
         },
         {
           "relative_path": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path": "src/effects/registry.js",
@@ -219,7 +223,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/mandelbrot-parity/mandelbrot_oracle_generator.mjs",
-      "sha256": "c7cf8f6cd49441430b93963c43c7a9889556c2d4a9befff417e38390d80ad2a5"
+      "sha256": "7deac12a469b55558378935c9458bd7b359ad497206077ce05c4d73919dca932"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_mandelbrot_native_oracle_include.py"
@@ -2144,9 +2148,9 @@
     }
   ],
   "source_mutation_contract": {
-    "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+    "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
     "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-    "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
+    "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
     "execution": "each exact anchor/replacement is applied to canonical factory text and the mutated factory is executed through bindCanonicalKernel/runPass"
   },
   "mutation_anchor_cardinality": {
@@ -2193,10 +2197,10 @@
       "independent": true,
       "source_anchor": "(dz[0] = 2 * (zx * dz[0] - zy * dz[1]) + 1, dz[1] = 2 * (zx * dz[1] + zy * dz[0]), dz);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "6098eca936e8451b3ccc971485cb67c5982d76f0f2d47f5694464bb6a1450d25",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "f3687ee7d8a728dd7d023dfb3f5a080c34139a1cba3d0735af7d28ea75fe09f8",
       "anchor_sha256": "25bc8c6865ed8e654db94ab1455baa24a578a080109e35b2ca21a303ec2093b3",
       "replacement_sha256": "0ccca8f5a0023d7a97b8c74202c303e8cd664c9961a71816e64e9c0e9193c54c",
       "results": [
@@ -2295,10 +2299,10 @@
       "independent": true,
       "source_anchor": "var new_zr = df64_add(df64_sub(zr2, zi2), c_re);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "cead81a62a1752e1f2458901daa7d958d9b1310357ff9f721d817277a9d19106",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "7eb7b5c6cc4b0b501a97b3119e8dda80f1aadc78cf77af93bdc7a7501a44de5d",
       "anchor_sha256": "24efb4cee16e7d59898550f807497d89e64de649e96a5dbd33910736275cf293",
       "replacement_sha256": "f4e4ef70027ac37462548d50b2528148c755e79aa9641012db7c1a93aeade445",
       "results": [
@@ -2436,10 +2440,10 @@
       "independent": true,
       "source_anchor": "var new_zi = df64_add(df64_mul_f(zri, 2), c_im);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "b16da853fe964882f9f98bd96b7794aab021764c58cfb1565f03a600bd67eeab",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "e8a0e92d758ec23d98728eb3cc9ef0acb84238da7f80368283c09caab71b1a7d",
       "anchor_sha256": "caabf69b2f78b353d10e386c9faf1ac72a486c2a6a666bc6c1942bfcc54e51c1",
       "replacement_sha256": "fb08aee75eb62fca54939f97f526cdbf109e5a8106079000f92379e8807bcb7d",
       "results": [
@@ -2570,10 +2574,10 @@
       "independent": true,
       "source_anchor": "smoothIter = i + 1 - nu;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "1033dd65e839d184b621462311117ecd086d85354419ec5dbc3f62e8b627dad8",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "1d6113ef67c0ea8e589a6d8682a5af760198209833ee75299e268b40cca73c84",
       "anchor_sha256": "b9fa39d738ba0cade041f6a6a40f824b417201f4ab6b09900b06bff09a8936ed",
       "replacement_sha256": "6633b4b02a3126cce6edb7713ba152f5efdea1d65841d5665dd4a65655772031",
       "results": [
@@ -2680,10 +2684,10 @@
       "independent": true,
       "source_anchor": "rawIter = (maxIter);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "6f054322691488758a6a08b595afcd498d0b48c57f266868c8443bfe1758f49b",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "eebf6d3d681ec6d0a54b598be55dab3a03df3de859029a4dc76bb26180e5fc12",
       "anchor_sha256": "9f54a05e1156b4f1b26071b56c4489741d53f774343ea381c78f7ae38dec164b",
       "replacement_sha256": "9a0bfe228439df6b43f003c90661ed6dbd4bdc0585b24dd7bf8d54c62aacbb79",
       "results": [
@@ -2782,10 +2786,10 @@
       "independent": true,
       "source_anchor": "(z_final[0] = fx, z_final[1] = fy, z_final);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "9ca6dea91f913e948a21e6933cc257fee3415dbeec571c62e42637d8f14add2c",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "cbd87f88e874be597dd3bb62c3325d50bb7de66b64f16e3da7adf5a56e264ad3",
       "anchor_sha256": "704b1c09e8eca33ea8432aecbae2243dc739bcbf8d12533e1a68eb91c1e7fb6f",
       "replacement_sha256": "725517ca0bffd6f01176621d7ef2bc964254a371c6a39d0d8c136b15136f951e",
       "results": [
@@ -2908,10 +2912,10 @@
       "independent": true,
       "source_anchor": "(dz_final[0] = dz[0], dz_final[1] = dz[1], dz_final);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "1bec1d0ec1944a38787b0f8506730dd80de1ea31be7446f7c4016a4994edf64c",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "49367bfd935503c7ffad88464bf9d92f2f3b7702c94c93d3b395544ce7e4fc86",
       "anchor_sha256": "10e79ca0816e5e000354234314c7d85282db56d09b8f0c51d5e0db8a45196db7",
       "replacement_sha256": "1f8d2eb44e7137095bd687077a57be8179b89e018f93bd28573c7848a31f9388",
       "results": [
@@ -3010,10 +3014,10 @@
       "independent": true,
       "source_anchor": "stripeAcc = stripe;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "e1b592d4d38d7393a719235af7328bfc211a3d85df4b7c9c6fe80a3577cecd14",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "0004b99a7e42764bb08da7f4d514a05f4075783d2ffcc532fdbc2cfc69dd124e",
       "anchor_sha256": "33f9940dff82a4a7478d049f50bcd35db6bd52a640c09a8cd6ea3b09a108ab9b",
       "replacement_sha256": "62654d058571c25464286c8ace520a0341ba6a3ea0da5b8d4537d8407d3ca1ad",
       "results": [
@@ -3104,10 +3108,10 @@
       "independent": true,
       "source_anchor": "trapMin = trap;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "c88cb72d0c35da1ec55296369422309cbe5ed4485d234253cc58077c1c73b072",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "4b3d9c828d0506b90a516ee6e65a2292cbdad23b50a0baddb57b460b75f35e20",
       "anchor_sha256": "32164534b1fbec800e3fcd2f78a33531fed7656148060cff88cc67ae8e76632c",
       "replacement_sha256": "fbdd072cf420a49e90ae6f831d5ca4c05bee4213949932ece4fa22332d77f62d",
       "results": [
@@ -3198,10 +3202,10 @@
       "independent": true,
       "source_anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "43ce413743895c2061ad7dc8635a989c27bc7dd047819d8a3633390703f733d8",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "465c810b9e17c383b63d9a20cf44cdabe46e6d9552b9e2d89e75f04f07cf4fa5",
       "anchor_sha256": "219199e2df71c33786551074a9276c22ec0063d2f4492f9c2467c46a2b35c384",
       "replacement_sha256": "44cdf0adc9582b0b47679cce0ae026f122a040bc03f75ab9c8b3ea55293f4ddf",
       "results": [
@@ -3324,10 +3328,10 @@
       "independent": true,
       "source_anchor": "[_local_cX_df_1, cY_df] = getPOI.__out__",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "177438618a139533ecc9226c56a041e4dca749bb8bcf41a84e1c1b01afd4b1f6",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "50f25f941604d6d5bcb2f68510d38a2bbdb2bf26b31bb0d48592d10d02944192",
       "anchor_sha256": "219199e2df71c33786551074a9276c22ec0063d2f4492f9c2467c46a2b35c384",
       "replacement_sha256": "5009675eaca5cd1162523d86ef5e77928f9b01679b13bd1698e2781d440cc116",
       "results": [
@@ -3443,10 +3447,10 @@
       "independent": true,
       "source_anchor": "[re_df, im_df] = transformCoords_df64.__out__",
       "anchor_occurrence_count": 2,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "3188bf2d2a7c2573643a75e171a7ca23d6fb9b021d4cff47d8e5232c2138bc27",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "6a52aaaa2f381b2617298ceffae2871d39410dbf512c098e12914470096e9631",
       "anchor_sha256": "0f3335ee76a8e80dbe309070431261bd55cd053b1ed72b6abdc85b60c56a0c76",
       "replacement_sha256": "c8ebb2ecb862a056d0c84587c3ef2540a81e2aef896d69ed1f9dda49d0420819",
       "results": [
@@ -3578,10 +3582,10 @@
       "independent": true,
       "source_anchor": "[re_df, im_df] = transformCoords_df64.__out__",
       "anchor_occurrence_count": 2,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "3218d0360d38abce1934062aa09ee4ad3f0198ff788406c4fdeddb37ec0d1722",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "086c11fac02c0ef1f1fa7050e8f09d3d14fadbba56772cae65d46943750bafaf",
       "anchor_sha256": "0f3335ee76a8e80dbe309070431261bd55cd053b1ed72b6abdc85b60c56a0c76",
       "replacement_sha256": "7e25ddb5e6ed6e121b6864b9d6fe5d85e1a648812bda38f2b8a30fc1362f3e1d",
       "results": [
@@ -3712,10 +3716,10 @@
       "independent": true,
       "source_anchor": "var MAX_ITER = 500;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "c8a2d1a4479446ee7cc95cae3266fdb536a1a584c6be36a1f656f670992d5367",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "a538ffc9d6c47f13dad6ced170d9346095cb950796e993ef14f6308bf15b71d5",
       "anchor_sha256": "4359c35a72a1e1d5919fec755cfcec25d168a5392cd98fc52b42a2de28ed3087",
       "replacement_sha256": "3d17437b3823cb08d66eb097a24fa73b6365c484ed78ee832cac8bee07c8f769",
       "results": [
@@ -3846,10 +3850,10 @@
       "independent": true,
       "source_anchor": "n >= maxIter)",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "6768a7a10f27d82562a3e9c56623d2d8b74b6d432e900438b3eb1f487c405329",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "8215a1f76497120cda16211f5dd98729bb7c393719341f5900df8e78cbc7838f",
       "anchor_sha256": "e828e7a879c36440536bfad173157bf73985476aaf58d0872772e710936c099e",
       "replacement_sha256": "34f2d0b4eb2cef9b1a124be6a4e21bb5bcc76d9f6aeaff747805270f639f6460",
       "results": [
@@ -3972,10 +3976,10 @@
       "independent": true,
       "source_anchor": "var log_zn = log(mag2) * 0.5;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "5cacdfb674a2f0a53afe052fd601ba57b3d7d7bcb714c91e444d9374b889156b",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "9319b14b0d456d6fc6baf810cd150edc22469715ce101c272a87cc1d28817a4a",
       "anchor_sha256": "f86c75929699353bf56b34a90d6afadc19868b2db0b00f79236ae72091caa26b",
       "replacement_sha256": "8e19d810663972a4226e27d889dab51e02bf82eb3b5f8bdaa02025e0cd63c2f8",
       "results": [
@@ -4078,10 +4082,10 @@
       "independent": true,
       "source_anchor": "(log(log_zn / LOG2)) / LOG2;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "9b544634e26db5db99cda6a48f009aa3ac5f57966ab7cde80f619dee472a7d15",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "a65e086a7f6c3200bf9266df1ee795112f0f627879b100dfd03a446223e26b56",
       "anchor_sha256": "3e3253b2d30d3fd0693f823e55ac15d038caf28a941270c681765f262d4972a8",
       "replacement_sha256": "4af6a7146d2988557638fae0785e86b91ba94a4114c5827f3ba0ece1bd526929",
       "results": [
@@ -4188,10 +4192,10 @@
       "independent": true,
       "source_anchor": "var dist = (2 * mag) * log(mag) / dmag;",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "55e654e4e6da35105f9ddbe9545b5bda59e7a2b3280dd7a767eae01345f16879",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "70d8f8405233fea2cb04647916a7c1a0847d2ebc4f67e5ed2ea01d635d39faf8",
       "anchor_sha256": "2bf2f9ad8e6fa6f321200e704dc477da585cd0dde272c8abff2c38b9c602ef92",
       "replacement_sha256": "36128d3e96de4c3bfa2d576abc50ed76945ce991c2ddd498dc66391f7a4ea042",
       "results": [
@@ -4286,10 +4290,10 @@
       "independent": true,
       "source_anchor": "var h0 = computeValueAt_df64(fragCoord, cX_df, cY_df, z_zoom, rot, maxIter);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "95c5ea0bbef10b1907f987f0c6db38fbf3d878bf1f13f95a7d7c1cd7e965b793",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "3fd3eac4c5c55edb6bd565852787ec48849c44c8c0332eb4640da27e29af7441",
       "anchor_sha256": "2418a74145e066291d030fe3a6c559e4f208cd7e32a5b997174fb1b9126caef0",
       "replacement_sha256": "57f12bc7a4eb9d46f8f7eb12726891991fdef04e773da450512578e8d0b9c7cc",
       "results": [
@@ -4380,10 +4384,10 @@
       "independent": true,
       "source_anchor": "var hx = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0] + 1, fragCoord[1]]), cX_df, cY_df, z_zoom, rot, maxIter);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "12d77bac5821955d3e577e741c05bac3998b4b261389f20f971c3e0a7a9c504c",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "bd59a013f2359be00d0bdb7cdf15550af7920a19e6b159eb48d15c7aa8748e98",
       "anchor_sha256": "80e421c088ecd4842742af9ba99397538e1d0676c5262bf91817a82614bd1d20",
       "replacement_sha256": "4cbec78390afb72543f28215603e466deb97df761a2d92a2067a98df4842b99c",
       "results": [
@@ -4474,10 +4478,10 @@
       "independent": true,
       "source_anchor": "var hy = computeValueAt_df64(new $runtime.PooledFloat32Array([fragCoord[0], fragCoord[1] + 1]), cX_df, cY_df, z_zoom, rot, maxIter);",
       "anchor_occurrence_count": 1,
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/mandelbrot/mandelbrot.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/mandelbrot/mandelbrot.glsl",
       "source_sha256": "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-      "canonical_factory_text_sha256": "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29",
-      "mutated_factory_text_sha256": "67da6fcc71d4a499992826be85817aad4c962951e22a5535c3d2c8608a1b3b8a",
+      "canonical_factory_text_sha256": "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951",
+      "mutated_factory_text_sha256": "ae3e791c23f793918e217503a81d48a6b5fd5458edc47f23cd397a1a08f41695",
       "anchor_sha256": "7967833bf0174b43827b9f8e6239f6227e7af5df00f5f54f88f72aca7e24715c",
       "replacement_sha256": "6fe57f1a12055c4005d116aaadb88e7e8e4f2ca11c6d673fc481e38b9f8469f3",
       "results": [
@@ -4582,11 +4586,11 @@
     "source_bound": "mandelbrot source and canonical factory pins",
     "anchor": "(dz[0] = 2 * (zx * dz[0] - zy * dz[1]) + 1, dz[1] = 2 * (zx * dz[1] + zy * dz[0]), dz);",
     "replacement": "(dz = new $runtime.PooledFloat32Array([2 * (zx * dz[0] - zy * dz[1]) + 1, 2 * (zx * dz[1] + zy * dz[0])]), dz);",
-    "mutated_factory_text_sha256": "6098eca936e8451b3ccc971485cb67c5982d76f0f2d47f5694464bb6a1450d25"
+    "mutated_factory_text_sha256": "f3687ee7d8a728dd7d023dfb3f5a080c34139a1cba3d0735af7d28ea75fe09f8"
   },
   "claim_boundaries": {
     "absolute_paths": "stable placeholders only",
-    "authority": "unmodified public canonicalFactory252 from immutable snapshot; no local reimplementation or C++ output participates",
+    "authority": "unmodified public canonicalFactory260 from immutable snapshot; no local reimplementation or C++ output participates",
     "adapter": "no adapter owns this key",
     "mutations": "source/factory anchor replacements are executed authority mutations, not uniform perturbations"
   }

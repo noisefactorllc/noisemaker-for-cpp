@@ -1,8 +1,8 @@
 {
   "schema": 1,
   "program_key": "classicNoisedeck/glitch:glitch",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "oracle_authority": "real unmodified noisemaker-for-cpu canonical factory and shipped GlslCpuRuntime",
   "exactness_contract": {
     "float32": "raw little-endian uint32 lane equality; signed zero and NaN payloads are significant",
@@ -50,7 +50,7 @@
       ],
       [
         "src/effects/adapters/index.js",
-        "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       ],
       [
         "src/effects/adapters/julia.js",
@@ -63,6 +63,10 @@
       [
         "src/effects/adapters/palette.js",
         "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      ],
+      [
+        "src/effects/adapters/remap.js",
+        "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       ],
       [
         "src/effects/adapters/snow.js",
@@ -82,7 +86,7 @@
       ],
       [
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       ],
       [
         "src/effects/generated/kernels.js",
@@ -90,7 +94,7 @@
       ],
       [
         "src/effects/generated/upstream-snapshot.js",
-        "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       ],
       [
         "src/effects/registry.js",
@@ -112,7 +116,7 @@
     "files": {
       "canonical_kernels": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       "public_catalog": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -120,7 +124,7 @@
       },
       "upstream_snapshot": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       "glsl_kernel": {
         "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -140,7 +144,7 @@
       }
     },
     "glsl_source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/glitch/glitch.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/glitch/glitch.glsl",
       "bytes": 7894,
       "sha256": "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134"
     },
@@ -153,9 +157,9 @@
     "adapter_override_absent": true,
     "moving_tree_observation": {
       "first_upstream_snapshot_sha256": "8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936",
-      "second_and_consumed_upstream_snapshot_sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090",
+      "second_and_consumed_upstream_snapshot_sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
       "relevant_artifacts_unchanged_across_observations": {
-        "canonical_kernels_sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+        "canonical_kernels_sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
         "public_catalog_sha256": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
         "glsl_runtime_sha256": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
         "glsl_kernel_sha256": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",

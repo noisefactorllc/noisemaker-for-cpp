@@ -11,10 +11,9 @@ const reportPath = path.join(here, 'shape-mixer-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'shape_mixer_frontend_probe.py')
 const programKey = 'classicNoisedeck/shapeMixer:shapeMixer'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
 const authorityCommit = '4834b0144ee0524588144a482cca0067b15f68ec'
-const authorityNode = 'v24.7.0'
-const upstreamRevision = '117a236679d1db3ab8f0e278230ece277b57564c'
+const authorityNode = 'v26.0.0'
+const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 
 const modes = new Set(['--write', '--check'])
 function parseArgs() {
@@ -62,6 +61,13 @@ const cppLexical = lexicalDirectory(path.resolve(here, '../../..'), 'C++ checkou
 const authorityLexical = lexicalDirectory(cpuArg, 'authority root')
 const liveLexical = lexicalDirectory(liveArg, 'live root')
 const cppRoot = fs.realpathSync(cppLexical)
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw new Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
 const cpuRoot = fs.realpathSync(authorityLexical)
 const liveRoot = fs.realpathSync(liveLexical)
 const includeGeneratorPath = path.join(cppRoot, 'tools/glslcpp/generate_shape_mixer_native_oracle_include.py')
@@ -280,10 +286,10 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  adapter_index: ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
+  adapter_index: ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
@@ -297,7 +303,7 @@ if (process.version !== authorityNode) throw new Error(`Node authority drift: ${
 if (UPSTREAM_REVISION !== upstreamRevision) throw new Error('upstream revision drift')
 
 const sourceBytes = fs.readFileSync(sourcePath)
-if (sourceBytes.length !== 21718 || sha256(sourceBytes) !== '704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4') throw new Error('pinned Shape Mixer GLSL source drift')
+if (sourceBytes.length !== 21721 || sha256(sourceBytes) !== '51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b') throw new Error('pinned Shape Mixer GLSL source drift')
 const canonicalFactory = canonicalKernelFactories[programKey]
 const publicFactory = kernelFactories.get(programKey)
 const canonicalText = canonicalFactory?.toString() ?? ''

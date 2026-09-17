@@ -6,6 +6,7 @@
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/graph/generated/classic_noisedeck_palette_table.hpp"
+#include "noisemaker/graph/iteration.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/pass_runner.hpp"
 #include "noisemaker/texture_format.hpp"
@@ -1299,7 +1300,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 }
 
 [[nodiscard]] std::size_t vector_width(std::string_view cpp_type) noexcept {
-  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2") return 2U;
+  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2" || cpp_type == "glsl::DVec2") return 2U;
   if (cpp_type == "glsl::Vec3" || cpp_type == "glsl::IVec3" || cpp_type == "glsl::DVec3") return 3U;
   if (cpp_type == "glsl::Vec4" || cpp_type == "glsl::IVec4" || cpp_type == "glsl::DVec4") return 4U;
   return 0U;
@@ -1315,8 +1316,16 @@ void validate_uniform_abi_shape(const EffectStep& step,
   // paletteAmp/paletteFreq/paletteOffset/palettePhase on exactly five
   // programs declares this cpp_type instead of the ordinary "glsl::Vec3",
   // and only because their generated kernel actually reads a
-  // `glsl::DVec3`-typed uniform there.
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 12>
+  // `glsl::DVec3`-typed uniform there. "vec2"->"glsl::DVec2" is the same
+  // carrier shape for exactly one uniform on one program --
+  // `synth/media:mediaInput`'s `imageSize` (tools/glslcpp/emit_typed_cpp.py's
+  // `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`): the authority's
+  // createCanonicalBindings() spreads `...uniforms` for an ordinary
+  // effect-parameter vec2 with no Math.fround anywhere on the path, so a
+  // `glsl::Vec2` (float lanes) ABI narrows it to float32 at bind time, one
+  // rounding earlier than the authority ever does -- measurably not
+  // byte-exact (rare, boundary-triggered) against it.
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 13>
       kTypes = {{{"float", "float"},
                  // A GLSL-declared scalar `float` uniform whose value the JS
                  // CPU authority never rounds to float32 (an ordinary DSL
@@ -1335,6 +1344,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
                  {"uint", "std::uint32_t"},
                  {"bool", "bool"},
                  {"vec2", "glsl::Vec2"},
+                 {"vec2", "glsl::DVec2"},
                  {"vec3", "glsl::Vec3"},
                  {"vec3", "glsl::DVec3"},
                  {"vec4", "glsl::Vec4"},
@@ -1501,12 +1511,13 @@ void validate_uniform_abi_shape(const EffectStep& step,
     // authority's semantic $bindings are plain, unrounded JS doubles; a
     // float32 lane here would silently reintroduce exactly the divergence
     // that ruled out typed generation for this program (see remap.cpp).
-    if (cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
+    if (cpp_type == "glsl::DVec2" || cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
       std::array<double, 4> d{};
       for (std::size_t index = 0; index < width; ++index) {
         if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
         d[index] = value.array[index].number;
       }
+      if (cpp_type == "glsl::DVec2") return glsl::DVec2(d[0], d[1]);
       if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
       return glsl::DVec4(d[0], d[1], d[2], d[3]);
     }
@@ -2489,6 +2500,619 @@ std::string GraphError::make_what(GraphErrorCode code, std::string_view detail,
   return result;
 }
 
+// ---------------------------------------------------------------------------
+// Iteration-group execution.
+//
+// See docs/port-engineering/iteration-group-resource-lifetime.md for the full
+// design; every citation below is against that document's own citations of
+// the JS authority (noisemaker-for-cpu 61aa869, src/runtime/renderer.js and
+// src/runtime/iteration.js). Summary: an iterated group's step-scoped and
+// group-shared resources are deliberately kept OUT of ResourceArena --
+// mirroring the JS authority's own `state.resources`/`groupResources`, which
+// are never merged into its `surfaces` map either -- so nothing here can be
+// bound by name from outside the one group run that owns it. Only the
+// group's final surface (an independent clone) ever crosses into the arena,
+// exactly like a non-iterated step's own final pass output already does.
+namespace {
+
+// ResourceArena::find/insert are private (friend GraphExecutor only, per
+// resource.hpp) -- a lambda defined inside GraphExecutor::execute() inherits
+// that access, but a free function does not. Every group-execution helper
+// below is therefore a free function that only ever reads the arena through
+// its public `require()` (wrapped here to return nullptr instead of
+// throwing, exactly like `find` would); the two places that must publish a
+// finished surface into the arena (zero_iteration_group_output's result and
+// run_iterated_group's final output) return the surface/format/route to
+// GraphExecutor::execute() instead, which performs the actual `arena.insert`
+// itself, the same way it already publishes every non-iterated pass output.
+[[nodiscard]] const GraphResource* find_named_resource(const ResourceArena& arena,
+                                                        std::string_view name) noexcept {
+  try {
+    return &arena.require(name);
+  } catch (const std::out_of_range&) {
+    return nullptr;
+  }
+}
+
+// noisemaker::Surface has no default constructor, so
+// `std::unordered_map<std::string, Surface>::operator[]` cannot be used
+// (it default-constructs on a miss before ever reaching the assignment).
+// Mirrors iteration::GroupResourceMap::store's own find-then-emplace-or-
+// move-assign shape.
+void store_step_resource(std::unordered_map<std::string, noisemaker::Surface>& resources,
+                         std::string name, noisemaker::Surface surface) {
+  const auto iterator = resources.find(name);
+  if (iterator != resources.end()) {
+    iterator->second = std::move(surface);
+    return;
+  }
+  resources.emplace(std::move(name), std::move(surface));
+}
+
+// renderer.js:34-45 -- groupOwnerStateSize. `undefined` (here: nullopt) for a
+// single-step group or an owner with no bound `stateSize`.
+[[nodiscard]] std::optional<double> group_owner_state_size(
+    const EffectStep& owner_step, std::size_t group_step_count) {
+  if (group_step_count <= 1U) return std::nullopt;
+  const auto* value = parameter(owner_step, "stateSize");
+  if (value == nullptr || value->kind != PlanValue::Kind::number) return std::nullopt;
+  return value->number;
+}
+
+// renderer.js:660-663 -- initializeGroupStepState's `sourceStep`: a joining
+// step's own `stateSize` binding is unconditionally replaced with the
+// owner's resolved value whenever the step declares one at all.
+[[nodiscard]] EffectStep apply_owner_state_size_override(const EffectStep& step,
+                                                          double owner_state_size) {
+  EffectStep result = step;
+  for (auto& binding : result.params) {
+    if (binding.name == "stateSize") {
+      binding.value = PlanValue::number_value(owner_state_size);
+      return result;
+    }
+  }
+  result.params.push_back({"stateSize", PlanValue::number_value(owner_state_size)});
+  return result;
+}
+
+// renderer.js:23-32 -- PARTICLE_STATE_FALLBACK_FORMATS / particleStateFallbackFormat.
+[[nodiscard]] std::string_view particle_state_fallback_format(std::string_view name) {
+  if (name == "global_xyz" || name == "global_vel") return "rgba32f";
+  if (name == "global_rgba") return "rgba8";
+  return "rgba16f";
+}
+
+// renderer.js:665-666 -- usesSelfTex: any pass input value is the reserved
+// `selfTex`/`feedback` token.
+[[nodiscard]] bool step_uses_self_tex(const effects::EffectDefinition& definition) noexcept {
+  for (const auto& pass : definition.passes) {
+    for (const auto& input : pass.inputs) {
+      if (input.second == "selfTex" || input.second == "feedback") return true;
+    }
+  }
+  return false;
+}
+
+// Per-step, per-group-run state: the C++ analog of JS's `state` object built
+// once by `initializeGroupStepState` (renderer.js:660-677) and threaded
+// unchanged through all `N` iterations.
+struct GroupStepState {
+  const PlanEffectSnapshot* snapshot = nullptr;
+  // Possibly a stateSize-overridden clone (apply_owner_state_size_override);
+  // every downstream lookup (dimensions, uniforms, pass enable/repeat) reads
+  // this, never the original chain step.
+  EffectStep effective_step{};
+  // state.resources: declared scratch, refreshed inputTex/surface-parameter
+  // routes. Persists across all N iterations; never touches ResourceArena.
+  std::unordered_map<std::string, noisemaker::Surface> resources;
+  bool uses_self_tex = false;
+  std::optional<noisemaker::Surface> self_tex;
+};
+
+// renderer.js:679-704 -- groupTextureSpec, folded with the dimension/format
+// resolution its two callers (resolveGroupParticleTexture,
+// groupOutputDestination) both immediately perform on its result: the first
+// step (group order) that declares `name` in its own textures, or the
+// synthetic `{param:'stateSize', default:256}` fallback resolved against the
+// REFERENCING step.
+struct GroupTextureResolution {
+  std::size_t width = 0;
+  std::size_t height = 0;
+  noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
+};
+
+[[nodiscard]] GroupTextureResolution resolve_group_particle_texture_spec(
+    std::string_view name, const std::vector<GroupStepState>& step_states,
+    const EffectStep& referencing_step, const ResourceArena& arena,
+    const ExecutionInputs& inputs) {
+  for (const auto& candidate : step_states) {
+    const auto* texture = texture_for(candidate.snapshot->definition, name);
+    if (texture == nullptr) continue;
+    GroupTextureResolution resolution;
+    resolution.width = resolve_dimension(texture->width, candidate.effective_step, arena,
+                                         inputs.width, true);
+    resolution.height = resolve_dimension(texture->height, candidate.effective_step, arena,
+                                          inputs.height, false);
+    resolution.format = resolve_texture_format(texture->format);
+    return resolution;
+  }
+  effects::DimensionExpression fallback;
+  fallback.kind = effects::DimensionKind::parameter_default;
+  fallback.parameter = "stateSize";
+  fallback.default_value = 256.0;
+  GroupTextureResolution resolution;
+  resolution.width = resolve_dimension(fallback, referencing_step, arena, inputs.width, true);
+  resolution.height = resolve_dimension(fallback, referencing_step, arena, inputs.height, false);
+  resolution.format = resolve_texture_format(particle_state_fallback_format(name));
+  return resolution;
+}
+
+// renderer.js:711-720 -- resolveGroupParticleTexture: lazily creates
+// (zero-cleared, once) a group-scoped particle-state texture. Never called
+// for the literal `global_accum`, which is only ever seeded up front for a
+// loop region (renderer.js:858-865) or absent -- see
+// lookup_group_step_route below.
+[[nodiscard]] const noisemaker::Surface* resolve_or_create_group_particle_texture(
+    std::string_view name, const std::vector<GroupStepState>& step_states,
+    const EffectStep& referencing_step, iteration::GroupResourceMap& group_resources,
+    const ResourceArena& arena, const ExecutionInputs& inputs) {
+  if (const auto* existing = group_resources.find(name)) return existing;
+  const auto resolution =
+      resolve_group_particle_texture_spec(name, step_states, referencing_step, arena, inputs);
+  noisemaker::Surface surface(resolution.width, resolution.height);
+  surface.clear();
+  group_resources.store(std::string(name), std::move(surface));
+  return group_resources.find(name);
+}
+
+// The route-lookup context and callback plugged into
+// BindingMaterializationContext for a group step's pass materialization --
+// the iterated-group analog of `lookup_resolved_sampler_route`.
+struct GroupStepRouteContext {
+  GroupStepState* state = nullptr;
+  iteration::GroupResourceMap* group_resources = nullptr;
+  const noisemaker::Surface* empty_surface = nullptr;
+};
+
+// renderer.js:726-743 -- groupInputTextures' per-route resolution (the lazy
+// particle-texture *creation* it also performs happens separately, before
+// this is consulted -- see ensure_group_particle_inputs below, since a plain
+// lookup callback cannot create a resource).
+[[nodiscard]] const noisemaker::Surface* lookup_group_step_route(void* context,
+                                                                  std::string_view route) {
+  auto* ctx = static_cast<GroupStepRouteContext*>(context);
+  if (ctx == nullptr) return nullptr;
+  if (route == "selfTex" || route == "feedback") {
+    return ctx->state->self_tex.has_value() ? &*ctx->state->self_tex : ctx->empty_surface;
+  }
+  if (route == "global_accum") {
+    if (const auto* surface = ctx->group_resources->find(route)) return surface;
+    // Falls through: JS only special-cases global_accum when the group map
+    // already has it (renderer.js:733-736); otherwise it is ordinary
+    // step-local state, exactly like any other declared texture.
+  } else if (iteration::is_particle_state_name(route)) {
+    return ctx->group_resources->find(route);
+  }
+  const auto iterator = ctx->state->resources.find(std::string(route));
+  return iterator == ctx->state->resources.end() ? nullptr : &iterator->second;
+}
+
+// Lazily creates every particle-state texture this pass's own inputs
+// reference before binding materialization runs (resolveGroupParticleTexture
+// is called inline by groupInputTextures in JS; a plain SurfaceLookup
+// callback has no create side, so this runs once up front instead).
+void ensure_group_particle_inputs(const effects::PassDefinition& pass,
+                                  const std::vector<GroupStepState>& step_states,
+                                  const EffectStep& referencing_step,
+                                  iteration::GroupResourceMap& group_resources,
+                                  const ResourceArena& arena, const ExecutionInputs& inputs) {
+  for (const auto& input : pass.inputs) {
+    if (iteration::is_particle_state_name(input.second)) {
+      (void)resolve_or_create_group_particle_texture(input.second, step_states, referencing_step,
+                                                      group_resources, arena, inputs);
+    }
+  }
+}
+
+// renderer.js:947-950 -- the top-of-iteration `bindings.textures` merge into
+// `state.resources`: `inputTex` (this iteration's threading input) and every
+// surface-parameter route are refreshed every iteration, exactly like
+// buildBindings feeds them fresh every non-iterated call.
+void seed_group_step_bindings(GroupStepState& state,
+                              const noisemaker::Surface* iteration_input,
+                              const ResourceArena& arena) {
+  if (iteration_input != nullptr) {
+    store_step_resource(state.resources, "inputTex", iteration_input->clone());
+  } else {
+    state.resources.erase("inputTex");
+  }
+  const auto& definition = state.snapshot->definition;
+  for (const auto& declared : definition.parameters) {
+    if (declared.type != "surface") continue;
+    const std::string route(bound_texture_name(declared));
+    const auto* value = parameter(state.effective_step, declared.name);
+    if (value == nullptr) continue;
+    if (value->kind == PlanValue::Kind::null_value) {
+      store_step_resource(state.resources, route, noisemaker::Surface(1U, 1U));
+      continue;
+    }
+    if (value->kind != PlanValue::Kind::surface) continue;
+    if (value->surface.kind == SurfaceReference::Kind::input) {
+      if (iteration_input == nullptr) {
+        throw GraphError(GraphErrorCode::missing_resource,
+                         "surface parameter requires an input surface",
+                         state.effective_step.effect.id);
+      }
+      store_step_resource(state.resources, route, iteration_input->clone());
+    } else if (value->surface.kind == SurfaceReference::Kind::named) {
+      const auto* resource = find_named_resource(arena, value->surface.name);
+      if (resource == nullptr) {
+        throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced",
+                         state.effective_step.effect.id);
+      }
+      store_step_resource(state.resources, route, resource->surface().clone());
+    }
+  }
+}
+
+// renderer.js:767-774 -- ensureGroupScratchResources: zero-fills, once, every
+// declared texture the step's own map does not already hold and that is not
+// a particle-state name (those are the group map's concern). Idempotent
+// after the first iteration, since `resources.contains(name)` is then always
+// true -- matching the JS comment on the identical idiom.
+void ensure_group_scratch_resources(GroupStepState& state, const ResourceArena& arena,
+                                    const ExecutionInputs& inputs) {
+  const auto& definition = state.snapshot->definition;
+  for (const auto& texture : definition.textures) {
+    if (iteration::is_particle_state_name(texture.name)) continue;
+    if (state.resources.find(texture.name) != state.resources.end()) continue;
+    const auto width = resolve_dimension(texture.width, state.effective_step, arena,
+                                         inputs.width, true);
+    const auto height = resolve_dimension(texture.height, state.effective_step, arena,
+                                          inputs.height, false);
+    const auto format = resolve_texture_format(texture.format);
+    (void)format;
+    noisemaker::Surface surface(width, height);
+    surface.clear();
+    state.resources.emplace(texture.name, std::move(surface));
+  }
+}
+
+// renderer.js:745-760 -- groupOutputDestination: a particle-state output
+// route is sized via the declaring step's own spec (resolve_group_particle_
+// texture_spec); everything else -- including the literal `global_accum`,
+// which is an ordinary declared texture on whichever effect owns it -- via
+// the CURRENT step's own declared texture (or the render extent/rgba16f
+// default when undeclared, matching the non-iterated path's own fallback).
+[[nodiscard]] noisemaker::Surface allocate_group_output_destination(
+    std::string_view name, const GroupStepState& state,
+    const std::vector<GroupStepState>& step_states, const ResourceArena& arena,
+    const ExecutionInputs& inputs, noisemaker::TextureFormat& format_out) {
+  if (iteration::is_particle_state_name(name)) {
+    const auto resolution =
+        resolve_group_particle_texture_spec(name, step_states, state.effective_step, arena, inputs);
+    format_out = resolution.format;
+    return noisemaker::Surface(resolution.width, resolution.height);
+  }
+  const auto* texture = texture_for(state.snapshot->definition, name);
+  std::size_t width = inputs.width;
+  std::size_t height = inputs.height;
+  format_out = noisemaker::TextureFormat::rgba16f;
+  if (texture != nullptr) {
+    width = resolve_dimension(texture->width, state.effective_step, arena, inputs.width, true);
+    height = resolve_dimension(texture->height, state.effective_step, arena, inputs.height, false);
+    format_out = resolve_texture_format(texture->format);
+  }
+  return noisemaker::Surface(width, height);
+}
+
+// renderer.js:762-765 -- storeGroupOutput's single routing predicate, already
+// ported as iteration::is_group_shared_resource_name.
+void store_group_output(std::string_view name, noisemaker::Surface surface, GroupStepState& state,
+                        iteration::GroupResourceMap& group_resources) {
+  if (iteration::is_group_shared_resource_name(name)) {
+    group_resources.store(std::string(name), std::move(surface));
+  } else {
+    store_step_resource(state.resources, std::string(name), std::move(surface));
+  }
+}
+
+struct GroupStepIterationResult {
+  noisemaker::Surface surface{1U, 1U};
+  noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
+  std::string output_route;
+};
+
+// renderer.js:943-1074 -- runGroupStepIterationSync. Structurally mirrors the
+// non-iterated EffectStep loop in GraphExecutor::execute() below (same two
+// pass shapes it supports: scatter, and ordinary single fragment output --
+// MRT needs no branch here either, see the design doc); the divergences are
+// exactly the persistent-resources, group-routing, and selfTex bookkeeping
+// this whole block exists for. Reuses every existing authenticated
+// materialization helper unchanged.
+[[nodiscard]] GroupStepIterationResult run_group_step_iteration(
+    GroupStepState& state, const noisemaker::Surface* iteration_input,
+    const std::vector<GroupStepState>& step_states, iteration::GroupResourceMap& group_resources,
+    ResourceArena& arena, const ExecutionInputs& iteration_inputs, std::size_t& pass_count,
+    const noisemaker::Surface& empty_surface) {
+  seed_group_step_bindings(state, iteration_input, arena);
+  ensure_group_scratch_resources(state, arena, iteration_inputs);
+
+  const auto& definition = state.snapshot->definition;
+  const auto& admissions = state.snapshot->admissions;
+  GroupStepIterationResult result;
+  bool produced = false;
+
+  for (std::size_t pass_index = 0; pass_index < definition.passes.size(); ++pass_index) {
+    const auto& pass = definition.passes[pass_index];
+    const auto& admission = admissions[pass_index];
+    bool enabled = false;
+    std::size_t repeats = 0U;
+    try {
+      enabled = pass_enabled(pass, state.effective_step);
+      repeats = pass_repeat(pass, state.effective_step);
+    } catch (const std::exception& error) {
+      throw GraphError(GraphErrorCode::invalid_options, error.what(),
+                       state.effective_step.effect.id, pass_index, pass.name,
+                       admission.identity.program_key);
+    }
+    if (!enabled || repeats == 0U) continue;
+    const bool dispatch_scatter = scatter_adapter_available(admission);
+    const std::string output_route = pass.outputs.front().second;
+
+    for (std::size_t repeat = 0; repeat < repeats; ++repeat) {
+      ensure_group_particle_inputs(pass, step_states, state.effective_step, group_resources,
+                                   arena, iteration_inputs);
+      noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
+      noisemaker::Surface destination = allocate_group_output_destination(
+          output_route, state, step_states, arena, iteration_inputs, format);
+      const std::size_t width = destination.width();
+      const std::size_t height = destination.height();
+
+      GroupStepRouteContext route_context{&state, &group_resources, &empty_surface};
+      const BindingMaterializationContext binding_context{
+          &iteration_inputs, &definition, width, height,
+          &lookup_group_step_route, &route_context};
+
+      try {
+        preflight_pass_abi(state.effective_step, admission, pass, binding_context);
+        if (dispatch_scatter) {
+          const auto& scatter = *admission.scatter;
+          const auto* input_surface = lookup_group_step_route(&route_context, scatter.input_texture);
+          if (input_surface == nullptr) {
+            throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced",
+                             state.effective_step.effect.id, pass_index, pass.name,
+                             admission.identity.program_key);
+          }
+          auto bindings =
+              materialize_scatter_bindings(state.effective_step, admission, definition, *input_surface);
+          const noisemaker::scatter::ScatterAdapter adapter =
+              noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
+          if (adapter == nullptr) {
+            throw GraphError(GraphErrorCode::unsupported_scatter,
+                             "no scatter adapter is registered for this program",
+                             state.effective_step.effect.id, pass_index, pass.name,
+                             admission.identity.program_key);
+          }
+          const auto* previous = lookup_group_step_route(&route_context, output_route);
+          if (previous != nullptr && previous->data().size() == destination.data().size()) {
+            const auto source = previous->data();
+            const auto target = destination.data();
+            std::copy(source.begin(), source.end(), target.begin());
+          } else {
+            destination.clear();
+          }
+          const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass);
+          adapter(bindings, scatter_pass, destination);
+          noisemaker::quantize_texture(destination, format);
+        } else {
+          auto bindings = materialize_uniform_bindings(state.effective_step, admission, pass,
+                                                        binding_context);
+          materialize_sampler_bindings(bindings, admission, binding_context, state.effective_step,
+                                       pass);
+          apply_classic_noisedeck_palette_override(bindings, state.effective_step, definition);
+          auto kernel = bind_factory_route(state.effective_step, admission, definition, bindings);
+          destination = noisemaker::run_pass(kernel, width, height,
+                                             noisemaker::f32(iteration_inputs.time),
+                                             noisemaker::f32(iteration_inputs.seed),
+                                             iteration_inputs.frame,
+                                             noisemaker::f32(iteration_inputs.delta_time));
+          noisemaker::quantize_texture(destination, format);
+        }
+      } catch (const GraphError& error) {
+        if (error.effect_id().empty()) {
+          throw GraphError(error.code(), std::string(error.detail()), state.effective_step.effect.id,
+                           pass_index, pass.name, admission.identity.program_key);
+        }
+        throw;
+      } catch (const glsl::KernelBindingError&) {
+        throw GraphError(GraphErrorCode::binding_type, "factory binding failed",
+                         state.effective_step.effect.id, pass_index, pass.name,
+                         admission.identity.program_key);
+      } catch (const std::exception&) {
+        throw GraphError(GraphErrorCode::execution_failure, "pass execution failed",
+                         state.effective_step.effect.id, pass_index, pass.name,
+                         admission.identity.program_key);
+      }
+
+      ++pass_count;
+      noisemaker::Surface published = destination.clone();
+      store_group_output(output_route, std::move(destination), state, group_resources);
+      result.surface = std::move(published);
+      result.format = format;
+      result.output_route = output_route;
+      produced = true;
+    }
+  }
+
+  if (!produced) {
+    throw GraphError(GraphErrorCode::execution_failure, "iterated step produced no output",
+                     state.effective_step.effect.id);
+  }
+  if (state.self_tex.has_value()) {
+    // renderer.js:1068-1072 / assertSelfTexMatchesOutput: a raw byte copy,
+    // never a reference swap, so a later pass within the SAME iteration that
+    // also reads selfTex can never observe a pool-recycled buffer -- and
+    // there is nothing to recycle here anyway, since self_tex is never
+    // stored under a name either map's publish path could replace.
+    if (state.self_tex->data().size() != result.surface.data().size()) {
+      throw GraphError(GraphErrorCode::invalid_dimension,
+                       "selfTex must match the step's own output",
+                       state.effective_step.effect.id);
+    }
+    const auto source = result.surface.data();
+    const auto target = state.self_tex->data();
+    std::copy(source.begin(), source.end(), target.begin());
+  }
+  return result;
+}
+
+// The finished group output GraphExecutor::execute() still needs to publish
+// into the arena itself (see find_named_resource's comment above for why
+// this layer cannot call `arena.insert` directly).
+struct GroupPublishResult {
+  noisemaker::Surface surface{1U, 1U};
+  noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
+  std::string route;
+};
+
+// renderer.js:592-634 -- zeroIterationGroupOutput, restricted to the plain
+// Surface case (this executor never threads a volume/geometry bundle; every
+// admitted effect is image-domain). `iterationCount <= 0` clones the group's
+// input straight through, or clears a fresh render-extent surface when the
+// group opens the chain.
+[[nodiscard]] GroupPublishResult zero_iteration_group_output(GraphResource* group_input,
+                                                              const ExecutionInputs& inputs) {
+  GroupPublishResult result;
+  if (group_input != nullptr) {
+    result.surface = group_input->surface().clone();
+    result.format = group_input->format();
+  } else {
+    result.surface = noisemaker::Surface(inputs.width, inputs.height);
+    result.surface.clear();
+  }
+  result.route = "outputTex";
+  return result;
+}
+
+// renderer.js:852-893 (sync) / 895-936 (async, identical here since this
+// executor has no async path) -- runIteratedGroupSync. Owns the whole
+// N-iteration run: resolves N, seeds global_accum for a loop region, builds
+// every step's persistent state once, runs the pass graph N times, and
+// hands its final surface back for GraphExecutor::execute() to publish.
+[[nodiscard]] GroupPublishResult run_iterated_group(const ExecutionPlan& plan,
+                                                    const ExecutionChain& chain,
+                                                    const iteration::IterationGroup& group,
+                                                    GraphResource* group_input,
+                                                    ResourceArena& arena,
+                                                    const ExecutionInputs& inputs,
+                                                    std::size_t& pass_count) {
+  const auto& owner_variant = chain.steps[group.step_indices.front()];
+  const auto* owner_step = std::get_if<EffectStep>(&owner_variant);
+  if (owner_step == nullptr) {
+    throw GraphError(GraphErrorCode::execution_failure,
+                     "iterated group's owning step is not an effect step");
+  }
+  const auto resolved = iteration::resolve_iteration_count(parameter(*owner_step, "iterationCount"));
+  if (resolved.zero_iterations) {
+    return zero_iteration_group_output(group_input, inputs);
+  }
+
+  iteration::GroupResourceMap group_resources;
+  if (group.loop) {
+    if (group_input == nullptr) {
+      throw GraphError(GraphErrorCode::missing_resource,
+                       "loop region has no input image to seed global_accum",
+                       owner_step->effect.id);
+    }
+    noisemaker::Surface accum = group_input->surface().clone();
+    accum.clear();
+    group_resources.store("global_accum", std::move(accum));
+  }
+
+  const auto owner_state_size = group_owner_state_size(*owner_step, group.step_indices.size());
+
+  std::vector<GroupStepState> step_states;
+  step_states.reserve(group.step_indices.size());
+  for (std::size_t position = 0; position < group.step_indices.size(); ++position) {
+    const auto& variant = chain.steps[group.step_indices[position]];
+    const auto* step = std::get_if<EffectStep>(&variant);
+    if (step == nullptr) {
+      throw GraphError(GraphErrorCode::execution_failure,
+                       "iterated group contains a non-effect step");
+    }
+    const auto& snapshot = plan.effects[step->snapshot_index];
+    GroupStepState state;
+    state.snapshot = &snapshot;
+    state.effective_step = (position > 0U && owner_state_size.has_value() &&
+                            parameter(*step, "stateSize") != nullptr)
+                               ? apply_owner_state_size_override(*step, *owner_state_size)
+                               : *step;
+    state.uses_self_tex = step_uses_self_tex(snapshot.definition);
+    if (state.uses_self_tex) {
+      const auto* out_texture = texture_for(snapshot.definition, "outputTex");
+      std::size_t width = inputs.width;
+      std::size_t height = inputs.height;
+      if (out_texture != nullptr) {
+        width = resolve_dimension(out_texture->width, state.effective_step, arena, inputs.width, true);
+        height = resolve_dimension(out_texture->height, state.effective_step, arena, inputs.height,
+                                   false);
+      }
+      noisemaker::Surface self_tex(width, height);
+      self_tex.clear();
+      state.self_tex = std::move(self_tex);
+    }
+    step_states.push_back(std::move(state));
+  }
+
+  const noisemaker::Surface empty_surface(1U, 1U);
+  const double n = resolved.n;
+  noisemaker::Surface last_surface(1U, 1U);
+  noisemaker::TextureFormat last_format = noisemaker::TextureFormat::rgba16f;
+  std::string last_route;
+  bool have_output = false;
+
+  for (std::size_t i = 0; static_cast<double>(i) < n; ++i) {
+    ExecutionInputs iteration_inputs = inputs;
+    iteration_inputs.frame = static_cast<std::uint32_t>(i);
+    iteration_inputs.delta_time = iteration::kIterationDeltaTime;
+    iteration_inputs.time = iteration::wrap01(
+        inputs.time - (n - 1.0 - static_cast<double>(i)) * iteration::kIterationDeltaTime);
+
+    const noisemaker::Surface* step_input =
+        group_input != nullptr ? &group_input->surface() : nullptr;
+    noisemaker::Surface carried(1U, 1U);
+    bool have_carried = false;
+
+    for (auto& state : step_states) {
+      auto step_result = run_group_step_iteration(state, step_input, step_states, group_resources,
+                                                   arena, iteration_inputs, pass_count,
+                                                   empty_surface);
+      carried = std::move(step_result.surface);
+      last_format = step_result.format;
+      last_route = std::move(step_result.output_route);
+      have_carried = true;
+      step_input = &carried;
+    }
+    if (have_carried) {
+      last_surface = std::move(carried);
+      have_output = true;
+    }
+  }
+
+  if (!have_output) {
+    throw GraphError(GraphErrorCode::execution_failure, "iterated group produced no output",
+                     owner_step->effect.id);
+  }
+  GroupPublishResult result;
+  result.surface = std::move(last_surface);
+  result.format = last_format;
+  result.route = std::move(last_route);
+  return result;
+}
+
+}  // namespace
+
 ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                                        const ExecutionInputs& inputs) const {
   validate_plan_before_allocation(plan, inputs);
@@ -2535,7 +3159,26 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
   GraphResource* current = nullptr;
   std::size_t pass_count = 0;
   for (const auto& chain : plan.chains) {
-    for (const auto& variant : chain.steps) {
+    // renderer.js:1616-1645 (render/renderAsync) -- computeIterationGroups
+    // partitions this chain into groups; a non-iterated group is always
+    // exactly one step (iteration.hpp's own invariant, ported from
+    // iteration.js) and takes the IDENTICAL path every step already took
+    // below -- this is the zero-overhead fast path required for every
+    // currently-admitted effect, none of which iteration::compute_iteration_
+    // groups can ever place into an iterated group (see
+    // docs/port-engineering/iteration-group-resource-lifetime.md's last
+    // section for why). An iterated group instead runs its whole pass graph
+    // N times via run_iterated_group, which is reachable only from a
+    // hand-built synthetic plan today.
+    for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
+      if (group.iterated) {
+        auto group_result = run_iterated_group(plan, chain, group, current, arena, inputs, pass_count);
+        auto& published = arena.insert(group_result.route, std::move(group_result.surface),
+                                       group_result.format, ResourceLifetime::transient);
+        current = &published;
+        continue;
+      }
+      const auto& variant = chain.steps[group.step_indices.front()];
       if (const auto* read = std::get_if<ReadStep>(&variant)) {
         if (read->surface.kind != SurfaceReference::Kind::named || arena.find(read->surface.name) == nullptr) {
           throw GraphError(GraphErrorCode::missing_resource, "named read surface is missing", {}, 0, {}, read->surface.name);
@@ -2875,6 +3518,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               auto& stored = arena.insert(output_route, std::move(destination),
                                           format, ResourceLifetime::transient);
               effect_output = &stored;
+              wrote_output_tex = output_route == "outputTex";
               ++pass_count;
             } else {
             auto bindings = materialize_uniform_bindings(step, admission, pass,
@@ -2900,7 +3544,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             wrote_output_tex = output_route == "outputTex";
             ++pass_count;
             }
-          }
+            }
           } catch (const GraphError& error) {
             release_borrowed();
             if (error.effect_id().empty()) {

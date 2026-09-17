@@ -8,7 +8,7 @@
 
 namespace mandelbrot_oracle {
 inline constexpr std::string_view kProgramKey = "synth/mandelbrot:mandelbrot";
-inline constexpr std::string_view kFactoryTextSha256 = "27b87c62a87c73d76e5a1d2d6096cecaa6714aeba3f26f72a03698592918ee29";
+inline constexpr std::string_view kFactoryTextSha256 = "c0a5273b978fdd466e0aa5059f51b5a88ba3a9a0fe674069563c22fc7a30b951";
 inline constexpr std::array<std::string_view, 18> kBindingNames{{
   "resolution", "tileOffset", "fullResolution", "time", "poi", "outputMode", "iterations", "centerHiX", "centerHiY", "centerLoX", "centerLoY", "zoomSpeed", "zoomDepth", "invert", "stripeFreq", "trapShape", "lightAngle", "rotation"
 }};

@@ -725,7 +725,7 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
     else { uniform("shape", std::int32_t{2}); uniform("blendMode", std::int32_t{task11_suffix(fixture.variant, "blend")}); }
   } else if (fixture.key == "synth/media:mediaInput") {
     texture("imageTex", fixture.variant == "transparent" ? transparent : media);
-    uniform("imageSize", noisemaker::glsl::Vec2(17.0f, 13.0f)); uniform("position", std::int32_t{0});
+    uniform("imageSize", noisemaker::glsl::DVec2(17.0, 13.0)); uniform("position", std::int32_t{0});
     uniform("rotation", 0.0f); uniform("scaleAmt", 100.0f); uniform("offsetX", 0.0f);
     uniform("offsetY", 0.0f); uniform("tiling", std::int32_t{0}); uniform("flip", std::int32_t{0});
     uniform("bgColor", noisemaker::glsl::DVec3(0.12, 0.34, 0.56)); uniform("bgAlpha", 0.71f);

@@ -1,6 +1,6 @@
 # Test Pattern pixel-parity oracle
 
-Program: `synth/testPattern:testPattern`. Source: `tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl` (5919 bytes, `f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20`).
+Program: `synth/testPattern:testPattern`. Source: `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl` (5919 bytes, `f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20`).
 
 Input contract: **source-only**. Test Pattern has no sampler or input texture path; no input lifetime or immutability claim is made.
 

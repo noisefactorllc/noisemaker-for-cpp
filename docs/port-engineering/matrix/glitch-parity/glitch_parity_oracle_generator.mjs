@@ -12,7 +12,13 @@ const reportPath = path.join(here, 'glitch-parity-oracle-report.md')
 const generatorPath = fileURLToPath(import.meta.url)
 const frontendProbePath = path.join(here, 'glitch_matrix_frontend_probe.py')
 const programKey = 'classicNoisedeck/glitch:glitch'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
 const sourcePath = path.join(cppRoot, 'tools/glslcpp/corpus', corpusRevision, 'sources/classicNoisedeck/glitch/glitch.glsl')
 const f = Math.fround
 
@@ -279,9 +285,9 @@ function comparerSelfTests() {
 }
 
 const provenanceFiles = {
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
-  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
+  upstream_snapshot: ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
   pass_runner: ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
@@ -608,7 +614,7 @@ const fixture = {
     adapter_override_absent: true,
     moving_tree_observation: {
       first_upstream_snapshot_sha256: '8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936',
-      second_and_consumed_upstream_snapshot_sha256: 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090',
+      second_and_consumed_upstream_snapshot_sha256: '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7',
       relevant_artifacts_unchanged_across_observations: {
         canonical_kernels_sha256: provenanceFiles.canonical_kernels[1],
         public_catalog_sha256: provenanceFiles.public_catalog[1],

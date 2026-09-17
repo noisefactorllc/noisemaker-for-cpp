@@ -4,7 +4,7 @@
   "program_key": "synth/julia:julia",
   "effect_key": "synth/julia",
   "runtime_key": "synth/julia:julia",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
     "name": "juliaFactory",
@@ -176,7 +176,7 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/julia/julia.glsl",
       "sha256": "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0"
     },
     "factory_source": {
@@ -285,11 +285,11 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
-      "sha256": "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
+      "sha256": "7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
-      "sha256": "f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7"
+      "sha256": "f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86"
     }
   },
   "render_cases": [
@@ -4173,7 +4173,7 @@
   "source_mutation_contract": {
     "source_relative_path": "src/effects/adapters/julia.js",
     "source_sha256": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
-    "shader_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl",
+    "shader_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/julia/julia.glsl",
     "shader_sha256": "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0",
     "canonical_factory_text_sha256": "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6",
     "execution": "each exact adapter source anchor/replacement is evaluated as a mutated juliaFactory and executed through bindCanonicalKernel/runPass"

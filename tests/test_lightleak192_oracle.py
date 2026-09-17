@@ -60,7 +60,7 @@ class LightLeak192OracleTests(unittest.TestCase):
         self.assertEqual("noisemaker-for-cpp.lightleak192.pixel-parity.v1",
                          oracle["schema"])
         self.assertEqual("filter/lightLeak:lightLeak", oracle["program_key"])
-        self.assertEqual(22, len(oracle["provenance"]["import_closure"]))
+        self.assertEqual(23, len(oracle["provenance"]["import_closure"]))
         self.assertEqual(11, len(oracle["render_cases"]))
         self.assertEqual({
             "schema", "source_function", "source_function_sha256",
@@ -338,7 +338,7 @@ class LightLeak192OracleTests(unittest.TestCase):
             dynamic.write_text(dynamic.read_text() + "\nvoid import('./literal-dynamic.js')\n")
             traversed = self._node("--check", cpu_root=clone)
             self.assertNotEqual(0, traversed.returncode)
-            self.assertIn("CPU import closure mismatch: expected 22, found 23",
+            self.assertIn("CPU import closure mismatch: expected 23, found 24",
                           traversed.stderr)
             dynamic.write_text(dynamic.read_text() + "\nvoid import(runtimeSpecifier)\n")
             rejected = self._node("--check", cpu_root=clone)

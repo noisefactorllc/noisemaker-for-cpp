@@ -10,6 +10,9 @@ import re
 import struct
 import sys
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_corpus  # noqa: E402  (deliberately late and local)
+
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/fractal-parity"
 ORACLE = PACKAGE / "fractal-oracles.json"
@@ -17,13 +20,13 @@ REPORT = PACKAGE / "fractal-oracle-report.md"
 OUTPUT = ROOT / "tests/oracles/fractal_expected.inc"
 SCHEMA = "noisemaker-for-cpp.fractal.pixel-parity.v1"
 KEY = "classicNoisedeck/fractal:fractal"
-SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/fractal/fractal.glsl"
+SOURCE = f"tools/glslcpp/corpus/{check_corpus.REVISION}/sources/classicNoisedeck/fractal/fractal.glsl"
 SOURCE_SHA = "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b"
 FACTORY_SOURCE = "src/effects/adapters/fractal.js"
 FACTORY_SHA = "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"
-EXPECTED_UPSTREAM = "117a236679d1db3ab8f0e278230ece277b57564c"
+EXPECTED_UPSTREAM = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 EXPECTED_AUTHORITY_PROVENANCE = "<external-authority-root>"
-EXPECTED_CLOSURE_SHA256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5"
+EXPECTED_CLOSURE_SHA256 = "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3"
 EXPECTED_ADVERSARIAL_WITNESS = {
     "case": "julia-near-escape-nonrepresentable",
     "pixel": [5, 1],
@@ -132,7 +135,11 @@ def validate(doc: dict) -> None:
     if snap.get("root_realpath") != EXPECTED_AUTHORITY_PROVENANCE or snap.get("import_closure_sha256") != EXPECTED_CLOSURE_SHA256:
         raise MaterializationError("pinned authority provenance/closure mismatch")
     closure = snap.get("import_closure")
-    if not isinstance(closure, list) or len(closure) != 22 or digest(json.dumps(closure, separators=(",", ":")).encode()) != EXPECTED_CLOSURE_SHA256:
+    # 23 (not 22): src/effects/adapters/index.js now imports adapters/remap.js
+    # at CPU authority 61aa869 (a canonical `synth/remap:remap` adapter added
+    # between e17dd02 and 61aa869); EXPECTED_CLOSURE_SHA256 is pinned to the
+    # 23-entry closure and independently verifies membership + content.
+    if not isinstance(closure, list) or len(closure) != 23 or digest(json.dumps(closure, separators=(",", ":")).encode()) != EXPECTED_CLOSURE_SHA256:
         raise MaterializationError("import closure digest mismatch")
     if doc.get("runtime_binding_names") != ["time", "resolution", "tileOffset", "fullResolution", "type", "symmetry", "offsetX", "offsetY", "centerX", "centerY", "zoomAmt", "speed", "rotation", "iterations", "mode", "colorMode", "paletteMode", "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase", "cyclePalette", "rotatePalette", "repeatPalette", "hueRange", "levels", "bgColor", "bgAlpha", "cutoff"]:
         raise MaterializationError("runtime binding order mismatch")

@@ -419,7 +419,7 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edg
 struct RemapUniformData {
   std::array<Vec4, 275> data{};
 };
-using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
+using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
 class KernelBindingError : public std::runtime_error { public: using std::runtime_error::runtime_error; };
 class Bindings {
  public:

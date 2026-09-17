@@ -13,12 +13,18 @@ const outputPath = path.join(here, 'julia-oracles.json')
 const reportPath = path.join(here, 'julia-oracle-report.md')
 const materializerPath = path.resolve(cppRoot, 'tools/glslcpp/generate_julia_native_oracle_include.py')
 const programKey = 'synth/julia:julia'
-const sourceRelative = 'tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
+const sourceRelative = `tools/glslcpp/corpus/${corpusRevision}/sources/synth/julia/julia.glsl`
 const sourceSha256 = '825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0'
 const factorySourceRelative = 'src/effects/adapters/julia.js'
 const factoryName = 'juliaFactory'
 const factoryTextSha256 = 'ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
 const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const expectedClosure = Object.freeze([
   ['src/csl/glsl-kernel.js','a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],

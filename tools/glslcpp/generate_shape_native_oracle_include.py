@@ -40,10 +40,13 @@ SCHEMA = "noisemaker-for-cpp.shape184.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "synth/shape:shape"
 EFFECT_KEY = "synth/shape"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
-FACTORY_NAME = "canonicalFactory274"
-FACTORY_SHA256 = "870d97a811e5720f827f5616057483a43b27224240ac95c04a8084dd257a6125"
+FACTORY_NAME = "canonicalFactory282"
+FACTORY_SHA256 = "2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4"
 SOURCE_RELATIVE = (
     f"tools/glslcpp/corpus/{CORPUS_REVISION}"
     "/sources/synth/shape/shape.glsl")
@@ -52,7 +55,7 @@ SOURCE_SHA256 = "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -80,6 +83,7 @@ CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
     "synth/julia:julia",
+    "synth/remap:remap",
 })
 
 

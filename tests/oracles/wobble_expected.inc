@@ -16,9 +16,9 @@
 
 namespace wobble189_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "b6b3f7d7919c9193098eacd84661a9cc1ac0e07033e925e1c7220086afd8d750";
+inline constexpr std::string_view kOracleSha256 = "b5e2e699a52f7cdd3607c1caba0cd4b00e13a7bbe905446eab3c922fa02a226e";
 inline constexpr std::string_view kProgramKey = "filter/wobble:wobble";
-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
+inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::size_t kCaseCount = 4U;
 inline constexpr std::size_t kBindingCount = 5U;
 

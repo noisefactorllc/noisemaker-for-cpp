@@ -11,9 +11,9 @@ struct Mutation { const char* name; const char* anchor; const char* replacement;
 inline constexpr const char* kSchema = "noisemaker-for-cpp.classic-noise.pixel-parity.v1";
 inline constexpr const char* kProgramKey = "classicNoisedeck/noise:noise";
 inline constexpr const char* kFactorySha256 = "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424";
-inline constexpr const char* kSourceSha256 = "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663";
-inline constexpr std::uint32_t kSourceBytes = 31255U;
-inline constexpr std::uint32_t kImportClosureCardinality = 22U;
+inline constexpr const char* kSourceSha256 = "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138";
+inline constexpr std::uint32_t kSourceBytes = 31258U;
+inline constexpr std::uint32_t kImportClosureCardinality = 23U;
 inline constexpr std::uint32_t kRuntimeBindingCardinality = 29U;
 inline const std::vector<Binding> kRuntimeBindings = {
   {"NOISE_TYPE", "int32", "define"},

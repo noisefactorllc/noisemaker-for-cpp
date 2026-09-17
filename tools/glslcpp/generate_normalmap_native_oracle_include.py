@@ -48,7 +48,10 @@ SCHEMA = "noisemaker-for-cpp.normalmap185.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "filter/normalMap:normalMap"
 EFFECT_KEY = "filter/normalMap"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 FACTORY_NAME = "canonicalFactory86"
 FACTORY_SHA256 = "9b1348836825b6efe90109747ca5ef341651527077d8ad7dbbcbc7080369842a"
 SOURCE_RELATIVE = (
@@ -61,7 +64,7 @@ SOURCE_SHA256 = (
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -89,6 +92,7 @@ CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
     "synth/julia:julia",
+    "synth/remap:remap",
 })
 
 CPU_ROOT_PLACEHOLDER = "<immutable-cpu-snapshot-root>"

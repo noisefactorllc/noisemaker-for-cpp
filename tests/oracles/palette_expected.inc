@@ -9,7 +9,7 @@ namespace noisemaker_palette_oracle {
 
 inline constexpr std::string_view kSchema = "noisemaker-for-cpp.palette.pixel-parity.v1";
 inline constexpr std::string_view kProgramKey = "filter/palette:palette";
-inline constexpr std::string_view kOracleSha256 = "e7ded54ec934f8b0f26621a26f552dd8d95cf50f5fb0ba33eb8633ca5ab3f3fb";
+inline constexpr std::string_view kOracleSha256 = "0851d0b5277267163e2df80e20549db2090a0034f39785d5a1d356b88d333890";
 inline constexpr std::string_view kFactoryTextSha256 = "547bb6741b27cc12d6ed488cd1bbe12284ab3b916cdaefe1c747a63125523040";
 struct BindingWords { std::array<std::uint32_t, 2> tile_offset; std::array<std::uint32_t, 2> full_resolution; std::int32_t palette_index; std::int32_t rotation; std::uint32_t offset; std::uint32_t repeat; std::uint32_t alpha; std::uint32_t time; std::size_t input_width; std::size_t input_height; };
 

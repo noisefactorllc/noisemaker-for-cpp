@@ -481,6 +481,6 @@ using BVec2=Vec<2,bool>; using BVec3=Vec<3,bool>; using BVec4=Vec<4,bool>;
 // authority for any component that is not already float32-exact (most
 // authored decimals are not). These reuse the existing generic Vec<N,T>
 // template at T=double; no new class, no change to any existing alternative.
-using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
+using DVec2=Vec<2,double>; using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
 using Mat2=Mat<2>; using Mat3=Mat<3>; using Mat4=Mat<4>;
 }  // namespace noisemaker::glsl

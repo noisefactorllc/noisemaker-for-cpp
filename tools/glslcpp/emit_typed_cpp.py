@@ -819,6 +819,7 @@ _CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
 # parameter, but its corpus record is `recordKind: "excluded"` (unrelated
 # 3D/volume-output limitation): it is never admitted by this port's executor
 # at all, so it is not on the carrier list either.
+
 # Identifiers the emitter itself binds inside every generated pixel function
 # and helper signature. A GLSL local or parameter with one of these names would
 # shadow them and either change meaning silently or fail to compile — e.g. a
@@ -963,21 +964,36 @@ _BUILTIN_NAMES = {
 # createCanonicalBindings() (noisemaker-for-cpu's src/csl/glsl-kernel.js)
 # spreads every ordinary effect-parameter uniform from `options.uniforms`
 # verbatim -- a raw, un-rounded JS double for a vector just as much as a
-# scalar. Only a handful of reserved scalar names are `Math.fround`'d there
-# (seed/aspectRatio/aspect/time/globalTime/deltaTime; scalars already carry
-# full JS Number precision throughout this port, see `uniform_type`), and
-# `resolution`/`fullResolution`/`tileOffset` (vec2) come from a
-# `Float32Array` instead -- but nothing vec2 is in scope here (see
-# `_is_double_vector_uniform`). Across the whole pinned corpus exactly two
-# vec3/vec4 uniform NAMES are not effect-parameter-sourced: `size`/`motion`
-# (filter/normalMap's `uniform vec4 size|motion`), which fall back to
-# createCanonicalBindings()'s own `Float32Array(4)` default because no
-# catalog parameter maps onto either name anywhere in the corpus (see
+# scalar, and no differently for a vec2 than a vec3/vec4. Only a handful of
+# reserved scalar names are `Math.fround`'d there (seed/aspectRatio/aspect/
+# time/globalTime/deltaTime; scalars already carry full JS Number precision
+# throughout this port, see `uniform_type`), and `resolution`/
+# `fullResolution`/`tileOffset` (also vec2) come from a `Float32Array`
+# instead of `options.uniforms`, so they are never effect-parameter-sourced
+# and stay ordinary float carriers. `synth/media:mediaInput`'s `imageSize`
+# is the one vec2 effect-parameter uniform in the whole pinned corpus
+# (confirmed: zero `Math.fround` calls anywhere in canonicalFactory261's
+# emitted body) -- a `glsl::Vec2` (float lanes) ABI narrows it to float32
+# one step earlier than the authority ever does, measurably not byte-exact
+# (rare, boundary-triggered: 3 of 4096 pixels in one
+# `tools/parity/sweep.py` variant with a non-round `imageSize`/`rotation`
+# combination), exactly the same failure shape as every vec3/vec4 case
+# below, so it needs no carrier list of its own: the general rule reaches
+# it identically to how it reaches the five classicNoisedeck palette
+# programs. Across the whole pinned corpus exactly five vec2/vec3/vec4
+# uniform NAMES are not effect-parameter-sourced: `size`/`motion`
+# (filter/normalMap's `uniform vec4 size|motion`, falling back to
+# createCanonicalBindings()'s own `Float32Array(4)` default) and
+# `resolution`/`fullResolution`/`tileOffset` above, because no catalog
+# parameter maps onto any of these five names anywhere in the corpus (see
 # tools/dsl/generate_backend_compatibility.py's PASS_DERIVED_BINDINGS:
-# "canonical_size_default"/"canonical_motion_default", and RESERVED_RUNTIME,
-# neither of which contains any other vec3/vec4 name). Every other vec3/vec4
-# uniform, in every program, is this authority-double carrier.
-_DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({"size", "motion"})
+# "canonical_size_default"/"canonical_motion_default", and
+# RESERVED_RUNTIME, neither of which contains any other vec2/vec3/vec4
+# name). Every other vec2/vec3/vec4 uniform, in every program, is this
+# authority-double carrier.
+_DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({
+    "size", "motion", "resolution", "fullResolution", "tileOffset",
+})
 # See `_is_double_vector_uniform`'s docstring.
 _FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
     ("synth/solid:solid", "color"),
@@ -5756,8 +5772,9 @@ class _Emitter:
 
     def _is_double_vector_uniform(self, symbol: object) -> bool:
         """See `_DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES` for the name-based
-        evidence, and `_FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION` for
-        the one (program, uniform) carve-out: `synth/solid:solid`'s `color`
+        evidence (five names, spanning vec2 through vec4), and
+        `_FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION` for the one
+        (program, uniform) carve-out: `synth/solid:solid`'s `color`
         is an ordinary effect-parameter vec3 uniform (this port's frozen,
         hand-written `src/generated/synth_solid.cpp` legacy factory is
         dispatched over the typed emitter's own row for the same key, but
@@ -5768,9 +5785,13 @@ class _Emitter:
         fail that authentication. `solid.glsl`'s only use of `color` is
         `color * alpha` (vector-times-scalar, always narrows unconditionally
         either way -- see `_double_vector_expression`'s docstring), so this
-        carve-out changes nothing observable.
+        carve-out changes nothing observable. vec2 is in scope here (not
+        just vec3/vec4): `synth/media:mediaInput`'s `imageSize` is the one
+        vec2 effect-parameter uniform anywhere in the corpus, and the
+        authority's own raw-double-until-first-narrowing-op rule makes no
+        distinction by vector width.
         """
-        return (symbol.type.display() in {"vec3", "vec4"}
+        return (symbol.type.display() in {"vec2", "vec3", "vec4"}
                 and symbol.name not in _DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES
                 and (self.program.key, symbol.name)
                 not in _FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION)
@@ -5778,9 +5799,9 @@ class _Emitter:
     def _double_vector_expression(self, value: TypedExpression) -> bool:
         """Whether `value` (any expression) still carries the authority's
         raw, un-rounded double all the way to this point -- `False` for
-        every non-vec3/vec4 expression, including a would-be-double scalar
-        (scalars already carry full JS Number precision throughout this
-        port unconditionally; see `uniform_type`/`local_type`/
+        every non-vec2/vec3/vec4 expression, including a would-be-double
+        scalar (scalars already carry full JS Number precision throughout
+        this port unconditionally; see `uniform_type`/`local_type`/
         `function_type`, so there is nothing for this to add there).
 
         This mirrors the JS CPU authority's own narrowing points exactly,
@@ -5831,7 +5852,7 @@ class _Emitter:
           (glsl-transpiler always materializes a `new Float32Array(...)`
           for these) -- the default `False` below.
         """
-        if value.type.display() not in {"vec3", "vec4"}:
+        if value.type.display() not in {"vec2", "vec3", "vec4"}:
             return False
         if value.kind == "id":
             symbol = value.symbol
@@ -5880,7 +5901,7 @@ class _Emitter:
             if statement.kind == "decl":
                 for declaration in statement.expressions:
                     if (declaration.kind == "declaration"
-                            and declaration.type.display() in {"vec3", "vec4"}
+                            and declaration.type.display() in {"vec2", "vec3", "vec4"}
                             and declaration.children
                             and declaration.symbol is not None
                             and self._double_vector_expression(declaration.children[0])):
@@ -5917,7 +5938,7 @@ class _Emitter:
             next_functions: set[int] = set()
             for function in self.program.functions:
                 returns = self._double_vector_statements(function.body)
-                if (function.return_type.display() in {"vec3", "vec4"}
+                if (function.return_type.display() in {"vec2", "vec3", "vec4"}
                         and returns and all(returns)):
                     next_functions.add(function.signature.id)
             converged = next_functions == self.double_vector_function_signature_ids
@@ -5935,7 +5956,8 @@ class _Emitter:
                 self._double_vector_statements(function.body)
 
     def _double_vector_type(self, glsl_type_display: str) -> str:
-        return {"vec3": "glsl::DVec3", "vec4": "glsl::DVec4"}[glsl_type_display]
+        return {"vec2": "glsl::DVec2", "vec3": "glsl::DVec3",
+                "vec4": "glsl::DVec4"}[glsl_type_display]
 
     def _function_return_type(self, function: object) -> str:
         """The declared C++ return type for `function`'s signature and
@@ -7835,8 +7857,8 @@ class _Emitter:
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
             if value.kind == "call":
-                # Every DSL user-function vec3/vec4 PARAMETER is always
-                # `glsl::Vec3`/`Vec4` (see `function_parameter_type` /
+                # Every DSL user-function vec2/vec3/vec4 PARAMETER is always
+                # `glsl::Vec2`/`Vec3`/`Vec4` (see `function_parameter_type` /
                 # `function_type`; never double -- a JS user function
                 # unconditionally narrows every vec/mat "in" parameter on
                 # call entry, see `_double_vector_expression`'s docstring).
@@ -7849,7 +7871,7 @@ class _Emitter:
                 # own `$runtime.copy()` narrows invisibly on entry.
                 arguments = [
                     f"{self.type(child.type)}({argument})"
-                    if (child.type.display() in {"vec3", "vec4"}
+                    if (child.type.display() in {"vec2", "vec3", "vec4"}
                         and self._double_vector_expression(child))
                     else argument
                     for child, argument in zip(value.children, arguments)]
@@ -8967,11 +8989,12 @@ class _Emitter:
                     declaration_type = "glsl::BVec3"
                 else:
                     declaration_type = self.local_type(declaration.type)
-                    # A vec3/vec4 local whose initializer is itself a
+                    # A vec2/vec3/vec4 local whose initializer is itself a
                     # double-vector expression (e.g. gradient's four-corner
-                    # `vec3 cTL = color1;`) must be declared `glsl::DVecN`,
-                    # not `glsl::Vec3/Vec4` -- otherwise the copy-init from
-                    # a `glsl::DVecN` initializer would need the converting
+                    # `vec3 cTL = color1;`, or synth/media's `vec2 size =
+                    # imageSize;`) must be declared `glsl::DVecN`, not
+                    # `glsl::Vec2/3/4` -- otherwise the copy-init from a
+                    # `glsl::DVecN` initializer would need the converting
                     # constructor's implicit (non-`explicit`) path, which
                     # does not exist, and it would also silently narrow one
                     # rounding step earlier than the authority does. See
@@ -9386,7 +9409,7 @@ class _Emitter:
                 # wrapping in the float type would narrow one step early
                 # and also fail to compile against a `glsl::DVecN` RHS.
                 is_double_target = (
-                    target_glsl_type in {"vec3", "vec4"}
+                    target_glsl_type in {"vec2", "vec3", "vec4"}
                     and target_expr.kind == "id"
                     and target_expr.symbol_id in self.double_vector_local_symbol_ids)
                 vector_type = (
@@ -9396,6 +9419,21 @@ class _Emitter:
                 if operation == "=":
                     if vector_type is not None: right = f"{vector_type}({right})"
                     return [f"{indent}{target} = {right};"]
+                # A compound assignment (`st += 1.0 / size;`) builds its own
+                # `target OP right` text directly, never through the
+                # "binary" expression cascade above. No promotion is needed
+                # here to make it compile or round correctly: `target` (an
+                # ordinary, already-narrowed `glsl::VecN`/float local) and
+                # `right` (whatever `self.expression()` already produced --
+                # a `FloatExpr<N>` if it referenced a double-vector carrier,
+                # an ordinary `glsl::VecN` otherwise) combine through the
+                # same generic mixed float/double operators every other
+                # double-vector expression already uses (see
+                # `NOISEMAKER_GLSL_DOUBLE_VEC_BINARY` in glsl_types.hpp),
+                # deferring the actual rounding to the explicit
+                # `vector_type(...)` wrapper below -- the single
+                # materialization point that matches the authority's own
+                # single store.
                 combined = f"({target} {operation[:-1]} {right})"
                 if vector_type is not None: combined = f"{vector_type}({combined})"
                 return [f"{indent}{target} = {combined};"]

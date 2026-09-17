@@ -1,6 +1,6 @@
 # Glitch exact-parity oracle
 
-Program `classicNoisedeck/glitch:glitch`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`.
+Program `classicNoisedeck/glitch:glitch`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.
 
 ## Result
 
@@ -60,7 +60,7 @@ The matrix-masked control must remain exact for every mutant. The active-scanlin
 
 ## Provenance observation
 
-The shared JS tree changed during package assembly: `upstream-snapshot.js` was first observed at `8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936` and then at the consumed/pinned `e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090`. The canonical kernels, public catalog, GLSL runtime/kernel, pass runner, Surface implementation, canonical Glitch factory, and pinned Glitch GLSL bytes remained identical across both observations. The final self-check uses an external temporary fixture root represented by `<external-temp-root>`; a later change in any relevant artifact is a hard failure.
+The shared JS tree changed during package assembly: `upstream-snapshot.js` was first observed at `8579de7f8d3ff35a71c35c2c5e32296d0f71ffef1e790db9736f99ab04969936` and then at the consumed/pinned `6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7`. The canonical kernels, public catalog, GLSL runtime/kernel, pass runner, Surface implementation, canonical Glitch factory, and pinned Glitch GLSL bytes remained identical across both observations. The final self-check uses an external temporary fixture root represented by `<external-temp-root>`; a later change in any relevant artifact is a hard failure.
 
 ## Regeneration
 

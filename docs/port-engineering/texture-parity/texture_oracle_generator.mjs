@@ -12,7 +12,13 @@ const cppRoot = fs.realpathSync(path.resolve(here, '../../..'))
 const out = path.join(here, 'texture-oracles.json')
 const report = path.join(here, 'texture-oracle-report.md')
 const key = 'filter/texture:texture'
-const sourceRelative = 'tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/texture/texture.glsl'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const sourceRelative = `tools/glslcpp/corpus/${deriveCorpusRevision(cppRoot)}/sources/filter/texture/texture.glsl`
 const sha = value => crypto.createHash('sha256').update(value).digest('hex')
 const f = value => Math.fround(value)
 const words = surface => Array.from(new Uint32Array(surface.data.buffer, surface.data.byteOffset, surface.data.byteLength / 4), x => `0x${(x >>> 0).toString(16).padStart(8, '0')}`)
@@ -55,7 +61,7 @@ const args = process.argv.slice(2); const mode = args.find(x => ['--write', '--c
 const ci = args.indexOf('--cpu-root'); if (ci < 0 || !args[ci + 1]) throw Error('--cpu-root <immutable snapshot> is required'); const cpuArg = path.resolve(args[ci + 1]); const stat = fs.lstatSync(cpuArg); if (!stat.isDirectory() || stat.isSymbolicLink()) throw Error('--cpu-root must be a non-symlink directory'); const cpuRoot = fs.realpathSync(cpuArg); const live = process.env.NOISEMAKER_FOR_CPU ? fs.realpathSync(process.env.NOISEMAKER_FOR_CPU) : null; if ((live && (beneath(live, cpuRoot) || beneath(cpuRoot, live))) || beneath(cppRoot, cpuRoot)) throw Error('authority must be an external immutable snapshot')
 const load = relative => import(pathToFileURL(path.join(cpuRoot, relative)).href)
 const [{ canonicalKernelFactories, kernelFactories }, { createCanonicalBindings }, { bindGlslKernel }, { runPass }, { Surface }, { UPSTREAM_REVISION }] = await Promise.all([load('src/effects/catalog.js'), load('src/csl/glsl-kernel.js'), load('src/csl/glsl-runtime.js'), load('src/runtime/pass-runner.js'), load('src/runtime/surface.js'), load('src/effects/generated/upstream-snapshot.js')])
-if (process.version !== 'v24.7.0') throw Error('Texture authority Node drift')
+if (process.version !== 'v26.0.0') throw Error('Texture authority Node drift')
 const canonical = canonicalKernelFactories[key]; const publicFactory = kernelFactories.get(key); if (typeof canonical !== 'function' || typeof publicFactory !== 'function' || publicFactory !== canonical) throw Error('Texture canonical/public factory identity drift')
 const factoryText = Function.prototype.toString.call(canonical); const sourcePath = path.join(cppRoot, sourceRelative); const sourceBytes = fs.readFileSync(sourcePath)
 const cases = [

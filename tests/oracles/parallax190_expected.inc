@@ -18,9 +18,9 @@
 
 namespace parallax190_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "a008092acc95189beb6eae8335e862f24b4283ae3454561c83e49f17ad90663e";
+inline constexpr std::string_view kOracleSha256 = "02f7b3ac5db049c9cdfe1911c9808ddeb69f6400f479420d7f0d1c9a7b4c9cc6";
 inline constexpr std::string_view kProgramKey = "filter/parallax:parallax";
-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
+inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::string_view kFactoryTextSha256 = "052b2b2cc1a086a57c458fd8ae49b6065391f19f55feaa0662e14f6614cde905";
 inline constexpr std::size_t kCaseCount = 6U;
 inline constexpr std::size_t kBindingCount = 6U;
