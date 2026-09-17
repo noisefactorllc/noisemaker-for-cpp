@@ -28640,7 +28640,7 @@ void median_native_integration_require_oracle_metadata() {
         return item.key == "filter/median:median";
       });
   REQUIRE(entry != catalog.end());
-  REQUIRE(entry->bind == &noisemaker::generated::bind_filter_median_median);
+  REQUIRE(entry->bind == &noisemaker::effects::bind_median);
 }
 // MEDIAN_NATIVE_AGGREGATE_TESTS_END
 

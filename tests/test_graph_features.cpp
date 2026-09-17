@@ -1,6 +1,7 @@
 #include "test_harness.hpp"
 
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/snow.hpp"
 #include "noisemaker/graph/executor.hpp"
 #include "noisemaker/renderer.hpp"
@@ -239,6 +240,10 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   REQUIRE(snow != nullptr);
   REQUIRE(snow->route_kind == "custom_adapter");
   REQUIRE(snow->bind == &noisemaker::effects::bind_snow);
+  const auto* median = canonical_route("filter/median:median", "noisemaker::effects::bind_median");
+  REQUIRE(median != nullptr);
+  REQUIRE(median->route_kind == "custom_adapter");
+  REQUIRE(median->bind == &noisemaker::effects::bind_median);
 
   // The source-incompatible row stays present for inspection; execution
   // rejects it on admission status, not by absence from the table.
@@ -253,8 +258,8 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  REQUIRE(typed_emitter == 208U);
-  REQUIRE(custom_adapter == 3U);
+  REQUIRE(typed_emitter == 207U);
+  REQUIRE(custom_adapter == 4U);
 }
 
 TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {
