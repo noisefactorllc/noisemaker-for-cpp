@@ -288,7 +288,7 @@ class ScanlineErrorFloatBitsIngressProfileTests(unittest.TestCase):
     def test_global_vocabularies_remain_frozen_and_foreign_builtin_is_rejected(self):
         _profile()
         frozen = {
-            "capabilities": (44, "6ddb906dc859e45ee613b580dc6988c663d2aff22db9c365ece3097d126a4aea"),
+            "capabilities": (45, "aee50eef847f1fe176c6a22e73a7400b342e766566a71996c38621945809549f"),
             "types": (17, "aa4ab00ac3b34ece6681eaa55435817b7908c9b8ea421a6eca1931f6ab4791c7"),
             "binary": (17, "cceb35790b79fa895906c57d7e81f0056fac404cf7448eec9b8d9dbb49b705b0"),
             "assignment": (6, "99a6ede7544a02082e0b72d83690c3b68d8c846e221078e3e90ac10463d498e2"),

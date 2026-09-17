@@ -119,7 +119,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest(),
         )
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertEqual(17, len(spec["binary_operators"]))
         self.assertEqual(6, len(spec["assignment_operators"]))

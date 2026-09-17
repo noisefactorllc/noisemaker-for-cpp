@@ -1854,9 +1854,9 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_prior_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "2a59a1a9f1409c928dcb6fb76f7c4bda55fd5b83f52283409b5e8f824d0756e3",
+                "9a40564b8a928269b48f0a7c451e8440cf11b960dca14deec73ec5cd20d5460b",
             "src/typed_generated/typed_manifest.json":
-                "e036322235f40254f7dd5b2a00a51909e67d31b50e71b623d0269dcb0193ff4c",
+                "ae4e597f3e947924ac4ea409cdf7a19da5cb0d28c3fe9bb5261a82e125d74cfc",
             "include/noisemaker/generated/catalog.hpp":
                 "5ca9c58b712b493ec5ef548bf7fc75deec99dbe9546b22bdb0b9d0386885f52a",
         }
@@ -2329,7 +2329,8 @@ and item["program_key"] != "filter/wobble:wobble"
             '    data[i+2U]=static_cast<float>(static_cast<double>((53U*x+13U*y+3U)%107U)/106.0);',
             '    const std::int64_t alpha=static_cast<std::int64_t>((7U*x+5U*y+2U)%19U)-4;',
             '    data[i+3U]=static_cast<float>(static_cast<double>(alpha)/11.0);',
-            '  } return noisemaker::Surface(width,height,std::move(data));',
+            '  }',
+            '  return noisemaker::Surface(width,height,std::move(data));',
             '}',
             'noisemaker::Surface rank(std::size_t width, std::size_t height) {',
             '  std::vector<float> data(width * height * 4U); const std::size_t d=width-1U;',
@@ -2338,7 +2339,8 @@ and item["program_key"] != "filter/wobble:wobble"
             '    data[i]=static_cast<float>(static_cast<double>((x*23U+y*11U+5U)%width)/static_cast<double>(d));',
             '    data[i+1U]=static_cast<float>(static_cast<double>((x*7U+y*3U)%width)/static_cast<double>(d));',
             '    data[i+2U]=static_cast<float>(static_cast<double>(x)/static_cast<double>(d)); data[i+3U]=1.0f;',
-            '  } return noisemaker::Surface(width,height,std::move(data));',
+            '  }',
+            '  return noisemaker::Surface(width,height,std::move(data));',
             '}',
             'Inputs inputs(std::size_t width, std::span<const std::uint32_t> rows) {',
             '  std::vector<float> data(rows.size()*4U); for (std::size_t y=0; y<rows.size(); ++y) { data[y*4U]=noisemaker::uint_bits_to_float(rows[y]); data[y*4U+3U]=1.0f; }',
@@ -2800,7 +2802,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        live_spec = generate_typed_slice.load_slice(REPOSITORY)
+        live_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec = copy.deepcopy(live_spec)
         spec["programs"] = [
             item for item in spec["programs"]
@@ -2901,8 +2903,8 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            (1008154,
-             "1060ededa145626f2f6cadbc1e10b56aebbae354e06dfd5ce9885f85b1896b47"),
+            (1021479,
+             "178efdfd44e8d606cdce182198decbab3082d0c7ad4a4c9bb0299e806e295e49"),
             (len(prior_cpp.encode()),
              hashlib.sha256(prior_cpp.encode()).hexdigest()))
 
@@ -6269,14 +6271,14 @@ and item["program_key"] != "filter/wobble:wobble"
                                   if entry["program_key"] in task14})
         self.assertTrue(all(entry["defines"] == {} for entry in slice_spec["programs"]
                             if entry["program_key"] in task14))
-        corpus_manifest = json.loads((
+        corpus_manifest = corpus_census.pre_expansion_manifest(json.loads((
             REPOSITORY / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json"
-        ).read_text())
+        ).read_text()))
         corpus_keys = {entry["program_key"] for entry in corpus_manifest["programs"]}
         public_keys = {entry["program_key"] for entry in slice_spec["programs"]} | {
             "filter/invert:inv", "synth/solid:solid",
         }
-        # The live 211-row slice leaves one corpus program unported.
+        # The pre-expansion corpus slice leaves one program unported.
         self.assertEqual(1, len(corpus_keys - public_keys))
 
     def test_typed_generator_owns_exact_public_catalog_header(self) -> None:
@@ -8058,7 +8060,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp import generate_typed_slice
 
         stats_key = "filter/normalize:statsFinal"
-        live_spec = generate_typed_slice.load_slice(REPOSITORY)
+        live_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         current_spec = copy.deepcopy(live_spec)
         current_spec["programs"] = [
             item for item in current_spec["programs"]
@@ -8125,17 +8127,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "cd3beb3b74768dfc0590938779187bb0c8c2fd0c1611b18f91ab4c49d5481e62",
+                "db890c9e965f5ec7ce0a2d55bb79716fa0810696323902ef558e0a1dafac5855",
             "src/typed_generated/typed_manifest.json":
-                "0cd003346b6b1c9f5dfe5adc10c5a02664136ce3fc51fe27e044c5a5dc457120",
+                "3ab9085751db86e84d374e0e8731e44a0896e81f07f820368e02ba5e2af64547",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "22262a4776423214e8671dfae1dc60f51e4e71a58358b963399361eb63817810",
+                "b0b815c60c3ee34e76361ffece5dfb47e0f7f02293d05fc438a64f0bf99a685c",
             "src/typed_generated/typed_manifest.json":
-                "4a6173b4d4591601429b0fef46bd835be6dcbea08d57e3e15814c95f2be38185",
+                "e631c93ca3eeaed0755ca639ddae7997ef2f2eb6c1b1aa9bd75c18f817f2c0ea",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8194,7 +8196,7 @@ and item["program_key"] != "filter/wobble:wobble"
 
         grain_key = "filter/grain:grain"
         current_spec = copy.deepcopy(
-            generate_typed_slice.load_slice(REPOSITORY))
+            corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY)))
         current_spec["programs"] = [
             item for item in current_spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
@@ -8259,17 +8261,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "d666cae2eec533668b81717023ece4b774731b3b373670243872e90d18906fae",
+                "3565366252d2cb3698668443bbe08b7fc2594a90775ed3abe1264766c17dc8ba",
             "src/typed_generated/typed_manifest.json":
-                "8736814b93dd3fc3ddffd1d5457af86e6ddf3fd778be556698589a7853104c70",
+                "5fddeabc8cb20559b31919c2f34858f0ba4e6f6e80812536fc45f6d8aeb5fa5b",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "cd3beb3b74768dfc0590938779187bb0c8c2fd0c1611b18f91ab4c49d5481e62",
+                "db890c9e965f5ec7ce0a2d55bb79716fa0810696323902ef558e0a1dafac5855",
             "src/typed_generated/typed_manifest.json":
-                "0cd003346b6b1c9f5dfe5adc10c5a02664136ce3fc51fe27e044c5a5dc457120",
+                "3ab9085751db86e84d374e0e8731e44a0896e81f07f820368e02ba5e2af64547",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8394,17 +8396,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "61d14a8932d9dfb2f749aa31024aa028ae3c073c3a377dc6c9e28505c1a5e2cc",
+                "f8d10d3493cbfe37b982ebc6eed0e607bad3af7d5e95c15be001bf48a668a34d",
             "src/typed_generated/typed_manifest.json":
-                "f0b7e0725c3001675b09d5e2eae6db8338add7d8b695d10ffdaad316919fe035",
+                "ff881f80e449f01b7553ab39e118c609180da2dc5918c07bd0ca91be6e92f8c0",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "d666cae2eec533668b81717023ece4b774731b3b373670243872e90d18906fae",
+                "3565366252d2cb3698668443bbe08b7fc2594a90775ed3abe1264766c17dc8ba",
             "src/typed_generated/typed_manifest.json":
-                "8736814b93dd3fc3ddffd1d5457af86e6ddf3fd778be556698589a7853104c70",
+                "5fddeabc8cb20559b31919c2f34858f0ba4e6f6e80812536fc45f6d8aeb5fa5b",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8527,17 +8529,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "8824804b73a5acbd0a969cba55d7ecb33ce09f836f9438a0727b762090d32ccf",
+                "3f0787f7515c41af040d59ae2b978731c57235118fee60a5287adfdb3619b1d6",
             "src/typed_generated/typed_manifest.json":
-                "8a66c515c9cf0e8b98049da8c018888ddde9a0753db9b97e0c967edec21140fb",
+                "cf6aaa08eb4fc77f71c69b8713a4db604bcb58a6be043c8ebbde4711f234a84f",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "61d14a8932d9dfb2f749aa31024aa028ae3c073c3a377dc6c9e28505c1a5e2cc",
+                "f8d10d3493cbfe37b982ebc6eed0e607bad3af7d5e95c15be001bf48a668a34d",
             "src/typed_generated/typed_manifest.json":
-                "f0b7e0725c3001675b09d5e2eae6db8338add7d8b695d10ffdaad316919fe035",
+                "ff881f80e449f01b7553ab39e118c609180da2dc5918c07bd0ca91be6e92f8c0",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -9416,7 +9418,7 @@ and item["program_key"] != "filter/wobble:wobble"
         }
         payload = json.dumps(vocabulary, sort_keys=True,
                              separators=(",", ":")).encode()
-        self.assertEqual("7b294a7d6ff669d26114d70d2afe0a8907b426a0de2f3335e7ee4990bb0ddf94",
+        self.assertEqual("548b5191abff6ba88ebcc05d373f1ae1b6c12ac569d3046bc2ab88baee66e361",
                          hashlib.sha256(json.dumps({
                              **vocabulary,
                              "compatibility_transforms": {
@@ -9660,7 +9662,8 @@ and item["program_key"] != "filter/wobble:wobble"
                           len(corpus_manifest["programs"]) - len(keys) - 2,
                           len(corpus_manifest["programs"])))
 
-        current = generate_typed_slice.generate_outputs(REPOSITORY)
+        with mock.patch.object(generate_typed_slice, "load_slice", return_value=spec):
+            current = generate_typed_slice.generate_outputs(REPOSITORY)
         current_cpp = current["src/typed_generated/typed_slice.cpp"].decode()
         old = copy.deepcopy(spec)
         old["programs"] = [item for item in old["programs"]
@@ -10680,7 +10683,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from unittest import mock
         from tools.glslcpp import check_corpus, generate_typed_slice
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         typed = [item["program_key"] for item in spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
                      "filter/rotate:rot", "mixer/focusBlur:focusBlur",
@@ -10961,10 +10964,10 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "b83ed57c41c4e70ffce2962e508f11361ebe137e9d40c2a34409f2681912bea4",
+            "8146544d2b08de19abca1321cf07b18b1ab7c7ec7d950e5778b6bfabf036ebad",
             hashlib.sha256(current_cpp.encode()).hexdigest())
         self.assertEqual(
-            "f33c5474a55f64b694ded76408a505bad14c7db62cbee0030e761a8a3c24b1d7",
+            "4981b4fcd63867deab8398395ba9f1bdede34397c348b22145effe040e26ceee",
             hashlib.sha256(prior_cpp.encode()).hexdigest())
 
         marker = re.compile(r"(?m)^// Typed IR program: (.+)$")
@@ -11143,7 +11146,7 @@ synth/subdivide:subdivide""".splitlines())
         expected_public = tuple(sorted((
             *expected_typed, "filter/invert:inv", "synth/solid:solid")))
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec = copy.deepcopy(spec)
         spec["programs"] = [
             item for item in spec["programs"]
@@ -11292,8 +11295,8 @@ synth/subdivide:subdivide""".splitlines())
                     ordinal.sub("typed_SENTINEL", current_blocks[key]))
 
         projections = {
-            LENS_KEY: (27519,
-                       "a516c15ef5eee1c0e16766f4104e4397b01293fc2a39df75154a029f3c312dc6"),
+            LENS_KEY: (27522,
+                       "2a3dced89b75cb8cb5b1611c6a3427b68d0338d3cf44fac4cd2608d1b566d27a"),
             PRISMATIC_KEY: (13316,
                             "8d6c98fed4ab2d2a2130566081386cdfb74d01ae84c11b198a1be08ae187155f"),
         }
@@ -11344,7 +11347,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '3f949057e2004902ca3ac69cd80243484f326cc4c65fb852e14ec03a21dc44ac'},
+                     'source_sha256': '970f0cc27ca1fe561f3d2496859fc885eda2dcb9fc4b21edcc065bae283de8a8'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11400,7 +11403,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '3f949057e2004902ca3ac69cd80243484f326cc4c65fb852e14ec03a21dc44ac'},
+                     'source_sha256': '970f0cc27ca1fe561f3d2496859fc885eda2dcb9fc4b21edcc065bae283de8a8'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11472,7 +11475,7 @@ synth/subdivide:subdivide""".splitlines())
         # the pin on the pre-rename bytes f704ac4c...; the suite was red on
         # every platform from that commit until this one.
         self.assertEqual(
-            "af04534ed4f57a606cb28da961e7cb2e64f55cfe479ed1537112f14f813ac8b6",
+            "1a9519e696e2bc64995ddd874063c72929a6b98465e7ba50d416366cee9582b7",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -14803,7 +14806,7 @@ class Task27PerlinTests(unittest.TestCase):
         from tools.glslcpp.frontend.perlin_scalar_uint_xor_profile import (
             PERLIN_KEY, PROFILE)
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
                                 "filter/rotate:rot",
@@ -14883,9 +14886,9 @@ class Task27PerlinTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task26_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "7849b3a39155436e479df8662433648883c45faa5fad9a18292aeae02a7df932",
+                "162df4c488bcfc342e4204f11953f688207e93819c57e7d3aef1f894d88a9eea",
             "src/typed_generated/typed_manifest.json":
-                "7ecbc89509c0b257f12cebb38718ab28974ae634b0089d502dd91c9d09670d90",
+                "d2f9eb7ec80d3f281c80e49af9dd46d23e9127db38d6da1366175558a8870273",
             "include/noisemaker/generated/catalog.hpp":
                 "2a0c8a3abb57b8fed2d29e5bdc9791a53a4e119ccf224ba751022fbd0f7dd59e",
         }
@@ -15884,7 +15887,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         from tools.glslcpp.frontend.rotate_mat2_return_profile import PROFILE, ROTATE_KEY
         self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
                                 "mixer/focusBlur:focusBlur",
@@ -15971,8 +15974,8 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         # translation-unit hash carriers, so the projected manifest is
         # internally consistent. cpp/catalog digests were unaffected.
         expected = {
-            "src/typed_generated/typed_slice.cpp": "290274a8ed370481243fb05d03d6f851b9b5fa93e8a0ab1ee1a209fbe04f5287",
-            "src/typed_generated/typed_manifest.json": "fc0c3619a921b1eb1c047443c3c1e5d6a27e7654f059a92e71de2c05068340b1",
+            "src/typed_generated/typed_slice.cpp": "4da5319b8c39d3096fb6a2a70ad99ab0ae0b0da33735b88380f6b38d4ee9414e",
+            "src/typed_generated/typed_manifest.json": "3ee1240dfc70ac5c535a6c88d47b2c6a56c5fcfc09c96106254dfae3967e166b",
             "include/noisemaker/generated/catalog.hpp": "67d72e3417329523e40a214fb058e5ed9fb8cd74aeee108c6dacda1036bda704",
         }
         for path, digest in expected.items():
@@ -16735,10 +16738,11 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())
-        self.assertEqual(181, typed.index(FOCUS_BLUR_KEY))
+        focus = corpus_census.ordinal(FOCUS_BLUR_KEY)
+        self.assertEqual(focus, typed.index(FOCUS_BLUR_KEY))
         self.assertEqual(("mixer/channelCombine:channelCombine",
                           "mixer/distortion:distortion", FOCUS_BLUR_KEY),
-                         typed[179:182])
+                         typed[focus - 2:focus + 1])
         self.assertEqual([{
             "defines": {},
             "focus_blur_borrowed_sampler_profile": PROFILE,
@@ -16746,7 +16750,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         }], [item for item in spec["programs"]
              if "focus_blur_borrowed_sampler_profile" in item])
 
-        current_spec = copy.deepcopy(spec)
+        current_spec = corpus_census.without_expansion(copy.deepcopy(spec))
         with historical_cross_lane(current_spec), \
                 mock.patch.object(generate_typed_slice, "load_slice",
                                   return_value=current_spec):
@@ -16760,7 +16764,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
                          focus_row["focus_blur_borrowed_sampler_profile"])
         self.assertEqual({}, focus_row["defines"])
 
-        task28_spec = copy.deepcopy(spec)
+        task28_spec = corpus_census.without_expansion(copy.deepcopy(spec))
         task28_spec["programs"] = [item for item in task28_spec["programs"]
                                    if item["program_key"] not in
                                    ({"filter/dither:dither", "synth/julia:julia",
@@ -16814,7 +16818,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         task28_public = tuple(sorted((*task28_keys, "filter/invert:inv",
                                      "synth/solid:solid")))
         task28_unported = tuple(sorted(
-            {item["program_key"] for item in corpus["programs"]}
+            {item["program_key"] for item in corpus_census.pre_expansion_manifest(corpus)["programs"]}
             - set(task28_public)))
         self.assertEqual((128, 130, 82),
                          (len(task28_keys), len(task28_public),
@@ -16843,9 +16847,9 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task28 = {
             "src/typed_generated/typed_slice.cpp":
-                "0d061d2dd6d52ac2622ca4d901aa184d9af18c6d253853ff54e049d6fc36e90e",
+                "931ef4bf8288e099438927f98634a9861ec677338eca5e5d1793a16749c02574",
             "src/typed_generated/typed_manifest.json":
-                "a6fc8cf2cc8ab98907e4d28980af5b2e33d337b8040415f02d05301eb93e91ba",
+                "b244c75225c8fd92ff40c54c39e7bffa2cca16328f9aaa63b2b8dac753393855",
             "include/noisemaker/generated/catalog.hpp":
                 "85f146ae07c41f97c57850229d3fcac788295dbdf236d025f03dd0b8d05f4cdd",
         }
@@ -17471,9 +17475,9 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         # The capability vocabulary is still exactly the 44 entries frozen
         # before this task; the two-node relational/reduction closure never
         # widened it.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         spec = generate_typed_slice.load_slice(REPOSITORY)
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(tuple(spec["capabilities"]),
                          generate_typed_slice.APPROVED_CAPABILITIES)
 
@@ -17550,8 +17554,8 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         current_cpp = current_outputs["src/typed_generated/typed_slice.cpp"].decode()
         extrude_start = current_cpp.index(f"// Typed IR program: {EXTRUDE_KEY}")
         extrude_end = current_cpp.index("// Typed IR program:", extrude_start + 1)
-        self.assertIn("namespace typed_47 {",
-                     current_cpp[extrude_start:extrude_end])
+        self.assertIn(f"namespace typed_{extrude} {{",
+                      current_cpp[extrude_start:extrude_end])
 
         # Coexistence: this identity profile carries no relationship to any
         # earlier task's profile/capability, so declaring both at once is a
@@ -17595,7 +17599,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         from tools.glslcpp.frontend import extrude_bvec2_relational_reduction_profile as profile_module
         self.assertEqual(PROFILE, profile_module.PROFILE)
         self.assertEqual(EXTRUDE_KEY, profile_module.EXTRUDE_KEY)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
 
     def test_task30_removing_only_extrude_regenerates_task29_outputs_byte_for_byte(self) -> None:
@@ -17611,7 +17615,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         task29_spec = copy.deepcopy(spec)
         task29_spec["programs"] = [item for item in task29_spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
@@ -17688,9 +17692,9 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task29 = {
             "src/typed_generated/typed_slice.cpp":
-                "7d639c6c32efda27a3688bfe24bfa6bc1505f5598514bb1892f57ae6fdc99952",
+                "925aa4d1fd28441606e23be8748f56cfff91a74f5d395ed42303347ef33d588d",
             "src/typed_generated/typed_manifest.json":
-                "6ae9d8f32efc7cceae4b9de83e985fd41909ac0377c780b3e41c84c43d50cbe6",
+                "25b17225d51ab9acb3f712b8382c9631493f1b6ca79a85d9790d6a095f884066",
             "include/noisemaker/generated/catalog.hpp":
                 "a0bbb90c96f6647ede3e6910b97010a35e33d1e1191325883a11073ad6a45fb0",
         }
@@ -18341,9 +18345,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         self.assertNotIn("tanh", generate_typed_slice.APPROVED_CAPABILITIES)
         self.assertNotIn("tanh", generate_typed_slice._BUILTINS)
         self.assertNotIn("tanh", emit_typed_cpp._BUILTIN_NAMES)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         spec = generate_typed_slice.load_slice(REPOSITORY)
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(tuple(spec["capabilities"]),
                          generate_typed_slice.APPROVED_CAPABILITIES)
 
@@ -18569,7 +18573,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         current_cpp = current_outputs["src/typed_generated/typed_slice.cpp"].decode()
         curl_start = current_cpp.index(f"// Typed IR program: {CURL_KEY}")
         curl_end = current_cpp.index("// Typed IR program:", curl_start + 1)
-        self.assertIn("namespace typed_191 {", current_cpp[curl_start:curl_end])
+        self.assertIn(f"namespace typed_{curl} {{", current_cpp[curl_start:curl_end])
         # tanh_lanewise is Curl's alone -- no other program's block emits it.
         self.assertEqual(1, current_cpp.count("tanh_lanewise"))
         self.assertIn("tanh_lanewise", current_cpp[curl_start:curl_end])
@@ -18614,7 +18618,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         self.assertEqual(_FROZEN_TASK33_DERIVATIVE_KEYS,
                          DERIVATIVE_ADMISSION_KEYS)
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         task30_spec = copy.deepcopy(spec)
         task30_spec["programs"] = [item for item in task30_spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
@@ -18691,9 +18695,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task30 = {
             "src/typed_generated/typed_slice.cpp":
-                "12f859a3208ebe8829dfd7d1367e7e298993ceb695794e4811201a85e9912018",
+                "631242d2ddc25ffb23ef2a0c2e93387c65465ae54d5570bff6f4fe3fa4086810",
             "src/typed_generated/typed_manifest.json":
-                "a620c18505b88d64e7ffbab3e8185ddc2ee4f236d8a837d30b7999037851615d",
+                "505e0f51887401ceea4d801834389170290128d108fe2e046c65266cd09ed58f",
             "include/noisemaker/generated/catalog.hpp":
                 "a47c84fb2bd9a5fbe7c336f5aad7c002c1a06101149cc117d7b3a73e0a9923f4",
         }
@@ -18887,7 +18891,7 @@ class Task32GradeClusterTests(unittest.TestCase):
             PROFILES as INDEX_PROFILES)
 
         before = tuple(generate_typed_slice.APPROVED_CAPABILITIES)
-        self.assertEqual(44, len(before))
+        self.assertEqual(45, len(before))
         for key in self.ALL_KEYS:
             with self.subTest(key=key):
                 _, source_hash, typed = self.exact_program(key)
@@ -18899,7 +18903,7 @@ class Task32GradeClusterTests(unittest.TestCase):
                     source_hash=source_hash, **kwargs)
                 render_typed_cpp(typed, key, source_hash, **kwargs)
         self.assertEqual(before, tuple(generate_typed_slice.APPROVED_CAPABILITIES))
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
 
     def test_task32_validator_and_emitter_require_both_profiles_where_expected(self) -> None:
         from tools.glslcpp import generate_typed_slice
@@ -19189,7 +19193,7 @@ class Task32GradeClusterTests(unittest.TestCase):
         typed = tuple(item["program_key"] for item in spec["programs"])
         self.assertEqual(corpus_census.typed_count(), len(typed))
 
-        task31_spec = copy.deepcopy(spec)
+        task31_spec = corpus_census.without_expansion(copy.deepcopy(spec))
         task31_spec["programs"] = [
             item for item in task31_spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
@@ -19198,8 +19202,8 @@ class Task32GradeClusterTests(unittest.TestCase):
                 "filter/grade:vignette", "filter/grade:wheels", "filter/reindex:nmReindexStats", "filter/zoomBlur:zoomBlur", "filter/oilPaint:oilFlatten", "filter/smooth:smoothBlend", "filter/fxaa:fxaa", "classicNoisedeck/caustic:caustic", "synth/bitwise:bitwise",
                 "filter/adjust:adjust", "filter/colorspace:colorspace",
                 "classicNoisedeck/cellNoise:cellNoise", "filter/lighting:lighting",
-                                       "filter/lightLeak:lightLeak",
-                                       "mixer/distortion:distortion",
+                                        "filter/lightLeak:lightLeak",
+                                        "mixer/distortion:distortion",
                 "filter/invert:inv", "synth/solid:solid",
                 "filter/reindex:nmReindexReduce",
                 "filter/watercolor:wcSimplify", "filter/snow:snow",
@@ -19263,16 +19267,16 @@ class Task32GradeClusterTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task31 = {
             "src/typed_generated/typed_slice.cpp":
-                "34f39beed3ae010e24d7fecefefeddbb052daac16338df9d83f25526daa00a1c",
+                "0e3ee7e9303a17dfe609977aa42283e187a7717b3361f43375eb88b8fb9d2b0f",
             "src/typed_generated/typed_manifest.json":
-                "5054c83e8f4225a80d044cb7159448d904fff8efb59f8dca2859bce287f06533",
+                "6663bc900e21f35e8e34db5780eab0158602b402c4117b9e158a2d63338b1c46",
             "include/noisemaker/generated/catalog.hpp":
                 "25b838ccd789bbe5163023ba112917c70f7c6bc3f78cade1eb08a4d795b3b663",
         }
         for path, expected in expected_task31.items():
             self.assertEqual(expected, hashlib.sha256(task31[path]).hexdigest(), path)
 
-        current_spec = copy.deepcopy(spec)
+        current_spec = corpus_census.without_expansion(copy.deepcopy(spec))
         with historical_cross_lane(current_spec), \
                 mock.patch.object(generate_typed_slice, "load_slice",
                                   return_value=current_spec):
@@ -19370,7 +19374,7 @@ class Task32GradeClusterTests(unittest.TestCase):
             generate_typed_slice.GATHER_SORTED_ROUND_PROFILE,
         }
         self.assertEqual(set(), set(all_names) & other_profiles)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
 
 
@@ -19763,9 +19767,9 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
             self.assertNotIn(name, generate_typed_slice.APPROVED_CAPABILITIES)
             self.assertNotIn(name, generate_typed_slice._BUILTINS)
             self.assertNotIn(name, emit_typed_cpp._BUILTIN_NAMES)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         spec = generate_typed_slice.load_slice(REPOSITORY)
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
 
         # Behavioral proof: validate_capabilities succeeds against the
         # UNMODIFIED 44-entry tuple for every one of the 17 admitted
@@ -19950,14 +19954,14 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_183 = {
         "tools/glslcpp/typed_slice.json": (
-            22728,
-            "8fb3b8bc876c380a0c406fdae8e81b74d4499924cf301ed7a980c450f7ccfe0a"),
+            23359,
+            "bc2da9403a29b5dc67a1325382cfd343cf61a3fff5161fcbabc9d9062225927c"),
         "src/typed_generated/typed_slice.cpp": (
-            1938998,
-            "af558a772ba59296d24e68e145aa26d0c49422ed621656935f3699dc29a2061b"),
+            1956081,
+            "724b2ac85fac80510104b1117128e8cc01c1e7fa863464f37f602e2a33b68906"),
         "src/typed_generated/typed_manifest.json": (
-            519037,
-            "60745dd78bdd9b3c4342040c6687015b5e8fbb4154ac82d90362f0116d3a47d8"),
+            524533,
+            "40c8d5f73cdc9048fce6763ea19dc0c7f8fe963867d160f2879f1584a44adf4e"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20023,9 +20027,9 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
         # type, that this mechanism admits, and there is no capability token.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn("mutable-global-frame",
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -20663,14 +20667,14 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_184 = {
         "tools/glslcpp/typed_slice.json": (
-            22993,
-            "c03ba30a9bc74697e5db1a9524a047a1dab1b0718ef72f0d4d772327a83f87d2"),
+            23624,
+            "b185a2d166231119dc736020f3804419b5f5d53811d1608bb8d2e14082738943"),
         "src/typed_generated/typed_slice.cpp": (
-            1993439,
-            "c9d7ad9f44fe9a0467c1ecc14e74bc423b0256a24e739b8e35da3da8dbc8c49a"),
+            2010522,
+            "774431b73495e8cf19b458d415ade25e6a3d9de913fa48e1084d186c16cf713a"),
         "src/typed_generated/typed_manifest.json": (
-            522139,
-            "04adefb5b983b8d62bf57f4b8802fa5295722825f7a755eb0b2d3745f947c901"),
+            527651,
+            "d9c2fa93fda6b4878b2c363d4fdc5c4465ecc8e0aee1873233cc60face386d06"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -20763,9 +20767,9 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         # Neither frozen vocabulary grows. `ivec2` and `float` were already
         # approved; only the ARRAY WRAPPER is new, and it is admitted by node
         # identity, so there is no capability token and no type entry.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn("const-global-nine-table",
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -21884,14 +21888,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_185 = {
         "tools/glslcpp/typed_slice.json": (
-            23202,
-            "69deb0c8b3f9b453c1101263b0de7fb2f0c1915a21ea5f6cbb298cf0508df20d"),
+            23833,
+            "b2570afecc4e93d79342aaf13635395e15cbf31d3c1d3f16a74dfce215fb4cd8"),
         "src/typed_generated/typed_slice.cpp": (
-            2007537,
-            "6be96cf3df1d669bf32ea59721fd9b139dd909cc20014a87183715ac5f477e65"),
+            2024620,
+            "ebe473b30c625a07193d5f379d9df7137b751ffbb658edb232e33581facc54bd"),
         "src/typed_generated/typed_manifest.json": (
-            524768,
-            "06d2746804af4606011591f02a4bac25411bb9f48461304013151a5bd77b19cd"),
+            530296,
+            "d2946116b129df7e28624827d06955c549f167b76a3a0821b84c096a62eb1029"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -22487,9 +22491,9 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
         # type, that this mechanism admits, and there is no capability token.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn("mutable-global-array",
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -22534,21 +22538,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 211-row tree with authenticated Gradient semantic repair, QUOTED FROM
+        # The four artifacts of the LIVE 255-program tree with authenticated Gradient semantic repair, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                28591,
-                "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
+                32968,
+                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
             "src/typed_generated/typed_slice.cpp": (
-                2713668,
-                "00cd1481392fae80570f798870a8162fc743dfba44f0fee3697f900540584e66"),
+                2925797,
+                "4841a18b39b1e37c0a8003ddeaa5f8363c33611f2764a8a12766bd159ce5a1f8"),
             "src/typed_generated/typed_manifest.json": (
-                614417,
-                "ce5e26ab4b3a2014653d268975b9b39535342dd23498c9e08b24ef2a982344ff"),
+                777326,
+                "f55b19838caee8a09e897a06a6c7ec1272ccd9cf29cb2a793f23c777b81fd62c"),
             "include/noisemaker/generated/catalog.hpp": (
-                20463,
-                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
+                25259,
+                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -22737,14 +22741,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_186 = {
         "tools/glslcpp/typed_slice.json": (
-            23429,
-            "ffaff05c37d718e0e3b7bae6fe2da5a46c44599410a8d88db419cae136b5ec5f"),
+            24060,
+            "49bb513f1f0299792cc9dc4d6911d7e80070794fe0c966ad6ad857ecb835b901"),
         "src/typed_generated/typed_slice.cpp": (
-            2044813,
-            "0732586fa495726291c51d2476948cf64adcab4839427f6bdf6ece213bff03b7"),
+            2061896,
+            "eddaccc67e8369c117819c04946cdcc49687b1810ce43cae743b727e9ebb0435"),
         "src/typed_generated/typed_manifest.json": (
-            528385,
-            "7d37fe945d026dcb48c61f2a583483082a86e609ed3dbf29d411b5ee61fca70b"),
+            533929,
+            "00bd310f68ab9e728ac55b2659204ee445a7f5faaca3cab784b27ed08eee7482"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -23264,9 +23268,9 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
         # type, that this mechanism admits, and there is no capability token.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn("mutable-global-array",
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -23314,21 +23318,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 211-row tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 255-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                28591,
-                "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
+                32968,
+                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
             "src/typed_generated/typed_slice.cpp": (
-                2713668,
-                "00cd1481392fae80570f798870a8162fc743dfba44f0fee3697f900540584e66"),
+                2925797,
+                "4841a18b39b1e37c0a8003ddeaa5f8363c33611f2764a8a12766bd159ce5a1f8"),
             "src/typed_generated/typed_manifest.json": (
-                614417,
-                "ce5e26ab4b3a2014653d268975b9b39535342dd23498c9e08b24ef2a982344ff"),
+                777326,
+                "f55b19838caee8a09e897a06a6c7ec1272ccd9cf29cb2a793f23c777b81fd62c"),
             "include/noisemaker/generated/catalog.hpp": (
-                20463,
-                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
+                25259,
+                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24021,9 +24025,9 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
         # type, that this mechanism admits, and there is no capability token.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn("mutable-global-array",
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -24070,21 +24074,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                28591,
-                "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
+                32968,
+                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
             "src/typed_generated/typed_slice.cpp": (
-                2713668,
-                "00cd1481392fae80570f798870a8162fc743dfba44f0fee3697f900540584e66"),
+                2925797,
+                "4841a18b39b1e37c0a8003ddeaa5f8363c33611f2764a8a12766bd159ce5a1f8"),
             "src/typed_generated/typed_manifest.json": (
-                614417,
-                "ce5e26ab4b3a2014653d268975b9b39535342dd23498c9e08b24ef2a982344ff"),
+                777326,
+                "f55b19838caee8a09e897a06a6c7ec1272ccd9cf29cb2a793f23c777b81fd62c"),
             "include/noisemaker/generated/catalog.hpp": (
-                20463,
-                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
+                25259,
+                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24112,14 +24116,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_187 = {
         "tools/glslcpp/typed_slice.json": (
-            23751,
-            "460edeccdce784b3d08f160ab32c6de399c07ff22aa99e04314b94435b59ac58"),
+            24382,
+            "09adedf6398be16af60cda21bf109e368a35fd43e351d5a09bbc23d6b7f1bbd2"),
         "src/typed_generated/typed_slice.cpp": (
-            2123584,
-            "0c8ef0c55d8fc69e4fff84fab96706b079bbd7a62cbc523c7a416093ec26f0ec"),
+            2140667,
+            "9041bf153e685f495aa2feb5a025a4a9e2ac5f75f0a8f95a4ba97651c833fefc"),
         "src/typed_generated/typed_manifest.json": (
-            531722,
-            "187657eab2c9f2345013918a0cbd5a1f2f24d96318f4a9186370c53d9f7aff36"),
+            537282,
+            "8179562343476eaa4aaeb976947469b0aa40a6d5572d750e7f195bd44d1e5a9f"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24563,9 +24567,9 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: varying admission is pure
         # expression lowering, and there is no capability token for it.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn(self.PROFILE,
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -24606,21 +24610,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                28591,
-                "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
+                32968,
+                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
             "src/typed_generated/typed_slice.cpp": (
-                2713668,
-                "00cd1481392fae80570f798870a8162fc743dfba44f0fee3697f900540584e66"),
+                2925797,
+                "4841a18b39b1e37c0a8003ddeaa5f8363c33611f2764a8a12766bd159ce5a1f8"),
             "src/typed_generated/typed_manifest.json": (
-                614417,
-                "ce5e26ab4b3a2014653d268975b9b39535342dd23498c9e08b24ef2a982344ff"),
+                777326,
+                "f55b19838caee8a09e897a06a6c7ec1272ccd9cf29cb2a793f23c777b81fd62c"),
             "include/noisemaker/generated/catalog.hpp": (
-                20463,
-                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
+                25259,
+                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24648,14 +24652,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_188 = {
         "tools/glslcpp/typed_slice.json": (
-            24086,
-            "bc32451249e6b11de2944f69318cea54172b1b5a8c4656ad09ce6b50e2b0da04"),
+            24717,
+            "737b6bff39c3fbd000c6c97b6d978c4f139d2018c6b2ed8786f32e549d6c2184"),
         "src/typed_generated/typed_slice.cpp": (
-            2181780,
-            "c175d5d850dd7b929afab00ca8a77cdeecb0289f70a329d4d53aa419b7418827"),
+            2198863,
+            "f5706636b362871e6858256d5c0d03f05f66a0c1540af91f7dcad2e86e79562f"),
         "src/typed_generated/typed_manifest.json": (
-            535205,
-            "dbd7deefef5d1b449891bbcbb4e51e1cd42f43cef510a2b4365e482bfbca46dc"),
+            540781,
+            "b8dfc1c799d2e0fcf245610ee97b89172bf6695b698860221c7bf4832b79e08c"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25119,7 +25123,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             1, emitted.count(
                 "State(const Surface* inputTex_value, "
                 "const Surface* heightMap_value, glsl::Vec2 tileOffset_value, "
-                "glsl::Vec2 fullResolution_value, glsl::Vec3 direction_value, "
+                "glsl::Vec2 fullResolution_value, glsl::DVec3 direction_value, "
                 "double pivot_value)"))
 
     # ---- projected state, asserted literally and then frozen -------------
@@ -25162,9 +25166,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         # Neither frozen vocabulary grows: the textureLod admission is an
         # identity alias over the existing texture path.
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
-        self.assertEqual(44, len(spec["capabilities"]))
+        self.assertEqual(45, len(spec["capabilities"]))
         self.assertEqual(17, len(spec["types"]))
         self.assertNotIn(self.PROFILE,
                          generate_typed_slice.APPROVED_CAPABILITIES)
@@ -25206,21 +25210,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 211-row post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                28591,
-                "fcd45366b93e515bca7181e90584e4f50cb5e2aa7af567de0e91545184bbc5c3"),
+                32968,
+                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
             "src/typed_generated/typed_slice.cpp": (
-                2713668,
-                "00cd1481392fae80570f798870a8162fc743dfba44f0fee3697f900540584e66"),
+                2925797,
+                "4841a18b39b1e37c0a8003ddeaa5f8363c33611f2764a8a12766bd159ce5a1f8"),
             "src/typed_generated/typed_manifest.json": (
-                614417,
-                "ce5e26ab4b3a2014653d268975b9b39535342dd23498c9e08b24ef2a982344ff"),
+                777326,
+                "f55b19838caee8a09e897a06a6c7ec1272ccd9cf29cb2a793f23c777b81fd62c"),
             "include/noisemaker/generated/catalog.hpp": (
-                20463,
-                "1fde9bae7a969694bc1f1ae6ca1407d73a2bf58a87b9fbbb68533533f33aedbc"),
+                25259,
+                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25251,14 +25255,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_189 = {
         "tools/glslcpp/typed_slice.json": (
-            24216,
-            "d950efd9b79306bf0e02c79592e0887b7aee23b68c5067213e933cf57ae00806"),
+            24847,
+            "5e9a45b95f053207710232faee881a45d157700deb475851dfb471413fcbb7a1"),
         "src/typed_generated/typed_slice.cpp": (
-            2192683,
-            "823be1bbb6a17fa5cc2ce833e34991952b71c814716abd6d86a372ce34c9b400"),
+            2209766,
+            "5b01d328aa0a5ee3f7dfbbeda6a646cc20d555f106024275d724fd1f3f4cd867"),
         "src/typed_generated/typed_manifest.json": (
-            537778,
-            "507a6a8cebb18a9dbf6677417fe47da37fe6247f7f201bf44fd0136f35e922c2"),
+            543370,
+            "01915c2856624557784b9bb5b295faad647d83f985089e8852927572262bd846"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),

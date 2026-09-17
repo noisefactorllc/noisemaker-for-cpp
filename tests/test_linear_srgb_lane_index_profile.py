@@ -528,9 +528,9 @@ class LinearSrgbVisitationLedgerTests(unittest.TestCase):
 class LinearSrgbFrozenVocabularyTests(unittest.TestCase):
     def test_capability_vocabulary_remains_exactly_forty_four_entries(self):
         _module()
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(
-            "6ddb906dc859e45ee613b580dc6988c663d2aff22db9c365ece3097d126a4aea",
+            "aee50eef847f1fe176c6a22e73a7400b342e766566a71996c38621945809549f",
             hashlib.sha256(repr(
                 generate_typed_slice.APPROVED_CAPABILITIES).encode()).hexdigest())
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))

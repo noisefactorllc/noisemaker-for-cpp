@@ -52,8 +52,8 @@ RUNTIME_UNIFORM_ABI = (
     ("hueRotation", "float"), ("hueRange", "float"), ("invert", "bool"),
     ("brightness", "float"), ("contrast", "float"), ("saturation", "float"),
     ("colorMode", "int32"), ("paletteMode", "int32"),
-    ("paletteOffset", "Vec3"), ("paletteAmp", "Vec3"),
-    ("paletteFreq", "Vec3"), ("palettePhase", "Vec3"),
+    ("paletteOffset", "DVec3"), ("paletteAmp", "DVec3"),
+    ("paletteFreq", "DVec3"), ("palettePhase", "DVec3"),
     ("cyclePalette", "int32"), ("rotatePalette", "float"),
     ("repeatPalette", "float"),
 )

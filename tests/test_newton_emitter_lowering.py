@@ -38,8 +38,13 @@ class NewtonEmitterLoweringTests(unittest.TestCase):
         self.assertIn("std::array<glsl::Vec2, 8> roots{};", rendered)
         self.assertIn("glsl::Vec2& rr", rendered)
         self.assertIn("glsl::Vec2& ri", rendered)
-        self.assertEqual(2, rendered.count("std::log("))
-        self.assertEqual(1, rendered.count("std::log2("))
+        self.assertEqual(0, rendered.count("std::log("))
+        self.assertEqual(0, rendered.count("std::log2("))
+        # glsl::log()/glsl::log2() route through noisemaker::fdlibm, never
+        # std::log/std::log2 -- see emit_typed_cpp.py's log-call emission
+        # comment and tests/test_no_raw_transcendentals.py.
+        self.assertEqual(2, rendered.count("glsl::log("))
+        self.assertEqual(1, rendered.count("glsl::log2("))
         self.assertIn("7.771800092370995e-09", rendered)
 
     def test_struct_and_root_mutations_fail_closed(self):

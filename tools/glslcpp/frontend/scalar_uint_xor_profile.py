@@ -55,7 +55,7 @@ _PROFILES: dict[str, dict[str, object]] = {
         "raw_bytes": 12748, "raw_sha256": "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b",
         "normalized_bytes": 8169, "normalized_sha256": "70c88967c308368f81a8739296786c3e501005e536e987446bdc9c1dc93b7bb0",
         "functions_sha256": "c2ffa4525ea4f39ba9e2395e2e755f580d450b645dee628408ddb089281377f5",
-        "whole_program_sha256": "5156fbfe252da7e0be21a216e420ca385aac31ab6d4e658a842a5baf4030a234",
+        "whole_program_sha256": "ae7c66f434f86a1c5b72bfb55faba6dada4b3be5ea5b967885fd6cce1ac6de44",
         "interface_sha256": "22a5c8be48bbe78e87c503b1bbce3bdfeead3e452259dd46057ceccd1f2dc664",
         "defines": (("COLOR_SCHEME", "int", "20"), ("FORMULA", "int", "0"),
                     ("INTERP", "int", "0"), ("MASK_COLOR_SCHEME", "int", "1"),

@@ -2006,8 +2006,8 @@ class ConstGlobalTableVocabularyTests(unittest.TestCase):
         _module()
         frozen = {
             "capabilities": (
-                44, generate_typed_slice.APPROVED_CAPABILITIES,
-                "6ddb906dc859e45ee613b580dc6988c663d2aff22db9c365ece3097d126a4aea"),
+                45, generate_typed_slice.APPROVED_CAPABILITIES,
+                "aee50eef847f1fe176c6a22e73a7400b342e766566a71996c38621945809549f"),
             "types": (
                 17, generate_typed_slice.APPROVED_TYPES,
                 "aa4ab00ac3b34ece6681eaa55435817b7908c9b8ea421a6eca1931f6ab4791c7"),
@@ -2043,7 +2043,7 @@ class ConstGlobalTableVocabularyTests(unittest.TestCase):
             _analyzed(), RAW_SHA256, PROFILE)
         self.assertEqual(before[0], generate_typed_slice.APPROVED_CAPABILITIES)
         self.assertEqual(before[1], generate_typed_slice.APPROVED_TYPES)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
 
 

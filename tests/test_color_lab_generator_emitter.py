@@ -160,6 +160,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
                 cxx = {
                     "Vec2": "glsl::Vec2",
                     "Vec3": "glsl::Vec3",
+                    "DVec3": "glsl::DVec3",
                     "bool": "bool",
                     "int32": "std::int32_t",
                 }[native]

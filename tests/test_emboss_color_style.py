@@ -936,7 +936,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             hashlib.sha256(("\n".join(
                 item["program_key"] for item in spec["programs"])
                 + "\n").encode()).hexdigest())
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
         self.assertNotIn("bvec2", generate_typed_slice.APPROVED_TYPES)
         self.assertNotIn("float[9]", generate_typed_slice.APPROVED_TYPES)
@@ -1098,11 +1098,11 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 ("glyph178", glyph178_spec, outputs(glyph178_spec)),
             )
         expected_spec_hashes = {
-            "live182": "c54c2ca281bbcb6db25b0b5afa45a86c50a6491adf848b384b4b21ed9011826d",
-            "emboss181": "bbfd7b261ae94fd9616ec9a50352fe20f759201e517655cb89dc83b0f4cac3ae",
-            "glitch180": "ccabcd9f07d62d515c19fd6280743416710cf5ae0a4f56dd9d06451682ffbb4b",
-            "edge179": "ec7888e36ad1828a185b80c77ea3915b1cd3fb77a79c6587cf75a94f6490e76f",
-            "glyph178": "9c9a47f7ca42097888d9dc4e6869297fa713b9bba47842bf03736ada0ea64347",
+            "live182": "f7a0c02e7e1b9ed86c9a665f387b01a4914de4222408fb86aa877cd470f7ee64",
+            "emboss181": "d22682f3b7fbe9d853e0431893a06960ef560388668743d2b522e2a2b4ad3799",
+            "glitch180": "5cc62aa874865cef27e69914151222cc540271d6a168c45b953d62f12c20ae2d",
+            "edge179": "36d22ec6f5f900b06addf4ad77aa6b4142d664745dac61501a3f033708875501",
+            "glyph178": "d53897c783b517b0310395756783992dee3c856db497940e62d14320c7690b69",
         }
         # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
         # FactoryRoute/define metadata into the emitted artifacts. The projection
@@ -1112,28 +1112,28 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_artifact_hashes = {
             "live182": {
-                "src/typed_generated/typed_slice.cpp": "3f108d58d2e06369cf785bd6871592bb554302df7ff1bd3f65bd4545987ce2d0",
-                "src/typed_generated/typed_manifest.json": "a64ecabd3f102b49063eaa8aa6cf9a3f4d36f0bc823c75bbff11528ad12f07c3",
+                "src/typed_generated/typed_slice.cpp": "88cc0c196067fafb8c1287d93dde996568cf1ff0167155ee79cd48513125d807",
+                "src/typed_generated/typed_manifest.json": "2a41b9f56c293ee6afac92a0a0a270c39eac43b99a0059ff4214711c35ac406d",
                 "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
             },
             "emboss181": {
-                "src/typed_generated/typed_slice.cpp": "a7225d35d813f7781663287a5f6b335a8d2e052d470f5314860146ce844a3a00",
-                "src/typed_generated/typed_manifest.json": "88b2ea6b7e541ef877e439aa7b32191116c47911da1d9ec83c806b6be489c43e",
+                "src/typed_generated/typed_slice.cpp": "20de9d50cfc6ef846bfc81b4fe75857faa2203e2b04ca74300e35ba259e461db",
+                "src/typed_generated/typed_manifest.json": "5f1b98f2958591af6a43cbec88ff965b94db030ef23db7a438a9bb117607d172",
                 "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
             },
             "glitch180": {
-                "src/typed_generated/typed_slice.cpp": "b003b93a26ed7504c39fd052c75811af70b50d96be6ee44ae49fec7a795b9954",
-                "src/typed_generated/typed_manifest.json": "721ce86527490b038f4378c7878e135382ba992497d9829015b4f1ace7c316d9",
+                "src/typed_generated/typed_slice.cpp": "6b2a53dc58d12ac467068a01976c2b491d165eff3926c7c908463f6bd12e1474",
+                "src/typed_generated/typed_manifest.json": "5f1763b50c02b645fa2980d1b8d13aa0639e1be574b7a5999f35f00e8679828e",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "67c70a8a66792d57844d50a8409757891264a951e6b56d06ba41bded78ff7e3f",
-                "src/typed_generated/typed_manifest.json": "0225c98b4ad08ff9a3c5036ec49de0464cec13649d369ce92c4de556d765d8a0",
+                "src/typed_generated/typed_slice.cpp": "626512a536b8060f122608c940e338b84d0d15fc107ff9a627f0e67cbb2ebd55",
+                "src/typed_generated/typed_manifest.json": "f817b48bd592ee14d854e4c82a3896c78ddf14a20628ccb1e599cb6383a0c668",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
-                "src/typed_generated/typed_manifest.json": "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
+                "src/typed_generated/typed_slice.cpp": "715b93ebb5d8df3e1f6eccec1e029eb14817ae25d54993238ca7b77815079ea1",
+                "src/typed_generated/typed_manifest.json": "54a80a1940624ca3258c745bade533fea5bac65dc723e3d9ab6ed8aa94e60d40",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }

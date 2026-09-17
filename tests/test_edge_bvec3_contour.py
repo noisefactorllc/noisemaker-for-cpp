@@ -473,17 +473,17 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "67c70a8a66792d57844d50a8409757891264a951e6b56d06ba41bded78ff7e3f",
+                "626512a536b8060f122608c940e338b84d0d15fc107ff9a627f0e67cbb2ebd55",
             "src/typed_generated/typed_manifest.json":
-                "0225c98b4ad08ff9a3c5036ec49de0464cec13649d369ce92c4de556d765d8a0",
+                "f817b48bd592ee14d854e4c82a3896c78ddf14a20628ccb1e599cb6383a0c668",
             "include/noisemaker/generated/catalog.hpp":
                 "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
+                "715b93ebb5d8df3e1f6eccec1e029eb14817ae25d54993238ca7b77815079ea1",
             "src/typed_generated/typed_manifest.json":
-                "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
+                "54a80a1940624ca3258c745bade533fea5bac65dc723e3d9ab6ed8aa94e60d40",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }
@@ -537,8 +537,8 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
 
     def test_global_vocabularies_remain_frozen(self):
         values = {
-            "capabilities": (generate_typed_slice.APPROVED_CAPABILITIES, 44,
-                "6ddb906dc859e45ee613b580dc6988c663d2aff22db9c365ece3097d126a4aea"),
+            "capabilities": (generate_typed_slice.APPROVED_CAPABILITIES, 45,
+                "aee50eef847f1fe176c6a22e73a7400b342e766566a71996c38621945809549f"),
             "types": (generate_typed_slice.APPROVED_TYPES, 17,
                 "aa4ab00ac3b34ece6681eaa55435817b7908c9b8ea421a6eca1931f6ab4791c7"),
             "binary": (generate_typed_slice.APPROVED_BINARY_OPERATORS, 17,
@@ -547,13 +547,11 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
                 "99a6ede7544a02082e0b72d83690c3b68d8c846e221078e3e90ac10463d498e2"),
             "emitter-types": (emit_typed_cpp._TYPES, 16,
                 "35bc343afc6ddda237a7d27601b214abdcd5fe668d0dc1d6d5aebd03ad5f7fba"),
-            "validator-builtins": (tuple(sorted(generate_typed_slice._BUILTINS)), 25,
-                "97358ee6a1b503ff8aed40f3aa104136704e2b528f7d2aadb32a24bd53ebe4b7"),
-            # 22 -> 23: `degrees`, mirroring `radians` exactly (glsl-runtime.js's
-            # unary adapter, value * (180 / Math.PI) then F32); the validator's
-            # own admission is gated separately by the capability vocabulary.
-            "emitter-builtins": (emit_typed_cpp._BUILTIN_NAMES, 23,
-                "717c07056812c0378ac0e3d8a7f6d3c1a90abd9bafa004bfcd374bbd2cc16f74"),
+            "validator-builtins": (tuple(sorted(generate_typed_slice._BUILTINS)), 26,
+                "8079f7101073af251c7d92f6e14397d7bf0bebea74bcb63c2ff689781b8f5fd8"),
+            # 23 -> 24: `acos` added in commit 935e882
+            "emitter-builtins": (emit_typed_cpp._BUILTIN_NAMES, 24,
+                "c919db08d843cdeb385e68e5609cbfcdef27eac8a868eb05cc244a092fd49f3d"),
         }
         for name, (value, count, digest) in values.items():
             with self.subTest(name=name):

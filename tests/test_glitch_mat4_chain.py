@@ -595,18 +595,18 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_hashes = {
             "live180": {
-                "src/typed_generated/typed_slice.cpp": "b003b93a26ed7504c39fd052c75811af70b50d96be6ee44ae49fec7a795b9954",
-                "src/typed_generated/typed_manifest.json": "721ce86527490b038f4378c7878e135382ba992497d9829015b4f1ace7c316d9",
+                "src/typed_generated/typed_slice.cpp": "6b2a53dc58d12ac467068a01976c2b491d165eff3926c7c908463f6bd12e1474",
+                "src/typed_generated/typed_manifest.json": "5f1763b50c02b645fa2980d1b8d13aa0639e1be574b7a5999f35f00e8679828e",
                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
             },
             "edge179": {
-                "src/typed_generated/typed_slice.cpp": "67c70a8a66792d57844d50a8409757891264a951e6b56d06ba41bded78ff7e3f",
-                "src/typed_generated/typed_manifest.json": "0225c98b4ad08ff9a3c5036ec49de0464cec13649d369ce92c4de556d765d8a0",
+                "src/typed_generated/typed_slice.cpp": "626512a536b8060f122608c940e338b84d0d15fc107ff9a627f0e67cbb2ebd55",
+                "src/typed_generated/typed_manifest.json": "f817b48bd592ee14d854e4c82a3896c78ddf14a20628ccb1e599cb6383a0c668",
                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
             },
             "glyph178": {
-                "src/typed_generated/typed_slice.cpp": "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
-                "src/typed_generated/typed_manifest.json": "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
+                "src/typed_generated/typed_slice.cpp": "715b93ebb5d8df3e1f6eccec1e029eb14817ae25d54993238ca7b77815079ea1",
+                "src/typed_generated/typed_manifest.json": "54a80a1940624ca3258c745bade533fea5bac65dc723e3d9ab6ed8aa94e60d40",
                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
             },
         }
@@ -673,7 +673,7 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(
                 item["program_key"] for item in spec["programs"]) + "\n").encode()).hexdigest())
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
         self.assertNotIn("mat4", generate_typed_slice.APPROVED_TYPES)
 

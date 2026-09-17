@@ -332,7 +332,7 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
 
     def test_global_vocabularies_remain_frozen(self):
         frozen = {
-            "capabilities": (44, "6ddb906dc859e45ee613b580dc6988c663d2aff22db9c365ece3097d126a4aea"),
+            "capabilities": (45, "aee50eef847f1fe176c6a22e73a7400b342e766566a71996c38621945809549f"),
             "types": (17, "aa4ab00ac3b34ece6681eaa55435817b7908c9b8ea421a6eca1931f6ab4791c7"),
             "binary": (17, "cceb35790b79fa895906c57d7e81f0056fac404cf7448eec9b8d9dbb49b705b0"),
             "assignment": (6, "99a6ede7544a02082e0b72d83690c3b68d8c846e221078e3e90ac10463d498e2"),
@@ -416,17 +416,17 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
         # task-7-typed-generator-census-repair.md.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "05c57f4e5c38c4fd6e1afae4ed1e222237d76b2e51cb65ff8d0478d21db9f3be",
+                "715b93ebb5d8df3e1f6eccec1e029eb14817ae25d54993238ca7b77815079ea1",
             "src/typed_generated/typed_manifest.json":
-                "0da0d1d4f140048f4c3d729c5b4159cbd7d08c8f62cb59a6601f613ab071c26a",
+                "54a80a1940624ca3258c745bade533fea5bac65dc723e3d9ab6ed8aa94e60d40",
             "include/noisemaker/generated/catalog.hpp":
                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "39eba3d58b974dfce89bfccc6c74d81ee54c206a30cdb52fc1c9fa4692fc19a2",
+                "6450f960b8a06203787626f83a63ea66127ea1c3767349bbd679da3979303b13",
             "src/typed_generated/typed_manifest.json":
-                "4f8308b00e1d3d984428840c387f237f439875b0706fe0408624dd05d76b6ac2",
+                "18455e0f3c8268a77d13acfee8f1e68d312c385597246565f9d7fe869d3e297e",
             "include/noisemaker/generated/catalog.hpp":
                 "e1e42ad869ed3095a2fe263d36cc5ca59d45939044d3fa8bc1beaa2f5fb10888",
         }

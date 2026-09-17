@@ -980,7 +980,7 @@ class VaryingUvVocabularyTests(unittest.TestCase):
                 self.assertNotIn(
                     token, generate_typed_slice.APPROVED_CAPABILITIES)
                 self.assertNotIn(token, generate_typed_slice.APPROVED_TYPES)
-        self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))
+        self.assertEqual(45, len(generate_typed_slice.APPROVED_CAPABILITIES))
         self.assertEqual(17, len(generate_typed_slice.APPROVED_TYPES))
 
     def test_the_module_never_grows_the_vocabulary_by_import(self):

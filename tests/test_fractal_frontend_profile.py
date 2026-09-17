@@ -564,7 +564,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
         self.assertIn(
             "return adapter_color;", rendered)
         self.assertIn(
-            "1.055 * std::pow(value, 1.0 / 2.4) - 0.055;", rendered)
+            "1.055 * noisemaker::fdlibm::pow(value, 1.0 / 2.4) - 0.055;", rendered)
         self.assertNotIn(
             "d = (static_cast<double>(d) * static_cast<double>((static_cast<double>(state.hueRange) * "
             "static_cast<double>(static_cast<float>(0.01)))));", rendered)

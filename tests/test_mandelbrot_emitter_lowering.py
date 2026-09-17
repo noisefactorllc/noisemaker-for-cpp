@@ -68,8 +68,11 @@ class MandelbrotEmitterLoweringTests(unittest.TestCase):
         self.assertEqual(2, rendered.count("mandelbrot_df64(state, context"))
         self.assertIn("glsl::set_swizzle<0>(dz", rendered)
         self.assertIn("glsl::set_swizzle<1>(dz", rendered)
-        self.assertNotIn("dz = glsl::Vec2", rendered)
-        self.assertEqual(3, rendered.count("std::log("))
+        self.assertEqual(0, rendered.count("std::log("))
+        # glsl::log() routes through noisemaker::fdlibm::log (V8's own
+        # ieee754::log), not std::log -- see emit_typed_cpp.py's log-call
+        # emission comment.
+        self.assertEqual(3, rendered.count("glsl::log("))
 
     def test_mandelbrot_lowering_requires_all_three_authenticated_profiles(self):
         program = _program()

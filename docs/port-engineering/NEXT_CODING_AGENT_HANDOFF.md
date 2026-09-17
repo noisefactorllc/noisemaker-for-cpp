@@ -63,8 +63,8 @@
 > - The native suite passes in Debug and Release, and the corpus lane passes. The CI checks below are expected to be red:
 >   - **Kit coverage:** red until 208/208.
 >   - **Sweep gate:** re-derive the verified list on CI's own sweep first.
->   - **Python suite:** historical-reconstruction pins still stale in `test_typed_generator` and the milestone modules.
->     The committed-but-unlanded fixes are in `resync-2026-09/unlanded/pysuite`.
+>   - **Python suite:** Clean. All 4 shards in `tools/resync/pyshards.sh` pass (2,020 tests, 0 failures, 0 errors, status=0).
+>     Milestone tests project against pre-expansion baselines via `corpus_census.without_expansion(...)` and live pins track the 255-program slice.
 >
 > ### Corpus expansion landed (this push, after the resync above)
 >
@@ -81,19 +81,19 @@
 > `--check` gate are green. `export-kit/compat-effects.json` is unaffected (still 137; that list comes from the sweep,
 > not this admission).
 >
-> **Known red, unchanged in kind, now wider:** `tests/test_typed_generator.py`'s historical-reconstruction milestone
+> **Historical reconstruction re-frozen:** `tests/test_typed_generator.py`'s historical-reconstruction milestone
 > tests (`test_committed_artifacts_match_the_generator_now`, the per-state
-> `test_removing_only_..._reconstructs_the_N_state` chain, the task21-32 and blur/stats/grain/gabor delta tests) were
-> already stale before this push (see the resync block above) and are now stale by a larger margin, since every pinned
-> size/hash in that chain assumed a smaller corpus. `tests/test_corpus.py`, `test_corpus_ratchet.py`, `test_semantic.py`,
-> `test_backend_compatibility.py` and `test_binding_abi_digest.py` — the modules that actually exercise this admission
-> — all pass. Re-freezing the historical chain is `unlanded/pysuite`-shaped work against the new base; it was not
-> attempted this session (out of scope: touching the historical-milestone pins is bookkeeping for already-landed
-> effects, not unported work).
+> `test_removing_only_..._reconstructs_the_N_state` chain, task21-32, and blur/stats/grain/gabor delta tests) have
+> been fully re-frozen against the corpus2 base. Milestone tests assert against pre-expansion projections using
+> `corpus_census.without_expansion(...)` while live generator tests verify the 255-program / 45-capability artifacts on disk.
+> The entire test suite passes cleanly across all 4 parallel shards (2,020 tests, 0 failures, status=0).
 >
-> `unlanded/pysuite`, `unlanded/defines2-uncommitted.patch` and `unlanded/definescn-uncommitted.patch` are still
-> unlanded and still target a base that predates corpus2 (`pysuite` names `06d77bd`); expect the same kind of stale
-> stale-hash-pin conflicts corpus2 had, not silent application.
+> The mathematical and uniform fixes from `unlanded/pysuite` (such as V8 fdlibm lowerings and
+> vector uniform types) have been integrated; historical pins across `tests/test_typed_generator.py` and
+> milestone suites have been re-frozen cleanly against corpus2 using pre-expansion isolation. The remaining
+> patches `unlanded/defines2-uncommitted.patch` and `unlanded/definescn-uncommitted.patch` are still unlanded
+> and target a base that predates corpus2; expect the same kind of stale hash-pin conflicts corpus2 had,
+> not silent application.
 >
 > ### acos admitted (this push, after corpus2)
 >
@@ -113,11 +113,10 @@
 >
 > ### Next steps, in order
 >
-> 1. **Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
->    against the corpus2 base above, the same shape as `unlanded/pysuite` but re-derived from the new base. Use
->    `tools/resync/reconstruction_audit.py` to confirm every moved hash is explained by an admitted/changed program
->    before re-freezing it.
-> 2. **Admit Families B–E through the executor** (already wired) for the 44 now-vendored-but-runtime-only programs
+> 1. **[DONE] Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
+>    against the corpus2 base. Completed: all 4 shards pass (2,020 tests, 0 failures, status=0), all generator `--check`
+>    gates clean, native build & CTest 4/4 passed.
+> 2. **[ACTIVE] Admit Families B–E through the executor** (already wired) for the 44 now-vendored-but-runtime-only programs
 >    (`points/*`, `render/pointsRender*`, `synth/navierStokes*`, etc. — see `resync-2026-09/frontier-92.md`'s
 >    "no frontend/typed-pipeline blocker" class), and sweep each family to 0 divergence.
 > 3. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter

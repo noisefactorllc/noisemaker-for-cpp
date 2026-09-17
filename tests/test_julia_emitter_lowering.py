@@ -58,8 +58,8 @@ class JuliaEmitterLoweringTests(unittest.TestCase):
                 "const double globalX = static_cast<double>(context.frag_coord[0])",
                 "iterateSmooth(state, fragX + 1.0, fragY",
                 "iterateSmooth(state, fragX, fragY + 1.0",
-                "std::hypot(nx, ny, nz)",
-                "std::hypot(lx, ly, lz)",
+                "noisemaker::fdlibm::hypot(nx, ny, nz)",
+                "noisemaker::fdlibm::hypot(lx, ly, lz)",
                 "double slowX = static_cast<double>(reHigh)",
                 "double slowY = static_cast<double>(imHigh)",
                 "const float stripeHalf = julia_f32(",
@@ -73,9 +73,13 @@ class JuliaEmitterLoweringTests(unittest.TestCase):
         self.assertNotIn("std::cos(", emitted)
         self.assertNotIn("std::fmin(", emitted)
         self.assertNotIn("std::fmax(", emitted)
+        self.assertNotIn("std::hypot(", emitted)
         self.assertIn(
             'noisemaker::f32(bindings.get_number("time"))', emitted)
-        self.assertIn(
+        # cSpeed is not a reserved frounded name; the runtime-int contract
+        # (intended change (c)) binds it as a plain, un-rounded double.
+        self.assertIn('bindings.get_number("cSpeed")', emitted)
+        self.assertNotIn(
             'noisemaker::f32(bindings.get_number("cSpeed"))', emitted)
         self.assertNotIn("runtime_loop_radius", emitted)
 

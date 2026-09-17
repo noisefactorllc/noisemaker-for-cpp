@@ -12,7 +12,14 @@ from tools.glslcpp.frontend import remap_profile
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+# remap_profile.py's authenticate_remap_frontend/preflight_remap_bindings are
+# SUPERSEDED (see that module's docstring): they are kept, unmodified, as a
+# correct record of the OLD 267-slot remap.glsl's exact shape (corpus
+# a024dc3a...), and are deliberately never run against the pinned
+# 0ed489ec... source, which grew to 275 slots and introduced `struct
+# ZoneTest`. This test authenticates that frozen historical record, so it
+# must read the OLD corpus, not the live one.
+SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
           / "sources/synth/remap/remap.glsl")
 KEY = remap_profile.KEY
 

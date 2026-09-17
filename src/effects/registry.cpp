@@ -168,7 +168,7 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   {
     const auto& capabilities = field(raw, "capabilities")->array;
     std::set<std::string> unique;
-    if (capabilities.size() != 44) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": capability census");
+    if (capabilities.size() != 45) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": capability census");
     for (const auto& capability : capabilities) if (capability.kind != ValueKind::string || capability.string.empty() || !unique.insert(capability.string).second) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": duplicate capability");
   }
   required_binding_array(required_field(raw, "samplers", ValueKind::array, context), context + ".samplers", false);
