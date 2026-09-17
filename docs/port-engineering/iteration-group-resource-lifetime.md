@@ -173,15 +173,19 @@ authenticated helper unchanged -- `preflight_pass_abi`,
 `materialize_scatter_bindings`, `scatter_pass_from_definition`,
 `resolve_scatter_adapter`, `run_pass`, `quantize_texture` -- only the route
 lookup callback and the per-iteration `ExecutionInputs` differ from the
-non-iterated path. Both pass shapes the non-iterated path supports (ordinary
-single fragment output, and scatter/points/billboards) are wired the same way
-here. MRT (`drawBuffers >= 2`) needs no special handling in either path: every
-pass, iterated or not, is required to declare exactly one fragment output by
-`validate_pass_output_abi`, which both `validate_plan_before_allocation` (the
-pre-allocation dry run) and `preflight_pass_abi` (the real per-pass
-authentication) already call unconditionally -- an MRT-shaped pass is refused
-with `unsupported_mrt` before `execute()`'s main loop reaches *any* pass,
-grouped or not. There is no gap here to defer.
+non-iterated path. All three pass shapes the non-iterated path supports
+(ordinary single fragment output, scatter/points/billboards, and MRT) are
+wired the same way.
+
+**Update (superseded):** at the time this section was written, MRT
+(`drawBuffers >= 2`) needed no branch here because it was blanket-refused
+before *any* pass, grouped or not, by `validate_pass_output_abi`. `lanes/
+integ4` later landed real MRT dispatch for the non-iterated path
+(`run_mrt_pass`/`bind_factory_route_mrt`), which made that refusal no
+longer universal -- see
+`docs/port-engineering/chain-bundle-volume-geometry-threading.md`'s "MRT
+inside an iterated group" section for the branch this module gained to
+match, mirroring `groupMrtDestinations` (`renderer.js:806-814`).
 
 ## Zero behavior change for every currently-admitted effect
 
