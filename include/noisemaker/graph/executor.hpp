@@ -172,6 +172,51 @@ void authenticate_compile_define_parameters(
     const effects::EffectDefinition& definition, const glsl::Bindings& bindings,
     std::span<const FactoryRouteDescriptor> routes = {});
 
+// The MRT (drawBuffers >= 2) analog of FactoryRouteDescriptor: the same
+// generated-route identity fields, but `bind` returns a multi-output
+// noisemaker::BoundKernelMrt. There is deliberately no generated table
+// populated behind `canonical_factory_routes_mrt()` yet -- no MRT program
+// has been compiled by the typed-slice generator (no admitted effect
+// declares more than one output today, verified by the identical checks
+// `validate_pass_output_abi`/`validate_pass_controls` now perform
+// generically for any N) -- so `authenticate_factory_route_mrt` correctly
+// refuses every lookup against the default empty table until that lands. A
+// caller (a test, or the eventual generated wiring) supplies its own
+// `routes` span exactly like `bind_factory_route` already allows.
+struct FactoryRouteDescriptorMrt {
+  std::string_view program_key;
+  std::string_view canonical_factory;
+  std::string_view emitted_factory;
+  std::string_view route_kind;
+  std::string_view source_sha256;
+  std::string_view typed_abi_sha256;
+  std::string_view define_contract;
+  std::string_view defines;
+  std::string_view sampler_abi_sha256;
+  std::string_view uniform_abi_sha256;
+  std::string_view output_abi_sha256;
+  std::string_view output_extent_sha256;
+  std::string_view compile_define_abi_sha256;
+  noisemaker::BoundKernelMrt (*bind)(const glsl::Bindings&) = nullptr;
+};
+
+[[nodiscard]] const FactoryRouteDescriptorMrt* find_factory_route_mrt(
+    std::span<const FactoryRouteDescriptorMrt> routes,
+    std::string_view program_key,
+    std::string_view canonical_factory) noexcept;
+
+// Always empty today; see the FactoryRouteDescriptorMrt comment above.
+[[nodiscard]] std::span<const FactoryRouteDescriptorMrt> canonical_factory_routes_mrt();
+
+[[nodiscard]] const FactoryRouteDescriptorMrt* authenticate_factory_route_mrt(
+    const EffectStep& step, const PassAdmission& admission,
+    std::span<const FactoryRouteDescriptorMrt> routes = {});
+
+[[nodiscard]] noisemaker::BoundKernelMrt bind_factory_route_mrt(
+    const EffectStep& step, const PassAdmission& admission,
+    const effects::EffectDefinition& definition, const glsl::Bindings& bindings,
+    std::span<const FactoryRouteDescriptorMrt> routes = {});
+
 struct BindingMaterializationContext {
   const ExecutionInputs* inputs = nullptr;
   // The owned snapshot definition for this step.  Compile-define bindings are

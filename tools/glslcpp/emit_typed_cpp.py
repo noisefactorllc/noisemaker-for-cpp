@@ -1029,6 +1029,7 @@ class _Emitter:
     cross_lane_assignment_profile: str | None = None
     uniforms: dict[int, object] = field(init=False)
     outputs: dict[int, object] = field(init=False)
+    output_slot_names: dict[int, str] = field(init=False, default_factory=dict)
     source_globals: dict[int, object] = field(init=False)
     source_global_dependencies: dict[int, tuple[int, ...]] = field(init=False)
     source_global_bounds: tuple[tuple[int, int, str, object], ...] = field(init=False)
@@ -4589,6 +4590,38 @@ class _Emitter:
                          if item.symbol.storage == "uniform"}
         self.outputs = {item.symbol.id: item.symbol for item in self.program.declarations
                         if item.symbol.storage == "output"}
+        # One declared `out` per MRT render target, in source declaration
+        # order -- which is also `layout(location=N)` order for every such
+        # declaration in the corpus (frontier-92.md 2.2: N is always the
+        # ascending index among a program's own `out` declarations; verified
+        # against the JS authority's drawBuffers pass metadata). A
+        # single-output program keeps resolving to the literal identifier
+        # "output" in name() below, so this arity check and the slot-name
+        # table below it only change anything once len(self.outputs) > 1.
+        if not self.outputs:
+            raise _error(self.program, self.program,
+                         "a fragment program must declare at least one output")
+        self.output_slot_names: dict[int, str] = {}
+        if len(self.outputs) > 1:
+            claimed: set[str] = set()
+            for slot_symbol_id, slot_symbol in self.outputs.items():
+                slot_name = _safe_identifier(slot_symbol.name, slot_symbol_id)
+                if slot_name in claimed:
+                    # This is the exact bug class frontier-92.md 2.2 found:
+                    # every output symbol used to resolve to the identical
+                    # C++ identifier "output", so only the last write to it
+                    # survived. Two distinct GLSL outputs colliding on one
+                    # emitted name would silently reintroduce that collapse
+                    # for at least one of them -- fail closed instead.
+                    raise _error(
+                        self.program, self.program,
+                        f"MRT output {slot_symbol.name!r} collides with "
+                        f"another output's emitted identifier {slot_name!r}")
+                claimed.add(slot_name)
+                self.output_slot_names[slot_symbol_id] = slot_name
+            if len(claimed) != len(self.outputs):
+                raise _error(self.program, self.program,
+                             "MRT output arity does not match its emitted slot count")
         self.source_globals = {item.symbol.id: item for item in self.program.declarations
                                if item.symbol.storage == "const"}
         self.source_global_dependencies = {}
@@ -6104,7 +6137,16 @@ class _Emitter:
             raise _error(self.program, expression, "identifier has no stable symbol identity")
         symbol = expression.symbol
         if symbol.id in self.outputs:
-            return "output"
+            # Exactly one declared output keeps the pre-MRT identifier
+            # "output" (the single `glsl::Vec4& output` parameter every
+            # existing single-output program's pixel()/main() signature
+            # already uses) so that emission is byte-identical for every
+            # currently-admitted program. N>1 resolves each output to its
+            # own slot-name instead of the shared "output" identifier that
+            # let every write but the last be silently discarded.
+            if len(self.outputs) == 1:
+                return "output"
+            return self.output_slot_names[symbol.id]
         if symbol.name == "gl_FragCoord":
             return "context.frag_coord"
         remap = self.authorized_remap_proof
@@ -11076,23 +11118,23 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
       bindings.get<glsl::Vec2>("tileOffset"),
       bindings.get<glsl::Vec2>("fullResolution"),
       static_cast<double>(noisemaker::f32(bindings.get_number("time"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("cReal"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("cImag"))),
+      bindings.get_number("cReal"),
+      bindings.get_number("cImag"),
       bindings.get<std::int32_t>("poi"),
       bindings.get<std::int32_t>("outputMode"),
-      static_cast<double>(noisemaker::f32(bindings.get_number("centerX"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("centerY"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("rotation"))),
+      bindings.get_number("centerX"),
+      bindings.get_number("centerY"),
+      bindings.get_number("rotation"),
       bindings.get<std::int32_t>("iterations"),
-      static_cast<double>(noisemaker::f32(bindings.get_number("stripeFreq"))),
+      bindings.get_number("stripeFreq"),
       bindings.get<std::int32_t>("trapShape"),
-      static_cast<double>(noisemaker::f32(bindings.get_number("lightAngle"))),
+      bindings.get_number("lightAngle"),
       bindings.get<std::int32_t>("cPath"),
-      static_cast<double>(noisemaker::f32(bindings.get_number("cSpeed"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("cRadius"))),
+      bindings.get_number("cSpeed"),
+      bindings.get_number("cRadius"),
       bindings.get<bool>("invert"),
-      static_cast<double>(noisemaker::f32(bindings.get_number("zoomSpeed"))),
-      static_cast<double>(noisemaker::f32(bindings.get_number("zoomDepth"))));
+      bindings.get_number("zoomSpeed"),
+      bindings.get_number("zoomDepth"));
   (void)bindings;
   return BoundKernel(state, &{namespace}::pixel);
 }}
@@ -11362,11 +11404,42 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             if function.name != "main": lines.extend([""] + self.function(function))
         main = next((function for function in self.program.functions if function.name == "main"), None)
         if main is None: raise _error(self.program, self.program, "main function is missing")
+        is_mrt = len(self.outputs) > 1
+        if is_mrt and any(bool(value) for value in (
+                remap, contract, array_contract,
+                self.authorized_median_frontend_proof,
+                self.authorized_const_global_table_contract,
+                self.authorized_fractal_mode_contract,
+                self.authorized_historic_palette_proof,
+                self.authorized_palette_frontend_proof,
+                self.authorized_struct_declaration,
+                self.authorized_struct_materialization,
+                self.authorized_testpattern_proof,
+                self.runtime_loop_contract,
+                self.program.fixed_affine_centers13_proof,
+                self.program.fixed_array_in_parameter_proof)):
+            # None of these hand-authored single-output carrier constructs
+            # (remap/median/mutable-frame/palette/testpattern/runtime-loop/
+            # fixed-array proofs) have been reasoned about in combination
+            # with more than one declared output -- every real MRT program
+            # (Family D's volume/render kernels, Family E's agent kernels)
+            # is a plain fragment kernel with none of them, per
+            # phase2-architecture.md 3.3/3.4. Fail closed rather than emit an
+            # unproven interaction.
+            raise _error(self.program, self.program,
+                         "MRT is not yet supported combined with this typed capability")
         self.locals = {}
         self.current_function_name = "main"
         self.current_function_signature_id = main.signature.id
-        lines.extend(["", "void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {",
-                      "  const auto& state = static_cast<const State&>(kernel_base);", "  (void)state;", "  (void)context;"])
+        if is_mrt:
+            lines.extend(["", "void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4* outputs) noexcept {",
+                          "  const auto& state = static_cast<const State&>(kernel_base);", "  (void)state;", "  (void)context;"])
+            lines.extend(
+                f"  glsl::Vec4& {self.output_slot_names[slot_id]} = outputs[{slot}];"
+                for slot, slot_id in enumerate(self.outputs))
+        else:
+            lines.extend(["", "void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {",
+                          "  const auto& state = static_cast<const State&>(kernel_base);", "  (void)state;", "  (void)context;"])
         if self.authorized_median_frontend_proof is not None:
             lines.append("  [[maybe_unused]] std::int32_t RADIUS = state.median_radius;")
         if contract is not None:
@@ -11389,7 +11462,8 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         self.current_function_name = None
         self.current_function_signature_id = None
         lines.extend(["}", "}  // namespace " + namespace, "",
-                      f"BoundKernel {factory}(const glsl::Bindings& bindings) {{"])
+                      f"{'BoundKernelMrt' if is_mrt else 'BoundKernel'} {factory}"
+                      "(const glsl::Bindings& bindings) {"])
         contract = self.runtime_loop_contract
         if contract is not None:
             if self.runtime_guard_emitted:
@@ -11524,14 +11598,25 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         if self.authorized_median_frontend_proof is not None:
             arguments.append(str(self.authorized_median_frontend_proof.radius))
         uses_derivatives_arg = ", true" if self.program.resources.uses_derivatives else ""
-        return_expression = "  return BoundKernel(state, &" + namespace + "::pixel"
-        if contract is not None and contract.kind == "texture-size-lanes":
-            assert contract.exact_output_extent == (1, 1)
-            return_expression += (
-                ', false, PassContract{ExactOutputExtent{1U, 1U, '
-                f'"{self.program.key} output dimensions must be 1x1"}}}})')
+        if is_mrt:
+            if self.program.resources.uses_derivatives:
+                # No admitted MRT program uses dFdx/dFdy/fwidth (verified
+                # against every pinned upstream MRT source); BoundKernelMrt
+                # has no derivative-quad replay wrapper, so fail closed
+                # rather than silently skip the approximation.
+                raise _error(self.program, self.program,
+                             "MRT does not yet support derivative approximation")
+            return_expression = ("  return BoundKernelMrt(state, &" + namespace +
+                                 f"::pixel, {len(self.outputs)}U)")
         else:
-            return_expression += uses_derivatives_arg + ")"
+            return_expression = "  return BoundKernel(state, &" + namespace + "::pixel"
+            if contract is not None and contract.kind == "texture-size-lanes":
+                assert contract.exact_output_extent == (1, 1)
+                return_expression += (
+                    ', false, PassContract{ExactOutputExtent{1U, 1U, '
+                    f'"{self.program.key} output dimensions must be 1x1"}}}})')
+            else:
+                return_expression += uses_derivatives_arg + ")"
         lines.extend([f"  const auto state = std::make_shared<{namespace}::State>(" + ", ".join(arguments) + ");",
                       "  (void)bindings;", return_expression + ";", "}"])
         return lines

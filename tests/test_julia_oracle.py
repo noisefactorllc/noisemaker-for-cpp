@@ -72,7 +72,7 @@ class JuliaOracleTests(unittest.TestCase):
         self.assertEqual("synth/julia:julia", doc["program_key"])
         self.assertEqual("juliaFactory", doc["factory"]["name"])
         self.assertTrue(doc["factory"]["adapter_own_key"])
-        self.assertEqual(22, len(doc["provenance"]["cpu_snapshot"]["import_closure"]))
+        self.assertEqual(23, len(doc["provenance"]["cpu_snapshot"]["import_closure"]))
         self.assertEqual(18, len(doc["render_cases"]))
         self.assertEqual(25, doc["mutation_anchor_cardinality"]["total"])
         self.assertEqual(25, len(doc["mutation_ledger"]))

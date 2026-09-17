@@ -11,8 +11,8 @@ This checked report is generated from the authenticated JSON document below. It 
 - Source: tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl; SHA-256: 825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0.
 - Factory source: src/effects/adapters/julia.js; SHA-256: 0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5.
 - Canonical factory: juliaFactory; text SHA-256: ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6; public/direct identity is canonical; adapter owns the key.
-- Corpus revision: a024dc3a960cc44af454abc7aebce50456c194e6; upstream revision: 117a236679d1db3ab8f0e278230ece277b57564c.
-- Import closure: 22 files, each realpath-confined and hash-pinned; checked data stores only the stable placeholder <immutable-cpu-snapshot-root>.
+- Corpus revision: a024dc3a960cc44af454abc7aebce50456c194e6; upstream revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5.
+- Import closure: 23 files, each realpath-confined and hash-pinned; checked data stores only the stable placeholder <immutable-cpu-snapshot-root>.
 - Authority contract: --cpu-root, NOISEMAKER_CPU_ROOT, and NOISEMAKER_FOR_CPU were the same non-symlink external pinned root; live checkout and symlink roots are rejected.
 
 ## Complete authenticated case, mutation, relation, and diagnostic records
@@ -27,7 +27,7 @@ The following canonical JSON record is emitted directly from the generator docum
   "effect_key": "synth/julia",
   "runtime_key": "synth/julia:julia",
   "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
     "name": "juliaFactory",
     "text_sha256": "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6",
@@ -241,7 +241,7 @@ The following canonical JSON record is emitted directly from the generator docum
         },
         {
           "relative_path": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path": "src/effects/adapters/julia.js",
@@ -254,6 +254,10 @@ The following canonical JSON record is emitted directly from the generator docum
         {
           "relative_path": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path": "src/effects/adapters/snow.js",
@@ -273,7 +277,7 @@ The following canonical JSON record is emitted directly from the generator docum
         },
         {
           "relative_path": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path": "src/effects/generated/kernels.js",
@@ -281,7 +285,7 @@ The following canonical JSON record is emitted directly from the generator docum
         },
         {
           "relative_path": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path": "src/effects/registry.js",
@@ -303,11 +307,11 @@ The following canonical JSON record is emitted directly from the generator docum
     },
     "generator": {
       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
-      "sha256": "4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017"
+      "sha256": "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
-      "sha256": "d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998"
+      "sha256": "f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7"
     }
   },
   "render_cases": [
@@ -2717,12 +2721,12 @@ The following canonical JSON record is emitted directly from the generator docum
       },
       "expected": {
         "f32_words_le": [
-          "0x3f56a8ef",
-          "0x3f56a8ef",
-          "0x3f56a8ef",
+          "0x3f56a8fe",
+          "0x3f56a8fe",
+          "0x3f56a8fe",
           "0x3f800000"
         ],
-        "f32_sha256": "e59c766c5f4c4faface8b7b5e30bafb20c6d10c89c12aba22784010e24fd1b67",
+        "f32_sha256": "d184544ae02c4932a200f8870074d749fdc44c0515b811d5902f9e58772b1a6a",
         "rgba8_bytes": [
           214,
           214,
@@ -4579,7 +4583,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -4669,7 +4673,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "15a47a2e97e32935c2851c33c16a79f73bfffcf07570f8b571e865b756f82ae2",
+      "result_sha256": "1db6a66d0efbb1a11c280afb67b0f8c8976987616109432ca4eca74c0d94ff48",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -4836,7 +4840,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -4918,7 +4922,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "6df249c1c71abb6262030b8425d4d37628c629dc7fc44ff38aa7f6a6b5f3bad7",
+      "result_sha256": "91cccd55a3b39cf320db9269346dbb273ee4c67511a17409e928b3893313c134",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -5085,7 +5089,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -5167,7 +5171,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "77da401b37b415f8286e8599265f3035a8d9ded0091b0c1e1cf0348121270afa",
+      "result_sha256": "e422acc4e7347b0d8dedb3511a31c46fff3c6bfa73bea0c586d59d4819d82e85",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -5334,7 +5338,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -5416,7 +5420,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "3251bfa71d38c3b48b52ec497f7ef4c4bf1335ba79cfc880058ffa1cb41de247",
+      "result_sha256": "5edbffc3a338088fb89a8b25da0770585366af51bded682d8b320df4ec1aab64",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -5576,7 +5580,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "float32_witness": {
             "index": 0,
             "expected": "0x00000000",
-            "actual": "0x3f56a8ef"
+            "actual": "0x3f56a8fe"
           },
           "rgba8_witness": {
             "index": 0,
@@ -5677,7 +5681,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "f50656a389d4bbd9370f9d19a61822df479dfe125386d8b083e34cdd2b90bc1d",
+      "result_sha256": "e8ccccf8c1e39c5241054183fc40f9eb0e007106a78986ddbc66ed5c3dc35ebf",
       "witness_cases": [
         "manual-smooth",
         "manual-normal",
@@ -6809,7 +6813,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -6883,7 +6887,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "rgba8_witness": null
         }
       ],
-      "result_sha256": "52e45382437e15a0004b2c25fea5b1dcbb522ec8f08c15ef10be2dfd85fc5997",
+      "result_sha256": "6900acfd71fd2669ee2adcfcf50cb76443ccb031eaa863ba94021f7d89a02eb6",
       "witness_cases": [
         "poi-trap",
         "iterations-clamp-1001",
@@ -7050,8 +7054,8 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
-            "actual": "0x3f7e8396"
+            "expected": "0x3f56a8fe",
+            "actual": "0x3f7e813b"
           },
           "rgba8_witness": {
             "index": 0,
@@ -7132,7 +7136,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "e99ceaec06045d872d591a097cac99c40fd34aab391271c90bb029d1456bbdc6",
+      "result_sha256": "9fd5206105b9ee9a05b62819fc8407f4bfe9c1f9fd4173803b01ebff7b9c506a",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -7288,7 +7292,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "float32_witness": {
             "index": 0,
             "expected": "0x00000000",
-            "actual": "0x3ef0a5ce"
+            "actual": "0x3ef0a5d0"
           },
           "rgba8_witness": {
             "index": 0,
@@ -7303,8 +7307,8 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
-            "actual": "0x3ef0a5ce"
+            "expected": "0x3f56a8fe",
+            "actual": "0x3ef0a5d0"
           },
           "rgba8_witness": {
             "index": 0,
@@ -7385,7 +7389,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "f7af78218f8f7d1f4b3e71f2970da9c6bbe5d1487fb2a716dce795a9ec5924f3",
+      "result_sha256": "bfcbaa76bca8e92ac740f620ca0a715bf29c62111f47528c06d036e5f1bc932d",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -7565,7 +7569,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "float32_witness": {
             "index": 0,
             "expected": "0x00000000",
-            "actual": "0x3e19f5f7"
+            "actual": "0x3e19f5ef"
           },
           "rgba8_witness": {
             "index": 0,
@@ -7580,8 +7584,8 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
-            "actual": "0x3e19f5f7"
+            "expected": "0x3f56a8fe",
+            "actual": "0x3e19f5ef"
           },
           "rgba8_witness": {
             "index": 0,
@@ -7678,7 +7682,7 @@ The following canonical JSON record is emitted directly from the generator docum
           }
         }
       ],
-      "result_sha256": "b7e2fad5e0b22d15dac9c45cb2e259aca69928363111918be8aefb5348634e18",
+      "result_sha256": "f5cc840cbf30f4dc15ab34594d7edc11d4a43080ca2d51bdee6312f211d882f7",
       "witness_cases": [
         "manual-smooth",
         "manual-distance-tile",
@@ -7805,7 +7809,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -7871,7 +7875,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "rgba8_witness": null
         }
       ],
-      "result_sha256": "8d2097f509bb15eb75a1f3d7e4c184ef8a55d303c1c80585eec4cec8b2fcb796",
+      "result_sha256": "e972d5f9fede29ee7c7c68f93dbc820b0a3f40f8c0da3f0e0306dafd4d12e4ca",
       "witness_cases": [
         "iterations-clamp-1001"
       ],
@@ -8022,7 +8026,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "changed_rgba8_bytes": 3,
           "float32_witness": {
             "index": 0,
-            "expected": "0x3f56a8ef",
+            "expected": "0x3f56a8fe",
             "actual": "0x00000000"
           },
           "rgba8_witness": {
@@ -8096,7 +8100,7 @@ The following canonical JSON record is emitted directly from the generator docum
           "rgba8_witness": null
         }
       ],
-      "result_sha256": "ea095a58e3b6d5df72611ca9dfbd20f602979362bf390b78da3cc5fb8b6c82a2",
+      "result_sha256": "467d825b99705ce8a3182f6c72c0f0e8b2c743ce3bfada54cbfd5662f69eeeda",
       "witness_cases": [
         "manual-distance-tile",
         "manual-stripe",
@@ -9777,9 +9781,9 @@ The following canonical JSON record is emitted directly from the generator docum
       },
       "canonical_1001": {
         "f32_words_le": [
-          "0x3f56a8ef",
-          "0x3f56a8ef",
-          "0x3f56a8ef",
+          "0x3f56a8fe",
+          "0x3f56a8fe",
+          "0x3f56a8fe",
           "0x3f800000"
         ],
         "rgba8_bytes": [
@@ -9793,7 +9797,7 @@ The following canonical JSON record is emitted directly from the generator docum
       "canonical_1000_vs_1001_identical_rgba8": false,
       "mutant_candidate_first_float32_witness": {
         "index": 0,
-        "expected": "0x3f56a8ef",
+        "expected": "0x3f56a8fe",
         "actual": "0x00000000"
       },
       "mutant_candidate_first_rgba8_witness": {
@@ -10695,9 +10699,9 @@ The following canonical JSON record is emitted directly from the generator docum
 
 ## Reviewed witness summary
 
-- Package cardinality: cases=18, mutations=25, diagnostics=1; binding names=21; closure files=22.
+- Package cardinality: cases=18, mutations=25, diagnostics=1; binding names=21; closure files=23.
 - Clamp observation iterations-clamp-1001-vs-1000: canonical 1000 loop entries=1000; canonical 1001=1000; no-clamp mutant=1001; instrumented canonical 1000/1001/mutant pixel identity=true/true/true. Canonical 1000-vs-1001 Float32/RGBA8 equality is false/false; this is recorded authority output, not normalized.
-- Clamp source anchor/replacement: for (let index = 0; index < Math.min(maxIterations, 1000); index += 1) { -> maxIterations; anchor/instrumentation/mutant hashes=fdc2d5bff18e5d7cce09258a645aa8276d2d8370d3d10013df9bf613059f44ba/764cabab720a2754486049b80e36e0096825b32eeeaec98734304cf93f1a33f8/a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18; mutant changed lanes/bytes=3/3; first witnesses={"index":0,"expected":"0x3f56a8ef","actual":"0x00000000"} / {"index":0,"expected":214,"actual":0}.
+- Clamp source anchor/replacement: for (let index = 0; index < Math.min(maxIterations, 1000); index += 1) { -> maxIterations; anchor/instrumentation/mutant hashes=fdc2d5bff18e5d7cce09258a645aa8276d2d8370d3d10013df9bf613059f44ba/764cabab720a2754486049b80e36e0096825b32eeeaec98734304cf93f1a33f8/a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18; mutant changed lanes/bytes=3/3; first witnesses={"index":0,"expected":"0x3f56a8fe","actual":"0x00000000"} / {"index":0,"expected":214,"actual":0}.
 - Result-trap-number source span=julia.js:158:7-47; anchor=trapMin = Math.min(trapMin, trapDistance); replacement=trapMin = F32(Math.min(trapMin, trapDistance)); source/anchor/replacement/mutant hashes=0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5/0705f06f3f6101e0f7990e839bd1c4aef343ee08dc7bafccd654669843890eb3/68ec4220d8cf63fd98aa5a0c94a2ed59c776f3d5081c671ff1bc89f20eb1f358/abd2a68d17ebff2e2390ab0645e60f7a582dc1f42690228db9e3ae286939eda5; occurrence count=1.
 - Result-trap-number fixed selection: poi-trap-first, then trap-search-000000 through trap-search-199999; tested=152236; selected=trap-search-152217; changed lanes/bytes=3/3; witnesses={"index":0,"expected":"0x3f3d3d3d","actual":"0x3f3d3d3e"} / {"index":0,"expected":188,"actual":189}.
 - Period diagnostic period-convergence: anchor=else if (Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10) {; replacement=else if (Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10) {
@@ -10728,7 +10732,7 @@ The Task34 brief records the required pre-expansion baseline as the 8-case/23-mu
 - Owned authored/tool files: docs/port-engineering/julia-parity/julia_oracle_generator.mjs; tools/glslcpp/generate_julia_native_oracle_include.py; tests/test_julia_oracle.py.
 - Owned generated artifacts and sidecars: docs/port-engineering/julia-parity/julia-oracles.json(.sha256); docs/port-engineering/julia-parity/julia-oracle-report.md(.sha256); tests/oracles/julia_expected.inc(.sha256).
 - No frontend, emitter, generated typed slice/catalog/runtime, corpus metadata, authority snapshot, unrelated tests/docs, build outputs, or Git files were changed.
-- JSON SHA-256: 4c752915ca441b197774b6f1d746068c88087fed028df6b5f42f2572d416a318.
+- JSON SHA-256: b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf.
 
 ## Remaining concerns
 
@@ -10742,18 +10746,18 @@ This table supersedes the earlier abbreviated audit. It is the complete Task34-o
 
 | Task34-owned relative path | Frozen baseline SHA-256 | Current SHA-256 or generation marker | Disposition |
 | --- | --- | --- | --- |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017 | changed |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | b103da7c6cec01e6e34d6cfa0c01f18c4656a5019ebcb7d35490d9ec8259c37c | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | 4c752915ca441b197774b6f1d746068c88087fed028df6b5f42f2572d416a318 | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 7310fb9cbab2269cddb0a3ba1defe284aa7b32186cd677155efa1fa4c756cb13 | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 67b3200eeba8ba5bb37863152f24459990d59d425563001fae485210bef87a59 | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 22365b6f154e89dd946c875ec2db868ae025efac0c693b4a7d6d8fe2f0272356 | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md | c3813c7024c861fcba27809c66997f97947bcd621842c4ef396a4f827d25bccf | generated-by-this-report | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md.sha256 | c3c3da4de0568075bbc18dadb9cbc12e007b7d8d18c9ef9a888ee9c848f51479 | generated-by-this-report | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998 | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | b89d544cac8bdb33a465359afabe670a57c5db377fdb063986aecf811baa190c | new |
-| tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | 8fa6d370657ae859294fa470e01646f4077a86054831749f1b8d3f1f9726f80e | changed |
-| tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 2bd1d4356779c4dd779f0e545472f5817df969bd51a157143c0cfaaea318fce4 | changed |
+| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7 | changed |
+| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | e0626dd7cb9b9e399892705aa9e660888acd05a4a773f1fcf126118fa0c19613 | new |
+| tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | f2750a281665d2c55375502325820b861e4d9efe681687ec072962c938e36776 | changed |
+| tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 24249a39f39046768c762d56fe772e9add131f59b1c66ca5486faabf382cb93d | changed |
 | tests/test_generated_kernels.cpp | d2210b840fa6ffe3b07b73330f7a336d01683c163e5887f276c254de40beb685 | e375c33914a968634ab7276c1f1146031c57ea182ae63c269bad72e81559649b | changed (recorded at Task34; cross-lane file, not re-read) |
-| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 5bc6d65fdeccbb53bd0823f69a44432e9e5fcbf8ce51fb76a7c097854b785b54 | changed |
+| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 39a2c1cd9fd8f6c8a8acb6663f462daaabdfecf0c046d4c9611e25a7e90d7b87 | changed |
 
 ## Fix3 observed seven-test RED reconstruction
 

@@ -166,6 +166,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_glsl_runtime.cpp
   tests/test_kernel.cpp
   tests/test_pass_runner.cpp
+  tests/test_mrt_kernel_and_pass_runner.cpp
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
   tests/test_scatter_wormhole.cpp
