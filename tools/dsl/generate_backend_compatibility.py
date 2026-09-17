@@ -128,6 +128,16 @@ CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
     for program_key in CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
     for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
+# Mirrors tools/glslcpp/emit_typed_cpp.py's
+# `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS` exactly, for the same reason as
+# the classicNoisedeck list above, one vec width down and one program
+# outside classicNoisedeck: `synth/media:mediaInput`'s `imageSize`. Two
+# independent generators (this one and emit_typed_cpp.py) each compute a
+# uniform's cpp_type; they must agree, so this list is deliberately kept
+# identical to, not derived from, the other.
+DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = frozenset({
+    ("synth/media:mediaInput", "imageSize"),
+})
 SUPPORTED_DRAW_MODES = frozenset({"fragment", "triangles"})
 
 
@@ -524,6 +534,8 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
         cpp_type = (
             "glsl::DVec3"
             if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS
+            else "glsl::DVec2"
+            if (program_key, name) in DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS
             else _cpp_type(typ, name, source, program_key))
         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
                 "source_name": source_name}

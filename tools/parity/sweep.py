@@ -53,15 +53,17 @@ coverage):
   default in every variant. Nothing in the catalog gives this tool a safe
   domain to sample for them, and guessing one (e.g. a huge ``stateSize``) risks
   turning a parity question into a resource-exhaustion question.
-- Only the JS lane can accept an external texture (via the already-supported
-  ``record.seedSurfaces`` -> ``api.Surface.fromRgba8`` path in
-  ``run_cpu_case.mjs``): ``filter/text`` and ``synth/media`` get a small
-  synthetic checkerboard fed to the JS runner. Neither
-  ``noisemaker-dsl-cpu-case`` nor ``noisemaker-render`` has ANY external-image
-  input (no CLI flag, no wiring) -- adding real image decoding and texture
-  wiring to the C++ engine is new engine capability, not a harness need, so
-  this tool does not add it; the C++ side is expected to keep refusing these
-  two (correctly reported as ``cpp_refused_only``, not ``both_refused``).
+- ``filter/text`` and ``synth/media`` (the two ``externalTexture``-declared
+  effects) get a small synthetic checkerboard fed to BOTH lanes from the
+  exact same bytes: the JS runner via the already-supported
+  ``record.externalTextures`` -> ``api.Surface.fromRgba8`` path in
+  ``run_cpu_case.mjs``, and the C++ driver via ``--external-texture
+  NAME=WxH:HEX`` (``tools/benchmark/run_cpp_case.cpp``, wired through
+  ``record_flags`` in ``tools/benchmark/corpus_lane.py``) -- one JSON field,
+  one hex string, no second encoding anywhere in the path. Both drivers
+  decode it with the same construction (``Surface.fromRgba8`` /
+  ``Surface::from_rgba8``), so this is a real byte-exact comparison, not a
+  reclassification of an expected refusal.
 - A chain variant exercises the swept effect plus two deterministically
   chosen helper effects (for the two roles it doesn't itself occupy). A
   divergence or refusal in a chain is reported against the chain (all three
@@ -424,15 +426,12 @@ def sanitize(effect_id: str) -> str:
 
 
 # A small deterministic checkerboard fed to effects declaring
-# ``externalTexture`` (filter/text, synth/media). Neither driver accepts a
-# real image file (no CLI flag exists on either side for one -- see the
-# module docstring); this uses the ALREADY-SUPPORTED `record.seedSurfaces`
-# path in run_cpu_case.mjs (api.Surface.fromRgba8) so the JS lane renders
-# instead of refusing. The C++ driver has no equivalent input at all, so it
-# still refuses -- correctly reclassifying these two effects from
-# both_refused (misleadingly implies neither lane can do this) to
-# cpp_refused_only (the true shape: JS can given an image, C++ cannot accept
-# one at all).
+# ``externalTexture`` (filter/text, synth/media) -- identically, to both
+# lanes: the JS runner via ``record.externalTextures`` ->
+# ``api.Surface.fromRgba8`` in run_cpu_case.mjs, the C++ driver via
+# ``--external-texture NAME=WxH:HEX`` (record_flags in corpus_lane.py ->
+# run_cpp_case.cpp). Neither lane refuses this case any more; it is a real
+# byte-exact comparison like every other admitted effect.
 _EXTERNAL_TEXTURE_SIZE = 4
 
 
@@ -745,15 +744,14 @@ def run_job(job_dict: dict) -> dict:
             "sourceSha256": source_sha256, "options": options, "plan": None,
         }
         if job.external_texture:
-            # JS-only: run_cpp_case.cpp has no external-texture input at all
-            # (no CLI flag, no wiring), so the C++ side still refuses. This
-            # only changes the JS side from a matching refusal to a real
-            # render, which reclassifies the case as cpp_refused_only
-            # (accurate: JS can do this given an image, C++ cannot accept
-            # one) instead of both_refused (implies neither can). Distinct
-            # from `seedSurfaces` (named oN pre-seeding): externalTexture-
-            # declared effects read `renderOptions.externalTextures` instead
-            # (see run_cpu_case.mjs).
+            # Fed to BOTH lanes from this one field: the JS runner via
+            # run_cpu_case.mjs's `record.externalTextures` ->
+            # `api.Surface.fromRgba8`, and the C++ driver via
+            # `record_flags`' `--external-texture NAME=WxH:HEX` (below, at
+            # `cpp_cmd`) -> `run_cpp_case.cpp`'s `Surface::from_rgba8`.
+            # Distinct from `seedSurfaces` (named oN pre-seeding):
+            # externalTexture-declared effects read
+            # `renderOptions.externalTextures` instead (see run_cpu_case.mjs).
             record["externalTextures"] = [{
                 "name": job.external_texture, "width": _EXTERNAL_TEXTURE_SIZE,
                 "height": _EXTERNAL_TEXTURE_SIZE, "rgba8": synthetic_texture_rgba8_hex(),

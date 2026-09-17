@@ -1299,7 +1299,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 }
 
 [[nodiscard]] std::size_t vector_width(std::string_view cpp_type) noexcept {
-  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2") return 2U;
+  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2" || cpp_type == "glsl::DVec2") return 2U;
   if (cpp_type == "glsl::Vec3" || cpp_type == "glsl::IVec3" || cpp_type == "glsl::DVec3") return 3U;
   if (cpp_type == "glsl::Vec4" || cpp_type == "glsl::IVec4" || cpp_type == "glsl::DVec4") return 4U;
   return 0U;
@@ -1315,8 +1315,16 @@ void validate_uniform_abi_shape(const EffectStep& step,
   // paletteAmp/paletteFreq/paletteOffset/palettePhase on exactly five
   // programs declares this cpp_type instead of the ordinary "glsl::Vec3",
   // and only because their generated kernel actually reads a
-  // `glsl::DVec3`-typed uniform there.
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 12>
+  // `glsl::DVec3`-typed uniform there. "vec2"->"glsl::DVec2" is the same
+  // carrier shape for exactly one uniform on one program --
+  // `synth/media:mediaInput`'s `imageSize` (tools/glslcpp/emit_typed_cpp.py's
+  // `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`): the authority's
+  // createCanonicalBindings() spreads `...uniforms` for an ordinary
+  // effect-parameter vec2 with no Math.fround anywhere on the path, so a
+  // `glsl::Vec2` (float lanes) ABI narrows it to float32 at bind time, one
+  // rounding earlier than the authority ever does -- measurably not
+  // byte-exact (rare, boundary-triggered) against it.
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 13>
       kTypes = {{{"float", "float"},
                  // A GLSL-declared scalar `float` uniform whose value the JS
                  // CPU authority never rounds to float32 (an ordinary DSL
@@ -1335,6 +1343,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
                  {"uint", "std::uint32_t"},
                  {"bool", "bool"},
                  {"vec2", "glsl::Vec2"},
+                 {"vec2", "glsl::DVec2"},
                  {"vec3", "glsl::Vec3"},
                  {"vec3", "glsl::DVec3"},
                  {"vec4", "glsl::Vec4"},
@@ -1491,12 +1500,13 @@ void validate_uniform_abi_shape(const EffectStep& step,
     // authority's semantic $bindings are plain, unrounded JS doubles; a
     // float32 lane here would silently reintroduce exactly the divergence
     // that ruled out typed generation for this program (see remap.cpp).
-    if (cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
+    if (cpp_type == "glsl::DVec2" || cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
       std::array<double, 4> d{};
       for (std::size_t index = 0; index < width; ++index) {
         if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
         d[index] = value.array[index].number;
       }
+      if (cpp_type == "glsl::DVec2") return glsl::DVec2(d[0], d[1]);
       if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
       return glsl::DVec4(d[0], d[1], d[2], d[3]);
     }
