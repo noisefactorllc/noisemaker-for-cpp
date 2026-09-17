@@ -35,8 +35,22 @@
 // else — branch structure, operator order, constant tables — is preserved
 // exactly, because THAT is what determines the exact output bits.
 //
-// Compile this translation unit with -ffp-contract=fast (scoped in
-// CMakeLists.txt to just this one file). See fdlibm.hpp for why.
+// FMA / fused-multiply-add: this TU compiles under the project's ordinary
+// -ffp-contract=off (no per-source override -- see the CMakeLists.txt
+// comment near noisemaker-cpu's target_compile_options for why the old
+// per-source override was removed). V8's own arm64 binary nonetheless
+// contains genuine hardware fused-multiply-add instructions at specific
+// sites in these functions (arm64 NEON always has hardware FMA, and V8's
+// build enables fusion); reproducing V8 bit-for-bit requires reproducing
+// that fusion at exactly those sites, no more and no fewer. Every such
+// site below calls the `fma_()` helper just below instead of writing plain
+// `a*b+c` and relying on the compiler to contract it. See that helper's
+// comment for why ambient contraction is not good enough (it depends on
+// the optimizer, which is absent at -O0/Debug) and for the
+// aarch64-vs-x86-64 architecture split. Each call site carries its own
+// comment citing the exact V8 disassembly evidence (real
+// `libnode.147.dylib`, V8 14.6.202.33-node.19, arm64) that the
+// corresponding operation is fused in V8's own binary.
 
 #include "noisemaker/fdlibm.hpp"
 
@@ -80,6 +94,56 @@ inline double insert_words(std::uint32_t hi, std::uint32_t lo) {
   bits |= static_cast<std::uint64_t>(lo);
   return std::bit_cast<double>(bits);
 }
+
+// ---- fma_(a, b, c): round(a*b + c), fused or not, chosen at COMPILE TIME
+//      per architecture -- not left to the optimizer. ----
+//
+// The problem this solves: contracting a source-level `a*b+c` into one
+// fused instruction is an OPTIMIZATION, performed by LLVM's InstCombine/
+// DAGCombiner passes even when `-ffp-contract=fast` is the active flag.
+// Those passes do not run at -O0. Measured directly (see
+// docs/port-engineering/v8-math/v8-math-report.md): `clang++ -O0
+// -ffp-contract=fast` emits separate `fmul`+`fadd` on arm64 for a bare
+// `a*b+c`, while `-O2` with the identical flag emits one `fmadd`. A Debug
+// build (-O0) of the old ambient-contraction design therefore silently
+// diverged from V8 on arm64 at every site that needed fusion -- the exact
+// bug this helper exists to close. `std::fma()`, by contrast, is defined
+// by the standard to always produce the fully-fused, singly-rounded
+// result, and clang lowers it to a single hardware `fmadd`/`fmsub`/
+// `fnmadd`/`fnmsub` on arm64 regardless of optimization level (confirmed:
+// identical `fmadd d0, d0, d1, d2` at both -O0 and -O2). So the fusion
+// decision here is made explicitly, per call site, rather than hoped for
+// from the optimizer.
+//
+// The architecture split is equally load-bearing, not portability
+// paranoia. V8's own x86-64 binary is built at the ordinary (no -mfma)
+// baseline this project also targets (confirmed by grep: no -march/-mfma
+// anywhere in CMakeLists.txt, and CI's ubuntu-latest native job configures
+// none either) -- with no hardware FMA instruction, V8's x86-64 build
+// simply never fuses these expressions; plain `a*b+c` under
+// -ffp-contract=off matches it exactly, at every optimization level
+// (verified: cross-compiled `-arch x86_64`, both -O0 and -O2, plain
+// mul+add either way -- no fusion happens on that target regardless of
+// the contract flag, because there is no hardware instruction for the
+// backend to select). Calling `std::fma()` UNCONDITIONALLY here would be
+// wrong on that architecture: `std::fma()` is defined to always produce
+// the correctly-rounded fused result even with no hardware support, by
+// calling a *software* emulation (confirmed: `callq _fma` in this
+// project's own x86-64 -O0 and -O2 disassembly of a bare `std::fma()`
+// call) -- forcing fusion V8's x86-64 binary does not perform. This is
+// the exact bug Section 6a of the v8-math report documents (an earlier,
+// rejected fix used an unconditional `std::fma()` for one of `log`'s
+// sites and regressed x86-64 to 180/2,000,000 divergent). So: fuse on
+// aarch64, stay plain everywhere else.
+#if defined(__aarch64__)
+inline double fma_(double a, double b, double c) noexcept {
+  return std::fma(a, b, c);
+}
+#else
+inline double fma_(double a, double b, double c) noexcept {
+  return (a * b) + c;
+}
+#endif
 
 // ============================================================
 // expm1(x): e^x - 1, accurate near x == 0.
@@ -138,10 +202,15 @@ double fd_expm1(double x) {
         k = -1;
       }
     } else {
-      k = static_cast<std::int32_t>(invln2 * x +
-                                     ((xsb == 0) ? 0.5 : -0.5));
+      // V8 arm64 (libnode.147.dylib, base::ieee754::expm1+0xbc/+0xd4):
+      // both `invln2*x+half` and `x-t*ln2_hi` compile to a single
+      // `fmadd`. The `t*ln2_hi is exact here` comment is true but
+      // irrelevant to the compiler, which fuses on syntax, not on
+      // whether rounding would matter -- V8's binary fuses it too.
+      k = static_cast<std::int32_t>(
+          fma_(invln2, x, (xsb == 0) ? 0.5 : -0.5));
       t = k;
-      hi = x - t * ln2_hi; /* t*ln2_hi is exact here */
+      hi = fma_(-t, ln2_hi, x); /* t*ln2_hi is exact here */
       lo = t * ln2_lo;
     }
     x = hi - lo;
@@ -156,22 +225,34 @@ double fd_expm1(double x) {
   /* x is now in primary range */
   hfx = 0.5 * x;
   hxs = x * hfx;
-  r1 = one + hxs * (Q1 + hxs * (Q2 + hxs * (Q3 + hxs * (Q4 + hxs * Q5))));
-  t = 3.0 - r1 * hfx;
-  e = hxs * ((r1 - t) / (6.0 - x * t));
+  // V8 arm64 (expm1+0x170..+0x19c): the entire Horner chain for r1 is
+  // five chained `fmadd`s -- every `coeff + hxs*(...)` step fuses,
+  // including the outermost `one + hxs*(...)`.
+  r1 = fma_(hxs, fma_(hxs, fma_(hxs, fma_(hxs, Q5, Q4), Q3), Q2), Q1);
+  r1 = fma_(hxs, r1, one);
+  // V8 arm64 (expm1+0x1a4, +0x1b0): `3.0 - r1*hfx` (fmsub) and
+  // `6.0 - x*t` (fmsub) are each one fused multiply-subtract.
+  t = fma_(-r1, hfx, 3.0);
+  e = hxs * ((r1 - t) / fma_(-x, t, 6.0));
   if (k == 0) {
-    return x - (x * e - hxs); /* c is 0 */
+    // V8 arm64 (expm1+0x1ec, the `cbz w8, ...` k==0 target): `x*e - hxs`
+    // is one fused site (fnmsub); the outer `x - (...)` is not.
+    return x - fma_(x, e, -hxs); /* c is 0 */
   } else {
     twopk = insert_words(
         0x3ff00000u + (static_cast<std::uint32_t>(k) << 20), 0); /* 2^k */
-    e = (x * (e - c) - c);
+    // V8 arm64 (expm1+0x1c4): `x*(e-c) - c` is one `fnmsub`.
+    e = fma_(x, (e - c), -c);
     e -= hxs;
-    if (k == -1) return 0.5 * (x - e) - 0.5;
+    // V8 arm64 (expm1+0x290): the shared `alpha*(x-e)+beta` tail both
+    // `k==-1` (alpha=0.5,beta=-0.5) and `k==1,x>=-0.25` (alpha=2.0,
+    // beta=one) reach is one `fmadd`.
+    if (k == -1) return fma_(0.5, (x - e), -0.5);
     if (k == 1) {
       if (x < -0.25)
         return -2.0 * (e - (x + 0.5));
       else
-        return one + 2.0 * (x - e);
+        return fma_(2.0, (x - e), one);
     }
     if (k <= -2 || k > 56) { /* suffice to return exp(x)-1 */
       y = one - (e - x);
@@ -248,9 +329,11 @@ double fd_exp(double x) {
       lo = ln2LO[xsb];
       k = 1 - xsb - xsb;
     } else {
-      k = static_cast<std::int32_t>(invln2 * x + halF[xsb]);
+      // V8 arm64 (base::ieee754::exp+0x118, +0x12c): same two fused
+      // sites as expm1's identical reduction step -- see there.
+      k = static_cast<std::int32_t>(fma_(invln2, x, halF[xsb]));
       t = k;
-      hi = x - t * ln2HI[0]; /* t*ln2HI is exact here */
+      hi = fma_(-t, ln2HI[0], x); /* t*ln2HI is exact here */
       lo = t * ln2LO[0];
     }
     x = hi - lo;
@@ -269,7 +352,13 @@ double fd_exp(double x) {
     twopk = insert_words(
         0x3ff00000u + (static_cast<std::uint32_t>(k + 1000) << 20), 0);
   }
-  c = x - t * (P1 + t * (P2 + t * (P3 + t * (P4 + t * P5))));
+  // V8 arm64 (base::ieee754::exp+0x168..+0x190): the four inner Horner
+  // steps AND the outer `x - t*(...)` are each one fused instruction
+  // (the outer one an `fmsub`) -- five fused sites total, no plain
+  // multiply-add left anywhere in this polynomial.
+  c = fma_(-t,
+           fma_(t, fma_(t, fma_(t, fma_(t, P5, P4), P3), P2), P1),
+           x);
   if (k == 0) {
     return one - ((x * c) / (c - 2.0) - x);
   } else {
@@ -321,7 +410,10 @@ int kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
   }
 
   for (i = 0; i <= jk; i++) {
-    for (j = 0, fw = 0.0; j <= jx; j++) fw += x[j] * f[jx + i - j];
+    // V8 arm64 (base::ieee754's __kernel_rem_pio2, inlined into
+    // __ieee754_rem_pio2's huge-argument path): this accumulation is a
+    // fused multiply-add at every iteration (`fw += x[j]*f[...]`).
+    for (j = 0, fw = 0.0; j <= jx; j++) fw = fma_(x[j], f[jx + i - j], fw);
     q[i] = fw;
   }
 
@@ -329,12 +421,14 @@ int kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
 recompute:
   for (i = 0, j = jz, z = q[jz]; j > 0; i++, j--) {
     fw = static_cast<double>(static_cast<std::int32_t>(twon24 * z));
-    iq[i] = static_cast<std::int32_t>(z - two24 * fw);
+    // V8 arm64: `z - two24*fw` is one fused site (fmsub).
+    iq[i] = static_cast<std::int32_t>(fma_(-two24, fw, z));
     z = q[j - 1] + fw;
   }
 
   z = std::scalbn(z, q0);
-  z -= 8.0 * std::floor(z * 0.125);
+  // V8 arm64: `z -= 8.0*floor(z*0.125)` is one fused site (fmsub).
+  z = fma_(-8.0, std::floor(z * 0.125), z);
   n = static_cast<std::int32_t>(z);
   z -= static_cast<double>(n);
   ih = 0;
@@ -390,7 +484,8 @@ recompute:
 
       for (i = jz + 1; i <= jz + k; i++) {
         f[jx + i] = static_cast<double>(ipio2[jv + i]);
-        for (j = 0, fw = 0.0; j <= jx; j++) fw += x[j] * f[jx + i - j];
+        // Same fused accumulation as the initial q[] fill above.
+        for (j = 0, fw = 0.0; j <= jx; j++) fw = fma_(x[j], f[jx + i - j], fw);
         q[i] = fw;
       }
       jz += k;
@@ -409,7 +504,8 @@ recompute:
     z = std::scalbn(z, -q0);
     if (z >= two24) {
       fw = static_cast<double>(static_cast<std::int32_t>(twon24 * z));
-      iq[jz] = static_cast<std::int32_t>(z - two24 * fw);
+      // Same fused `z - two24*fw` shape as the main jz-loop above.
+      iq[jz] = static_cast<std::int32_t>(fma_(-two24, fw, z));
       jz += 1;
       q0 += 24;
       iq[jz] = static_cast<std::int32_t>(fw);
@@ -425,7 +521,10 @@ recompute:
   }
 
   for (i = jz; i >= 0; i--) {
-    for (fw = 0.0, k = 0; k <= jp && k <= jz - i; k++) fw += PIo2[k] * q[i + k];
+    // V8 arm64: this accumulation is fused at every iteration too
+    // (`fw += PIo2[k]*q[...]`).
+    for (fw = 0.0, k = 0; k <= jp && k <= jz - i; k++)
+      fw = fma_(PIo2[k], q[i + k], fw);
     fq[jz - i] = fw;
   }
 
@@ -542,9 +641,13 @@ std::int32_t ieee754_rem_pio2(double x, double* y) {
   }
   if (ix <= 0x413921fb) { /* |x| ~<= 2^19*(pi/2), medium size */
     t = std::fabs(x);
-    n = static_cast<std::int32_t>(t * invpio2 + half);
+    // V8 arm64 (base::ieee754::__ieee754_rem_pio2, medium-size branch):
+    // `t*invpio2 + half` (fmadd) and `t - fn*pio2_1` (fmsub) are each
+    // one fused instruction; `fn*pio2_1t` (plain, no addend in that
+    // statement) is not.
+    n = static_cast<std::int32_t>(fma_(t, invpio2, half));
     fn = static_cast<double>(n);
-    r = t - fn * pio2_1;
+    r = fma_(-fn, pio2_1, t);
     w = fn * pio2_1t;
     if (n < 32 && ix != npio2_hw[n - 1]) {
       y[0] = r - w;
@@ -558,7 +661,9 @@ std::int32_t ieee754_rem_pio2(double x, double* y) {
         t = r;
         w = fn * pio2_2;
         r = t - w;
-        w = fn * pio2_2t - ((t - r) - w);
+        // V8 arm64: `fn*pio2_2t - ((t-r)-w)` is one fused site
+        // (fnmsub); the `(t-r)-w` feeding it is plain.
+        w = fma_(fn, pio2_2t, -((t - r) - w));
         y[0] = r - w;
         high = hi_word(y[0]);
         i = j - static_cast<std::int32_t>((high >> 20) & 0x7ffu);
@@ -566,7 +671,8 @@ std::int32_t ieee754_rem_pio2(double x, double* y) {
           t = r;
           w = fn * pio2_3;
           r = t - w;
-          w = fn * pio2_3t - ((t - r) - w);
+          // Same fused shape, third correction pass.
+          w = fma_(fn, pio2_3t, -((t - r) - w));
           y[0] = r - w;
         }
       }
@@ -624,18 +730,29 @@ double kernel_cos(double x, double y) {
     if (static_cast<int>(x) == 0) return one;
   }
   z = x * x;
-  r = z * (C1 + z * (C2 + z * (C3 + z * (C4 + z * (C5 + z * C6)))));
+  // V8 arm64 (base::ieee754::cos, inlined __kernel_cos): the 5-step
+  // Horner chain is fully fused; the outer `z*(...)` producing r stays
+  // a plain multiply (no addend in that statement).
+  r = z * fma_(z, fma_(z, fma_(z, fma_(z, fma_(z, C6, C5), C4), C3), C2), C1);
   if (ix < 0x3fd33333) {
-    return one - (0.5 * z - (z * r - x * y));
+    // V8 arm64: `z*r - x*y` (fnmsub, one fused site) and the outer
+    // `0.5*z - (...)` (fmsub, a second fused site) are each one fused
+    // instruction.
+    const double zr_minus_xy = fma_(z, r, -(x * y));
+    return one - fma_(z, 0.5, -zr_minus_xy);
   } else {
     if (ix > 0x3fe90000) {
       qx = 0.28125;
     } else {
       qx = insert_words(static_cast<std::uint32_t>(ix - 0x00200000), 0);
     }
-    iz = 0.5 * z - qx;
+    // V8 arm64: `iz = 0.5*z - qx` is its own fused site (fmsub); the
+    // outer `iz - (z*r - x*y)` is NOT fused (iz is a plain variable by
+    // that point, not syntactically a multiply), matching disassembly.
+    iz = fma_(z, 0.5, -qx);
     a = one - qx;
-    return a - (iz - (z * r - x * y));
+    const double zr_minus_xy = fma_(z, r, -(x * y));
+    return a - (iz - zr_minus_xy);
   }
 }
 
@@ -657,44 +774,50 @@ double kernel_sin(double x, double y, int iy) {
   }
   z = x * x;
   v = z * x;
-  r = S2 + z * (S3 + z * (S4 + z * (S5 + z * S6)));
+  // V8 arm64 (base::ieee754::sin/cos, inlined __kernel_sin): 4-step
+  // Horner chain, fully fused, with no extra outer multiply (r is
+  // assigned directly, unlike kernel_cos's `z*(...)`).
+  r = fma_(z, fma_(z, fma_(z, fma_(z, S6, S5), S4), S3), S2);
   if (iy == 0) {
-    return x + v * (S1 + z * r);
+    // V8 arm64: `S1 + z*r` (fmadd) and the outer `x + v*(...)` (fmadd)
+    // are each one fused instruction.
+    return fma_(v, fma_(z, r, S1), x);
   } else {
-    return x - ((z * (half * y - v * r) - y) - v * S1);
+    // V8 arm64: three fused sites, innermost to outermost --
+    // `half*y - v*r` (two products; the left one, half*y, fuses with
+    // the right one, v*r, precomputed plain, as the fnmsub addend),
+    // `z*(...) - y` (fnmsub), and `(...) - v*S1` (fmsub). The outermost
+    // `x - (...)` stays a plain subtract (not fused).
+    const double vr = v * r;
+    const double half_y_minus_vr = fma_(half, y, -vr);
+    const double z_term_minus_y = fma_(z, half_y_minus_vr, -y);
+    const double inner = fma_(-v, S1, z_term_minus_y);
+    return x - inner;
   }
 }
 
-// The shared r/v/s polynomial combination __kernel_tan needs, factored into
-// its own never-inlined function. This is NOT an algorithmic change --
-// compare byte-for-byte with the two lines this replaces inside
-// __kernel_tan below, textually identical, zero explicit std::fma. It
-// exists because of a measured, reproducible compiler fact, not a
-// portability shortcut: with these two lines inlined directly into
-// kernel_tan (as fdlibm.cpp originally had them), the exact same source
-// compiles to DIFFERENT machine code depending on surrounding code shape
-// -- clang's -ffp-contract=fast auto-fusion heuristic for these
-// multiply-adds is sensitive to register pressure/scheduling context from
-// the rest of kernel_tan's body, and that context-dependence is exactly
-// why this port measured a residual 304/2,000,000 (0.015%) divergence
-// from V8's Math.tan even though every other fdlibm-derived function in
-// this file reaches 0/2,000,000 under the same -ffp-contract=fast.
-// Isolating the expression in its own `noinline` function removes that
-// context-dependence: compiled on its own, with no other live variables
-// competing for registers, clang's heuristic makes one fixed choice
-// regardless of the caller, and that choice reproduces V8's arm64 AND
-// x86-64 binaries exactly (verified: 0/2,000,000 on both architectures,
-// at both -O2 and -O3, see docs/port-engineering/v8-math/v8-math-report.md
-// section on tan). tests/test_fdlibm_contract_pin.cpp pins several of the
-// specific inputs that were divergent before this change, specifically so
-// a future refactor that re-inlines this (or a compiler upgrade that
-// changes the isolated function's own codegen) fails loudly instead of
-// silently reintroducing the residual.
-__attribute__((noinline)) double kernel_tan_combine(double y, double z,
-                                                      double s, double r,
-                                                      double v, double T0) {
-  double result = y + z * (s * (r + v) + y);
-  result += T0 * s;
+// The shared r/v/s polynomial combination __kernel_tan needs, factored
+// into its own named function for clarity and for
+// tests/test_fdlibm_contract_pin.cpp to reference by name.
+//
+// History: this used to depend on `__attribute__((noinline))` plus
+// ambient -ffp-contract=fast, because the identical source, inlined
+// directly into kernel_tan, measurably compiled to DIFFERENT machine code
+// depending on surrounding code shape (clang's auto-fusion heuristic is
+// sensitive to register pressure/scheduling context) -- a residual
+// 304/2,000,000 divergence from V8's Math.tan. That entire class of bug
+// is now moot: every fusion below is an explicit fma_() call, selected at
+// compile time per architecture, not left to an optimizer heuristic that
+// can vary with context (or, as CI's Debug build proved, may not run at
+// all at -O0). `noinline` is no longer load-bearing, so it's dropped.
+//
+// V8 arm64 (base::ieee754::__kernel_tan): three fused sites -- the inner
+// `s*(r+v)+y` (fmadd), the outer `y + z*(...)` wrapping it (fmadd), and
+// `result += T0*s` (fmadd).
+double kernel_tan_combine(double y, double z, double s, double r, double v,
+                           double T0) {
+  double result = fma_(z, fma_(s, (r + v), y), y);
+  result = fma_(T0, s, result);
   return result;
 }
 
@@ -738,8 +861,11 @@ double kernel_tan(double x, double y, int iy) {
           v = y - (z - x);
           t = a = -one / w;
           set_low_word(t, 0);
-          s = one + t * z;
-          return t + a * (s + t * v);
+          // V8 arm64 (base::ieee754::__kernel_tan): `one + t*z` (fmadd),
+          // the inner `s + t*v` (fmadd), and the outer `t + a*(...)`
+          // (fmadd) are each one fused instruction.
+          s = fma_(t, z, one);
+          return fma_(a, fma_(t, v, s), t);
         }
       }
     }
@@ -756,14 +882,26 @@ double kernel_tan(double x, double y, int iy) {
   }
   z = x * x;
   w = z * z;
-  r = T[1] + w * (T[3] + w * (T[5] + w * (T[7] + w * (T[9] + w * T[11]))));
-  v = z * (T[2] + w * (T[4] + w * (T[6] + w * (T[8] + w * (T[10] + w * T[12])))));
+  // V8 arm64: r's 5-step Horner chain is fully fused, assigned to r
+  // directly (no extra outer multiply). v's inner poly is also a fully
+  // fused 5-step chain, but the outer `z*(...)` producing v stays plain
+  // (matches disassembly: no fma for that final multiply).
+  r = fma_(w, fma_(w, fma_(w, fma_(w, T[11], T[9]), T[7]), T[5]), T[3]);
+  r = fma_(w, r, T[1]);
+  v = fma_(w, fma_(w, fma_(w, fma_(w, T[12], T[10]), T[8]), T[6]), T[4]);
+  v = z * fma_(w, v, T[2]);
   s = z * x;
   r = kernel_tan_combine(y, z, s, r, v, T[0]);
   w = x + r;
   if (ix >= 0x3fe59428) {
     v = iy;
-    return (1 - ((hx >> 30) & 2)) * (v - 2.0 * (x - (w * w / (w + v) - r)));
+    // V8 arm64: `v - 2.0*(x - (w*w/(w+v) - r))` is one fused site (the
+    // outer `v - 2.0*(...)`, fmsub); the division and the two plain
+    // subtracts feeding it are not fused (confirmed unfused in the
+    // disassembly -- a division result is never a syntactic multiply).
+    const double reduced = x - (w * w / (w + v) - r);
+    const double fused = fma_(-2.0, reduced, v);
+    return (1 - ((hx >> 30) & 2)) * fused;
   }
   if (iy == 1) {
     return w;
@@ -774,8 +912,10 @@ double kernel_tan(double x, double y, int iy) {
     v = r - (z - x);
     t = a = -1.0 / w;
     set_low_word(t, 0);
-    s = 1.0 + t * z;
-    return t + a * (s + t * v);
+    // Same fused shape as the small-|x| branch above: `1.0 + t*z`,
+    // `s + t*v`, and the outer `t + a*(...)`.
+    s = fma_(t, z, 1.0);
+    return fma_(a, fma_(t, v, s), t);
   }
 }
 
@@ -809,7 +949,9 @@ double fd_asin(double x) {
   if (ix >= 0x3ff00000) {
     std::uint32_t lx = lo_word(x);
     if (((static_cast<std::uint32_t>(ix) - 0x3ff00000u) | lx) == 0) {
-      return x * pio2_hi + x * pio2_lo;
+      // V8 arm64 (base::ieee754::asin): `x*pio2_hi + x*pio2_lo` is one
+      // fused site (the right-hand product precomputed plain).
+      return fma_(x, pio2_hi, x * pio2_lo);
     }
     return std::numeric_limits<double>::signaling_NaN();
   } else if (ix < 0x3fe00000) {
@@ -818,26 +960,51 @@ double fd_asin(double x) {
     } else {
       t = x * x;
     }
-    p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
-    q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));
+    // V8 arm64: p's 5-step and q's 4-step Horner chains are each fully
+    // fused (the outer `t*(...)` producing p stays plain; q's outer
+    // `one+t*(...)` step is itself the last fused step, matching
+    // expm1/log's identical Horner shape).
+    {
+      const double p_poly = fma_(
+          t, fma_(t, fma_(t, fma_(t, pS5, pS4), pS3), pS2), pS1);
+      p = t * fma_(t, p_poly, pS0);
+    }
+    q = fma_(t, fma_(t, fma_(t, qS4, qS3), qS2), qS1);
+    q = fma_(t, q, one);
     w = p / q;
-    return x + x * w;
+    // V8 arm64: `x + x*w` is one fused site.
+    return fma_(x, w, x);
   }
   w = one - std::fabs(x);
   t = w * 0.5;
-  p = t * (pS0 + t * (pS1 + t * (pS2 + t * (pS3 + t * (pS4 + t * pS5)))));
-  q = one + t * (qS1 + t * (qS2 + t * (qS3 + t * qS4)));
+  {
+    const double p_poly = fma_(
+        t, fma_(t, fma_(t, fma_(t, pS5, pS4), pS3), pS2), pS1);
+    p = t * fma_(t, p_poly, pS0);
+  }
+  q = fma_(t, fma_(t, fma_(t, qS4, qS3), qS2), qS1);
+  q = fma_(t, q, one);
   s = std::sqrt(t);
   if (ix >= 0x3fef3333) {
     w = p / q;
-    t = pio2_hi - (2.0 * (s + s * w) - pio2_lo);
+    // V8 arm64: inner `s + s*w` (fmadd) and `2.0*(...) - pio2_lo`
+    // (fmsub) are each fused; the outer `pio2_hi - (...)` is not.
+    const double s_plus_sw = fma_(s, w, s);
+    t = pio2_hi - fma_(2.0, s_plus_sw, -pio2_lo);
   } else {
     w = s;
     set_low_word(w, 0);
-    c = (t - w * w) / (s + w);
+    // V8 arm64: `t - w*w` (fmsub) is fused; the division is not.
+    c = fma_(-w, w, t) / (s + w);
     r = p / q;
-    p = 2.0 * s * r - (pio2_lo - 2.0 * c);
-    q = pio4_hi - 2.0 * w;
+    // V8 arm64: `pio2_lo - 2.0*c` (fmsub) fuses first; then
+    // `2.0*s*r - (...)` fuses the (2.0*s) product (precomputed plain)
+    // with r against the negated result (fnmsub). `pio4_hi - 2.0*w`
+    // (fmsub) is a separate, third fused site. The final
+    // `pio4_hi - (p-q)` is not fused (p, q are plain values by then).
+    const double pio2_lo_minus_2c = fma_(-2.0, c, pio2_lo);
+    p = fma_((2.0 * s), r, -pio2_lo_minus_2c);
+    q = fma_(-2.0, w, pio4_hi);
     t = pio4_hi - (p - q);
   }
   if (hx > 0)
@@ -879,28 +1046,40 @@ double fd_acos(double x) {
   if (ix < 0x3fe00000) {
     if (ix <= 0x3c600000) return pio2_hi + pio2_lo;
     z = x * x;
-    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
-    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    // V8 arm64: same 5-step/4-step Horner shapes as fd_asin, here over z
+    // instead of t, with the same fully-plain outer `z*(...)` multiply.
+    p = z * fma_(z, fma_(z, fma_(z, fma_(z, fma_(z, pS5, pS4), pS3), pS2), pS1), pS0);
+    q = fma_(z, fma_(z, fma_(z, qS4, qS3), qS2), qS1);
+    q = fma_(z, q, one);
     r = p / q;
-    return pio2_hi - (x - (pio2_lo - x * r));
+    // V8 arm64: `pio2_lo - x*r` is one fused site (fmsub); the two
+    // outer subtracts are not.
+    return pio2_hi - (x - fma_(-x, r, pio2_lo));
   } else if (hx < 0) {
     z = (one + x) * 0.5;
-    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
-    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    p = z * fma_(z, fma_(z, fma_(z, fma_(z, fma_(z, pS5, pS4), pS3), pS2), pS1), pS0);
+    q = fma_(z, fma_(z, fma_(z, qS4, qS3), qS2), qS1);
+    q = fma_(z, q, one);
     s = std::sqrt(z);
     r = p / q;
-    w = r * s - pio2_lo;
-    return pi - 2.0 * (s + w);
+    // V8 arm64: `r*s - pio2_lo` (fmsub) and the outer
+    // `pi - 2.0*(s+w)` (fmsub) are each one fused site.
+    w = fma_(r, s, -pio2_lo);
+    return fma_(-2.0, (s + w), pi);
   } else {
     z = (one - x) * 0.5;
     s = std::sqrt(z);
     df = s;
     set_low_word(df, 0);
-    c = (z - df * df) / (s + df);
-    p = z * (pS0 + z * (pS1 + z * (pS2 + z * (pS3 + z * (pS4 + z * pS5)))));
-    q = one + z * (qS1 + z * (qS2 + z * (qS3 + z * qS4)));
+    // V8 arm64: `z - df*df` is fused (fmsub); the division is not.
+    c = fma_(-df, df, z) / (s + df);
+    p = z * fma_(z, fma_(z, fma_(z, fma_(z, fma_(z, pS5, pS4), pS3), pS2), pS1), pS0);
+    q = fma_(z, fma_(z, fma_(z, qS4, qS3), qS2), qS1);
+    q = fma_(z, q, one);
     r = p / q;
-    w = r * s + c;
+    // V8 arm64: `r*s + c` is fused (fmadd); the final `2.0*(df+w)` is
+    // not (no addend alongside that multiply).
+    w = fma_(r, s, c);
     return 2.0 * (df + w);
   }
 }
@@ -954,7 +1133,9 @@ double fd_atan(double x) {
     if (ix < 0x3ff30000) {
       if (ix < 0x3fe60000) {
         id = 0;
-        x = (2.0 * x - one) / (2.0 + x);
+        // V8 arm64 (base::ieee754::atan): `2.0*x - one` is one fused
+        // site (fmsub); the division is not.
+        x = fma_(2.0, x, -one) / (2.0 + x);
       } else {
         id = 1;
         x = (x - one) / (x + one);
@@ -962,7 +1143,8 @@ double fd_atan(double x) {
     } else {
       if (ix < 0x40038000) {
         id = 2;
-        x = (x - 1.5) / (one + 1.5 * x);
+        // V8 arm64: `one + 1.5*x` is one fused site (fmadd).
+        x = (x - 1.5) / fma_(1.5, x, one);
       } else {
         id = 3;
         x = -1.0 / x;
@@ -971,13 +1153,25 @@ double fd_atan(double x) {
   }
   z = x * x;
   w = z * z;
-  s1 = z * (aT[0] +
-            w * (aT[2] + w * (aT[4] + w * (aT[6] + w * (aT[8] + w * aT[10])))));
-  s2 = w * (aT[1] + w * (aT[3] + w * (aT[5] + w * (aT[7] + w * aT[9]))));
+  // V8 arm64: s1's 5-step and s2's 4-step Horner chains are each fully
+  // fused; both outer multiplies (`z*(...)` for s1, `w*(...)` for s2)
+  // producing s1/s2 themselves stay plain.
+  {
+    const double s1_poly = fma_(
+        w, fma_(w, fma_(w, fma_(w, aT[10], aT[8]), aT[6]), aT[4]), aT[2]);
+    s1 = z * fma_(w, s1_poly, aT[0]);
+  }
+  {
+    const double s2_poly = fma_(w, fma_(w, fma_(w, aT[9], aT[7]), aT[5]), aT[3]);
+    s2 = w * fma_(w, s2_poly, aT[1]);
+  }
   if (id < 0) {
-    return x - x * (s1 + s2);
+    // V8 arm64: `x - x*(s1+s2)` is one fused site (fmsub).
+    return fma_(-x, (s1 + s2), x);
   } else {
-    z = atanhi[id] - ((x * (s1 + s2) - atanlo[id]) - x);
+    // V8 arm64: `x*(s1+s2) - atanlo[id]` is fused (fmsub); the two
+    // outer subtracts producing z are not.
+    z = atanhi[id] - (fma_(x, (s1 + s2), -atanlo[id]) - x);
     return (hx < 0) ? -z : z;
   }
 }
@@ -1056,7 +1250,10 @@ double fd_atan2(double y, double x) {
   double z;
   const std::int32_t k = (iy - ix) >> 20;
   if (k > 60) {
-    z = pi_o_2 + 0.5 * pi_lo;
+    // V8 arm64 (base::ieee754::atan2): `pi_o_2 + 0.5*pi_lo` is one
+    // fused site (fmadd) -- the only fma-family instruction in this
+    // function's whole compiled body.
+    z = fma_(0.5, pi_lo, pi_o_2);
     // |y/x| > 2**60: x's sign is numerically irrelevant at this ratio, so
     // fdlibm forces the case-2/3 pi-combination branches off entirely
     // here (this line was dropped in an earlier draft of this port and
@@ -1084,39 +1281,34 @@ double fd_atan2(double y, double x) {
 // log2() is NOT defined in this TU -- see src/fdlibm_log2.cpp. Its
 // combined-precision Dekker-style summation (val_hi/val_lo/w below) is
 // actively BROKEN by FMA contraction (verified: 0/50000 divergent from V8
-// under -ffp-contract=off, but 108/50000 under -ffp-contract=fast, the
-// opposite direction from every other function in this file), so it
-// cannot share this TU's -ffp-contract=fast override. See that file's
+// under -ffp-contract=off, but 108/50000 under fused arithmetic, the
+// opposite direction from every other function in this file). Direct
+// disassembly of V8's own arm64 `log2` confirms it: NO fma-family
+// instruction appears anywhere in that function's combining arithmetic.
+// So log2 gets no fma_() calls anywhere, on purpose. See that file's
 // header comment and docs/port-engineering/v8-math/v8-math-report.md.
 
-// The two combining expressions fd_log's k!=0 branches need, each factored
-// into its own never-inlined function -- same rationale and technique as
-// kernel_tan_combine below: the identical source, inlined directly inside
-// fd_log (as this file originally had it), measurably diverges from V8 on
-// arm64 under this file's -ffp-contract=fast (2/50,000 residual at that
-// scale; see docs/port-engineering/v8-math/v8-math-report.md).
+// The two combining expressions fd_log's k!=0 branches need. Kept as
+// their own named functions for clarity/pinning (tests/
+// test_fdlibm_contract_pin.cpp references them by name in comments), but
+// -- unlike the earlier ambient-contraction design -- their fusion is now
+// explicit (fma_()), not dependent on being isolated from surrounding
+// code to dodge a register-pressure-sensitive auto-fusion heuristic. See
+// the fma_() helper's comment for why explicit fusion doesn't have that
+// problem: it is architecture-selected at compile time, not decided by
+// an optimizer pass that may or may not run.
 //
-// An earlier version of this fix used an explicit std::fma() at each site
-// instead of a noinline extraction, and that reached 0/2,000,000 on arm64
-// -- but REGRESSED x86-64 to 180/2,000,000 divergent, because std::fma()
-// unconditionally fuses on every architecture, while V8's own x86-64
-// binary does not fuse this expression at all (the x86-64 baseline this
-// project targets has no hardware fused-multiply-add for
-// -ffp-contract=fast to select, so V8's own ieee754.cc build stays
-// unfused there). Isolating the plain, unfused expression in its own
-// noinline function instead lets ordinary -ffp-contract=fast auto-fusion
-// decide per architecture -- fusing on arm64 (matching V8's arm64
-// binary), staying unfused on x86-64 baseline (matching V8's x86-64
-// binary) -- with no explicit std::fma anywhere. Verified 0/2,000,000 on
-// both arm64 and x86-64.
-__attribute__((noinline)) double log_combine_a(double s, double hfsq,
-                                                 double r, double dk,
-                                                 double ln2_lo) {
-  return s * (hfsq + r) + dk * ln2_lo;
+// V8 arm64 (base::ieee754::log, the i>0/k!=0 tail and the i<=0/k!=0 tail):
+// `s*(hfsq+r) + dk*ln2_lo` and `s*(f-r) - dk*ln2_lo` are each one fused
+// instruction (`fmadd`/`fmadd` after a plain `dk*ln2_lo` precompute --
+// see the report's fused-site table for the exact disassembly).
+double log_combine_a(double s, double hfsq, double r, double dk,
+                      double ln2_lo) {
+  return fma_(s, (hfsq + r), dk * ln2_lo);
 }
-__attribute__((noinline)) double log_combine_b(double s, double f, double r,
-                                                 double dk, double ln2_lo) {
-  return s * (f - r) - dk * ln2_lo;
+double log_combine_b(double s, double f, double r, double dk,
+                      double ln2_lo) {
+  return fma_(s, (f - r), -(dk * ln2_lo));
 }
 
 // ============================================================
@@ -1173,16 +1365,22 @@ double fd_log(double x) {
       if (k == 0) {
         return zero;
       } else {
+        // V8 arm64 (log+0xc4): `dk*ln2_hi + dk*ln2_lo` is one `fmadd`.
         dk = static_cast<double>(k);
-        return dk * ln2_hi + dk * ln2_lo;
+        return fma_(dk, ln2_hi, dk * ln2_lo);
       }
     }
-    r = f * f * (0.5 - 0.33333333333333333 * f);
+    // V8 arm64 (log+0x1ac): `0.5 - 0.333...*f` is one `fmadd` (the
+    // constant is stored pre-negated so the subtraction becomes an add).
+    r = f * f * fma_(-0.33333333333333333, f, 0.5);
     if (k == 0) {
       return f - r;
     } else {
       dk = static_cast<double>(k);
-      return dk * ln2_hi - ((r - dk * ln2_lo) - f);
+      // V8 arm64 (log+0x1dc, +0x1ec): `r - dk*ln2_lo` (fmadd with a
+      // pre-negated ln2_lo) and the outer `dk*ln2_hi - (...)` (fnmsub)
+      // are each one fused instruction.
+      return fma_(dk, ln2_hi, -(fma_(-dk, ln2_lo, r) - f));
     }
   }
   s = f / (2.0 + f);
@@ -1191,25 +1389,54 @@ double fd_log(double x) {
   i = hx - 0x6147a;
   w = z * z;
   j = 0x6b851 - hx;
-  t1 = w * (Lg2 + w * (Lg4 + w * Lg6));
-  t2 = z * (Lg1 + w * (Lg3 + w * (Lg5 + w * Lg7)));
+  // V8 arm64 (log+0x204..+0x24c): t1's 2-step and t2's 3-step Horner
+  // chains are each fully fused (5 fmadds total); the outer `w*(...)`
+  // and `z*(...)` multiplies that produce t1/t2 themselves stay plain
+  // (no addend in the same expression -- confirmed unfused in the
+  // disassembly).
+  t1 = w * fma_(w, fma_(w, Lg6, Lg4), Lg2);
+  t2 = z * fma_(w, fma_(w, fma_(w, Lg7, Lg5), Lg3), Lg1);
   i |= j;
   r = t2 + t1;
   if (i > 0) {
     hfsq = 0.5 * f * f;
     if (k == 0)
-      return f - (hfsq - s * (hfsq + r));
+      // V8 arm64 (log+0x2ac): `hfsq - s*(hfsq+r)` is one `fmsub`.
+      return f - fma_(-s, (hfsq + r), hfsq);
     else
-      return dk * ln2_hi - ((hfsq - log_combine_a(s, hfsq, r, dk, ln2_lo)) - f);
+      // V8 arm64 (log+0x2c8): the outer `dk*ln2_hi - (...)` wrapping
+      // log_combine_a is its own, separate fused site (fnmsub) -- not
+      // part of log_combine_a itself.
+      return fma_(dk, ln2_hi,
+                  -((hfsq - log_combine_a(s, hfsq, r, dk, ln2_lo)) - f));
   } else {
     if (k == 0)
-      return f - s * (f - r);
+      // V8 arm64 (log+0x2d8): `f - s*(f-r)` is one `fmsub`, the whole
+      // k==0 return value in a single fused instruction.
+      return fma_(-s, (f - r), f);
     else
-      return dk * ln2_hi - (log_combine_b(s, f, r, dk, ln2_lo) - f);
+      // V8 arm64 (log+0x2c8, shared with the i>0 case above): same
+      // outer-fnmsub shape wrapping log_combine_b instead.
+      return fma_(dk, ln2_hi, -(log_combine_b(s, f, r, dk, ln2_lo) - f));
   }
 }
 
 }  // namespace
+
+// Exposes the production `fma_()` dispatch (defined above, internal
+// linkage) so tests/test_fdlibm_contract_pin.cpp can exercise the ACTUAL
+// compiled fused/unfused selection directly -- not a second, separately
+// written copy of the same `#if defined(__aarch64__)` logic, which could
+// itself drift from this file's real behavior and pass a test that
+// verifies nothing. Not part of the public API (not declared in
+// fdlibm.hpp); the test forward-declares it itself. See
+// fdlibm_contract_pin_fma_dispatch_matches_this_architecture in that file
+// for what it's used to prove.
+namespace testing {
+double fma_probe(double a, double b, double c) noexcept {
+  return fma_(a, b, c);
+}
+}  // namespace testing
 
 // ============================================================
 // tanh(x)

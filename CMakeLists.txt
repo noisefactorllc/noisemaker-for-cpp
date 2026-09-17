@@ -88,31 +88,27 @@ set_source_files_properties(
 target_compile_options(noisemaker-cpu PUBLIC
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-ffp-contract=off>
 )
-# fdlibm.cpp is the one file that must NOT build under -ffp-contract=off.
-# It is a line-for-line transcription of V8's own src/base/ieee754.cc, and
-# V8's shipped binary on FMA-capable hardware (arm64 NEON always has FMA;
-# x86-64 needs -mfma) contains FMA-contracted arithmetic in exactly these
-# polynomial evaluations -- reproducing V8's bits exactly therefore
-# requires reproducing that contraction, not disabling it. Overriding the
-# PUBLIC -ffp-contract=off above with a per-source COMPILE_OPTIONS is safe
-# here specifically because this project's baseline has no -march/-mfma
-# anywhere (grep this file): on x86-64 without -mfma there is no hardware
-# fused-multiply-add instruction for -ffp-contract=fast to select, so on
-# that architecture the flag is a byte-for-byte no-op and this TU compiles
-# identically to -ffp-contract=off -- matching V8's own x86-64 binary,
-# which is equally built at the ordinary (non-FMA) baseline. On arm64 the
-# flag lets the backend fuse, matching V8's own arm64 binary. Both halves
-# of that claim are verified by exhaustive differential testing on both
-# architectures, not assumed -- see
-# docs/port-engineering/v8-math/v8-math-report.md. A per-source
-# COMPILE_OPTIONS is appended after the target-level flags in the compiler
-# invocation, and the LAST occurrence of a repeated -ffp-contract= flag
-# wins for both Clang and GCC, so this override is effective; the pinning
-# test in tests/test_fdlibm_contract_pin.cpp fails loudly (by comparing
-# this TU's actual codegen behavior, not just re-reading this comment) if
-# a future refactor ever changes that.
-set_source_files_properties(src/fdlibm.cpp PROPERTIES COMPILE_OPTIONS
-  "$<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-ffp-contract=fast>")
+# fdlibm.cpp used to need a per-source -ffp-contract=fast override here
+# (removed 2026-09-17). It is a line-for-line transcription of V8's own
+# src/base/ieee754.cc, and V8's shipped binary on FMA-capable hardware
+# (arm64 NEON always has FMA) contains FMA-contracted arithmetic in
+# exactly some of these polynomial evaluations -- reproducing V8's bits
+# exactly requires reproducing that contraction. Ambient -ffp-contract
+# turned out to be the wrong mechanism for that: contraction is an
+# OPTIMIZATION (LLVM's InstCombine/DAGCombiner), and those passes do not
+# run at -O0, so a Debug build silently reverted to unfused arithmetic
+# and diverged from V8 on arm64 -- verified directly (bare `a*b+c` under
+# `-ffp-contract=fast` emits one `fmadd` at -O2 but separate `fmul`+`fadd`
+# at -O0 on this toolchain). fdlibm.cpp now selects fusion explicitly, per
+# call site, via the file-local `fma_()` helper (aarch64: std::fma();
+# everywhere else: plain a*b+c) rather than depending on ambient
+# contraction or the optimizer's willingness to run -- see that helper's
+# comment in src/fdlibm.cpp and
+# docs/port-engineering/v8-math/v8-math-report.md. fdlibm.cpp therefore
+# now compiles under the same project-wide -ffp-contract=off as
+# everything else; the pinning tests in
+# tests/test_fdlibm_contract_pin.cpp exercise the actual compiled
+# behavior (not this comment) and pass identically in Debug and Release.
 # Warnings stay PRIVATE: they are this project's discipline, not a consumer's.
 target_compile_options(noisemaker-cpu PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror>

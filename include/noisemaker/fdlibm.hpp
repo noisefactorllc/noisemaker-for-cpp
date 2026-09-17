@@ -97,23 +97,31 @@
 // order are what determine the exact output bits. Do not "simplify" the
 // arithmetic in fdlibm.cpp.
 //
-// FMA / -ffp-contract: V8's own shipped binary contains FMA-contracted
-// arithmetic in its polynomial evaluations on FMA-capable hardware (this is
-// not a defect; it is what happens when *any* C++ compiler compiles this
-// same fdlibm source at -O1+ with contraction allowed and the target has a
-// fused-multiply-add instruction). This project mandates
-// -ffp-contract=off everywhere else for cross-compiler/cross-architecture
-// reproducibility, but the math translation unit (fdlibm.cpp) is compiled
-// with -ffp-contract=fast specifically -- see the CMakeLists.txt comment at
-// its `set_source_files_properties` block, and
-// docs/port-engineering/v8-math/v8-math-report.md for the exhaustive
-// differential evidence on both arm64 and x86-64 justifying that as safe
-// and deterministic (not a "close enough" tradeoff): on arm64 (NEON always
-// has FMA) it reproduces V8's own arm64 binary's contraction; on x86-64
-// without -mfma (this project's baseline, and this CI's baseline) there is
-// no hardware fused-multiply-add instruction for contract=fast to select,
-// so it is a byte-for-byte no-op there and reproduces V8's own x86-64
-// binary (also built at the ordinary, non--mfma baseline) too.
+// FMA: V8's own shipped binary contains genuine fused-multiply-add
+// arithmetic in some of its polynomial evaluations on FMA-capable
+// hardware (this is not a defect; it is what happens when V8's own build
+// compiles this same fdlibm source with contraction allowed and the
+// target has a fused-multiply-add instruction). This project mandates
+// -ffp-contract=off everywhere, including the math translation unit
+// (src/fdlibm.cpp) -- ambient contraction is an OPTIMIZATION performed by
+// LLVM's InstCombine/DAGCombiner passes, which do not run at -O0, so
+// relying on it made a Debug build silently diverge from V8 on arm64
+// (verified directly: identical `-ffp-contract=fast` source emits a
+// fused `fmadd` at -O2 but separate `fmul`+`fadd` at -O0). Instead,
+// src/fdlibm.cpp selects fusion EXPLICITLY, at each site V8's arm64
+// binary is confirmed (by direct disassembly) to fuse, via a file-local
+// `fma_()` helper that is chosen at compile time per architecture:
+// `std::fma()` on aarch64 (lowers to one hardware FMADD/FMSUB/FNMADD/
+// FNMSUB at every optimization level), and plain `(a*b)+c` everywhere
+// else (this project's x86-64 baseline has no -march/-mfma anywhere, so
+// there is no hardware fused-multiply-add instruction there at all --
+// V8's own x86-64 binary never fuses these sites either, and an
+// unconditional std::fma() would be wrong there: it calls a *software*
+// correctly-rounded emulation regardless of hardware support, forcing
+// fusion V8's x86-64 binary does not perform). See src/fdlibm.cpp's
+// `fma_()` comment and docs/port-engineering/v8-math/v8-math-report.md
+// for the full per-function fused-site inventory and its V8-disassembly
+// citations, on both arm64 and x86-64.
 //
 // Scope: every function noisemaker's kernels/adapters call through
 // noisemaker::glsl:: or directly: sin, cos, tan, asin, acos, atan, atan2,
