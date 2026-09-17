@@ -1,5 +1,68 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## RESYNC CHECKPOINT 2026-09-17 — READ THIS FIRST
+>
+> This block supersedes the 2026-08-30 publication checkpoint below (kept as history).
+>
+> ### What went wrong
+>
+> - CI pinned `noisemaker-for-cpu@e17dd02` and stayed green for weeks while the authority moved
+>   to upstream `0ed489ec`. The 2026-09-04 sync bumped the authority but left the GLSL corpus at
+>   `a024dc3a`. The compatibility table then absorbed the gap: six programs were marked
+>   `semantic_exact`, and `filter/text` was marked incompatible.
+> - The only pixel gate rendered each effect once, at 17x11, with default parameters. A 208-effect
+>   sweep over sizes, seeds, times and parameter domains later found 91 fully exact effects,
+>   74 divergent cases, and thousands of C++-only refusals of values the authority accepts.
+> - The export kit listed every effect whose passes were admitted, including effects that refuse
+>   every non-default define value.
+>
+> ### What is in place now
+>
+> - **Resync:** corpus `0ed489ec` (17 changed programs, profile locks re-proven from old/new
+>   programs) and authority `61aa869` (ledger 719, behavioral lock 91 files). The compatibility
+>   table has 212 raw-exact programs, 0 semantic-exact and 0 incompatible.
+> - **Gates:**
+>   - `tools/parity/sweep.py --gate kit` in CI: RGBA8 plus float32 comparison, and the
+>     `--define-enum` mode.
+>   - The `Authority drift` workflow: the live cpu `main` behavioral lock must equal the pin,
+>     and `export-kit/check-authority-coverage.mjs` must find the kit covering all 208 authority
+>     effects. This gate stays red until parity.
+>   - The kit claims only the effects in `export-kit/verified-effects.json`, derived from sweep
+>     results by `tools/parity/verified_effects.py`.
+> - **Ported since the resync:**
+>   - Hand-written adapters: remap (double precision), snow, median (all radii), the worm
+>     overlays, and all seven scatter deposit adapters.
+>   - Executor: scatter dispatch (`filter/wormhole` end to end), the classicNoisedeck palette
+>     override, the generic runtime-define contract, and multi-render-target passes.
+>   - Iteration groups: ported but not yet wired into `execute()`.
+>   - Numerics: V8-exact fdlibm (FMA contraction per translation unit), and scalar `float`
+>     effect parameters bound as double. The authority frounds only its reserved uniforms.
+>
+> ### Remaining work to 208/208 (live, in landing order)
+>
+> 1. **Corpus expansion:** vendor all 304 authority programs (92 missing) with a ratcheted
+>    blocked set. Blocker classes are listed in the frontier-92 census.
+> 2. **Executor:** wire iteration groups, step-persistent resources, selfTex/feedback,
+>    loop regions/`global_accum`, particle groups and volume bundles, then admit Families B–E.
+> 3. **Define values:** make every define-backed parameter value render (about 21 programs
+>    still refuse non-default values).
+> 4. **Float precision:** vector-typed effect parameters must carry double precision
+>    (gradient, mandala, pattern, sacredGeometry), and snow has a 192-pixel divergence.
+> 5. **Oracle packages:** re-derive every historical package against `61aa869`/`0ed489ec`.
+> 6. **Authority kit list:** the authority's own `export-kit/compat-effects.json` lists 205 while
+>    its snapshot renders 208 (heightGrid, renderLandscape3d, heightmap3d are missing from it).
+>
+> ### Rules learned the hard way
+>
+> - Parity means the live authority HEAD, full kit coverage, and a sweep with zero divergences.
+>   A green gate against a frozen pin is not parity.
+> - A report tool that exits 0 is not a gate. Every gate must fail on divergence, on a timeout
+>   that persists after the solo retry, and on a refusal of a claimed effect.
+> - Never hand-edit generated files. Integration means regenerating to a fixed point, and a
+>   hand-spliced include was lost exactly that way.
+> - Tests derive revisions and counts from the single source (`check_corpus.REVISION`,
+>   manifests, provenance). Reconstruction pins move only with a per-program audit.
+>
 > ## PUBLICATION CHECKPOINT 2026-08-30 — READ THIS FIRST
 >
 > This block supersedes the 2026-08-26 checkpoint below (kept as history).
