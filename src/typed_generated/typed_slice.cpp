@@ -2,7 +2,6 @@
 // Revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
-#include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/remap.hpp"
 #include "noisemaker/effects/snow.hpp"
 
@@ -13622,7 +13621,8 @@ BoundKernel bind_filter_lens_lens(const glsl::Bindings& bindings) {
 // Source SHA-256: 46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244
 namespace typed_70 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double brightness_value, double centerX_value, double centerY_value, glsl::Vec3 tint_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), brightness(brightness_value), centerX(centerX_value), centerY(centerY_value), tint(tint_value) {}
+  State(std::int32_t LENS_TYPE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double brightness_value, double centerX_value, double centerY_value, glsl::Vec3 tint_value) : LENS_TYPE(LENS_TYPE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), brightness(brightness_value), centerX(centerX_value), centerY(centerY_value), tint(tint_value) {}
+  std::int32_t LENS_TYPE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -13731,31 +13731,59 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 flare = glsl::FloatExpr<3>(static_cast<float>(0.0));
   flare = glsl::Vec3((flare + glsl::FloatExpr<3>(coreGlow(state, context, d0))));
   [[maybe_unused]] double streakVal = anamorphicStreak(state, context, delta0);
+  if (state.LENS_TYPE == std::int32_t(3)) {
+    streakVal = (streakVal * static_cast<float>(2.0));
+  }
   flare = glsl::Vec3((flare + glsl::FloatExpr<3>(streakVal)));
-  flare = glsl::Vec3((flare + glsl::FloatExpr<3>(sixPointStar(state, context, delta0, d0))));
+  if ((state.LENS_TYPE == std::int32_t(0)) || (state.LENS_TYPE == std::int32_t(3))) {
+    flare = glsl::Vec3((flare + glsl::FloatExpr<3>(sixPointStar(state, context, delta0, d0))));
+  }
   [[maybe_unused]] glsl::Vec2 aMirror = flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.0), aspectRatio);
   [[maybe_unused]] double dc = glsl::length((p - aMirror));
   flare = glsl::Vec3((flare + glsl::Vec3((haloRainbow(state, context, dc) * haloBand(state, context, dc)))));
   [[maybe_unused]] glsl::Vec2 g = glsl::FloatExpr<2>(static_cast<float>(0.0));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.25), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(1.00), static_cast<float>(0.85), static_cast<float>(0.60)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.06))) * static_cast<float>(0.35))));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.4), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.40), static_cast<float>(0.90), static_cast<float>(0.85)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.10))) * static_cast<float>(0.25))));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.6), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.65), static_cast<float>(0.40), static_cast<float>(0.95)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.045))) * static_cast<float>(0.45))));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.85), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.45), static_cast<float>(0.90), static_cast<float>(0.50)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.14))) * static_cast<float>(0.18))));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.2), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(1.00), static_cast<float>(0.55), static_cast<float>(0.20)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.08))) * static_cast<float>(0.30))));
-  g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.55), aspectRatio));
-  flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.40), static_cast<float>(0.55), static_cast<float>(1.00)) * ringGhost(state, context, glsl::length((p - g)), static_cast<float>(0.20))) * static_cast<float>(0.12))));
+  if ((state.LENS_TYPE == std::int32_t(0)) || (state.LENS_TYPE == std::int32_t(3))) {
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.25), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(1.00), static_cast<float>(0.85), static_cast<float>(0.60)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.06))) * static_cast<float>(0.35))));
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.4), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.40), static_cast<float>(0.90), static_cast<float>(0.85)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.10))) * static_cast<float>(0.25))));
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.6), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.65), static_cast<float>(0.40), static_cast<float>(0.95)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.045))) * static_cast<float>(0.45))));
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.85), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.45), static_cast<float>(0.90), static_cast<float>(0.50)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.14))) * static_cast<float>(0.18))));
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.2), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(1.00), static_cast<float>(0.55), static_cast<float>(0.20)) * circleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.08))) * static_cast<float>(0.30))));
+    g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.55), aspectRatio));
+    flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.40), static_cast<float>(0.55), static_cast<float>(1.00)) * ringGhost(state, context, glsl::length((p - g)), static_cast<float>(0.20))) * static_cast<float>(0.12))));
+  } else {
+    if (state.LENS_TYPE == std::int32_t(1)) {
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.3), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(1.00), static_cast<float>(0.80), static_cast<float>(0.55)) * hexGhost(state, context, (p - g), static_cast<float>(0.04))) * static_cast<float>(0.35))));
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.55), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.85), static_cast<float>(0.85), static_cast<float>(0.92)) * hexGhost(state, context, (p - g), static_cast<float>(0.055))) * static_cast<float>(0.30))));
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.8), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.95), static_cast<float>(0.70), static_cast<float>(0.50)) * hexGhost(state, context, (p - g), static_cast<float>(0.065))) * static_cast<float>(0.25))));
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.3), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.80), static_cast<float>(0.85), static_cast<float>(0.95)) * hexGhost(state, context, (p - g), static_cast<float>(0.08))) * static_cast<float>(0.20))));
+    } else {
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.45), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.92), static_cast<float>(0.85), static_cast<float>(0.78)) * softCircleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.12))) * static_cast<float>(0.25))));
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(0.9), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.85), static_cast<float>(0.88), static_cast<float>(0.95)) * softCircleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.16))) * static_cast<float>(0.20))));
+      g = glsl::Vec2(flareAxis(state, context, flarePos, mirrorPos, static_cast<float>(1.5), aspectRatio));
+      flare = glsl::Vec3((flare + ((glsl::FloatExpr<3>(static_cast<float>(0.95), static_cast<float>(0.88), static_cast<float>(0.80)) * softCircleGhost(state, context, glsl::length((p - g)), static_cast<float>(0.20))) * static_cast<float>(0.15))));
+    }
+  }
   [[maybe_unused]] glsl::Vec3 outFlare = ((flare * state.tint) * (static_cast<double>(state.brightness) / static_cast<double>(static_cast<float>(100.0))));
+  if (state.LENS_TYPE == std::int32_t(3)) {
+    outFlare = glsl::Vec3((outFlare * glsl::FloatExpr<3>(static_cast<float>(0.9), static_cast<float>(0.95), static_cast<float>(1.1))));
+  }
   output = glsl::Vec4(glsl::Vec4(glsl::clamp((glsl::swizzle<0, 1, 2>(src) + outFlare), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<3>(src)));
 }
 }  // namespace typed_70
 
 BoundKernel bind_filter_lensFlare_lensFlare(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_70::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::Vec3>("tint"));
+  const auto state = std::make_shared<typed_70::State>(bindings.get<std::int32_t>("LENS_TYPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::Vec3>("tint"));
   (void)bindings;
   return BoundKernel(state, &typed_70::pixel);
 }
@@ -14451,27 +14479,18 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }
 }  // namespace typed_75
 
-// Was: the typed kernel emitted from median.glsl, compiled for exactly one
-// RADIUS value (2, this row's "default-only" bake). The authority never
-// dispatches that GLSL program at all -- it always runs its own hand-written
-// CPU adapter (src/effects/adapters/median.js), which reads RADIUS as an
-// ordinary runtime binding, not a compile-time define, so it correctly
-// serves every allowed radius (1, 2, 3) from one bound kernel. This now
-// trampolines to the hand-written port of that adapter
-// (noisemaker::effects::bind_median, src/effects/median.cpp) instead of the
-// dead typed_75::pixel body above, which no other row now references. See
-// docs/port-engineering/median-parity/ for the oracle proving the two agree
-// byte-for-byte, and this row's now-"custom_adapter" metadata below (in
-// kCanonicalRoutes) for how RADIUS reaches `bindings` at all.
 BoundKernel bind_filter_median_median(const glsl::Bindings& bindings) {
-  return noisemaker::effects::bind_median(bindings);
+  const auto state = std::make_shared<typed_75::State>(&bindings.texture("inputTex"), bindings.get_number("threshold"), 2);
+  (void)bindings;
+  return BoundKernel(state, &typed_75::pixel);
 }
 
 // Typed IR program: filter/morphology:morphA
 // Source SHA-256: 9c9b20313b5a112d7684d34ee3f62cb49d04c34aa75f0c846dc9443c6380ba70
 namespace typed_76 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, std::int32_t mode_value, double radius_value) : inputTex(inputTex_value), resolution(resolution_value), mode(mode_value), radius(radius_value) {}
+  State(std::int32_t SHAPE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, std::int32_t mode_value, double radius_value) : SHAPE(SHAPE_value), inputTex(inputTex_value), resolution(resolution_value), mode(mode_value), radius(radius_value) {}
+  std::int32_t SHAPE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   std::int32_t mode;
@@ -14497,24 +14516,44 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
   [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
   [[maybe_unused]] glsl::Vec4 acc = sample_texture(*state.inputTex, uv);
-  [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(32.0));
-  for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= std::int32_t(32)); ++i) {
-    if (float(i) > r) {
-      break;
+  if (state.SHAPE == std::int32_t(1)) {
+    [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(12.0));
+    [[maybe_unused]] double r2 = (static_cast<double>(r) * static_cast<double>(r));
+    for ([[maybe_unused]] std::int32_t y = (-std::int32_t(12)); (y <= std::int32_t(12)); ++y) {
+      for ([[maybe_unused]] std::int32_t x = (-std::int32_t(12)); (x <= std::int32_t(12)); ++x) {
+        if ((x == std::int32_t(0)) && (y == std::int32_t(0))) {
+          continue;
+        }
+        [[maybe_unused]] glsl::Vec2 d = glsl::FloatExpr<2>(float(x), float(y));
+        if (glsl::dot(d, d) > r2) {
+          continue;
+        }
+        [[maybe_unused]] glsl::Vec4 s = sample_texture(*state.inputTex, (uv + (d * texel)));
+        [[maybe_unused]] glsl::Vec4 hi = glsl::component_max(acc, s);
+        [[maybe_unused]] glsl::Vec4 lo = glsl::component_min(acc, s);
+        acc = glsl::Vec4(glsl::mix(hi, lo, float(state.mode)));
+      }
     }
-    [[maybe_unused]] glsl::Vec2 o = (glsl::FloatExpr<2>(float(i), static_cast<float>(0.0)) * texel);
-    [[maybe_unused]] glsl::Vec4 sL = sample_texture(*state.inputTex, (uv - o));
-    [[maybe_unused]] glsl::Vec4 sR = sample_texture(*state.inputTex, (uv + o));
-    [[maybe_unused]] glsl::Vec4 hi = glsl::component_max(acc, glsl::component_max(sL, sR));
-    [[maybe_unused]] glsl::Vec4 lo = glsl::component_min(acc, glsl::component_min(sL, sR));
-    acc = glsl::Vec4(glsl::mix(hi, lo, float(state.mode)));
+  } else {
+    [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(32.0));
+    for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= std::int32_t(32)); ++i) {
+      if (float(i) > r) {
+        break;
+      }
+      [[maybe_unused]] glsl::Vec2 o = (glsl::FloatExpr<2>(float(i), static_cast<float>(0.0)) * texel);
+      [[maybe_unused]] glsl::Vec4 sL = sample_texture(*state.inputTex, (uv - o));
+      [[maybe_unused]] glsl::Vec4 sR = sample_texture(*state.inputTex, (uv + o));
+      [[maybe_unused]] glsl::Vec4 hi = glsl::component_max(acc, glsl::component_max(sL, sR));
+      [[maybe_unused]] glsl::Vec4 lo = glsl::component_min(acc, glsl::component_min(sL, sR));
+      acc = glsl::Vec4(glsl::mix(hi, lo, float(state.mode)));
+    }
   }
   output = glsl::Vec4(acc);
 }
 }  // namespace typed_76
 
 BoundKernel bind_filter_morphology_morphA(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_76::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_76::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_76::pixel);
 }
@@ -14523,7 +14562,8 @@ BoundKernel bind_filter_morphology_morphA(const glsl::Bindings& bindings) {
 // Source SHA-256: 68818a6c62f0b9960aacd671a8dce1622c6860df44b3c1381abf47447a6504b5
 namespace typed_77 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, std::int32_t mode_value, double radius_value) : inputTex(inputTex_value), resolution(resolution_value), mode(mode_value), radius(radius_value) {}
+  State(std::int32_t SHAPE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, std::int32_t mode_value, double radius_value) : SHAPE(SHAPE_value), inputTex(inputTex_value), resolution(resolution_value), mode(mode_value), radius(radius_value) {}
+  std::int32_t SHAPE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   std::int32_t mode;
@@ -14548,25 +14588,27 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
   [[maybe_unused]] glsl::Vec4 acc = sample_texture(*state.inputTex, uv);
-  [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
-  [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(32.0));
-  for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= std::int32_t(32)); ++i) {
-    if (float(i) > r) {
-      break;
+  if (state.SHAPE == std::int32_t(0)) {
+    [[maybe_unused]] glsl::Vec2 texel = (static_cast<float>(1.0) / state.resolution);
+    [[maybe_unused]] double r = glsl::component_min(state.radius, static_cast<float>(32.0));
+    for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i <= std::int32_t(32)); ++i) {
+      if (float(i) > r) {
+        break;
+      }
+      [[maybe_unused]] glsl::Vec2 o = (glsl::FloatExpr<2>(static_cast<float>(0.0), float(i)) * texel);
+      [[maybe_unused]] glsl::Vec4 sD = sample_texture(*state.inputTex, (uv - o));
+      [[maybe_unused]] glsl::Vec4 sU = sample_texture(*state.inputTex, (uv + o));
+      [[maybe_unused]] glsl::Vec4 hi = glsl::component_max(acc, glsl::component_max(sD, sU));
+      [[maybe_unused]] glsl::Vec4 lo = glsl::component_min(acc, glsl::component_min(sD, sU));
+      acc = glsl::Vec4(glsl::mix(hi, lo, float(state.mode)));
     }
-    [[maybe_unused]] glsl::Vec2 o = (glsl::FloatExpr<2>(static_cast<float>(0.0), float(i)) * texel);
-    [[maybe_unused]] glsl::Vec4 sD = sample_texture(*state.inputTex, (uv - o));
-    [[maybe_unused]] glsl::Vec4 sU = sample_texture(*state.inputTex, (uv + o));
-    [[maybe_unused]] glsl::Vec4 hi = glsl::component_max(acc, glsl::component_max(sD, sU));
-    [[maybe_unused]] glsl::Vec4 lo = glsl::component_min(acc, glsl::component_min(sD, sU));
-    acc = glsl::Vec4(glsl::mix(hi, lo, float(state.mode)));
   }
   output = glsl::Vec4(acc);
 }
 }  // namespace typed_77
 
 BoundKernel bind_filter_morphology_morphB(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_77::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
+  const auto state = std::make_shared<typed_77::State>(bindings.get<std::int32_t>("SHAPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("mode"), bindings.get_number("radius"));
   (void)bindings;
   return BoundKernel(state, &typed_77::pixel);
 }
@@ -14575,7 +14617,8 @@ BoundKernel bind_filter_morphology_morphB(const glsl::Bindings& bindings) {
 // Source SHA-256: 1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47
 namespace typed_78 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double tileSize_value, double groutWidth_value, double relief_value, double maxOffset_value, std::int32_t gapFill_value, glsl::Vec3 backgroundColor_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), tileSize(tileSize_value), groutWidth(groutWidth_value), relief(relief_value), maxOffset(maxOffset_value), gapFill(gapFill_value), backgroundColor(backgroundColor_value), seed(seed_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double tileSize_value, double groutWidth_value, double relief_value, double maxOffset_value, std::int32_t gapFill_value, glsl::Vec3 backgroundColor_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), tileSize(tileSize_value), groutWidth(groutWidth_value), relief(relief_value), maxOffset(maxOffset_value), gapFill(gapFill_value), backgroundColor(backgroundColor_value), seed(seed_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -14656,36 +14699,64 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec4 srcHome = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] double seedF = float(state.seed);
   [[maybe_unused]] glsl::Vec3 result = {};
-  [[maybe_unused]] double warp = mosaicWarp(state, context, globalCoord, state.tileSize, seedF);
-  [[maybe_unused]] glsl::Vec2 warpedCoord = (globalCoord + glsl::FloatExpr<2>(warp));
-  [[maybe_unused]] glsl::Vec2 cellSpace = (warpedCoord / state.tileSize);
-  [[maybe_unused]] glsl::Vec2 cellId = glsl::floor(cellSpace);
-  [[maybe_unused]] glsl::Vec2 warpedCenter = ((cellId + glsl::FloatExpr<2>(static_cast<float>(0.5))) * state.tileSize);
-  [[maybe_unused]] double centerWarp = mosaicWarp(state, context, warpedCenter, state.tileSize, seedF);
-  [[maybe_unused]] glsl::Vec2 sampleGc = (warpedCenter - glsl::FloatExpr<2>(centerWarp));
-  [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((sampleGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec3 tileColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, sampleUV));
-  [[maybe_unused]] double kC = mosaicGroutMask(state, context, globalCoord, state.tileSize, state.groutWidth, seedF);
-  [[maybe_unused]] double kR = mosaicGroutMask(state, context, (globalCoord + glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), state.tileSize, state.groutWidth, seedF);
-  [[maybe_unused]] double kL = mosaicGroutMask(state, context, (globalCoord - glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), state.tileSize, state.groutWidth, seedF);
-  [[maybe_unused]] double kT = mosaicGroutMask(state, context, (globalCoord + glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0))), state.tileSize, state.groutWidth, seedF);
-  [[maybe_unused]] double kB = mosaicGroutMask(state, context, (globalCoord - glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0))), state.tileSize, state.groutWidth, seedF);
-  [[maybe_unused]] glsl::Vec2 gradK = glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(kR) - static_cast<double>(kL))) * static_cast<double>(static_cast<float>(0.5))), (static_cast<double>((static_cast<double>(kT) - static_cast<double>(kB))) * static_cast<double>(static_cast<float>(0.5))));
-  [[maybe_unused]] double hC = (-kC);
-  [[maybe_unused]] double hR = (static_cast<double>(hC) - static_cast<double>(glsl::swizzle<0>(gradK)));
-  [[maybe_unused]] double hT = (static_cast<double>(hC) - static_cast<double>(glsl::swizzle<1>(gradK)));
-  [[maybe_unused]] double shadeStrength = static_cast<float>(6.0);
-  [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, shadeStrength, static_cast<float>(135.0));
-  [[maybe_unused]] double flatShade = static_cast<float>(0.6);
-  [[maybe_unused]] glsl::Vec3 darkened = (tileColor * glsl::mix(static_cast<float>(1.0), static_cast<float>(0.35), kC));
-  [[maybe_unused]] double shadeMul = (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(shade) - static_cast<double>(flatShade))) * static_cast<double>(static_cast<float>(2.0)))) * static_cast<double>((static_cast<double>(state.relief) / static_cast<double>(static_cast<float>(100.0)))))));
-  result = glsl::Vec3(glsl::clamp((darkened * shadeMul), static_cast<float>(0.0), static_cast<float>(1.0)));
+  if (state.MODE == std::int32_t(0)) {
+    [[maybe_unused]] double warp = mosaicWarp(state, context, globalCoord, state.tileSize, seedF);
+    [[maybe_unused]] glsl::Vec2 warpedCoord = (globalCoord + glsl::FloatExpr<2>(warp));
+    [[maybe_unused]] glsl::Vec2 cellSpace = (warpedCoord / state.tileSize);
+    [[maybe_unused]] glsl::Vec2 cellId = glsl::floor(cellSpace);
+    [[maybe_unused]] glsl::Vec2 warpedCenter = ((cellId + glsl::FloatExpr<2>(static_cast<float>(0.5))) * state.tileSize);
+    [[maybe_unused]] double centerWarp = mosaicWarp(state, context, warpedCenter, state.tileSize, seedF);
+    [[maybe_unused]] glsl::Vec2 sampleGc = (warpedCenter - glsl::FloatExpr<2>(centerWarp));
+    [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((sampleGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec3 tileColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, sampleUV));
+    [[maybe_unused]] double kC = mosaicGroutMask(state, context, globalCoord, state.tileSize, state.groutWidth, seedF);
+    [[maybe_unused]] double kR = mosaicGroutMask(state, context, (globalCoord + glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), state.tileSize, state.groutWidth, seedF);
+    [[maybe_unused]] double kL = mosaicGroutMask(state, context, (globalCoord - glsl::FloatExpr<2>(static_cast<float>(1.0), static_cast<float>(0.0))), state.tileSize, state.groutWidth, seedF);
+    [[maybe_unused]] double kT = mosaicGroutMask(state, context, (globalCoord + glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0))), state.tileSize, state.groutWidth, seedF);
+    [[maybe_unused]] double kB = mosaicGroutMask(state, context, (globalCoord - glsl::FloatExpr<2>(static_cast<float>(0.0), static_cast<float>(1.0))), state.tileSize, state.groutWidth, seedF);
+    [[maybe_unused]] glsl::Vec2 gradK = glsl::FloatExpr<2>((static_cast<double>((static_cast<double>(kR) - static_cast<double>(kL))) * static_cast<double>(static_cast<float>(0.5))), (static_cast<double>((static_cast<double>(kT) - static_cast<double>(kB))) * static_cast<double>(static_cast<float>(0.5))));
+    [[maybe_unused]] double hC = (-kC);
+    [[maybe_unused]] double hR = (static_cast<double>(hC) - static_cast<double>(glsl::swizzle<0>(gradK)));
+    [[maybe_unused]] double hT = (static_cast<double>(hC) - static_cast<double>(glsl::swizzle<1>(gradK)));
+    [[maybe_unused]] double shadeStrength = static_cast<float>(6.0);
+    [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, shadeStrength, static_cast<float>(135.0));
+    [[maybe_unused]] double flatShade = static_cast<float>(0.6);
+    [[maybe_unused]] glsl::Vec3 darkened = (tileColor * glsl::mix(static_cast<float>(1.0), static_cast<float>(0.35), kC));
+    [[maybe_unused]] double shadeMul = (static_cast<double>(static_cast<float>(1.0)) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(shade) - static_cast<double>(flatShade))) * static_cast<double>(static_cast<float>(2.0)))) * static_cast<double>((static_cast<double>(state.relief) / static_cast<double>(static_cast<float>(100.0)))))));
+    result = glsl::Vec3(glsl::clamp((darkened * shadeMul), static_cast<float>(0.0), static_cast<float>(1.0)));
+  } else {
+    if (state.MODE == std::int32_t(1)) {
+      [[maybe_unused]] glsl::Vec2 cellSpace = (globalCoord / state.tileSize);
+      [[maybe_unused]] glsl::Vec2 cellId = glsl::floor(cellSpace);
+      [[maybe_unused]] glsl::Vec2 cellFrac = glsl::fract(cellSpace);
+      [[maybe_unused]] double edgeDistPx = (static_cast<double>(glsl::component_min(glsl::component_min(glsl::swizzle<0>(cellFrac), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<0>(cellFrac)))), glsl::component_min(glsl::swizzle<1>(cellFrac), (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(cellFrac)))))) * static_cast<double>(state.tileSize));
+      [[maybe_unused]] double gapWidthPx = (static_cast<double>((static_cast<double>(state.groutWidth) / static_cast<double>(static_cast<float>(100.0)))) * static_cast<double>(state.tileSize));
+      [[maybe_unused]] double gapAA = static_cast<float>(1.25);
+      [[maybe_unused]] double gapMask = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep((static_cast<double>((static_cast<double>(gapWidthPx) * static_cast<double>(static_cast<float>(0.5)))) - static_cast<double>(gapAA)), (static_cast<double>((static_cast<double>(gapWidthPx) * static_cast<double>(static_cast<float>(0.5)))) + static_cast<double>(gapAA)), edgeDistPx)));
+      [[maybe_unused]] glsl::Vec2 offsetPx = glsl::Vec2((glsl::Vec2((glsl::Vec2((glsl::Vec2((hash22(state, context, (cellId + (static_cast<double>(seedF) * static_cast<double>(static_cast<float>(101.7))))) - static_cast<float>(0.5))) * static_cast<float>(2.0))) * (static_cast<double>(state.maxOffset) / static_cast<double>(static_cast<float>(100.0))))) * state.tileSize));
+      [[maybe_unused]] glsl::Vec2 cellCenterGc = ((cellId + glsl::FloatExpr<2>(static_cast<float>(0.5))) * state.tileSize);
+      [[maybe_unused]] glsl::Vec2 shiftedGc = (cellCenterGc + offsetPx);
+      [[maybe_unused]] glsl::Vec2 shiftedUV = glsl::clamp(((shiftedGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+      [[maybe_unused]] glsl::Vec3 tileColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, shiftedUV));
+      [[maybe_unused]] glsl::Vec3 gapColor = {};
+      if (state.gapFill == std::int32_t(0)) {
+        gapColor = glsl::Vec3(state.backgroundColor);
+      } else {
+        if (state.gapFill == std::int32_t(1)) {
+          gapColor = glsl::Vec3((static_cast<float>(1.0) - glsl::swizzle<0, 1, 2>(srcHome)));
+        } else {
+          gapColor = glsl::Vec3(glsl::swizzle<0, 1, 2>(srcHome));
+        }
+      }
+      result = glsl::Vec3(glsl::mix(tileColor, gapColor, gapMask));
+    }
+  }
   output = glsl::Vec4(glsl::Vec4(result, glsl::swizzle<3>(srcHome)));
 }
 }  // namespace typed_78
 
 BoundKernel bind_filter_mosaicTiles_mosaicTiles(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_78::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::Vec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_78::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::Vec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_78::pixel);
 }
@@ -17919,7 +17990,8 @@ BoundKernel bind_filter_reindex_nmReindexStats(const glsl::Bindings& bindings) {
 // Source SHA-256: bc2fba2fc1a766f59890289bea39e4001b0403983b7c81e47be5259a5e2bb260
 namespace typed_115 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   double smoothness;
@@ -17962,7 +18034,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_115
 
 BoundKernel bind_filter_relief_rlBlurH(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_115::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_115::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_115::pixel);
 }
@@ -17971,7 +18043,8 @@ BoundKernel bind_filter_relief_rlBlurH(const glsl::Bindings& bindings) {
 // Source SHA-256: da3ea200f6e5296fa03af42a1ec9f01dd3f9edfc0965534813b1f0c8ec481ec8
 namespace typed_116 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   double smoothness;
@@ -18014,7 +18087,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_116
 
 BoundKernel bind_filter_relief_rlBlurV(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_116::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_116::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_116::pixel);
 }
@@ -18023,7 +18096,8 @@ BoundKernel bind_filter_relief_rlBlurV(const glsl::Bindings& bindings) {
 // Source SHA-256: dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90
 namespace typed_117 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double detail_value, double lightAngle_value, double balance_value, double graininess_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), detail(detail_value), lightAngle(lightAngle_value), balance(balance_value), graininess(graininess_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double detail_value, double lightAngle_value, double balance_value, double graininess_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : MODE(MODE_value), inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), detail(detail_value), lightAngle(lightAngle_value), balance(balance_value), graininess(graininess_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   const Surface* blurTex;
   glsl::Vec2 resolution;
@@ -18087,14 +18161,40 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double hT = lum(state, context, glsl::swizzle<0, 1, 2>(sample_texture(*state.blurTex, (uv + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(texel))))));
   [[maybe_unused]] double strength = (static_cast<double>(state.detail) * static_cast<double>(static_cast<float>(0.2)));
   [[maybe_unused]] glsl::Vec3 outColor = {};
-  [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, strength, state.lightAngle);
-  outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hC, shade, static_cast<float>(0.75)), state.inkColor, state.paperColor));
+  if (state.MODE == std::int32_t(0)) {
+    [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, strength, state.lightAngle);
+    outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hC, shade, static_cast<float>(0.75)), state.inkColor, state.paperColor));
+  } else {
+    if (state.MODE == std::int32_t(1)) {
+      [[maybe_unused]] double hhC = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.35), static_cast<float>(0.65), hC)));
+      [[maybe_unused]] double hhR = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.35), static_cast<float>(0.65), hR)));
+      [[maybe_unused]] double hhT = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.35), static_cast<float>(0.65), hT)));
+      [[maybe_unused]] double shade = reliefShade(state, context, hhC, hhR, hhT, strength, state.lightAngle);
+      [[maybe_unused]] double glossy = glsl::pow(shade, static_cast<float>(2.0));
+      outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hhC, glossy, static_cast<float>(0.75)), state.inkColor, state.paperColor));
+    } else {
+      if (state.MODE == std::int32_t(2)) {
+        [[maybe_unused]] double threshold = (static_cast<double>(state.balance) / static_cast<double>(static_cast<float>(100.0)));
+        [[maybe_unused]] double m = glsl::step(threshold, hC);
+        [[maybe_unused]] glsl::Vec3 sheet = glsl::mix(((state.inkColor * static_cast<float>(0.9)) + static_cast<float>(0.1)), state.paperColor, m);
+        [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, strength, state.lightAngle);
+        [[maybe_unused]] double gradMag = glsl::length(glsl::FloatExpr<2>((static_cast<double>(hR) - static_cast<double>(hC)), (static_cast<double>(hT) - static_cast<double>(hC))));
+        [[maybe_unused]] double bandHeight = glsl::component_max((static_cast<double>(gradMag) * static_cast<double>(static_cast<float>(2.0))), static_cast<float>(1e-5));
+        [[maybe_unused]] double edge = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.0), bandHeight, glsl::abs((static_cast<double>(hC) - static_cast<double>(threshold))))));
+        [[maybe_unused]] glsl::Vec3 beveled = glsl::clamp((sheet * glsl::mix(static_cast<float>(0.6), static_cast<float>(1.4), shade)), static_cast<float>(0.0), static_cast<float>(1.0));
+        [[maybe_unused]] glsl::Vec3 sheetOut = glsl::mix(sheet, beveled, edge);
+        [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
+        [[maybe_unused]] double grain = (static_cast<double>((static_cast<double>((static_cast<double>(hash12(state, context, glsl::floor(globalCoord))) - static_cast<double>(static_cast<float>(0.5)))) * static_cast<double>((static_cast<double>(state.graininess) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(static_cast<float>(0.15)));
+        outColor = glsl::Vec3(glsl::clamp((sheetOut + glsl::FloatExpr<3>(grain)), static_cast<float>(0.0), static_cast<float>(1.0)));
+      }
+    }
+  }
   output = glsl::Vec4(glsl::Vec4(outColor, glsl::swizzle<3>(src)));
 }
 }  // namespace typed_117
 
 BoundKernel bind_filter_relief_rlShade(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_117::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_117::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_117::pixel);
 }
@@ -30421,7 +30521,7 @@ constexpr std::array<KernelFactory, 213> kCatalog{{
     {"filter/lightLeak:lightLeak", &bind_filter_lightLeak_lightLeak},
     {"filter/lighting:lighting", &bind_filter_lighting_lighting},
     {"filter/lowPoly:lowPoly", &bind_filter_lowPoly_lowPoly},
-    {"filter/median:median", &bind_filter_median_median},
+    {"filter/median:median", &noisemaker::effects::bind_median},
     {"filter/morphology:morphA", &bind_filter_morphology_morphA},
     {"filter/morphology:morphB", &bind_filter_morphology_morphB},
     {"filter/mosaicTiles:mosaicTiles", &bind_filter_mosaicTiles_mosaicTiles},
@@ -30631,37 +30731,15 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/hs:hs", "bind_filter_hs_hs", "bind_filter_hs_hs", "typed_emitter", "5449441668f1ed62da954294285b5fbeae48b7c9feeecbfbe3b56bcc9afae4d7", "7ab6d8ec198193820647bcc09d3d9bd818614d845b0b953ea5dc3931968d2e1f", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7287ee4a4ea34ccec4cc5ccb1c24877fd493c417359217bf85e6d7605ad82bfc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_hs_hs},
     {"filter/invert:inv", "bind_filter_invert_inv", "bind_filter_invert_inv", "typed_emitter", "a18fa342ca8507983495ff5eeaaa7704f227b58d476cf413476b230cbd5d6de4", "0362d48525f911ea260b33c194d0020536a0ca7ae774dd52cb85917a9a4f1f9a", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c9738dca8af8b37c4377f0d75d58918cb014b0103b49d2aa582466f3fad13964", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_invert_inv},
     {"filter/lens:lens", "bind_filter_lens_lens", "bind_filter_lens_lens", "typed_emitter", "6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5", "e140e54bf05785c601f856e7bf8aba7460fe30f22087af19ba5bc1ebf7aa10bd", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ee6cd4b4f231fca45843772e6eda3fc38b37222c3b468ad41f42a4bdffc60f8b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lens_lens},
-    {"filter/lensFlare:lensFlare", "bind_filter_lensFlare_lensFlare", "bind_filter_lensFlare_lensFlare", "typed_emitter", "46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244", "2df869e1060cef437ce6a2ea8d142b863186eed4350c8658c1ede5bb48a00d29", "default-only", "LENS_TYPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "e4bfb75b08009cf3ac6378ec88dd023f723643ad80da0137823ebe1d6c778f9f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensFlare_lensFlare},
+    {"filter/lensFlare:lensFlare", "bind_filter_lensFlare_lensFlare", "bind_filter_lensFlare_lensFlare", "typed_emitter", "46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244", "a6ae43381a4dfc39ccc3af5d61078b7dc63226907de7f65eae4cc0823fb6e529", "runtime-int", "LENS_TYPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ac1f230b5507f79d7f5b5cb309f749c84335cfeeb0a951a770ef085ea1d195f3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensFlare_lensFlare},
     {"filter/lensWarp:lensWarp", "bind_filter_lensWarp_lensWarp", "bind_filter_lensWarp_lensWarp", "typed_emitter", "543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480", "483335be32ed483651c733bcdfa7044bd0c9291acd22aae2727f6b9b6b0461f5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "0198c5916dce2c6d474112433efe735700d835ef2c044abead9314690b5b82e0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensWarp_lensWarp},
     {"filter/lightLeak:lightLeak", "bind_filter_lightLeak_lightLeak", "bind_filter_lightLeak_lightLeak", "typed_emitter", "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb", "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "1a99c191af1f355aa957a603238f4ab877d3fffe587532162fee0d4fd3d38938", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lightLeak_lightLeak},
     {"filter/lighting:lighting", "bind_filter_lighting_lighting", "bind_filter_lighting_lighting", "typed_emitter", "a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f", "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "97e787e0be2a7de850bd7863ddfbb1e206052bf42e6870be94f03aa84abb8ecc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lighting_lighting},
     {"filter/lowPoly:lowPoly", "bind_filter_lowPoly_lowPoly", "bind_filter_lowPoly_lowPoly", "typed_emitter", "2f6a184ef4d372ebf811eaa59420bbce66fa25702e23a278557521679ce7b2f5", "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2", "default-only", "LP_BORDER=0;LP_LIGHT=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "610015e9e8725f4790888d33bd984a88c594363b99a4631219ccdbedd4549c4b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lowPoly_lowPoly},
-    // filter/median:median is now a custom_adapter route, exactly like
-    // synth/remap:remap (see src/effects/median.cpp / bind_median): the
-    // authority's own hand-written adapter is the ground truth, never the
-    // typed kernel median.glsl would have emitted. canonical_factory now
-    // names the real hand-written factory; the bind pointer stays the
-    // generated `bind_filter_median_median` symbol above (unchanged
-    // identity, now a one-line trampoline into bind_median) so every
-    // existing reference to that symbol (kCatalog above, and
-    // tests/test_generated_kernels.cpp's direct calls and `entry->bind`
-    // pointer-identity check) keeps working unmodified. define_contract
-    // moves from "default-only" (one baked RADIUS value) to "none": RADIUS
-    // is a real runtime compile-define binding now, not a baked constant --
-    // see MEDIAN_KEY's binding_abi in effect_catalog.cpp's canonical row and
-    // tools/glslcpp/frontend/median_profile.py's declared ABI. Only
-    // compile_define_abi_sha256 actually changes among the anchored
-    // hashes: sampler/uniform/output/extent are byte-identical to the old
-    // row (inputTex/threshold/the single Vec4 output never changed), and
-    // this hash is sha256("defines\x1e" "RADIUS\x1fstd::int32_t\x1fcustom_adapter\x1f" "\x1e"),
-    // matching src/effects/registry.cpp's compile-define extraction (any
-    // binding_abi.uniforms entry whose name is not already in the row's
-    // top-level "uniforms" list) and src/graph/executor.cpp's
-    // binding_abi_sections defines-section format exactly.
-    {"filter/median:median", "noisemaker::effects::bind_median", "bind_filter_median_median", "custom_adapter", "95e869c02fe2645f4a1b5af5a7446b3f2bacb888f2c965bc272ba56b10666e5d", "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "75b868408b85dbb7516023bfcdd87707f1a59917ac356602fe70ec9bffb4cfc3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "6219cd38392877a2f1468525572f40925e48e809bc0605fcccfda6cbea2cc6a8", &bind_filter_median_median},
-    {"filter/morphology:morphA", "bind_filter_morphology_morphA", "bind_filter_morphology_morphA", "typed_emitter", "9c9b20313b5a112d7684d34ee3f62cb49d04c34aa75f0c846dc9443c6380ba70", "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672", "default-only", "SHAPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "9ed81cc165aae1f0da4499914a70bfcda1fd8927454f838eb534b15a80149e3a", "3aaf45187fe03053c72d9ee0ee1dfa4ef13172c15245856c31d2df7f67201dcd", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphA},
-    {"filter/morphology:morphB", "bind_filter_morphology_morphB", "bind_filter_morphology_morphB", "typed_emitter", "68818a6c62f0b9960aacd671a8dce1622c6860df44b3c1381abf47447a6504b5", "f7f108a9c1d4915927f6f4347224db00febe061d199c72cd08283852ca744672", "default-only", "SHAPE=0", "d7404f7435df426aec9acb598f5d635c0a81db7786285d816827e5c8db87625f", "9ed81cc165aae1f0da4499914a70bfcda1fd8927454f838eb534b15a80149e3a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphB},
-    {"filter/mosaicTiles:mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "typed_emitter", "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47", "192ddcb0d8eec39b4fe7bf72dcbae905f188551257766ff9c3c8cfd8e5e4a526", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "66cc16111f4e77a5753124f56a4aa46c8b14042413659b076cc7b09367809a2b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_mosaicTiles_mosaicTiles},
+    {"filter/median:median", "noisemaker::effects::bind_median", "bind_filter_median_median", "custom_adapter", "95e869c02fe2645f4a1b5af5a7446b3f2bacb888f2c965bc272ba56b10666e5d", "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e", "default-only", "RADIUS=2", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "75b868408b85dbb7516023bfcdd87707f1a59917ac356602fe70ec9bffb4cfc3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "6219cd38392877a2f1468525572f40925e48e809bc0605fcccfda6cbea2cc6a8", &noisemaker::effects::bind_median},
+    {"filter/morphology:morphA", "bind_filter_morphology_morphA", "bind_filter_morphology_morphA", "typed_emitter", "9c9b20313b5a112d7684d34ee3f62cb49d04c34aa75f0c846dc9443c6380ba70", "3fcdcbe2f835d8eeb67817e2eedc412d3ec7e52a183b6cbf76009de0a087a8c2", "runtime-int", "SHAPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a3003b1617f478536eb096916f41e30ece2af78ea37fc82beac4e9dff6467d12", "3aaf45187fe03053c72d9ee0ee1dfa4ef13172c15245856c31d2df7f67201dcd", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphA},
+    {"filter/morphology:morphB", "bind_filter_morphology_morphB", "bind_filter_morphology_morphB", "typed_emitter", "68818a6c62f0b9960aacd671a8dce1622c6860df44b3c1381abf47447a6504b5", "3fcdcbe2f835d8eeb67817e2eedc412d3ec7e52a183b6cbf76009de0a087a8c2", "runtime-int", "SHAPE=0", "d7404f7435df426aec9acb598f5d635c0a81db7786285d816827e5c8db87625f", "a3003b1617f478536eb096916f41e30ece2af78ea37fc82beac4e9dff6467d12", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphB},
+    {"filter/mosaicTiles:mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "typed_emitter", "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47", "3c600ab5b33d29c9e1d932d4757806bffe6a20471eacde5ac303fbfbd5a4a6ef", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4ad5df6e4d160433d256ce10d25fb0386fb6d88348362af55fadc41a9adc4517", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_mosaicTiles_mosaicTiles},
     {"filter/normalMap:normalMap", "bind_filter_normalMap_normalMap", "bind_filter_normalMap_normalMap", "typed_emitter", "384312e50972f75dbebd4080cd76d1c2554a439eb36746f2e351d63a03a271cb", "79d72798c02b3022e9d2f388208d03b47d807fd91cf6f71210dffbbc2a3b72ea", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "82f290714d22e756f02dbfc5f1c8296d0e8b695a455df156f94e13bc84a2f7a3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalMap_normalMap},
     {"filter/normalize:apply", "bind_filter_normalize_apply", "bind_filter_normalize_apply", "typed_emitter", "c59c0bad843a38c823bd2fc6396d0b9bca1cac7f1fe074aaf5dbc9622522e855", "4abf6e34aa8461b42bd250bcc171d080584394bb4f9b0997aceee5ac5a7cc2f2", "none", "", "e11b5b8b1553636d781831502362c7d44f2a65b7cb725c90d0fa1ca9bc92a7e6", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_apply},
     {"filter/normalize:reduce", "bind_filter_normalize_reduce", "bind_filter_normalize_reduce", "typed_emitter", "f32243e29192b79cb5da701de42b62858108ee71a9a1c01220fd93a87beac2b3", "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "322bb65c4e388f504ca0079ca6efcd7be8401d699e7f2bacdbd230816d9428fa", "838859e71971c7e903bbaef24bdcf5f949883eded478446ad57862e1a2147581", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_reduce},
@@ -30698,9 +30776,9 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/reindex:nmReindexApply", "bind_filter_reindex_nmReindexApply", "bind_filter_reindex_nmReindexApply", "typed_emitter", "651bb6930d3fe51629fc3a17c88bfa7c7831e78fa18be0ea16d0f3f9d3c5154d", "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1", "none", "", "2839c05f4debae78b519c01724336878fb51ba69bb2778127e3d9aefb70dd1f6", "83d6c39fcd8e82b980a7817ab1857748ce9a9dc207ed8cca9b9c17b9efa3ed07", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reindex_nmReindexApply},
     {"filter/reindex:nmReindexReduce", "bind_filter_reindex_nmReindexReduce", "bind_filter_reindex_nmReindexReduce", "typed_emitter", "5e9701125522aaa1f838858a7892ac1312f1161608a5f94b494ae64c7db8b7ff", "103dee63fe2c41d98a8c339a4420ad16c1c964a38dcad44c4fc00d54aafbf821", "none", "", "2a10987c960c8aeb6e2d644d55bf8309a4e8a684ba09ea4ac489711db4f9988c", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "de62f4ae77cd3cdee90b9e7872e66455452683bfc9a2ba8655795d6e32922d94", "b3956517b5943ce560514e453a7a578d3a216647cb4072f9620fe55cbb96ead1", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reindex_nmReindexReduce},
     {"filter/reindex:nmReindexStats", "bind_filter_reindex_nmReindexStats", "bind_filter_reindex_nmReindexStats", "typed_emitter", "06525e054fc4910e7bc53345ad656071d2fcb33fc897f4aa35e8fc59b6f0b951", "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "f1472133458ba228ed80d2fbb66588f3c369c3e8f6ad3d2df3c975e2adea89af", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reindex_nmReindexStats},
-    {"filter/relief:rlBlurH", "bind_filter_relief_rlBlurH", "bind_filter_relief_rlBlurH", "typed_emitter", "bc2fba2fc1a766f59890289bea39e4001b0403983b7c81e47be5259a5e2bb260", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "0934c8b19039ed74413a420d832c2e4ff6bc7c8ee87e7225e429e4fea19f09c5", "5812ff08ebc65f68e84fdbe385240f9f22b0e1b433a3acb5f362e95cfb6c701d", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurH},
-    {"filter/relief:rlBlurV", "bind_filter_relief_rlBlurV", "bind_filter_relief_rlBlurV", "typed_emitter", "da3ea200f6e5296fa03af42a1ec9f01dd3f9edfc0965534813b1f0c8ec481ec8", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "default-only", "MODE=0", "2fc438429ee218bc238446a359f8d916eaa3812d3ef49e86262d443aa0ce96f6", "0934c8b19039ed74413a420d832c2e4ff6bc7c8ee87e7225e429e4fea19f09c5", "c5fa9c049293fc61ad8df5b003e898927339c878edc78ff774a0d329f8d2c051", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurV},
-    {"filter/relief:rlShade", "bind_filter_relief_rlShade", "bind_filter_relief_rlShade", "typed_emitter", "dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90", "34d7c17b582ed92256fc62e88243670bbf42187d0da1a28177cd2e356008ef0a", "default-only", "MODE=0", "04bcb2cf3b07f1faea5ecb50a4611ccdc472eff287c4a60088901d489dc0bf59", "f3fefa2ed5a8c2774d924525f4df311bae7af9dca8ee0880a66ba3f54feb36b6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlShade},
+    {"filter/relief:rlBlurH", "bind_filter_relief_rlBlurH", "bind_filter_relief_rlBlurH", "typed_emitter", "bc2fba2fc1a766f59890289bea39e4001b0403983b7c81e47be5259a5e2bb260", "dcc7bee0547496f80849cb0c8c29dd863f6b7233234be24d78412812291447b1", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "47e0fd9c454c551e214956bfe89ccf69c0dc08fcc1ac49ec270ce047f2bd006d", "5812ff08ebc65f68e84fdbe385240f9f22b0e1b433a3acb5f362e95cfb6c701d", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurH},
+    {"filter/relief:rlBlurV", "bind_filter_relief_rlBlurV", "bind_filter_relief_rlBlurV", "typed_emitter", "da3ea200f6e5296fa03af42a1ec9f01dd3f9edfc0965534813b1f0c8ec481ec8", "dcc7bee0547496f80849cb0c8c29dd863f6b7233234be24d78412812291447b1", "runtime-int", "MODE=0", "2fc438429ee218bc238446a359f8d916eaa3812d3ef49e86262d443aa0ce96f6", "47e0fd9c454c551e214956bfe89ccf69c0dc08fcc1ac49ec270ce047f2bd006d", "c5fa9c049293fc61ad8df5b003e898927339c878edc78ff774a0d329f8d2c051", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurV},
+    {"filter/relief:rlShade", "bind_filter_relief_rlShade", "bind_filter_relief_rlShade", "typed_emitter", "dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90", "12cdd75e2b00148e9967678228ba4817d359ec853bd755d4741685e5b44ec2d0", "runtime-int", "MODE=0", "04bcb2cf3b07f1faea5ecb50a4611ccdc472eff287c4a60088901d489dc0bf59", "c81c3a2b4f47d531f9277f9420b83632a52433d0b67a823cb4063125b15ed1f0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlShade},
     {"filter/repeat:repeat", "bind_filter_repeat_repeat", "bind_filter_repeat_repeat", "typed_emitter", "6fe9a919129c3424f66c145aca77b4a4101c7edc46828c2d85bff40d4f67ebbc", "644804c52eea38592eec40b59a167f7edbb2a9e987266f18f086e83353871b4c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "508f4e6fb5c351606f90781b86d1010f1e4b6a504ebed7fcbcbaeca13fade0d4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_repeat_repeat},
     {"filter/reverb:reverb", "bind_filter_reverb_reverb", "bind_filter_reverb_reverb", "typed_emitter", "4dde4b901aded65365d0d46145a7d50dcd2b8d279e32c3d1e7bf02cfc7f78bcb", "050e5a35c8684ac5f5862b58328265bb6bc8ef816fd7bacd779542eed3074f24", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "80f00092e5b388511325098c8770594f7c451344ca3878e137c4d213b2616184", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reverb_reverb},
     {"filter/ridge:ridge", "bind_filter_ridge_ridge", "bind_filter_ridge_ridge", "typed_emitter", "0e3cc0289ff2057145afd5bb8ceeef71bfbbee0aee149eb0f609937f0571694c", "89ebcb3e45b668adfa8ffa6cf96e11538c54e3a586b2b1efd3a1a764828fbe7c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "065be82b53cbf74fec079dec4506f842856bffa3ddaba7c7f958503ec0514267", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_ridge_ridge},
