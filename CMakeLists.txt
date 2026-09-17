@@ -185,6 +185,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
   tests/test_graph_iteration.cpp
+  tests/test_graph_iterated_execution.cpp
   tests/test_snow_kernel.cpp
   tests/test_fdlibm_contract_pin.cpp
   tests/test_palette_override_oracle.cpp
