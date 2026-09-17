@@ -9,12 +9,17 @@
 //
 // Usage: cpp_probe <function> <infile> <outfile>
 //
-// Build (matching arch, matching contraction as the real project TU):
-//   clang++ -std=c++20 -O2 -ffp-contract=fast -Iinclude \
-//     docs/port-engineering/v8-math/cpp_probe.cpp src/fdlibm.cpp -o cpp_probe
-//   clang++ -arch x86_64 -std=c++20 -O2 -ffp-contract=fast -Iinclude \
+// Build (matching arch; fdlibm.cpp's fusion is now explicit and
+// architecture-gated inside the source itself -- see its fma_() helper
+// -- so this no longer needs a special -ffp-contract flag; plain
+// -ffp-contract=off matches the rest of the project and is what actually
+// ships):
+//   clang++ -std=c++20 -O2 -ffp-contract=off -Iinclude \
 //     docs/port-engineering/v8-math/cpp_probe.cpp src/fdlibm.cpp \
-//     -o cpp_probe_x86_64
+//     src/fdlibm_off.cpp -o cpp_probe
+//   clang++ -arch x86_64 -std=c++20 -O2 -ffp-contract=off -Iinclude \
+//     docs/port-engineering/v8-math/cpp_probe.cpp src/fdlibm.cpp \
+//     src/fdlibm_off.cpp -o cpp_probe_x86_64
 
 #include <cstdint>
 #include <cstdio>

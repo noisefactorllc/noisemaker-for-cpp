@@ -498,3 +498,206 @@ function-level comparisons on two architectures.
 - `docs/port-engineering/v8-math/`: this report, the differential harness
   (`gen_inputs.mjs`, `node_probe.mjs`, `cpp_probe.cpp`, `compare.mjs`,
   `run_differential.sh`), and `pixel_sweep.py`.
+
+## 11. Debug build divergence, root-caused and closed (2026-09-17)
+
+### 11.1 The bug
+
+CI builds `noisemaker-cpu-tests` in both Debug (`-O0`) and Release
+(`-O3 -DNDEBUG`). Section 4's contraction resolution -- Section 6's
+noinline-extraction fix included -- depends on the LLVM optimizer
+(InstCombine/DAGCombiner) actually running to fold a source-level `a*b+c`
+under `-ffp-contract=fast` into a hardware `fmadd`. Those passes do not run
+at `-O0`. Verified directly, on this toolchain (Apple clang 21.0.0,
+arm64-apple-darwin25.5.0):
+
+```
+$ cat repro.cpp
+double f(double a, double b, double c) { return a * b + c; }
+$ clang++ -O0 -ffp-contract=fast -c repro.cpp -o /dev/stdout | otool -tV -
+	fmul	d0, d0, d1
+	ldr	d1, [sp, #0x8]
+	fadd	d0, d0, d1        # separate mul+add, NOT fused
+$ clang++ -O2 -ffp-contract=fast -c repro.cpp -o /dev/stdout | otool -tV -
+	fmadd	d0, d0, d1, d2    # one fused instruction
+```
+
+A Debug build therefore silently reverted to unfused arithmetic at every
+site the file's fusion depends on, and diverged from V8's arm64 binary
+there. This was invisible until this pass because Section 5's differential
+harness had only ever been run at the project's Release flags
+(`-O3 -DNDEBUG`); nothing had run it at `-O0`. Once run there, four of the
+five hand-placed pin tests failed (`expm1`, both `tan` pins, `log`) --
+and, more importantly, the harness showed EVERY function this file owns
+(`sin`, `cos`, `asin`, `acos`, `atan`, `exp`, `tanh`, `atan2`, plus the
+four already known) diverging at `-O0`, because ambient auto-fusion had
+been silently load-bearing for all of them, not just the four with a pin
+test.
+
+### 11.2 The fix: explicit, architecture-gated fusion, not ambient contraction
+
+`src/fdlibm.cpp` no longer relies on `-ffp-contract=fast` at all. The
+per-source `set_source_files_properties(... -ffp-contract=fast)` override
+in `CMakeLists.txt` is deleted; the file now compiles under the same
+project-wide `-ffp-contract=off` as everything else. In its place, a
+file-local helper selects fusion explicitly, at compile time, per call
+site:
+
+```cpp
+#if defined(__aarch64__)
+inline double fma_(double a, double b, double c) noexcept {
+  return std::fma(a, b, c);
+}
+#else
+inline double fma_(double a, double b, double c) noexcept {
+  return (a * b) + c;
+}
+#endif
+```
+
+Verified on this toolchain that this removes the `-O0`/`-O2` dependency
+entirely: `std::fma()` lowers to one hardware `fmadd`/`fmsub`/`fnmadd`/
+`fnmsub` on arm64 at BOTH `-O0` and `-O2` (identical instruction either
+way). The architecture split is equally load-bearing, not portability
+paranoia: on x86-64 (this project's baseline, no `-mfma` anywhere), an
+UNCONDITIONAL `std::fma()` would call a *software* correctly-rounded fma
+emulation (`callq _fma`, confirmed in this project's own x86-64 `-O0` and
+`-O2` disassembly of a bare `std::fma()` call) regardless of hardware
+support -- forcing fusion V8's x86-64 binary does not perform, exactly the
+Section 6a bug reincarnated at every site instead of one. Plain `(a*b)+c`
+on x86-64, under this file's now-uniform `-ffp-contract=off`, never
+contracts on that architecture at any optimization level (verified by
+cross-compiling and disassembling), matching V8's own unfused x86-64
+binary.
+
+`kernel_tan_combine`, `log_combine_a`, `log_combine_b` are kept (named,
+for clarity and for the pin tests to reference) but no longer need
+`__attribute__((noinline))` -- the entire class of bug they were isolating
+against (clang's auto-fusion heuristic picking a different fusion,
+or none, depending on surrounding code shape) cannot occur with an
+explicit `fma_()` call, which is not a heuristic.
+
+### 11.3 Fused-site inventory, with V8 citations
+
+Every site below was established two ways, not one: (a) direct
+disassembly of the real, unmodified `base::ieee754::*` machine code in
+this environment's `libnode.147.dylib` (V8 14.6.202.33-node.19, arm64;
+symbols are present and unstripped in this Homebrew build -- `nm
+/Users/alex/homebrew/lib/libnode.147.dylib | grep ieee754`), decoding each
+`fmadd`/`fmsub`/`fnmadd`/`fnmsub` instruction's operands back to the
+matching `fdlibm.cpp` source expression by tracing register moves; and
+(b) cross-checked against a mechanical rule (`A*B+C`->fmadd,
+`A*B-C`->fnmsub, `C-A*B`->fmsub, `-(A*B+C)`->fnmadd, applied per
+statement, honoring statement boundaries -- a multiply already consumed
+by a previous statement's fusion is not visible to the next one) applied
+to every eligible expression in each function, then confirmed by an exact
+match between the RULE's predicted fma-instruction count and the REAL
+disassembly's instruction count for that function/kernel (expm1: 12/12;
+exp: 7/7; log: 14/14; atan: 13/13; atan2: 1/1; kernel_tan incl.
+kernel_tan_combine: 20/20; kernel_rem_pio2 + the medium-size branch of
+ieee754_rem_pio2 combined: 10/10). `fma_()` calls were placed at exactly
+these sites and nowhere else -- confirmed by the differential harness
+reaching 0/2,000,000 per function afterward (Section 11.4), including one
+site (`fd_expm1`'s `k==0` return, `x*e - hxs`) that the disassembly
+tracing caught and the differential harness then confirmed was the last
+remaining gap.
+
+| Function | Fused expressions (source shape) | V8 arm64 evidence |
+|---|---|---|
+| `fd_expm1` | `invln2*x+half`; `x-t*ln2_hi`; `r1` 5-step Horner; `3.0-r1*hfx`; `6.0-x*t`; `x*(e-c)-c`; `x*e-hxs` (k==0); `0.5*(x-e)-0.5` (k==-1); `one+2.0*(x-e)` (k==1) | `expm1+0xbc..+0x2e0`, 12 fma-family instructions |
+| `fd_exp` | `invln2*x+halF[xsb]`; `x-t*ln2HI[0]`; `c=x-t*(...)` 5-step (4 Horner + outer fuse) | `exp+0x118..+0x190`, 7 instructions |
+| `fd_log` | `dk*ln2_hi+dk*ln2_lo`; `0.5-0.333...*f`; `r-dk*ln2_lo`; outer `dk*ln2_hi-(...)` (small-f); t1/t2 Horner (2+3 steps); `log_combine_a`/`log_combine_b` internals; outer `dk*ln2_hi-(...)` wrapping each; `hfsq-s*(hfsq+r)` and `f-s*(f-r)` (k==0 cases) | `log+0xc4..+0x2d8`, 14 instructions |
+| `kernel_sin` | `r` 4-step Horner; `S1+z*r` & outer `x+v*(...)` (iy==0); `half*y-v*r`, `z*(...)-y`, `(...)-v*S1` (iy!=0) | inlined into `sin`/`cos`; shape confirmed via mechanical-rule/count cross-check |
+| `kernel_cos` | `r` 5-step Horner; `z*r-x*y` (shared); `0.5*z-(...)` / `0.5*z-qx` | inlined into `sin`/`cos`; shape confirmed via mechanical-rule/count cross-check |
+| `kernel_tan`/`kernel_tan_combine` | `s*(r+v)+y` & outer `y+z*(...)`; `+=T0*s`; `s=1+t*z` & `t+a*(s+t*v)` (x2, small/final branches); `r`/`v` 5-step Horners; `v-2.0*(...)` (large-angle) | `__kernel_tan`, 20/20 exact count match |
+| `fd_asin` | `x+x*pio2_lo` style; `p`/`q` Horners (5/4-step, x2 branches); `s+s*w`, `2.0*(...)-pio2_lo`; `t-w*w`; `pio2_lo-2.0*c`, `2.0*s*r-(...)`, `pio4_hi-2.0*w` | mechanical-rule/count cross-check |
+| `fd_acos` | `p`/`q` Horners (x3 branches); `pio2_lo-x*r`; `r*s-pio2_lo`, `pi-2.0*(...)`; `z-df*df`; `r*s+c` | mechanical-rule/count cross-check |
+| `fd_atan` | `s1`/`s2` Horners (5/4-step); `2.0*x-one` & `one+1.5*x` (argument reduction); `x-x*(s1+s2)`; `x*(s1+s2)-atanlo[id]` | `atan`, 13/13 exact count match |
+| `fd_atan2` | `pi_o_2+0.5*pi_lo` | `atan2`, 1/1 exact count match |
+| `ieee754_rem_pio2` (medium branch) | `t*invpio2+half`; `t-fn*pio2_1`; `fn*pio2_2t-(...)`, `fn*pio2_3t-(...)` | combined with `kernel_rem_pio2`, 10/10 exact count match |
+| `kernel_rem_pio2` (huge-argument path) | `fw+=x[j]*f[...]` accumulation (x2 loops); `z-two24*fw` (x2 sites); `z-=8.0*floor(z*0.125)`; `fw+=PIo2[k]*q[...]` accumulation | combined with `ieee754_rem_pio2` above |
+| `fd_atan`/rest of `fd_asin`/`fd_acos` argument reduction, `tanh`, `pow`'s wrapper | no fusion (verified: 0 fma-family instructions in V8's real `tanh` disassembly; `tanh`'s own divergence at `-O0` was entirely inherited through `expm1`, confirmed 0/2,000,000 once `expm1` was fixed) | disassembly + differential |
+| `log2`, `hypot` (2/3/N-arg) | none, on purpose (`src/fdlibm_off.cpp`, unchanged by this pass) | already 0/2,000,000 unfused; re-confirmed |
+
+### 11.4 Verification
+
+- **Differential harness, 2,000,000 inputs per function, every function**:
+  0 divergent on arm64 Release (`-O3 -DNDEBUG`), arm64 Debug (`-O0`),
+  AND -- newly, this pass located the previously-fetched official
+  `node-v26.0.0-darwin-x64` build plus this toolchain's Rosetta support,
+  so x86-64 is empirically verified here rather than merely argued --
+  x86-64 Release and x86-64 Debug (`clang++ -arch x86_64`, run under
+  Rosetta against the real x64 V8). 15 functions x 4 configurations x
+  2,000,000 inputs = 120,000,000 direct comparisons, 0 divergent.
+- **Native suite**: `noisemaker-cpu-tests` -- 602 PASS / 0 FAIL in both
+  Debug and Release (601 pre-existing + 1 new: see 11.5). All 5
+  `fdlibm_contract_pin_*` tests pass in both.
+- **`ctest`**: identical result in Debug and Release -- one pre-existing,
+  unrelated failure (`noisemaker-render-cli`'s
+  `test_a_refused_program_exits_nonzero_and_carries_the_executor_reason`),
+  reproduced byte-for-byte on a pristine, unmodified clone of this lane's
+  base commit; not touched or caused by this pass.
+- **`tests.test_dsl_corpus_parity`**: OK, 166/166 admitted corpus records
+  byte-exact (Release driver).
+- **Parameter/geometry sweep** (`tools/parity/sweep.py --variants 6
+  --seed 20260916 --no-chains`), Release, before (pristine base commit
+  982099a) vs. after (this pass): 1248/1248 case ids in common,
+  classification totals IDENTICAL in every category (`byte_exact` 911,
+  `cpp_refused_only` 328, `timeout` 2, `divergent` 4, `both_refused` 3)
+  -- 0 cases changed classification, 0 `byte_exact` cases changed RGBA8
+  hash. All 4 `divergent` cases (`synth/gradient` v2/v3/v4,
+  `synth/mandala` v3) are the SAME case ids with the SAME reason in both
+  runs (`rgba8 matched; float32 pre-quantization surface differs` -- the
+  actual rendered RGBA8 output is byte-identical; only the
+  pre-quantization float32 surface has a sub-quantization-threshold
+  difference), confirming this is a pre-existing, non-transcendental
+  artifact this pass's changes do not touch. Both `timeout` cases
+  (`synth3d/cell3d` v3, `synth3d/noise3d` v3, both heavy 3D effects) are
+  likewise the same 2 case ids, timing out identically in both runs
+  under this shared machine's load -- not something this pass changed
+  either.
+- **Debug-built `noisemaker-dsl-cpu-case` sweep**, transcendental-heavy
+  effects (`synth/{noise,perlin,curl,julia,mandelbrot,remap}`,
+  `classicNoisedeck/fractal`, `synth3d/fractal3d`,
+  `filter/{fibers,scratches,strayHair,wormhole,snow}`,
+  `classicNoisedeck/{noise,noise3d}`, `synth3d/noise3d`,
+  `mixer/uvRemap`; --variants 6): **0 divergent** (78 byte_exact, 23
+  `cpp_refused_only` -- all pre-existing compile-define/missing-backend
+  gaps unrelated to math, 1 timeout on one `synth3d/noise3d` variant --
+  an unoptimized `-O0` performance limit for a 3D volumetric effect, not
+  a correctness issue).
+
+### 11.5 New test
+
+`tests/test_fdlibm_contract_pin.cpp` gained
+`fdlibm_contract_pin_fma_dispatch_matches_this_architecture`, which calls
+a test-only forwarder (`noisemaker::fdlibm::testing::fma_probe`, defined
+in `src/fdlibm.cpp` right next to `fma_()`) at an `(a, b, c)` triple where
+fused and unfused arithmetic are not just off by a rounding hair but
+grossly different (`a=1+2^-52`, `b=1-2^-52`, `c=-1.0`: fused
+`≈-4.93e-32`, unfused exactly `0.0`, verified independently with Python's
+`math.fma`), and asserts THIS architecture produced the result it is
+supposed to produce -- fused on aarch64, unfused elsewhere -- while
+asserting the OTHER value is NOT what came out. Verified to actually
+catch the bug it exists for: manually swapping `fma_()`'s two branches
+(both resolving to the unfused expression) turned this and all four
+other pin tests red with the expected off-by-ULP/grossly-different
+values; reverting restored all five to green.
+
+### 11.6 x86-64: what is and is not verified here
+
+Everything is now empirically verified on x86-64 in this environment,
+not merely argued from `-mfma` absence: the previously-fetched
+SHA256-verified `node-v26.0.0-darwin-x64` official build runs under
+Rosetta on this Apple Silicon Mac, and `clang++ -arch x86_64` cross-
+compiles this project's actual `src/fdlibm.cpp` + `src/fdlibm_off.cpp`.
+The full 2,000,000-input differential harness ran against that real x64
+V8, for every function, at both `-O0` and `-O2`: 0 divergent, matching
+arm64. Confirmed by direct disassembly that the compiled x86-64 object
+contains zero `vfmadd`/`vfmsub`/`vfnmadd`/`vfnmsub` instructions anywhere
+in `fdlibm.cpp`, at either optimization level -- `fma_()`'s x86-64 branch
+is a byte-for-byte no-op there, exactly as designed. What remains
+unverified on real hardware: an actual x86-64 CI runner (this is Rosetta
+emulation on arm64 host silicon, not a physical/virtual x86-64 CPU) and
+the `-Wall -Wextra -Wpedantic -Werror` build under GCC (this project's
+compiler guard also names GCC; only Clang was exercised here).
