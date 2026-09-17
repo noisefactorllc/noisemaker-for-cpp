@@ -3523,6 +3523,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             wrote_output_tex = output_route == "outputTex";
             ++pass_count;
             }
+            }
           } catch (const GraphError& error) {
             release_borrowed();
             if (error.effect_id().empty()) {
