@@ -135,6 +135,11 @@ template <class T> inline constexpr bool is_vec_v = is_vec<std::remove_cvref_t<T
 template <class T> struct is_float_vec : std::false_type {};
 template <std::size_t N> struct is_float_vec<Vec<N, float>> : std::true_type {};
 template <class T> inline constexpr bool is_float_vec_v = is_float_vec<std::remove_cvref_t<T>>::value;
+// A double-lane vector: an authority-double uniform, or a local/return this
+// port classified as such (emit_typed_cpp.py's `_double_vector_expression`).
+template <class T> struct is_double_vec : std::false_type {};
+template <std::size_t N> struct is_double_vec<Vec<N, double>> : std::true_type {};
+template <class T> inline constexpr bool is_double_vec_v = is_double_vec<std::remove_cvref_t<T>>::value;
 template <class T> struct is_float_expr : std::false_type {};
 template <std::size_t N> struct is_float_expr<FloatExpr<N>> : std::true_type { static constexpr std::size_t lanes = N; };
 template <class T> inline constexpr bool is_float_expr_v = is_float_expr<std::remove_cvref_t<T>>::value;
@@ -201,7 +206,15 @@ class FloatExpr {
   constexpr FloatExpr() = default;
   constexpr explicit FloatExpr(double scalar) { lanes_.fill(scalar); }
   constexpr FloatExpr(const Vec<N, float>& vector) { for (std::size_t i = 0; i < N; ++i) lanes_[i] = vector[i]; }
-  template <class T> requires(std::integral<T> && !std::same_as<T, bool>)
+  // A double-lane vector (an authority-double uniform, or a local/return
+  // this port classified as such -- see emit_typed_cpp.py's
+  // `_double_vector_expression`) promotes into this deferred-rounding
+  // expression exactly like an integral vector already does: its lanes are
+  // already full JS-double precision, so the promotion itself performs no
+  // rounding, only the eventual materialization into a `Vec<N, float>`
+  // does (`noisemaker::f32` below) -- matching the authority's own single
+  // rounding at the point its `#binary`/`#ternary`/... actually narrow.
+  template <class T> requires((std::integral<T> && !std::same_as<T, bool>) || std::same_as<T, double>)
   constexpr explicit FloatExpr(const Vec<N, T>& vector) {
     for (std::size_t i = 0; i < N; ++i) lanes_[i] = static_cast<double>(vector[i]);
   }
@@ -218,6 +231,7 @@ Vec<N, T>::Vec(const FloatExpr<N>& expression) requires std::same_as<T, float> {
 template <std::size_t N, class T>
 Vec<N, T>& Vec<N, T>::operator=(const FloatExpr<N>& expression) requires std::same_as<T, float> { for (std::size_t i = 0; i < N; ++i) lanes_[i] = noisemaker::f32(expression[i]); return *this; }
 template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> float_expr(const Vec<N, float>& value) { return FloatExpr<N>(value); }
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> float_expr(const Vec<N, double>& value) { return FloatExpr<N>(value); }
 template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> float_expr(const FloatExpr<N>& value) { return value; }
 template <std::size_t N, class Op> [[nodiscard]] constexpr FloatExpr<N> float_binary(const FloatExpr<N>& a, const FloatExpr<N>& b, Op op) { std::array<double, N> lanes{}; for (std::size_t i = 0; i < N; ++i) lanes[i] = op(a[i], b[i]); return make_float_expr(lanes); }
 
@@ -235,6 +249,29 @@ NOISEMAKER_GLSL_FLOAT_BINARY(-)
 NOISEMAKER_GLSL_FLOAT_BINARY(*)
 NOISEMAKER_GLSL_FLOAT_BINARY(/)
 #undef NOISEMAKER_GLSL_FLOAT_BINARY
+
+// A `Vec<N, double>` operand (an authority-double uniform/local/return; see
+// `_double_vector_expression`) mixed with a `Vec<N, float>`/`FloatExpr<N>`/
+// `double` scalar promotes into the very same deferred double-precision
+// expression the all-float overloads above already build, rounding to
+// float32 only once, at eventual materialization -- exactly like the
+// authority's own arithmetic on a raw JS double never rounds until its
+// underlying `#binary` narrows the result. `Vec<N, double> op Vec<N,
+// double>` needs no new overload: `operator symbol` above (for `T` other
+// than `float`) already returns an unrounded `Vec<N, double>`, which is
+// itself a valid operand to every overload below.
+#define NOISEMAKER_GLSL_DOUBLE_VEC_BINARY(symbol) \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(const Vec<N, double>& a, const Vec<N, float>& b) { return float_expr(a) symbol float_expr(b); } \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(const Vec<N, float>& a, const Vec<N, double>& b) { return float_expr(a) symbol float_expr(b); } \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(const Vec<N, double>& a, const FloatExpr<N>& b) { return float_expr(a) symbol b; } \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(const FloatExpr<N>& a, const Vec<N, double>& b) { return a symbol float_expr(b); } \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(const Vec<N, double>& a, double b) { return float_expr(a) symbol FloatExpr<N>(b); } \
+template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator symbol(double a, const Vec<N, double>& b) { return FloatExpr<N>(a) symbol float_expr(b); }
+NOISEMAKER_GLSL_DOUBLE_VEC_BINARY(+)
+NOISEMAKER_GLSL_DOUBLE_VEC_BINARY(-)
+NOISEMAKER_GLSL_DOUBLE_VEC_BINARY(*)
+NOISEMAKER_GLSL_DOUBLE_VEC_BINARY(/)
+#undef NOISEMAKER_GLSL_DOUBLE_VEC_BINARY
 
 template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator-(const Vec<N, float>& value) { return FloatExpr<N>(0.0) - value; }
 template <std::size_t N> [[nodiscard]] constexpr FloatExpr<N> operator-(const FloatExpr<N>& value) { return FloatExpr<N>(0.0) - value; }

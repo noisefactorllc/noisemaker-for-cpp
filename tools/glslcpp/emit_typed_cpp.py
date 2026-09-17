@@ -799,6 +799,14 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
     for program_key in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
     for uniform_name in _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
+# See `_classic_noisedeck_double_uniform_type`: the one deliberate carve-out
+# from the general vec3/vec4-uniform double rule below, kept in lockstep
+# with executor.cpp's `apply_classic_noisedeck_palette_override`.
+_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
+    (program_key, uniform_name)
+    for program_key in ("classicNoisedeck/noise:noise",)
+    for uniform_name in _CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
+)
 # classicNoisedeck/noise:noise also declares a palette-typed parameter, but
 # this port's generated route bakes `colorMode` as a compile-time constant
 # fixed at 6 ("hsv") -- the authenticated route never admits `colorMode: 4`
@@ -811,25 +819,6 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
 # parameter, but its corpus record is `recordKind: "excluded"` (unrelated
 # 3D/volume-output limitation): it is never admitted by this port's executor
 # at all, so it is not on the carrier list either.
-
-# The identical carrier shape as `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`
-# above, for one vec2 uniform on one non-classicNoisedeck program:
-# `synth/media:mediaInput`'s `imageSize`. renderer.js's
-# `createCanonicalBindings()` spreads `...uniforms` (buildBindings()'s raw,
-# unrounded `params[name]`) for every ordinary effect-parameter uniform, and
-# only explicitly `f32()`'s a handful of reserved names (time/seed/
-# deltaTime/aspect/aspectRatio/renderScale) -- `imageSize` is none of those,
-# so the authority carries it as a full, un-rounded JS double all the way
-# into the kernel body (confirmed: zero `Math.fround` calls anywhere in
-# canonicalFactory261's emitted body). A `glsl::Vec2` (float lanes) uniform
-# ABI narrows it to float32 one step earlier than the authority ever does --
-# measurably not byte-exact (rare, boundary-triggered: 3 of 4096 pixels in
-# one `tools/parity/sweep.py` variant with a non-round `imageSize`/
-# `rotation` combination). `glsl::DVec2` doesn't exist as a carrier
-# elsewhere in this port; this is its first and, today, only use.
-_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = frozenset({
-    ("synth/media:mediaInput", "imageSize"),
-})
 
 # Identifiers the emitter itself binds inside every generated pixel function
 # and helper signature. A GLSL local or parameter with one of these names would
@@ -972,6 +961,44 @@ _BUILTIN_NAMES = {
     "sign": "sign", "sin": "sin", "smoothstep": "smoothstep", "sqrt": "sqrt", "step": "step",
 }
 
+# createCanonicalBindings() (noisemaker-for-cpu's src/csl/glsl-kernel.js)
+# spreads every ordinary effect-parameter uniform from `options.uniforms`
+# verbatim -- a raw, un-rounded JS double for a vector just as much as a
+# scalar, and no differently for a vec2 than a vec3/vec4. Only a handful of
+# reserved scalar names are `Math.fround`'d there (seed/aspectRatio/aspect/
+# time/globalTime/deltaTime; scalars already carry full JS Number precision
+# throughout this port, see `uniform_type`), and `resolution`/
+# `fullResolution`/`tileOffset` (also vec2) come from a `Float32Array`
+# instead of `options.uniforms`, so they are never effect-parameter-sourced
+# and stay ordinary float carriers. `synth/media:mediaInput`'s `imageSize`
+# is the one vec2 effect-parameter uniform in the whole pinned corpus
+# (confirmed: zero `Math.fround` calls anywhere in canonicalFactory261's
+# emitted body) -- a `glsl::Vec2` (float lanes) ABI narrows it to float32
+# one step earlier than the authority ever does, measurably not byte-exact
+# (rare, boundary-triggered: 3 of 4096 pixels in one
+# `tools/parity/sweep.py` variant with a non-round `imageSize`/`rotation`
+# combination), exactly the same failure shape as every vec3/vec4 case
+# below, so it needs no carrier list of its own: the general rule reaches
+# it identically to how it reaches the five classicNoisedeck palette
+# programs. Across the whole pinned corpus exactly five vec2/vec3/vec4
+# uniform NAMES are not effect-parameter-sourced: `size`/`motion`
+# (filter/normalMap's `uniform vec4 size|motion`, falling back to
+# createCanonicalBindings()'s own `Float32Array(4)` default) and
+# `resolution`/`fullResolution`/`tileOffset` above, because no catalog
+# parameter maps onto any of these five names anywhere in the corpus (see
+# tools/dsl/generate_backend_compatibility.py's PASS_DERIVED_BINDINGS:
+# "canonical_size_default"/"canonical_motion_default", and
+# RESERVED_RUNTIME, neither of which contains any other vec2/vec3/vec4
+# name). Every other vec2/vec3/vec4 uniform, in every program, is this
+# authority-double carrier.
+_DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({
+    "size", "motion", "resolution", "fullResolution", "tileOffset",
+})
+# See `_is_double_vector_uniform`'s docstring.
+_FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
+    ("synth/solid:solid", "color"),
+})
+
 
 @dataclass(slots=True)
 class _Emitter:
@@ -1040,6 +1067,11 @@ class _Emitter:
     runtime_radius_declaration_emitted: bool = field(init=False, default=False)
     function_names: dict[int, str] = field(init=False)
     ordinary_array_return_signatures: set[int] = field(init=False)
+    # See `_compute_double_vector_classification` for what these three
+    # carry and the JS evidence behind them.
+    double_vector_uniform_symbol_ids: set[int] = field(init=False)
+    double_vector_local_symbol_ids: set[int] = field(init=False)
+    double_vector_function_signature_ids: set[int] = field(init=False)
     mutated_symbol_ids: set[int] = field(init=False)
     program_scope_symbol_ids: set[int] = field(init=False)
     alias_declaration_symbol_ids: set[int] = field(init=False)
@@ -1564,14 +1596,6 @@ class _Emitter:
     # scoped to these named symbols in this one authenticated program.
     emitted_testpattern_digit_extraction_declarations: list[object] = field(
         init=False, default_factory=list)
-    # Symbol ids of every local declaration this render authored as
-    # `glsl::DVec2` via `_double_precision_vec2_alias_declaration` -- so a
-    # later binary-expression emission referencing one of them by `id` (see
-    # the "binary" expression case) knows to promote its OTHER operand to
-    # `glsl::DVec2` explicitly rather than emit a mixed Vec<N,float>/
-    # Vec<N,double> operator that does not exist.
-    double_precision_vec2_alias_symbol_ids: list[int] = field(
-        init=False, default_factory=list)
     emitted_testpattern_digit_extraction_remainder: TypedExpression | None = field(
         init=False, default=None)
     emitted_testpattern_digit_extraction_call: TypedExpression | None = field(
@@ -1906,7 +1930,6 @@ class _Emitter:
         self.authorized_testpattern_glyph_mask = None
         self.emitted_testpattern_bitwise = []
         self.emitted_testpattern_digit_extraction_declarations = []
-        self.double_precision_vec2_alias_symbol_ids = []
         self.emitted_testpattern_digit_extraction_remainder = None
         self.emitted_testpattern_digit_extraction_call = None
         self.authorized_remap_proof = None
@@ -4653,6 +4676,7 @@ class _Emitter:
         self._validate_fixed_array_input_parameter()
         self._validate_fixed_affine_centers13()
         self._validate_source_globals()
+        self._compute_double_vector_classification()
 
     def _literal_lane_site(self, value: object) -> tuple[TypedExpression, int, str] | None:
         if not hasattr(self, "authorized_literal_vec3_lane_sites"):
@@ -5746,6 +5770,212 @@ class _Emitter:
                 f"{initializer};")
         return lines
 
+    def _is_double_vector_uniform(self, symbol: object) -> bool:
+        """See `_DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES` for the name-based
+        evidence (five names, spanning vec2 through vec4), and
+        `_FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION` for the one
+        (program, uniform) carve-out: `synth/solid:solid`'s `color`
+        is an ordinary effect-parameter vec3 uniform (this port's frozen,
+        hand-written `src/generated/synth_solid.cpp` legacy factory is
+        dispatched over the typed emitter's own row for the same key, but
+        `generate_backend_compatibility.py`'s `_legacy_factories` still
+        authenticates the typed row's ABI against that frozen file's
+        literal `bindings.get_or<glsl::Vec3>("color", ...)` read) --
+        widening it here without also hand-editing that frozen file would
+        fail that authentication. `solid.glsl`'s only use of `color` is
+        `color * alpha` (vector-times-scalar, always narrows unconditionally
+        either way -- see `_double_vector_expression`'s docstring), so this
+        carve-out changes nothing observable. vec2 is in scope here (not
+        just vec3/vec4): `synth/media:mediaInput`'s `imageSize` is the one
+        vec2 effect-parameter uniform anywhere in the corpus, and the
+        authority's own raw-double-until-first-narrowing-op rule makes no
+        distinction by vector width.
+        """
+        return (symbol.type.display() in {"vec2", "vec3", "vec4"}
+                and symbol.name not in _DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES
+                and (self.program.key, symbol.name)
+                not in _FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION)
+
+    def _double_vector_expression(self, value: TypedExpression) -> bool:
+        """Whether `value` (any expression) still carries the authority's
+        raw, un-rounded double all the way to this point -- `False` for
+        every non-vec2/vec3/vec4 expression, including a would-be-double
+        scalar (scalars already carry full JS Number precision throughout
+        this port unconditionally; see `uniform_type`/`local_type`/
+        `function_type`, so there is nothing for this to add there).
+
+        This mirrors the JS CPU authority's own narrowing points exactly,
+        established against noisemaker-for-cpu's `glsl-transpiler`-produced
+        kernels (src/effects/generated/canonical-kernels.js) and its
+        src/csl/glsl-runtime.js CPU runtime:
+
+        - a plain identifier reference (`id`) is transparent: a uniform
+          reference is double iff `_is_double_vector_uniform`; a local is
+          double iff its OWN declaration was classified double (see
+          `_compute_double_vector_classification`); a function parameter is
+          NEVER double -- glsl-transpiler unconditionally copies every
+          vec/mat "in" parameter on call entry
+          (node_modules/glsl-transpiler/lib/index.js's function-emission:
+          inArgs.forEach(arg => result += arg + " = " + arg + ".slice();\n"
+          when /^(vec|mat)/.test(arg.type)), and the
+          authority's own postprocessing (scripts/upstream/compile-glsl.js)
+          rewrites that slice into `$runtime.copy(...)`, which narrows
+          every lane through a `Float32Array.set()`
+          (src/csl/glsl-runtime.js's `copy()`);
+        - `return <expr>;` is transparent: glsl-transpiler emits a plain JS
+          `return`, no copy is inserted for a return value;
+        - an identity, full-width swizzle (`.rgb` on a vec3, `.xyzw` on a
+          vec4, ...) is transparent: glsl-transpiler's `unswizzle()`
+          (lib/index.js) returns the very same identifier unchanged for
+          that one case (`if (type && args.length ===
+          this.types[type].length && positions.every((position, i) =>
+          position === i)) return ident`); every other swizzle (narrowing
+          or reordering) rebuilds a `new Float32Array([...].map(...))` and
+          so narrows -- conservatively treated as narrowing below (the
+          default `False`), since it is never the identity case;
+        - a conditional (`?:`) is double only if BOTH branches are: JS
+          values carry no static type, so whichever raw branch a
+          conditional selects is exactly as double, or as narrowed, as
+          that branch's own value, and this port must pick ONE static C++
+          type for the whole conditional;
+        - a call to a DSL user function is double iff that function's own
+          return type was classified double (see
+          `_compute_double_vector_classification`); a call to a builtin
+          (mix/dot/length/clamp/normalize/...) is NEVER double -- every
+          name in `_BUILTIN_NAMES` is implemented in glsl-runtime.js's
+          `#unary`/`#binary`/`#ternary`/`dot`/`length`/`normalize`/
+          `matrixMult`, all of which `Math.fround` every output lane
+          unconditionally, regardless of whether their operands were raw
+          doubles;
+        - a vector constructor call (`vecN(...)`), arithmetic (`+ - * /`),
+          and every other expression kind narrow unconditionally in JS too
+          (glsl-transpiler always materializes a `new Float32Array(...)`
+          for these) -- the default `False` below.
+        """
+        if value.type.display() not in {"vec2", "vec3", "vec4"}:
+            return False
+        if value.kind == "id":
+            symbol = value.symbol
+            if symbol is None:
+                return False
+            if symbol.storage == "uniform":
+                return self._is_double_vector_uniform(symbol)
+            if symbol.storage == "local":
+                return symbol.id in self.double_vector_local_symbol_ids
+            return False
+        if value.kind == "swizzle":
+            if not value.children or not value.member:
+                return False
+            child = value.children[0]
+            source_width = {"vec2": 2, "vec3": 3, "vec4": 4}.get(child.type.display())
+            if source_width is None or len(value.member) != source_width:
+                return False
+            lanes = [_SWIZZLE.get(lane) for lane in value.member]
+            if any(lane is None for lane in lanes) or lanes != list(range(source_width)):
+                return False
+            return self._double_vector_expression(child)
+        if value.kind == "conditional":
+            return (len(value.children) == 3
+                    and self._double_vector_expression(value.children[1])
+                    and self._double_vector_expression(value.children[2]))
+        if value.kind == "call":
+            return value.signature_id in self.double_vector_function_signature_ids
+        return False
+
+    def _double_vector_statements(self, statements: tuple[TypedStatement, ...]) -> list[bool]:
+        """Walk `statements` (one function body, or a nested block/if/for
+        body reached recursively) in execution order.
+
+        Every vec3/vec4 local declaration reached is classified via
+        `_double_vector_expression` and, if double, recorded into
+        `self.double_vector_local_symbol_ids` immediately -- so a later
+        declaration in the same or a nested scope that references an
+        earlier one (gradient's four-corners `cBR = ... ? color4 : cBL`)
+        sees it already classified, matching JS's own left-to-right,
+        top-to-bottom evaluation order. Returns one bool per `return`
+        statement reached (of any type; callers filter by the enclosing
+        function's own return type).
+        """
+        returns: list[bool] = []
+        for statement in statements:
+            if statement.kind == "decl":
+                for declaration in statement.expressions:
+                    if (declaration.kind == "declaration"
+                            and declaration.type.display() in {"vec2", "vec3", "vec4"}
+                            and declaration.children
+                            and declaration.symbol is not None
+                            and self._double_vector_expression(declaration.children[0])):
+                        self.double_vector_local_symbol_ids.add(declaration.symbol.id)
+            elif statement.kind == "return" and statement.expressions:
+                returns.append(self._double_vector_expression(statement.expressions[0]))
+            if statement.children:
+                returns.extend(self._double_vector_statements(statement.children))
+        return returns
+
+    def _compute_double_vector_classification(self) -> None:
+        """Populate the three double-vector sets `__post_init__` declares.
+
+        `double_vector_uniform_symbol_ids` is static (a pure function of
+        each uniform's own name/type). `double_vector_local_symbol_ids` and
+        `double_vector_function_signature_ids` are mutually recursive (a
+        local can be double because it aliases a double-returning call,
+        and a function's return can be double because it returns a double
+        local) and are converged with an ordinary Jacobi-style fixed-point
+        iteration: each pass re-walks every function body from scratch
+        against the PREVIOUS pass's `double_vector_function_signature_ids`
+        (so a widened set can promote a local an earlier pass missed), and
+        the set of double functions only ever grows pass over pass, so it
+        stabilizes in at most `len(functions)` passes.
+        """
+        self.double_vector_uniform_symbol_ids = {
+            symbol.id for symbol in self.uniforms.values()
+            if self._is_double_vector_uniform(symbol)
+        }
+        self.double_vector_local_symbol_ids = set()
+        self.double_vector_function_signature_ids = set()
+        for _ in range(len(self.program.functions) + 2):
+            self.double_vector_local_symbol_ids = set()
+            next_functions: set[int] = set()
+            for function in self.program.functions:
+                returns = self._double_vector_statements(function.body)
+                if (function.return_type.display() in {"vec2", "vec3", "vec4"}
+                        and returns and all(returns)):
+                    next_functions.add(function.signature.id)
+            converged = next_functions == self.double_vector_function_signature_ids
+            self.double_vector_function_signature_ids = next_functions
+            if converged:
+                break
+        else:
+            # The bound above is a strict upper bound on how many passes a
+            # monotonically-growing fixed point over this many functions can
+            # take, so this is unreachable; re-run once more defensively so
+            # `double_vector_local_symbol_ids` still matches the final
+            # `double_vector_function_signature_ids` if it ever is.
+            self.double_vector_local_symbol_ids = set()
+            for function in self.program.functions:
+                self._double_vector_statements(function.body)
+
+    def _double_vector_type(self, glsl_type_display: str) -> str:
+        return {"vec2": "glsl::DVec2", "vec3": "glsl::DVec3",
+                "vec4": "glsl::DVec4"}[glsl_type_display]
+
+    def _function_return_type(self, function: object) -> str:
+        """The declared C++ return type for `function`'s signature and
+        forward declaration (kept identical between both emission sites).
+
+        The pre-existing `ordinary_array_return_signatures` deferred-vector
+        (`glsl::FloatExpr<N>`) case takes priority -- it is an unrelated,
+        narrower mechanism (see `_function_returns_integral_call_map`) --
+        then the general double-vector-return rule
+        (`double_vector_function_signature_ids`, see
+        `_compute_double_vector_classification`), then the ordinary case.
+        """
+        if function.signature.id in self.ordinary_array_return_signatures:
+            return f"glsl::FloatExpr<{function.return_type.display()[-1]}>"
+        if function.signature.id in self.double_vector_function_signature_ids:
+            return self._double_vector_type(function.return_type.display())
+        return self.function_type(function.return_type)
+
     def type(self, value: object) -> str:
         name = value.display()
         if name == "mat4" and self.authorized_glitch_proof is not None:
@@ -5922,90 +6152,43 @@ class _Emitter:
         # compatibly through Bindings::get_number().
         return "double" if value.display() == "float" else self.type(value)
 
-    def _classic_noisedeck_double_uniform_type(self, symbol_name: str) -> str | None:
-        """The declared double-precision-uniform carrier list override.
+    def _classic_noisedeck_double_uniform_type(self, symbol: object) -> str | None:
+        """The double-precision-uniform ABI override for a program-level
+        uniform, generalized from the original classicNoisedeck palette
+        carrier list to the full JS authority rule.
 
-        Returns "glsl::DVec3" for exactly the (program, uniform) pairs in
-        `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`; `None` for every other
-        program or uniform, which then falls through to the ordinary
-        `glsl::Vec3` (float lanes) uniform type unchanged.
+        Returns "glsl::DVec3"/"glsl::DVec4" whenever the uniform still
+        carries the authority's raw, un-rounded double at bind time --
+        which `_is_double_vector_uniform` establishes is every vec3/vec4
+        effect-parameter uniform in the corpus except `size`/`motion` (see
+        its docstring for the evidence) -- with two carve-outs kept exactly
+        as already proven:
+
+        - the five original `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`
+          programs take this same "glsl::DVec3" unconditionally, so folding
+          them into the general rule below changes nothing for them;
+        - `classicNoisedeck/noise`'s own paletteAmp/paletteFreq/
+          paletteOffset/palettePhase are deliberately left OUT of the
+          general rule (`_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION`): its
+          generated route bakes `colorMode` to a compile-time constant that
+          never reaches `pal()` (dead code in this port), so there is no
+          live code path to prove a widened ABI against, and
+          `apply_classic_noisedeck_palette_override` in executor.cpp
+          already, deliberately, keeps binding it `glsl::Vec3` -- changing
+          only this file without that one would make the kernel's declared
+          uniform type disagree with the bound ABI type and throw at
+          runtime.
+
+        Returns `None` for every other uniform, which then falls through to
+        the ordinary `glsl::Vec3`/`glsl::Vec4` (float lanes) uniform type.
         """
-        if (self.program.key, symbol_name) in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
+        if (self.program.key, symbol.name) in _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
             return "glsl::DVec3"
+        if (self.program.key, symbol.name) in _CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION:
+            return None
+        if self._is_double_vector_uniform(symbol):
+            return self._double_vector_type(symbol.type.display())
         return None
-
-    def _double_precision_vec2_uniform_type(self, symbol_name: str) -> str | None:
-        """The declared double-precision vec2 uniform carrier override.
-
-        Returns "glsl::DVec2" for exactly the (program, uniform) pairs in
-        `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`; `None` for every other
-        program or uniform, which then falls through to the ordinary
-        `glsl::Vec2` (float lanes) uniform type unchanged. Mirrors
-        `_classic_noisedeck_double_uniform_type` exactly, one vec width
-        down, for a program outside the classicNoisedeck namespace.
-        """
-        if (self.program.key, symbol_name) in _DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS:
-            return "glsl::DVec2"
-        return None
-
-    def _double_precision_vec2_alias_declaration(self, declaration) -> bool:
-        """True for a local `vec2 x = imageSize;` (or any other declared
-        double-precision vec2 uniform carrier), unmodified.
-
-        Narrowing such a declaration to `glsl::Vec2` would reintroduce
-        exactly the float32 rounding the carrier override above exists to
-        avoid, just one statement later than the uniform read itself.
-        Scoped tightly: a direct, single-child identifier initializer
-        naming exactly one of `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`'s
-        uniforms for the current program. Any other shape (arithmetic, a
-        second local aliasing the first, a different program) is not
-        recognized and keeps the ordinary float carrier -- only the two
-        directly-uniform-aliasing declarations in synth/media's own
-        getImage/rotate2D (`size = imageSize`) are proven to need this.
-        """
-        if declaration.type.display() != "vec2" or len(declaration.children) != 1:
-            return False
-        initializer = declaration.children[0]
-        if initializer.kind != "id" or initializer.symbol_id is None:
-            return False
-        uniform_symbol = next(
-            (item.symbol for item in self.program.declarations
-             if item.symbol.storage == "uniform"
-             and item.symbol.id == initializer.symbol_id),
-            None)
-        if uniform_symbol is None:
-            return False
-        return self._double_precision_vec2_uniform_type(uniform_symbol.name) == "glsl::DVec2"
-
-    def _is_double_precision_vec2_alias_symbol(self, symbol_id: int) -> bool:
-        """True for exactly the local symbol ids
-        `_double_precision_vec2_alias_declaration` already promoted to
-        `glsl::DVec2` for the CURRENT program (recorded at their own
-        declaration site into `double_precision_vec2_alias_symbol_ids`)."""
-        return symbol_id in self.double_precision_vec2_alias_symbol_ids
-
-    def _references_double_precision_vec2_alias(self, value: TypedExpression) -> bool:
-        """True when `value`'s own subtree reads a `glsl::DVec2`-promoted
-        local ANYWHERE within it -- not only when `value` itself is that
-        direct identifier.
-
-        Needed because the promotion above must propagate upward through
-        every enclosing expression until the next explicit narrowing
-        constructor (the emitter's existing `glsl::Vec2(...)` wrapper at
-        each assignment -- the single rounding point that matches the
-        authority's own single Float32Array store): `size` directly is
-        `glsl::DVec2`, so is `(gl_FragCoord.xy / size)`, so is
-        `(1.0 / size)`, and so is `st + (1.0 / size)` even though `st`
-        itself is an ordinary, already-narrowed `glsl::Vec2` local --
-        narrowing any INTERMEDIATE step back to float32 before the
-        assignment's own outer wrapper would round one step earlier than
-        the authority ever does, exactly the divergence this whole carrier
-        exists to avoid.
-        """
-        if value.kind == "id" and value.symbol_id is not None:
-            return self._is_double_precision_vec2_alias_symbol(value.symbol_id)
-        return any(self._references_double_precision_vec2_alias(child)
-                   for child in value.children)
 
     @staticmethod
     def _contains_vector_value_boundary(value: TypedExpression) -> bool:
@@ -7602,36 +7785,6 @@ class _Emitter:
                             left = materialized
                         else:
                             right = materialized
-            if value.type.display() == "vec2":
-                # One operand's subtree reads our declared double-precision
-                # vec2 uniform carrier alias (`size`, see
-                # `_double_precision_vec2_alias_declaration`) -- directly
-                # (`size` itself) or transitively (e.g. `1.0 / size`, or
-                # `st + (1.0 / size)`) -- while the OTHER does not. The
-                # non-referencing operand must be promoted to `glsl::DVec2`
-                # explicitly in the emitted text, since no implicit mixed
-                # Vec<N,float>/Vec<N,double> operator exists (deliberately:
-                # GLSL itself has no implicit vec-vec precision conversion
-                # either) -- see `_references_double_precision_vec2_alias`
-                # for why this has to check the whole subtree, not just an
-                # immediate `id` child. Scoped to exactly the vec2 binary
-                # ops synth/media's own getImage/rotate2D perform against
-                # `size` and its descendants; this never fires for any
-                # other program, since that helper only ever recognizes
-                # symbols this same render already promoted. When BOTH
-                # operands already reference it, both are already
-                # `glsl::DVec2` and the ordinary same-type operator applies
-                # unchanged.
-                referencing = [self._references_double_precision_vec2_alias(child)
-                              for child in value.children]
-                if referencing[0] != referencing[1]:
-                    other_index = 0 if referencing[1] else 1
-                    other = left if other_index == 0 else right
-                    promoted = f"glsl::DVec2({other})"
-                    if other_index == 0:
-                        left = promoted
-                    else:
-                        right = promoted
             result = f"({left} {value.operator} {right})"
             if vector_with_boundary:
                 # Vector-vector helpers return an ordinary Array with rounded
@@ -7687,11 +7840,41 @@ class _Emitter:
             yes = self.expression(value.children[1])
             no = self.expression(value.children[2])
             if value.type.display() in {"vec2", "vec3", "vec4"}:
-                vector_type = self.type(value.type)
+                # Both branches double (see `_double_vector_expression`)
+                # means the whole conditional stays double -- e.g.
+                # gradient's `vec3 cTR = colorCount >= 3 ? color2 : color1;`
+                # -- wrapping each branch in `glsl::Vec2/3/4(...)` here
+                # (as the ordinary case below does) would narrow one
+                # rounding step earlier than the authority's plain JS `?:`
+                # does, and would also fail to compile: `glsl::Vec3(dvec)`
+                # is a valid explicit narrowing conversion, but it is not
+                # the authority's semantics for a bare conditional.
+                vector_type = (self._double_vector_type(value.type.display())
+                                if self._double_vector_expression(value)
+                                else self.type(value.type))
                 yes, no = f"{vector_type}({yes})", f"{vector_type}({no})"
             return f"({condition} ? {yes} : {no})"
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
+            if value.kind == "call":
+                # Every DSL user-function vec2/vec3/vec4 PARAMETER is always
+                # `glsl::Vec2`/`Vec3`/`Vec4` (see `function_parameter_type` /
+                # `function_type`; never double -- a JS user function
+                # unconditionally narrows every vec/mat "in" parameter on
+                # call entry, see `_double_vector_expression`'s docstring).
+                # A double-carrying ARGUMENT must be narrowed explicitly
+                # here to match: unlike a builtin call (mix/dot/length/...,
+                # which stays untouched below so it can still dispatch to
+                # the double-aware runtime overloads), C++ has no implicit
+                # `glsl::DVecN -> glsl::VecN` conversion (it is `explicit`,
+                # deliberately, so it can never happen silently), where JS's
+                # own `$runtime.copy()` narrows invisibly on entry.
+                arguments = [
+                    f"{self.type(child.type)}({argument})"
+                    if (child.type.display() in {"vec2", "vec3", "vec4"}
+                        and self._double_vector_expression(child))
+                    else argument
+                    for child, argument in zip(value.children, arguments)]
             testpattern = self.authorized_testpattern_proof
             if (testpattern is not None and value.kind == "call"
                     and value.callee == "sampleGlyph"
@@ -8806,11 +8989,18 @@ class _Emitter:
                     declaration_type = "glsl::BVec3"
                 else:
                     declaration_type = self.local_type(declaration.type)
-                if self._double_precision_vec2_alias_declaration(declaration):
-                    declaration_type = "glsl::DVec2"
-                    if declaration.symbol.id not in self.double_precision_vec2_alias_symbol_ids:
-                        self.double_precision_vec2_alias_symbol_ids.append(
-                            declaration.symbol.id)
+                    # A vec2/vec3/vec4 local whose initializer is itself a
+                    # double-vector expression (e.g. gradient's four-corner
+                    # `vec3 cTL = color1;`, or synth/media's `vec2 size =
+                    # imageSize;`) must be declared `glsl::DVecN`, not
+                    # `glsl::Vec2/3/4` -- otherwise the copy-init from a
+                    # `glsl::DVecN` initializer would need the converting
+                    # constructor's implicit (non-`explicit`) path, which
+                    # does not exist, and it would also silently narrow one
+                    # rounding step earlier than the authority does. See
+                    # `_double_vector_expression`.
+                    if declaration.symbol_id in self.double_vector_local_symbol_ids:
+                        declaration_type = self._double_vector_type(declaration.type.display())
                 if self._testpattern_digit_extraction_declaration(declaration):
                     declaration_type = "double"
                 if self._osd_js_number_declaration(declaration):
@@ -9207,31 +9397,44 @@ class _Emitter:
                     raise _error(self.program, assignment, "unsupported assignment operator ^=")
                 return [f"{indent}{target} = glsl::bitwise_xor({target}, {right});"]
             if swizzle is None:
-                vector_type = (self.type(assignment.children[0].type)
-                               if assignment.children[0].type.display() in {"vec2", "vec3", "vec4"}
-                               else None)
+                target_expr = assignment.children[0]
+                target_glsl_type = target_expr.type.display()
+                # A plain (non-declaration) assignment into a local this
+                # port already classified double-vector (see
+                # `_double_vector_expression`/`_compute_double_vector_
+                # classification`) must keep coercing its RHS to that same
+                # `glsl::DVecN`, not the ordinary `glsl::VecN` -- the target
+                # was declared `glsl::DVecN` precisely because a plain `=`
+                # here is JS-transparent (no authority narrowing), so
+                # wrapping in the float type would narrow one step early
+                # and also fail to compile against a `glsl::DVecN` RHS.
+                is_double_target = (
+                    target_glsl_type in {"vec2", "vec3", "vec4"}
+                    and target_expr.kind == "id"
+                    and target_expr.symbol_id in self.double_vector_local_symbol_ids)
+                vector_type = (
+                    self._double_vector_type(target_glsl_type) if is_double_target
+                    else self.type(target_expr.type)
+                    if target_glsl_type in {"vec2", "vec3", "vec4"} else None)
                 if operation == "=":
                     if vector_type is not None: right = f"{vector_type}({right})"
                     return [f"{indent}{target} = {right};"]
                 # A compound assignment (`st += 1.0 / size;`) builds its own
                 # `target OP right` text directly, never through the
-                # "binary" expression cascade above -- so the same
-                # double-precision vec2 alias promotion has to be
-                # duplicated here, or a compound assignment whose RHS (or,
-                # symmetrically, whose target) references the carrier
-                # mixes `glsl::Vec2`/`glsl::DVec2` with no operator to
-                # match, exactly like the plain binary case.
-                combined_target, combined_right = target, right
-                if assignment.children[0].type.display() == "vec2":
-                    target_refs = self._references_double_precision_vec2_alias(
-                        assignment.children[0])
-                    right_refs = self._references_double_precision_vec2_alias(
-                        assignment.children[1])
-                    if right_refs and not target_refs:
-                        combined_target = f"glsl::DVec2({target})"
-                    elif target_refs and not right_refs:
-                        combined_right = f"glsl::DVec2({right})"
-                combined = f"({combined_target} {operation[:-1]} {combined_right})"
+                # "binary" expression cascade above. No promotion is needed
+                # here to make it compile or round correctly: `target` (an
+                # ordinary, already-narrowed `glsl::VecN`/float local) and
+                # `right` (whatever `self.expression()` already produced --
+                # a `FloatExpr<N>` if it referenced a double-vector carrier,
+                # an ordinary `glsl::VecN` otherwise) combine through the
+                # same generic mixed float/double operators every other
+                # double-vector expression already uses (see
+                # `NOISEMAKER_GLSL_DOUBLE_VEC_BINARY` in glsl_types.hpp),
+                # deferring the actual rounding to the explicit
+                # `vector_type(...)` wrapper below -- the single
+                # materialization point that matches the authority's own
+                # single store.
+                combined = f"({target} {operation[:-1]} {right})"
                 if vector_type is not None: combined = f"{vector_type}({combined})"
                 return [f"{indent}{target} = {combined};"]
             if operation == "=":
@@ -10194,9 +10397,7 @@ class _Emitter:
             f"[[maybe_unused]] {self.function_parameter_type(function, ordinal, parameter)} "
             f"{_safe_identifier(parameter.name, parameter.id)}"
             for ordinal, parameter in enumerate(function.parameters))])
-        return_type = (f"glsl::FloatExpr<{function.return_type.display()[-1]}>"
-                       if function.signature.id in self.ordinary_array_return_signatures
-                       else self.function_type(function.return_type))
+        return_type = self._function_return_type(function)
         # [[nodiscard]] is ill-formed on a void-returning function under
         # -Werror -Wignored-attributes (there is never a discardable return
         # value). sort2's inout-vec3-swap admission is the first void
@@ -10350,9 +10551,7 @@ class _Emitter:
                 function, ordinal, parameter, record_out_inout=False)} "
             f"{_safe_identifier(parameter.name, parameter.id)}"
             for ordinal, parameter in enumerate(function.parameters))])
-        return_type = (f"glsl::FloatExpr<{function.return_type.display()[-1]}>"
-                       if function.signature.id in self.ordinary_array_return_signatures
-                       else self.function_type(function.return_type))
+        return_type = self._function_return_type(function)
         nodiscard = "" if return_type == "void" else "[[nodiscard]] "
         emitted_name = self.function_names[function.signature.id]
         return f"{nodiscard}{return_type} {emitted_name}({parameters}) noexcept;"
@@ -11349,7 +11548,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         lines.append("struct State final : KernelState {")
         constructor_parts = [
             f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else
-            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
+            f"{self._classic_noisedeck_double_uniform_type(symbol) or self.uniform_type(symbol.type)} {symbol.name}_value"
             for symbol in uniforms]
         if remap is not None:
             constructor_parts.insert(0, "glsl::RemapUniformData data_value")
@@ -11374,7 +11573,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             lines.append("  glsl::RemapUniformData data;")
         for symbol in uniforms:
             type_name = ("const Surface*" if symbol.type.kind == "sampler" else
-                        self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type))
+                        self._classic_noisedeck_double_uniform_type(symbol) or self.uniform_type(symbol.type))
             lines.append(f"  {type_name} {symbol.name};")
         if (self.runtime_loop_contract is not None
                 and self.runtime_loop_contract.kind == "blur-radius"):
@@ -11589,7 +11788,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 arguments.append(symbol.name)
             elif symbol.type.display() == "float": arguments.append(f"bindings.get_number(\"{symbol.name}\")")
             else:
-                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.type(symbol.type)
+                cpp_type = self._classic_noisedeck_double_uniform_type(symbol) or self.type(symbol.type)
                 arguments.append(f"bindings.get<{cpp_type}>(\"{symbol.name}\")")
         if remap_data_argument is not None:
             arguments.insert(0, remap_data_argument)

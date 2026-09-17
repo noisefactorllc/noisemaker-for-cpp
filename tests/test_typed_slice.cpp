@@ -166,36 +166,36 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
   texture("inputTex", input);
   if (key == "filter/celShading:celShadingBlend") {
     texture("colorTex", color); texture("edgeTex", edge);
-    uniform("edgeColor", noisemaker::glsl::Vec3(0.17f, 0.63f, 0.91f)); uniform("mixAmount", 0.71f);
+    uniform("edgeColor", noisemaker::glsl::DVec3(0.17, 0.63, 0.91)); uniform("mixAmount", 0.71f);
   } else if (key == "filter/chroma:chroma") {
     uniform("targetHue", 0.37f); uniform("range", 0.19f); uniform("feather", 0.07f);
   } else if (key == "filter/chrome:chMap") {
     texture("blurTex", blur); uniform("detail", 63.0f); uniform("distortion", 27.0f);
   } else if (key == "filter/colorReplace:colorReplace") {
-    uniform("targetColor", noisemaker::glsl::Vec3(0.23f, 0.51f, 0.77f));
-    uniform("replaceColor", noisemaker::glsl::Vec3(0.88f, 0.16f, 0.42f));
+    uniform("targetColor", noisemaker::glsl::DVec3(0.23, 0.51, 0.77));
+    uniform("replaceColor", noisemaker::glsl::DVec3(0.88, 0.16, 0.42));
     uniform("sensitivity", 0.43f); uniform("smoothing", 0.18f);
     uniform("colorMix", 0.67f); uniform("replaceAlpha", 0.82f); uniform("keepAlpha", 0.31f);
   } else if (key == "filter/deriv:deriv") {
     uniform("amount", 1.7f); uniform("renderScale", 0.75f);
   } else if (key == "filter/lensFlare:lensFlare") {
     uniform("brightness", 137.0f); uniform("centerX", 0.29f); uniform("centerY", 0.61f);
-    uniform("tint", noisemaker::glsl::Vec3(0.83f, 0.94f, 0.71f));
+    uniform("tint", noisemaker::glsl::DVec3(0.83, 0.94, 0.71));
     uniform("LENS_TYPE", std::int32_t(0));
   } else if (key == "filter/mosaicTiles:mosaicTiles") {
     uniform("tileSize", 4.7f); uniform("groutWidth", 22.0f); uniform("relief", 58.0f);
     uniform("maxOffset", 31.0f); uniform("gapFill", std::int32_t(2));
-    uniform("backgroundColor", noisemaker::glsl::Vec3(0.12f, 0.34f, 0.56f)); uniform("seed", std::int32_t(7));
+    uniform("backgroundColor", noisemaker::glsl::DVec3(0.12, 0.34, 0.56)); uniform("seed", std::int32_t(7));
     uniform("MODE", std::int32_t(0));
   } else if (key == "filter/photocopy:pcCombine") {
     texture("blurTex", blur); uniform("darkness", 68.0f);
-    uniform("inkColor", noisemaker::glsl::Vec3(0.08f, 0.17f, 0.29f));
-    uniform("paperColor", noisemaker::glsl::Vec3(0.93f, 0.84f, 0.61f));
+    uniform("inkColor", noisemaker::glsl::DVec3(0.08, 0.17, 0.29));
+    uniform("paperColor", noisemaker::glsl::DVec3(0.93, 0.84, 0.61));
   } else if (key == "filter/relief:rlShade") {
     texture("blurTex", blur); uniform("detail", 57.0f); uniform("lightAngle", 123.0f);
     uniform("balance", 44.0f); uniform("graininess", 36.0f);
-    uniform("inkColor", noisemaker::glsl::Vec3(0.09f, 0.18f, 0.27f));
-    uniform("paperColor", noisemaker::glsl::Vec3(0.92f, 0.79f, 0.63f));
+    uniform("inkColor", noisemaker::glsl::DVec3(0.09, 0.18, 0.27));
+    uniform("paperColor", noisemaker::glsl::DVec3(0.92, 0.79, 0.63));
     uniform("MODE", std::int32_t(0));
   } else if (key == "filter/ridge:ridge") {
     uniform("level", 0.42f);
@@ -204,7 +204,7 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
   } else if (key == "filter/simpleAberration:chromaticAberration") {
     uniform("displacement", 0.037f);
   } else if (key == "filter/text:text") {
-    texture("textTex", text); uniform("matteColor", noisemaker::glsl::Vec3(0.14f, 0.35f, 0.73f));
+    texture("textTex", text); uniform("matteColor", noisemaker::glsl::DVec3(0.14, 0.35, 0.73));
     uniform("matteOpacity", 0.38f);
   } else if (key == "filter/unsharpMask:usmCombine") {
     texture("blurTex", blur); uniform("amount", 173.0f); uniform("threshold", 14.0f);
@@ -283,7 +283,7 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
     uniform("size", 3.7f);
   } else if (key == "filter/plasticWrap:pwSpec") {
     texture("blurTex", blur); uniform("highlight", 77.3f); uniform("smoothness", 31.7f);
-    uniform("lightDirection", noisemaker::glsl::Vec3(0.31f, 0.79f, 0.43f));
+    uniform("lightDirection", noisemaker::glsl::DVec3(0.31, 0.79, 0.43));
   } else if (key == "filter/seamless:seamless") {
     uniform("blend", 0.31f); uniform("repeat", 2.3f); uniform("curve", std::int32_t(1));
   } else if (key == "filter/sine:sine") {
@@ -312,8 +312,8 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
     // with the output surface aspect (7 / 5) after merging them.
     uniform("aspect", 7.0f / 5.0f); uniform("sides", std::int32_t(3));
     uniform("radius", 0.4f); uniform("smoothing", polygon_smoothing); uniform("rotation", 23.0f);
-    uniform("fgColor", noisemaker::glsl::Vec3(0.14f, 0.73f, 0.31f)); uniform("fgAlpha", 0.83f);
-    uniform("bgColor", noisemaker::glsl::Vec3(0.91f, 0.22f, 0.58f)); uniform("bgAlpha", 0.47f);
+    uniform("fgColor", noisemaker::glsl::DVec3(0.14, 0.73, 0.31)); uniform("fgAlpha", 0.83f);
+    uniform("bgColor", noisemaker::glsl::DVec3(0.91, 0.22, 0.58)); uniform("bgAlpha", 0.47f);
   }
 }
 
@@ -337,8 +337,8 @@ void populate_task10_bindings(noisemaker::glsl::Bindings& bindings, std::string_
   else if (variant == "metric2") bindings.set_uniform("sobelMetric", 2.0f);
   else if (variant == "mono") bindings.set_uniform("mono", true);
   else if (variant == "earlyReturn") bindings.set_uniform("size", 0.75f);
-  else if (variant == "zeroLightFallback") bindings.set_uniform("lightDirection", noisemaker::glsl::Vec3(0.0f));
-  else if (variant == "oppositeLightHalfFallback") bindings.set_uniform("lightDirection", noisemaker::glsl::Vec3(0.0f, 0.0f, -1.0f));
+  else if (variant == "zeroLightFallback") bindings.set_uniform("lightDirection", noisemaker::glsl::DVec3(0.0));
+  else if (variant == "oppositeLightHalfFallback") bindings.set_uniform("lightDirection", noisemaker::glsl::DVec3(0.0, 0.0, -1.0));
   else if (variant == "linear") bindings.set_uniform("curve", std::int32_t(0));
   else if (variant == "sharp") bindings.set_uniform("curve", std::int32_t(2));
   else if (variant == "zeroBlend") bindings.set_uniform("blend", 0.0f);
@@ -395,19 +395,19 @@ TEST(typed_slice_test_sha256_has_standard_empty_and_zero_block_vectors) {
 TEST(typed_math_slice_sixteen_external_oracles_are_repeatable) {
   struct Fixture { std::string_view key; std::string_view floats; std::string_view rgba; std::uint32_t first; };
   constexpr std::array<Fixture, 16> fixtures{{
-      {"filter/celShading:celShadingBlend", "3040fca866a32e77c2d5828672a9d983fd8b78c8f19e81030444b7f922cc144a", "998a939393905a859371711b5c971f0435ed757720ac5b5a9348e59d652a6409", 0x3e0a9e59U},
+      {"filter/celShading:celShadingBlend", "5a665384d249380a7faf6c910392f7dd147f2c58341b3c01ee09688894d71515", "998a939393905a859371711b5c971f0435ed757720ac5b5a9348e59d652a6409", 0x3e0a9e58U},
       {"filter/chroma:chroma", "efc59e60e7b127541dbb28cf18d5981144fc4a22f02d4f6d710be29ea0ac06fe", "72ef0585ff112ea147febd8ede9f8d3965215513c44ddf0feb188790f371c637", 0x3f4234f7U},
       {"filter/chrome:chMap", "5d0c6dd88fe0a39b97b994002b7431214d59760f9133c2ff40d1e3bebd8ec119", "bc19edaad2c576252a6f9ea3420422d08286039b8cc15f88aa0e7a6734f18bf8", 0x3d70c7b5U},
-      {"filter/colorReplace:colorReplace", "f672cb72086923fa32c34cc12915196bccd211ea450d6cac6dee39649b4d3814", "33c8b3e38c7d93521a58581c2b1bc0e56547d2afc8d5673aeddca4d2bf26d0ff", 0x3d9c2f9cU},
+      {"filter/colorReplace:colorReplace", "d07476f0cc1a36bb5c4e5f392ddb14b11f3987b0c842f065387313e7c2999206", "33c8b3e38c7d93521a58581c2b1bc0e56547d2afc8d5673aeddca4d2bf26d0ff", 0x3d9c2f9cU},
       {"filter/deriv:deriv", "43e591217a059e9a86f3e00e52a91b0539c2cc3783619dd0f45de04c292fd3a2", "6a3cbb07be0a133257bd1ca518d82c8269c5b47bd4abd975fe1cb530b70c900e", 0x3c88d638U},
-      {"filter/lensFlare:lensFlare", "046d8dc804bf93f97533a85f05783b14a6dcedf09afede6a3660e600676d8599", "42d035c4d765ef017d27b641bb5a2a96f03122ca19032c1e02233b8d7915cbc4", 0x3d85d166U},
+      {"filter/lensFlare:lensFlare", "f7b5491ccf7d5c7e6af2471788df1c817727f0bc34d4c6f5a3af3911a1ea177b", "42d035c4d765ef017d27b641bb5a2a96f03122ca19032c1e02233b8d7915cbc4", 0x3d85d166U},
       {"filter/mosaicTiles:mosaicTiles", "b45240877494b59e366f9d9441bd2e125365bcd87f000ca363839cdc8bd725b0", "bacfcc449e6470bfa16347c7b00cf9a2807ec433a060282b32358f2b39a273e1", 0x3c311fc9U},
       {"filter/photocopy:pcCombine", "5c30639723acd4eed15826649692300488800a81c4c20d0b9a2cdafb4bfb4405", "76d6b92b4fb7f0c8e4f465da28246117a0ad5ac0c9c45e43085d1280f0877c6f", 0x3da3d70aU},
       {"filter/relief:rlShade", "1dba0f21095568d3f62d27d313993dfaa6bae04c1fb0fc81156d583ea3a2d1d6", "f5205caa03ccc976eefc1c41b9f535ea578a23510cf6154642b16634da32abe6", 0x3f078889U},
       {"filter/ridge:ridge", "14e083e0d2e604d0b5559ebbdd175316ae313160e5aca89c468678ef3932eff9", "5d220bfe0488a6b32a233b82932edee6b8b5e094c478b95f54289d6e0edc1b8b", 0x3eba3eaaU},
       {"filter/scatter:scatterJitter", "3894d5739e765cf71a39a082abb8315bfd5fac4a7d6be6c4f8a8cf9b87ae5c8c", "d3425ff7218c66a0a0711e3ed96f3c343df410227e22cececf9ad51dc48c42be", 0x3df0f0f1U},
       {"filter/simpleAberration:chromaticAberration", "09c9d93ea78ddb0f877dd993f6af3f5b7d7ffd9c10d05fe4dc2f4b505f1af7e6", "42c44f9ac2cd9b55e1dc92abd18afa3960b6a7982d44e9463db03717b207b760", 0x3e30b0b1U},
-      {"filter/text:text", "997dc1b44ba44b9dd63e68ea7182c7b2df6148565d359e5f406087da4d26fe78", "9a03fadce3dc09be280da2a0d8d89cbd14c822222893dd9fd38d8d71e780a223", 0x3d8faa52U},
+      {"filter/text:text", "660011a5b64c22eb297b38ed0843f1b68cff75977331dfad37f5f2be5135ea6f", "9a03fadce3dc09be280da2a0d8d89cbd14c822222893dd9fd38d8d71e780a223", 0x3d8faa52U},
       {"filter/unsharpMask:usmCombine", "dcb8cd1ae6f41bba9ab35d807a4d89d158605be5a2fb5b8bd199def2d06970a5", "c5c85cddd59a4e9c9c6e98e316ad8de4074dffbd4787c841a5cd1b6f80829630", 0x00000000U},
       {"filter/watercolor:wcComposite", "409c8f37bb8778750cedc218f2ca6d488ad6fffe1c090c786d7e3c582bde5a3b", "1bdc0c3ae9f57ef445f25fa3e3cac55cbcfbba28745b0a2af58c885a6d514bc4", 0x3d3f48c0U},
       {"filter/watercolor:wcSeed", "29f8cb0bcb53dac6c6c0f32405d5ee0670617a236c5b59c2aa9d3536637abe0a", "b758a60117b29acbcaa0d2e74eaef9487d06f80d1cf5363df30967a981e0df2f", 0x3d50d0d1U},
@@ -464,13 +464,13 @@ TEST(typed_control_flow_slice_external_oracles_are_repeatable) {
       {"mixer/alphaMask:alphaMask", "cd459701e88a9422cbf042e08013043760e6ef2d6566dde1f1d0c4fd0410cfb7", "b352155bb35bb1b39d427784164f2edfe75e8d9373161a2209d98feb4b967032", {0x3e3926fbU,0x3f22910dU,0x3f234fa2U,0x3f4889cbU,0x3f55704eU,0x3f628f41U,0x3f83c258U,0x3efcbb80U,0x3f818c4dU,0x3dbf284aU,0x3e94a2faU,0x3f63d371U}},
       {"mixer/applyMode:applyMode", "7aeee2945e2264b2706af1000de073f87afa3de89fb58b74d7d45c5e489fc462", "901503d50bab78d19f2bdd7f32efd5a6166653885a965813a1a12b735c9517e5", {0x3dc01c46U,0x3eaff106U,0x3eb6cb47U,0x3f7afafbU,0x3efb291fU,0x3f4760fbU,0x3ea6022bU,0x3f35b5b6U,0x3f4f0f0fU,0x3e0ff65cU,0x3e9cc8c2U,0x3f5ddddeU}},
       {"mixer/thresholdMix:thresholdMix", "f6e338ca581f3243524f124f3db407c3e0a56c42d9563eaba6901f48eb373712", "9499f26e19394e0bd91fad082d820362851877598640cfbdf87f9719ffa62b7e", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f088889U,0x3f3cbcbdU,0x3f50d0d1U,0x3ed82d83U,0x3f76f6f7U,0x3f27a7a8U,0x3e64e4e5U,0x3f022cd8U}},
-      {"synth/polygon:shape", "17c3ee338cf903cacfcf422df124a54bc7d9b8497339fca260fe3b8e435b011f", "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c", {0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U,0x3dedfa44U,0x3f1b1c43U,0x3e83bcd3U,0x3f547ae1U,0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U}},
+      {"synth/polygon:shape", "ea0b018bc0cb8dbf445e26a4e7d5d944f2636ad046dd1d2e0ee8b22e9978e32e", "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c", {0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U,0x3dedfa44U,0x3f1b1c43U,0x3e83bcd3U,0x3f547ae1U,0x3edafb7fU,0x3dd3c361U,0x3e8b923aU,0x3ef0a3d7U}},
   }};
   const noisemaker::Surface polygon_nonzero_before = render_task10("synth/polygon:shape", 0.12f);
   const noisemaker::Surface polygon_zero = render_task10("synth/polygon:shape", 0.0f);
   const noisemaker::Surface polygon_nonzero_after = render_task10("synth/polygon:shape", 0.12f);
   const noisemaker::Surface polygon_zero_after = render_task10("synth/polygon:shape", 0.0f);
-  REQUIRE(hex(sha256(little_endian_float_bytes(polygon_nonzero_before))) == "17c3ee338cf903cacfcf422df124a54bc7d9b8497339fca260fe3b8e435b011f");
+  REQUIRE(hex(sha256(little_endian_float_bytes(polygon_nonzero_before))) == "ea0b018bc0cb8dbf445e26a4e7d5d944f2636ad046dd1d2e0ee8b22e9978e32e");
   REQUIRE(hex(sha256(polygon_nonzero_before.to_rgba8())) == "22dc2377820085ffdead0646a681390f2285f1dc2de1fba0283145cec687a69c");
   const std::string polygon_zero_float = hex(sha256(little_endian_float_bytes(polygon_zero)));
   if (polygon_zero_float != "1d15ee530fda3a6edcc2234b7c796461eab1b0156cba3916adec7e610313f850") {
@@ -672,10 +672,10 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
     texture("inputTex", input); uniform("seed", 7.0f); uniform("enabled", true);
     uniform("useSpecks", true); uniform("splatSource", std::int32_t{0}); uniform("scale", 3.7f);
     uniform("cutoff", 41.0f); uniform("speed", 2.0f);
-    uniform("splatColor", noisemaker::glsl::Vec3(0.81f, 0.22f, 0.63f));
+    uniform("splatColor", noisemaker::glsl::DVec3(0.81, 0.22, 0.63));
     uniform("mode", std::int32_t{2}); uniform("speckScale", 2.6f); uniform("speckCutoff", 38.0f);
     uniform("speckSpeed", 3.0f); uniform("speckSeed", 5.0f);
-    uniform("speckColor", noisemaker::glsl::Vec3(0.17f, 0.74f, 0.39f));
+    uniform("speckColor", noisemaker::glsl::DVec3(0.17, 0.74, 0.39));
     uniform("speckMode", std::int32_t{3});
     if (fixture.variant == "disabledNoSpecks") { uniform("enabled", false); uniform("useSpecks", false); }
     if (fixture.variant.starts_with("splatMode")) {
@@ -706,12 +706,12 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
   } else if (fixture.key == "filter/outline:outlineValueMap") {
     texture("inputTex", fixture.variant == "grayscale" ? grayscale : input);
   } else if (fixture.key == "filter/spatter:spatter") {
-    texture("inputTex", input); uniform("color", noisemaker::glsl::Vec3(0.83f, 0.19f, 0.47f));
+    texture("inputTex", input); uniform("color", noisemaker::glsl::DVec3(0.83, 0.19, 0.47));
     uniform("density", 1.5f); uniform("alpha", 0.83f); uniform("seed", std::int32_t{11});
     if (fixture.variant == "fallbackResolution") uniform("fullResolution", noisemaker::glsl::Vec2(0.0f));
   } else if (fixture.key == "filter/tint:colorize") {
     texture("inputTex", fixture.variant == "mode2" ? tint_hybrid : input);
-    uniform("color", noisemaker::glsl::Vec3(0.16f, 0.69f, 0.83f));
+    uniform("color", noisemaker::glsl::DVec3(0.16, 0.69, 0.83));
     uniform("alpha", 0.62f); uniform("mode", static_cast<float>(task11_suffix(fixture.variant, "mode")));
   } else if (fixture.key == "mixer/blendMode:blendMode") {
     texture("inputTex", input); texture("tex", tex);
@@ -728,7 +728,7 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
     uniform("imageSize", noisemaker::glsl::DVec2(17.0, 13.0)); uniform("position", std::int32_t{0});
     uniform("rotation", 0.0f); uniform("scaleAmt", 100.0f); uniform("offsetX", 0.0f);
     uniform("offsetY", 0.0f); uniform("tiling", std::int32_t{0}); uniform("flip", std::int32_t{0});
-    uniform("bgColor", noisemaker::glsl::Vec3(0.12f, 0.34f, 0.56f)); uniform("bgAlpha", 0.71f);
+    uniform("bgColor", noisemaker::glsl::DVec3(0.12, 0.34, 0.56)); uniform("bgAlpha", 0.71f);
     if (fixture.variant.starts_with("position")) uniform("position", std::int32_t{task11_suffix(fixture.variant, "position")});
     else if (fixture.variant.starts_with("tiling")) {
       uniform("position", std::int32_t{4}); uniform("scaleAmt", 40.0f);
@@ -738,7 +738,7 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
       uniform("flip", std::int32_t{task11_suffix(fixture.variant, "flip")});
     } else if (fixture.variant == "outOfBounds") {
       uniform("scaleAmt", 15.0f); uniform("offsetX", 100.0f); uniform("offsetY", 100.0f);
-      uniform("bgColor", noisemaker::glsl::Vec3(0.03f, 0.57f, 0.91f)); uniform("bgAlpha", 0.63f);
+      uniform("bgColor", noisemaker::glsl::DVec3(0.03, 0.57, 0.91)); uniform("bgAlpha", 0.63f);
     } else {
       uniform("position", std::int32_t{4});
       if (fixture.variant == "scaleZeroGuard") uniform("scaleAmt", std::numeric_limits<float>::infinity());
@@ -792,10 +792,10 @@ TEST(typed_task11_all_ninety_four_external_oracles_are_exact_and_repeatable) {
     {"filter/outline:outlineBlend", "whiteOutline", "6db4db090e13c80eaa2c8b5988712ed2d20e4d0afb506bbe26c7e4268da8d937", "239586e2a1ae6ba3046bfe13b4ba8c08c363c14468eff650e302da2ab33d9456", {0x3f636af3U,0x3f654eb8U,0x3f62b588U,0x3f7afafbU,0x3f06929fU,0x3ec56e17U,0x3f59b28cU,0x3f35b5b6U,0x3f56a97dU,0x3f54b18fU,0x3f1e8f81U,0x3ea8a8a9U}},
     {"filter/outline:outlineValueMap", "colorOklab", "856c984b4d37fdded7e9e7cd117a64bbf218658cfb51dc572f92d7c9b0332306", "349d19d5f9238b64607c265a97cee2e57558f49b2254a613efb80f334e4fef88", {0x3e56cac9U,0x3e56cac9U,0x3e56cac9U,0x3f7afafbU,0x3f00d280U,0x3f00d280U,0x3f00d280U,0x3f35b5b6U,0x3f36081fU,0x3f36081fU,0x3f36081fU,0x3ea8a8a9U}},
     {"filter/outline:outlineValueMap", "grayscale", "17137e5da9dba3919e6fc1a42221ddfd166388e8059fc671b73e04ea354041f2", "c6ded0a7986409c32fd2cea123458989295584a3857f5e856a6ccc0870d40eb1", {0x3df8f8f9U,0x3df8f8f9U,0x3df8f8f9U,0x3f41c1c2U,0x3ed0d0d1U,0x3ed0d0d1U,0x3ed0d0d1U,0x3f189899U,0x3efcfcfdU,0x3efcfcfdU,0x3efcfcfdU,0x3f0a8a8bU}},
-    {"filter/spatter:spatter", "primary", "f106b4d60c9e1b0ce579b25adcadb918f220d94bf62ea73a615ccd06dc1c3143", "2270dc9fe831c33940eb09df5ac36a0d97d8cd9793449e21924298df6b599cd4", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3f1372a8U,0x3e5bc316U,0x3e00341fU,0x3ea8a8a9U}},
-    {"filter/spatter:spatter", "fallbackResolution", "50439a305aa93b986840fe29f7732b31d4694adfc7addeaf64167d6cc4008f6c", "4314515902999d5f9ae734fc41592f1e76cd9d909e17f8b06efaa072e7c7187c", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb6cd06U,0x3da32d37U,0x3ee9ea53U,0x3f35b5b6U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
+    {"filter/spatter:spatter", "primary", "5afbc539989e16c64c435c55983653137ac366e3b9b7b19d11195561c5ac4a02", "2270dc9fe831c33940eb09df5ac36a0d97d8cd9793449e21924298df6b599cd4", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3ed4d4d5U,0x3e78f8f9U,0x3f50d0d1U,0x3f35b5b6U,0x3f1372a8U,0x3e5bc317U,0x3e00341fU,0x3ea8a8a9U}},
+    {"filter/spatter:spatter", "fallbackResolution", "9ff37b3d2e8a719547a206af8f0cbc2af51024a37014608bc5842ca867f0afa9", "4314515902999d5f9ae734fc41592f1e76cd9d909e17f8b06efaa072e7c7187c", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3eb6cd06U,0x3da32d37U,0x3ee9ea53U,0x3f35b5b6U,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
     {"filter/tint:colorize", "mode0", "aff281c01b0fffe08479d978fd1d3d1da6889ab9683cf48b05cdaa66afa1761b", "781d9cfac8befe7dd4fd2afa5fddc51a517a99043b6953877d66a0082796e87c", {0x3deeda60U,0x3eecdd81U,0x3f03d32fU,0x3f7afafbU,0x3e69dab3U,0x3ecac694U,0x3f228ebeU,0x3f35b5b6U,0x3e21a483U,0x3e883e1bU,0x3e82481eU,0x3ea8a8a9U}},
-    {"filter/tint:colorize", "mode1", "db04d41246e0985fe76dc26d8979b3f0e8beeb97e52e35bb6d99808fc7b15cf6", "82e38f492645d1a4b3d53548f6e13c3ea45e27635327942874668589c38e4d85", {0x3cc82103U,0x3dbc2501U,0x3cc92d1eU,0x3f7afafbU,0x3e4bfa43U,0x3e491ebaU,0x3f228ebeU,0x3f35b5b6U,0x3e21a483U,0x3e883e1bU,0x3e4cc4c7U,0x3ea8a8a9U}},
+    {"filter/tint:colorize", "mode1", "7199299bb9d0bd5ef62448a03c13eb7c21a810d93883e48033a1c467be0edaeb", "82e38f492645d1a4b3d53548f6e13c3ea45e27635327942874668589c38e4d85", {0x3cc82103U,0x3dbc2501U,0x3cc92d1eU,0x3f7afafbU,0x3e4bfa43U,0x3e491ebaU,0x3f228ebeU,0x3f35b5b6U,0x3e21a483U,0x3e883e1bU,0x3e4cc4c7U,0x3ea8a8a9U}},
     {"filter/tint:colorize", "mode2", "04c9eef319ed883cc4c06e5aaf499f904cec0395b9f3d4d58638e63cd3ddfc96", "fba3769da35e84e822d6c232b6d06bcb5274f138d8fb1a5e03fad67a20e58aa1", {0x00000000U,0x00000000U,0x00000000U,0x3f800000U,0x3d4ada88U,0x3f4081ddU,0x3f277441U,0x3f5ededfU,0x3e9d0db1U,0x3e8cd122U,0x3ecacacbU,0x3ecacacbU}},
     {"mixer/blendMode:blendMode", "mode0", "ea87899c030cceb2e2528b0c46eaf985b625d711c702fe2f0de4825db5aac4c8", "c23eb08bea0f5b812986d86bbbfc1257bf646adc08687a154c98b245db6bc69b", {0x3e20fd26U,0x3ed78d29U,0x3ebace62U,0x3f7cb772U,0x3f1095adU,0x3eeb68c2U,0x3f5f842cU,0x3f42bdbeU,0x3f645150U,0x3efe7f58U,0x3ecafe32U,0x3f320fc2U}},
     {"mixer/blendMode:blendMode", "mode1", "2ed6d991094c7a92e00779d610abcc4a16bd91c2a28f5f4655cfb0730bf78f86", "1218c3992fa95593198d8a4db3d524560c053f9d9666d9c0d84ad702808e79b2", {0x3d111f47U,0x3e19d976U,0x3da03d81U,0x3f7cb772U,0x3f09b089U,0x3edb94b2U,0x3f62b377U,0x3f42bdbeU,0x3f87946cU,0x40714836U,0x3e5eac70U,0x3f320fc2U}},
@@ -1008,9 +1008,9 @@ void populate_task12_bindings(noisemaker::glsl::Bindings& bindings, const Task12
     texture("inputTex", constant_a); texture("tex", constant_b);
     std::int32_t mode = task12_number(fixture.variant, "mode");
     uniform("blendMode", mode); uniform("range", 1.0f); uniform("mixAmt", 63.0f);
-    if (fixture.variant.ends_with("Far")) uniform("inputColor", noisemaker::glsl::Vec3(0.0f));
-    else if (fixture.variant == "mode2Near") uniform("inputColor", noisemaker::glsl::Vec3(230.0f / 255.0f, 77.0f / 255.0f, 179.0f / 255.0f));
-    else uniform("inputColor", noisemaker::glsl::Vec3(0.2f, 0.6f, 26.0f / 255.0f));
+    if (fixture.variant.ends_with("Far")) uniform("inputColor", noisemaker::glsl::DVec3(0.0));
+    else if (fixture.variant == "mode2Near") uniform("inputColor", noisemaker::glsl::DVec3(230.0 / 255.0, 77.0 / 255.0, 179.0 / 255.0));
+    else uniform("inputColor", noisemaker::glsl::DVec3(0.2, 0.6, 26.0 / 255.0));
   } else if (fixture.key == "filter/hs:hs") {
     texture("inputTex", hue_negative);
     uniform("rotation", static_cast<float>(task12_number(fixture.variant, "sector")));
@@ -1078,8 +1078,8 @@ void populate_task12_bindings(noisemaker::glsl::Bindings& bindings, const Task12
     uniform("aspect", 9.0f / 7.0f); uniform("patternType", pattern); uniform("scale", 5.4f);
     uniform("thickness", 0.57f); uniform("smoothness", 0.046f); uniform("rotation", 29.0f);
     uniform("skew", -0.31f); uniform("animation", std::int32_t(pattern == 0 ? 2 : pattern == 2 ? 1 : 0));
-    uniform("speed", 3.6f); uniform("fgColor", noisemaker::glsl::Vec3(0.91f, 0.17f, 0.63f));
-    uniform("bgColor", noisemaker::glsl::Vec3(0.08f, 0.72f, 0.34f));
+    uniform("speed", 3.6f); uniform("fgColor", noisemaker::glsl::DVec3(0.91, 0.17, 0.63));
+    uniform("bgColor", noisemaker::glsl::DVec3(0.08, 0.72, 0.34));
   }
 }
 
@@ -1204,18 +1204,18 @@ TEST(typed_task12_all_one_hundred_twenty_external_oracles_are_exact_and_repeatab
     {"synth/modPattern:modPattern", "blend1Anim1", "69ee857e22e397e6b539158bcd60f3d1f940a008569d5d8fa5842c9269cf2af6", "04d8112f92d355d0eb6a9a09439cb8d208f679918e95452700456e02f2423b4e", {0x3f2d1f44U,0x3f2d1f44U,0x3f2d1f44U,0x3f800000U,0x3f532a37U,0x3f532a37U,0x3f532a37U,0x3f800000U,0x3f2d1f44U,0x3f2d1f44U,0x3f2d1f44U,0x3f800000U}},
     {"synth/modPattern:modPattern", "blend2Anim2", "44d6f6df118c46a647903bb6f047df9f77302abef5b4067ebf2083c33e8a071b", "c8ebfb4e079211cb3aabbdefab4fa5604c8f5314741d7926baa0d53300c8a421", {0x3f258e0dU,0x3f258e0dU,0x3f258e0dU,0x3f800000U,0x3ec64896U,0x3ec64896U,0x3ec64896U,0x3f800000U,0x3ea98ba9U,0x3ea98ba9U,0x3ea98ba9U,0x3f800000U}},
     {"synth/modPattern:modPattern", "blend3", "423fc336468e9c2a851e7c27e593d092dff5619c8906c87f3bc60a59acbdcef5", "de2e3c5329b0b51c6fbb2be34c7562ca03c3c2542d5515e548c62a1022d68e83", {0x3f0973d4U,0x3f028f0cU,0x3ef6bf10U,0x3f800000U,0x3f333334U,0x3f0cccf4U,0x3f17197eU,0x3f800000U,0x3f0fc10cU,0x3f260134U,0x3f4fbf34U,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern0", "ffb6e9e731ce29aad4776feff178c40b9d962714ad1d326698aa43ca8ccd4dc9", "6e437bd47e0081c716da2ca80b8a1dab786b070db4005293c59c1ebe9be1480a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern1", "44cb6680c69e14162cf803604e78a5f3748f268550101cea72197da5e02d49c0", "e792a79c71b16dc7622ccc75ceb37ff8ae5c6b55b375d5db062c44e728754320", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern2", "a8787a6049ab38853d29b7d9d7bf01af7206e6cc068d620075231020a4b1c251", "aec5160837e274cfdf9fca07d74d09287759ba415d86a13f311919d61a8d00b5", {0x3eaf13faU,0x3f0be221U,0x3edcf0c6U,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern3", "cf9885ae95b0b8d8d6846841434384f0964214ae12a29a2103e9f7082d2883d9", "3586262e902fdc56b201dfa657751d4e5242d00278cd385795ef0dc39cefe91a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern4", "a0df7803e2d2748dec9e01cf0a13818c74939531d9f902bcf1faf5f06422da26", "be607ff90246e5ed1134fa43a064fca16afca154f29fad0df384c9fc5cd0f7a5", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern5", "eae1e338c6344e9c496b22e94bfc3f7e62df157d045bfdfa97010ad3cfdd1f82", "ca941d37c1c9dee500cc8054648069489100952097babe19b44f98cd069355b9", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3db1d5ecU,0x3f372926U,0x3eaf4d71U,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern6", "bcba4688612a3333276bcf32dfd7b4d7b110a0a770552097f7dff17be3d86435", "dde101746a2ba06fa562142f6930d20217543d5d4e44c52a7395ff8df81a9463", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern7", "c238e47ba18b83326b390d1c5193a5c8dfc9fb3b0309c1170690fcf6f52a2ab7", "16a65955ca902e6746842cde58580358407e7c8f5ade24b4606a3938759e6c60", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern8", "690d7381132717d81bbbbea19fc65ca30b99c382500fcc85e5ddf47f79130d40", "3f60c7d6f4d4febf7e728976c83a04928efdf31001100740b32815764bf3dd8c", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern9", "9795fd701bad6f566171ea1b92648632bebe57e6de83829e99e0ee59b6302169", "754b3d34ad15540a99be7501dea41c68ae9d4f0d28e6bba4e928614a53a6c6c0", {0x3dae5584U,0x3f377366U,0x3eaeff24U,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern10", "2bfca80c49c762e21d370eb6a284d36178e4060ce3d4b31141585c1a7b49f25d", "82de84498b417ac654ecce4e3aaad85ff791ceb5e864ccdab35c42f6ecabda3a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
-    {"synth/pattern:pattern", "pattern11", "d7889c848f8185abc1702c2c06d501ffdbf6a4e14f3453bd1ce6a8a2e10cea38", "84a1a385c3ddb42077c2d022faf1a1c68ef27bc37c9d1d61e82752ea1ea64c20", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3ee797f4U,0x3ef2510aU,0x3ef0afd9U,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern0", "ce65b6674ebdc8b9a2e120207fdfbd274b8859efc8677bb3f0526de2a3284cb6", "6e437bd47e0081c716da2ca80b8a1dab786b070db4005293c59c1ebe9be1480a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern1", "b3f820f41766e65cfa888f135232ef7301b060544d0e6bd83532fe21423c64a3", "e792a79c71b16dc7622ccc75ceb37ff8ae5c6b55b375d5db062c44e728754320", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern2", "ef51ac5c8c9bcd2af1122e0a452d9d6da019ab9af2ea1616d0a25aaef5024f16", "aec5160837e274cfdf9fca07d74d09287759ba415d86a13f311919d61a8d00b5", {0x3eaf13f9U,0x3f0be220U,0x3edcf0c6U,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern3", "f4c95e5b26a9f500ea72c0bdca2c66668ac1d36b147ce2aea98356a30c70c21a", "3586262e902fdc56b201dfa657751d4e5242d00278cd385795ef0dc39cefe91a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern4", "d9e8a05492d9ac339ef4f00f8bb164230f53c3f4e958375926962535d73f1609", "be607ff90246e5ed1134fa43a064fca16afca154f29fad0df384c9fc5cd0f7a5", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern5", "466513fd97c8d9d0f88257a9ffb966257f20437b2cb51f393dd2630e9835ef9f", "ca941d37c1c9dee500cc8054648069489100952097babe19b44f98cd069355b9", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3db1d5edU,0x3f372925U,0x3eaf4d71U,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern6", "38d7470fb6bca04479c9efc6a567279e00f9c49e35495f3d416455d738ef6fa0", "dde101746a2ba06fa562142f6930d20217543d5d4e44c52a7395ff8df81a9463", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern7", "f23e2060c9629abfb60dea8c638a7df35d244db056d7978c347a8f1485574db0", "16a65955ca902e6746842cde58580358407e7c8f5ade24b4606a3938759e6c60", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern8", "f0afb674f48d28be1861ba8b932ddc9964cc114e661c5f139df0621e78d8f8f3", "3f60c7d6f4d4febf7e728976c83a04928efdf31001100740b32815764bf3dd8c", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern9", "ceb8ae072342c8afaf42c76867ff75b183ed279f365fc9b01790d7310ec51f7c", "754b3d34ad15540a99be7501dea41c68ae9d4f0d28e6bba4e928614a53a6c6c0", {0x3dae5584U,0x3f377365U,0x3eaeff24U,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern10", "0c9aca8849097ee54a20516e54ba2dd96c9f73be6d1190eb1bd6dd594bf3ce44", "82de84498b417ac654ecce4e3aaad85ff791ceb5e864ccdab35c42f6ecabda3a", {0x3f68f5c3U,0x3e2e147bU,0x3f2147aeU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
+    {"synth/pattern:pattern", "pattern11", "d3f96eddd45839d59f7074d30949d775f86156c857d764c945e3ad482930e200", "84a1a385c3ddb42077c2d022faf1a1c68ef27bc37c9d1d61e82752ea1ea64c20", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3ee797f3U,0x3ef2510aU,0x3ef0afd9U,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
     {"synth/pattern:pattern", "fallback", "e3b382913869fc4757fbf092c7c3c85f6c4db65c2d7e3ececc4e7880d1b66ab9", "86fff5aa9a92ed6f71b6cdcf4b96dfbc39c39bde3c0d66f0fa7ea0cc39fcaeba", {0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U,0x3da3d70aU,0x3f3851ecU,0x3eae147bU,0x3f800000U}},
   }};
   constexpr std::array<std::size_t, 3> pixels{0U, 31U, 62U};
@@ -1347,8 +1347,8 @@ void populate_task13_bindings(noisemaker::glsl::Bindings& bindings,
     texture("inputTex", tag1); texture("bloomTex", tag23);
     uniform("intensity", fixture.variant == "zeroIntensity" ? 0.0f : 1.7f);
     uniform("tint", fixture.variant == "zeroIntensity"
-                        ? noisemaker::glsl::Vec3(0.7f, 0.2f, 0.9f)
-                        : noisemaker::glsl::Vec3(0.31f, 0.83f, 0.52f));
+                        ? noisemaker::glsl::DVec3(0.7, 0.2, 0.9)
+                        : noisemaker::glsl::DVec3(0.31, 0.83, 0.52));
   } else if (fixture.key == "filter/fibers:fibersBlend" ||
              fixture.key == "filter/scratches:scratchesBlend") {
     texture("inputTex", tag1); texture("overlayTex", overlay);
@@ -1404,7 +1404,7 @@ TEST(typed_task13_all_twenty_one_external_oracles_are_exact_and_repeatable) {
     {"filter/bloom:brightPass", "below", "39db1c2790da52b4ec7590014d7f438a3a2b4d4cc6ca5f6ed6c38fb60de27192", "17b3576fb2405e4d1dee78a343a9d8e473409056c8c1cd0fcb38b9659df20a6a", {0x00000000U,0x00000000U,0x00000000U,0x3e808081U,0x00000000U,0x00000000U,0x00000000U,0x3f40c0c1U,0x00000000U,0x00000000U,0x00000000U,0x3f5cdcddU}},
     {"filter/bloom:brightPass", "above", "e817cda4b3759b575fdb3778177564544800f2df625f2129ef3709001c6702ed", "48b6681702181716a45c4a1e76d1c0992208d454fb8825ebe107ac8adee4ccdb", {0x3d50d0d1U,0x3da0a0a1U,0x3df0f0f1U,0x3e808081U,0x3f70f0f1U,0x3f61e1e2U,0x3f52d2d3U,0x3f40c0c1U,0x3f7afafbU,0x3f75f5f6U,0x3f6bebecU,0x3f5cdcddU}},
     {"filter/bloom:composite", "zeroIntensity", "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66", "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
-    {"filter/bloom:composite", "tintedHDR", "88aed7c00ff073094ebb5dd35b7007448ad97e97dabd6310e566cf6fd20711aa", "60d5ab2cf84570f303bfe8e7dc5d80f81ed1bc21fc4eff0ccc3506fcb650ad5b", {0x3e0f3412U,0x3f78ad29U,0x3f15e8dbU,0x3f7afafbU,0x3f637a86U,0x3edc3b77U,0x3f12dea5U,0x3f1e9e9fU,0x3f904c13U,0x3fca1ba5U,0x3f6b9ab5U,0x3ea8a8a9U}},
+    {"filter/bloom:composite", "tintedHDR", "1406691b8909ecbdb4ec8601b8ed1d7f0af7838cb43c26995b382f4524bca398", "bcc786af67740040a8764308603f4e76ab20a6687b586698b12d42890b0ae944", {0x3e0f3412U,0x3f78ad29U,0x3f15e8dbU,0x3f7afafbU,0x3f637a86U,0x3edc3b77U,0x3f12dea6U,0x3f1e9e9fU,0x3f904c13U,0x3fca1ba6U,0x3f6b9ab6U,0x3ea8a8a9U}},
     {"filter/fibers:fibersBlend", "alpha0", "82dce1fda9a7c8bf9e8c8ac5e3e92804ed3d75a68246f705f9f37ed379526e66", "97b2a11438e374e306befe0d6d844374c576f5e68fd5723d282b7f13a92747ab", {0x3d50d0d1U,0x3de8e8e9U,0x3ce0e0e1U,0x3f7afafbU,0x3f09898aU,0x3e929293U,0x3d989899U,0x3f1e9e9fU,0x3f2babacU,0x3f27a7a8U,0x3e64e4e5U,0x3ea8a8a9U}},
     {"filter/fibers:fibersBlend", "alpha0p53", "ab16d60f5002784bf79c7ff1e69e8c4b88189962b491acdd8e1e6eda71f98022", "a914338ee1630fe92a0530dbd76ea90741b2fa9431f684ccaa1909af64be8996", {0x3ec22d18U,0x3e184f8cU,0x3e900843U,0x3f7afafbU,0x3f2f42b5U,0x3e83a1f4U,0x3e9f2995U,0x3f1e9e9fU,0x3f44b1eaU,0x3efa26f8U,0x3ecf131aU,0x3ea8a8a9U}},
     {"filter/fibers:fibersBlend", "alpha1", "2200817335871e52518207a88e870a097b77916b44cea500c8b67f42fdedda6a", "fdc4b4d6db28e6a43aab5821dae93bc181276e39bd129de2f409f56a725f0e7e", {0x3f2b9c8eU,0x3e381b7fU,0x3f01a5caU,0x3f7afafbU,0x3f50b69dU,0x3e6cc49dU,0x3f053cf5U,0x3f1e9e9fU,0x3f5ae2ebU,0x3eaea297U,0x3f109ba7U,0x3ea8a8a9U}},
@@ -2145,7 +2145,13 @@ void populate_task15_bindings(noisemaker::glsl::Bindings& bindings, std::string_
       case Task15BindingType::vec2:
         bindings.set_uniform(name, noisemaker::glsl::Vec2(9.0f, 7.0f)); break;
       case Task15BindingType::vec3:
-        bindings.set_uniform(name, noisemaker::glsl::Vec3(0.2f, 0.4f, 0.6f)); break;
+        // Every vec3-tagged entry in kTask15Bindings (hatch's inkColor/
+        // paperColor, lowPoly's edgeColor, mixer/shadow's color, gradient's
+        // color1..4, mandala's fgColor/bgColor) is an ordinary
+        // effect-parameter vec3 uniform, now a double-precision carrier
+        // (see emit_typed_cpp.py's `_is_double_vector_uniform`); none is
+        // the size/motion/solid-color exception.
+        bindings.set_uniform(name, noisemaker::glsl::DVec3(0.2, 0.4, 0.6)); break;
     }
   }
 }
@@ -2567,7 +2573,14 @@ void populate_task15_oracle_bindings(
       case Task15BindingType::vec2:
         bindings.set_uniform(name, noisemaker::glsl::Vec2(uniform.value[0], uniform.value[1])); break;
       case Task15BindingType::vec3:
-        bindings.set_uniform(name, noisemaker::glsl::Vec3(uniform.value[0], uniform.value[1], uniform.value[2])); break;
+        // Every vec3-tagged kTask15OracleUniforms entry (hatch's
+        // inkColor/paperColor, lowPoly's edgeColor, mixer/shadow's color,
+        // gradient's color1..4, mandala's fgColor/bgColor) is an ordinary
+        // effect-parameter vec3 uniform, now a double-precision carrier.
+        bindings.set_uniform(name, noisemaker::glsl::DVec3(
+            static_cast<double>(uniform.value[0]),
+            static_cast<double>(uniform.value[1]),
+            static_cast<double>(uniform.value[2]))); break;
       case Task15BindingType::sampler: throw std::logic_error("sampler in Task 15 uniform table");
     }
   }
@@ -3098,11 +3111,11 @@ constexpr std::array<std::array<std::size_t, 2>, 9> task20_probe_coordinates{{
   bindings.set_uniform("speed", noisemaker::uint_bits_to_float(fixture.speed_bits));
   bindings.set_uniform("pulseDepth", noisemaker::uint_bits_to_float(fixture.pulse_depth_bits));
   bindings.set_uniform("time", noisemaker::uint_bits_to_float(fixture.time_bits));
-  bindings.set_uniform("fgColor", noisemaker::glsl::Vec3(
+  bindings.set_uniform("fgColor", noisemaker::glsl::DVec3(
       noisemaker::uint_bits_to_float(fixture.fg_bits[0]),
       noisemaker::uint_bits_to_float(fixture.fg_bits[1]),
       noisemaker::uint_bits_to_float(fixture.fg_bits[2])));
-  bindings.set_uniform("bgColor", noisemaker::glsl::Vec3(
+  bindings.set_uniform("bgColor", noisemaker::glsl::DVec3(
       noisemaker::uint_bits_to_float(fixture.bg_bits[0]),
       noisemaker::uint_bits_to_float(fixture.bg_bits[1]),
       noisemaker::uint_bits_to_float(fixture.bg_bits[2])));

@@ -208,20 +208,33 @@ template <class T> requires(!std::floating_point<T>&&!detail::is_vec_v<T>&&!deta
 template <class A,class B,class C> requires(std::is_arithmetic_v<A>&&std::is_arithmetic_v<B>&&std::is_arithmetic_v<C>&&!(std::same_as<A,B>&&std::same_as<B,C>)) [[nodiscard]] inline float mix(A x,B y,C amount) { return mix(static_cast<double>(x),static_cast<double>(y),static_cast<double>(amount)); }
 template <class A,class B,class C> requires(std::is_arithmetic_v<A>&&std::is_arithmetic_v<B>&&std::is_arithmetic_v<C>&&!(std::same_as<A,B>&&std::same_as<B,C>)) [[nodiscard]] inline float clamp(A x,B low,C high) { return noisemaker::f32(component_min(static_cast<double>(component_max(static_cast<double>(x),static_cast<double>(low))),static_cast<double>(high))); }
 template <class A,class B> requires(std::is_arithmetic_v<A>&&std::is_arithmetic_v<B>&&!std::same_as<A,B>) [[nodiscard]] inline float step(A edge,B x) { return static_cast<double>(x)<static_cast<double>(edge)?0.0f:1.0f; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_min(const Vec<N,T>& a,const Vec<N,T>& b) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=component_min(a[i],b[i]);return result; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_min(const Vec<N,T>& a,T b) { return component_min(a,Vec<N,T>(b)); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_min(T a,const Vec<N,T>& b) { return component_min(Vec<N,T>(a),b); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_max(const Vec<N,T>& a,const Vec<N,T>& b) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=component_max(a[i],b[i]);return result; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_max(const Vec<N,T>& a,T b) { return component_max(a,Vec<N,T>(b)); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> component_max(T a,const Vec<N,T>& b) { return component_max(Vec<N,T>(a),b); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> clamp(const Vec<N,T>& x,const Vec<N,T>& low,const Vec<N,T>& high) { return component_min(component_max(x,low),high); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> clamp(const Vec<N,T>& x,T low,T high) { return clamp(x,Vec<N,T>(low),Vec<N,T>(high)); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> mix(const Vec<N,T>& a,const Vec<N,T>& b,const Vec<N,T>& amount) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=mix(a[i],b[i],amount[i]);return result; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> mix(const Vec<N,T>& a,const Vec<N,T>& b,T amount) { return mix(a,b,Vec<N,T>(amount)); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> step(const Vec<N,T>& edge,const Vec<N,T>& x) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=step(edge[i],x[i]);return result; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> step(T edge,const Vec<N,T>& x) { return step(Vec<N,T>(edge),x); }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> smoothstep(const Vec<N,T>& edge0,const Vec<N,T>& edge1,const Vec<N,T>& x) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=smoothstep(edge0[i],edge1[i],x[i]);return result; }
-template <std::size_t N,class T> [[nodiscard]] inline Vec<N,T> smoothstep(T edge0,T edge1,const Vec<N,T>& x) { return smoothstep(Vec<N,T>(edge0),Vec<N,T>(edge1),x); }
+// `requires(!std::same_as<T,double>)` on every one of these: a `Vec<N,
+// double>` (an authority-double uniform/local/return; see emit_typed_cpp.py's
+// `_double_vector_expression`) must never resolve to these generic,
+// unrounded-until-the-caller-decides templates -- JS's own
+// mix/clamp/min/max/step/smoothstep ALWAYS narrow to float32 exactly once,
+// regardless of whether their operands were raw doubles (glsl-runtime.js's
+// `#ternary`/`#binary` `Math.fround` every output lane unconditionally), so
+// a call with any double-lane vector operand must round to `Vec<N,float>`
+// there and then -- see the dedicated double-aware overloads below instead.
+// No existing call site passes `T=double` here (remap.cpp, the only
+// DVec3/DVec4 consumer outside the generated kernels, does its own inline
+// arithmetic and never calls these), so this changes nothing for T=float/
+// int32/uint32.
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_min(const Vec<N,T>& a,const Vec<N,T>& b) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=component_min(a[i],b[i]);return result; }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_min(const Vec<N,T>& a,T b) { return component_min(a,Vec<N,T>(b)); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_min(T a,const Vec<N,T>& b) { return component_min(Vec<N,T>(a),b); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_max(const Vec<N,T>& a,const Vec<N,T>& b) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=component_max(a[i],b[i]);return result; }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_max(const Vec<N,T>& a,T b) { return component_max(a,Vec<N,T>(b)); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> component_max(T a,const Vec<N,T>& b) { return component_max(Vec<N,T>(a),b); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> clamp(const Vec<N,T>& x,const Vec<N,T>& low,const Vec<N,T>& high) { return component_min(component_max(x,low),high); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> clamp(const Vec<N,T>& x,T low,T high) { return clamp(x,Vec<N,T>(low),Vec<N,T>(high)); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> mix(const Vec<N,T>& a,const Vec<N,T>& b,const Vec<N,T>& amount) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=mix(a[i],b[i],amount[i]);return result; }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> mix(const Vec<N,T>& a,const Vec<N,T>& b,T amount) { return mix(a,b,Vec<N,T>(amount)); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> step(const Vec<N,T>& edge,const Vec<N,T>& x) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=step(edge[i],x[i]);return result; }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> step(T edge,const Vec<N,T>& x) { return step(Vec<N,T>(edge),x); }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> smoothstep(const Vec<N,T>& edge0,const Vec<N,T>& edge1,const Vec<N,T>& x) { Vec<N,T> result;for(std::size_t i=0;i<N;++i)result[i]=smoothstep(edge0[i],edge1[i],x[i]);return result; }
+template <std::size_t N,class T> requires(!std::same_as<T,double>) [[nodiscard]] inline Vec<N,T> smoothstep(T edge0,T edge1,const Vec<N,T>& x) { return smoothstep(Vec<N,T>(edge0),Vec<N,T>(edge1),x); }
 
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> component_min(const Vec<N,float>& a,double b) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(component_min(static_cast<double>(a[i]),b));return result; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> component_min(double a,const Vec<N,float>& b) { return component_min(b,a); }
@@ -232,6 +245,129 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> mix(const Vec<N,float
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> mix(const Vec<N,float>& a,const Vec<N,float>& b,float amount) { return mix(a,b,static_cast<double>(amount)); }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> step(double edge,const Vec<N,float>& x) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=static_cast<double>(x[i])<edge?0.0f:1.0f;return result; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edge0,double edge1,const Vec<N,float>& x) { Vec<N,float> result;for(std::size_t i=0;i<N;++i)result[i]=noisemaker::f32(smoothstep(edge0,edge1,static_cast<double>(x[i])));return result; }
+
+// Double-lane vector operands (an authority-double uniform/local/return;
+// see emit_typed_cpp.py's `_double_vector_expression`) for the vector
+// builtins the DSL can actually reach (`_BUILTIN_NAMES` in
+// emit_typed_cpp.py) -- and any `FloatExpr<N>` an ordinary arithmetic
+// expression built from one (a double uniform combined with a float lane
+// or a literal via glsl_types.hpp's mixed-precision operators never rounds
+// until something materializes it, and a builtin call is exactly such a
+// consumer; without this a call like `mix((color*0.9)+0.1, other, t)`
+// would have no viable overload at all). `float_expr()` reads every lane
+// at its own precision (a float lane widens, a double lane is already
+// exact, an already-deferred FloatExpr lane passes through) and every
+// result here rounds to float32 exactly once, matching the authority's own
+// single narrowing at its `#binary`/`#ternary`/`dot`/`length`/`normalize`
+// (never twice: once at a premature float bind, then again here, which is
+// exactly the ~1 ULP divergence this mechanism exists to remove). At least
+// one operand must be `is_double_vec_v` (a genuine `Vec<N,double>`, not
+// merely a `FloatExpr`) so the existing all-float/FloatExpr overloads above
+// stay the sole match when no double vector is actually involved -- this
+// is additive, not a replacement.
+template <class T> concept VectorOrExpr = detail::is_vec_v<T> || detail::is_float_expr_v<T>;
+template <class... Parts> concept AnyDoubleVec = (detail::is_double_vec_v<Parts> || ...);
+
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> mix(const A& a,const B& b,double amount) {
+  constexpr std::size_t N = detail::lane_count_v<A>;
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = noisemaker::f32(fa[i]*(1.0-amount)+fb[i]*amount);
+  return result;
+}
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> mix(const A& a,const B& b,float amount) { return mix(a,b,static_cast<double>(amount)); }
+
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> component_min(const A& a,const B& b) {
+  constexpr std::size_t N = detail::lane_count_v<A>;
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = component_min(fa[i],fb[i]);
+  return result;
+}
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> component_max(const A& a,const B& b) {
+  constexpr std::size_t N = detail::lane_count_v<A>;
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = component_max(fa[i],fb[i]);
+  return result;
+}
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> component_min(const T& a,double b) { return component_min(a,Vec<detail::lane_count_v<T>,double>(b)); }
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> component_min(double a,const T& b) { return component_min(Vec<detail::lane_count_v<T>,double>(a),b); }
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> component_max(const T& a,double b) { return component_max(a,Vec<detail::lane_count_v<T>,double>(b)); }
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> component_max(double a,const T& b) { return component_max(Vec<detail::lane_count_v<T>,double>(a),b); }
+
+template <class A,class B,class C>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && VectorOrExpr<C>
+           && detail::lane_count_v<A> == detail::lane_count_v<B> && detail::lane_count_v<A> == detail::lane_count_v<C>
+           && AnyDoubleVec<A,B,C>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> clamp(const A& x,const B& low,const C& high) { return component_min(component_max(x,low),high); }
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> clamp(const T& x,double low,double high) {
+  constexpr std::size_t N = detail::lane_count_v<T>;
+  const auto fx = float_expr(x);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = clamp(fx[i],low,high);
+  return result;
+}
+
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> step(const A& edge,const B& x) {
+  constexpr std::size_t N = detail::lane_count_v<A>;
+  const auto fedge = float_expr(edge); const auto fx = float_expr(x);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = step(fedge[i],fx[i]);
+  return result;
+}
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> step(double edge,const T& x) { return step(Vec<detail::lane_count_v<T>,double>(edge),x); }
+
+template <class A,class B,class C>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && VectorOrExpr<C>
+           && detail::lane_count_v<A> == detail::lane_count_v<B> && detail::lane_count_v<A> == detail::lane_count_v<C>
+           && AnyDoubleVec<A,B,C>)
+[[nodiscard]] inline Vec<detail::lane_count_v<A>,float> smoothstep(const A& edge0,const B& edge1,const C& x) {
+  constexpr std::size_t N = detail::lane_count_v<A>;
+  const auto f0 = float_expr(edge0); const auto f1 = float_expr(edge1); const auto fx = float_expr(x);
+  Vec<N,float> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = smoothstep(f0[i],f1[i],fx[i]);
+  return result;
+}
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> smoothstep(double edge0,double edge1,const T& x) { return smoothstep(Vec<detail::lane_count_v<T>,double>(edge0),Vec<detail::lane_count_v<T>,double>(edge1),x); }
+
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline float dot(const A& a,const B& b) {
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  double sum = 0.0;
+  for (std::size_t i = 0; i < detail::lane_count_v<A>; ++i) sum += fa[i]*fb[i];
+  return noisemaker::f32(sum);
+}
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline float length(const T& value) { return noisemaker::f32(std::sqrt(static_cast<double>(dot(value,value)))); }
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
+[[nodiscard]] inline float distance(const A& a,const B& b) {
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  double sum = 0.0;
+  for (std::size_t i = 0; i < detail::lane_count_v<A>; ++i) { const double delta = fa[i]-fb[i]; sum += delta*delta; }
+  return noisemaker::f32(std::sqrt(sum));
+}
+template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> normalize(const T& value) {
+  constexpr std::size_t N = detail::lane_count_v<T>;
+  double sum = 0.0;
+  for (std::size_t i = 0; i < N; ++i) sum += value[i]*value[i];
+  const double magnitude = std::sqrt(sum);
+  Vec<N,float> result;
+  if (magnitude == 0.0) return result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = noisemaker::f32(value[i]/magnitude);
+  return result;
+}
 
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> materialize(const Vec<N,float>& value) { return value; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> materialize(const FloatExpr<N>& value) { return Vec<N,float>(value); }

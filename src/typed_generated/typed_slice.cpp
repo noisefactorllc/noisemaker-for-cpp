@@ -2182,14 +2182,14 @@ BoundKernel bind_classicNoisedeck_colorLab_colorLab(const glsl::Bindings& bindin
 // Source SHA-256: ae3f29a129016653a5705647cb61c5c6448504e44ad321539fb4ce2e120d9123
 namespace typed_6 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, glsl::Vec3 inputColor_value, std::int32_t blendMode_value, double range_value, double mixAmt_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), inputColor(inputColor_value), blendMode(blendMode_value), range(range_value), mixAmt(mixAmt_value) {}
+  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, glsl::DVec3 inputColor_value, std::int32_t blendMode_value, double range_value, double mixAmt_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), inputColor(inputColor_value), blendMode(blendMode_value), range(range_value), mixAmt(mixAmt_value) {}
   const Surface* inputTex;
   const Surface* tex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   double time;
-  glsl::Vec3 inputColor;
+  glsl::DVec3 inputColor;
   std::int32_t blendMode;
   double range;
   double mixAmt;
@@ -2404,7 +2404,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_6
 
 BoundKernel bind_classicNoisedeck_composite_composite(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_6::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<glsl::Vec3>("inputColor"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("range"), bindings.get_number("mixAmt"));
+  const auto state = std::make_shared<typed_6::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<glsl::DVec3>("inputColor"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("range"), bindings.get_number("mixAmt"));
   (void)bindings;
   return BoundKernel(state, &typed_6::pixel);
 }
@@ -3070,7 +3070,7 @@ BoundKernel bind_classicNoisedeck_effects_effects(const glsl::Bindings& bindings
 // Source SHA-256: a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b
 namespace typed_8 {
 struct State final : KernelState {
-  State(double time_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t type_value, std::int32_t symmetry_value, double offsetX_value, double offsetY_value, double centerX_value, double centerY_value, double zoomAmt_value, double speed_value, double rotation_value, std::int32_t iterations_value, std::int32_t mode_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double hueRange_value, double levels_value, glsl::Vec3 bgColor_value, double bgAlpha_value, double cutoff_value) : time(time_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), type(type_value), symmetry(symmetry_value), offsetX(offsetX_value), offsetY(offsetY_value), centerX(centerX_value), centerY(centerY_value), zoomAmt(zoomAmt_value), speed(speed_value), rotation(rotation_value), iterations(iterations_value), mode(mode_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), hueRange(hueRange_value), levels(levels_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value), cutoff(cutoff_value) {}
+  State(double time_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t type_value, std::int32_t symmetry_value, double offsetX_value, double offsetY_value, double centerX_value, double centerY_value, double zoomAmt_value, double speed_value, double rotation_value, std::int32_t iterations_value, std::int32_t mode_value, std::int32_t colorMode_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double hueRange_value, double levels_value, glsl::DVec3 bgColor_value, double bgAlpha_value, double cutoff_value) : time(time_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), type(type_value), symmetry(symmetry_value), offsetX(offsetX_value), offsetY(offsetY_value), centerX(centerX_value), centerY(centerY_value), zoomAmt(zoomAmt_value), speed(speed_value), rotation(rotation_value), iterations(iterations_value), mode(mode_value), colorMode(colorMode_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), hueRange(hueRange_value), levels(levels_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value), cutoff(cutoff_value) {}
   double time;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -3097,7 +3097,7 @@ struct State final : KernelState {
   double repeatPalette;
   double hueRange;
   double levels;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 bgColor;
   double bgAlpha;
   double cutoff;
 };
@@ -3471,7 +3471,7 @@ BoundKernel bind_classicNoisedeck_fractal_fractal(const glsl::Bindings& bindings
   if (mode < 0 || mode > 1) {
     throw glsl::KernelBindingError("classicNoisedeck/fractal:fractal mode must be one of the authenticated choices [0,1]");
   }
-  const auto state = std::make_shared<typed_8::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("type"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoomAmt"), bindings.get_number("speed"), bindings.get_number("rotation"), iterations, mode, bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("hueRange"), bindings.get_number("levels"), bindings.get<glsl::Vec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get_number("cutoff"));
+  const auto state = std::make_shared<typed_8::State>(bindings.get_number("time"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("type"), bindings.get<std::int32_t>("symmetry"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get_number("zoomAmt"), bindings.get_number("speed"), bindings.get_number("rotation"), iterations, mode, bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("hueRange"), bindings.get_number("levels"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"), bindings.get_number("cutoff"));
   (void)bindings;
   return BoundKernel(state, &typed_8::pixel);
 }
@@ -4533,7 +4533,7 @@ BoundKernel bind_classicNoisedeck_kaleido_kaleido(const glsl::Bindings& bindings
 // Source SHA-256: f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444
 namespace typed_11 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, bool aspectLens_value, std::int32_t shape_value, glsl::Vec3 tint_value, double alpha_value, double vignetteAmt_value, double distortion_value, double speed_value, double loopScale_value, double aberration_value, double hueRotation_value, double hueRange_value, std::int32_t mode_value, bool modulate_value, std::int32_t blendMode_value, double saturation_value, double passthru_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), aspectLens(aspectLens_value), shape(shape_value), tint(tint_value), alpha(alpha_value), vignetteAmt(vignetteAmt_value), distortion(distortion_value), speed(speed_value), loopScale(loopScale_value), aberration(aberration_value), hueRotation(hueRotation_value), hueRange(hueRange_value), mode(mode_value), modulate(modulate_value), blendMode(blendMode_value), saturation(saturation_value), passthru(passthru_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, bool aspectLens_value, std::int32_t shape_value, glsl::DVec3 tint_value, double alpha_value, double vignetteAmt_value, double distortion_value, double speed_value, double loopScale_value, double aberration_value, double hueRotation_value, double hueRange_value, std::int32_t mode_value, bool modulate_value, std::int32_t blendMode_value, double saturation_value, double passthru_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), aspectLens(aspectLens_value), shape(shape_value), tint(tint_value), alpha(alpha_value), vignetteAmt(vignetteAmt_value), distortion(distortion_value), speed(speed_value), loopScale(loopScale_value), aberration(aberration_value), hueRotation(hueRotation_value), hueRange(hueRange_value), mode(mode_value), modulate(modulate_value), blendMode(blendMode_value), saturation(saturation_value), passthru(passthru_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -4541,7 +4541,7 @@ struct State final : KernelState {
   double time;
   bool aspectLens;
   std::int32_t shape;
-  glsl::Vec3 tint;
+  glsl::DVec3 tint;
   double alpha;
   double vignetteAmt;
   double distortion;
@@ -4805,7 +4805,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_11
 
 BoundKernel bind_classicNoisedeck_lensDistortion_lensDistortion(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_11::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("shape"), bindings.get<glsl::Vec3>("tint"), bindings.get_number("alpha"), bindings.get_number("vignetteAmt"), bindings.get_number("distortion"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("aberration"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<std::int32_t>("mode"), bindings.get<bool>("modulate"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("saturation"), bindings.get_number("passthru"));
+  const auto state = std::make_shared<typed_11::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("aspectLens"), bindings.get<std::int32_t>("shape"), bindings.get<glsl::DVec3>("tint"), bindings.get_number("alpha"), bindings.get_number("vignetteAmt"), bindings.get_number("distortion"), bindings.get_number("speed"), bindings.get_number("loopScale"), bindings.get_number("aberration"), bindings.get_number("hueRotation"), bindings.get_number("hueRange"), bindings.get<std::int32_t>("mode"), bindings.get<bool>("modulate"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("saturation"), bindings.get_number("passthru"));
   (void)bindings;
   return BoundKernel(state, &typed_11::pixel);
 }
@@ -6800,7 +6800,7 @@ BoundKernel bind_classicNoisedeck_shapes_shapes(const glsl::Bindings& bindings) 
 // Source SHA-256: cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced
 namespace typed_17 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, bool enabled_value, bool useSpecks_value, std::int32_t splatSource_value, double scale_value, double cutoff_value, double speed_value, double seed_value, glsl::Vec3 splatColor_value, std::int32_t mode_value, double speckScale_value, double speckCutoff_value, double speckSpeed_value, double speckSeed_value, glsl::Vec3 speckColor_value, std::int32_t speckMode_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), enabled(enabled_value), useSpecks(useSpecks_value), splatSource(splatSource_value), scale(scale_value), cutoff(cutoff_value), speed(speed_value), seed(seed_value), splatColor(splatColor_value), mode(mode_value), speckScale(speckScale_value), speckCutoff(speckCutoff_value), speckSpeed(speckSpeed_value), speckSeed(speckSeed_value), speckColor(speckColor_value), speckMode(speckMode_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, bool enabled_value, bool useSpecks_value, std::int32_t splatSource_value, double scale_value, double cutoff_value, double speed_value, double seed_value, glsl::DVec3 splatColor_value, std::int32_t mode_value, double speckScale_value, double speckCutoff_value, double speckSpeed_value, double speckSeed_value, glsl::DVec3 speckColor_value, std::int32_t speckMode_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), enabled(enabled_value), useSpecks(useSpecks_value), splatSource(splatSource_value), scale(scale_value), cutoff(cutoff_value), speed(speed_value), seed(seed_value), splatColor(splatColor_value), mode(mode_value), speckScale(speckScale_value), speckCutoff(speckCutoff_value), speckSpeed(speckSpeed_value), speckSeed(speckSeed_value), speckColor(speckColor_value), speckMode(speckMode_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -6813,13 +6813,13 @@ struct State final : KernelState {
   double cutoff;
   double speed;
   double seed;
-  glsl::Vec3 splatColor;
+  glsl::DVec3 splatColor;
   std::int32_t mode;
   double speckScale;
   double speckCutoff;
   double speckSpeed;
   double speckSeed;
-  glsl::Vec3 speckColor;
+  glsl::DVec3 speckColor;
   std::int32_t speckMode;
 };
 
@@ -6970,7 +6970,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_17
 
 BoundKernel bind_classicNoisedeck_splat_splat(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_17::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("enabled"), bindings.get<bool>("useSpecks"), bindings.get<std::int32_t>("splatSource"), bindings.get_number("scale"), bindings.get_number("cutoff"), bindings.get_number("speed"), bindings.get_number("seed"), bindings.get<glsl::Vec3>("splatColor"), bindings.get<std::int32_t>("mode"), bindings.get_number("speckScale"), bindings.get_number("speckCutoff"), bindings.get_number("speckSpeed"), bindings.get_number("speckSeed"), bindings.get<glsl::Vec3>("speckColor"), bindings.get<std::int32_t>("speckMode"));
+  const auto state = std::make_shared<typed_17::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<bool>("enabled"), bindings.get<bool>("useSpecks"), bindings.get<std::int32_t>("splatSource"), bindings.get_number("scale"), bindings.get_number("cutoff"), bindings.get_number("speed"), bindings.get_number("seed"), bindings.get<glsl::DVec3>("splatColor"), bindings.get<std::int32_t>("mode"), bindings.get_number("speckScale"), bindings.get_number("speckCutoff"), bindings.get_number("speckSpeed"), bindings.get_number("speckSeed"), bindings.get<glsl::DVec3>("speckColor"), bindings.get<std::int32_t>("speckMode"));
   (void)bindings;
   return BoundKernel(state, &typed_17::pixel);
 }
@@ -7240,13 +7240,13 @@ BoundKernel bind_filter_bloom_brightPass(const glsl::Bindings& bindings) {
 // Source SHA-256: 28e480fad84b7254e9392b8d4d85bc398b62a0e57f94dffac94db655132abbef
 namespace typed_21 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, const Surface* bloomTex_value, double intensity_value, glsl::Vec3 tint_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), bloomTex(bloomTex_value), intensity(intensity_value), tint(tint_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, const Surface* bloomTex_value, double intensity_value, glsl::DVec3 tint_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), bloomTex(bloomTex_value), intensity(intensity_value), tint(tint_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
   const Surface* bloomTex;
   double intensity;
-  glsl::Vec3 tint;
+  glsl::DVec3 tint;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -7276,7 +7276,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_21
 
 BoundKernel bind_filter_bloom_composite(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_21::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("bloomTex"), bindings.get_number("intensity"), bindings.get<glsl::Vec3>("tint"));
+  const auto state = std::make_shared<typed_21::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("bloomTex"), bindings.get_number("intensity"), bindings.get<glsl::DVec3>("tint"));
   (void)bindings;
   return BoundKernel(state, &typed_21::pixel);
 }
@@ -7576,13 +7576,13 @@ BoundKernel bind_filter_bulge_bulge(const glsl::Bindings& bindings) {
 // Source SHA-256: 182d5b48d026e923aa2c412c659c633541859ffc3e9bc03315d5c5e18385f69f
 namespace typed_26 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, const Surface* colorTex_value, const Surface* edgeTex_value, glsl::Vec3 edgeColor_value, double mixAmount_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), colorTex(colorTex_value), edgeTex(edgeTex_value), edgeColor(edgeColor_value), mixAmount(mixAmount_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, const Surface* colorTex_value, const Surface* edgeTex_value, glsl::DVec3 edgeColor_value, double mixAmount_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), colorTex(colorTex_value), edgeTex(edgeTex_value), edgeColor(edgeColor_value), mixAmount(mixAmount_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
   const Surface* colorTex;
   const Surface* edgeTex;
-  glsl::Vec3 edgeColor;
+  glsl::DVec3 edgeColor;
   double mixAmount;
 };
 
@@ -7615,7 +7615,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_26
 
 BoundKernel bind_filter_celShading_celShadingBlend(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_26::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("colorTex"), &bindings.texture("edgeTex"), bindings.get<glsl::Vec3>("edgeColor"), bindings.get_number("mixAmount"));
+  const auto state = std::make_shared<typed_26::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), &bindings.texture("colorTex"), &bindings.texture("edgeTex"), bindings.get<glsl::DVec3>("edgeColor"), bindings.get_number("mixAmount"));
   (void)bindings;
   return BoundKernel(state, &typed_26::pixel);
 }
@@ -7624,14 +7624,14 @@ BoundKernel bind_filter_celShading_celShadingBlend(const glsl::Bindings& binding
 // Source SHA-256: 90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4
 namespace typed_27 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, std::int32_t levels_value, double gamma_value, bool antialias_value, glsl::Vec3 lightDirection_value, double strength_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), levels(levels_value), gamma(gamma_value), antialias(antialias_value), lightDirection(lightDirection_value), strength(strength_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, std::int32_t levels_value, double gamma_value, bool antialias_value, glsl::DVec3 lightDirection_value, double strength_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), levels(levels_value), gamma(gamma_value), antialias(antialias_value), lightDirection(lightDirection_value), strength(strength_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
   std::int32_t levels;
   double gamma;
   bool antialias;
-  glsl::Vec3 lightDirection;
+  glsl::DVec3 lightDirection;
   double strength;
 };
 
@@ -7717,7 +7717,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_27
 
 BoundKernel bind_filter_celShading_celShadingColor(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_27::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("levels"), bindings.get_number("gamma"), bindings.get<bool>("antialias"), bindings.get<glsl::Vec3>("lightDirection"), bindings.get_number("strength"));
+  const auto state = std::make_shared<typed_27::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("levels"), bindings.get_number("gamma"), bindings.get<bool>("antialias"), bindings.get<glsl::DVec3>("lightDirection"), bindings.get_number("strength"));
   (void)bindings;
   return BoundKernel(state, &typed_27::pixel, true);
 }
@@ -8281,12 +8281,12 @@ BoundKernel bind_filter_clouds_clouds(const glsl::Bindings& bindings) {
 // Source SHA-256: e85d80a109a48d551d60ff6136efedb4a131e0b973ad9637b82df9b46449f5fb
 namespace typed_36 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, glsl::Vec3 targetColor_value, glsl::Vec3 replaceColor_value, double sensitivity_value, double smoothing_value, double colorMix_value, double replaceAlpha_value, double keepAlpha_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), targetColor(targetColor_value), replaceColor(replaceColor_value), sensitivity(sensitivity_value), smoothing(smoothing_value), colorMix(colorMix_value), replaceAlpha(replaceAlpha_value), keepAlpha(keepAlpha_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, glsl::DVec3 targetColor_value, glsl::DVec3 replaceColor_value, double sensitivity_value, double smoothing_value, double colorMix_value, double replaceAlpha_value, double keepAlpha_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), targetColor(targetColor_value), replaceColor(replaceColor_value), sensitivity(sensitivity_value), smoothing(smoothing_value), colorMix(colorMix_value), replaceAlpha(replaceAlpha_value), keepAlpha(keepAlpha_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
-  glsl::Vec3 targetColor;
-  glsl::Vec3 replaceColor;
+  glsl::DVec3 targetColor;
+  glsl::DVec3 replaceColor;
   double sensitivity;
   double smoothing;
   double colorMix;
@@ -8325,7 +8325,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_36
 
 BoundKernel bind_filter_colorReplace_colorReplace(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_36::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<glsl::Vec3>("targetColor"), bindings.get<glsl::Vec3>("replaceColor"), bindings.get_number("sensitivity"), bindings.get_number("smoothing"), bindings.get_number("colorMix"), bindings.get_number("replaceAlpha"), bindings.get_number("keepAlpha"));
+  const auto state = std::make_shared<typed_36::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<glsl::DVec3>("targetColor"), bindings.get<glsl::DVec3>("replaceColor"), bindings.get_number("sensitivity"), bindings.get_number("smoothing"), bindings.get_number("colorMix"), bindings.get_number("replaceAlpha"), bindings.get_number("keepAlpha"));
   (void)bindings;
   return BoundKernel(state, &typed_36::pixel);
 }
@@ -11240,14 +11240,14 @@ BoundKernel bind_filter_glyphMap_glyphMap(const glsl::Bindings& bindings) {
 // Source SHA-256: b043aa43d17e098ffb736f16e6c81a5ca422ecdd6fc37fef03c39b01cc939bd3
 namespace typed_53 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, double vibrance_value, double fadedFilm_value, glsl::Vec3 shadowTint_value, glsl::Vec3 highlightTint_value, double splitToneBalance_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), vibrance(vibrance_value), fadedFilm(fadedFilm_value), shadowTint(shadowTint_value), highlightTint(highlightTint_value), splitToneBalance(splitToneBalance_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, double vibrance_value, double fadedFilm_value, glsl::DVec3 shadowTint_value, glsl::DVec3 highlightTint_value, double splitToneBalance_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), vibrance(vibrance_value), fadedFilm(fadedFilm_value), shadowTint(shadowTint_value), highlightTint(highlightTint_value), splitToneBalance(splitToneBalance_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
   double vibrance;
   double fadedFilm;
-  glsl::Vec3 shadowTint;
-  glsl::Vec3 highlightTint;
+  glsl::DVec3 shadowTint;
+  glsl::DVec3 highlightTint;
   double splitToneBalance;
 };
 
@@ -11354,14 +11354,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 rgb = srgbToLinear(state, context, glsl::swizzle<0, 1, 2>(color));
   rgb = glsl::Vec3(applyVibrance(state, context, rgb, state.vibrance));
   rgb = glsl::Vec3(applyFadedFilm(state, context, rgb, state.fadedFilm));
-  rgb = glsl::Vec3(applySplitTone(state, context, rgb, state.shadowTint, state.highlightTint, state.splitToneBalance));
+  rgb = glsl::Vec3(applySplitTone(state, context, rgb, glsl::Vec3(state.shadowTint), glsl::Vec3(state.highlightTint), state.splitToneBalance));
   rgb = glsl::Vec3(linearToSrgb(state, context, glsl::component_max(rgb, glsl::FloatExpr<3>(static_cast<float>(0.0)))));
   output = glsl::Vec4(glsl::Vec4(rgb, glsl::swizzle<3>(color)));
 }
 }  // namespace typed_53
 
 BoundKernel bind_filter_grade_creative(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_53::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get_number("vibrance"), bindings.get_number("fadedFilm"), bindings.get<glsl::Vec3>("shadowTint"), bindings.get<glsl::Vec3>("highlightTint"), bindings.get_number("splitToneBalance"));
+  const auto state = std::make_shared<typed_53::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get_number("vibrance"), bindings.get_number("fadedFilm"), bindings.get<glsl::DVec3>("shadowTint"), bindings.get<glsl::DVec3>("highlightTint"), bindings.get_number("splitToneBalance"));
   (void)bindings;
   return BoundKernel(state, &typed_53::pixel);
 }
@@ -12308,13 +12308,13 @@ BoundKernel bind_filter_grade_vignette(const glsl::Bindings& bindings) {
 // Source SHA-256: fa9c411096816263985e8d5ef82ade976667a6cadecf8929ecd185edbc71f479
 namespace typed_58 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, glsl::Vec3 wheelShadows_value, glsl::Vec3 wheelMidtones_value, glsl::Vec3 wheelHighlights_value, double wheelBalance_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), wheelShadows(wheelShadows_value), wheelMidtones(wheelMidtones_value), wheelHighlights(wheelHighlights_value), wheelBalance(wheelBalance_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, glsl::DVec3 wheelShadows_value, glsl::DVec3 wheelMidtones_value, glsl::DVec3 wheelHighlights_value, double wheelBalance_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), wheelShadows(wheelShadows_value), wheelMidtones(wheelMidtones_value), wheelHighlights(wheelHighlights_value), wheelBalance(wheelBalance_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
-  glsl::Vec3 wheelShadows;
-  glsl::Vec3 wheelMidtones;
-  glsl::Vec3 wheelHighlights;
+  glsl::DVec3 wheelShadows;
+  glsl::DVec3 wheelMidtones;
+  glsl::DVec3 wheelHighlights;
   double wheelBalance;
 };
 
@@ -12413,14 +12413,14 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::IVec2 coord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::Vec4 color = fetch_texel(*state.inputTex, coord);
   [[maybe_unused]] glsl::Vec3 rgb = srgbToLinear(state, context, glsl::swizzle<0, 1, 2>(color));
-  rgb = glsl::Vec3(applyWheels(state, context, rgb, state.wheelShadows, state.wheelMidtones, state.wheelHighlights, state.wheelBalance));
+  rgb = glsl::Vec3(applyWheels(state, context, rgb, glsl::Vec3(state.wheelShadows), glsl::Vec3(state.wheelMidtones), glsl::Vec3(state.wheelHighlights), state.wheelBalance));
   rgb = glsl::Vec3(linearToSrgb(state, context, glsl::component_max(rgb, glsl::FloatExpr<3>(static_cast<float>(0.0)))));
   output = glsl::Vec4(glsl::Vec4(rgb, glsl::swizzle<3>(color)));
 }
 }  // namespace typed_58
 
 BoundKernel bind_filter_grade_wheels(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_58::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<glsl::Vec3>("wheelShadows"), bindings.get<glsl::Vec3>("wheelMidtones"), bindings.get<glsl::Vec3>("wheelHighlights"), bindings.get_number("wheelBalance"));
+  const auto state = std::make_shared<typed_58::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<glsl::DVec3>("wheelShadows"), bindings.get<glsl::DVec3>("wheelMidtones"), bindings.get<glsl::DVec3>("wheelHighlights"), bindings.get_number("wheelBalance"));
   (void)bindings;
   return BoundKernel(state, &typed_58::pixel);
 }
@@ -12823,7 +12823,7 @@ BoundKernel bind_filter_grime_grime(const glsl::Bindings& bindings) {
 // Source SHA-256: 063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7
 namespace typed_61 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double frequency_value, double cyanAngle_value, double magentaAngle_value, double yellowAngle_value, double blackAngle_value, double monoAngle_value, double sharpness_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), frequency(frequency_value), cyanAngle(cyanAngle_value), magentaAngle(magentaAngle_value), yellowAngle(yellowAngle_value), blackAngle(blackAngle_value), monoAngle(monoAngle_value), sharpness(sharpness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double frequency_value, double cyanAngle_value, double magentaAngle_value, double yellowAngle_value, double blackAngle_value, double monoAngle_value, double sharpness_value, glsl::DVec3 inkColor_value, glsl::DVec3 paperColor_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), frequency(frequency_value), cyanAngle(cyanAngle_value), magentaAngle(magentaAngle_value), yellowAngle(yellowAngle_value), blackAngle(blackAngle_value), monoAngle(monoAngle_value), sharpness(sharpness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -12835,8 +12835,8 @@ struct State final : KernelState {
   double blackAngle;
   double monoAngle;
   double sharpness;
-  glsl::Vec3 inkColor;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 inkColor;
+  glsl::DVec3 paperColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -12951,7 +12951,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_61
 
 BoundKernel bind_filter_halftone_halftone(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_61::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("frequency"), bindings.get_number("cyanAngle"), bindings.get_number("magentaAngle"), bindings.get_number("yellowAngle"), bindings.get_number("blackAngle"), bindings.get_number("monoAngle"), bindings.get_number("sharpness"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_61::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("frequency"), bindings.get_number("cyanAngle"), bindings.get_number("magentaAngle"), bindings.get_number("yellowAngle"), bindings.get_number("blackAngle"), bindings.get_number("monoAngle"), bindings.get_number("sharpness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_61::pixel, true);
 }
@@ -12960,7 +12960,7 @@ BoundKernel bind_filter_halftone_halftone(const glsl::Bindings& bindings) {
 // Source SHA-256: 510c07e58308c1b0ffb16aafdd90362decc92f818fe25da676bb6c348b120106
 namespace typed_62 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double strokeLength_value, std::int32_t direction_value, double balance_value, double pressure_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), strokeLength(strokeLength_value), direction(direction_value), balance(balance_value), pressure(pressure_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double strokeLength_value, std::int32_t direction_value, double balance_value, double pressure_value, glsl::DVec3 inkColor_value, glsl::DVec3 paperColor_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), strokeLength(strokeLength_value), direction(direction_value), balance(balance_value), pressure(pressure_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -12968,8 +12968,8 @@ struct State final : KernelState {
   std::int32_t direction;
   double balance;
   double pressure;
-  glsl::Vec3 inkColor;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 inkColor;
+  glsl::DVec3 paperColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -13078,13 +13078,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double s = strokeField(state, context, gc, theta, stretchAmt);
   [[maybe_unused]] glsl::Vec3 outColor = {};
   [[maybe_unused]] double inkMask = glsl::step(s, glsl::clamp((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) + static_cast<double>((static_cast<double>(pb) * static_cast<double>(static_cast<float>(0.3))))), static_cast<float>(0.0), static_cast<float>(1.0)));
-  outColor = glsl::Vec3(tonemap2(state, context, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(inkMask)), state.inkColor, state.paperColor));
+  outColor = glsl::Vec3(tonemap2(state, context, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(inkMask)), glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor)));
   output = glsl::Vec4(glsl::Vec4(glsl::clamp(outColor, static_cast<float>(0.0), static_cast<float>(1.0)), glsl::swizzle<3>(src)));
 }
 }  // namespace typed_62
 
 BoundKernel bind_filter_hatch_hatch(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_62::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get<std::int32_t>("direction"), bindings.get_number("balance"), bindings.get_number("pressure"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_62::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("strokeLength"), bindings.get<std::int32_t>("direction"), bindings.get_number("balance"), bindings.get_number("pressure"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_62::pixel);
 }
@@ -13622,7 +13622,7 @@ BoundKernel bind_filter_lens_lens(const glsl::Bindings& bindings) {
 // Source SHA-256: 46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244
 namespace typed_70 {
 struct State final : KernelState {
-  State(std::int32_t LENS_TYPE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double brightness_value, double centerX_value, double centerY_value, glsl::Vec3 tint_value) : LENS_TYPE(LENS_TYPE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), brightness(brightness_value), centerX(centerX_value), centerY(centerY_value), tint(tint_value) {}
+  State(std::int32_t LENS_TYPE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double brightness_value, double centerX_value, double centerY_value, glsl::DVec3 tint_value) : LENS_TYPE(LENS_TYPE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), brightness(brightness_value), centerX(centerX_value), centerY(centerY_value), tint(tint_value) {}
   std::int32_t LENS_TYPE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
@@ -13631,7 +13631,7 @@ struct State final : KernelState {
   double brightness;
   double centerX;
   double centerY;
-  glsl::Vec3 tint;
+  glsl::DVec3 tint;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -13784,7 +13784,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_70
 
 BoundKernel bind_filter_lensFlare_lensFlare(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_70::State>(bindings.get<std::int32_t>("LENS_TYPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::Vec3>("tint"));
+  const auto state = std::make_shared<typed_70::State>(bindings.get<std::int32_t>("LENS_TYPE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("brightness"), bindings.get_number("centerX"), bindings.get_number("centerY"), bindings.get<glsl::DVec3>("tint"));
   (void)bindings;
   return BoundKernel(state, &typed_70::pixel);
 }
@@ -13921,13 +13921,13 @@ BoundKernel bind_filter_lensWarp_lensWarp(const glsl::Bindings& bindings) {
 // Source SHA-256: 61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb
 namespace typed_72 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double alpha_value, glsl::Vec3 color_value, double speed_value, std::int32_t seed_value, double time_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), alpha(alpha_value), color(color_value), speed(speed_value), seed(seed_value), time(time_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double alpha_value, glsl::DVec3 color_value, double speed_value, std::int32_t seed_value, double time_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), alpha(alpha_value), color(color_value), speed(speed_value), seed(seed_value), time(time_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   double alpha;
-  glsl::Vec3 color;
+  glsl::DVec3 color;
   double speed;
   std::int32_t seed;
   double time;
@@ -14060,7 +14060,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_72
 
 BoundKernel bind_filter_lightLeak_lightLeak(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_72::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("alpha"), bindings.get<glsl::Vec3>("color"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"));
+  const auto state = std::make_shared<typed_72::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("alpha"), bindings.get<glsl::DVec3>("color"), bindings.get_number("speed"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"));
   (void)bindings;
   return BoundKernel(state, &typed_72::pixel);
 }
@@ -14069,17 +14069,17 @@ BoundKernel bind_filter_lightLeak_lightLeak(const glsl::Bindings& bindings) {
 // Source SHA-256: a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f
 namespace typed_73 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* heightMap_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::Vec3 diffuseColor_value, glsl::Vec3 specularColor_value, double specularIntensity_value, double shininess_value, glsl::Vec3 ambientColor_value, glsl::Vec3 lightDirection_value, double normalStrength_value, double smoothing_value, double renderScale_value, double reflection_value, double refraction_value, double aberration_value) : inputTex(inputTex_value), heightMap(heightMap_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), diffuseColor(diffuseColor_value), specularColor(specularColor_value), specularIntensity(specularIntensity_value), shininess(shininess_value), ambientColor(ambientColor_value), lightDirection(lightDirection_value), normalStrength(normalStrength_value), smoothing(smoothing_value), renderScale(renderScale_value), reflection(reflection_value), refraction(refraction_value), aberration(aberration_value) {}
+  State(const Surface* inputTex_value, const Surface* heightMap_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::DVec3 diffuseColor_value, glsl::DVec3 specularColor_value, double specularIntensity_value, double shininess_value, glsl::DVec3 ambientColor_value, glsl::DVec3 lightDirection_value, double normalStrength_value, double smoothing_value, double renderScale_value, double reflection_value, double refraction_value, double aberration_value) : inputTex(inputTex_value), heightMap(heightMap_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), diffuseColor(diffuseColor_value), specularColor(specularColor_value), specularIntensity(specularIntensity_value), shininess(shininess_value), ambientColor(ambientColor_value), lightDirection(lightDirection_value), normalStrength(normalStrength_value), smoothing(smoothing_value), renderScale(renderScale_value), reflection(reflection_value), refraction(refraction_value), aberration(aberration_value) {}
   const Surface* inputTex;
   const Surface* heightMap;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
-  glsl::Vec3 diffuseColor;
-  glsl::Vec3 specularColor;
+  glsl::DVec3 diffuseColor;
+  glsl::DVec3 specularColor;
   double specularIntensity;
   double shininess;
-  glsl::Vec3 ambientColor;
-  glsl::Vec3 lightDirection;
+  glsl::DVec3 ambientColor;
+  glsl::DVec3 lightDirection;
   double normalStrength;
   double smoothing;
   double renderScale;
@@ -14217,7 +14217,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_73
 
 BoundKernel bind_filter_lighting_lighting(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_73::State>(&bindings.texture("inputTex"), &bindings.texture("heightMap"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec3>("diffuseColor"), bindings.get<glsl::Vec3>("specularColor"), bindings.get_number("specularIntensity"), bindings.get_number("shininess"), bindings.get<glsl::Vec3>("ambientColor"), bindings.get<glsl::Vec3>("lightDirection"), bindings.get_number("normalStrength"), bindings.get_number("smoothing"), bindings.get_number("renderScale"), bindings.get_number("reflection"), bindings.get_number("refraction"), bindings.get_number("aberration"));
+  const auto state = std::make_shared<typed_73::State>(&bindings.texture("inputTex"), &bindings.texture("heightMap"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("diffuseColor"), bindings.get<glsl::DVec3>("specularColor"), bindings.get_number("specularIntensity"), bindings.get_number("shininess"), bindings.get<glsl::DVec3>("ambientColor"), bindings.get<glsl::DVec3>("lightDirection"), bindings.get_number("normalStrength"), bindings.get_number("smoothing"), bindings.get_number("renderScale"), bindings.get_number("reflection"), bindings.get_number("refraction"), bindings.get_number("aberration"));
   (void)bindings;
   return BoundKernel(state, &typed_73::pixel);
 }
@@ -14226,7 +14226,7 @@ BoundKernel bind_filter_lighting_lighting(const glsl::Bindings& bindings) {
 // Source SHA-256: 2f6a184ef4d372ebf811eaa59420bbce66fa25702e23a278557521679ce7b2f5
 namespace typed_74 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double scale_value, double seed_value, std::int32_t mode_value, double edgeStrength_value, glsl::Vec3 edgeColor_value, double speed_value, double time_value, double alpha_value) : inputTex(inputTex_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), scale(scale_value), seed(seed_value), mode(mode_value), edgeStrength(edgeStrength_value), edgeColor(edgeColor_value), speed(speed_value), time(time_value), alpha(alpha_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double scale_value, double seed_value, std::int32_t mode_value, double edgeStrength_value, glsl::DVec3 edgeColor_value, double speed_value, double time_value, double alpha_value) : inputTex(inputTex_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), scale(scale_value), seed(seed_value), mode(mode_value), edgeStrength(edgeStrength_value), edgeColor(edgeColor_value), speed(speed_value), time(time_value), alpha(alpha_value) {}
   const Surface* inputTex;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -14234,7 +14234,7 @@ struct State final : KernelState {
   double seed;
   std::int32_t mode;
   double edgeStrength;
-  glsl::Vec3 edgeColor;
+  glsl::DVec3 edgeColor;
   double speed;
   double time;
   double alpha;
@@ -14348,7 +14348,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_74
 
 BoundKernel bind_filter_lowPoly_lowPoly(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_74::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scale"), bindings.get_number("seed"), bindings.get<std::int32_t>("mode"), bindings.get_number("edgeStrength"), bindings.get<glsl::Vec3>("edgeColor"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_74::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scale"), bindings.get_number("seed"), bindings.get<std::int32_t>("mode"), bindings.get_number("edgeStrength"), bindings.get<glsl::DVec3>("edgeColor"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get_number("alpha"));
   (void)bindings;
   return BoundKernel(state, &typed_74::pixel);
 }
@@ -14618,7 +14618,7 @@ BoundKernel bind_filter_morphology_morphB(const glsl::Bindings& bindings) {
 // Source SHA-256: 1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47
 namespace typed_78 {
 struct State final : KernelState {
-  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double tileSize_value, double groutWidth_value, double relief_value, double maxOffset_value, std::int32_t gapFill_value, glsl::Vec3 backgroundColor_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), tileSize(tileSize_value), groutWidth(groutWidth_value), relief(relief_value), maxOffset(maxOffset_value), gapFill(gapFill_value), backgroundColor(backgroundColor_value), seed(seed_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double tileSize_value, double groutWidth_value, double relief_value, double maxOffset_value, std::int32_t gapFill_value, glsl::DVec3 backgroundColor_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), tileSize(tileSize_value), groutWidth(groutWidth_value), relief(relief_value), maxOffset(maxOffset_value), gapFill(gapFill_value), backgroundColor(backgroundColor_value), seed(seed_value) {}
   std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
@@ -14628,7 +14628,7 @@ struct State final : KernelState {
   double relief;
   double maxOffset;
   std::int32_t gapFill;
-  glsl::Vec3 backgroundColor;
+  glsl::DVec3 backgroundColor;
   std::int32_t seed;
 };
 
@@ -14757,7 +14757,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_78
 
 BoundKernel bind_filter_mosaicTiles_mosaicTiles(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_78::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::Vec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_78::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("tileSize"), bindings.get_number("groutWidth"), bindings.get_number("relief"), bindings.get_number("maxOffset"), bindings.get<std::int32_t>("gapFill"), bindings.get<glsl::DVec3>("backgroundColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_78::pixel);
 }
@@ -16207,12 +16207,12 @@ BoundKernel bind_filter_palette_palette(const glsl::Bindings& bindings) {
 // Source SHA-256: 5ce5dce2ec8e8d7ebd3024c6a5bd5dcb068d0cf322bfd105c4fb3546e1b97642
 namespace typed_92 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* heightMap_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::Vec3 direction_value, double pivot_value) : inputTex(inputTex_value), heightMap(heightMap_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), direction(direction_value), pivot(pivot_value) {}
+  State(const Surface* inputTex_value, const Surface* heightMap_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::DVec3 direction_value, double pivot_value) : inputTex(inputTex_value), heightMap(heightMap_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), direction(direction_value), pivot(pivot_value) {}
   const Surface* inputTex;
   const Surface* heightMap;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
-  glsl::Vec3 direction;
+  glsl::DVec3 direction;
   double pivot;
 };
 
@@ -16289,7 +16289,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_92
 
 BoundKernel bind_filter_parallax_parallax(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_92::State>(&bindings.texture("inputTex"), &bindings.texture("heightMap"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec3>("direction"), bindings.get_number("pivot"));
+  const auto state = std::make_shared<typed_92::State>(&bindings.texture("inputTex"), &bindings.texture("heightMap"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("direction"), bindings.get_number("pivot"));
   (void)bindings;
   return BoundKernel(state, &typed_92::pixel);
 }
@@ -16513,13 +16513,13 @@ BoundKernel bind_filter_photocopy_pcBlurV(const glsl::Bindings& bindings) {
 // Source SHA-256: 67f0d9c44fe0142c326691427ffa6bb819a9e04bd8bd8c7aa0f639c659aeba03
 namespace typed_96 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, double darkness_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), darkness(darkness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, double darkness_value, glsl::DVec3 inkColor_value, glsl::DVec3 paperColor_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), darkness(darkness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
   const Surface* inputTex;
   const Surface* blurTex;
   glsl::Vec2 resolution;
   double darkness;
-  glsl::Vec3 inkColor;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 inkColor;
+  glsl::DVec3 paperColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -16561,13 +16561,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double toneLo = (static_cast<double>(toneHi) - static_cast<double>(static_cast<float>(0.26)));
   [[maybe_unused]] double toneInk = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(toneLo, toneHi, lumSrc)));
   [[maybe_unused]] double ink = glsl::clamp(glsl::component_max(edgeInk, toneInk), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec3 outColor = tonemap2(state, context, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(ink)), state.inkColor, state.paperColor);
+  [[maybe_unused]] glsl::Vec3 outColor = tonemap2(state, context, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(ink)), glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor));
   output = glsl::Vec4(glsl::Vec4(outColor, glsl::swizzle<3>(src)));
 }
 }  // namespace typed_96
 
 BoundKernel bind_filter_photocopy_pcCombine(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_96::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("darkness"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_96::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("darkness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_96::pixel);
 }
@@ -17203,13 +17203,13 @@ BoundKernel bind_filter_plasticWrap_pwBlurV(const glsl::Bindings& bindings) {
 // Source SHA-256: a26cbadc9c0aec753494f3e2a95964f35358eb8bf283107c2d7c624055c87767
 namespace typed_107 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, double highlight_value, double smoothness_value, glsl::Vec3 lightDirection_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), highlight(highlight_value), smoothness(smoothness_value), lightDirection(lightDirection_value) {}
+  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, double highlight_value, double smoothness_value, glsl::DVec3 lightDirection_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), highlight(highlight_value), smoothness(smoothness_value), lightDirection(lightDirection_value) {}
   const Surface* inputTex;
   const Surface* blurTex;
   glsl::Vec2 resolution;
   double highlight;
   double smoothness;
-  glsl::Vec3 lightDirection;
+  glsl::DVec3 lightDirection;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -17269,7 +17269,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_107
 
 BoundKernel bind_filter_plasticWrap_pwSpec(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_107::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("highlight"), bindings.get_number("smoothness"), bindings.get<glsl::Vec3>("lightDirection"));
+  const auto state = std::make_shared<typed_107::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("highlight"), bindings.get_number("smoothness"), bindings.get<glsl::DVec3>("lightDirection"));
   (void)bindings;
   return BoundKernel(state, &typed_107::pixel);
 }
@@ -18097,7 +18097,7 @@ BoundKernel bind_filter_relief_rlBlurV(const glsl::Bindings& bindings) {
 // Source SHA-256: dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90
 namespace typed_117 {
 struct State final : KernelState {
-  State(std::int32_t MODE_value, const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double detail_value, double lightAngle_value, double balance_value, double graininess_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : MODE(MODE_value), inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), detail(detail_value), lightAngle(lightAngle_value), balance(balance_value), graininess(graininess_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double detail_value, double lightAngle_value, double balance_value, double graininess_value, glsl::DVec3 inkColor_value, glsl::DVec3 paperColor_value) : MODE(MODE_value), inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), detail(detail_value), lightAngle(lightAngle_value), balance(balance_value), graininess(graininess_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
   std::int32_t MODE;
   const Surface* inputTex;
   const Surface* blurTex;
@@ -18107,8 +18107,8 @@ struct State final : KernelState {
   double lightAngle;
   double balance;
   double graininess;
-  glsl::Vec3 inkColor;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 inkColor;
+  glsl::DVec3 paperColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -18164,7 +18164,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 outColor = {};
   if (state.MODE == std::int32_t(0)) {
     [[maybe_unused]] double shade = reliefShade(state, context, hC, hR, hT, strength, state.lightAngle);
-    outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hC, shade, static_cast<float>(0.75)), state.inkColor, state.paperColor));
+    outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hC, shade, static_cast<float>(0.75)), glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor)));
   } else {
     if (state.MODE == std::int32_t(1)) {
       [[maybe_unused]] double hhC = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.35), static_cast<float>(0.65), hC)));
@@ -18172,7 +18172,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] double hhT = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.35), static_cast<float>(0.65), hT)));
       [[maybe_unused]] double shade = reliefShade(state, context, hhC, hhR, hhT, strength, state.lightAngle);
       [[maybe_unused]] double glossy = glsl::pow(shade, static_cast<float>(2.0));
-      outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hhC, glossy, static_cast<float>(0.75)), state.inkColor, state.paperColor));
+      outColor = glsl::Vec3(tonemap2(state, context, glsl::mix(hhC, glossy, static_cast<float>(0.75)), glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor)));
     } else {
       if (state.MODE == std::int32_t(2)) {
         [[maybe_unused]] double threshold = (static_cast<double>(state.balance) / static_cast<double>(static_cast<float>(100.0)));
@@ -18195,7 +18195,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_117
 
 BoundKernel bind_filter_relief_rlShade(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_117::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_117::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("detail"), bindings.get_number("lightAngle"), bindings.get_number("balance"), bindings.get_number("graininess"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_117::pixel);
 }
@@ -19941,13 +19941,13 @@ BoundKernel bind_filter_sobel_sobel(const glsl::Bindings& bindings) {
 // Source SHA-256: 9d8cb56f43761cdb52a36935a7c3b66d758189d82db0c52ad93b5090206579af
 namespace typed_138 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, glsl::Vec3 color_value, double density_value, double alpha_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), color(color_value), density(density_value), alpha(alpha_value), seed(seed_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, glsl::DVec3 color_value, double density_value, double alpha_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), color(color_value), density(density_value), alpha(alpha_value), seed(seed_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   double time;
-  glsl::Vec3 color;
+  glsl::DVec3 color;
   double density;
   double alpha;
   std::int32_t seed;
@@ -20111,7 +20111,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_138
 
 BoundKernel bind_filter_spatter_spatter(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_138::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<glsl::Vec3>("color"), bindings.get_number("density"), bindings.get_number("alpha"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_138::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<glsl::DVec3>("color"), bindings.get_number("density"), bindings.get_number("alpha"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_138::pixel);
 }
@@ -20512,15 +20512,15 @@ BoundKernel bind_filter_stamp_stBlurV(const glsl::Bindings& bindings) {
 // Source SHA-256: d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94
 namespace typed_144 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double balance_value, double roughness_value, glsl::Vec3 inkColor_value, glsl::Vec3 paperColor_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), balance(balance_value), roughness(roughness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
+  State(const Surface* inputTex_value, const Surface* blurTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double balance_value, double roughness_value, glsl::DVec3 inkColor_value, glsl::DVec3 paperColor_value) : inputTex(inputTex_value), blurTex(blurTex_value), resolution(resolution_value), tileOffset(tileOffset_value), balance(balance_value), roughness(roughness_value), inkColor(inkColor_value), paperColor(paperColor_value) {}
   const Surface* inputTex;
   const Surface* blurTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   double balance;
   double roughness;
-  glsl::Vec3 inkColor;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 inkColor;
+  glsl::DVec3 paperColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -20587,13 +20587,13 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double b = (static_cast<double>(state.balance) / static_cast<double>(static_cast<float>(100.0)));
   [[maybe_unused]] double aa = (static_cast<double>(glsl::component_max(glsl::fwidth(context, t), static_cast<float>(0.01))) + static_cast<double>((static_cast<double>((static_cast<double>(state.roughness) / static_cast<double>(static_cast<float>(100.0)))) * static_cast<double>(static_cast<float>(0.05)))));
   [[maybe_unused]] double m = glsl::smoothstep((static_cast<double>(b) - static_cast<double>(aa)), (static_cast<double>(b) + static_cast<double>(aa)), t);
-  [[maybe_unused]] glsl::Vec3 outColor = tonemap2(state, context, m, state.inkColor, state.paperColor);
+  [[maybe_unused]] glsl::Vec3 outColor = tonemap2(state, context, m, glsl::Vec3(state.inkColor), glsl::Vec3(state.paperColor));
   output = glsl::Vec4(glsl::Vec4(outColor, glsl::swizzle<3>(src)));
 }
 }  // namespace typed_144
 
 BoundKernel bind_filter_stamp_stThreshold(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_144::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("balance"), bindings.get_number("roughness"), bindings.get<glsl::Vec3>("inkColor"), bindings.get<glsl::Vec3>("paperColor"));
+  const auto state = std::make_shared<typed_144::State>(&bindings.texture("inputTex"), &bindings.texture("blurTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("balance"), bindings.get_number("roughness"), bindings.get<glsl::DVec3>("inkColor"), bindings.get<glsl::DVec3>("paperColor"));
   (void)bindings;
   return BoundKernel(state, &typed_144::pixel, true);
 }
@@ -20650,14 +20650,14 @@ BoundKernel bind_filter_step_step(const glsl::Bindings& bindings) {
 // Source SHA-256: 69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609
 namespace typed_146 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double cellSize_value, double grainSize_value, double density_value, glsl::Vec3 paperColor_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), cellSize(cellSize_value), grainSize(grainSize_value), density(density_value), paperColor(paperColor_value), seed(seed_value) {}
+  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double cellSize_value, double grainSize_value, double density_value, glsl::DVec3 paperColor_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), cellSize(cellSize_value), grainSize(grainSize_value), density(density_value), paperColor(paperColor_value), seed(seed_value) {}
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   double cellSize;
   double grainSize;
   double density;
-  glsl::Vec3 paperColor;
+  glsl::DVec3 paperColor;
   std::int32_t seed;
 };
 
@@ -20769,7 +20769,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_146
 
 BoundKernel bind_filter_stipple_stipple(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_146::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::Vec3>("paperColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_146::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::DVec3>("paperColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_146::pixel, true);
 }
@@ -21070,21 +21070,21 @@ BoundKernel bind_filter_strokes_stkSmear(const glsl::Bindings& bindings) {
 // Source SHA-256: 68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438
 namespace typed_150 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, std::int32_t colorMode_value, std::int32_t colorCount_value, std::int32_t positionMode_value, glsl::Vec3 color0_value, glsl::Vec3 color1_value, glsl::Vec3 color2_value, glsl::Vec3 color3_value, glsl::Vec3 color4_value, glsl::Vec3 color5_value, glsl::Vec3 color6_value, glsl::Vec3 color7_value, double pos0_value, double pos1_value, double pos2_value, double pos3_value, double pos4_value, double pos5_value, double pos6_value, double pos7_value, double repeat_value, double offset_value, double smoothness_value, double alpha_value, std::int32_t rotation_value, double time_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), colorMode(colorMode_value), colorCount(colorCount_value), positionMode(positionMode_value), color0(color0_value), color1(color1_value), color2(color2_value), color3(color3_value), color4(color4_value), color5(color5_value), color6(color6_value), color7(color7_value), pos0(pos0_value), pos1(pos1_value), pos2(pos2_value), pos3(pos3_value), pos4(pos4_value), pos5(pos5_value), pos6(pos6_value), pos7(pos7_value), repeat(repeat_value), offset(offset_value), smoothness(smoothness_value), alpha(alpha_value), rotation(rotation_value), time(time_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* inputTex_value, std::int32_t colorMode_value, std::int32_t colorCount_value, std::int32_t positionMode_value, glsl::DVec3 color0_value, glsl::DVec3 color1_value, glsl::DVec3 color2_value, glsl::DVec3 color3_value, glsl::DVec3 color4_value, glsl::DVec3 color5_value, glsl::DVec3 color6_value, glsl::DVec3 color7_value, double pos0_value, double pos1_value, double pos2_value, double pos3_value, double pos4_value, double pos5_value, double pos6_value, double pos7_value, double repeat_value, double offset_value, double smoothness_value, double alpha_value, std::int32_t rotation_value, double time_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputTex(inputTex_value), colorMode(colorMode_value), colorCount(colorCount_value), positionMode(positionMode_value), color0(color0_value), color1(color1_value), color2(color2_value), color3(color3_value), color4(color4_value), color5(color5_value), color6(color6_value), color7(color7_value), pos0(pos0_value), pos1(pos1_value), pos2(pos2_value), pos3(pos3_value), pos4(pos4_value), pos5(pos5_value), pos6(pos6_value), pos7(pos7_value), repeat(repeat_value), offset(offset_value), smoothness(smoothness_value), alpha(alpha_value), rotation(rotation_value), time(time_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
   const Surface* inputTex;
   std::int32_t colorMode;
   std::int32_t colorCount;
   std::int32_t positionMode;
-  glsl::Vec3 color0;
-  glsl::Vec3 color1;
-  glsl::Vec3 color2;
-  glsl::Vec3 color3;
-  glsl::Vec3 color4;
-  glsl::Vec3 color5;
-  glsl::Vec3 color6;
-  glsl::Vec3 color7;
+  glsl::DVec3 color0;
+  glsl::DVec3 color1;
+  glsl::DVec3 color2;
+  glsl::DVec3 color3;
+  glsl::DVec3 color4;
+  glsl::DVec3 color5;
+  glsl::DVec3 color6;
+  glsl::DVec3 color7;
   double pos0;
   double pos1;
   double pos2;
@@ -21114,7 +21114,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 colorSpaceToRgb([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color, [[maybe_unused]] std::int32_t mode) noexcept;
-[[nodiscard]] glsl::Vec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index) noexcept;
+[[nodiscard]] glsl::DVec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index) noexcept;
 [[nodiscard]] double getPosition([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index, [[maybe_unused]] std::int32_t count) noexcept;
 [[nodiscard]] glsl::Vec3 hsv2rgb([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 hsv) noexcept;
 [[nodiscard]] glsl::Vec3 linear2oklab([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 lin) noexcept;
@@ -21143,7 +21143,7 @@ struct State final : KernelState {
   return color;
 }
 
-[[nodiscard]] glsl::Vec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index) noexcept {
+[[nodiscard]] glsl::DVec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t index) noexcept {
   if (index == std::int32_t(0)) {
     return state.color0;
   }
@@ -21339,7 +21339,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec3 sampleColorArray([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t, [[maybe_unused]] std::int32_t count, [[maybe_unused]] double smoothAmount) noexcept {
   t = glsl::clamp(t, static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] std::int32_t mode = state.colorMode;
-  [[maybe_unused]] glsl::Vec3 result = rgbToColorSpace(state, context, getColor(state, context, std::int32_t(0)), mode);
+  [[maybe_unused]] glsl::Vec3 result = rgbToColorSpace(state, context, glsl::Vec3(getColor(state, context, std::int32_t(0))), mode);
   for ([[maybe_unused]] std::int32_t i = std::int32_t(1); (i < count); ++i) {
     [[maybe_unused]] double boundary = {};
     [[maybe_unused]] double bw = {};
@@ -21353,7 +21353,7 @@ struct State final : KernelState {
       bw = (static_cast<double>((static_cast<double>(smoothAmount) * static_cast<double>((static_cast<double>(pCurr) - static_cast<double>(pPrev))))) * static_cast<double>(static_cast<float>(0.25)));
     }
     [[maybe_unused]] double blend = glsl::smoothstep((static_cast<double>(boundary) - static_cast<double>(bw)), (static_cast<double>(boundary) + static_cast<double>(bw)), t);
-    [[maybe_unused]] glsl::Vec3 nextColor = rgbToColorSpace(state, context, getColor(state, context, i), mode);
+    [[maybe_unused]] glsl::Vec3 nextColor = rgbToColorSpace(state, context, glsl::Vec3(getColor(state, context, i)), mode);
     result = glsl::Vec3(mixInColorSpace(state, context, result, nextColor, blend, mode));
   }
   if (smoothAmount > static_cast<float>(0.0)) {
@@ -21369,8 +21369,8 @@ struct State final : KernelState {
     if (bw > static_cast<float>(0.0)) {
       [[maybe_unused]] double d = ((t > static_cast<float>(0.5)) ? (static_cast<double>(t) - static_cast<double>(static_cast<float>(1.0))) : t);
       [[maybe_unused]] double wrapFactor = glsl::smoothstep((-bw), bw, d);
-      [[maybe_unused]] glsl::Vec3 lastColor = rgbToColorSpace(state, context, getColor(state, context, (count - std::int32_t(1))), mode);
-      [[maybe_unused]] glsl::Vec3 firstColor = rgbToColorSpace(state, context, getColor(state, context, std::int32_t(0)), mode);
+      [[maybe_unused]] glsl::Vec3 lastColor = rgbToColorSpace(state, context, glsl::Vec3(getColor(state, context, (count - std::int32_t(1)))), mode);
+      [[maybe_unused]] glsl::Vec3 firstColor = rgbToColorSpace(state, context, glsl::Vec3(getColor(state, context, std::int32_t(0))), mode);
       [[maybe_unused]] glsl::Vec3 wrapColor = mixInColorSpace(state, context, lastColor, firstColor, wrapFactor, mode);
       [[maybe_unused]] double wrapMask = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(static_cast<float>(0.0), bw, glsl::abs(d))));
       result = glsl::Vec3(mixInColorSpace(state, context, result, wrapColor, wrapMask, mode));
@@ -21414,7 +21414,7 @@ BoundKernel bind_filter_tetraColorArray_tetraColorArray(const glsl::Bindings& bi
   if (colorCount < 2 || colorCount > 8) {
     throw glsl::KernelBindingError("filter/tetraColorArray:tetraColorArray colorCount must be in [2,8]");
   }
-  const auto state = std::make_shared<typed_150::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("colorMode"), colorCount, bindings.get<std::int32_t>("positionMode"), bindings.get<glsl::Vec3>("color0"), bindings.get<glsl::Vec3>("color1"), bindings.get<glsl::Vec3>("color2"), bindings.get<glsl::Vec3>("color3"), bindings.get<glsl::Vec3>("color4"), bindings.get<glsl::Vec3>("color5"), bindings.get<glsl::Vec3>("color6"), bindings.get<glsl::Vec3>("color7"), bindings.get_number("pos0"), bindings.get_number("pos1"), bindings.get_number("pos2"), bindings.get_number("pos3"), bindings.get_number("pos4"), bindings.get_number("pos5"), bindings.get_number("pos6"), bindings.get_number("pos7"), bindings.get_number("repeat"), bindings.get_number("offset"), bindings.get_number("smoothness"), bindings.get_number("alpha"), bindings.get<std::int32_t>("rotation"), bindings.get_number("time"));
+  const auto state = std::make_shared<typed_150::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("colorMode"), colorCount, bindings.get<std::int32_t>("positionMode"), bindings.get<glsl::DVec3>("color0"), bindings.get<glsl::DVec3>("color1"), bindings.get<glsl::DVec3>("color2"), bindings.get<glsl::DVec3>("color3"), bindings.get<glsl::DVec3>("color4"), bindings.get<glsl::DVec3>("color5"), bindings.get<glsl::DVec3>("color6"), bindings.get<glsl::DVec3>("color7"), bindings.get_number("pos0"), bindings.get_number("pos1"), bindings.get_number("pos2"), bindings.get_number("pos3"), bindings.get_number("pos4"), bindings.get_number("pos5"), bindings.get_number("pos6"), bindings.get_number("pos7"), bindings.get_number("repeat"), bindings.get_number("offset"), bindings.get_number("smoothness"), bindings.get_number("alpha"), bindings.get<std::int32_t>("rotation"), bindings.get_number("time"));
   (void)bindings;
   return BoundKernel(state, &typed_150::pixel);
 }
@@ -21594,13 +21594,13 @@ BoundKernel bind_filter_tetraCosine_tetraCosine(const glsl::Bindings& bindings) 
 // Source SHA-256: 7a492aea1422528421c352187d108ea32a1d5bf48991ef74f099f8dafbe5ccea
 namespace typed_152 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* textTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::Vec3 matteColor_value, double matteOpacity_value) : inputTex(inputTex_value), textTex(textTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), matteColor(matteColor_value), matteOpacity(matteOpacity_value) {}
+  State(const Surface* inputTex_value, const Surface* textTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::DVec3 matteColor_value, double matteOpacity_value) : inputTex(inputTex_value), textTex(textTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), matteColor(matteColor_value), matteOpacity(matteOpacity_value) {}
   const Surface* inputTex;
   const Surface* textTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
-  glsl::Vec3 matteColor;
+  glsl::DVec3 matteColor;
   double matteOpacity;
 };
 
@@ -21633,7 +21633,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_152
 
 BoundKernel bind_filter_text_text(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_152::State>(&bindings.texture("inputTex"), &bindings.texture("textTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec3>("matteColor"), bindings.get_number("matteOpacity"));
+  const auto state = std::make_shared<typed_152::State>(&bindings.texture("inputTex"), &bindings.texture("textTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("matteColor"), bindings.get_number("matteOpacity"));
   (void)bindings;
   return BoundKernel(state, &typed_152::pixel);
 }
@@ -22129,10 +22129,10 @@ BoundKernel bind_filter_tile_tile(const glsl::Bindings& bindings) {
 // Source SHA-256: d10c38ae0a90c8dbd4b0998362b199af71c549ff743a9479a23decc5f7c3037d
 namespace typed_156 {
 struct State final : KernelState {
-  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::Vec3 color_value, double alpha_value, double mode_value, const Surface* inputTex_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), color(color_value), alpha(alpha_value), mode(mode_value), inputTex(inputTex_value) {}
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, glsl::DVec3 color_value, double alpha_value, double mode_value, const Surface* inputTex_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), color(color_value), alpha(alpha_value), mode(mode_value), inputTex(inputTex_value) {}
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
-  glsl::Vec3 color;
+  glsl::DVec3 color;
   double alpha;
   double mode;
   const Surface* inputTex;
@@ -22211,7 +22211,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     tinted = glsl::Vec3((base_rgb * state.color));
   } else {
     if (m == std::int32_t(2)) {
-      [[maybe_unused]] double tintHue = glsl::swizzle<0>(rgb_to_hsv(state, context, state.color));
+      [[maybe_unused]] double tintHue = glsl::swizzle<0>(rgb_to_hsv(state, context, glsl::Vec3(state.color)));
       [[maybe_unused]] glsl::Vec3 base_hsv = rgb_to_hsv(state, context, base_rgb);
       tinted = glsl::Vec3(glsl::clamp(hsv_to_rgb(state, context, glsl::FloatExpr<3>(tintHue, glsl::clamp(glsl::swizzle<1>(base_rgb), static_cast<float>(0.0), static_cast<float>(1.0)), glsl::clamp(glsl::swizzle<2>(base_hsv), static_cast<float>(0.0), static_cast<float>(1.0)))), static_cast<float>(0.0), static_cast<float>(1.0)));
     } else {
@@ -22224,7 +22224,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_156
 
 BoundKernel bind_filter_tint_colorize(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_156::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::Vec3>("color"), bindings.get_number("alpha"), bindings.get_number("mode"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_156::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<glsl::DVec3>("color"), bindings.get_number("alpha"), bindings.get_number("mode"), &bindings.texture("inputTex"));
   (void)bindings;
   return BoundKernel(state, &typed_156::pixel);
 }
@@ -24787,7 +24787,7 @@ BoundKernel bind_mixer_patternMix_patternMix(const glsl::Bindings& bindings) {
 // Source SHA-256: 6a321002481cd9dcbf92b11abb37089e7a6a2995494bf8a5befa2145fb1066aa
 namespace typed_184 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, std::int32_t maskSource_value, std::int32_t sourceChannel_value, double threshold_value, glsl::Vec3 color_value, double offsetX_value, double offsetY_value, double blur_value, double spread_value, std::int32_t wrap_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), maskSource(maskSource_value), sourceChannel(sourceChannel_value), threshold(threshold_value), color(color_value), offsetX(offsetX_value), offsetY(offsetY_value), blur(blur_value), spread(spread_value), wrap(wrap_value) {}
+  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, std::int32_t maskSource_value, std::int32_t sourceChannel_value, double threshold_value, glsl::DVec3 color_value, double offsetX_value, double offsetY_value, double blur_value, double spread_value, std::int32_t wrap_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), maskSource(maskSource_value), sourceChannel(sourceChannel_value), threshold(threshold_value), color(color_value), offsetX(offsetX_value), offsetY(offsetY_value), blur(blur_value), spread(spread_value), wrap(wrap_value) {}
   const Surface* inputTex;
   const Surface* tex;
   glsl::Vec2 resolution;
@@ -24797,7 +24797,7 @@ struct State final : KernelState {
   std::int32_t maskSource;
   std::int32_t sourceChannel;
   double threshold;
-  glsl::Vec3 color;
+  glsl::DVec3 color;
   double offsetX;
   double offsetY;
   double blur;
@@ -24887,7 +24887,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_184
 
 BoundKernel bind_mixer_shadow_shadow(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_184::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get<std::int32_t>("maskSource"), bindings.get<std::int32_t>("sourceChannel"), bindings.get_number("threshold"), bindings.get<glsl::Vec3>("color"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("blur"), bindings.get_number("spread"), bindings.get<std::int32_t>("wrap"));
+  const auto state = std::make_shared<typed_184::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get<std::int32_t>("maskSource"), bindings.get<std::int32_t>("sourceChannel"), bindings.get_number("threshold"), bindings.get<glsl::DVec3>("color"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get_number("blur"), bindings.get_number("spread"), bindings.get<std::int32_t>("wrap"));
   (void)bindings;
   return BoundKernel(state, &typed_184::pixel);
 }
@@ -25923,7 +25923,7 @@ BoundKernel bind_synth_gabor_gabor(const glsl::Bindings& bindings) {
 // Source SHA-256: 308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75
 namespace typed_193 {
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t gradientType_value, double rotation_value, std::int32_t repeat_value, std::int32_t colorCount_value, glsl::Vec3 color1_value, glsl::Vec3 color2_value, glsl::Vec3 color3_value, glsl::Vec3 color4_value, std::int32_t seed_value, double time_value, double speed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), gradientType(gradientType_value), rotation(rotation_value), repeat(repeat_value), colorCount(colorCount_value), color1(color1_value), color2(color2_value), color3(color3_value), color4(color4_value), seed(seed_value), time(time_value), speed(speed_value) {}
+  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t gradientType_value, double rotation_value, std::int32_t repeat_value, std::int32_t colorCount_value, glsl::DVec3 color1_value, glsl::DVec3 color2_value, glsl::DVec3 color3_value, glsl::DVec3 color4_value, std::int32_t seed_value, double time_value, double speed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), gradientType(gradientType_value), rotation(rotation_value), repeat(repeat_value), colorCount(colorCount_value), color1(color1_value), color2(color2_value), color3(color3_value), color4(color4_value), seed(seed_value), time(time_value), speed(speed_value) {}
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -25931,10 +25931,10 @@ struct State final : KernelState {
   double rotation;
   std::int32_t repeat;
   std::int32_t colorCount;
-  glsl::Vec3 color1;
-  glsl::Vec3 color2;
-  glsl::Vec3 color3;
-  glsl::Vec3 color4;
+  glsl::DVec3 color1;
+  glsl::DVec3 color2;
+  glsl::DVec3 color3;
+  glsl::DVec3 color4;
   std::int32_t seed;
   double time;
   double speed;
@@ -25954,7 +25954,7 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec3 blendColors([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept;
 [[nodiscard]] double fbmNoise([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept;
-[[nodiscard]] glsl::Vec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t idx) noexcept;
+[[nodiscard]] glsl::DVec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t idx) noexcept;
 [[nodiscard]] double hash2D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept;
 [[nodiscard]] glsl::UVec3 pcg([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::UVec3 v) noexcept;
 [[nodiscard]] glsl::FloatExpr<3> prng([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
@@ -25987,7 +25987,7 @@ struct State final : KernelState {
   return (static_cast<double>(sum) / static_cast<double>(maxVal));
 }
 
-[[nodiscard]] glsl::Vec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t idx) noexcept {
+[[nodiscard]] glsl::DVec3 getColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t idx) noexcept {
   if (idx == std::int32_t(0)) {
     return state.color1;
   }
@@ -26078,10 +26078,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     } else {
       if (state.gradientType == std::int32_t(2)) {
         [[maybe_unused]] glsl::Vec2 cornerSt = rotate2D(state, context, st, angle);
-        [[maybe_unused]] glsl::Vec3 cTL = state.color1;
-        [[maybe_unused]] glsl::Vec3 cTR = ((state.colorCount >= std::int32_t(3)) ? glsl::Vec3(state.color2) : glsl::Vec3(state.color1));
-        [[maybe_unused]] glsl::Vec3 cBL = ((state.colorCount >= std::int32_t(3)) ? glsl::Vec3(state.color3) : glsl::Vec3(state.color2));
-        [[maybe_unused]] glsl::Vec3 cBR = ((state.colorCount >= std::int32_t(4)) ? glsl::Vec3(state.color4) : glsl::Vec3(cBL));
+        [[maybe_unused]] glsl::DVec3 cTL = state.color1;
+        [[maybe_unused]] glsl::DVec3 cTR = ((state.colorCount >= std::int32_t(3)) ? glsl::DVec3(state.color2) : glsl::DVec3(state.color1));
+        [[maybe_unused]] glsl::DVec3 cBL = ((state.colorCount >= std::int32_t(3)) ? glsl::DVec3(state.color3) : glsl::DVec3(state.color2));
+        [[maybe_unused]] glsl::DVec3 cBR = ((state.colorCount >= std::int32_t(4)) ? glsl::DVec3(state.color4) : glsl::DVec3(cBL));
         [[maybe_unused]] glsl::Vec3 top = glsl::mix(cTL, cTR, glsl::swizzle<0>(cornerSt));
         [[maybe_unused]] glsl::Vec3 bottom = glsl::mix(cBL, cBR, glsl::swizzle<0>(cornerSt));
         color = glsl::Vec3(glsl::mix(bottom, top, glsl::swizzle<1>(cornerSt)));
@@ -26122,7 +26122,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_193
 
 BoundKernel bind_synth_gradient_gradient(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_193::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("gradientType"), bindings.get_number("rotation"), bindings.get<std::int32_t>("repeat"), bindings.get<std::int32_t>("colorCount"), bindings.get<glsl::Vec3>("color1"), bindings.get<glsl::Vec3>("color2"), bindings.get<glsl::Vec3>("color3"), bindings.get<glsl::Vec3>("color4"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_193::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("gradientType"), bindings.get_number("rotation"), bindings.get<std::int32_t>("repeat"), bindings.get<std::int32_t>("colorCount"), bindings.get<glsl::DVec3>("color1"), bindings.get<glsl::DVec3>("color2"), bindings.get<glsl::DVec3>("color3"), bindings.get<glsl::DVec3>("color4"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"), bindings.get_number("speed"));
   (void)bindings;
   return BoundKernel(state, &typed_193::pixel);
 }
@@ -26575,7 +26575,7 @@ BoundKernel bind_synth_julia_julia(const glsl::Bindings& bindings) {
 // Source SHA-256: ef97349f9f3003d356bf73ecea6292bbe8ad41c6c2605eff4a8468a44215dea2
 namespace typed_195 {
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double scale_value, double rotation_value, double thickness_value, double smoothness_value, std::int32_t symmetry_value, std::int32_t layers_value, std::int32_t shape_value, double layerSpacing_value, double twist_value, double shapeGrowth_value, bool bindu_value, std::int32_t animation_value, double speed_value, double pulseDepth_value, double time_value, glsl::Vec3 fgColor_value, glsl::Vec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), scale(scale_value), rotation(rotation_value), thickness(thickness_value), smoothness(smoothness_value), symmetry(symmetry_value), layers(layers_value), shape(shape_value), layerSpacing(layerSpacing_value), twist(twist_value), shapeGrowth(shapeGrowth_value), bindu(bindu_value), animation(animation_value), speed(speed_value), pulseDepth(pulseDepth_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
+  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double scale_value, double rotation_value, double thickness_value, double smoothness_value, std::int32_t symmetry_value, std::int32_t layers_value, std::int32_t shape_value, double layerSpacing_value, double twist_value, double shapeGrowth_value, bool bindu_value, std::int32_t animation_value, double speed_value, double pulseDepth_value, double time_value, glsl::DVec3 fgColor_value, glsl::DVec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), scale(scale_value), rotation(rotation_value), thickness(thickness_value), smoothness(smoothness_value), symmetry(symmetry_value), layers(layers_value), shape(shape_value), layerSpacing(layerSpacing_value), twist(twist_value), shapeGrowth(shapeGrowth_value), bindu(bindu_value), animation(animation_value), speed(speed_value), pulseDepth(pulseDepth_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -26595,8 +26595,8 @@ struct State final : KernelState {
   double speed;
   double pulseDepth;
   double time;
-  glsl::Vec3 fgColor;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 fgColor;
+  glsl::DVec3 bgColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -26720,7 +26720,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_195
 
 BoundKernel bind_synth_mandala_mandala(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_195::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("symmetry"), bindings.get<std::int32_t>("layers"), bindings.get<std::int32_t>("shape"), bindings.get_number("layerSpacing"), bindings.get_number("twist"), bindings.get_number("shapeGrowth"), bindings.get<bool>("bindu"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::Vec3>("fgColor"), bindings.get<glsl::Vec3>("bgColor"));
+  const auto state = std::make_shared<typed_195::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("symmetry"), bindings.get<std::int32_t>("layers"), bindings.get<std::int32_t>("shape"), bindings.get_number("layerSpacing"), bindings.get_number("twist"), bindings.get_number("shapeGrowth"), bindings.get<bool>("bindu"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
   return BoundKernel(state, &typed_195::pixel);
 }
@@ -27132,7 +27132,7 @@ BoundKernel bind_synth_mandelbrot_mandelbrot(const glsl::Bindings& bindings) {
 // Source SHA-256: 3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c
 namespace typed_197 {
 struct State final : KernelState {
-  State(const Surface* imageTex_value, glsl::DVec2 imageSize_value, glsl::Vec2 resolution_value, double time_value, std::int32_t position_value, double rotation_value, double scaleAmt_value, double offsetX_value, double offsetY_value, std::int32_t tiling_value, std::int32_t flip_value, glsl::Vec3 bgColor_value, double bgAlpha_value) : imageTex(imageTex_value), imageSize(imageSize_value), resolution(resolution_value), time(time_value), position(position_value), rotation(rotation_value), scaleAmt(scaleAmt_value), offsetX(offsetX_value), offsetY(offsetY_value), tiling(tiling_value), flip(flip_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
+  State(const Surface* imageTex_value, glsl::DVec2 imageSize_value, glsl::Vec2 resolution_value, double time_value, std::int32_t position_value, double rotation_value, double scaleAmt_value, double offsetX_value, double offsetY_value, std::int32_t tiling_value, std::int32_t flip_value, glsl::DVec3 bgColor_value, double bgAlpha_value) : imageTex(imageTex_value), imageSize(imageSize_value), resolution(resolution_value), time(time_value), position(position_value), rotation(rotation_value), scaleAmt(scaleAmt_value), offsetX(offsetX_value), offsetY(offsetY_value), tiling(tiling_value), flip(flip_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
   const Surface* imageTex;
   glsl::DVec2 imageSize;
   glsl::Vec2 resolution;
@@ -27144,7 +27144,7 @@ struct State final : KernelState {
   double offsetY;
   std::int32_t tiling;
   std::int32_t flip;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 bgColor;
   double bgAlpha;
 };
 
@@ -27169,7 +27169,7 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec4 getImage([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st) noexcept {
   [[maybe_unused]] glsl::DVec2 size = state.imageSize;
-  st = glsl::Vec2((glsl::DVec2(glsl::swizzle<0, 1>(context.frag_coord)) / size));
+  st = glsl::Vec2((glsl::swizzle<0, 1>(context.frag_coord) / size));
   glsl::set_swizzle<1>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st))));
   [[maybe_unused]] double scale = (static_cast<double>(static_cast<float>(100.0)) / static_cast<double>(state.scaleAmt));
   if (scale == static_cast<float>(0.0)) {
@@ -27225,7 +27225,7 @@ struct State final : KernelState {
   }
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) / (static_cast<double>(glsl::swizzle<0>(size)) / static_cast<double>(glsl::swizzle<1>(size)))));
   st = glsl::Vec2(tile(state, context, st));
-  st = glsl::Vec2((glsl::DVec2(st) + (glsl::DVec2(static_cast<float>(1.0)) / size)));
+  st = glsl::Vec2((st + (static_cast<float>(1.0) / size)));
   if (state.flip == std::int32_t(1)) {
     glsl::set_swizzle<0>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<0>(st))));
     glsl::set_swizzle<1>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st))));
@@ -27363,7 +27363,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_197
 
 BoundKernel bind_synth_media_mediaInput(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_197::State>(&bindings.texture("imageTex"), bindings.get<glsl::DVec2>("imageSize"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("position"), bindings.get_number("rotation"), bindings.get_number("scaleAmt"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get<std::int32_t>("tiling"), bindings.get<std::int32_t>("flip"), bindings.get<glsl::Vec3>("bgColor"), bindings.get_number("bgAlpha"));
+  const auto state = std::make_shared<typed_197::State>(&bindings.texture("imageTex"), bindings.get<glsl::DVec2>("imageSize"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("position"), bindings.get_number("rotation"), bindings.get_number("scaleAmt"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get<std::int32_t>("tiling"), bindings.get<std::int32_t>("flip"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
   (void)bindings;
   return BoundKernel(state, &typed_197::pixel);
 }
@@ -28546,7 +28546,7 @@ BoundKernel bind_synth_osc2d_osc2d(const glsl::Bindings& bindings) {
 // Source SHA-256: d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c
 namespace typed_202 {
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t patternType_value, double scale_value, double thickness_value, double smoothness_value, double rotation_value, double skew_value, std::int32_t animation_value, double speed_value, double time_value, glsl::Vec3 fgColor_value, glsl::Vec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), patternType(patternType_value), scale(scale_value), thickness(thickness_value), smoothness(smoothness_value), rotation(rotation_value), skew(skew_value), animation(animation_value), speed(speed_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
+  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t patternType_value, double scale_value, double thickness_value, double smoothness_value, double rotation_value, double skew_value, std::int32_t animation_value, double speed_value, double time_value, glsl::DVec3 fgColor_value, glsl::DVec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), patternType(patternType_value), scale(scale_value), thickness(thickness_value), smoothness(smoothness_value), rotation(rotation_value), skew(skew_value), animation(animation_value), speed(speed_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -28560,8 +28560,8 @@ struct State final : KernelState {
   std::int32_t animation;
   double speed;
   double time;
-  glsl::Vec3 fgColor;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 fgColor;
+  glsl::DVec3 bgColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -28792,7 +28792,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_202
 
 BoundKernel bind_synth_pattern_pattern(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_202::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("patternType"), bindings.get_number("scale"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get_number("rotation"), bindings.get_number("skew"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get<glsl::Vec3>("fgColor"), bindings.get<glsl::Vec3>("bgColor"));
+  const auto state = std::make_shared<typed_202::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("patternType"), bindings.get_number("scale"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get_number("rotation"), bindings.get_number("skew"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
   return BoundKernel(state, &typed_202::pixel);
 }
@@ -29014,7 +29014,7 @@ BoundKernel bind_synth_perlin_perlin(const glsl::Bindings& bindings) {
 // Source SHA-256: e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6
 namespace typed_204 {
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t sides_value, double radius_value, double smoothing_value, double rotation_value, glsl::Vec3 fgColor_value, double fgAlpha_value, glsl::Vec3 bgColor_value, double bgAlpha_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), sides(sides_value), radius(radius_value), smoothing(smoothing_value), rotation(rotation_value), fgColor(fgColor_value), fgAlpha(fgAlpha_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
+  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t sides_value, double radius_value, double smoothing_value, double rotation_value, glsl::DVec3 fgColor_value, double fgAlpha_value, glsl::DVec3 bgColor_value, double bgAlpha_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), sides(sides_value), radius(radius_value), smoothing(smoothing_value), rotation(rotation_value), fgColor(fgColor_value), fgAlpha(fgAlpha_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -29023,9 +29023,9 @@ struct State final : KernelState {
   double radius;
   double smoothing;
   double rotation;
-  glsl::Vec3 fgColor;
+  glsl::DVec3 fgColor;
   double fgAlpha;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 bgColor;
   double bgAlpha;
 };
 
@@ -29075,7 +29075,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_204
 
 BoundKernel bind_synth_polygon_shape(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_204::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("sides"), bindings.get_number("radius"), bindings.get_number("smoothing"), bindings.get_number("rotation"), bindings.get<glsl::Vec3>("fgColor"), bindings.get_number("fgAlpha"), bindings.get<glsl::Vec3>("bgColor"), bindings.get_number("bgAlpha"));
+  const auto state = std::make_shared<typed_204::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("sides"), bindings.get_number("radius"), bindings.get_number("smoothing"), bindings.get_number("rotation"), bindings.get<glsl::DVec3>("fgColor"), bindings.get_number("fgAlpha"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
   (void)bindings;
   return BoundKernel(state, &typed_204::pixel);
 }
@@ -29093,7 +29093,7 @@ static_assert(sizeof(glsl::Vec2) == 8U);
 static_assert(sizeof(Centers13) == 104U);
 
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double scale_value, double rotation_value, double thickness_value, double smoothness_value, std::int32_t geometry_value, std::int32_t rings_value, std::int32_t starPoints_value, std::int32_t animation_value, double speed_value, double pulseDepth_value, double time_value, glsl::Vec3 fgColor_value, glsl::Vec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), scale(scale_value), rotation(rotation_value), thickness(thickness_value), smoothness(smoothness_value), geometry(geometry_value), rings(rings_value), starPoints(starPoints_value), animation(animation_value), speed(speed_value), pulseDepth(pulseDepth_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
+  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double scale_value, double rotation_value, double thickness_value, double smoothness_value, std::int32_t geometry_value, std::int32_t rings_value, std::int32_t starPoints_value, std::int32_t animation_value, double speed_value, double pulseDepth_value, double time_value, glsl::DVec3 fgColor_value, glsl::DVec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), scale(scale_value), rotation(rotation_value), thickness(thickness_value), smoothness(smoothness_value), geometry(geometry_value), rings(rings_value), starPoints(starPoints_value), animation(animation_value), speed(speed_value), pulseDepth(pulseDepth_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -29109,8 +29109,8 @@ struct State final : KernelState {
   double speed;
   double pulseDepth;
   double time;
-  glsl::Vec3 fgColor;
-  glsl::Vec3 bgColor;
+  glsl::DVec3 fgColor;
+  glsl::DVec3 bgColor;
 };
 
 [[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
@@ -29410,7 +29410,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_206
 
 BoundKernel bind_synth_sacredGeometry_sacredGeometry(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_206::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("geometry"), bindings.get<std::int32_t>("rings"), bindings.get<std::int32_t>("starPoints"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::Vec3>("fgColor"), bindings.get<glsl::Vec3>("bgColor"));
+  const auto state = std::make_shared<typed_206::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("geometry"), bindings.get<std::int32_t>("rings"), bindings.get<std::int32_t>("starPoints"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
   return BoundKernel(state, &typed_206::pixel);
 }
@@ -30668,28 +30668,28 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"classicNoisedeck/cellRefract:cellRefract", "bind_classicNoisedeck_cellRefract_cellRefract", "bind_classicNoisedeck_cellRefract_cellRefract", "typed_emitter", "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70", "e0df92eda5c1e7338dcbb054ef7e08d5697ccb3db9fbb79449d87a951dc173d8", "default-only", "KERNEL=0;SHAPE=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8891ec08f1849c000d7532487cb4afd38b84ab107c873df25fb309cb4429adb5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellRefract_cellRefract},
     {"classicNoisedeck/coalesce:coalesce", "bind_classicNoisedeck_coalesce_coalesce", "bind_classicNoisedeck_coalesce_coalesce", "typed_emitter", "a0f96df68ce058e5e2154c78880b5a611eaf5ab9adcd64242368978c813b6b58", "5442b956df178a4854c2111a99dfee821ea40b4287b5032db81e1277cf76f8c2", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "0c602164431f80fa5aa16642de4965d0528d783e8a945e53f62ffc5e0a06a02e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_coalesce_coalesce},
     {"classicNoisedeck/colorLab:colorLab", "bind_classicNoisedeck_colorLab_colorLab", "bind_classicNoisedeck_colorLab_colorLab", "typed_emitter", "4bf9ea925634ee684e01917ea3b690d332b37905d21c8aa7377bf88625570945", "c0382753b33ff19abf120ffa898dedafc7732a77daaf70d954ee8d1635d7429a", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7c671b30f025d385dee81396a3464c277c594dff511051e1933ab2a1566d4343", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_colorLab_colorLab},
-    {"classicNoisedeck/composite:composite", "bind_classicNoisedeck_composite_composite", "bind_classicNoisedeck_composite_composite", "typed_emitter", "ae3f29a129016653a5705647cb61c5c6448504e44ad321539fb4ce2e120d9123", "d0429b0fb6bec601654e551cd99c4f82a9bcd35d7298b0b2f7e2b90ea44bac0d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "59a9ef7cea7eafd8101c36b007fce4231042d615124cbb70b66bb8ceb14623e7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_composite_composite},
+    {"classicNoisedeck/composite:composite", "bind_classicNoisedeck_composite_composite", "bind_classicNoisedeck_composite_composite", "typed_emitter", "ae3f29a129016653a5705647cb61c5c6448504e44ad321539fb4ce2e120d9123", "d0429b0fb6bec601654e551cd99c4f82a9bcd35d7298b0b2f7e2b90ea44bac0d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "d1e9903e241fbd3ee9df4aaad34800837dbcad841a0750e19c833d43b64429ee", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_composite_composite},
     {"classicNoisedeck/effects:effects", "bind_classicNoisedeck_effects_effects", "bind_classicNoisedeck_effects_effects", "typed_emitter", "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c", "196f7fd2e8efc1fe546f1d200caef086311d6b889937062185059a4647774eb0", "default-only", "EFFECT=0;FLIP=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "5d454c83a211f4b66cf129e4baf860265fcfd957cdb548c675869354e33be414", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_effects_effects},
-    {"classicNoisedeck/fractal:fractal", "bind_classicNoisedeck_fractal_fractal", "bind_classicNoisedeck_fractal_fractal", "typed_emitter", "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b", "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "578f0da6cfe4f04f5b61abbeacb06d862752abc4f48e2b1f1141cd808a3d93d7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_fractal_fractal},
+    {"classicNoisedeck/fractal:fractal", "bind_classicNoisedeck_fractal_fractal", "bind_classicNoisedeck_fractal_fractal", "typed_emitter", "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b", "f524c0dbfee85e9208c7780f980a1ced07b5b1e6968f4ebc7123812bda459daa", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5d013be36f40100f8681fc18484a83bca36a96b3ee45f971cbc820291a5a3096", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_fractal_fractal},
     {"classicNoisedeck/glitch:glitch", "bind_classicNoisedeck_glitch_glitch", "bind_classicNoisedeck_glitch_glitch", "typed_emitter", "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134", "18c825ca788a34601c37fe9b92bcdfac459b161152daec55180079e970d4f403", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "510a599c4fab7b9e13078600b013acc0c6d8291b4cfa1b52a12dd69914135132", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_glitch_glitch},
     {"classicNoisedeck/kaleido:kaleido", "bind_classicNoisedeck_kaleido_kaleido", "bind_classicNoisedeck_kaleido_kaleido", "typed_emitter", "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52", "56be169c4101a109d3b370d8ac2f3aad91aa6030d3fd0e660017e1ba257c0da9", "default-only", "DIRECTION=2;KERNEL=0;LOOP_OFFSET=10;METRIC=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "59c4cfd5ac98954332b0f426d5f7825e244a527308e3f60d60185598abe5115d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_kaleido_kaleido},
-    {"classicNoisedeck/lensDistortion:lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "typed_emitter", "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444", "b2e660a89fff9c62dad6d083e7a81302e10af981db4fcfb9849e00c91c47e5f7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4cc32a085defc85025e8e57c3d91e21f795c8c13c1322789fbad545c632d3f5f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_lensDistortion_lensDistortion},
+    {"classicNoisedeck/lensDistortion:lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "bind_classicNoisedeck_lensDistortion_lensDistortion", "typed_emitter", "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444", "b2e660a89fff9c62dad6d083e7a81302e10af981db4fcfb9849e00c91c47e5f7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8e08c9afa856484a6d6f84f61ecc357a34b0893397a471b7c17055553cbc9c2d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_lensDistortion_lensDistortion},
     {"classicNoisedeck/moodscape:moodscape", "bind_classicNoisedeck_moodscape_moodscape", "bind_classicNoisedeck_moodscape_moodscape", "typed_emitter", "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44", "f7f870f37d82b3406b5cce4f2248fcb362084688bee6aa18ffcf960bad8ca0ed", "default-only", "COLOR_MODE=2;NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "cd0f6c0855052f2468ef2c2bb22af8a496a4cd73b674601023f91b8044242fe3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_moodscape_moodscape},
     {"classicNoisedeck/noise:noise", "bind_classicNoisedeck_noise_noise", "bind_classicNoisedeck_noise_noise", "typed_emitter", "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138", "49092c171718e69eb5e4e7f48a561004ea01bc94eaa4f76b9b90cf446e1c505a", "default-only", "COLOR_MODE=6;LOOP_OFFSET=300;METRIC=0;NOISE_TYPE=10;REFRACT_MODE=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "1341d9a79b545c5e3e29828c68385bd47fa3fa8347bf8a6811a88ca69ba1a2a4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_noise_noise},
     {"classicNoisedeck/refract:refract", "bind_classicNoisedeck_refract_refract", "bind_classicNoisedeck_refract_refract", "typed_emitter", "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a49cfa2", "59ff19cdf6bf811af7e3d29e10f74471670cac20921aa53c0f1466e5ce8a57eb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ff33cdaec296d14f8a71b0fee5820c34c53347a3da7b47d4f84465ea530cbc3e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_refract_refract},
     {"classicNoisedeck/shapeMixer:shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "typed_emitter", "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b", "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46", "default-only", "LOOP_OFFSET=10", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "cd1cf9d1c6e5509f3900e1827ebdeff60ecb58b38b4f930be72927bddb6cda15", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapeMixer_shapeMixer},
     {"classicNoisedeck/shapes:shapes", "bind_classicNoisedeck_shapes_shapes", "bind_classicNoisedeck_shapes_shapes", "typed_emitter", "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e", "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "44198af1ca7635b99dfb3fa8e4ee44314fcabce7ab6836931dc1269b0252c8d6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapes_shapes},
-    {"classicNoisedeck/splat:splat", "bind_classicNoisedeck_splat_splat", "bind_classicNoisedeck_splat_splat", "typed_emitter", "cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced", "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "96f2713937280a271e8fdb50d65fa8d3c74a74f38db76092f24898193dfc755d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_splat_splat},
+    {"classicNoisedeck/splat:splat", "bind_classicNoisedeck_splat_splat", "bind_classicNoisedeck_splat_splat", "typed_emitter", "cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced", "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a9dd1b611637adf0defaf3928acadbd8997601b887511f49d9d03c034444ddae", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_splat_splat},
     {"filter/adjust:adjust", "bind_filter_adjust_adjust", "bind_filter_adjust_adjust", "typed_emitter", "dafbae039de5463cb5a94bb5e3046fd65b3212240e15a14996186e3d4d88b71d", "7daf8c804ed6bb78918a6834966466805ec75113b69686c8c8c58808e76edb9d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "e0330e2664e44524c1cc3a9b2e5b1b00453e8464d8d3a9b85b4c35cc0d0b4f24", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_adjust_adjust},
     {"filter/bc:bc", "bind_filter_bc_bc", "bind_filter_bc_bc", "typed_emitter", "1422e35c223dd3b9095dc0eb7b26b1b9f75767748689b15fd3e4006128089701", "6d60f2efae772f867fcac7513045104827009305500cae4df64e64bb62e38ff7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4b23f4b8d7e07cb445b9c937f8b2b6a5d3be4b16aa945a6850077d4fc8f1df25", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bc_bc},
     {"filter/bloom:brightPass", "bind_filter_bloom_brightPass", "bind_filter_bloom_brightPass", "typed_emitter", "db9bb2dbe897ee03435cae86aa88a766b7d8e6bc58e61103fa5e66c3c3dbc880", "a52289ba6193e3b3fbc140bc21ea20987559801f806d5b5a873d796e0d24cab7", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "54a091d9112b196a8924553fb8182e89d39221b04135c08a4da9646142cc0e0f", "54a2a78950e43a0e6eb5bc504e40c2a949aaaa5ca4e09d4a571c89f89e0f87bf", "896e9c24920245ca0b00b83bf120402887b1ab67a97eb57c623c334b2e99fd05", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bloom_brightPass},
-    {"filter/bloom:composite", "bind_filter_bloom_composite", "bind_filter_bloom_composite", "typed_emitter", "28e480fad84b7254e9392b8d4d85bc398b62a0e57f94dffac94db655132abbef", "476e5e91eb39c246048c3c37fb91f93f6a8f87b1273e14f2861e57be524c38d5", "none", "", "843d63e9827ccb937fc3ff9453fcca7862a62dfe8e882c0d163ebf5eeabe3670", "a212d9d73391996083389df3bcb516a0a9a3e9c98d50e444afa774a3db70bc70", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bloom_composite},
+    {"filter/bloom:composite", "bind_filter_bloom_composite", "bind_filter_bloom_composite", "typed_emitter", "28e480fad84b7254e9392b8d4d85bc398b62a0e57f94dffac94db655132abbef", "476e5e91eb39c246048c3c37fb91f93f6a8f87b1273e14f2861e57be524c38d5", "none", "", "843d63e9827ccb937fc3ff9453fcca7862a62dfe8e882c0d163ebf5eeabe3670", "d026d7980474011439076b05e6662c35278d9da35e96e2584140e564330d3dde", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bloom_composite},
     {"filter/bloom:ntapGather", "bind_filter_bloom_ntapGather", "bind_filter_bloom_ntapGather", "typed_emitter", "f11c983976cb8450d611e8d888bd151a4c2cfdda8d9d772f906608dedb99d237", "7875bfa98187b7b5037decd08db576a15679aeeb5046d40eaa68c8411e2deabe", "none", "", "757ee307ef5578288523e42befe82b2c0b861b4fd99125f06f9a49a1aa4603e7", "6225522e8368c15696dae402ef81b8f5b6b6e63a87b33f5cc88da3e488d0f91c", "f7382d95f1ec8193e589e14707a2444d8ecf3225db47ec9e1baacc18ca5f2b3f", "896e9c24920245ca0b00b83bf120402887b1ab67a97eb57c623c334b2e99fd05", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bloom_ntapGather},
     {"filter/blur:blurH", "bind_filter_blur_blurH", "bind_filter_blur_blurH", "typed_emitter", "c4283e820b2ade9148358ad4582d350bc7f4a5ccb5fc60f2e1b76bcda58deecc", "1279eef07efade7c8a0c2fd351ca2edd18f7fbee6b37e8eb6fc6c71a09cb511b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "06e8027a81c1cfd1d76288969c6adfab3d25ba202099ae35697ef7d6456b66e8", "68549f5088424962467d0b3f722875496fbd501d95f507f3fb1ca3f45110eb1e", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_blur_blurH},
     {"filter/blur:blurV", "bind_filter_blur_blurV", "bind_filter_blur_blurV", "typed_emitter", "cc33343032b34e1ede6eed15fbdcb9229ad64484a092b2914065b09fa957fb9b", "9a88bd63399bde71aecfa895e3d4a8b3826ca73a1be87b9ef7a540695d96ffd2", "none", "", "46cec6331d04dc68d889bfed61087b2b7fee7da290f33781d0082a04d8e9e3c5", "06ec2cd7a1ae5e6d9e9cc4ff77af0844a2e60ce813ce08968655f23394a820c4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_blur_blurV},
     {"filter/bulge:bulge", "bind_filter_bulge_bulge", "bind_filter_bulge_bulge", "typed_emitter", "87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170", "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6eca211ce3de0bee7c1d27ede41010829458341dc212437909389fba0a69d519", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_bulge_bulge},
-    {"filter/celShading:celShadingBlend", "bind_filter_celShading_celShadingBlend", "bind_filter_celShading_celShadingBlend", "typed_emitter", "182d5b48d026e923aa2c412c659c633541859ffc3e9bc03315d5c5e18385f69f", "19afed36f9f53d3f5bad1da4b288e82e5502cccc8123fecdd89e85f33aa8c0d3", "none", "", "da80caede17722c1e2a85238680a991214b5b8c71263d40832dc08a45c6ea071", "644a4566fd565a601991c9b2e6be7b238b1fd1feeb59935c560283ebb073caf3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_celShading_celShadingBlend},
-    {"filter/celShading:celShadingColor", "bind_filter_celShading_celShadingColor", "bind_filter_celShading_celShadingColor", "typed_emitter", "90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4", "fe30bebf98cc6c50221d1cd08cda782f07a7068354d553a7bc831a2f7be49ab0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a772a72ba414304145ed892ac69afbfdc317ac626d7c5e888262b50a20d01dbf", "50f484d7515c7a6217f07d176e60b85eb31242c5170e4bf12f844d3fe67f862d", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_celShading_celShadingColor},
+    {"filter/celShading:celShadingBlend", "bind_filter_celShading_celShadingBlend", "bind_filter_celShading_celShadingBlend", "typed_emitter", "182d5b48d026e923aa2c412c659c633541859ffc3e9bc03315d5c5e18385f69f", "19afed36f9f53d3f5bad1da4b288e82e5502cccc8123fecdd89e85f33aa8c0d3", "none", "", "da80caede17722c1e2a85238680a991214b5b8c71263d40832dc08a45c6ea071", "bb590f20d1c6ed27aa4e69720fac7c2a649863e12e544f0c87c96cf485222a84", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_celShading_celShadingBlend},
+    {"filter/celShading:celShadingColor", "bind_filter_celShading_celShadingColor", "bind_filter_celShading_celShadingColor", "typed_emitter", "90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4", "fe30bebf98cc6c50221d1cd08cda782f07a7068354d553a7bc831a2f7be49ab0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "fd2743fa461242633d0a687b1c03a63c37402a8d0f0e71f81cd93c28b9438455", "50f484d7515c7a6217f07d176e60b85eb31242c5170e4bf12f844d3fe67f862d", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_celShading_celShadingColor},
     {"filter/celShading:celShadingEdges", "bind_filter_celShading_celShadingEdges", "bind_filter_celShading_celShadingEdges", "typed_emitter", "9c2848c92bd0f3e2de76fd065ac8fc55086cb7d209ce09ac4ba6488acda4630e", "cf89a4c730c0579bdfb7e16c9e513fe79818cf063cd560cd6053c24d5f3da96f", "none", "", "6564f10a984ca920968b169b1decaf4f6ee09085d805a0b249ba55b41b86fbb1", "5ce856f5119575ff21d0389cc614c9e565f4fcbc6bf6d4b640b739455301d87a", "aa212001baa70f63049e68f0acb1985e857dd5246a536556dd54eccfc12ab8a5", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_celShading_celShadingEdges},
     {"filter/channel:channel", "bind_filter_channel_channel", "bind_filter_channel_channel", "typed_emitter", "b237868c688bcfe51deb56155b0fbfe66a3fcf0db5cba93177ec2198ae48e9e7", "5477acaf1995a3bc7469ed5e4564a7243abeafba6c197dcc2bef5b1efa41472b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c064beb74e63bab8b7674136a32917cf3cc5a0896b4607766780859c6856d5fb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_channel_channel},
     {"filter/chroma:chroma", "bind_filter_chroma_chroma", "bind_filter_chroma_chroma", "typed_emitter", "520627b0a7461e42baad13d20851ff4c0a2cb1a7d050776f3592ade9f800dcfb", "affc750b134e4094cbb06993891b1d9f39ccd8600713a67f374f8ad9aa947bac", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "79cc6b4b260937c7fd6d4aca68fd15cab1c35d9ed893070f8d07b4c1c671cf3d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_chroma_chroma},
@@ -30698,7 +30698,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/chrome:chBlurV", "bind_filter_chrome_chBlurV", "bind_filter_chrome_chBlurV", "typed_emitter", "b6e49ae5eeb8528e57266a50f7ebba7b937712f01db40c69f819ca790ffc3b9b", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "none", "", "8b8af829811efd09f4d934e3482493cb23db904d5dfc9127e9f8a22beef9cc8e", "f0986eb3cbab20ced46f9254a83f47969aa31d3b4964120399cc4d6a5f26968d", "95f4df35529af9af2ebaf8e926be338fe325a64c143ab392591d16084073c04c", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_chrome_chBlurV},
     {"filter/chrome:chMap", "bind_filter_chrome_chMap", "bind_filter_chrome_chMap", "typed_emitter", "4329fdfb95fc912608b3f5ce0f1efd282d5965e9c2f8326bc2d845cfe4aa9dae", "ee53de6686b254688ae4d740bdcf45601904fed86e5b191372bcb3888cf9dcc2", "none", "", "ee8b420ce9cca1a749663362ea74dc1d8313b751c7d3204aa758a2c523bda616", "a39bc3c65e517aea977696667659e4c86d0541b189454ae40c2dcfc7b6abc271", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_chrome_chMap},
     {"filter/clouds:clouds", "bind_filter_clouds_clouds", "bind_filter_clouds_clouds", "typed_emitter", "fe73bfd7ea5daec2f31d588dc147d8231f127680929dd90d679c4e0a2c9f299d", "ef5cfa24759ecc24a2d0f5e4e466c41bbf41596ae41370e5fd61acd7692705ae", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "41a7394707c9c9b8dbc7809d0ce64adc461a7a066524d1029a8353aa96e4faa7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_clouds_clouds},
-    {"filter/colorReplace:colorReplace", "bind_filter_colorReplace_colorReplace", "bind_filter_colorReplace_colorReplace", "typed_emitter", "e85d80a109a48d551d60ff6136efedb4a131e0b973ad9637b82df9b46449f5fb", "e5a1ee5cb8e18ff6e72797d0822583c297b1ee702a85f28cdd9f877ef898f664", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6bf34e90ae8def11dff110b5c5114299eb663400bd8d30b2e6a3b27b6fafd5f4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_colorReplace_colorReplace},
+    {"filter/colorReplace:colorReplace", "bind_filter_colorReplace_colorReplace", "bind_filter_colorReplace_colorReplace", "typed_emitter", "e85d80a109a48d551d60ff6136efedb4a131e0b973ad9637b82df9b46449f5fb", "e5a1ee5cb8e18ff6e72797d0822583c297b1ee702a85f28cdd9f877ef898f664", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d0b83d3ca4e995136eb6207040c134562492431d260d0242f5e07eb108aed716", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_colorReplace_colorReplace},
     {"filter/colorspace:colorspace", "bind_filter_colorspace_colorspace", "bind_filter_colorspace_colorspace", "typed_emitter", "602f1a2ce0abd59e8e17753c8ec9b49d01fbe0f169d60ad290d294904e02f705", "ebae52af1e222aaa5eaf3f5ff9401208a0a33372c61d113e217d4781d642f7e2", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c84b6d5fb70640e15f9ba69565bc6f186d049e152e8b804bd5d2763acd9d85d5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_colorspace_colorspace},
     {"filter/corrupt:corrupt", "bind_filter_corrupt_corrupt", "bind_filter_corrupt_corrupt", "typed_emitter", "b81642d2e63294f9f51656eb2441cdaf479c495c5e4acb0d3a4907a13b070d02", "8d36a9aa9e47ec91370ee7defa9215740fc2a47450f97f7eb6cbd42bd584c781", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ab6cc8ab176f004df8a4c2e180631a2528e6778a42f7a202d29a1022de4c5038", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_corrupt_corrupt},
     {"filter/craquelure:craquelure", "bind_filter_craquelure_craquelure", "bind_filter_craquelure_craquelure", "typed_emitter", "a21be5c20bec6d75d648c0a2debcc69843193e676f5195efff7b643bb0cc9e2b", "7fc3ff4fa7b1adbaaa5221daace8d0da612abba607598dce210e36cfee8ed7c0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "941daeb22ac7b52021d4304b63c830f15d4f5ba5b331775a08bc88c7446e99fb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_craquelure_craquelure},
@@ -30715,16 +30715,16 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/fxaa:fxaa", "bind_filter_fxaa_fxaa", "bind_filter_fxaa_fxaa", "typed_emitter", "088449aa1fd5855489d3ce0c6ed2986b9b128fa93ace5817dbeafeff92a7bdf0", "f97abe0ff1e04e30c6058c379f63f5980e046c54071bcf14bd36cb54a68e8327", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "28f0fb1a55bc1293e027f768040ed50a7fb14f1e092b57ae33c25ca471a703d6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_fxaa_fxaa},
     {"filter/glowingEdge:glowingEdge", "bind_filter_glowingEdge_glowingEdge", "bind_filter_glowingEdge_glowingEdge", "typed_emitter", "e5df47ffdea81d4f7403d4a3133acd42f2955da8870fd62e6052c2dbeef1d3fd", "eb24a55fe63c6ab643c1dc43d75a652f82f28c276740e48a2f2f11949c3dda03", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "e1d4835029fd08901d9bf263d71e6ddc631efedb8aec0f6fce6f58bb1552b433", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_glowingEdge_glowingEdge},
     {"filter/glyphMap:glyphMap", "bind_filter_glyphMap_glyphMap", "bind_filter_glyphMap_glyphMap", "typed_emitter", "853c3c15f300cf56ba3c11d5613cb91bfcb14b8b2f1be6bb5193e71397fdcea1", "46b5505882a4537505428bebcff3787f535df40965283e9078a1f6ad819aecf6", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "346c8deecfefbcf2f0546f8f1a2a8b366c14514314d99cb09aeced6e2b46226a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_glyphMap_glyphMap},
-    {"filter/grade:creative", "bind_filter_grade_creative", "bind_filter_grade_creative", "typed_emitter", "b043aa43d17e098ffb736f16e6c81a5ca422ecdd6fc37fef03c39b01cc939bd3", "1fb225eccf8ceef960308d602f4d7d5c3e80d56c4467a51efe2433201c1842e5", "none", "", "f2b0e8c86f0e9ea32f617c3da490d46bd96a8bf6fd63d13c9550496f83301827", "d094928502d92e6f5cda61e69bd94ad32e51661f92379dd0dc811e791aa1a991", "cbb5e24e33db8a7be8d3ef36f475da7346964e4d89ef0efc2f74ce64c0977f08", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_creative},
+    {"filter/grade:creative", "bind_filter_grade_creative", "bind_filter_grade_creative", "typed_emitter", "b043aa43d17e098ffb736f16e6c81a5ca422ecdd6fc37fef03c39b01cc939bd3", "1fb225eccf8ceef960308d602f4d7d5c3e80d56c4467a51efe2433201c1842e5", "none", "", "f2b0e8c86f0e9ea32f617c3da490d46bd96a8bf6fd63d13c9550496f83301827", "f25886e4f21f4bc867e85a8f3e49b411add3e80f9654d7c3679739169058beab", "cbb5e24e33db8a7be8d3ef36f475da7346964e4d89ef0efc2f74ce64c0977f08", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_creative},
     {"filter/grade:hslSecondary", "bind_filter_grade_hslSecondary", "bind_filter_grade_hslSecondary", "typed_emitter", "2f2c54a6d977ccc0ba8657c02f1fc2fecfb576ad85f6d03ea16468fc9cbd095a", "e6580a374dc9038e16c59c101124c732b486f85344fac734196fe3e02dc5aa03", "none", "", "bf01ff1849d74988ae916b8e455ad5f3aa0fb339a0e0741b26884163c05c3cae", "17eec0050be52b8de54a79f903607b7060c20207ec85b7ef0ecd7dfb0eb384ba", "362338f30cea7c593122983a6b129168924efb72d9a7a147b153ecb5547797b1", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_hslSecondary},
     {"filter/grade:lut", "bind_filter_grade_lut", "bind_filter_grade_lut", "typed_emitter", "0a8a3ae4d2a14142ae7d53373bfac6ac87a0b175dff132d71cd80e6226f9ec40", "34ca25b4b530e5774f335c22ed2b932890d0f8d37d773f86cf50aac9a31fa48d", "none", "", "0842eec980f75e3777a9933a19bc852156aa5faa7cc8904c46b0bd9c8003cbbd", "2ad9cc4d5fcfa45d6529d04465abc97cdcf8d5937713863a0487c48f0925877d", "0c7ef6bd387879905ebbfb3863b69216e871cc52e3f0327d2ec4dc9997027e34", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_lut},
     {"filter/grade:primary", "bind_filter_grade_primary", "bind_filter_grade_primary", "typed_emitter", "97a3a6497e3bc03716e875b75b7efab058d9848c915f806b68239154e313e71d", "7c28a38eef15c404a6545186ff8b62ce0700cce97137b2d059ce87fe76442d4b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d0d12cbcb18b1ce41ab25ae4e405da3470875747ff2253a1cb5077782cdfd2a4", "df93e345fbf3b2235872cc69ce5650744a391f39fd535d8e6dc0cb9e2cb7c7e2", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_primary},
     {"filter/grade:vignette", "bind_filter_grade_vignette", "bind_filter_grade_vignette", "typed_emitter", "50dbb470cec43a2f7db7e1caf319c3dd2465bf85e09f0250e7a13eadaf975522", "da75c97140b411f6cfa42ca7098ee99c153c55b9f6d77b7731a1c4f9b742cc9e", "none", "", "df6c20bd5c9fdaeb377accd22a74d67f04ff32b147ec8c722551ca467346e000", "54a8f884974d893aa03a4005fd61294e29448183871f54642473ff052efbaaf3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_vignette},
-    {"filter/grade:wheels", "bind_filter_grade_wheels", "bind_filter_grade_wheels", "typed_emitter", "fa9c411096816263985e8d5ef82ade976667a6cadecf8929ecd185edbc71f479", "507ccf8e3f0df9c9bbe191fbffc6b9baf0338a8bbf911316651a9bb44531da14", "none", "", "4c8a94f6f05e143973915c9af5427de9326d2c512c2af9b8b0b459bf87bee1fe", "a3561798fa37026114ba02e95a32667e061c115e9d26f1c64b8d4e5bc03038c7", "6c090373419bcd989504688dd59c162412a11621a392aaa096dce24b550845db", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_wheels},
+    {"filter/grade:wheels", "bind_filter_grade_wheels", "bind_filter_grade_wheels", "typed_emitter", "fa9c411096816263985e8d5ef82ade976667a6cadecf8929ecd185edbc71f479", "507ccf8e3f0df9c9bbe191fbffc6b9baf0338a8bbf911316651a9bb44531da14", "none", "", "4c8a94f6f05e143973915c9af5427de9326d2c512c2af9b8b0b459bf87bee1fe", "539fb5873766b2375fc7cc690abd56164a842bca777ff148b465faf77f8f9363", "6c090373419bcd989504688dd59c162412a11621a392aaa096dce24b550845db", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grade_wheels},
     {"filter/grain:grain", "bind_filter_grain_grain", "bind_filter_grain_grain", "typed_emitter", "6edf8deec35e2fa3a32fc150c2be8cb6d71a9356c1c7a3cff5bd3c6c7df764f0", "c9e83271dc9605821d2f6399191a636be8cd0482129b9e77f0740c7e1ed983e5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "000eda1563b6871e9b7d412402ef9b28ff8c86ba8b87b7a526a214b6539e0cd1", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grain_grain},
     {"filter/grime:grime", "bind_filter_grime_grime", "bind_filter_grime_grime", "typed_emitter", "15a88fff0e951bf7fa01f4c982532cf79d835663cb2a81c2076c5fecbd9c351f", "92feb3d96fd0f8342dfa6212a9e78162717ab60faa56e9030dee85fb0e0c75fb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "538aab6075e785dfcabffa64ac8421ce089825ac9993a402737934849cd6744b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_grime_grime},
-    {"filter/halftone:halftone", "bind_filter_halftone_halftone", "bind_filter_halftone_halftone", "typed_emitter", "063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7", "ee29192c4e5e0a4cae1bf976f3f392421c428a424ea3abf3a50afcd866ca11c7", "default-only", "MODE=0;PATTERN=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "b134b96c69a7897b7d39719b2b4dd7179db459a9101afd7a977d6d60a6b50255", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_halftone_halftone},
-    {"filter/hatch:hatch", "bind_filter_hatch_hatch", "bind_filter_hatch_hatch", "typed_emitter", "510c07e58308c1b0ffb16aafdd90362decc92f818fe25da676bb6c348b120106", "2b23853d55900ba8bdc09297a0d111f53f6482d29fe40a8a861be076067c904b", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "de796bb5d24d3a91c68845bb97466f518db125b6eec62118a0379d54f7812de7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_hatch_hatch},
+    {"filter/halftone:halftone", "bind_filter_halftone_halftone", "bind_filter_halftone_halftone", "typed_emitter", "063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7", "ee29192c4e5e0a4cae1bf976f3f392421c428a424ea3abf3a50afcd866ca11c7", "default-only", "MODE=0;PATTERN=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "2242f6d6401bc116a09ef3ef6b0fffa0670bfa5bdfa0978cb648d31560867b6d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_halftone_halftone},
+    {"filter/hatch:hatch", "bind_filter_hatch_hatch", "bind_filter_hatch_hatch", "typed_emitter", "510c07e58308c1b0ffb16aafdd90362decc92f818fe25da676bb6c348b120106", "2b23853d55900ba8bdc09297a0d111f53f6482d29fe40a8a861be076067c904b", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "fafad91de998b38d9bb5cda3866a06c435c789cf0eaf5bd14c56d2b687ece697", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_hatch_hatch},
     {"filter/highPass:hpBlurH", "bind_filter_highPass_hpBlurH", "bind_filter_highPass_hpBlurH", "typed_emitter", "d2254ef3ad99291669d5e705529350f9fe383995760f83654af3d1de9f8195b9", "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "feb9cc8d87ccc46b69807867524cae7b1342f68f891478e4d37519aca4917b47", "6635c0fe587ccb4122b7539b8fceaf5e1a0726b6640afe04bd48f4af1e5de562", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_highPass_hpBlurH},
     {"filter/highPass:hpBlurV", "bind_filter_highPass_hpBlurV", "bind_filter_highPass_hpBlurV", "typed_emitter", "8d4f5b6f17480c441fbf0bc26f05c42409472344b5dd410fa5663b7337cddd3c", "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e", "none", "", "0452cde1623f8c56d56e102ab22f15019ad0cefd371b696719e046c7341549fe", "feb9cc8d87ccc46b69807867524cae7b1342f68f891478e4d37519aca4917b47", "263c8a0e2d9d326bf6fb9f380fbe08fb8ead20b0d6d9629c9cc31d33bb958206", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_highPass_hpBlurV},
     {"filter/highPass:hpCombine", "bind_filter_highPass_hpCombine", "bind_filter_highPass_hpCombine", "typed_emitter", "1dc649d0010cee700cdd56b0e35f4867bbadee7426cb04cad49a126ad1e95284", "de107ac1f89d0d2d0b88fd1d30c81b0c7354875ccf8068f653a7302433876b9a", "none", "", "69963e7caf44f39e54aa8608f6a02bb5a73c2875ad5d9addfc676f5810c83321", "e8932c9ed1dd637d218574ce62fd107d7ea2b9269aa8a8548a4af575fa95c6ec", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_highPass_hpCombine},
@@ -30732,15 +30732,15 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/hs:hs", "bind_filter_hs_hs", "bind_filter_hs_hs", "typed_emitter", "5449441668f1ed62da954294285b5fbeae48b7c9feeecbfbe3b56bcc9afae4d7", "7ab6d8ec198193820647bcc09d3d9bd818614d845b0b953ea5dc3931968d2e1f", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f3d8a8efdaf0d5031112be39a581bfe4c8626e7701389f5fca8dd1a5bfdb1c5c", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_hs_hs},
     {"filter/invert:inv", "bind_filter_invert_inv", "bind_filter_invert_inv", "typed_emitter", "a18fa342ca8507983495ff5eeaaa7704f227b58d476cf413476b230cbd5d6de4", "0362d48525f911ea260b33c194d0020536a0ca7ae774dd52cb85917a9a4f1f9a", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c9738dca8af8b37c4377f0d75d58918cb014b0103b49d2aa582466f3fad13964", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_invert_inv},
     {"filter/lens:lens", "bind_filter_lens_lens", "bind_filter_lens_lens", "typed_emitter", "6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5", "e140e54bf05785c601f856e7bf8aba7460fe30f22087af19ba5bc1ebf7aa10bd", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "75f75a07a1180f0425e293df61207a485917ae08ad7c9f986e40adaa6a02af17", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lens_lens},
-    {"filter/lensFlare:lensFlare", "bind_filter_lensFlare_lensFlare", "bind_filter_lensFlare_lensFlare", "typed_emitter", "46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244", "a6ae43381a4dfc39ccc3af5d61078b7dc63226907de7f65eae4cc0823fb6e529", "runtime-int", "LENS_TYPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ccd2216fc711b883dbb386e9f27360b6846afb60533fcdf0495d976804a99918", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensFlare_lensFlare},
+    {"filter/lensFlare:lensFlare", "bind_filter_lensFlare_lensFlare", "bind_filter_lensFlare_lensFlare", "typed_emitter", "46ba9da4e66a3978f92b18810bcb5db9d0f2f01fb4a80843c2091381f2001244", "a6ae43381a4dfc39ccc3af5d61078b7dc63226907de7f65eae4cc0823fb6e529", "runtime-int", "LENS_TYPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "14c478c38f2cf1da4c80fbd9db22464e752e3ac5b27611869787033c1c7a5417", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensFlare_lensFlare},
     {"filter/lensWarp:lensWarp", "bind_filter_lensWarp_lensWarp", "bind_filter_lensWarp_lensWarp", "typed_emitter", "543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480", "483335be32ed483651c733bcdfa7044bd0c9291acd22aae2727f6b9b6b0461f5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d7dfc17afddeae592bb03263bbc80a4510bd01380d1fa7baa4d54de42c364c90", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lensWarp_lensWarp},
-    {"filter/lightLeak:lightLeak", "bind_filter_lightLeak_lightLeak", "bind_filter_lightLeak_lightLeak", "typed_emitter", "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb", "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a1c749c58617f400d16ecff13016815cbc5d1bc5dc4f84f0a4d163b4c83af6ac", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lightLeak_lightLeak},
-    {"filter/lighting:lighting", "bind_filter_lighting_lighting", "bind_filter_lighting_lighting", "typed_emitter", "a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f", "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "aaa3db7b1990449ba4fc8e80be4b5ba3a59aed1efdcc810e4924451c1b711bd5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lighting_lighting},
-    {"filter/lowPoly:lowPoly", "bind_filter_lowPoly_lowPoly", "bind_filter_lowPoly_lowPoly", "typed_emitter", "2f6a184ef4d372ebf811eaa59420bbce66fa25702e23a278557521679ce7b2f5", "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2", "default-only", "LP_BORDER=0;LP_LIGHT=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "2d5b7afdd88f18b694b81f31edc9ca27adc364a95c814e10effe20cb72dd93b4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lowPoly_lowPoly},
+    {"filter/lightLeak:lightLeak", "bind_filter_lightLeak_lightLeak", "bind_filter_lightLeak_lightLeak", "typed_emitter", "61bcb2989992c109dcf73ac5b34bb4dfa7f6603b54c111a84e69b6f73a9501bb", "d33800b6586ea73157000e02dd5bc5f71e597525d17e8752e7771a63376642ac", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "65728ee6b2936f634e33ec726084b17901fce0792d981b36022ea68714abf2f6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lightLeak_lightLeak},
+    {"filter/lighting:lighting", "bind_filter_lighting_lighting", "bind_filter_lighting_lighting", "typed_emitter", "a0601f7012f385c14c1bdb9f462e5dcb303fe05cfbb4645484d5d1bd629e1a4f", "91803025d98c95c15912d5ea0bdef9b185301278970f49e99048a88fcf0c8c1c", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "031183e7a06dba5342215f9edaec0ed49883584e63f40759a09403d1318f10ff", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lighting_lighting},
+    {"filter/lowPoly:lowPoly", "bind_filter_lowPoly_lowPoly", "bind_filter_lowPoly_lowPoly", "typed_emitter", "2f6a184ef4d372ebf811eaa59420bbce66fa25702e23a278557521679ce7b2f5", "07ecf4bfa6760b1d215fc635252b00d576312f47ab818274eba5dfbb29bcf3b2", "default-only", "LP_BORDER=0;LP_LIGHT=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8b8a59f7d88fc91c7a7ca1c48a98e01d220a7c1d08d0749d559f6c2e916ed27a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_lowPoly_lowPoly},
     {"filter/median:median", "noisemaker::effects::bind_median", "bind_filter_median_median", "custom_adapter", "95e869c02fe2645f4a1b5af5a7446b3f2bacb888f2c965bc272ba56b10666e5d", "0076f5102b9c24eb78b6a944925cb4d319e00838fc8fc250a23338f473d8207e", "default-only", "RADIUS=2", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "b3b5f0af35a93c1811bff33c250b3d491635620a5953132a453569c50e8daa54", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "6219cd38392877a2f1468525572f40925e48e809bc0605fcccfda6cbea2cc6a8", &noisemaker::effects::bind_median},
     {"filter/morphology:morphA", "bind_filter_morphology_morphA", "bind_filter_morphology_morphA", "typed_emitter", "9c9b20313b5a112d7684d34ee3f62cb49d04c34aa75f0c846dc9443c6380ba70", "3fcdcbe2f835d8eeb67817e2eedc412d3ec7e52a183b6cbf76009de0a087a8c2", "runtime-int", "SHAPE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7b5d93559dd549342008bc7b43d035967b8499c9cc1f4d8bab2deaa2c73ae811", "3aaf45187fe03053c72d9ee0ee1dfa4ef13172c15245856c31d2df7f67201dcd", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphA},
     {"filter/morphology:morphB", "bind_filter_morphology_morphB", "bind_filter_morphology_morphB", "typed_emitter", "68818a6c62f0b9960aacd671a8dce1622c6860df44b3c1381abf47447a6504b5", "3fcdcbe2f835d8eeb67817e2eedc412d3ec7e52a183b6cbf76009de0a087a8c2", "runtime-int", "SHAPE=0", "d7404f7435df426aec9acb598f5d635c0a81db7786285d816827e5c8db87625f", "7b5d93559dd549342008bc7b43d035967b8499c9cc1f4d8bab2deaa2c73ae811", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_morphology_morphB},
-    {"filter/mosaicTiles:mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "typed_emitter", "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47", "3c600ab5b33d29c9e1d932d4757806bffe6a20471eacde5ac303fbfbd5a4a6ef", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "92fc40d4e37db114171db66b862b9edda55b72d9eee51876f1565913af9d81c7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_mosaicTiles_mosaicTiles},
+    {"filter/mosaicTiles:mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "bind_filter_mosaicTiles_mosaicTiles", "typed_emitter", "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47", "3c600ab5b33d29c9e1d932d4757806bffe6a20471eacde5ac303fbfbd5a4a6ef", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "181a037fe0865debbc5a8d7dcfc36db7c873887b1c734b421e7c6179f807a83f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_mosaicTiles_mosaicTiles},
     {"filter/normalMap:normalMap", "bind_filter_normalMap_normalMap", "bind_filter_normalMap_normalMap", "typed_emitter", "384312e50972f75dbebd4080cd76d1c2554a439eb36746f2e351d63a03a271cb", "79d72798c02b3022e9d2f388208d03b47d807fd91cf6f71210dffbbc2a3b72ea", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "82f290714d22e756f02dbfc5f1c8296d0e8b695a455df156f94e13bc84a2f7a3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalMap_normalMap},
     {"filter/normalize:apply", "bind_filter_normalize_apply", "bind_filter_normalize_apply", "typed_emitter", "c59c0bad843a38c823bd2fc6396d0b9bca1cac7f1fe074aaf5dbc9622522e855", "4abf6e34aa8461b42bd250bcc171d080584394bb4f9b0997aceee5ac5a7cc2f2", "none", "", "e11b5b8b1553636d781831502362c7d44f2a65b7cb725c90d0fa1ca9bc92a7e6", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_apply},
     {"filter/normalize:reduce", "bind_filter_normalize_reduce", "bind_filter_normalize_reduce", "typed_emitter", "f32243e29192b79cb5da701de42b62858108ee71a9a1c01220fd93a87beac2b3", "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "322bb65c4e388f504ca0079ca6efcd7be8401d699e7f2bacdbd230816d9428fa", "838859e71971c7e903bbaef24bdcf5f949883eded478446ad57862e1a2147581", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_reduce},
@@ -30754,11 +30754,11 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/outline:outlineSobel", "bind_filter_outline_outlineSobel", "bind_filter_outline_outlineSobel", "typed_emitter", "cfe848d1605f1ad693fd3ce9e518a4adf4e0f34e3fff6c6ae1ebcaec49949f5d", "ff3daf7dfbf2353f8077d720320a126118c667ea0c39860ee6eb9607bcf47d5b", "none", "", "ac58204c363f55acdda5339188837100e854109505310bdcab34540749ea6d37", "7a589b80761727291e0464c7b7e36d8e7f7449552285495dd68f87bd06c9ba56", "b614c424156f545d7d6222f99eb7f01efb21a7cb717b6bb96bfe9c84f88f6ea7", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_outline_outlineSobel},
     {"filter/outline:outlineValueMap", "bind_filter_outline_outlineValueMap", "bind_filter_outline_outlineValueMap", "typed_emitter", "8d6504a8464a44cb4d1e86d2596c0d7a60d4924d18bd2114dc1f5ce5d49434cb", "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "1c98ceb9a3efccc25f895d7611089c0bf56b61c159c081e8f5ea78116168504a", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_outline_outlineValueMap},
     {"filter/palette:palette", "bind_filter_palette_palette", "bind_filter_palette_palette", "typed_emitter", "03ab3914862807288f7d5f6d2cbe8907cfa66fd1bb80b02df509880292967c09", "f332747709eda3d6b5c037252f36f5b4b545066a7017fdde1b4757e639f8d9bf", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "b08f914a9ac13aa95b9d7a4e11a0be67955c34c935741f8b7ee14b66e8a36961", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_palette_palette},
-    {"filter/parallax:parallax", "bind_filter_parallax_parallax", "bind_filter_parallax_parallax", "typed_emitter", "5ce5dce2ec8e8d7ebd3024c6a5bd5dcb068d0cf322bfd105c4fb3546e1b97642", "24ef65412e636d9b910b8d771c681a13de03d3b55f0b46651ce5922a4ab8a3cc", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "cf04e335765ed2dfeb82150bafcb8c09d59198b5f776038e2d7a6657e83ef763", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_parallax_parallax},
+    {"filter/parallax:parallax", "bind_filter_parallax_parallax", "bind_filter_parallax_parallax", "typed_emitter", "5ce5dce2ec8e8d7ebd3024c6a5bd5dcb068d0cf322bfd105c4fb3546e1b97642", "24ef65412e636d9b910b8d771c681a13de03d3b55f0b46651ce5922a4ab8a3cc", "none", "", "4aa1791f2ec83118c147628f7bc20cd1bdfe963c043bb7e0aa4fde317123cea8", "3facc33fa3a0c328bae3289e74e09a4c44e672e5db76d449875dc4275ab24c18", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_parallax_parallax},
     {"filter/patchwork:patchwork", "bind_filter_patchwork_patchwork", "bind_filter_patchwork_patchwork", "typed_emitter", "39e866a841c98d5c716ab853b23bc9dea919585f135e5010d264d2bb3a04b53e", "60c6a906d1a9c22bd6bd483bdd77acabe838e5e00500e62ef53c0799f62e42f1", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8bd733924c21830872a67827035dfb06ea61a5c0e82ebbc54655a84da47509b4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_patchwork_patchwork},
     {"filter/photocopy:pcBlurH", "bind_filter_photocopy_pcBlurH", "bind_filter_photocopy_pcBlurH", "typed_emitter", "4c4ca404f015f0112dc81cf8161b2f15743287baf3720a9590d3cc3fe061aa68", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "bceac5df12156df05303f9fe288f47fc7a59e7319083a709c8fbc8810feb3400", "cf366a386c5b21dd69e930511aa805e105db5c426bf05a630d8d7f80e080d933", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_photocopy_pcBlurH},
     {"filter/photocopy:pcBlurV", "bind_filter_photocopy_pcBlurV", "bind_filter_photocopy_pcBlurV", "typed_emitter", "a718a4793dc36d8008cd8c67378b6bc65d84f57b6f7507245859ebd32d44ab15", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "bb80ba391664ad8edf72a80a99a4035f953b7bcb00fd72b4c132b02e0f7a2c56", "bceac5df12156df05303f9fe288f47fc7a59e7319083a709c8fbc8810feb3400", "0070ac314827086fa2c91f8a5cc6211fa673561d97e1527ab51b9c7a1342f008", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_photocopy_pcBlurV},
-    {"filter/photocopy:pcCombine", "bind_filter_photocopy_pcCombine", "bind_filter_photocopy_pcCombine", "typed_emitter", "67f0d9c44fe0142c326691427ffa6bb819a9e04bd8bd8c7aa0f639c659aeba03", "74ebd805e2a07a1a67bef5aa6e973d2b0083f96664eec54f4abda25ff53aa8dd", "none", "", "803e66108290164eccd0f4c72667e1555f03b1a837900fd2a623ad71613bca7c", "ad60fca131a6815e224a3c1bfcf9077ccf272008d51f991ab6a8e249ca3dc378", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_photocopy_pcCombine},
+    {"filter/photocopy:pcCombine", "bind_filter_photocopy_pcCombine", "bind_filter_photocopy_pcCombine", "typed_emitter", "67f0d9c44fe0142c326691427ffa6bb819a9e04bd8bd8c7aa0f639c659aeba03", "74ebd805e2a07a1a67bef5aa6e973d2b0083f96664eec54f4abda25ff53aa8dd", "none", "", "803e66108290164eccd0f4c72667e1555f03b1a837900fd2a623ad71613bca7c", "f584a2365e711c30af9f9b0cd9806e9ea42586964e9b77d4f5cfef642fe0abe3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_photocopy_pcCombine},
     {"filter/pinch:pinch", "bind_filter_pinch_pinch", "bind_filter_pinch_pinch", "typed_emitter", "031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c", "4a053457666a751d8f5c1b80c73a5f01cdd16c3c6056c648245d7f314f8abba6", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6eca211ce3de0bee7c1d27ede41010829458341dc212437909389fba0a69d519", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pinch_pinch},
     {"filter/pixelSort:computeRank", "bind_filter_pixelSort_computeRank", "bind_filter_pixelSort_computeRank", "typed_emitter", "6ce61bb5cb69bb22ac51f48603d5b40755b1e3f700acad1bc685a1e8a4dea6a4", "1f09da4a4689c52d21f8642305ff512fb8cdccf3c1738cbaf1d2edf53341cbbf", "none", "", "edecba8164df644fd09ca392572188decc793c058c764b9fdeb9569fb09d5e80", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "ef959cd9f65bc2b41c5508b2c6478acc9509b0db95c8bf8aaceaa971447687cb", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pixelSort_computeRank},
     {"filter/pixelSort:finalize", "bind_filter_pixelSort_finalize", "bind_filter_pixelSort_finalize", "typed_emitter", "99a84b4b2f5196788c227915b500a44542d74e5cc7cb41bbf637361ae327ad87", "c1bfc8eb4ce5d4b686662c672b50d3b0c9c5db62c4381aa1dcaa7c491a46f325", "none", "", "05830be97765e739f19b6761e445a7aacf04475af85290fcbaceae99a01cc56f", "a2cc5ad5419a2cd777bf5032870cd2ca36250311ab1cab72c5016db5856efc73", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pixelSort_finalize},
@@ -30769,7 +30769,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/pixels:pixels", "bind_filter_pixels_pixels", "bind_filter_pixels_pixels", "typed_emitter", "06919a5f0cb829fdae9c04ae878aa4d7a12072e176ce3c98fb1ccf2623661e6e", "61e7f06e38f8ee2e7dc1dab5e2350607dad18fb17f51e912a854514523f72e45", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "13daa65e0ad0f297a1ad7a517c05b267582f44ee75409ac5b08f70a1a71cda63", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pixels_pixels},
     {"filter/plasticWrap:pwBlurH", "bind_filter_plasticWrap_pwBlurH", "bind_filter_plasticWrap_pwBlurH", "typed_emitter", "6c0c36d1f9c5b658d87c5cd4abe30da3c9969aafd14d12893a8a103a9a17fe93", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "bceac5df12156df05303f9fe288f47fc7a59e7319083a709c8fbc8810feb3400", "550ea01804629e4bff9b160b92a6bed4a84c996a507e4613dbdd7bb89e70ba46", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwBlurH},
     {"filter/plasticWrap:pwBlurV", "bind_filter_plasticWrap_pwBlurV", "bind_filter_plasticWrap_pwBlurV", "typed_emitter", "cc214498ee40dcfeaf3b411a4becde7b336d8e238495e27ffc996ea3f3576cea", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "9998e60f06ea9924c114fd4db123cb96ab27ec499f48d335a18d48a66ae25125", "bceac5df12156df05303f9fe288f47fc7a59e7319083a709c8fbc8810feb3400", "e0ca6e9bf591f6ac810f042c14367e56ba255575386d30728d129246b7e6edf5", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwBlurV},
-    {"filter/plasticWrap:pwSpec", "bind_filter_plasticWrap_pwSpec", "bind_filter_plasticWrap_pwSpec", "typed_emitter", "a26cbadc9c0aec753494f3e2a95964f35358eb8bf283107c2d7c624055c87767", "6998b3efc762ae3b871f1e1ec77f838f729397f7e91e8c0ca9899d333a5f6a69", "none", "", "4c45edab7beb0bd96dbaa3d2165db9833f0d8ee5298a262de3a48061c58d7ab2", "3adecc5f089ff792724cc8c657a682268182b4b148071c7ae2febfa17f6081da", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwSpec},
+    {"filter/plasticWrap:pwSpec", "bind_filter_plasticWrap_pwSpec", "bind_filter_plasticWrap_pwSpec", "typed_emitter", "a26cbadc9c0aec753494f3e2a95964f35358eb8bf283107c2d7c624055c87767", "6998b3efc762ae3b871f1e1ec77f838f729397f7e91e8c0ca9899d333a5f6a69", "none", "", "4c45edab7beb0bd96dbaa3d2165db9833f0d8ee5298a262de3a48061c58d7ab2", "fc8633861c1bbb3935b1f06c7b7980cd7dad29a6452637eac88ed56bcb814607", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwSpec},
     {"filter/polar:polar", "bind_filter_polar_polar", "bind_filter_polar_polar", "typed_emitter", "391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d", "56647d262427b6448667b30161baa143da2c67a8a2d52ee502117f45a11c99fa", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8082789f1b1c48eee1b0ee8fec74417472bd9fda2a37726eb51c3b86aeb60b8d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_polar_polar},
     {"filter/pondRipples:pondRipples", "bind_filter_pondRipples_pondRipples", "bind_filter_pondRipples_pondRipples", "typed_emitter", "2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d", "6e6e6fa197f698b5e601d1bce6bf974e545ee32bd1480a32cc0f7a9e50189752", "default-only", "STYLE=2;WRAP=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "aadebdfdc4435e53123ef1cbddcad6269401ccb79a8cf70d428358137b480e8e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pondRipples_pondRipples},
     {"filter/posterize:posterize", "bind_filter_posterize_posterize", "bind_filter_posterize_posterize", "typed_emitter", "460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2", "730faa01844175d07ffa477a938871df946cfb9bb54f7ad9580132700e958e16", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "0ca0e43d572b6333cf7bdd02474f69606c93b948dbe7f2ab17698c54cdf1acc2", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_posterize_posterize},
@@ -30779,7 +30779,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/reindex:nmReindexStats", "bind_filter_reindex_nmReindexStats", "bind_filter_reindex_nmReindexStats", "typed_emitter", "06525e054fc4910e7bc53345ad656071d2fcb33fc897f4aa35e8fc59b6f0b951", "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "f1472133458ba228ed80d2fbb66588f3c369c3e8f6ad3d2df3c975e2adea89af", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reindex_nmReindexStats},
     {"filter/relief:rlBlurH", "bind_filter_relief_rlBlurH", "bind_filter_relief_rlBlurH", "typed_emitter", "bc2fba2fc1a766f59890289bea39e4001b0403983b7c81e47be5259a5e2bb260", "dcc7bee0547496f80849cb0c8c29dd863f6b7233234be24d78412812291447b1", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "dae1d70c74430af9849cbc89e28755ac7eadb72615261b974555a3b6bb08a68e", "5812ff08ebc65f68e84fdbe385240f9f22b0e1b433a3acb5f362e95cfb6c701d", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurH},
     {"filter/relief:rlBlurV", "bind_filter_relief_rlBlurV", "bind_filter_relief_rlBlurV", "typed_emitter", "da3ea200f6e5296fa03af42a1ec9f01dd3f9edfc0965534813b1f0c8ec481ec8", "dcc7bee0547496f80849cb0c8c29dd863f6b7233234be24d78412812291447b1", "runtime-int", "MODE=0", "2fc438429ee218bc238446a359f8d916eaa3812d3ef49e86262d443aa0ce96f6", "dae1d70c74430af9849cbc89e28755ac7eadb72615261b974555a3b6bb08a68e", "c5fa9c049293fc61ad8df5b003e898927339c878edc78ff774a0d329f8d2c051", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlBlurV},
-    {"filter/relief:rlShade", "bind_filter_relief_rlShade", "bind_filter_relief_rlShade", "typed_emitter", "dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90", "12cdd75e2b00148e9967678228ba4817d359ec853bd755d4741685e5b44ec2d0", "runtime-int", "MODE=0", "04bcb2cf3b07f1faea5ecb50a4611ccdc472eff287c4a60088901d489dc0bf59", "96e54d4bb0fecb01ce0235902255c1028dbf1043b7641600aa926eb9ef72082a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlShade},
+    {"filter/relief:rlShade", "bind_filter_relief_rlShade", "bind_filter_relief_rlShade", "typed_emitter", "dda1113e9cca57b25fa93c0843cd19fa76880724059fe1b56c5e5735f671ea90", "12cdd75e2b00148e9967678228ba4817d359ec853bd755d4741685e5b44ec2d0", "runtime-int", "MODE=0", "04bcb2cf3b07f1faea5ecb50a4611ccdc472eff287c4a60088901d489dc0bf59", "42afda3cf20c57ba990c35b00edd455767ca01c7f1c767c599ced2b7331a3050", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_relief_rlShade},
     {"filter/repeat:repeat", "bind_filter_repeat_repeat", "bind_filter_repeat_repeat", "typed_emitter", "6fe9a919129c3424f66c145aca77b4a4101c7edc46828c2d85bff40d4f67ebbc", "644804c52eea38592eec40b59a167f7edbb2a9e987266f18f086e83353871b4c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "3849ec18ce2b9bd8adae3d7bcca67c985eba8c18dec80e2fc44bd1b23f3c7757", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_repeat_repeat},
     {"filter/reverb:reverb", "bind_filter_reverb_reverb", "bind_filter_reverb_reverb", "typed_emitter", "4dde4b901aded65365d0d46145a7d50dcd2b8d279e32c3d1e7bf02cfc7f78bcb", "050e5a35c8684ac5f5862b58328265bb6bc8ef816fd7bacd779542eed3074f24", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "909980033a88694d9dc672d4d1ef490bf70d7808ff4a59655183b0b9af16903f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reverb_reverb},
     {"filter/ridge:ridge", "bind_filter_ridge_ridge", "bind_filter_ridge_ridge", "typed_emitter", "0e3cc0289ff2057145afd5bb8ceeef71bfbbee0aee149eb0f609937f0571694c", "89ebcb3e45b668adfa8ffa6cf96e11538c54e3a586b2b1efd3a1a764828fbe7c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "fe3b84cf778ddb11e06880257437f4a2900344c13ce8bf0b668e1387eaad4ecd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_ridge_ridge},
@@ -30800,25 +30800,25 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/smoothstep:smoothstep", "bind_filter_smoothstep_smoothstep", "bind_filter_smoothstep_smoothstep", "typed_emitter", "505b938cf202f02760d527a127e3c234e5fe527ba1c31e7df25fea70dce59c83", "887533e03fd77097e82e74884951774d5defb7b68d8fd7bea01279ede0cbabbe", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "10fbe2920f98cfb03b68f99bedf35baed6523009c7f90c4b3a3cb48955919807", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_smoothstep_smoothstep},
     {"filter/snow:snow", "noisemaker::effects::bind_snow", "bind_filter_snow_snow", "custom_adapter", "ae057787cc101755743c17b4cdf46b51d70ed8b9896fed9535a058c8b252f48a", "e5f9c87084dd08a7f0ea74aee11ab146f4e0abc0b2c62856e9ab2c666425256c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7a0fdfcb7ab7aef59172b5e7b054b15d575749823e5db7d8c31903159bba69e3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &noisemaker::effects::bind_snow},
     {"filter/sobel:sobel", "bind_filter_sobel_sobel", "bind_filter_sobel_sobel", "typed_emitter", "ef459738b931929a65422df36f852da4e7cbe4e90387690bea747a34a2e52f84", "37aa3ab631d8927c893a7dc131fe1f681f69f236232d0096a0cac45a9025959b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "0baa3ceb46f5f8691d22a6d9795e7177d140502631c1f66a77a3277d89b1c851", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_sobel_sobel},
-    {"filter/spatter:spatter", "bind_filter_spatter_spatter", "bind_filter_spatter_spatter", "typed_emitter", "9d8cb56f43761cdb52a36935a7c3b66d758189d82db0c52ad93b5090206579af", "9003d47dcb7c1837fc56e3b4ed6b88721ff783939e4ee6ff0c6eb97f292dd1b0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "edd032d0cc259f62b53f26d42bc186e0d4e37416fd43b537f5a154ad1fc7621e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_spatter_spatter},
+    {"filter/spatter:spatter", "bind_filter_spatter_spatter", "bind_filter_spatter_spatter", "typed_emitter", "9d8cb56f43761cdb52a36935a7c3b66d758189d82db0c52ad93b5090206579af", "9003d47dcb7c1837fc56e3b4ed6b88721ff783939e4ee6ff0c6eb97f292dd1b0", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "cf261dac3383374f08607feeb505ac39a86e7d92d03d8949e9e2afd198edc065", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_spatter_spatter},
     {"filter/spinBlur:spinBlur", "bind_filter_spinBlur_spinBlur", "bind_filter_spinBlur_spinBlur", "typed_emitter", "a5ee242e189066b55d4d5c3140e957418bdff582b367d1f6d4cdfee4c333b405", "6193f0c28dcb7aebd0e68a81ec2835c2e0de7f0793fd7b3d46bf27b1bded75f1", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "bde2910d4a1185d32e0294ad5b68f9924c353a5ea445c2623c71081b52be3439", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_spinBlur_spinBlur},
     {"filter/spiral:spiral", "bind_filter_spiral_spiral", "bind_filter_spiral_spiral", "typed_emitter", "3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a", "bc4792c26e379f0afeef25085c982e087e429462843811e23d68b4c26e49d374", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f1d9f95670e8d0627e67891aa32cf41f7183e2619830c6565a892d5b136ea580", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_spiral_spiral},
     {"filter/spookyTicker:spookyTicker", "bind_filter_spookyTicker_spookyTicker", "bind_filter_spookyTicker_spookyTicker", "typed_emitter", "d50ca880cd6c6c03dd01a7ae683316d42ed93baddaadce9f3b918be1c816d50f", "71ef8f115886745bd81b8e7d6fcf8e0f3990582f398bb55bfd5a41e0827aa53b", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7a35c7e0546bcc52e4138372f6c996e67a6e2fe5d4fb3e45ecdb5254a673851d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_spookyTicker_spookyTicker},
     {"filter/stamp:stBlurH", "bind_filter_stamp_stBlurH", "bind_filter_stamp_stBlurH", "typed_emitter", "2177384617ed22ade9338585025b881166adbe2a1c1d31b3cae6f194e232e2ad", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f0986eb3cbab20ced46f9254a83f47969aa31d3b4964120399cc4d6a5f26968d", "d07a5c1df80e794bf8717680d3f18be9746bd1a525afc92c110fc94ba73691ca", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stBlurH},
     {"filter/stamp:stBlurV", "bind_filter_stamp_stBlurV", "bind_filter_stamp_stBlurV", "typed_emitter", "cbcd8aba19f19c99653416b1b9b6ffff27f40e7f6b9ca7330936d2645a84bd7f", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "none", "", "32fd84fbcc19f9515338144596bffa65695a789f839eac565cd4d5de8fe68a5b", "f0986eb3cbab20ced46f9254a83f47969aa31d3b4964120399cc4d6a5f26968d", "832b6dbf9f3c5f12253ed694b546fc4b960acd730ae9cb2b9f8db67f685fb4ed", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stBlurV},
-    {"filter/stamp:stThreshold", "bind_filter_stamp_stThreshold", "bind_filter_stamp_stThreshold", "typed_emitter", "d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94", "f99d0ecefdda66332bdac797437c3923bd15e8f3eacb53d7caee168ba2636757", "none", "", "9a4bb5defda330f45b3bcfe2e18ba300da476a0869c2a7ce0cb7ccb09810cbd5", "90c3b1f433b30f443ba7c2ca993964dca846beca736e2733ee022f2d9ca39c3f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stThreshold},
+    {"filter/stamp:stThreshold", "bind_filter_stamp_stThreshold", "bind_filter_stamp_stThreshold", "typed_emitter", "d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94", "f99d0ecefdda66332bdac797437c3923bd15e8f3eacb53d7caee168ba2636757", "none", "", "9a4bb5defda330f45b3bcfe2e18ba300da476a0869c2a7ce0cb7ccb09810cbd5", "7f9c8548a563cde5cbe3233b9a181f53afb6e9635b69d60f1286f0d7c1e73ae7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stThreshold},
     {"filter/step:step", "bind_filter_step_step", "bind_filter_step_step", "typed_emitter", "4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf", "bfa9d48c282b207d1282ff7014173c79c0b6279d0d15b3dcc0ffcef3f2ebbb7e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8ac51cd399d4f162a80a38b5dcbe49e314752d365808a6fca65dc747d6b348c5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_step_step},
-    {"filter/stipple:stipple", "bind_filter_stipple_stipple", "bind_filter_stipple_stipple", "typed_emitter", "69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609", "534c92f17be4741d25dc7723fde0a00231abe3c17476d78c3a85d48f34312c34", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "fa8d218ceff3afa6ac1f8bc53bde4599e732da01fc9a5c360efb6a285fe21111", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stipple_stipple},
+    {"filter/stipple:stipple", "bind_filter_stipple_stipple", "bind_filter_stipple_stipple", "typed_emitter", "69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609", "534c92f17be4741d25dc7723fde0a00231abe3c17476d78c3a85d48f34312c34", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4dd18769bba9a2288ceb91879d428a93b7b06e8220f32d2d3d0292f9329837ec", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stipple_stipple},
     {"filter/strayHair:strayHairBlend", "bind_filter_strayHair_strayHairBlend", "bind_filter_strayHair_strayHairBlend", "typed_emitter", "bacff9ec121ac6e28d377702145eb14cdd8dfa2cbfc4ec9ba89765f658b1345c", "3d4ab5484087d3585aca123c2f5f9b91754f7e9177a283e8a098bef877128451", "none", "", "1fcbe80bd745fddf01cdee27a2575111b43b6045a7bcbfeeb0f83229d0ea67d2", "c56155dd3fc31243d21beef4aba1a2f2dccfa9c1890b549958dfd4be0d6e8109", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strayHair_strayHairBlend},
     {"filter/strokes:stkPost", "bind_filter_strokes_stkPost", "bind_filter_strokes_stkPost", "typed_emitter", "b911bd1b40452044205ee2e7bb8ae90f54cc56faaa0225430d5baa67e5ec949f", "1b613a945f44b1ea690c4b7e59cc2fe6348f27a233d0b9fa53bc7b177bddce08", "default-only", "MODE=0", "0b6829b66b7d0ef2f9fb2bc8297b27fc3b327bfa0728cbd5b246013ae699b361", "31dba33793480d832a4cc22c2310c1c9b6a8ec8b2bcaf97ac80b2b3c6c0f11c7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strokes_stkPost},
     {"filter/strokes:stkSmear", "bind_filter_strokes_stkSmear", "bind_filter_strokes_stkSmear", "typed_emitter", "dac057232a650f3c9eb56829aa12507b639d8632f6fc132cbd067a28996fa4db", "c26d34b4d04ba989487fca96fb3543d8ee654086e3099e67ec00046ee22a0d29", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "eb11383a49a6a64e5f8311261797d1f3742493b3dba82c47d45dcaa0d5947ec2", "c248df15ad449ade9ded064c56e6cd284aa90f3356a1386272c0121de267645d", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strokes_stkSmear},
-    {"filter/tetraColorArray:tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "typed_emitter", "68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438", "8a892de8a6a44a74db1a88360640bc3831a5f1e969acaedfe1d371f201e827e4", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "b36722e807f879d9ba839d8edbf5f7a925d8e54ca783d64b00178394268a979a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tetraColorArray_tetraColorArray},
+    {"filter/tetraColorArray:tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "typed_emitter", "68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438", "8a892de8a6a44a74db1a88360640bc3831a5f1e969acaedfe1d371f201e827e4", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6cc49eeb94de6b47acc05a3ea61bcf370b15ed2b091a421f088bcd61db838171", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tetraColorArray_tetraColorArray},
     {"filter/tetraCosine:tetraCosine", "bind_filter_tetraCosine_tetraCosine", "bind_filter_tetraCosine_tetraCosine", "typed_emitter", "538f13b472519cc521b5d30dbd72a799c7fa46a820691ab88117aff4d93f0ffd", "d7735e970a509d973b52341f45b19637479f9ab49fb15e50f217ae95b1f9758d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "224b35687d5c0c6a2a24b7d446bea87e87717897d993fe6c144cb3d340da4ee8", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tetraCosine_tetraCosine},
-    {"filter/text:text", "bind_filter_text_text", "bind_filter_text_text", "typed_emitter", "7a492aea1422528421c352187d108ea32a1d5bf48991ef74f099f8dafbe5ccea", "f6349e7ce3af11e6949421258d2425fc3b23fdbc75b371588f3e07525e04e4f3", "none", "", "bff44689367264e625f92a505d938659419fc5a7196aa9c6c0ea458c79932170", "426f64174ff98b13eb356b053e4de157d8a6e29362b280a021cdabd24e62aff7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_text_text},
+    {"filter/text:text", "bind_filter_text_text", "bind_filter_text_text", "typed_emitter", "7a492aea1422528421c352187d108ea32a1d5bf48991ef74f099f8dafbe5ccea", "f6349e7ce3af11e6949421258d2425fc3b23fdbc75b371588f3e07525e04e4f3", "none", "", "bff44689367264e625f92a505d938659419fc5a7196aa9c6c0ea458c79932170", "f298a378e79e3cdecc2a5ee6c17f3a24ade27803962d8b29983cfd6e457b5650", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_text_text},
     {"filter/texture:texture", "bind_filter_texture_texture", "bind_filter_texture_texture", "typed_emitter", "8e95251ef9a7789b1de4e51718ab3bebd9fc6d20db8acd0969191e288ec7454c", "e0dbde58a958bd24197867d43615a65523598905935dea4428a1d586272a5c08", "default-only", "MODE=3", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7ba2c30626c0732d2e0749461ef81c807f92044c4bcd95733fe89f86a0ec32eb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_texture_texture},
     {"filter/threshold:thresh", "bind_filter_threshold_thresh", "bind_filter_threshold_thresh", "typed_emitter", "cef36d6704f2c2070f7b02ce88c9789a2c667db699d41c2e21a872836918561e", "507232d772cafe1055475b8241c6f11ca697f75a4c67437c2d625258ec4ce5d9", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "09b9e9ce93d7c903aec2bb33057aed8e996550ba9e38839041f383c8cf0f56ff", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_threshold_thresh},
     {"filter/tile:tile", "bind_filter_tile_tile", "bind_filter_tile_tile", "typed_emitter", "ff85419a24f0cdcc7f12334885cb87bca74a51cf6617ab549d3ebdc6d34e03a7", "982f1ccf1b34d872a3b37a70d4712545e26151b6e9e462b18859cd69b960ffdb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4bff11e977d8e21c2b1391d0582bf86013aeccaa0f14c063c61ceda8373b89d0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tile_tile},
-    {"filter/tint:colorize", "bind_filter_tint_colorize", "bind_filter_tint_colorize", "typed_emitter", "d10c38ae0a90c8dbd4b0998362b199af71c549ff743a9479a23decc5f7c3037d", "c67fc34d4c16731258c2001398a8dd0962ebaa1bbd5072e556f93c0bd43f23bb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f5c7a94a8e4f3ced91a17e37c920411283f69c7694de0c9ffcd3eec77958df07", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tint_colorize},
+    {"filter/tint:colorize", "bind_filter_tint_colorize", "bind_filter_tint_colorize", "typed_emitter", "d10c38ae0a90c8dbd4b0998362b199af71c549ff743a9479a23decc5f7c3037d", "c67fc34d4c16731258c2001398a8dd0962ebaa1bbd5072e556f93c0bd43f23bb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "757d57db2ae70b5325d22be88111e78805c6d380ed1506e54ad3d8aef48c702e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tint_colorize},
     {"filter/translate:translate", "bind_filter_translate_translate", "bind_filter_translate_translate", "typed_emitter", "70f5c44a2d8275f3dd51a9c11fa997dbb0ffc829c5b3565d651ebbfa246db987", "6f7c876ec12dd7a6990f65bec11ea544053bfbc227dd40f154c36e31cad09079", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ca9d89d4724547b066af3f7cfbb037abe4fb17e3fba07730c040e1eeff9d0107", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_translate_translate},
     {"filter/tunnel:tunnel", "bind_filter_tunnel_tunnel", "bind_filter_tunnel_tunnel", "typed_emitter", "c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193", "e784b1ddeadca33e02843425c1ed965d5949b2548d0786535e8d779f393e7e46", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4603e7eff3cbc963378ac92c48b83f64893ee38565fdd4976abd7f81c9310a4b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tunnel_tunnel},
     {"filter/unsharpMask:usmBlurH", "bind_filter_unsharpMask_usmBlurH", "bind_filter_unsharpMask_usmBlurH", "typed_emitter", "86ee319a6cc22695b679507e569e9b4338083a0100ecb4afeee3cd8e9217917c", "958cc4bed21313b4b56b013ec0e4ab4b7f62ad0e5b8e4cc7ec6671223e8a2a5e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "feb9cc8d87ccc46b69807867524cae7b1342f68f891478e4d37519aca4917b47", "f82303e133f1d79b75caa88066362c98edfe44a2584b684aa6510ed8051c21e9", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_unsharpMask_usmBlurH},
@@ -30846,7 +30846,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"mixer/focusBlur:focusBlur", "bind_mixer_focusBlur_focusBlur", "bind_mixer_focusBlur_focusBlur", "typed_emitter", "dff787c7de67122abe60ac14f0fc8995e8087fc4549626e6fe678d8f86b3d7d1", "8319e094c6fa21d6e610a5f3aa56f71693aaceeb48b38cb3a6223bdc1c007a6b", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "08bfc7ffc870ff64f74b8158ee61571ba7935ab161e7264f32b0caaaf3a871c6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_focusBlur_focusBlur},
     {"mixer/mashup:mashup", "bind_mixer_mashup_mashup", "bind_mixer_mashup_mashup", "typed_emitter", "defacb16704d2e7ca69c85959fad97d09587523caa731252f263004cc1e01fe6", "30966dc730d95b93be71ed94ca59490566ae49aae9cef157615350a222861fd2", "none", "", "42745d29f6c3f1cfd3d07437417c0c0f3457ff38d575f23e39deb5149bbb29de", "e2014a9ca4bc8ad8dc4504d1b8a059b92e27f80dcc0fbc0c7f863fa5ba6513d3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_mashup_mashup},
     {"mixer/patternMix:patternMix", "bind_mixer_patternMix_patternMix", "bind_mixer_patternMix_patternMix", "typed_emitter", "b7fab7bc3646f4936fa2f730a07df9ffb9fd36b21250410fc5d0f4718a06d21d", "01869d1ec348045ebc69ed67425eb9faef922dba79f309eabd648157106ec91c", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "7f9c03f5e0719fcb3292ad01e66a9aeebdca71ef9f8fc3a8bab9aec39c0db88c", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_patternMix_patternMix},
-    {"mixer/shadow:shadow", "bind_mixer_shadow_shadow", "bind_mixer_shadow_shadow", "typed_emitter", "6a321002481cd9dcbf92b11abb37089e7a6a2995494bf8a5befa2145fb1066aa", "353f246286dd20d2a2bb2a1a167099d83485dedcaa291e62bc1d5200fc99d83d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "6a457c2d4cc9e75a38c2f5a115a3d32eb1761fe773c6a34d23a727de9feebfc9", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_shadow_shadow},
+    {"mixer/shadow:shadow", "bind_mixer_shadow_shadow", "bind_mixer_shadow_shadow", "typed_emitter", "6a321002481cd9dcbf92b11abb37089e7a6a2995494bf8a5befa2145fb1066aa", "353f246286dd20d2a2bb2a1a167099d83485dedcaa291e62bc1d5200fc99d83d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "6fd2ca8ef62d61496c12d536d76537ff49c2f039bdf6173a4d1929531d5f498a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_shadow_shadow},
     {"mixer/shapeMask:shapeMask", "bind_mixer_shapeMask_shapeMask", "bind_mixer_shapeMask_shapeMask", "typed_emitter", "2503c37ae4bb9f81b5d77931445b69743067b7e43370a50779d5a09d86bf0374", "75f9483099ecb7e914deaa8c1923b1feceacc2376e7ac432cf79a3dbb6944b9d", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "f6cf66a90100c1c202c69631af904806a98c3fa17de925cb77e2920c26849c90", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_shapeMask_shapeMask},
     {"mixer/split:split", "bind_mixer_split_split", "bind_mixer_split_split", "typed_emitter", "5e6aa68831e8e5749d76f8cc9721d2dadca6149f06f79991bdf671106f04c0b8", "c51bb7362103c2b7c0451aa19680c752a3a10a501cfabbd58b8d67afb022fb93", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "6de44f14c0c28e14989dead995ad0468ca5bbcf5db83f244820b39145c13efbd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_split_split},
     {"mixer/thresholdMix:thresholdMix", "bind_mixer_thresholdMix_thresholdMix", "bind_mixer_thresholdMix_thresholdMix", "typed_emitter", "66a51769ab16f2b2575101d5c347860a19fc0a7618af6dd7d06c561af22d1a87", "bc84545998f9b2c09e35bddfe0351be7df605fc5d281ab684e6537f51fdb56c2", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "0d46187b3bcc7ed74f7e0a7136ba5afb6b609bdda102fed3f3e7b486e317e553", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_thresholdMix_thresholdMix},
@@ -30855,20 +30855,20 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"synth/cell:cell", "bind_synth_cell_cell", "bind_synth_cell_cell", "typed_emitter", "b2cae5ecdfd315194d4b3b04d2c5b39d1b48c56a9bd1a10396827e3b8d413a18", "6a61608d7ddf0c96bd77e06a730dc1d7d0cf352d2d1a5aa535657a86a4d3a2d8", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "741ec6020c3cec7cf6c080c2ddaed4aed72b42ce511bbcacae37dbf5d840e811", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_cell_cell},
     {"synth/curl:curl", "bind_synth_curl_curl", "bind_synth_curl_curl", "typed_emitter", "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce", "1bac543a8b6c4e0e2d67ad1246c88c42a0ed17c43fef14d7c19c9eb109704bd4", "runtime-int", "OCTAVES=1;OUTPUT_MODE=3;RIDGES=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "607e7418593f3fb23337d7e7cadbaad3e9d7e9837335690823064bb2a40f19b5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_curl_curl},
     {"synth/gabor:gabor", "bind_synth_gabor_gabor", "bind_synth_gabor_gabor", "typed_emitter", "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5", "e9c1d22f4c2ac8c2c72fe595130a56b7b4fb81e3d7433eab6dc8be44b658b88c", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "77e15b3e114939cab7cb0622fe1dfb1bb0999454ee8ee3681a0c20a69eb70807", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gabor_gabor},
-    {"synth/gradient:gradient", "bind_synth_gradient_gradient", "bind_synth_gradient_gradient", "typed_emitter", "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75", "e49ea0cadc23009e3633af3b0a1bf259cbe6b3d91cb30cc32b42923c92575900", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "29fec38ff10f57c7cf31ccacc021ceab736cd4312eab89505e34f164e47e13ea", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gradient_gradient},
+    {"synth/gradient:gradient", "bind_synth_gradient_gradient", "bind_synth_gradient_gradient", "typed_emitter", "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75", "e49ea0cadc23009e3633af3b0a1bf259cbe6b3d91cb30cc32b42923c92575900", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "690f05e5f536f8bca1b12041b649e0d405dcccee3cc53db905c607043f312ddc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gradient_gradient},
     {"synth/julia:julia", "bind_synth_julia_julia", "bind_synth_julia_julia", "typed_emitter", "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0", "2ef898fd02c7f283ee34ff3bde8bc4c43f09285cbc1814a02ce84991cfe614d8", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "15e403c38957738cc0611af99760f77479b9641dd33b8bfb0d8a676ab5bc7983", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_julia_julia},
-    {"synth/mandala:mandala", "bind_synth_mandala_mandala", "bind_synth_mandala_mandala", "typed_emitter", "ef97349f9f3003d356bf73ecea6292bbe8ad41c6c2605eff4a8468a44215dea2", "07143e555cad95c4535ac43053fa117f35dc3785e789787eca60424a021da821", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "0cdbb3069fb0f9cfa5b6bf8c162112006ce12f3399589c3b7186ecc4c5f173d8", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mandala_mandala},
+    {"synth/mandala:mandala", "bind_synth_mandala_mandala", "bind_synth_mandala_mandala", "typed_emitter", "ef97349f9f3003d356bf73ecea6292bbe8ad41c6c2605eff4a8468a44215dea2", "07143e555cad95c4535ac43053fa117f35dc3785e789787eca60424a021da821", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "54cce2aea589352480906e06928a125a86c0e28cbe2ec6290ada47d7d36b793d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mandala_mandala},
     {"synth/mandelbrot:mandelbrot", "bind_synth_mandelbrot_mandelbrot", "bind_synth_mandelbrot_mandelbrot", "typed_emitter", "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615", "80cc453eedd1d7a44c2fb6c4216a1060451a02dc492b2b8428a4e080c7436774", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "c7fa40d1f7f452d4f7465094010f9e359b62e3e2be493422303c540e90266b6a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mandelbrot_mandelbrot},
-    {"synth/media:mediaInput", "bind_synth_media_mediaInput", "bind_synth_media_mediaInput", "typed_emitter", "3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c", "d89ab75302e1cf27a19f336e45521dd315cd56daff9c0de8b92a0de437f5bb88", "none", "", "35fad22f0023f820f2c6cd8074e9bccacf6eecbcca588ae7aea6ef596351bfe2", "ce5bef2cfef12cdb95c6742459e219edfd3514ba7f0902b1ba5f464f064e8d70", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_media_mediaInput},
+    {"synth/media:mediaInput", "bind_synth_media_mediaInput", "bind_synth_media_mediaInput", "typed_emitter", "3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c", "d89ab75302e1cf27a19f336e45521dd315cd56daff9c0de8b92a0de437f5bb88", "none", "", "35fad22f0023f820f2c6cd8074e9bccacf6eecbcca588ae7aea6ef596351bfe2", "bcce9eb6bd73707355370ddd4a55c6d9cad2513eae46c85ed610436d055716cc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_media_mediaInput},
     {"synth/modPattern:modPattern", "bind_synth_modPattern_modPattern", "bind_synth_modPattern_modPattern", "typed_emitter", "5bf4fc9ed8fdf68fa58e9c66f79e1f42624234500f89fb1ee63da64839d3dc2e", "ce60049aedbfa2e2e297bdc3305c22f56e73904a09d4fbd649b4658d0782d5a3", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "672b1b574d7214432320077aa210eced6b324411072b9d63dbc02d6e9e07771e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_modPattern_modPattern},
     {"synth/newton:newton", "bind_synth_newton_newton", "bind_synth_newton_newton", "typed_emitter", "603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac", "98294f18e45b30d074d840649faafc51c0d6a7c6f4598e1948ad7c1b4af391bb", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "f043718f0c88c3887c9dae1f020ed12cb91d8235c20ac9e12354162f9688f8bd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_newton_newton},
     {"synth/noise:noise", "bind_synth_noise_noise", "bind_synth_noise_noise", "typed_emitter", "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274", "bd103a0728bd15a92c33f83494db717aad7fe565a03abb406a59bbd3b5763d91", "runtime-int", "LOOP_OFFSET=300;NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "23722770ae10e8c11a87da58800de8f501ff887a3615bd6ca4b2e45a23aaca38", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_noise_noise},
     {"synth/osc2d:osc2d", "bind_synth_osc2d_osc2d", "bind_synth_osc2d_osc2d", "typed_emitter", "e25335112291f2b3f7e9e7f5803948b602a44058bb10c20f835c461f0b6a3512", "ec41f49ef9c557f09098ea61ae6ac820edf70bab0c92beb9be80070e8dfb8a75", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "0ee9ea1a27707fb4aee5cbf987e1c3c98eaa9ae1efea111a296bab421da3ae72", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_osc2d_osc2d},
-    {"synth/pattern:pattern", "bind_synth_pattern_pattern", "bind_synth_pattern_pattern", "typed_emitter", "d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c", "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "3c1db5c994127d998c3d3e8437a6d47d784a8c26516e92a306126033db46c149", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_pattern_pattern},
+    {"synth/pattern:pattern", "bind_synth_pattern_pattern", "bind_synth_pattern_pattern", "typed_emitter", "d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c", "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5b9250ca7503c447a4fea79fd7493610cef5b31f4607a53c9b2589b658df2982", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_pattern_pattern},
     {"synth/perlin:perlin", "bind_synth_perlin_perlin", "bind_synth_perlin_perlin", "typed_emitter", "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318", "73be9fbfb9dd7baa65e8fc7f506c4dfbd72c3f5659b507374a1b92acb3aeb00c", "default-only", "DIMENSIONS=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "e084d6f5df677f435f61d8703cfbb1ff4a5dadd30bc019eefd1f5af25eddb70d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_perlin_perlin},
-    {"synth/polygon:shape", "bind_synth_polygon_shape", "bind_synth_polygon_shape", "typed_emitter", "e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6", "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5208bbd48e3a7c3d0251865c1e52333bc4a59a1d06095bd3e30f39f7f4afabd6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_polygon_shape},
+    {"synth/polygon:shape", "bind_synth_polygon_shape", "bind_synth_polygon_shape", "typed_emitter", "e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6", "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "dbe7ddf5bd68c3cdbfd6a5151cde4b0b105327fee8d290e057653d23fd832649", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_polygon_shape},
     {"synth/remap:remap", "noisemaker::effects::bind_remap", "bind_synth_remap_remap", "custom_adapter", "500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b", "b73a352c896eee8c0b00da621f29063d302efce117485deebb16b7b7a5daf179", "none", "", "120eccceff26846478df36969e985883ca75f0f9eabae9921028a04db69014e1", "21857846a27ae69201d44fe1f2ead9aa18cf5d400f8d5ef537b78f58aad4c505", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &noisemaker::effects::bind_remap},
-    {"synth/sacredGeometry:sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "typed_emitter", "24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de", "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "417b127bdc8fe0ae57be26159d81654586e703b14b89bb75c6f396fa4fa2a36d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_sacredGeometry_sacredGeometry},
+    {"synth/sacredGeometry:sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "typed_emitter", "24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de", "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "53404ba3cece8cabffdd38c78f99781a3516afcceaf100874c41e5b31d1a1f68", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_sacredGeometry_sacredGeometry},
     {"synth/shape:shape", "bind_synth_shape_shape", "bind_synth_shape_shape", "typed_emitter", "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f", "3c09c2bd90e980371877a4df8ba5e58da7ec268c969fcfa5dbfcbc2935c7e72c", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "142e135352a98983ad23ad8cfab2e69a33fd26b2330377b5312a2405c6f53f95", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_shape_shape},
     {"synth/solid:solid", "bind_synth_solid_solid", "bind_synth_solid_solid", "typed_emitter", "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c", "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "cc89f98fbec0177fcfccaaaa99e51d407c860fe4396fb1830994c676debb2951", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_solid_solid},
     {"synth/subdivide:subdivide", "bind_synth_subdivide_subdivide", "bind_synth_subdivide_subdivide", "typed_emitter", "65e57d82c8982040240528c4410328453bc39de4f4d9519da2497266b1b500bd", "fe7665c4789c16ef2c6ee017cd87bb29d69019dc727d823e8474b4d2850db5da", "none", "", "4b563031c35aed94707bd5e68bed0086979eb575195b958d952a80855ddfebf9", "462707cd4ac26624345ce030d43d9491151071d1d939508b3a4cfd0b68ccca30", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_subdivide_subdivide},
