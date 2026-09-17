@@ -717,12 +717,51 @@ def compare_float32(width: int, height: int, expected: bytes, actual: bytes) -> 
             "mismatchCount": mismatch_count, "firstMismatch": first}
 
 
-def _cpp_detail(stdout: str) -> tuple[str, str]:
+_SOURCE_LOCATION_PREFIX = re.compile(r"^\d+:\d+:\s*")
+
+
+def _strip_source_location_prefix(detail: str, source_path: Path) -> str:
+    """Strips a DSL compiler diagnostic's own ``<file>:<line>:<col>: `` prefix.
+
+    ``dsl::DslError::what()`` (and anything the DSL compiler decorates with a
+    source location -- e.g. ``EffectRegistry``'s parameter-validation
+    ``std::invalid_argument``s, rethrown with position context) conventionally
+    leads with exactly that: correct, ordinary compiler behavior for a human
+    reading a real file. Every sweep case's ``--source-file`` is a fresh,
+    disposable scratch path, though, so that prefix is never portable or
+    actionable in a report -- it just buries the real refusal reason under a
+    long, per-case absolute path (this is the "``cpp_reason`` reads as a
+    scratch file path instead of the refusal message" bug: a report skims as
+    the path, even though the real message follows it). ``source_path`` is
+    the exact path this job's own case was compiled from, so the strip is
+    exact, never a guess at what "looks like a path".
+    """
+    prefix = f"{source_path}:"
+    if not detail.startswith(prefix):
+        return detail
+    rest = detail[len(prefix):]
+    match = _SOURCE_LOCATION_PREFIX.match(rest)
+    return rest[match.end():] if match else rest
+
+
+def _cpp_detail(stdout: str, source_path: Path) -> tuple[str, str]:
+    """The driver's actual refusal code and message, JSON-parsed off its
+    stdout (``run_cpp_case.cpp``'s ``refusal_record``:
+    ``{"code": ..., "detail": ...}``) -- ``code`` is the numeric
+    ``GraphErrorCode`` as a string for a structured refusal, or the literal
+    string ``"exception"`` for any other ``std::exception`` (a DSL compile
+    error, most commonly). Never the file path a "cannot parse this as JSON"
+    fallback used to return: a malformed/non-JSON stdout is itself a driver
+    contract violation worth seeing verbatim, so the raw text is kept, just
+    still put through the same source-location strip.
+    """
     try:
         parsed = json.loads(stdout or "{}")
-        return parsed.get("code", ""), parsed.get("detail", "")
+        code = parsed.get("code", "")
+        detail = parsed.get("detail", "")
     except json.JSONDecodeError:
-        return "", stdout.strip()[:300]
+        code, detail = "", stdout.strip()[:300]
+    return code, _strip_source_location_prefix(detail, source_path)
 
 
 def run_job(job_dict: dict) -> dict:
@@ -792,7 +831,7 @@ def run_job(job_dict: dict) -> dict:
 
         js_ok = js_rc == 0
         cpp_ok = cpp_rc == 0
-        cpp_code, cpp_detail = _cpp_detail(cpp_out)
+        cpp_code, cpp_detail = _cpp_detail(cpp_out, source_path)
 
         if not js_ok and not cpp_ok:
             result["classification"] = "both_refused"
