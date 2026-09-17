@@ -1040,6 +1040,10 @@ def main() -> int:
                              "full declared domain (others at default) plus a joint sample "
                              "for effects with more than one, instead of the usual random "
                              "single/chain variants. --variants is ignored in this mode.")
+    parser.add_argument("--gate", choices=("kit", "all"), default=None,
+                        help="exit 1 unless the sweep proves parity: no divergent or timed-out case, "
+                             "and no C++-only refusal of a case whose effects are all claimed by "
+                             "export-kit/compat-effects.json (kit) or of any case at all (all)")
     parser.add_argument("--joint-samples", type=int, default=8,
                         help="--define-enum only: random joint-combination draws per effect "
                              "with more than one `define` parameter")
@@ -1126,7 +1130,30 @@ def main() -> int:
     write_summary(all_rows, out_dir, meta)
     shutil.rmtree(scratch_root, ignore_errors=True)
     print(f"[sweep] wrote {out_dir / 'results.json'} and {out_dir / 'summary.md'}", file=sys.stderr)
-    return 0
+    if args.gate is None:
+        return 0
+    return gate_failures(all_rows, args.gate, {job.case_id for job in jobs})
+
+
+def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
+    """Prints every case that breaks parity and returns the process exit code."""
+    kit = set(json.loads((LANE_ROOT / "export-kit/compat-effects.json").read_text(encoding="utf-8")))
+    failures = []
+    for row in rows:
+        if row["case_id"] not in case_ids:
+            continue
+        classification = row["classification"]
+        effects = {row["effect_id"], *row.get("chain_effects", [])}
+        if classification in ("divergent", "timeout"):
+            failures.append(row)
+        elif classification == "cpp_refused_only" and (gate == "all" or effects <= kit):
+            failures.append(row)
+    for row in failures:
+        reason = row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""
+        print(f"[sweep gate] {row['classification']}: {row['case_id']} {str(reason)[:200]}", file=sys.stderr)
+    checked = sum(1 for row in rows if row["case_id"] in case_ids)
+    print(f"[sweep gate] {gate}: {len(failures)} failing of {checked} cases", file=sys.stderr)
+    return 1 if failures or checked != len(case_ids) else 0
 
 
 if __name__ == "__main__":

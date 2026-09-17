@@ -2,7 +2,8 @@ name: Authority drift
 
 # CI proves parity against one pinned noisemaker-for-cpu commit. This workflow
 # fails whenever noisemaker-for-cpu's default branch behaves differently from
-# that pin, so a stale port cannot stay green.
+# that pin, or when this port's export kit does not claim exactly the effects
+# the authority renders, so a stale or partial port cannot stay green.
 
 on:
   push:
@@ -29,7 +30,16 @@ jobs:
         with:
           python-version: '3.13'
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Stage the live authority outside the repository tree
+        run: mv "$GITHUB_WORKSPACE/cpu-authority-live" "$RUNNER_TEMP/cpu-authority-live"
+
       - name: Compare the pinned authority with the live authority
-        run: |
-          mv "$GITHUB_WORKSPACE/cpu-authority-live" "$RUNNER_TEMP/cpu-authority-live"
-          python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority-live"
+        run: python -B tools/dsl/check_authority_drift.py --cpu-root "$RUNNER_TEMP/cpu-authority-live"
+
+      - name: Export kit claims exactly the effects the authority renders
+        if: always()
+        run: node export-kit/check-authority-coverage.mjs --cpu-root "$RUNNER_TEMP/cpu-authority-live"

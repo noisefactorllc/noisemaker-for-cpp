@@ -125,12 +125,12 @@ jobs:
   corpus-parity:
     name: byte-exact corpus parity (C++ vs JS authority)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
 
       # The frozen CPU authority is the public JS reference at the revision
-      # whose 90-file behavioral aggregate this repository pins. Checking it
+      # whose 91-file behavioral aggregate this repository pins. Checking it
       # out at that exact commit reproduces the authority bit-for-bit.
       - uses: actions/checkout@v4
         with:
@@ -178,6 +178,39 @@ jobs:
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
         run: python3 -B -m unittest tests.test_dsl_corpus_parity -v
+
+      # The corpus lane renders each effect once, at 17x11, with default
+      # parameters. That single point hid real divergences, so it is not the
+      # parity proof by itself. The sweep renders every authority effect across
+      # sizes (including 1x1 and non-square), seeds, times, randomized parameter
+      # domains and chains, compares RGBA8 and the float32 surface behind it,
+      # and fails on any divergence, any timeout, or any refusal of an effect
+      # the export kit claims.
+      - name: Parameter sweep parity gate
+        env:
+          NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
+          NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
+          NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
+        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep" --variants 6 --gate kit
+
+      - name: Define-parameter enumeration parity gate
+        env:
+          NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
+          NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
+          NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
+        run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep-defines" --define-enum --gate kit
+
+      - name: Keep the sweep reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: parity-sweep
+          path: |
+            ${{ runner.temp }}/sweep/summary.md
+            ${{ runner.temp }}/sweep/results.json
+            ${{ runner.temp }}/sweep-defines/summary.md
+            ${{ runner.temp }}/sweep-defines/results.json
+          if-no-files-found: warn
 
   package-consumer:
     name: install + external find_package consumer
