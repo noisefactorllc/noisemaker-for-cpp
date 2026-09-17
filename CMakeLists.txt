@@ -43,6 +43,7 @@ add_library(noisemaker-cpu
   src/dsl/compiler.cpp
   src/graph/resource.cpp
   src/graph/executor.cpp
+  src/graph/iteration.cpp
   src/renderer.cpp
 )
 target_include_directories(noisemaker-cpu PUBLIC
@@ -170,6 +171,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_resources.cpp
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
+  tests/test_graph_iteration.cpp
   tests/test_snow_kernel.cpp
   tests/test_fdlibm_contract_pin.cpp
   tests/test_palette_override_oracle.cpp
