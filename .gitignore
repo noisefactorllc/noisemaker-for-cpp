@@ -10,3 +10,8 @@ __pycache__/
 .vscode/
 *.swp
 *~
+# Large randomized-sweep case files (tens of MB each), regenerated on demand
+# by docs/port-engineering/scatter-adapters/oracle/*_oracle_generator.mjs
+# --fuzz-count=N -- see scatter-adapters-report.md. The curated
+# *-oracles.json files ARE checked in; these binary sweep files are not.
+docs/port-engineering/scatter-adapters/oracle/*-fuzz.bin

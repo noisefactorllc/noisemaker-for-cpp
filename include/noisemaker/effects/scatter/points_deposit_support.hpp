@@ -117,7 +117,13 @@ struct ClipCenterUniforms {
   double pos_y = 0.0;
   double pos_z = 0.0;
   double view_scale = 0.0;
-  double field_of_view = 0.0;  // only read when the resolved viewMode == 2 (perspective).
+  // Only read when the resolved viewMode == 2 (perspective). Unlike
+  // `pos_z`, JS reads `uniforms.fieldOfView` with NO `?? default` -- the
+  // CALLER must pass NaN (not 0) here when the pass leaves it unbound, to
+  // mirror `Math.max(undefined, 10)` coercing to NaN. Do not default this
+  // field to 0.0 anywhere upstream (a real, caught divergence -- see
+  // points_render.cpp's and points_billboard_render.cpp's own comments).
+  double field_of_view = 0.0;
 };
 
 struct ClipCenter {

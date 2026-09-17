@@ -199,6 +199,12 @@ target_compile_options(noisemaker-cpu-example-perlin PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 
+add_executable(scatter-fuzz-verify tools/parity/scatter_fuzz_verify.cpp)
+target_link_libraries(scatter-fuzz-verify PRIVATE noisemaker-cpu)
+target_compile_options(scatter-fuzz-verify PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
 add_executable(noisemaker-dsl-cpu-case
   tools/benchmark/run_cpp_case.cpp
   tools/benchmark/corpus_case.cpp

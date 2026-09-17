@@ -1,6 +1,7 @@
 #include "noisemaker/effects/scatter/points_render.hpp"
 
 #include <cstdint>
+#include <limits>
 
 #include "noisemaker/effects/scatter/points_deposit_support.hpp"
 #include "noisemaker/effects/scatter/registry.hpp"
@@ -22,7 +23,16 @@ std::size_t adapter(const glsl::Bindings& bindings, const ScatterPass& /*pass*/,
   uniforms.pos_y = bindings.get_number("posY");
   uniforms.pos_z = points_deposit::get_number_or(bindings, "posZ", 0.0);
   uniforms.view_scale = bindings.get_number("viewScale");
-  uniforms.field_of_view = points_deposit::get_number_or(bindings, "fieldOfView", 0.0);
+  // JS reads `uniforms.fieldOfView` DIRECTLY inside computeClipCenter's
+  // viewMode==2 branch -- there is NO `?? default` on this one (unlike
+  // posZ). An absent binding therefore mirrors JS `undefined`, which
+  // `Math.max(undefined, 10)` coerces to NaN (ToNumber(undefined) = NaN) --
+  // NOT a fallback value of 0. Found by the randomized differential sweep:
+  // an earlier version of this port used a `0.0` fallback here and
+  // diverged from JS on every case that omitted fieldOfView under
+  // viewMode 2.
+  uniforms.field_of_view =
+      points_deposit::get_number_or(bindings, "fieldOfView", std::numeric_limits<double>::quiet_NaN());
   return run_deposit(xyz_tex, rgba_tex, uniforms, destination);
 }
 

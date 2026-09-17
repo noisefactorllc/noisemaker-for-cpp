@@ -218,7 +218,10 @@ std::size_t adapter(const glsl::Bindings& bindings, const ScatterPass& pass, Sur
   uniforms.pos_y = bindings.get_number("posY");
   uniforms.pos_z = pd::get_number_or(bindings, "posZ", 0.0);
   uniforms.view_scale = bindings.get_number("viewScale");
-  uniforms.field_of_view = pd::get_number_or(bindings, "fieldOfView", 0.0);
+  // Same non-`??` fieldOfView read as points_render.cpp -- see that file's
+  // comment. An absent binding must mirror JS `undefined` (-> NaN through
+  // Math.max), not a `0.0` default.
+  uniforms.field_of_view = pd::get_number_or(bindings, "fieldOfView", std::numeric_limits<double>::quiet_NaN());
   uniforms.shape_mode = bindings.get_number("shapeMode");
   uniforms.blend_mode = bindings.get_number("blendMode");
   uniforms.blur_layer = pd::get_number_or(bindings, "blurLayer", 0.0);
