@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Fail-closed materializer for the Classic Noise canonical CPU oracle."""
 from __future__ import annotations
-import argparse, copy, hashlib, json, math, pathlib, re, struct
+import argparse, copy, hashlib, json, math, pathlib, re, struct, sys
+
+# Derive the corpus revision from the single source of truth (never transcribe it):
+# the script's own directory (tools/glslcpp) is on sys.path[0] when run directly.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = check_corpus.REVISION
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/classic-noise-parity"
@@ -9,7 +15,7 @@ ORACLE = PACKAGE / "classic-noise-oracles.json"
 GENERATOR = PACKAGE / "classic_noise_oracle_generator.mjs"
 REPORT = PACKAGE / "classic-noise-oracle-report.md"
 TARGET = ROOT / "tests/oracles/classic_noise_expected.inc"
-SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/noise/noise.glsl"
+SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/noise/noise.glsl"
 SCHEMA = "noisemaker-for-cpp.classic-noise.pixel-parity.v1"
 KEY = "classicNoisedeck/noise:noise"
 FACTORY_SHA256 = "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424"
@@ -90,10 +96,12 @@ def validate(document):
         raise OracleError("output ABI drift")
     provenance = document["provenance"]
     exact(provenance, {"source","generator","materializer"}, "provenance")
-    if provenance["source"] != {"relative_path":SOURCE,"bytes":31255,"sha256":"4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663"}:
+    if provenance["source"] != {"relative_path":SOURCE,"bytes":31258,"sha256":"8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138"}:
         raise OracleError("source provenance drift")
     exact(document["authority"], {"node_version","oracle","cpu_root_argument","immutable_snapshot","realpath_containment_checked","live_checkout_rejected","closure_cardinality","import_closure"}, "authority")
-    if document["authority"]["closure_cardinality"] != 22 or len(document["authority"]["import_closure"]) != 22:
+    # Cardinality is 23 (not 22) at CPU authority 61aa869: src/effects/adapters/index.js
+    # now imports src/effects/adapters/remap.js (added between e17dd02 and 61aa869).
+    if document["authority"]["closure_cardinality"] != 23 or len(document["authority"]["import_closure"]) != 23:
         raise OracleError("closure cardinality drift")
     if not all(isinstance(x, dict) and set(x) == {"relative_path","sha256"} and isinstance(x["relative_path"], str) and SHA.fullmatch(x["sha256"]) for x in document["authority"]["import_closure"]):
         raise OracleError("closure entry drift")

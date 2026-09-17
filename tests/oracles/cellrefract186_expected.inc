@@ -11,9 +11,9 @@
 
 namespace cellrefract186_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "dd026ed5a7f14bd7710e8d876f3656adb3fe91394d5afb1ee422df9ac155cbe8";
+inline constexpr std::string_view kOracleSha256 = "4564e48493a373d035e0f51a7a62b03cb2755a7aa7cd49bdbfc5b69f52c06bfc";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/cellRefract:cellRefract";
-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
+inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::int32_t kKernelDefine = 0;
 inline constexpr std::int32_t kShapeDefine = 1;
 inline constexpr std::size_t kCaseCount = 4U;

@@ -44,7 +44,11 @@ SCHEMA = "noisemaker-for-cpp.cellrefract186.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "classicNoisedeck/cellRefract:cellRefract"
 EFFECT_KEY = "classicNoisedeck/cellRefract"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+# Derived from the single source of truth (never transcribed): this script's
+# own directory (tools/glslcpp) is on sys.path[0] when run directly.
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 DEFINES = {"KERNEL": 0, "SHAPE": 1}
 FACTORY_NAME = "canonicalFactory3"
 FACTORY_SHA256 = "329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3"
@@ -56,7 +60,7 @@ SOURCE_SHA256 = "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a7
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -79,11 +83,14 @@ PINNED_CPU_FILES = {
 # frozen copy against another frozen copy proves nothing, and would stay green
 # if `classicNoisedeck/cellRefract` were ever added to the real table.
 CORPUS_ADAPTER_SOURCE = "tools/glslcpp/check_corpus.py"
+# Grew from 4 to 5 at CPU authority 61aa869: check_corpus.py's `_ADAPTERS`
+# census now also carries `synth/remap:remap`.
 CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
     "classicNoisedeck/fractal:fractal",
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
     "synth/julia:julia",
+    "synth/remap:remap",
 })
 
 
