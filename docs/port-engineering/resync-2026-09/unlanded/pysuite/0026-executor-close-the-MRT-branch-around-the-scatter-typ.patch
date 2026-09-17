@@ -1,0 +1,41 @@
+From 982099ad31062406f1c5fa940f65b3f1f9d72ba0 Mon Sep 17 00:00:00 2001
+From: Alex Ayars <aayars@gmail.com>
+Date: Thu, 17 Sep 2026 02:07:50 -0600
+Subject: [PATCH 26/29] executor: close the MRT branch around the scatter/typed
+ single-output path
+
+Cherry-picking the iteration-group wiring onto the MRT dispatch merged
+without conflict markers but dropped the brace that closes the MRT branch's
+else, so executor.cpp no longer compiled. The scatter branch also lost its
+outputTex bookkeeping in the same merge and sets wrote_output_tex again.
+Native suite: 601 passed, 0 failed.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ src/graph/executor.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/graph/executor.cpp b/src/graph/executor.cpp
+index 4b2c450..bde3282 100644
+--- a/src/graph/executor.cpp
++++ b/src/graph/executor.cpp
+@@ -3498,6 +3498,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
+               auto& stored = arena.insert(output_route, std::move(destination),
+                                           format, ResourceLifetime::transient);
+               effect_output = &stored;
++              wrote_output_tex = output_route == "outputTex";
+               ++pass_count;
+             } else {
+             auto bindings = materialize_uniform_bindings(step, admission, pass,
+@@ -3523,6 +3524,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
+             wrote_output_tex = output_route == "outputTex";
+             ++pass_count;
+             }
++            }
+           } catch (const GraphError& error) {
+             release_borrowed();
+             if (error.effect_id().empty()) {
+-- 
+2.50.1 (Apple Git-155)
+

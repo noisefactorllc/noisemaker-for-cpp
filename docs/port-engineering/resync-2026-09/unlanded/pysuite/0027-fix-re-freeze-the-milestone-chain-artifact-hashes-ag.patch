@@ -1,0 +1,170 @@
+From 611eb697cc9b4909af5e5076969e9131e91af4ee Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 03:16:18 -0600
+Subject: [PATCH 27/29] fix: re-freeze the milestone-chain artifact hashes
+ again after the integ4 merge
+
+The two lanes/integ4 merges (a6470d4, 0d975a7) brought in MRT typed-emitter
+support (N-output emission, emit_typed_cpp.py +292 lines), the julia
+uniform fix, corpus driver texture support, and iteration-group wiring --
+all of which regenerate src/typed_generated/typed_slice.cpp and
+typed_manifest.json for every projection, moving every one of the
+milestone-chain artifact hashes this lane had just re-frozen for the
+0ed489ec corpus bump (task35, edge/glyph-map, emboss). None of this
+touches load_slice's own spec metadata, so every spec-JSON hash from the
+prior fix is confirmed unchanged; only the generated-artifact hashes
+moved.
+
+Recomputed all of them together in two scripts run directly against the
+post-merge tree (not reused from any earlier run): one covers the
+emboss181/glitch180/edge179/glyph178/live182 chain end to end, the other
+covers glyph_map's scanline177 and task35's 176/175-program projections.
+Cross-checked internally: edge_bvec3's edge179/glyph178 and glyph_map's
+glyph178 pull the identical values the emboss script computed for the
+same milestones (same exclusion-set composition, three independent call
+sites agreeing), and task35's own bitwise-key block hash and catalog.hpp
+across every state came back byte-identical to the pre-merge run,
+confirming the two lanes' change set genuinely does not touch those and
+this is not a blind swap of numbers.
+
+Re-pinned: test_task35_bitwise_number_profile.py (2 hashes),
+test_edge_bvec3_contour.py (2 states x 2 artifacts),
+test_glyph_map_nonnegative_int_shift.py (2 states x 2 artifacts),
+test_emboss_color_style.py (5 states x 2 artifacts; catalog.hpp
+untouched throughout, matching the cross-check above). Ran all four
+modules together: 50 tests, OK (skipped=7, all authority-gated).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_edge_bvec3_contour.py              |  8 ++++----
+ tests/test_emboss_color_style.py              | 20 +++++++++----------
+ tests/test_glyph_map_nonnegative_int_shift.py |  8 ++++----
+ tests/test_task35_bitwise_number_profile.py   |  6 +++---
+ 4 files changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/tests/test_edge_bvec3_contour.py b/tests/test_edge_bvec3_contour.py
+index d5461bb..430ee19 100644
+--- a/tests/test_edge_bvec3_contour.py
++++ b/tests/test_edge_bvec3_contour.py
+@@ -472,17 +472,17 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
+         # task-7-typed-generator-census-repair.md.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "be08f2ccd7591812c0fe966c63d88607484c7f8f56d4d0517798db6cb1d908d9",
++                "d15a483d411780c6180e480219fe39347109c6b7d9be371315f2515117ee1d0d",
+             "src/typed_generated/typed_manifest.json":
+-                "4ea6c65203ddb02add1a6d5a37e4d0f60683b17421b9a257840d23a16384c49b",
++                "d1ac50058e869f2a0f76f87f7b4eb6b311becddd787c55f6e88cb6d3c750eb85",
+             "include/noisemaker/generated/catalog.hpp":
+                 "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "18091bb630902ca5824e407c21fc76527ba8921ce2328ad204db4b0212390b47",
++                "cf4e90a4d7765b82216403e6318a797c76d12b1c569fbddd9f48a94159abc9d2",
+             "src/typed_generated/typed_manifest.json":
+-                "14004a04173946d3a89f1c12882591d7bbc111637205b957d5b0ddd3a347186a",
++                "1ee8b8654c14a79a3ff65c9e81fbb14b21559d9f2f118194f5eb1df5cf8bb754",
+             "include/noisemaker/generated/catalog.hpp":
+                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
+         }
+diff --git a/tests/test_emboss_color_style.py b/tests/test_emboss_color_style.py
+index 48d5025..0e4f403 100644
+--- a/tests/test_emboss_color_style.py
++++ b/tests/test_emboss_color_style.py
+@@ -1111,28 +1111,28 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
+         # task-7-typed-generator-census-repair.md.
+         expected_artifact_hashes = {
+             "live182": {
+-                "src/typed_generated/typed_slice.cpp": "74b9056189563fb61b4bf93eee66610b5ac92b35896146e51d4405fd685fe8f2",
+-                "src/typed_generated/typed_manifest.json": "3164f8bd338ba2a9cbaa1156035570c86353c2096746e2aa4a4f345a9102ecb7",
++                "src/typed_generated/typed_slice.cpp": "f4321b58dcc6824b125bb3a3d0852565e3b729da73b0030e58601829d5e85a0c",
++                "src/typed_generated/typed_manifest.json": "e54e16149c7b2c97ac741b99197c4ec63c9c48d03df5e864dae0507cdf21dbfe",
+                 "include/noisemaker/generated/catalog.hpp": "c167d502824e6ee052d404f403c524e75c49ee8d153aed5b7ef18a3bb7d66dc6",
+             },
+             "emboss181": {
+-                "src/typed_generated/typed_slice.cpp": "d8954e888949920234422a4c816e8d39f944ad670715815d14d2fa5cea58fb51",
+-                "src/typed_generated/typed_manifest.json": "deb94cbc7d38087309013f2400895bef098e79957d142ded9da3c65fe6a77e37",
++                "src/typed_generated/typed_slice.cpp": "40bbac75f58e3a55aff91dd1a89a5f284bce5cb914895fb34fde1bf94de629dd",
++                "src/typed_generated/typed_manifest.json": "32cde97ae821a8762dbe78f3147f0e170f4b4e1bbdf758ef1e0fb11bc0cd418c",
+                 "include/noisemaker/generated/catalog.hpp": "afa8e867e782e540a323113549c3b5e6d6f1a7c2abd504846661999359ff4673",
+             },
+             "glitch180": {
+-                "src/typed_generated/typed_slice.cpp": "76dbdfa405fbb0bcc280c42ba6c7dbfd823c51cc5d2580db42c71c77c0e75f6e",
+-                "src/typed_generated/typed_manifest.json": "fbff7a83d8e0d8cd3ba67eefc7af9bcfc6b79913975c9892ba0da0218d2df465",
++                "src/typed_generated/typed_slice.cpp": "3ca7d69ca5f968046223fdfdb5666f8b77485f4fa401f5bc90523744d5ee566f",
++                "src/typed_generated/typed_manifest.json": "f322176ce333541bfd9f48f03ae44debb6c0d192b0e49634a68d10f0cff1aed8",
+                 "include/noisemaker/generated/catalog.hpp": "dedfbfa3f14fe7e0267a5ccac9a6d385717a64cded35d0374cf7e4320142c1f2",
+             },
+             "edge179": {
+-                "src/typed_generated/typed_slice.cpp": "be08f2ccd7591812c0fe966c63d88607484c7f8f56d4d0517798db6cb1d908d9",
+-                "src/typed_generated/typed_manifest.json": "4ea6c65203ddb02add1a6d5a37e4d0f60683b17421b9a257840d23a16384c49b",
++                "src/typed_generated/typed_slice.cpp": "d15a483d411780c6180e480219fe39347109c6b7d9be371315f2515117ee1d0d",
++                "src/typed_generated/typed_manifest.json": "d1ac50058e869f2a0f76f87f7b4eb6b311becddd787c55f6e88cb6d3c750eb85",
+                 "include/noisemaker/generated/catalog.hpp": "b493116184614b37edc2416ebb9c16822bab9032aaadc28e60650020f33b8f42",
+             },
+             "glyph178": {
+-                "src/typed_generated/typed_slice.cpp": "18091bb630902ca5824e407c21fc76527ba8921ce2328ad204db4b0212390b47",
+-                "src/typed_generated/typed_manifest.json": "14004a04173946d3a89f1c12882591d7bbc111637205b957d5b0ddd3a347186a",
++                "src/typed_generated/typed_slice.cpp": "cf4e90a4d7765b82216403e6318a797c76d12b1c569fbddd9f48a94159abc9d2",
++                "src/typed_generated/typed_manifest.json": "1ee8b8654c14a79a3ff65c9e81fbb14b21559d9f2f118194f5eb1df5cf8bb754",
+                 "include/noisemaker/generated/catalog.hpp": "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
+             },
+         }
+diff --git a/tests/test_glyph_map_nonnegative_int_shift.py b/tests/test_glyph_map_nonnegative_int_shift.py
+index c2bea6f..a8a163a 100644
+--- a/tests/test_glyph_map_nonnegative_int_shift.py
++++ b/tests/test_glyph_map_nonnegative_int_shift.py
+@@ -415,17 +415,17 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
+         # task-7-typed-generator-census-repair.md.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "18091bb630902ca5824e407c21fc76527ba8921ce2328ad204db4b0212390b47",
++                "cf4e90a4d7765b82216403e6318a797c76d12b1c569fbddd9f48a94159abc9d2",
+             "src/typed_generated/typed_manifest.json":
+-                "14004a04173946d3a89f1c12882591d7bbc111637205b957d5b0ddd3a347186a",
++                "1ee8b8654c14a79a3ff65c9e81fbb14b21559d9f2f118194f5eb1df5cf8bb754",
+             "include/noisemaker/generated/catalog.hpp":
+                 "a9e99e5bc57bb06d2e0307b8255fc39a2fb769b7e9aff808e18b2bd4de1b4f53",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "fb35a16d4836a87aeac912d762d7bf8138d0852db258c0934930d5889158ea05",
++                "57374fd3a971b13c2b03576e9b0eb27ed3fa04da6aa4f3c2734f1b031af5b343",
+             "src/typed_generated/typed_manifest.json":
+-                "e247e84011966daf6cc8cda1911f5364aa15ed2a32136b04fe97e70d0cd13e75",
++                "56da9320788eba0cedc2252d2e23a0f5b6fcea36a7e5590804c701ae3850484c",
+             "include/noisemaker/generated/catalog.hpp":
+                 "e1e42ad869ed3095a2fe263d36cc5ca59d45939044d3fa8bc1beaa2f5fb10888",
+         }
+diff --git a/tests/test_task35_bitwise_number_profile.py b/tests/test_task35_bitwise_number_profile.py
+index e79511d..8c49b1d 100644
+--- a/tests/test_task35_bitwise_number_profile.py
++++ b/tests/test_task35_bitwise_number_profile.py
+@@ -350,7 +350,7 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
+         # measured regeneration of this test's own projection; see
+         # task-7-typed-generator-census-repair.md.
+         self.assertEqual(
+-            "721f252a2e71767964ae1677a702ddf75cbd350dc8d99a88176538178ccab3a5",
++            "d2183c6790bae092bafd76d4ca2e3661a57942003ac7d6f64144c7801b7b8f8e",
+             hashlib.sha256("".join(
+                 block for key, block in current.items() if key != KEY
+             ).encode()).hexdigest())
+@@ -377,11 +377,11 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
+         # this test's own projection; see
+         # task-7-typed-generator-census-repair.md.
+         self.assertEqual(
+-            "10a86340da0a79eb55e1a6e6141994617179f4385eea4bf1a7e5bcd8473a5e4f",
++            "ff041fb2817da1820ff5b9882d99fba26c3b5f88bc2ce1ddb003f859a1fd239c",
+             hashlib.sha256(without_task35[
+                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
+         self.assertEqual(
+-            "4896d196d4b50bf7bb28cb395baa317163539671ecfe37ddc039a74f991cc0b0",
++            "063241e3066efd7a1c8772e2cb7d222c1c0e08021f1efc530cf08286c9816975",
+             hashlib.sha256(without_task35[
+                 "src/typed_generated/typed_manifest.json"]).hexdigest())
+ 
+-- 
+2.50.1 (Apple Git-155)
+

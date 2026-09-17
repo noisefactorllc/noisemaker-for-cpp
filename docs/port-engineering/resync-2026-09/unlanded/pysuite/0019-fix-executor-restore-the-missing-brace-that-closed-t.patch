@@ -1,0 +1,74 @@
+From ba77a97d07597538e636b3cb3d5cae0d9c3e57c7 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 01:43:03 -0600
+Subject: [PATCH 19/29] fix(executor): restore the missing brace that closed
+ the non-MRT else branch
+
+The merge from lanes/integ4 (a6470d4) brought in 6963b95's iteration-
+group wiring, which is unbuildable as committed: GraphExecutor::execute()
+fails -fsyntax-only with "expected expression" at the first `} catch
+(const GraphError&`, cascading into "expected catch" and a final
+"expected '}'" at the namespace close. This is not a merge artifact --
+the identical byte-for-byte file at integ4's own 8c72107 fails the exact
+same way when compiled directly against integ4's own include tree with
+integ4's own flags (confirmed before touching anything: `diff -rq` shows
+pysuite's and integ4's src/ and include/ trees are 100% identical after
+the merge, and integ4's own executor.cpp reproduces the identical three
+errors standalone). integ4-build's already-linked libnoisemaker-cpu.a
+must predate whatever composed this exact text; the 6963b95 commit
+message's own verification claims ("ctest: same two pre-existing
+failures... 6 new tests all pass") don't match what this file compiles
+to today.
+
+Root cause: raw brace count over the whole file was 618 `{` vs 617 `}`
+-- one short. Tracing nesting depth by hand through the pass-execution
+try block (GraphExecutor::execute(), the MRT-vs-ordinary
+`if (admission.outputs.size() > 1U) { ... } else { ... }` at line 3340)
+found it: the non-MRT `else` opened at line 3417 is never closed. Its
+body resolves the destination texture format, then branches again on
+`if (dispatch_scatter) { ... } else { ... }` (3452-3525) -- and that
+inner if/else's own closing brace at 3525 was mistaken for closing the
+outer 3417 `else` too, leaving the `try` from line 3339 one level short
+by the time execution reaches `} catch (const GraphError& error)` at
+3526.
+
+Fix: add the one missing `}` after line 3525, closing the 3417 `else`
+before the `catch` chain. Purely mechanical -- no braces moved, no
+lines reordered, nothing renamed; this is the minimum edit that
+restores the structure the commit message itself describes (MRT branch
+/ non-MRT branch, with the scatter/ordinary split nested inside the
+latter). Verified: raw brace count is now 618/618; `-fsyntax-only
+-Wall -Wextra -Wpedantic -Werror` is clean; full rebuild succeeds; the
+native suite (noisemaker-cpu-tests, including the new
+test_graph_iterated_execution.cpp and test_mrt_kernel_and_pass_runner.cpp
+integ4 added) is 600/601 PASS, the lone failure being the pre-existing
+oracles2-owned classic-noise oracle metadata SHA (unrelated, unchanged
+by this fix).
+
+This is graph/executor.cpp, not part of this lane's Python-test-suite
+brief -- flagging for whoever owns the iteration-group feature to
+confirm the fix matches their intent, since I can't verify the new
+run_iterated_group path's actual behavior, only that the file now
+parses and the full native suite (old and new tests alike) passes.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ src/graph/executor.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/graph/executor.cpp b/src/graph/executor.cpp
+index 4b2c450..10c17e3 100644
+--- a/src/graph/executor.cpp
++++ b/src/graph/executor.cpp
+@@ -3523,6 +3523,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
+             wrote_output_tex = output_route == "outputTex";
+             ++pass_count;
+             }
++            }
+           } catch (const GraphError& error) {
+             release_borrowed();
+             if (error.effect_id().empty()) {
+-- 
+2.50.1 (Apple Git-155)
+

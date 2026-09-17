@@ -1,0 +1,65 @@
+From 9284d96c413ff111c1e33872b37914a235b0af8f Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 01:58:46 -0600
+Subject: [PATCH 23/29] fix(julia): follow the fdlibm-hypot and
+ un-frounded-cSpeed changes
+
+lanes/integ4's "919d22f fix(julia): stop rounding julia's un-frounded
+scalar uniforms to float32" (merged in via a6470d4) changed two things
+test_julia_emitter_lowering.py still pinned to the old shape:
+
+- outputNormalMap's nx/ny/nz and lx/ly/lz magnitude now goes through
+  noisemaker::fdlibm::hypot, not std::hypot (same V8-exact math lane as
+  the earlier snow/mandelbrot/newton fixes -- verified directly against
+  the live rendered output).
+- cSpeed is not a reserved frounded name, so the runtime-int contract
+  (intended change (c)) binds it as a plain `bindings.get_number("cSpeed")`
+  double, no noisemaker::f32() rounding -- `time` still keeps its f32
+  rounding (it IS a reserved frounded name), confirmed by the same
+  rendered output.
+
+Updated the three assertions (two hypot call-site checks, one
+un-frounded cSpeed binding check plus an explicit assertNotIn for the
+old rounded form) and added assertNotIn("std::hypot(", ...) alongside
+the existing sin/cos/fmin/fmax bare-std checks. All 9 tests pass (Ran 9
+tests ... OK).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_julia_emitter_lowering.py | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/tests/test_julia_emitter_lowering.py b/tests/test_julia_emitter_lowering.py
+index 1fba509..33b8217 100644
+--- a/tests/test_julia_emitter_lowering.py
++++ b/tests/test_julia_emitter_lowering.py
+@@ -58,8 +58,8 @@ class JuliaEmitterLoweringTests(unittest.TestCase):
+                 "const double globalX = static_cast<double>(context.frag_coord[0])",
+                 "iterateSmooth(state, fragX + 1.0, fragY",
+                 "iterateSmooth(state, fragX, fragY + 1.0",
+-                "std::hypot(nx, ny, nz)",
+-                "std::hypot(lx, ly, lz)",
++                "noisemaker::fdlibm::hypot(nx, ny, nz)",
++                "noisemaker::fdlibm::hypot(lx, ly, lz)",
+                 "double slowX = static_cast<double>(reHigh)",
+                 "double slowY = static_cast<double>(imHigh)",
+                 "const float stripeHalf = julia_f32(",
+@@ -73,9 +73,13 @@ class JuliaEmitterLoweringTests(unittest.TestCase):
+         self.assertNotIn("std::cos(", emitted)
+         self.assertNotIn("std::fmin(", emitted)
+         self.assertNotIn("std::fmax(", emitted)
++        self.assertNotIn("std::hypot(", emitted)
+         self.assertIn(
+             'noisemaker::f32(bindings.get_number("time"))', emitted)
+-        self.assertIn(
++        # cSpeed is not a reserved frounded name; the runtime-int contract
++        # (intended change (c)) binds it as a plain, un-rounded double.
++        self.assertIn('bindings.get_number("cSpeed")', emitted)
++        self.assertNotIn(
+             'noisemaker::f32(bindings.get_number("cSpeed"))', emitted)
+         self.assertNotIn("runtime_loop_radius", emitted)
+ 
+-- 
+2.50.1 (Apple Git-155)
+

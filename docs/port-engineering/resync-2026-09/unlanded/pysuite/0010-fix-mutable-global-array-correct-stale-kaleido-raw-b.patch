@@ -1,0 +1,40 @@
+From cd1d975fc0e82beaf4a3e5415e79338be425e787 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 23:58:31 -0600
+Subject: [PATCH 10/29] fix(mutable-global-array): correct stale kaleido raw
+ byte count for 0ed489ec
+
+classicNoisedeck/kaleido/kaleido.glsl grew from 27567 to 27570 bytes in
+the 0ed489ec corpus bump (one of the 17 changed programs). Commit cf26f99
+moved this test's CORPUS path to 0ed489ec and updated KALEIDO_RAW_SHA256,
+but test_kaleido_frozen_source_path_and_hashes still asserted the old
+literal byte count (27567) instead of the new one.
+
+Verified directly: `wc -c` on the live 0ed489ec kaleido.glsl reads 27570,
+matching the already-correct KALEIDO_RAW_SHA256 pinned in this same file
+and the already-correct scalar_uint_xor_profile.py raw_bytes for the same
+key (27570) that the test cross-checks against. Only the len(raw) literal
+was stale.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_mutable_global_array.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/test_mutable_global_array.py b/tests/test_mutable_global_array.py
+index 6ead4f6..cc38e13 100644
+--- a/tests/test_mutable_global_array.py
++++ b/tests/test_mutable_global_array.py
+@@ -1835,7 +1835,7 @@ class KaleidoMutableGlobalArraySurfaceTests(unittest.TestCase):
+         lock = module._LOCKS[KALEIDO_KEY]
+         self.assertEqual(KALEIDO_SOURCE_PATH, lock["source_path"])
+         raw = (CORPUS / lock["source_path"]).read_bytes()
+-        self.assertEqual(27567, len(raw))
++        self.assertEqual(27570, len(raw))
+         self.assertEqual(KALEIDO_RAW_SHA256, hashlib.sha256(raw).hexdigest())
+         self.assertEqual(KALEIDO_RAW_SHA256, lock["raw_sha256"])
+         self.assertEqual(KALEIDO_NORMALIZED_SHA256, lock["normalized_sha256"])
+-- 
+2.50.1 (Apple Git-155)
+

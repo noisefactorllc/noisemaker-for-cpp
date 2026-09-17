@@ -1,0 +1,76 @@
+From d5431e94604bc47f4ae2d535ad67ff003f4ec865 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 00:31:55 -0600
+Subject: [PATCH 12/29] fix(color-lab): declare palette uniforms DVec3 in the
+ runtime ABI table
+
+classicNoisedeck/colorLab:colorLab is one of the 5 programs
+(cellNoise/colorLab/fractal/shapeMixer/shapes) in the classicNoisedeck
+double-precision palette carrier list (intended change (b) --
+_CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS /
+_classic_noisedeck_double_uniform_type in emit_typed_cpp.py): its
+paletteOffset/paletteAmp/paletteFreq/palettePhase uniforms bind as
+glsl::DVec3, not glsl::Vec3. Verified directly against the live emitter:
+render_typed_cpp's actual output for colorLab contains
+`bindings.get<glsl::DVec3>("paletteOffset")`, never Vec3.
+
+color_lab_frontend_profile.py's RUNTIME_UNIFORM_ABI table (the C++-side
+ABI, distinct from SOURCE_UNIFORMS which correctly stays GLSL "vec3" --
+that's the shader-source type, unaffected) still declared all four
+palette fields "Vec3". test_color_lab_generator_emitter.py's
+test_rendered_runtime_abi_matches_the_authenticated_profile walks that
+table and asserts the rendered binding call for each entry -- it
+reliably fails on 'paletteOffset'/'bindings.get<glsl::Vec3>(...)' when
+run in isolation (confirmed standalone and across three PYTHONHASHSEED
+values), even though it happened not to surface in the parallel-sharded
+run that produced this campaign's initial failure list (that grouping
+runs a different module subset/order than plain discovery). Since the
+official CI-equivalent invocation is a single `python3 -m unittest
+discover` pass, not the sharded grouping, this is a real gap regardless
+of which run exposed it.
+
+Updated RUNTIME_UNIFORM_ABI to "DVec3" for the four palette fields and
+added the "DVec3" -> "glsl::DVec3" arm to the test's native-to-C++ type
+map. Confirmed no other profile module has an equivalent stale
+Vec3-for-palette runtime-ABI entry (grep across tools/glslcpp/frontend
+for '"paletteOffset"' -- fractal/noise/shapes/shape_mixer only ever
+declare the GLSL-source-level lowercase "vec3", not a C++ ABI table).
+All 4 tests in the module now pass (Ran 4 tests ... OK).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_color_lab_generator_emitter.py            | 1 +
+ tools/glslcpp/frontend/color_lab_frontend_profile.py | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tests/test_color_lab_generator_emitter.py b/tests/test_color_lab_generator_emitter.py
+index c470bd4..8cba692 100644
+--- a/tests/test_color_lab_generator_emitter.py
++++ b/tests/test_color_lab_generator_emitter.py
+@@ -159,6 +159,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
+                 cxx = {
+                     "Vec2": "glsl::Vec2",
+                     "Vec3": "glsl::Vec3",
++                    "DVec3": "glsl::DVec3",
+                     "bool": "bool",
+                     "int32": "std::int32_t",
+                 }[native]
+diff --git a/tools/glslcpp/frontend/color_lab_frontend_profile.py b/tools/glslcpp/frontend/color_lab_frontend_profile.py
+index f83b8af..35efeaf 100644
+--- a/tools/glslcpp/frontend/color_lab_frontend_profile.py
++++ b/tools/glslcpp/frontend/color_lab_frontend_profile.py
+@@ -52,8 +52,8 @@ RUNTIME_UNIFORM_ABI = (
+     ("hueRotation", "float"), ("hueRange", "float"), ("invert", "bool"),
+     ("brightness", "float"), ("contrast", "float"), ("saturation", "float"),
+     ("colorMode", "int32"), ("paletteMode", "int32"),
+-    ("paletteOffset", "Vec3"), ("paletteAmp", "Vec3"),
+-    ("paletteFreq", "Vec3"), ("palettePhase", "Vec3"),
++    ("paletteOffset", "DVec3"), ("paletteAmp", "DVec3"),
++    ("paletteFreq", "DVec3"), ("palettePhase", "DVec3"),
+     ("cyclePalette", "int32"), ("rotatePalette", "float"),
+     ("repeatPalette", "float"),
+ )
+-- 
+2.50.1 (Apple Git-155)
+

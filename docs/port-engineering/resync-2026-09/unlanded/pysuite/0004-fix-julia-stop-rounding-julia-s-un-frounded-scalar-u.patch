@@ -1,0 +1,1183 @@
+From 919d22f3ada07188156e2d12a542dcc9fe7cb906 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 22:55:18 -0600
+Subject: [PATCH 04/29] fix(julia): stop rounding julia's un-frounded scalar
+ uniforms to float32
+
+Root cause, same class as 28c4a80 but in a different place: julia is
+dispatched through a hand-authored typed-emitter body
+(emit_typed_cpp.py's _render_julia_body), independent of the generic
+ABI-driven bind path that commit fixed. Its bind_synth_julia_julia
+constructor literal still wrapped 11 of julia's 12 scalar float
+uniforms (cReal, cImag, centerX, centerY, rotation, stripeFreq,
+lightAngle, cSpeed, cRadius, zoomSpeed, zoomDepth) in
+noisemaker::f32(...) before storing them as double -- rounding to
+float32 at bind time a value the JS authority's createCanonicalBindings
+(glsl-kernel.js) never rounds (it explicitly Math.fround()s only
+seed/aspectRatio/aspect/time/globalTime/deltaTime, spreading every
+ordinary effect parameter, including julia's, untouched). Only `time`
+is a genuine reserved name for julia and keeps its f32() wrap.
+
+Verified against a direct, independent invocation of the live JS
+authority's juliaFactory via bindCanonicalKernel/createCanonicalBindings
+with the exact iterations-clamp-1001 case bindings: real value is
+0x3f56a8fe, confirming the previously pinned oracle expectation
+(0x3f56a8ef) was itself computed under the same over-rounding
+assumption, not the fix. Fixed the emitter template and regenerated
+typed_slice.cpp/typed_manifest.json via the real generator (no hand
+patch to generated files).
+
+Full 208-effect float32-lane sweep (seed 20260916): synth/julia goes
+from divergent (15/23668 values, e.g. iterations-clamp-1001 pixel
+0.395751953125 vs 0.3955078125) to 0 divergent, alongside
+filter/hs, synth/mandelbrot and synth/noise (already fixed by the
+merged 28c4a80). Native: 586 PASS, 1 pre-existing unrelated FAIL
+(classic_noise oracle metadata pin, present since ca68fc4). Frozen
+166-record corpus parity lane: 100% byte-exact.
+
+Also repairs the julia-parity oracle package's own self-authentication,
+found stale while re-deriving ground truth for the fix above:
+- julia_oracle_generator.mjs's pinned CPU import-closure was missing
+  src/effects/adapters/remap.js entirely and had 3 stale hashes for
+  index.js/canonical-kernels.js/upstream-snapshot.js (unrelated
+  additions to the authority -- median.js/snow.js adapters -- shifted
+  these after the package was last frozen). Re-derived against the
+  current, correctly-mounted, immutable authority checkout.
+- The SAME staleness mirrored in
+  generate_julia_native_oracle_include.py's EXPECTED_CLOSURE, plus a
+  stale pinned upstream shader revision (117a236... -> 0ed489ec...) in
+  both files.
+- The generator's own render() helper independently baked in the exact
+  same over-frounding bug being fixed above (it Math.fround()'d
+  cReal/cImag/centerX/centerY/rotation/stripeFreq/lightAngle/cSpeed/
+  cRadius/zoomSpeed/zoomDepth before calling bindCanonicalKernel), so
+  the oracle's own frozen expectations were computed under the same
+  wrong assumption. Fixed render() to stop frounding those 11 fields,
+  regenerated the whole package end to end (JSON -> report -> native
+  .inc include) via --write, and updated the 12 cascading pinned
+  digests this changed (1 case digest + 11 mutation-ledger digests, all
+  for iterations-clamp-1001 -- the only one of 18 frozen cases whose
+  precise, non-round-number bindings actually cross a rounding
+  threshold under the fix). tests.test_julia_oracle: 7/7 PASS (was
+  2 FAIL from the stale pins before any of this).
+
+Unrelated hardening found and fixed along the way: src/effects/snow.cpp
+used std::sin/std::cos/std::pow (platform libm) instead of this
+project's verified-bit-exact noisemaker::fdlibm::sin/cos/pow, the
+convention every other file in the codebase follows. Durable fix
+regardless of outcome; empirically did not change filter/snow's own
+remaining 192-pixel divergence in the v17 sweep case (confirmed
+bit-for-bit identical before/after) -- that root cause is still open.
+
+Also open, diagnosed but not fixed: synth/gradient, synth/mandala,
+synth/pattern, synth/sacredGeometry show the vector-typed analogue of
+this same bug class (ordinary vec2/vec3/vec4 DSL parameters, e.g.
+gradient's color1-4, are bound as raw un-rounded JS doubles by the
+authority's parseColor() but narrowed to float32 (glsl::Vec3) at
+uniform-bind time in the C++ port). A naive widen-the-storage-type fix
+(glsl::Vec3 -> glsl::DVec3, generalizing the existing narrowly-scoped
+_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS mechanism) does not work:
+the generic typed emitter infers local-variable and return types from
+the GLSL type alone, not from the referenced uniform's actual C++
+type, so the narrowing just moves to the next local-variable assignment
+(and several call sites don't even compile, lacking an implicit
+Vec3(DVec3) conversion). A correct fix needs the emitter to propagate
+double precision through the specific subset of each expression graph
+that traces back to one of these uniforms -- reverted the incomplete
+attempt rather than leave the tree broken or ship an unverified change.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ .../julia-parity/julia-oracle-report.md       | 114 +++++++++---------
+ .../julia-oracle-report.md.sha256             |   2 +-
+ .../julia-parity/julia-oracles.json           |  86 ++++++-------
+ .../julia-parity/julia-oracles.json.sha256    |   2 +-
+ .../julia-parity/julia_oracle_generator.mjs   |  11 +-
+ .../julia_oracle_generator.mjs.sha256         |   2 +-
+ src/effects/snow.cpp                          |   7 +-
+ tests/oracles/julia_expected.inc              |  52 ++++----
+ tests/oracles/julia_expected.inc.sha256       |   2 +-
+ tests/test_julia_oracle.py                    |   2 +-
+ tools/glslcpp/emit_typed_cpp.py               |  22 ++--
+ .../generate_julia_native_oracle_include.py   |  10 +-
+ ...rate_julia_native_oracle_include.py.sha256 |   2 +-
+ 13 files changed, 162 insertions(+), 152 deletions(-)
+
+diff --git a/docs/port-engineering/julia-parity/julia-oracle-report.md b/docs/port-engineering/julia-parity/julia-oracle-report.md
+index e224de9..1a46499 100644
+--- a/docs/port-engineering/julia-parity/julia-oracle-report.md
++++ b/docs/port-engineering/julia-parity/julia-oracle-report.md
+@@ -11,8 +11,8 @@ This checked report is generated from the authenticated JSON document below. It
+ - Source: tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl; SHA-256: 825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0.
+ - Factory source: src/effects/adapters/julia.js; SHA-256: 0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5.
+ - Canonical factory: juliaFactory; text SHA-256: ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6; public/direct identity is canonical; adapter owns the key.
+-- Corpus revision: a024dc3a960cc44af454abc7aebce50456c194e6; upstream revision: 117a236679d1db3ab8f0e278230ece277b57564c.
+-- Import closure: 22 files, each realpath-confined and hash-pinned; checked data stores only the stable placeholder <immutable-cpu-snapshot-root>.
++- Corpus revision: a024dc3a960cc44af454abc7aebce50456c194e6; upstream revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5.
++- Import closure: 23 files, each realpath-confined and hash-pinned; checked data stores only the stable placeholder <immutable-cpu-snapshot-root>.
+ - Authority contract: --cpu-root, NOISEMAKER_CPU_ROOT, and NOISEMAKER_FOR_CPU were the same non-symlink external pinned root; live checkout and symlink roots are rejected.
+ 
+ ## Complete authenticated case, mutation, relation, and diagnostic records
+@@ -27,7 +27,7 @@ The following canonical JSON record is emitted directly from the generator docum
+   "effect_key": "synth/julia",
+   "runtime_key": "synth/julia:julia",
+   "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+   "factory": {
+     "name": "juliaFactory",
+     "text_sha256": "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6",
+@@ -241,7 +241,7 @@ The following canonical JSON record is emitted directly from the generator docum
+         },
+         {
+           "relative_path": "src/effects/adapters/index.js",
+-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+         },
+         {
+           "relative_path": "src/effects/adapters/julia.js",
+@@ -255,6 +255,10 @@ The following canonical JSON record is emitted directly from the generator docum
+           "relative_path": "src/effects/adapters/palette.js",
+           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+         },
++        {
++          "relative_path": "src/effects/adapters/remap.js",
++          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++        },
+         {
+           "relative_path": "src/effects/adapters/snow.js",
+           "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -273,7 +277,7 @@ The following canonical JSON record is emitted directly from the generator docum
+         },
+         {
+           "relative_path": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         {
+           "relative_path": "src/effects/generated/kernels.js",
+@@ -281,7 +285,7 @@ The following canonical JSON record is emitted directly from the generator docum
+         },
+         {
+           "relative_path": "src/effects/generated/upstream-snapshot.js",
+-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+         },
+         {
+           "relative_path": "src/effects/registry.js",
+@@ -303,11 +307,11 @@ The following canonical JSON record is emitted directly from the generator docum
+     },
+     "generator": {
+       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
+-      "sha256": "4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017"
++      "sha256": "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
+     },
+     "materializer": {
+       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
+-      "sha256": "d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998"
++      "sha256": "f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7"
+     }
+   },
+   "render_cases": [
+@@ -2717,12 +2721,12 @@ The following canonical JSON record is emitted directly from the generator docum
+       },
+       "expected": {
+         "f32_words_le": [
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
+           "0x3f800000"
+         ],
+-        "f32_sha256": "e59c766c5f4c4faface8b7b5e30bafb20c6d10c89c12aba22784010e24fd1b67",
++        "f32_sha256": "d184544ae02c4932a200f8870074d749fdc44c0515b811d5902f9e58772b1a6a",
+         "rgba8_bytes": [
+           214,
+           214,
+@@ -4579,7 +4583,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -4669,7 +4673,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "15a47a2e97e32935c2851c33c16a79f73bfffcf07570f8b571e865b756f82ae2",
++      "result_sha256": "1db6a66d0efbb1a11c280afb67b0f8c8976987616109432ca4eca74c0d94ff48",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -4836,7 +4840,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -4918,7 +4922,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "6df249c1c71abb6262030b8425d4d37628c629dc7fc44ff38aa7f6a6b5f3bad7",
++      "result_sha256": "91cccd55a3b39cf320db9269346dbb273ee4c67511a17409e928b3893313c134",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5085,7 +5089,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -5167,7 +5171,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "77da401b37b415f8286e8599265f3035a8d9ded0091b0c1e1cf0348121270afa",
++      "result_sha256": "e422acc4e7347b0d8dedb3511a31c46fff3c6bfa73bea0c586d59d4819d82e85",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5334,7 +5338,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -5416,7 +5420,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "3251bfa71d38c3b48b52ec497f7ef4c4bf1335ba79cfc880058ffa1cb41de247",
++      "result_sha256": "5edbffc3a338088fb89a8b25da0770585366af51bded682d8b320df4ec1aab64",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5576,7 +5580,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3f56a8ef"
++            "actual": "0x3f56a8fe"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -5677,7 +5681,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "f50656a389d4bbd9370f9d19a61822df479dfe125386d8b083e34cdd2b90bc1d",
++      "result_sha256": "e8ccccf8c1e39c5241054183fc40f9eb0e007106a78986ddbc66ed5c3dc35ebf",
+       "witness_cases": [
+         "manual-smooth",
+         "manual-normal",
+@@ -6809,7 +6813,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -6883,7 +6887,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "52e45382437e15a0004b2c25fea5b1dcbb522ec8f08c15ef10be2dfd85fc5997",
++      "result_sha256": "6900acfd71fd2669ee2adcfcf50cb76443ccb031eaa863ba94021f7d89a02eb6",
+       "witness_cases": [
+         "poi-trap",
+         "iterations-clamp-1001",
+@@ -7050,8 +7054,8 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3f7e8396"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3f7e813b"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7132,7 +7136,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "e99ceaec06045d872d591a097cac99c40fd34aab391271c90bb029d1456bbdc6",
++      "result_sha256": "9fd5206105b9ee9a05b62819fc8407f4bfe9c1f9fd4173803b01ebff7b9c506a",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -7288,7 +7292,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3ef0a5ce"
++            "actual": "0x3ef0a5d0"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7303,8 +7307,8 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3ef0a5ce"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3ef0a5d0"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7385,7 +7389,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "f7af78218f8f7d1f4b3e71f2970da9c6bbe5d1487fb2a716dce795a9ec5924f3",
++      "result_sha256": "bfcbaa76bca8e92ac740f620ca0a715bf29c62111f47528c06d036e5f1bc932d",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -7565,7 +7569,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3e19f5f7"
++            "actual": "0x3e19f5ef"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7580,8 +7584,8 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3e19f5f7"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3e19f5ef"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7678,7 +7682,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           }
+         }
+       ],
+-      "result_sha256": "b7e2fad5e0b22d15dac9c45cb2e259aca69928363111918be8aefb5348634e18",
++      "result_sha256": "f5cc840cbf30f4dc15ab34594d7edc11d4a43080ca2d51bdee6312f211d882f7",
+       "witness_cases": [
+         "manual-smooth",
+         "manual-distance-tile",
+@@ -7805,7 +7809,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -7871,7 +7875,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "8d2097f509bb15eb75a1f3d7e4c184ef8a55d303c1c80585eec4cec8b2fcb796",
++      "result_sha256": "e972d5f9fede29ee7c7c68f93dbc820b0a3f40f8c0da3f0e0306dafd4d12e4ca",
+       "witness_cases": [
+         "iterations-clamp-1001"
+       ],
+@@ -8022,7 +8026,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -8096,7 +8100,7 @@ The following canonical JSON record is emitted directly from the generator docum
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "ea095a58e3b6d5df72611ca9dfbd20f602979362bf390b78da3cc5fb8b6c82a2",
++      "result_sha256": "467d825b99705ce8a3182f6c72c0f0e8b2c743ce3bfada54cbfd5662f69eeeda",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -9777,9 +9781,9 @@ The following canonical JSON record is emitted directly from the generator docum
+       },
+       "canonical_1001": {
+         "f32_words_le": [
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
+           "0x3f800000"
+         ],
+         "rgba8_bytes": [
+@@ -9793,7 +9797,7 @@ The following canonical JSON record is emitted directly from the generator docum
+       "canonical_1000_vs_1001_identical_rgba8": false,
+       "mutant_candidate_first_float32_witness": {
+         "index": 0,
+-        "expected": "0x3f56a8ef",
++        "expected": "0x3f56a8fe",
+         "actual": "0x00000000"
+       },
+       "mutant_candidate_first_rgba8_witness": {
+@@ -10695,9 +10699,9 @@ The following canonical JSON record is emitted directly from the generator docum
+ 
+ ## Reviewed witness summary
+ 
+-- Package cardinality: cases=18, mutations=25, diagnostics=1; binding names=21; closure files=22.
++- Package cardinality: cases=18, mutations=25, diagnostics=1; binding names=21; closure files=23.
+ - Clamp observation iterations-clamp-1001-vs-1000: canonical 1000 loop entries=1000; canonical 1001=1000; no-clamp mutant=1001; instrumented canonical 1000/1001/mutant pixel identity=true/true/true. Canonical 1000-vs-1001 Float32/RGBA8 equality is false/false; this is recorded authority output, not normalized.
+-- Clamp source anchor/replacement: for (let index = 0; index < Math.min(maxIterations, 1000); index += 1) { -> maxIterations; anchor/instrumentation/mutant hashes=fdc2d5bff18e5d7cce09258a645aa8276d2d8370d3d10013df9bf613059f44ba/764cabab720a2754486049b80e36e0096825b32eeeaec98734304cf93f1a33f8/a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18; mutant changed lanes/bytes=3/3; first witnesses={"index":0,"expected":"0x3f56a8ef","actual":"0x00000000"} / {"index":0,"expected":214,"actual":0}.
++- Clamp source anchor/replacement: for (let index = 0; index < Math.min(maxIterations, 1000); index += 1) { -> maxIterations; anchor/instrumentation/mutant hashes=fdc2d5bff18e5d7cce09258a645aa8276d2d8370d3d10013df9bf613059f44ba/764cabab720a2754486049b80e36e0096825b32eeeaec98734304cf93f1a33f8/a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18; mutant changed lanes/bytes=3/3; first witnesses={"index":0,"expected":"0x3f56a8fe","actual":"0x00000000"} / {"index":0,"expected":214,"actual":0}.
+ - Result-trap-number source span=julia.js:158:7-47; anchor=trapMin = Math.min(trapMin, trapDistance); replacement=trapMin = F32(Math.min(trapMin, trapDistance)); source/anchor/replacement/mutant hashes=0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5/0705f06f3f6101e0f7990e839bd1c4aef343ee08dc7bafccd654669843890eb3/68ec4220d8cf63fd98aa5a0c94a2ed59c776f3d5081c671ff1bc89f20eb1f358/abd2a68d17ebff2e2390ab0645e60f7a582dc1f42690228db9e3ae286939eda5; occurrence count=1.
+ - Result-trap-number fixed selection: poi-trap-first, then trap-search-000000 through trap-search-199999; tested=152236; selected=trap-search-152217; changed lanes/bytes=3/3; witnesses={"index":0,"expected":"0x3f3d3d3d","actual":"0x3f3d3d3e"} / {"index":0,"expected":188,"actual":189}.
+ - Period diagnostic period-convergence: anchor=else if (Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10) {; replacement=else if (Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10) {
+@@ -10728,7 +10732,7 @@ The Task34 brief records the required pre-expansion baseline as the 8-case/23-mu
+ - Owned authored/tool files: docs/port-engineering/julia-parity/julia_oracle_generator.mjs; tools/glslcpp/generate_julia_native_oracle_include.py; tests/test_julia_oracle.py.
+ - Owned generated artifacts and sidecars: docs/port-engineering/julia-parity/julia-oracles.json(.sha256); docs/port-engineering/julia-parity/julia-oracle-report.md(.sha256); tests/oracles/julia_expected.inc(.sha256).
+ - No frontend, emitter, generated typed slice/catalog/runtime, corpus metadata, authority snapshot, unrelated tests/docs, build outputs, or Git files were changed.
+-- JSON SHA-256: 4c752915ca441b197774b6f1d746068c88087fed028df6b5f42f2572d416a318.
++- JSON SHA-256: b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf.
+ 
+ ## Remaining concerns
+ 
+@@ -10742,18 +10746,18 @@ This table supersedes the earlier abbreviated audit. It is the complete Task34-o
+ 
+ | Task34-owned relative path | Frozen baseline SHA-256 | Current SHA-256 or generation marker | Disposition |
+ | --- | --- | --- | --- |
+-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017 | changed |
+-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | b103da7c6cec01e6e34d6cfa0c01f18c4656a5019ebcb7d35490d9ec8259c37c | changed |
+-| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | 4c752915ca441b197774b6f1d746068c88087fed028df6b5f42f2572d416a318 | changed |
+-| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 7310fb9cbab2269cddb0a3ba1defe284aa7b32186cd677155efa1fa4c756cb13 | changed |
++| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e | changed |
++| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 67b3200eeba8ba5bb37863152f24459990d59d425563001fae485210bef87a59 | changed |
++| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf | changed |
++| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 22365b6f154e89dd946c875ec2db868ae025efac0c693b4a7d6d8fe2f0272356 | changed |
+ | docs/port-engineering/julia-parity/julia-oracle-report.md | c3813c7024c861fcba27809c66997f97947bcd621842c4ef396a4f827d25bccf | generated-by-this-report | changed |
+ | docs/port-engineering/julia-parity/julia-oracle-report.md.sha256 | c3c3da4de0568075bbc18dadb9cbc12e007b7d8d18c9ef9a888ee9c848f51479 | generated-by-this-report | changed |
+-| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998 | changed |
+-| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | b89d544cac8bdb33a465359afabe670a57c5db377fdb063986aecf811baa190c | new |
+-| tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | 8fa6d370657ae859294fa470e01646f4077a86054831749f1b8d3f1f9726f80e | changed |
+-| tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 2bd1d4356779c4dd779f0e545472f5817df969bd51a157143c0cfaaea318fce4 | changed |
++| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7 | changed |
++| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | e0626dd7cb9b9e399892705aa9e660888acd05a4a773f1fcf126118fa0c19613 | new |
++| tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | f2750a281665d2c55375502325820b861e4d9efe681687ec072962c938e36776 | changed |
++| tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 24249a39f39046768c762d56fe772e9add131f59b1c66ca5486faabf382cb93d | changed |
+ | tests/test_generated_kernels.cpp | d2210b840fa6ffe3b07b73330f7a336d01683c163e5887f276c254de40beb685 | e375c33914a968634ab7276c1f1146031c57ea182ae63c269bad72e81559649b | changed (recorded at Task34; cross-lane file, not re-read) |
+-| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 5bc6d65fdeccbb53bd0823f69a44432e9e5fcbf8ce51fb76a7c097854b785b54 | changed |
++| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 39a2c1cd9fd8f6c8a8acb6663f462daaabdfecf0c046d4c9611e25a7e90d7b87 | changed |
+ 
+ ## Fix3 observed seven-test RED reconstruction
+ 
+diff --git a/docs/port-engineering/julia-parity/julia-oracle-report.md.sha256 b/docs/port-engineering/julia-parity/julia-oracle-report.md.sha256
+index 1d0d995..068a66e 100644
+--- a/docs/port-engineering/julia-parity/julia-oracle-report.md.sha256
++++ b/docs/port-engineering/julia-parity/julia-oracle-report.md.sha256
+@@ -1 +1 @@
+-345970dda07e0fa95f15dd2883e9786c8808a71039929842a19adc3172c46684  julia-oracle-report.md
++0ac1758463459a341f1e011e7575493524680ac86c18c42ecd4756be861d50ef  julia-oracle-report.md
+diff --git a/docs/port-engineering/julia-parity/julia-oracles.json b/docs/port-engineering/julia-parity/julia-oracles.json
+index b875649..2e2628a 100644
+--- a/docs/port-engineering/julia-parity/julia-oracles.json
++++ b/docs/port-engineering/julia-parity/julia-oracles.json
+@@ -5,7 +5,7 @@
+   "effect_key": "synth/julia",
+   "runtime_key": "synth/julia:julia",
+   "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+   "factory": {
+     "name": "juliaFactory",
+     "text_sha256": "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6",
+@@ -219,7 +219,7 @@
+         },
+         {
+           "relative_path": "src/effects/adapters/index.js",
+-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+         },
+         {
+           "relative_path": "src/effects/adapters/julia.js",
+@@ -233,6 +233,10 @@
+           "relative_path": "src/effects/adapters/palette.js",
+           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+         },
++        {
++          "relative_path": "src/effects/adapters/remap.js",
++          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++        },
+         {
+           "relative_path": "src/effects/adapters/snow.js",
+           "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -251,7 +255,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         {
+           "relative_path": "src/effects/generated/kernels.js",
+@@ -259,7 +263,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/upstream-snapshot.js",
+-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+         },
+         {
+           "relative_path": "src/effects/registry.js",
+@@ -281,11 +285,11 @@
+     },
+     "generator": {
+       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
+-      "sha256": "4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017"
++      "sha256": "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
+     },
+     "materializer": {
+       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
+-      "sha256": "d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998"
++      "sha256": "f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7"
+     }
+   },
+   "render_cases": [
+@@ -2695,12 +2699,12 @@
+       },
+       "expected": {
+         "f32_words_le": [
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
+           "0x3f800000"
+         ],
+-        "f32_sha256": "e59c766c5f4c4faface8b7b5e30bafb20c6d10c89c12aba22784010e24fd1b67",
++        "f32_sha256": "d184544ae02c4932a200f8870074d749fdc44c0515b811d5902f9e58772b1a6a",
+         "rgba8_bytes": [
+           214,
+           214,
+@@ -4557,7 +4561,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -4647,7 +4651,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "15a47a2e97e32935c2851c33c16a79f73bfffcf07570f8b571e865b756f82ae2",
++      "result_sha256": "1db6a66d0efbb1a11c280afb67b0f8c8976987616109432ca4eca74c0d94ff48",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -4814,7 +4818,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -4896,7 +4900,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "6df249c1c71abb6262030b8425d4d37628c629dc7fc44ff38aa7f6a6b5f3bad7",
++      "result_sha256": "91cccd55a3b39cf320db9269346dbb273ee4c67511a17409e928b3893313c134",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5063,7 +5067,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -5145,7 +5149,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "77da401b37b415f8286e8599265f3035a8d9ded0091b0c1e1cf0348121270afa",
++      "result_sha256": "e422acc4e7347b0d8dedb3511a31c46fff3c6bfa73bea0c586d59d4819d82e85",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5312,7 +5316,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -5394,7 +5398,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "3251bfa71d38c3b48b52ec497f7ef4c4bf1335ba79cfc880058ffa1cb41de247",
++      "result_sha256": "5edbffc3a338088fb89a8b25da0770585366af51bded682d8b320df4ec1aab64",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -5554,7 +5558,7 @@
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3f56a8ef"
++            "actual": "0x3f56a8fe"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -5655,7 +5659,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "f50656a389d4bbd9370f9d19a61822df479dfe125386d8b083e34cdd2b90bc1d",
++      "result_sha256": "e8ccccf8c1e39c5241054183fc40f9eb0e007106a78986ddbc66ed5c3dc35ebf",
+       "witness_cases": [
+         "manual-smooth",
+         "manual-normal",
+@@ -6787,7 +6791,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -6861,7 +6865,7 @@
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "52e45382437e15a0004b2c25fea5b1dcbb522ec8f08c15ef10be2dfd85fc5997",
++      "result_sha256": "6900acfd71fd2669ee2adcfcf50cb76443ccb031eaa863ba94021f7d89a02eb6",
+       "witness_cases": [
+         "poi-trap",
+         "iterations-clamp-1001",
+@@ -7028,8 +7032,8 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3f7e8396"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3f7e813b"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7110,7 +7114,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "e99ceaec06045d872d591a097cac99c40fd34aab391271c90bb029d1456bbdc6",
++      "result_sha256": "9fd5206105b9ee9a05b62819fc8407f4bfe9c1f9fd4173803b01ebff7b9c506a",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -7266,7 +7270,7 @@
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3ef0a5ce"
++            "actual": "0x3ef0a5d0"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7281,8 +7285,8 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3ef0a5ce"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3ef0a5d0"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7363,7 +7367,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "f7af78218f8f7d1f4b3e71f2970da9c6bbe5d1487fb2a716dce795a9ec5924f3",
++      "result_sha256": "bfcbaa76bca8e92ac740f620ca0a715bf29c62111f47528c06d036e5f1bc932d",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -7543,7 +7547,7 @@
+           "float32_witness": {
+             "index": 0,
+             "expected": "0x00000000",
+-            "actual": "0x3e19f5f7"
++            "actual": "0x3e19f5ef"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7558,8 +7562,8 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
+-            "actual": "0x3e19f5f7"
++            "expected": "0x3f56a8fe",
++            "actual": "0x3e19f5ef"
+           },
+           "rgba8_witness": {
+             "index": 0,
+@@ -7656,7 +7660,7 @@
+           }
+         }
+       ],
+-      "result_sha256": "b7e2fad5e0b22d15dac9c45cb2e259aca69928363111918be8aefb5348634e18",
++      "result_sha256": "f5cc840cbf30f4dc15ab34594d7edc11d4a43080ca2d51bdee6312f211d882f7",
+       "witness_cases": [
+         "manual-smooth",
+         "manual-distance-tile",
+@@ -7783,7 +7787,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -7849,7 +7853,7 @@
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "8d2097f509bb15eb75a1f3d7e4c184ef8a55d303c1c80585eec4cec8b2fcb796",
++      "result_sha256": "e972d5f9fede29ee7c7c68f93dbc820b0a3f40f8c0da3f0e0306dafd4d12e4ca",
+       "witness_cases": [
+         "iterations-clamp-1001"
+       ],
+@@ -8000,7 +8004,7 @@
+           "changed_rgba8_bytes": 3,
+           "float32_witness": {
+             "index": 0,
+-            "expected": "0x3f56a8ef",
++            "expected": "0x3f56a8fe",
+             "actual": "0x00000000"
+           },
+           "rgba8_witness": {
+@@ -8074,7 +8078,7 @@
+           "rgba8_witness": null
+         }
+       ],
+-      "result_sha256": "ea095a58e3b6d5df72611ca9dfbd20f602979362bf390b78da3cc5fb8b6c82a2",
++      "result_sha256": "467d825b99705ce8a3182f6c72c0f0e8b2c743ce3bfada54cbfd5662f69eeeda",
+       "witness_cases": [
+         "manual-distance-tile",
+         "manual-stripe",
+@@ -9755,9 +9759,9 @@
+       },
+       "canonical_1001": {
+         "f32_words_le": [
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
+-          "0x3f56a8ef",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
++          "0x3f56a8fe",
+           "0x3f800000"
+         ],
+         "rgba8_bytes": [
+@@ -9771,7 +9775,7 @@
+       "canonical_1000_vs_1001_identical_rgba8": false,
+       "mutant_candidate_first_float32_witness": {
+         "index": 0,
+-        "expected": "0x3f56a8ef",
++        "expected": "0x3f56a8fe",
+         "actual": "0x00000000"
+       },
+       "mutant_candidate_first_rgba8_witness": {
+diff --git a/docs/port-engineering/julia-parity/julia-oracles.json.sha256 b/docs/port-engineering/julia-parity/julia-oracles.json.sha256
+index 82cb6f5..3b6803f 100644
+--- a/docs/port-engineering/julia-parity/julia-oracles.json.sha256
++++ b/docs/port-engineering/julia-parity/julia-oracles.json.sha256
+@@ -1 +1 @@
+-4c752915ca441b197774b6f1d746068c88087fed028df6b5f42f2572d416a318  julia-oracles.json
++b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf  julia-oracles.json
+diff --git a/docs/port-engineering/julia-parity/julia_oracle_generator.mjs b/docs/port-engineering/julia-parity/julia_oracle_generator.mjs
+index 399ba8c..73dd4d6 100644
+--- a/docs/port-engineering/julia-parity/julia_oracle_generator.mjs
++++ b/docs/port-engineering/julia-parity/julia_oracle_generator.mjs
+@@ -19,7 +19,7 @@ const factorySourceRelative = 'src/effects/adapters/julia.js'
+ const factoryName = 'juliaFactory'
+ const factoryTextSha256 = 'ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6'
+ const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+-const upstreamRevision = '117a236679d1db3ab8f0e278230ece277b57564c'
++const upstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+ const expectedClosure = Object.freeze([
+   ['src/csl/glsl-kernel.js','a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
+   ['src/csl/glsl-runtime.js','a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+@@ -28,17 +28,18 @@ const expectedClosure = Object.freeze([
+   ['src/effects/adapters/crt.js','c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+   ['src/effects/adapters/f32-color.js','b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
+   ['src/effects/adapters/fractal.js','0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+-  ['src/effects/adapters/index.js','40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
++  ['src/effects/adapters/index.js','dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+   ['src/effects/adapters/julia.js','0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
+   ['src/effects/adapters/median.js','e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
+   ['src/effects/adapters/palette.js','8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
++  ['src/effects/adapters/remap.js','91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
+   ['src/effects/adapters/snow.js','202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+   ['src/effects/catalog.js','d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
+   ['src/effects/definition.js','fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
+   ['src/effects/generated/canonical-adapter-data.js','ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
+-  ['src/effects/generated/canonical-kernels.js','66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
++  ['src/effects/generated/canonical-kernels.js','f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+   ['src/effects/generated/kernels.js','b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
+-  ['src/effects/generated/upstream-snapshot.js','e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
++  ['src/effects/generated/upstream-snapshot.js','6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
+   ['src/effects/registry.js','8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+   ['src/runtime/pass-runner.js','fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
+   ['src/runtime/sampler.js','1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+@@ -153,7 +154,7 @@ const cases=[
+  {name:'non-square-f32-transform',width:7,height:3,time:1.25,cReal:-.4,cImag:.6,poi:0,outputMode:4,centerX:.125,centerY:-.2,rotation:33,iterations:73,stripeFreq:0,trapShape:0,lightAngle:271,cPath:0,cSpeed:0,cRadius:.5,invert:false,zoomSpeed:0,zoomDepth:2.5,tileX:.375,tileY:-.125,salt:14},
+ ]
+ function syntheticInput(width,height,salt){const s=new Surface(width,height);for(let y=0;y<height;y++)for(let x=0;x<width;x++){const i=(y*width+x)*4;s.data[i]=f(((x*3+y*5+salt)%17)/16);s.data[i+1]=f(((x*7+y*2+salt)%19)/18);s.data[i+2]=f(((x*11+y*13+salt)%23)/22);s.data[i+3]=f(1)}return s}
+-function render(spec,override={},factory=canonicalFactory,extraUniforms={}){const v={...spec,...override};const input=syntheticInput(v.width,v.height,v.salt);const before=new Uint32Array(input.data.buffer.slice(0));const uniforms={resolution:new Float32Array([v.width,v.height]),tileOffset:new Float32Array([v.tileX,v.tileY]),fullResolution:new Float32Array([v.width,v.height]),time:f(v.time),cReal:f(v.cReal),cImag:f(v.cImag),poi:v.poi|0,outputMode:v.outputMode|0,centerX:f(v.centerX),centerY:f(v.centerY),rotation:f(v.rotation),iterations:v.iterations|0,stripeFreq:f(v.stripeFreq),trapShape:v.trapShape|0,lightAngle:f(v.lightAngle),cPath:v.cPath|0,cSpeed:f(v.cSpeed),cRadius:f(v.cRadius),invert:Boolean(v.invert),zoomSpeed:f(v.zoomSpeed),zoomDepth:f(v.zoomDepth),...extraUniforms};const kernel=bindCanonicalKernel(factory,{width:v.width,height:v.height,time:v.time,seed:0,uniforms,textures:{},tileOffset:uniforms.tileOffset,fullResolution:uniforms.fullResolution});const output=new Surface(v.width,v.height);runPass({kernel,destination:output,time:v.time,seed:0,tileRows:1});return{inputWords:words(input.data),outputWords:words(output.data),outputBytes:Array.from(output.toRgba8()),inputUnchanged:same(Array.from(before),Array.from(new Uint32Array(input.data.buffer))),outputStorage:output.data,outputBuffer:output.data.buffer,inputStorage:input.data}}
++function render(spec,override={},factory=canonicalFactory,extraUniforms={}){const v={...spec,...override};const input=syntheticInput(v.width,v.height,v.salt);const before=new Uint32Array(input.data.buffer.slice(0));const uniforms={resolution:new Float32Array([v.width,v.height]),tileOffset:new Float32Array([v.tileX,v.tileY]),fullResolution:new Float32Array([v.width,v.height]),time:f(v.time),cReal:v.cReal,cImag:v.cImag,poi:v.poi|0,outputMode:v.outputMode|0,centerX:v.centerX,centerY:v.centerY,rotation:v.rotation,iterations:v.iterations|0,stripeFreq:v.stripeFreq,trapShape:v.trapShape|0,lightAngle:v.lightAngle,cPath:v.cPath|0,cSpeed:v.cSpeed,cRadius:v.cRadius,invert:Boolean(v.invert),zoomSpeed:v.zoomSpeed,zoomDepth:v.zoomDepth,...extraUniforms};const kernel=bindCanonicalKernel(factory,{width:v.width,height:v.height,time:v.time,seed:0,uniforms,textures:{},tileOffset:uniforms.tileOffset,fullResolution:uniforms.fullResolution});const output=new Surface(v.width,v.height);runPass({kernel,destination:output,time:v.time,seed:0,tileRows:1});return{inputWords:words(input.data),outputWords:words(output.data),outputBytes:Array.from(output.toRgba8()),inputUnchanged:same(Array.from(before),Array.from(new Uint32Array(input.data.buffer))),outputStorage:output.data,outputBuffer:output.data.buffer,inputStorage:input.data}}
+ const rendered=cases.map(spec=>{const r=render(spec);return{...spec,input:{width:spec.width,height:spec.height,f32_words_le:r.inputWords,f32_sha256:digestWords(r.inputWords)},expected:{f32_words_le:r.outputWords,f32_sha256:digestWords(r.outputWords),rgba8_bytes:r.outputBytes,rgba8_sha256:digestBytes(r.outputBytes)},alpha_f32_word:'0x3f800000',alpha_rgba8_byte:255,input_immutable_exact_bits:r.inputUnchanged,bindings:{resolution:[spec.width,spec.height],tileOffset:[spec.tileX,spec.tileY],fullResolution:[spec.width,spec.height],time:spec.time,cReal:spec.cReal,cImag:spec.cImag,poi:spec.poi,outputMode:spec.outputMode,centerX:spec.centerX,centerY:spec.centerY,rotation:spec.rotation,iterations:spec.iterations,stripeFreq:spec.stripeFreq,trapShape:spec.trapShape,lightAngle:spec.lightAngle,cPath:spec.cPath,cSpeed:spec.cSpeed,cRadius:spec.cRadius,invert:spec.invert,zoomSpeed:spec.zoomSpeed,zoomDepth:spec.zoomDepth}}})
+ const baseline=new Map(rendered.map(x=>[x.name,x]));
+ const periodSpec=cases.find(x=>x.name==='period-convergence');const periodDiagnostic={periodHits:0};const periodInstrumented=render(periodSpec,{},diagnosticFactory,{__juliaDiagnostic:periodDiagnostic});if(periodDiagnostic.periodHits<1)throw new Error('period diagnostic witness did not execute the convergence branch');const diagnosticWitness={name:'period-convergence',source_anchor:diagnosticAnchor,replacement:diagnosticReplacement,anchor_occurrence_count:diagnosticAnchorOccurrenceCount,anchor_sha256:sha256(diagnosticAnchor),replacement_sha256:sha256(diagnosticReplacement),canonical_factory_text_sha256:factoryTextSha256,instrumented_factory_text_sha256:sha256(diagnosticFactoryText),period_hit_count:periodDiagnostic.periodHits,canonical:{f32_words_le:baseline.get('period-convergence').expected.f32_words_le,rgba8_bytes:baseline.get('period-convergence').expected.rgba8_bytes},instrumented:{f32_words_le:periodInstrumented.outputWords,rgba8_bytes:periodInstrumented.outputBytes}};compareExact({width:1,height:1,...diagnosticWitness.canonical}, {width:1,height:1,...diagnosticWitness.instrumented}, 'period diagnostic')
+diff --git a/docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 b/docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256
+index a5553bd..d47cc09 100644
+--- a/docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256
++++ b/docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256
+@@ -1 +1 @@
+-4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017  julia_oracle_generator.mjs
++9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e  julia_oracle_generator.mjs
+diff --git a/src/effects/snow.cpp b/src/effects/snow.cpp
+index 2e39f1c..2c5d84f 100644
+--- a/src/effects/snow.cpp
++++ b/src/effects/snow.cpp
+@@ -5,6 +5,7 @@
+ #include <cmath>
+ #include <memory>
+ 
++#include "noisemaker/fdlibm.hpp"
+ #include "noisemaker/glsl_runtime.hpp"
+ #include "noisemaker/numeric.hpp"
+ #include "noisemaker/sampler.hpp"
+@@ -60,9 +61,9 @@ constexpr double kInvTau = 1.0 / 6.283185307179586;  // rounded to float32 below
+ [[nodiscard]] double sine(double value) noexcept {
+   const double turns = f32(value * f32(kInvTau));
+   const double phase = turns - std::floor(turns);
+-  return f32(std::sin(phase * f32(kTau)));
++  return f32(noisemaker::fdlibm::sin(phase * f32(kTau)));
+ }
+-[[nodiscard]] double cosine(double value) noexcept { return f32(std::cos(value)); }
++[[nodiscard]] double cosine(double value) noexcept { return f32(noisemaker::fdlibm::cos(value)); }
+ 
+ [[nodiscard]] double periodic_value(double time, double value) noexcept {
+   return mul(add(sine(mul(sub(time, value), f32(kTau))), 1.0), 0.5);
+@@ -148,7 +149,7 @@ void pixel(const KernelState& base, const glsl::PixelContext& ctx, Vec4& out) no
+   const double density = std::max(mul(s.density, f32(0.01)), f32(0.0001));
+   const double exponent = div(sub(1.0, density), density);
+   const double limiter_mask =
+-      mul(f32(std::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
++      mul(f32(noisemaker::fdlibm::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
+   const double inverse_mask = sub(1.0, limiter_mask);
+ 
+   out[0] = noisemaker::f32(static_cast<double>(texel[0]) * inverse_mask +
+diff --git a/tests/oracles/julia_expected.inc b/tests/oracles/julia_expected.inc
+index 868b7f2..8b51d13 100644
+--- a/tests/oracles/julia_expected.inc
++++ b/tests/oracles/julia_expected.inc
+@@ -166,7 +166,7 @@ inline constexpr std::array<std::uint32_t, 4> kCase10Input{{
+   0x3f700000U, 0x3f555555U, 0x3f2e8ba3U, 0x3f800000U
+ }};
+ inline constexpr std::array<std::uint32_t, 4> kCase10Expected{{
+-  0x3f56a8efU, 0x3f56a8efU, 0x3f56a8efU, 0x3f800000U
++  0x3f56a8feU, 0x3f56a8feU, 0x3f56a8feU, 0x3f800000U
+ }};
+ inline constexpr std::array<std::uint8_t, 4> kCase10Rgba8{{
+   214U, 214U, 214U, 255U
+@@ -253,7 +253,7 @@ inline constexpr std::array<CaseView, 18> kCases{{
+   CaseView{"animated-lissajous", 3U, 3U, kCase7Bindings, kCase7Input, "a0c51cd0aa9ad8a182b9d62fd6205b2339e03f1430b49cb37e56a6d70fec75e3", kCase7Expected, "8657f768505e95acfcb2802903768a6bf4e72e408ddea917bc9780784ffd2c44", kCase7Rgba8, "d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538", "0x3f800000", 255U, "0x3f800000", 255U, true},
+   CaseView{"iterations-min", 1U, 1U, kCase8Bindings, kCase8Input, "9ab27ec849e1d15f5c1b80a7c88f41b3be7c10af6e8fdf00649fd5a45f183c76", kCase8Expected, "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e", kCase8Rgba8, "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332", "0x3f800000", 255U, "0x3f800000", 255U, true},
+   CaseView{"iterations-max", 1U, 1U, kCase9Bindings, kCase9Input, "3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2", kCase9Expected, "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e", kCase9Rgba8, "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332", "0x3f800000", 255U, "0x3f800000", 255U, true},
+-  CaseView{"iterations-clamp-1001", 1U, 1U, kCase10Bindings, kCase10Input, "3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2", kCase10Expected, "e59c766c5f4c4faface8b7b5e30bafb20c6d10c89c12aba22784010e24fd1b67", kCase10Rgba8, "118a1615c6cfc6ba1f8f9c5f3a4c07e4f79edd70d13f56c086d7f0c2a655e66b", "0x3f800000", 255U, "0x3f800000", 255U, true},
++  CaseView{"iterations-clamp-1001", 1U, 1U, kCase10Bindings, kCase10Input, "3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2", kCase10Expected, "d184544ae02c4932a200f8870074d749fdc44c0515b811d5902f9e58772b1a6a", kCase10Rgba8, "118a1615c6cfc6ba1f8f9c5f3a4c07e4f79edd70d13f56c086d7f0c2a655e66b", "0x3f800000", 255U, "0x3f800000", 255U, true},
+   CaseView{"bulb-path", 2U, 2U, kCase11Bindings, kCase11Input, "eaa3484acd7fa41d0ad4941309bab6374f222c210b17764fb521d5cf4eefcb7f", kCase11Expected, "9ba3b531624710dece54456c2e5cb1cb31d7df8cfb6fee2b1180d0cb791ea049", kCase11Rgba8, "cc0fa51d4d0a97b664030be5052f3b2b69a1267f89ace4c9bbc65007566725df", "0x3f800000", 255U, "0x3f800000", 255U, true},
+   CaseView{"poi-fallback", 2U, 2U, kCase12Bindings, kCase12Input, "7b8fcf38d596b67f0caf52ff4ba76e5a14213cae87d9ee2d7ba8ea354aa19b2d", kCase12Expected, "9ba3b531624710dece54456c2e5cb1cb31d7df8cfb6fee2b1180d0cb791ea049", kCase12Rgba8, "cc0fa51d4d0a97b664030be5052f3b2b69a1267f89ace4c9bbc65007566725df", "0x3f800000", 255U, "0x3f800000", 255U, true},
+   CaseView{"period-convergence", 1U, 1U, kCase13Bindings, kCase13Input, "df5b7da9a846298cb6d8132039eef63d490145aec049791b61256d076cde4877", kCase13Expected, "7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e", kCase13Rgba8, "e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332", "0x3f800000", 255U, "0x3f800000", 255U, true},
+@@ -322,7 +322,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation1Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", true, 12U, 12U, WitnessView{0, "0x00000000", "0x3f800000"}, WitnessView{0, "0", "255"} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -342,7 +342,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation2Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -362,7 +362,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation3Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -382,7 +382,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation4Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -401,7 +401,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation5Results{{
+   MutationResultView{"invert-output", true, 6U, 6U, WitnessView{0, "0x3f800000", "0x3f7e81c6"}, WitnessView{0, "255", "254"} },
+   MutationResultView{"animated-lissajous", true, 27U, 27U, WitnessView{0, "0x00000000", "0x3f7ff4eb"}, WitnessView{0, "0", "255"} },
+   MutationResultView{"iterations-min", true, 3U, 0U, WitnessView{0, "0x00000000", "0x7fe00000"}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3f56a8ef"}, WitnessView{0, "0", "214"} },
++  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3f56a8fe"}, WitnessView{0, "0", "214"} },
+   MutationResultView{"iterations-clamp-1001", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"bulb-path", true, 6U, 0U, WitnessView{0, "0x00000000", "0x7fe00000"}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -522,7 +522,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation11Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -542,7 +542,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation12Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x3f7e8396"}, WitnessView{0, "214", "254"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x3f7e813b"}, WitnessView{0, "214", "254"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -561,8 +561,8 @@ inline constexpr std::array<MutationResultView, 18> kMutation13Results{{
+   MutationResultView{"invert-output", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3ef0a5ce"}, WitnessView{0, "0", "120"} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x3ef0a5ce"}, WitnessView{0, "214", "120"} },
++  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3ef0a5d0"}, WitnessView{0, "0", "120"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x3ef0a5d0"}, WitnessView{0, "214", "120"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -581,8 +581,8 @@ inline constexpr std::array<MutationResultView, 18> kMutation14Results{{
+   MutationResultView{"invert-output", true, 36U, 36U, WitnessView{0, "0x3f800000", "0x7fe00000"}, WitnessView{0, "255", "0"} },
+   MutationResultView{"animated-lissajous", true, 27U, 27U, WitnessView{0, "0x00000000", "0x3f7ff1cf"}, WitnessView{0, "0", "255"} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3e19f5f7"}, WitnessView{0, "0", "38"} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x3e19f5f7"}, WitnessView{0, "214", "38"} },
++  MutationResultView{"iterations-max", true, 3U, 3U, WitnessView{0, "0x00000000", "0x3e19f5ef"}, WitnessView{0, "0", "38"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x3e19f5ef"}, WitnessView{0, "214", "38"} },
+   MutationResultView{"bulb-path", true, 12U, 0U, WitnessView{0, "0x00000000", "0x7fe00000"}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", true, 12U, 0U, WitnessView{0, "0x00000000", "0x7fe00000"}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -602,7 +602,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation15Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -622,7 +622,7 @@ inline constexpr std::array<MutationResultView, 18> kMutation16Results{{
+   MutationResultView{"animated-lissajous", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-min", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"iterations-max", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+-  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8ef", "0x00000000"}, WitnessView{0, "214", "0"} },
++  MutationResultView{"iterations-clamp-1001", true, 3U, 3U, WitnessView{0, "0x3f56a8fe", "0x00000000"}, WitnessView{0, "214", "0"} },
+   MutationResultView{"bulb-path", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"poi-fallback", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+   MutationResultView{"period-convergence", false, 0U, 0U, WitnessView{-1, {}, {}}, WitnessView{-1, {}, {}} },
+@@ -943,22 +943,22 @@ inline constexpr std::array<std::string_view, 18> kMutation24ControlCases{{
+ struct MutationView { std::string_view name; std::string_view group; std::string_view mechanism; std::string_view source_anchor; std::string_view source_span; std::string_view replacement; std::string_view anchor_sha256; std::string_view replacement_sha256; std::string_view mutated_factory_sha256; std::string_view result_sha256; bool independent; std::size_t anchor_occurrence_count; std::span<const std::string_view> witness_cases; std::span<const std::string_view> control_cases; std::span<const MutationResultView> results; };
+ inline constexpr std::array<MutationView, 25> kMutations{{
+   MutationView{"cross-lane-dz-assignment", "cross-lane-assignment", "replace next-derivative temporary with source-order aliasing", "const nextDerivativeX = F32(2 * F32(F32(reHigh * derivativeX) - F32(imHigh * derivativeY)))\n      derivativeY = F32(2 * F32(F32(reHigh * derivativeY) + F32(imHigh * derivativeX)))\n      derivativeX = nextDerivativeX", "", "derivativeX = F32(2 * F32(F32(reHigh * derivativeX) - F32(imHigh * derivativeY)))\n      derivativeY = F32(2 * F32(F32(reHigh * derivativeY) + F32(imHigh * derivativeX)))", "c83c5e436be035614cc98e1b8e96d71c5a31804e1c543c8e9001b9052ff4e44a", "60737b08ed7eb5909a883d8c0fba2abf6ffe477ffe7fc747d15e84e3de2cddd1", "9fdd53914591d4bb4209094359c1450847beef8bf0426bf737c872de286d081e", "4acdbcb21f93a80e55b86b5146a1de0ae96b576d7b23889e01fdca7f7bbd77cf", true, 1U, kMutation0WitnessCases, kMutation0ControlCases, kMutation0Results},
+-  MutationView{"df64-re2-carrier", "df64-carrier", "replace df64 real-square carrier owner", "const re2High = scratchHigh\n      const re2Low = scratchLow", "", "const re2High = 0\n      const re2Low = 0", "8179e52b0d81507ebe5ea947187d17e13369707e41a6724a1c3e9c4718d46333", "7aff87de41586aa57188e9fadaed79afddb149412e1f898a9a2c2ba583b8f1eb", "94c4d51c7c00b1ae740f57b0bc783c4d60a30aba5dc35312e3796069f16f4480", "15a47a2e97e32935c2851c33c16a79f73bfffcf07570f8b571e865b756f82ae2", true, 1U, kMutation1WitnessCases, kMutation1ControlCases, kMutation1Results},
+-  MutationView{"df64-im2-carrier", "df64-carrier", "replace df64 imaginary-square carrier owner", "const im2High = scratchHigh\n      const im2Low = scratchLow", "", "const im2High = 0\n      const im2Low = 0", "869cd06339a147e9cb452afdaded26b2cc082b17ff9d2e05d5fbdd0e60296d08", "f728fc3c75861ac1908f3c99d0ea01a573cd339d8690a2d89f4b082b48bff44d", "5b81a2db3058cfab7595b182f445bfa32fa143279a8dc1ddf1e32f1416b54194", "6df249c1c71abb6262030b8425d4d37628c629dc7fc44ff38aa7f6a6b5f3bad7", true, 1U, kMutation2WitnessCases, kMutation2ControlCases, kMutation2Results},
+-  MutationView{"df64-product-carrier", "df64-carrier", "replace df64 product carrier owner", "const productHigh = scratchHigh\n      const productLow = scratchLow", "", "const productHigh = 0\n      const productLow = 0", "bf08c13264b7df9f6d350909bf4fbaee0ec152b327f508c9c971c80dedbc8e40", "76695fed4c1fa0e89f85bc1ca8703292489b39d3bf317152ee53cfc328a0fbce", "78904c52122d5ab142be1628ff4290dac7d143b529f4116dd4df4ad1927ad0fc", "77da401b37b415f8286e8599265f3035a8d9ded0091b0c1e1cf0348121270afa", true, 1U, kMutation3WitnessCases, kMutation3ControlCases, kMutation3Results},
+-  MutationView{"df64-next-re-carrier", "df64-carrier", "replace df64 next-real carrier owner", "const nextReHigh = scratchHigh\n      const nextReLow = scratchLow", "", "const nextReHigh = 0\n      const nextReLow = 0", "d6589040e2a74df6e07a87fde42351b2fd29cc93550947d1106b23f6d8c0fc4d", "3a1ab0e1e7a77817560db1257ff5e1d0a782e99ae4e0c09512501a932b87b84d", "900bf690c575f4fdc517db041aac51ef59f78051ff257616e1750fe3dbbd1813", "3251bfa71d38c3b48b52ec497f7ef4c4bf1335ba79cfc880058ffa1cb41de247", true, 1U, kMutation4WitnessCases, kMutation4ControlCases, kMutation4Results},
+-  MutationView{"out-iteration", "out-materialization", "mutate iteration result owner materialization", "result.iteration = iteration", "", "result.iteration = 0", "30c8fb06d7d4f895e14cb9b022ff7c4192e3ca90fe8780cc4de9ffb8b2610d4e", "7c4cfbe45467c7ae34c862d91ea3a57fca56ae082223347c90bebf83c421e206", "c8f88c760fad861bfb6dbc4cd63f2f9a2c127daa35d2645e21418a8d8258ea3d", "f50656a389d4bbd9370f9d19a61822df479dfe125386d8b083e34cdd2b90bc1d", true, 1U, kMutation5WitnessCases, kMutation5ControlCases, kMutation5Results},
++  MutationView{"df64-re2-carrier", "df64-carrier", "replace df64 real-square carrier owner", "const re2High = scratchHigh\n      const re2Low = scratchLow", "", "const re2High = 0\n      const re2Low = 0", "8179e52b0d81507ebe5ea947187d17e13369707e41a6724a1c3e9c4718d46333", "7aff87de41586aa57188e9fadaed79afddb149412e1f898a9a2c2ba583b8f1eb", "94c4d51c7c00b1ae740f57b0bc783c4d60a30aba5dc35312e3796069f16f4480", "1db6a66d0efbb1a11c280afb67b0f8c8976987616109432ca4eca74c0d94ff48", true, 1U, kMutation1WitnessCases, kMutation1ControlCases, kMutation1Results},
++  MutationView{"df64-im2-carrier", "df64-carrier", "replace df64 imaginary-square carrier owner", "const im2High = scratchHigh\n      const im2Low = scratchLow", "", "const im2High = 0\n      const im2Low = 0", "869cd06339a147e9cb452afdaded26b2cc082b17ff9d2e05d5fbdd0e60296d08", "f728fc3c75861ac1908f3c99d0ea01a573cd339d8690a2d89f4b082b48bff44d", "5b81a2db3058cfab7595b182f445bfa32fa143279a8dc1ddf1e32f1416b54194", "91cccd55a3b39cf320db9269346dbb273ee4c67511a17409e928b3893313c134", true, 1U, kMutation2WitnessCases, kMutation2ControlCases, kMutation2Results},
++  MutationView{"df64-product-carrier", "df64-carrier", "replace df64 product carrier owner", "const productHigh = scratchHigh\n      const productLow = scratchLow", "", "const productHigh = 0\n      const productLow = 0", "bf08c13264b7df9f6d350909bf4fbaee0ec152b327f508c9c971c80dedbc8e40", "76695fed4c1fa0e89f85bc1ca8703292489b39d3bf317152ee53cfc328a0fbce", "78904c52122d5ab142be1628ff4290dac7d143b529f4116dd4df4ad1927ad0fc", "e422acc4e7347b0d8dedb3511a31c46fff3c6bfa73bea0c586d59d4819d82e85", true, 1U, kMutation3WitnessCases, kMutation3ControlCases, kMutation3Results},
++  MutationView{"df64-next-re-carrier", "df64-carrier", "replace df64 next-real carrier owner", "const nextReHigh = scratchHigh\n      const nextReLow = scratchLow", "", "const nextReHigh = 0\n      const nextReLow = 0", "d6589040e2a74df6e07a87fde42351b2fd29cc93550947d1106b23f6d8c0fc4d", "3a1ab0e1e7a77817560db1257ff5e1d0a782e99ae4e0c09512501a932b87b84d", "900bf690c575f4fdc517db041aac51ef59f78051ff257616e1750fe3dbbd1813", "5edbffc3a338088fb89a8b25da0770585366af51bded682d8b320df4ec1aab64", true, 1U, kMutation4WitnessCases, kMutation4ControlCases, kMutation4Results},
++  MutationView{"out-iteration", "out-materialization", "mutate iteration result owner materialization", "result.iteration = iteration", "", "result.iteration = 0", "30c8fb06d7d4f895e14cb9b022ff7c4192e3ca90fe8780cc4de9ffb8b2610d4e", "7c4cfbe45467c7ae34c862d91ea3a57fca56ae082223347c90bebf83c421e206", "c8f88c760fad861bfb6dbc4cd63f2f9a2c127daa35d2645e21418a8d8258ea3d", "e8ccccf8c1e39c5241054183fc40f9eb0e007106a78986ddbc66ed5c3dc35ebf", true, 1U, kMutation5WitnessCases, kMutation5ControlCases, kMutation5Results},
+   MutationView{"out-z-magnitude2", "out-materialization", "mutate zMagnitude2 result owner materialization", "result.zMagnitude2 = F32(F32(reHigh * reHigh) + F32(imHigh * imHigh))", "", "result.zMagnitude2 = 0", "7ba3eacc7b9b8b8da2605660a467a5bce50d9e9b6e07c19454d550a2b66e8f66", "d36ed37ea88cc317e08d4c3ac1e323f95b964662c0462e1a851a0a3cf133a0e5", "69507160fcd2f53af070bd4db5c14749f09a7475339f72f498d5495993613427", "e9ec50a9e509fa3847ba149892528d5320aa08418a98fa566e697f3badde58a9", true, 1U, kMutation6WitnessCases, kMutation6ControlCases, kMutation6Results},
+   MutationView{"out-derivative-magnitude2", "out-materialization", "mutate derivativeMagnitude2 result owner materialization", "result.derivativeMagnitude2 = F32(F32(derivativeX * derivativeX) + F32(derivativeY * derivativeY))", "", "result.derivativeMagnitude2 = 0", "0aa48418f5c21ee957c609cdf0331624a843282cfb70eb70183de6d0870c9504", "4938e9681edd141d48686819c27b08698980e07efc1757c4e65917c5e470bec6", "d836409e43fa5c3b1a222303b8a40dcba144eff89a813720ac5ee2773fe86541", "bda52bbbf81c7ae6324de92efa8ed6031d752b00bfadee8a72261d62e28ce8cf", true, 1U, kMutation7WitnessCases, kMutation7ControlCases, kMutation7Results},
+   MutationView{"out-stripe-sum", "out-materialization", "mutate stripeSum result owner materialization", "result.stripeSum = stripeSum", "", "result.stripeSum = 0", "66392efe93e894248bac6c6bca7ae0d8f8549199289356b51b8ee66e1cfe7eb6", "fd870248bb90468d89ea28efe5c0c9d53ecc29b04edcf28bc48e9de75de94471", "c1e17b234f588162749c5a8766c48af04fd231af2ff24b7f439a580326fbbd33", "29d37266e62062713a9f57016275b0d427adeb2171aed6ce08e70f0ff061a209", true, 1U, kMutation8WitnessCases, kMutation8ControlCases, kMutation8Results},
+   MutationView{"out-stripe-count", "out-materialization", "mutate stripeCount result owner materialization", "result.stripeCount = stripeCount", "", "result.stripeCount = stripeCount + 1", "d79ff37e0390f4091a72fe78876b0caa2f92347cf4eefff5bbbeca74a5b765fe", "0f9d1fbd21929c819e18d9ac761c6492b874dfed91d452c17baf867baea78651", "0bb332675454140bf47a02c53d47d18a8667500a0c6a642a616919b75c204a66", "42ab9d6e31b8f9b24a2c257d5564337d00b3e0f89ae62ed5d1eb5c5a2f8c65b7", true, 1U, kMutation9WitnessCases, kMutation9ControlCases, kMutation9Results},
+   MutationView{"out-stripe-last", "out-materialization", "mutate stripeLast result owner materialization", "result.stripeLast = stripeLast", "", "result.stripeLast = 0", "69a85b0ccde99c3821f03dde06cb9e4ec3c94d7cbd1aae65306f3c75d6e65b4a", "e6b5d74c85d2c2ee381cb0302783776b2a008732775233d75d870d4a63f6ede5", "bf00af11ec4f923f4c29890f8b53f55eaab6aaf36667dbd835513871fbf02018", "399c49689696fbb38060af8b5ca33c2f50c9f595a6df829859ff49013d22a5b3", true, 1U, kMutation10WitnessCases, kMutation10ControlCases, kMutation10Results},
+-  MutationView{"out-trap-min", "out-materialization", "mutate trapMin result owner materialization", "result.trapMin = trapMin", "", "result.trapMin = 1", "1a01779573462d720c6ae74e6bb10083ad6a9c3209ca508c262088f3903b1df2", "5648290fd2fc4f963aed60553d5e08eb31bd05d7e9dc77c6853fcb4612e58ae9", "0c18b2a9a2d2e2989e1bcc8f53ffbfb34606726710dc03b2f64d4358faef04aa", "52e45382437e15a0004b2c25fea5b1dcbb522ec8f08c15ef10be2dfd85fc5997", true, 1U, kMutation11WitnessCases, kMutation11ControlCases, kMutation11Results},
+-  MutationView{"transform-re-owner", "out-materialization", "mutate transform real coordinate owner", "coordinates[0] = scratchHigh", "", "coordinates[0] = 0", "04cd174c201170ba87b4cc0f4c8e3a832aba6cff09ffcd6a884156ca9d4d627e", "8826e0fbf5c6623a03a15cfe86306fa89e8ad1df362be765d151b390b26a0a51", "e0db5ab13c82c1a50b6a2538bd97aaff2317d0f8a45345e21675abe6760d0e4b", "e99ceaec06045d872d591a097cac99c40fd34aab391271c90bb029d1456bbdc6", true, 1U, kMutation12WitnessCases, kMutation12ControlCases, kMutation12Results},
+-  MutationView{"transform-im-owner", "out-materialization", "mutate transform imaginary coordinate owner", "coordinates[2] = scratchHigh", "", "coordinates[2] = 0", "7d323b5bac250bf655fecb32049b8754f5f65b9f5e2f2edac90caf7a993d2444", "6b85f53f990d823afdd18bd215c236941a89c26d9b5be1365d8b57daad46bcfc", "7d4ac5cb76054fa93bfa948bd867b32343ff171ab19d37308219c78db8156292", "f7af78218f8f7d1f4b3e71f2970da9c6bbe5d1487fb2a716dce795a9ec5924f3", true, 1U, kMutation13WitnessCases, kMutation13ControlCases, kMutation13Results},
+-  MutationView{"loop-bound", "iteration-loop", "shorten Julia outer iteration bound", "Math.min(maxIterations, 1000)", "", "Math.min(maxIterations, 1)", "d7827a7823840b51b49c31a86c8e2653bb2d14e2b28d599205c61f29ce05d461", "848242238dd18b61ae89a14eebdf9ce4857f349e446cf4f62907e58e715f5c1f", "dc56981c1d347992b9c390393acd073b9640afc653b476027230b2c437f8f4fb", "b7e2fad5e0b22d15dac9c45cb2e259aca69928363111918be8aefb5348634e18", true, 1U, kMutation14WitnessCases, kMutation14ControlCases, kMutation14Results},
+-  MutationView{"loop-clamp-1001", "iteration-loop", "remove the runtime maxIterations clamp at the direct 1001 boundary", "Math.min(maxIterations, 1000)", "", "maxIterations", "d7827a7823840b51b49c31a86c8e2653bb2d14e2b28d599205c61f29ce05d461", "825df14610cc75d3e2a1e1e35276bce9686d82063e3d66f9c449100bc1e74f7b", "a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18", "8d2097f509bb15eb75a1f3d7e4c184ef8a55d303c1c80585eec4cec8b2fcb796", true, 1U, kMutation15WitnessCases, kMutation15ControlCases, kMutation15Results},
+-  MutationView{"period-loop-bound", "iteration-loop", "widen period detection convergence bound", "Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10", "", "Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-1", "447482a148196100135bf5d27c8fa26cf758afd687b5207a377a0ae10395c3cd", "f65b14b1826bb113e75206d47e8644461c4cd4feeb9a24718d557a1b1134c16a", "1fb47da10ab8baa42ee7fd469724eb7d282b8c37d8ec02ba767f23cbd47a5c5e", "ea095a58e3b6d5df72611ca9dfbd20f602979362bf390b78da3cc5fb8b6c82a2", true, 1U, kMutation16WitnessCases, kMutation16ControlCases, kMutation16Results},
++  MutationView{"out-trap-min", "out-materialization", "mutate trapMin result owner materialization", "result.trapMin = trapMin", "", "result.trapMin = 1", "1a01779573462d720c6ae74e6bb10083ad6a9c3209ca508c262088f3903b1df2", "5648290fd2fc4f963aed60553d5e08eb31bd05d7e9dc77c6853fcb4612e58ae9", "0c18b2a9a2d2e2989e1bcc8f53ffbfb34606726710dc03b2f64d4358faef04aa", "6900acfd71fd2669ee2adcfcf50cb76443ccb031eaa863ba94021f7d89a02eb6", true, 1U, kMutation11WitnessCases, kMutation11ControlCases, kMutation11Results},
++  MutationView{"transform-re-owner", "out-materialization", "mutate transform real coordinate owner", "coordinates[0] = scratchHigh", "", "coordinates[0] = 0", "04cd174c201170ba87b4cc0f4c8e3a832aba6cff09ffcd6a884156ca9d4d627e", "8826e0fbf5c6623a03a15cfe86306fa89e8ad1df362be765d151b390b26a0a51", "e0db5ab13c82c1a50b6a2538bd97aaff2317d0f8a45345e21675abe6760d0e4b", "9fd5206105b9ee9a05b62819fc8407f4bfe9c1f9fd4173803b01ebff7b9c506a", true, 1U, kMutation12WitnessCases, kMutation12ControlCases, kMutation12Results},
++  MutationView{"transform-im-owner", "out-materialization", "mutate transform imaginary coordinate owner", "coordinates[2] = scratchHigh", "", "coordinates[2] = 0", "7d323b5bac250bf655fecb32049b8754f5f65b9f5e2f2edac90caf7a993d2444", "6b85f53f990d823afdd18bd215c236941a89c26d9b5be1365d8b57daad46bcfc", "7d4ac5cb76054fa93bfa948bd867b32343ff171ab19d37308219c78db8156292", "bfcbaa76bca8e92ac740f620ca0a715bf29c62111f47528c06d036e5f1bc932d", true, 1U, kMutation13WitnessCases, kMutation13ControlCases, kMutation13Results},
++  MutationView{"loop-bound", "iteration-loop", "shorten Julia outer iteration bound", "Math.min(maxIterations, 1000)", "", "Math.min(maxIterations, 1)", "d7827a7823840b51b49c31a86c8e2653bb2d14e2b28d599205c61f29ce05d461", "848242238dd18b61ae89a14eebdf9ce4857f349e446cf4f62907e58e715f5c1f", "dc56981c1d347992b9c390393acd073b9640afc653b476027230b2c437f8f4fb", "f5cc840cbf30f4dc15ab34594d7edc11d4a43080ca2d51bdee6312f211d882f7", true, 1U, kMutation14WitnessCases, kMutation14ControlCases, kMutation14Results},
++  MutationView{"loop-clamp-1001", "iteration-loop", "remove the runtime maxIterations clamp at the direct 1001 boundary", "Math.min(maxIterations, 1000)", "", "maxIterations", "d7827a7823840b51b49c31a86c8e2653bb2d14e2b28d599205c61f29ce05d461", "825df14610cc75d3e2a1e1e35276bce9686d82063e3d66f9c449100bc1e74f7b", "a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18", "e972d5f9fede29ee7c7c68f93dbc820b0a3f40f8c0da3f0e0306dafd4d12e4ca", true, 1U, kMutation15WitnessCases, kMutation15ControlCases, kMutation15Results},
++  MutationView{"period-loop-bound", "iteration-loop", "widen period detection convergence bound", "Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-10", "", "Math.hypot(reHigh - slowX, imHigh - slowY) < 1e-1", "447482a148196100135bf5d27c8fa26cf758afd687b5207a377a0ae10395c3cd", "f65b14b1826bb113e75206d47e8644461c4cd4feeb9a24718d557a1b1134c16a", "1fb47da10ab8baa42ee7fd469724eb7d282b8c37d8ec02ba767f23cbd47a5c5e", "467d825b99705ce8a3182f6c72c0f0e8b2c743ce3bfada54cbfd5662f69eeeda", true, 1U, kMutation16WitnessCases, kMutation16ControlCases, kMutation16Results},
+   MutationView{"log-smoothing", "log-sites", "mutate smooth iteration logarithm", "const nu = Math.log(logMagnitude / LOG2) / LOG2\n    return clamp((iterationResult.iteration + 1 - nu) / maxIterations)", "", "const nu = Math.log(logMagnitude / LOG2) / (LOG2 * 2)\n    return clamp((iterationResult.iteration + 1 - nu) / maxIterations)", "d3bdfef870e6dc5fd8912686b44441d8441f6ad793f0caff514c9f46752e1f3a", "cd6ca2a350c60483ae4e939d5283d448a9c577b3d79d39454e7af1dfcd665603", "9937f3ecb41404f1c3f4a90763f31c75435c0baf0e88740eec6f539be5ccf0fc", "ed124e272782a8e08152fca66b52c5c26e42310cd1e384244392c2edaf247086", true, 1U, kMutation17WitnessCases, kMutation17ControlCases, kMutation17Results},
+   MutationView{"log-distance", "log-sites", "mutate distance estimation logarithm", "Math.log(2 * magnitude * Math.log(magnitude) / derivative + 1) * 2", "", "Math.log(2 * magnitude * Math.log(magnitude * 2) / derivative + 1) * 2", "b25f59f85a9fc1f67ab9871f119ece6223efe996d84d10e4713a050cd6f88b20", "23792fe1424127784d6fbbdcbf39cbb0929ed9248a0a75def3f46d265839f78d", "e7b841834a4022189633c1374841a638b0e1c5dbc567059d0e3b7b84461fa50b", "d7c742fe96564afc28cb5d863d1b24119c0ef8ae4ed0e60feca4fe2e9cfe918c", true, 1U, kMutation18WitnessCases, kMutation18ControlCases, kMutation18Results},
+   MutationView{"log-stripe", "log-sites", "mutate stripe logarithm", "const logMagnitude = Math.log(r.zMagnitude2) * 0.5", "", "const logMagnitude = Math.log(r.zMagnitude2) * 5", "a8ab022104954ba54031d07439b3370f16a0429130ef09ee0077c44782d3238d", "e25fa0a0c4a95a122b863167b47c6b43cd7c01ac8aa96371d8341a3a16c48500", "c2da8e6fccffc9ae07940766e80c928d88e4641d7a6c23eae259d53c69c983f8", "fa98057c765a6f6901336ba44627a27efab51397e85fc694cc608c2e677a0292", true, 1U, kMutation19WitnessCases, kMutation19ControlCases, kMutation19Results},
+diff --git a/tests/oracles/julia_expected.inc.sha256 b/tests/oracles/julia_expected.inc.sha256
+index d1e6672..20160ad 100644
+--- a/tests/oracles/julia_expected.inc.sha256
++++ b/tests/oracles/julia_expected.inc.sha256
+@@ -1 +1 @@
+-8fa6d370657ae859294fa470e01646f4077a86054831749f1b8d3f1f9726f80e  julia_expected.inc
++f2750a281665d2c55375502325820b861e4d9efe681687ec072962c938e36776  julia_expected.inc
+diff --git a/tests/test_julia_oracle.py b/tests/test_julia_oracle.py
+index 3b6f3c6..316f754 100644
+--- a/tests/test_julia_oracle.py
++++ b/tests/test_julia_oracle.py
+@@ -72,7 +72,7 @@ class JuliaOracleTests(unittest.TestCase):
+         self.assertEqual("synth/julia:julia", doc["program_key"])
+         self.assertEqual("juliaFactory", doc["factory"]["name"])
+         self.assertTrue(doc["factory"]["adapter_own_key"])
+-        self.assertEqual(22, len(doc["provenance"]["cpu_snapshot"]["import_closure"]))
++        self.assertEqual(23, len(doc["provenance"]["cpu_snapshot"]["import_closure"]))
+         self.assertEqual(18, len(doc["render_cases"]))
+         self.assertEqual(25, doc["mutation_anchor_cardinality"]["total"])
+         self.assertEqual(25, len(doc["mutation_ledger"]))
+diff --git a/tools/glslcpp/emit_typed_cpp.py b/tools/glslcpp/emit_typed_cpp.py
+index 263452b..b76a263 100644
+--- a/tools/glslcpp/emit_typed_cpp.py
++++ b/tools/glslcpp/emit_typed_cpp.py
+@@ -10963,23 +10963,23 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
+       bindings.get<glsl::Vec2>("tileOffset"),
+       bindings.get<glsl::Vec2>("fullResolution"),
+       static_cast<double>(noisemaker::f32(bindings.get_number("time"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("cReal"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("cImag"))),
++      bindings.get_number("cReal"),
++      bindings.get_number("cImag"),
+       bindings.get<std::int32_t>("poi"),
+       bindings.get<std::int32_t>("outputMode"),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("centerX"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("centerY"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("rotation"))),
++      bindings.get_number("centerX"),
++      bindings.get_number("centerY"),
++      bindings.get_number("rotation"),
+       bindings.get<std::int32_t>("iterations"),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("stripeFreq"))),
++      bindings.get_number("stripeFreq"),
+       bindings.get<std::int32_t>("trapShape"),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("lightAngle"))),
++      bindings.get_number("lightAngle"),
+       bindings.get<std::int32_t>("cPath"),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("cSpeed"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("cRadius"))),
++      bindings.get_number("cSpeed"),
++      bindings.get_number("cRadius"),
+       bindings.get<bool>("invert"),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("zoomSpeed"))),
+-      static_cast<double>(noisemaker::f32(bindings.get_number("zoomDepth"))));
++      bindings.get_number("zoomSpeed"),
++      bindings.get_number("zoomDepth"));
+   (void)bindings;
+   return BoundKernel(state, &{namespace}::pixel);
+ }}
+diff --git a/tools/glslcpp/generate_julia_native_oracle_include.py b/tools/glslcpp/generate_julia_native_oracle_include.py
+index 15a68e4..5327a26 100644
+--- a/tools/glslcpp/generate_julia_native_oracle_include.py
++++ b/tools/glslcpp/generate_julia_native_oracle_include.py
+@@ -16,13 +16,13 @@ FACTORY_SOURCE_SHA = "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb5704
+ FACTORY_SHA = "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6"
+ GENERATOR_RELATIVE = "docs/port-engineering/julia-parity/julia_oracle_generator.mjs"
+ MATERIALIZER_RELATIVE = "tools/glslcpp/generate_julia_native_oracle_include.py"
+-GENERATOR_SHA = "4445d39ddc05e720d2583d0b1cf785434464c1e764eb3059f20da65165158017"
++GENERATOR_SHA = "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
+ CORPUS = "a024dc3a960cc44af454abc7aebce50456c194e6"
+-UPSTREAM = "117a236679d1db3ab8f0e278230ece277b57564c"
++UPSTREAM = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+ EXPECTED_NAMES = ["resolution", "tileOffset", "fullResolution", "time", "cReal", "cImag", "poi", "outputMode", "centerX", "centerY", "rotation", "iterations", "stripeFreq", "trapShape", "lightAngle", "cPath", "cSpeed", "cRadius", "invert", "zoomSpeed", "zoomDepth"]
+ EXPECTED_ABI = {"resolution":"Vec2", "tileOffset":"Vec2", "fullResolution":"Vec2", "time":"number", "cReal":"number", "cImag":"number", "poi":"int32", "outputMode":"int32", "centerX":"number", "centerY":"number", "rotation":"number", "iterations":"int32", "stripeFreq":"number", "trapShape":"int32", "lightAngle":"number", "cPath":"int32", "cSpeed":"number", "cRadius":"number", "invert":"bool", "zoomSpeed":"number", "zoomDepth":"number"}
+ EXPECTED_SOURCE_ABI = {"resolution":"vec2", "tileOffset":"vec2", "fullResolution":"vec2", "time":"float", "cReal":"float", "cImag":"float", "poi":"int", "outputMode":"int", "centerX":"float", "centerY":"float", "rotation":"float", "iterations":"int", "stripeFreq":"float", "trapShape":"int", "lightAngle":"float", "cPath":"int", "cSpeed":"float", "cRadius":"float", "invert":"bool", "zoomSpeed":"float", "zoomDepth":"float"}
+-EXPECTED_CLOSURE = {"src/csl/glsl-kernel.js":"a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa", "src/csl/glsl-runtime.js":"a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072", "src/csl/runtime.js":"a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee", "src/effects/adapters/bit-effects.js":"5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7", "src/effects/adapters/crt.js":"c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc", "src/effects/adapters/f32-color.js":"b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046", "src/effects/adapters/fractal.js":"0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29", "src/effects/adapters/index.js":"40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267", "src/effects/adapters/julia.js":FACTORY_SOURCE_SHA, "src/effects/adapters/median.js":"e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583", "src/effects/adapters/palette.js":"8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452", "src/effects/adapters/snow.js":"202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366", "src/effects/catalog.js":"d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4", "src/effects/definition.js":"fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02", "src/effects/generated/canonical-adapter-data.js":"ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab", "src/effects/generated/canonical-kernels.js":"66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe", "src/effects/generated/kernels.js":"b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01", "src/effects/generated/upstream-snapshot.js":"e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090", "src/effects/registry.js":"8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618", "src/runtime/pass-runner.js":"fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa", "src/runtime/sampler.js":"1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328", "src/runtime/surface.js":"0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"}
++EXPECTED_CLOSURE = {"src/csl/glsl-kernel.js":"a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa", "src/csl/glsl-runtime.js":"a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072", "src/csl/runtime.js":"a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee", "src/effects/adapters/bit-effects.js":"5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7", "src/effects/adapters/crt.js":"c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc", "src/effects/adapters/f32-color.js":"b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046", "src/effects/adapters/fractal.js":"0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29", "src/effects/adapters/index.js":"dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e", "src/effects/adapters/julia.js":FACTORY_SOURCE_SHA, "src/effects/adapters/median.js":"e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583", "src/effects/adapters/palette.js":"8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452", "src/effects/adapters/remap.js":"91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79", "src/effects/adapters/snow.js":"202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366", "src/effects/catalog.js":"d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4", "src/effects/definition.js":"fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02", "src/effects/generated/canonical-adapter-data.js":"ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab", "src/effects/generated/canonical-kernels.js":"f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c", "src/effects/generated/kernels.js":"b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01", "src/effects/generated/upstream-snapshot.js":"6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7", "src/effects/registry.js":"8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618", "src/runtime/pass-runner.js":"fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa", "src/runtime/sampler.js":"1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328", "src/runtime/surface.js":"0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"}
+ EXACTNESS = {"float32":"raw little-endian uint32 words; signed zero and NaN payloads significant", "rgba8":"complete independently captured RGBA8 bytes", "tolerance":"none", "dimensions":"checked before lane access", "comparison":"dimensions, counts, every uint32 word, every RGBA8 byte"}
+ COMPARER = {"dimensions_before_access":True, "first_mismatch_reported":True, "raw_words_and_rgba8_independent":True, "cases":{"good":True,"dimensions":True,"short":True,"long":True,"rgba8_count":True,"rgba8_mismatch":True,"signed_zero":True,"nan_payload":True}}
+ def _case(name,width,height,controls,input_hash,expected_hash,rgba_hash):
+@@ -38,7 +38,7 @@ EXPECTED_CASES = [
+  _case("animated-lissajous",3,3,{"time":0.9,"cReal":0,"cImag":0,"poi":0,"outputMode":3,"centerX":0,"centerY":0,"rotation":-12,"iterations":72,"stripeFreq":0,"trapShape":1,"lightAngle":180,"cPath":1,"cSpeed":1.1,"cRadius":0.4,"invert":False,"zoomSpeed":0.8,"zoomDepth":3,"tileX":0.25,"tileY":-0.5,"salt":8},"a0c51cd0aa9ad8a182b9d62fd6205b2339e03f1430b49cb37e56a6d70fec75e3","8657f768505e95acfcb2802903768a6bf4e72e408ddea917bc9780784ffd2c44","d574fbbbc44a56d8ec9bf06a4221e0c975b101e434c87e030572be6660dfb538"),
+  _case("iterations-min",1,1,{"time":0,"cReal":0,"cImag":0,"poi":0,"outputMode":0,"centerX":0,"centerY":0,"rotation":0,"iterations":1,"stripeFreq":0,"trapShape":0,"lightAngle":45,"cPath":0,"cSpeed":0,"cRadius":0.5,"invert":False,"zoomSpeed":0,"zoomDepth":1,"tileX":0,"tileY":0,"salt":9},"9ab27ec849e1d15f5c1b80a7c88f41b3be7c10af6e8fdf00649fd5a45f183c76","7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e","e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"),
+  _case("iterations-max",1,1,{"time":6.4456087906019786,"cReal":0.7145556327222278,"cImag":0.18602843191149376,"poi":0,"outputMode":3,"centerX":-0.5526962232665849,"centerY":-0.20907021993982378,"rotation":-24.482864887566052,"iterations":1000,"stripeFreq":0,"trapShape":0,"lightAngle":284.247223381942,"cPath":3,"cSpeed":1.1909674250499735,"cRadius":0.8099422763590567,"invert":False,"zoomSpeed":0,"zoomDepth":4.561745525235716,"tileX":0,"tileY":0,"salt":15},"3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2","7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e","e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"),
+- _case("iterations-clamp-1001",1,1,{"time":6.4456087906019786,"cReal":0.7145556327222278,"cImag":0.18602843191149376,"poi":0,"outputMode":3,"centerX":-0.5526962232665849,"centerY":-0.20907021993982378,"rotation":-24.482864887566052,"iterations":1001,"stripeFreq":0,"trapShape":0,"lightAngle":284.247223381942,"cPath":3,"cSpeed":1.1909674250499735,"cRadius":0.8099422763590567,"invert":False,"zoomSpeed":0,"zoomDepth":4.561745525235716,"tileX":0,"tileY":0,"salt":15},"3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2","e59c766c5f4c4faface8b7b5e30bafb20c6d10c89c12aba22784010e24fd1b67","118a1615c6cfc6ba1f8f9c5f3a4c07e4f79edd70d13f56c086d7f0c2a655e66b"),
++ _case("iterations-clamp-1001",1,1,{"time":6.4456087906019786,"cReal":0.7145556327222278,"cImag":0.18602843191149376,"poi":0,"outputMode":3,"centerX":-0.5526962232665849,"centerY":-0.20907021993982378,"rotation":-24.482864887566052,"iterations":1001,"stripeFreq":0,"trapShape":0,"lightAngle":284.247223381942,"cPath":3,"cSpeed":1.1909674250499735,"cRadius":0.8099422763590567,"invert":False,"zoomSpeed":0,"zoomDepth":4.561745525235716,"tileX":0,"tileY":0,"salt":15},"3e528f72f53b49516bb6c44bdd3db8f688f2c0105fa1120e8ea941ca5d88ead2","d184544ae02c4932a200f8870074d749fdc44c0515b811d5902f9e58772b1a6a","118a1615c6cfc6ba1f8f9c5f3a4c07e4f79edd70d13f56c086d7f0c2a655e66b"),
+  _case("bulb-path",2,2,{"time":0.25,"cReal":0,"cImag":0,"poi":0,"outputMode":1,"centerX":0,"centerY":0,"rotation":0,"iterations":64,"stripeFreq":0,"trapShape":0,"lightAngle":45,"cPath":3,"cSpeed":0.5,"cRadius":0.5,"invert":False,"zoomSpeed":0,"zoomDepth":1,"tileX":0,"tileY":0,"salt":11},"eaa3484acd7fa41d0ad4941309bab6374f222c210b17764fb521d5cf4eefcb7f","9ba3b531624710dece54456c2e5cb1cb31d7df8cfb6fee2b1180d0cb791ea049","cc0fa51d4d0a97b664030be5052f3b2b69a1267f89ace4c9bbc65007566725df"),
+  _case("poi-fallback",2,2,{"time":0.5,"cReal":0.2,"cImag":-0.3,"poi":99,"outputMode":1,"centerX":0,"centerY":0,"rotation":0,"iterations":64,"stripeFreq":0,"trapShape":0,"lightAngle":45,"cPath":0,"cSpeed":0,"cRadius":0.5,"invert":False,"zoomSpeed":0,"zoomDepth":1,"tileX":0,"tileY":0,"salt":12},"7b8fcf38d596b67f0caf52ff4ba76e5a14213cae87d9ee2d7ba8ea354aa19b2d","9ba3b531624710dece54456c2e5cb1cb31d7df8cfb6fee2b1180d0cb791ea049","cc0fa51d4d0a97b664030be5052f3b2b69a1267f89ace4c9bbc65007566725df"),
+  _case("period-convergence",1,1,{"time":0,"cReal":0,"cImag":0,"poi":0,"outputMode":3,"centerX":0,"centerY":0,"rotation":0,"iterations":50,"stripeFreq":0,"trapShape":0,"lightAngle":45,"cPath":0,"cSpeed":0,"cRadius":0.5,"invert":False,"zoomSpeed":0,"zoomDepth":1,"tileX":0,"tileY":0,"salt":13},"df5b7da9a846298cb6d8132039eef63d490145aec049791b61256d076cde4877","7ab8f6c26e4f9862c95a18c8e5c50403eeb64d8869fbbf9a7a6397d9a63b7b0e","e3820096cb82366b860b8a4e668453a7aaaf423af03bdf289fa308ea03a79332"),
+@@ -59,7 +59,7 @@ EXPECTED_REPLACEMENTS.update({'loop-clamp-1001':'825df14610cc75d3e2a1e1e35276bce
+ EXPECTED_MUTATED.update({'loop-clamp-1001':'a5c1e3fe9530d06a8d6ccfaafd3f1b29c2221a35a7a874b6d48881281d9a9a18','result-trap-number':'abd2a68d17ebff2e2390ab0645e60f7a582dc1f42690228db9e3ae286939eda5'})
+ EXPECTED_RESULTS.update({'loop-clamp-1001':'0f88e75470219de768392d631715d11595f907434e966649335b739b2d785e71','result-trap-number':'9115e939e6b95fb0dc42683155c5d69bc2038d15090387c90be7c114e01dac73'})
+ EXPECTED_RESULTS.update({'cross-lane-dz-assignment':'4acdbcb21f93a80e55b86b5146a1de0ae96b576d7b23889e01fdca7f7bbd77cf','df64-re2-carrier':'801e1875f5d8bcaaed3c337c8d7446ef0f644f00c87152d8d7d88db017d8f364','df64-im2-carrier':'33e5e4ca77c5de1d4213eadaab863faf21024d1dc7e2b6b17564552bfb678576','df64-product-carrier':'7b5f2646cd6efbdc792bc4517f6a1c1cfca3204b70fdd9853c06f1f92f78baf6','df64-next-re-carrier':'6a82c920ece2f67d8b23e54c8bb14c28cc47f35d0a862d60f368f2163ee26c03','out-iteration':'da6dc9d91253a75b8d14246d1eaae27cf84939fcc6c4824cb5f196e7d3fbded4','out-z-magnitude2':'eac6aea4144444a3939d8b692dd1cc84e1a1303206037e3795ed69bdfc3b9e4e','out-derivative-magnitude2':'bda52bbbf81c7ae6324de92efa8ed6031d752b00bfadee8a72261d62e28ce8cf','out-stripe-sum':'29d37266e62062713a9f57016275b0d427adeb2171aed6ce08e70f0ff061a209','out-stripe-count':'42ab9d6e31b8f9b24a2c257d5564337d00b3e0f89ae62ed5d1eb5c5a2f8c65b7','out-stripe-last':'399c49689696fbb38060af8b5ca33c2f50c9f595a6df829859ff49013d22a5b3','out-trap-min':'cd07570d3ff8f4ac4459d9f21adb7fc142d1b3556559c8dc4a09d02a26483047','transform-re-owner':'c19195e92293ce1ac789b98e76a6b147de048ae25f8a8ab1e1de9432d6807bbf','transform-im-owner':'4e4155930e7e5e0eabca37afadba4ca4fb9979cfc5b5ca915782be454055f949','loop-bound':'3516a069429ec40e22eb461bab3a693e2269253b2a52992711895303de9d07ae','period-loop-bound':'c473345c2346fabec474799beb06fba0bb6e9bdc19ad00dcc24ac6c1a8f62411','log-smoothing':'950d307ecd1dc902ae3be8a05c2813d726c4c93970c0a349ab1b97d811552778','log-distance':'d7c742fe96564afc28cb5d863d1b24119c0ef8ae4ed0e60feca4fe2e9cfe918c','log-stripe':'fa98057c765a6f6901336ba44627a27efab51397e85fc694cc608c2e677a0292','log-stripe-normalization':'b0088d0eaaf30bcc4f15841d75b8e3b4abcd1b540dc177a68d041ea155df9eab','normal-base':'76c6354657e987109a97770fc09dc4b0fe9bcf14f3a8539d56b19752367c713c','normal-right':'99438a9a181e430315aa124e2d87638739d8e7bf46ef1b65cc2f5f6ccfdebb8c','normal-up':'9bd4ee9f88cf66a806c078d65609fe631d35d6a606f99607cf9a4f11fed74885'})
+-EXPECTED_RESULTS = {'cross-lane-dz-assignment':'4acdbcb21f93a80e55b86b5146a1de0ae96b576d7b23889e01fdca7f7bbd77cf','df64-re2-carrier':'15a47a2e97e32935c2851c33c16a79f73bfffcf07570f8b571e865b756f82ae2','df64-im2-carrier':'6df249c1c71abb6262030b8425d4d37628c629dc7fc44ff38aa7f6a6b5f3bad7','df64-product-carrier':'77da401b37b415f8286e8599265f3035a8d9ded0091b0c1e1cf0348121270afa','df64-next-re-carrier':'3251bfa71d38c3b48b52ec497f7ef4c4bf1335ba79cfc880058ffa1cb41de247','out-iteration':'f50656a389d4bbd9370f9d19a61822df479dfe125386d8b083e34cdd2b90bc1d','out-z-magnitude2':'e9ec50a9e509fa3847ba149892528d5320aa08418a98fa566e697f3badde58a9','out-derivative-magnitude2':'bda52bbbf81c7ae6324de92efa8ed6031d752b00bfadee8a72261d62e28ce8cf','out-stripe-sum':'29d37266e62062713a9f57016275b0d427adeb2171aed6ce08e70f0ff061a209','out-stripe-count':'42ab9d6e31b8f9b24a2c257d5564337d00b3e0f89ae62ed5d1eb5c5a2f8c65b7','out-stripe-last':'399c49689696fbb38060af8b5ca33c2f50c9f595a6df829859ff49013d22a5b3','out-trap-min':'52e45382437e15a0004b2c25fea5b1dcbb522ec8f08c15ef10be2dfd85fc5997','transform-re-owner':'e99ceaec06045d872d591a097cac99c40fd34aab391271c90bb029d1456bbdc6','transform-im-owner':'f7af78218f8f7d1f4b3e71f2970da9c6bbe5d1487fb2a716dce795a9ec5924f3','loop-bound':'b7e2fad5e0b22d15dac9c45cb2e259aca69928363111918be8aefb5348634e18','loop-clamp-1001':'8d2097f509bb15eb75a1f3d7e4c184ef8a55d303c1c80585eec4cec8b2fcb796','period-loop-bound':'ea095a58e3b6d5df72611ca9dfbd20f602979362bf390b78da3cc5fb8b6c82a2','log-smoothing':'ed124e272782a8e08152fca66b52c5c26e42310cd1e384244392c2edaf247086','log-distance':'d7c742fe96564afc28cb5d863d1b24119c0ef8ae4ed0e60feca4fe2e9cfe918c','log-stripe':'fa98057c765a6f6901336ba44627a27efab51397e85fc694cc608c2e677a0292','log-stripe-normalization':'b0088d0eaaf30bcc4f15841d75b8e3b4abcd1b540dc177a68d041ea155df9eab','normal-base':'8520a894a1cdd89832fb2750eb673c9c9ca354e64137ab7b2f98953a1bc5e565','normal-right':'fa3cb216ac0941e39827719196c4166658bd8c6cf4cb1db3e5d3143f2296925c','normal-up':'59e3cfc76f8f46b63c0d269912d1b036d0fa0bb062ace36dd7a46e450954a058','result-trap-number':'9115e939e6b95fb0dc42683155c5d69bc2038d15090387c90be7c114e01dac73'}
++EXPECTED_RESULTS = {'cross-lane-dz-assignment':'4acdbcb21f93a80e55b86b5146a1de0ae96b576d7b23889e01fdca7f7bbd77cf','df64-re2-carrier':'1db6a66d0efbb1a11c280afb67b0f8c8976987616109432ca4eca74c0d94ff48','df64-im2-carrier':'91cccd55a3b39cf320db9269346dbb273ee4c67511a17409e928b3893313c134','df64-product-carrier':'e422acc4e7347b0d8dedb3511a31c46fff3c6bfa73bea0c586d59d4819d82e85','df64-next-re-carrier':'5edbffc3a338088fb89a8b25da0770585366af51bded682d8b320df4ec1aab64','out-iteration':'e8ccccf8c1e39c5241054183fc40f9eb0e007106a78986ddbc66ed5c3dc35ebf','out-z-magnitude2':'e9ec50a9e509fa3847ba149892528d5320aa08418a98fa566e697f3badde58a9','out-derivative-magnitude2':'bda52bbbf81c7ae6324de92efa8ed6031d752b00bfadee8a72261d62e28ce8cf','out-stripe-sum':'29d37266e62062713a9f57016275b0d427adeb2171aed6ce08e70f0ff061a209','out-stripe-count':'42ab9d6e31b8f9b24a2c257d5564337d00b3e0f89ae62ed5d1eb5c5a2f8c65b7','out-stripe-last':'399c49689696fbb38060af8b5ca33c2f50c9f595a6df829859ff49013d22a5b3','out-trap-min':'6900acfd71fd2669ee2adcfcf50cb76443ccb031eaa863ba94021f7d89a02eb6','transform-re-owner':'9fd5206105b9ee9a05b62819fc8407f4bfe9c1f9fd4173803b01ebff7b9c506a','transform-im-owner':'bfcbaa76bca8e92ac740f620ca0a715bf29c62111f47528c06d036e5f1bc932d','loop-bound':'f5cc840cbf30f4dc15ab34594d7edc11d4a43080ca2d51bdee6312f211d882f7','loop-clamp-1001':'e972d5f9fede29ee7c7c68f93dbc820b0a3f40f8c0da3f0e0306dafd4d12e4ca','period-loop-bound':'467d825b99705ce8a3182f6c72c0f0e8b2c743ce3bfada54cbfd5662f69eeeda','log-smoothing':'ed124e272782a8e08152fca66b52c5c26e42310cd1e384244392c2edaf247086','log-distance':'d7c742fe96564afc28cb5d863d1b24119c0ef8ae4ed0e60feca4fe2e9cfe918c','log-stripe':'fa98057c765a6f6901336ba44627a27efab51397e85fc694cc608c2e677a0292','log-stripe-normalization':'b0088d0eaaf30bcc4f15841d75b8e3b4abcd1b540dc177a68d041ea155df9eab','normal-base':'8520a894a1cdd89832fb2750eb673c9c9ca354e64137ab7b2f98953a1bc5e565','normal-right':'fa3cb216ac0941e39827719196c4166658bd8c6cf4cb1db3e5d3143f2296925c','normal-up':'59e3cfc76f8f46b63c0d269912d1b036d0fa0bb062ace36dd7a46e450954a058','result-trap-number':'9115e939e6b95fb0dc42683155c5d69bc2038d15090387c90be7c114e01dac73'}
+ EXPECTED_FORGE_CHECKS = 65
+ DIAGNOSTIC_ANCHOR_SHA = "fc8f0c37a014b2f996687589bf96d3fd9a70c2d82392e90d27b91ffdd03d71dc"
+ DIAGNOSTIC_REPLACEMENT_SHA = "4b07de3f6020508a97bd3a436a1d6111651703fcbc4a75010b281e4895171f12"
+diff --git a/tools/glslcpp/generate_julia_native_oracle_include.py.sha256 b/tools/glslcpp/generate_julia_native_oracle_include.py.sha256
+index 8470e29..07e5666 100644
+--- a/tools/glslcpp/generate_julia_native_oracle_include.py.sha256
++++ b/tools/glslcpp/generate_julia_native_oracle_include.py.sha256
+@@ -1 +1 @@
+-d74c67eeeda0c4cddd9f2b06d1c3ebc15afc7137b33511e583e5c522a34c5998  generate_julia_native_oracle_include.py
++f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7  generate_julia_native_oracle_include.py
+-- 
+2.50.1 (Apple Git-155)
+

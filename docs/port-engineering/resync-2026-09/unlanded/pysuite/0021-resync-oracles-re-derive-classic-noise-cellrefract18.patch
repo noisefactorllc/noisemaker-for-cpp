@@ -1,0 +1,1271 @@
+From 934f3a8537f50f185a08c5620c1f66d346058888 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 19:24:59 -0600
+Subject: [PATCH 21/29] resync(oracles): re-derive classic-noise,
+ cellrefract186, distortion, dither against authority 61aa869/corpus 0ed489ec
+
+Each package's .mjs generator now derives the corpus revision from
+tools/glslcpp/check_corpus.py (REVISION) instead of hardcoding
+a024dc3a960cc44af454abc7aebce50456c194e6, and asserts the CPU-authority
+import closure at 61aa869 (23 files, up from 22 -- adapters/index.js now
+imports adapters/remap.js, confirmed by diffing the authority source
+directly) instead of the stale e17dd02 closure. Python materializers
+derive the same revision from check_corpus.REVISION and re-emit the
+native .inc/.sha256 pairs. No pixel/render-case data changed for any of
+these four effects; only provenance metadata (corpus path, upstream
+revision, closure hashes/cardinality, node version) moved to the current
+authority. test_generated_kernels.cpp literal expectations (kOracleSha256,
+kCorpusRevision, kAuthorityNode, kClosureSha256, kSourceRelativePath, the
+classic-noise kImportClosureCardinality) are updated to match.
+
+Also adds the missing '#include "noisemaker/effects/median.hpp"' that
+test_generated_kernels.cpp needs for noisemaker::effects::bind_median --
+introduced at base commit 9edf5fb and breaking the build before any of
+this oracle work, unrelated to the corpus/authority resync.
+---
+ .../cellrefract-oracle-report.md              |  8 ++---
+ .../cellrefract-oracle-report.md.sha256       |  2 +-
+ .../cellrefract186-oracles.json               | 32 +++++++++++--------
+ .../cellrefract186-oracles.json.sha256        |  2 +-
+ .../cellrefract186_oracle_generator.mjs       | 23 ++++++++++---
+ ...cellrefract186_oracle_generator.mjs.sha256 |  2 +-
+ .../classic-noise-oracles.json                | 24 ++++++++------
+ .../classic-noise-oracles.json.sha256         |  2 +-
+ .../classic_noise_oracle_generator.mjs        | 22 +++++++++----
+ .../classic_noise_oracle_generator.mjs.sha256 |  2 +-
+ .../distortion-oracle-report.md               |  2 +-
+ .../distortion-oracle-report.md.sha256        |  2 +-
+ .../distortion-parity/distortion-oracles.json | 18 +++++++----
+ .../distortion-oracles.json.sha256            |  2 +-
+ .../distortion_oracle_generator.mjs           | 21 +++++++++---
+ .../dither-parity/dither-oracle-report.md     |  2 +-
+ .../dither-oracle-report.md.sha256            |  2 +-
+ .../dither-parity/dither-oracles.json         | 24 ++++++++------
+ .../dither-parity/dither-oracles.json.sha256  |  2 +-
+ .../dither-parity/dither_oracle_generator.mjs | 25 +++++++++++----
+ tests/oracles/cellrefract186_expected.inc     |  4 +--
+ .../cellrefract186_expected.inc.sha256        |  2 +-
+ tests/oracles/classic_noise_expected.inc      |  6 ++--
+ .../oracles/classic_noise_expected.inc.sha256 |  2 +-
+ tests/oracles/distortion_expected.inc         | 15 +++++----
+ tests/oracles/distortion_expected.inc.sha256  |  2 +-
+ tests/oracles/dither_expected.inc             | 21 ++++++------
+ tests/oracles/dither_expected.inc.sha256      |  2 +-
+ tests/test_generated_kernels.cpp              | 22 ++++++-------
+ ...erate_cellrefract_native_oracle_include.py | 11 +++++--
+ ...ellrefract_native_oracle_include.py.sha256 |  2 +-
+ ...ate_classic_noise_native_oracle_include.py | 16 +++++++---
+ ...ssic_noise_native_oracle_include.py.sha256 |  2 +-
+ ...nerate_distortion_native_oracle_include.py | 22 ++++++++++---
+ ...distortion_native_oracle_include.py.sha256 |  2 +-
+ .../generate_dither_native_oracle_include.py  | 28 +++++++++++-----
+ 36 files changed, 241 insertions(+), 137 deletions(-)
+
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md b/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md
+index fae5b29..eb35fa6 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md
++++ b/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md
+@@ -1,6 +1,6 @@
+ # Cellrefract186 exact-parity oracle
+ 
+-Program `classicNoisedeck/cellRefract:cellRefract`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; exact defines
++Program `classicNoisedeck/cellRefract:cellRefract`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; exact defines
+ `KERNEL=0`, `SHAPE=1`.
+ 
+ ## The contract this program exists to prove
+@@ -31,11 +31,11 @@ This oracle is produced by the unmodified public canonicalFactory3 from an immut
+ `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
+ `canonicalFactory3`, its `Function.prototype.toString` SHA-256 is `329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3`, neither
+ adapter table owns the key, `canonicalAdapterFactories` matches its
+-11-key census exactly, the key is absent from the
+-4-key `check_corpus._ADAPTERS` eligibility table
++12-key census exactly, the key is absent from the
++5-key `check_corpus._ADAPTERS` eligibility table
+ **parsed out of the live `tools/glslcpp/check_corpus.py`**
+ rather than transcribed, all six pinned CPU files match, and every module in the
+-22-file import closure resolves by real path
++23-file import closure resolves by real path
+ beneath the immutable snapshot. Bare module specifiers other than `node:` builtins are rejected, and
+ the live checkout is refused as a `--cpu-root`.
+ 
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md.sha256 b/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md.sha256
+index 6ead313..043c6fa 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md.sha256
++++ b/docs/port-engineering/cellrefract-parity/cellrefract-oracle-report.md.sha256
+@@ -1 +1 @@
+-77c02bd51ae8e25d61075f3c52da0ecfefde44a98278c5142e3aadc29281dfc0  cellrefract-oracle-report.md
++e7079cbbd317989992e3f4cee4eedb793a9a739e15cf19aa894eef7397c2de34  cellrefract-oracle-report.md
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json b/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json
+index 48fbeed..4a14919 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json
++++ b/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json
+@@ -4,8 +4,8 @@
+   "program_key": "classicNoisedeck/cellRefract:cellRefract",
+   "effect_key": "classicNoisedeck/cellRefract",
+   "runtime_key": "classicNoisedeck/cellRefract:cellRefract",
+-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
++  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+   "defines": {
+     "KERNEL": 0,
+     "SHAPE": 1
+@@ -174,14 +174,14 @@
+     "alpha": "the program copies the sampled alpha through; every input alpha is exactly 1, so every output alpha float word is exactly 0x3f800000 and every RGBA8 alpha byte is exactly 255"
+   },
+   "provenance": {
+-    "node_version": "v24.7.0",
++    "node_version": "v26.0.0",
+     "generator": {
+       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs",
+-      "sha256": "3f2e3c9293f15a65f7aad598b2960b415a3810ba1b9136895b63d493108f796a"
++      "sha256": "42b635b400122e61f973e0b37c72033a4cd0f28e14ada46b8fd84cacf33f7919"
+     },
+     "native_include_generator": {
+       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_cellrefract_native_oracle_include.py",
+-      "sha256": "96f4e7b62a4678448e1050334bde4b2b60867d6c6c036e6c818b8ccdfbf9dce8"
++      "sha256": "d1ad2185e0abb767aa1f955d159f7922f7a113f7efef3b5c3941cfcbeb45fb32"
+     },
+     "cpu_snapshot": {
+       "argument": "<immutable-cpu-snapshot-root>",
+@@ -189,7 +189,7 @@
+       "live_checkout_rejected": "<live-noisemaker-for-cpu-checkout>",
+       "live_checkout_resolution": "process.env.NOISEMAKER_FOR_CPU when set, else $HOME/platform/noisemaker-for-cpu",
+       "imports_confined_beneath_snapshot": true,
+-      "import_closure_file_count": 22,
++      "import_closure_file_count": 23,
+       "import_closure": [
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
+@@ -221,7 +221,7 @@
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
+-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/julia.js",
+@@ -235,6 +235,10 @@
+           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/palette.js",
+           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+         },
++        {
++          "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/remap.js",
++          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++        },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/snow.js",
+           "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -253,7 +257,7 @@
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/kernels.js",
+@@ -261,7 +265,7 @@
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
+-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+         },
+         {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/registry.js",
+@@ -283,7 +287,7 @@
+       "pinned_files": {
+         "canonical_kernels": {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         "public_catalog": {
+           "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
+@@ -308,7 +312,7 @@
+       }
+     },
+     "source": {
+-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/cellRefract/cellRefract.glsl",
++      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/cellRefract/cellRefract.glsl",
+       "bytes": 13719,
+       "sha256": "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a70",
+       "preprocessor_defines": [
+@@ -336,13 +340,15 @@
+       "filter/reindex:nmReindexApply",
+       "filter/reindex:nmReindexStats",
+       "filter/snow:snow",
+-      "synth/julia:julia"
++      "synth/julia:julia",
++      "synth/remap:remap"
+     ],
+     "corpus_adapter_keys": [
+       "classicNoisedeck/fractal:fractal",
+       "filter/historicPalette:historicPalette",
+       "filter/palette:palette",
+-      "synth/julia:julia"
++      "synth/julia:julia",
++      "synth/remap:remap"
+     ],
+     "corpus_adapter_source": {
+       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/check_corpus.py",
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json.sha256 b/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json.sha256
+index bbac7d2..baf71b6 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json.sha256
++++ b/docs/port-engineering/cellrefract-parity/cellrefract186-oracles.json.sha256
+@@ -1 +1 @@
+-dd026ed5a7f14bd7710e8d876f3656adb3fe91394d5afb1ee422df9ac155cbe8  cellrefract186-oracles.json
++4564e48493a373d035e0f51a7a62b03cb2755a7aa7cd49bdbfc5b69f52c06bfc  cellrefract186-oracles.json
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs b/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs
+index 6bfc66a..f8b72a8 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs
++++ b/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs
+@@ -47,9 +47,15 @@ const schema = 'noisemaker-for-cpp.cellrefract186.pixel-parity.v1'
+ const schemaVersion = 1
+ const programKey = 'classicNoisedeck/cellRefract:cellRefract'
+ const effectKey = 'classicNoisedeck/cellRefract'
+-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
+-const upstreamRevisionExpected = '117a236679d1db3ab8f0e278230ece277b57564c'
+-const authorityNode = 'v24.7.0'
++function deriveCorpusRevision(root) {
++  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
++  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
++  if (!match) throw new Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
++  return match[1]
++}
++const corpusRevision = deriveCorpusRevision(cppRoot)
++const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
++const authorityNode = 'v26.0.0'
+ const defines = { KERNEL: 0, SHAPE: 1 }
+ const factoryName = 'canonicalFactory3'
+ const factoryTextSha256 = '329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3'
+@@ -102,7 +108,7 @@ const bindingAbi = Object.freeze({
+ const vecLanes = Object.freeze({ Vec2: 2 })
+ 
+ const pinnedCpuFiles = Object.freeze({
+-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
++  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
+   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
+   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+@@ -118,19 +124,26 @@ const pinnedCpuFiles = Object.freeze({
+ // another frozen copy proves nothing, and would stay green if
+ // `classicNoisedeck/cellRefract` were ever added to the real table.
+ const corpusAdapterSourceRelative = 'tools/glslcpp/check_corpus.py'
++// Grew from 4 to 5 at CPU authority 61aa869: check_corpus.py's `_ADAPTERS`
++// census now also carries `synth/remap:remap` (the authority added a
++// canonical remap adapter between e17dd02 and 61aa869; see cellrefract-oracle-report.md).
+ const corpusAdapterCensusExpected = Object.freeze([
+   'classicNoisedeck/fractal:fractal', 'filter/historicPalette:historicPalette',
+-  'filter/palette:palette', 'synth/julia:julia',
++  'filter/palette:palette', 'synth/julia:julia', 'synth/remap:remap',
+ ])
+ // `canonicalAdapterFactories` (the JavaScript-side override table) is a larger,
+ // separate set. It is pinned by census here so a new override cannot silently
+ // take over this key.
++// Grew from 11 to 12 at CPU authority 61aa869 for the same reason as the
++// `_ADAPTERS` census above: `synth/remap:remap` is a new canonical-adapter
++// override.
+ const canonicalAdapterKeys = Object.freeze([
+   'classicNoisedeck/bitEffects:bitEffects', 'classicNoisedeck/fractal:fractal',
+   'filter/crt:crt', 'filter/historicPalette:historicPalette',
+   'filter/median:median', 'filter/palette:palette',
+   'filter/pixelSort:luminance', 'filter/reindex:nmReindexApply',
+   'filter/reindex:nmReindexStats', 'filter/snow:snow', 'synth/julia:julia',
++  'synth/remap:remap',
+ ])
+ 
+ const f = Math.fround
+diff --git a/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs.sha256 b/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs.sha256
+index 17b423e..0bfc719 100644
+--- a/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs.sha256
++++ b/docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs.sha256
+@@ -1 +1 @@
+-3f2e3c9293f15a65f7aad598b2960b415a3810ba1b9136895b63d493108f796a  cellrefract186_oracle_generator.mjs
++42b635b400122e61f973e0b37c72033a4cd0f28e14ada46b8fd84cacf33f7919  cellrefract186_oracle_generator.mjs
+diff --git a/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json b/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json
+index 91dcb90..9b06bd2 100644
+--- a/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json
++++ b/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json
+@@ -4,8 +4,8 @@
+   "program_key": "classicNoisedeck/noise:noise",
+   "effect_key": "classicNoisedeck/noise",
+   "runtime_key": "classicNoisedeck/noise:noise",
+-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
++  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+   "defines": {
+     "NOISE_TYPE": 10,
+     "REFRACT_MODE": 2,
+@@ -30,13 +30,13 @@
+     "control_mutation_rejected": true
+   },
+   "authority": {
+-    "node_version": "v24.7.0",
++    "node_version": "v26.0.0",
+     "oracle": "unmodified canonical Classic Noise factory from immutable CPU snapshot",
+     "cpu_root_argument": "<immutable-cpu-snapshot-root>",
+     "immutable_snapshot": true,
+     "realpath_containment_checked": true,
+     "live_checkout_rejected": true,
+-    "closure_cardinality": 22,
++    "closure_cardinality": 23,
+     "import_closure": [
+       {
+         "relative_path": "src/csl/glsl-kernel.js",
+@@ -68,7 +68,7 @@
+       },
+       {
+         "relative_path": "src/effects/adapters/index.js",
+-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+       },
+       {
+         "relative_path": "src/effects/adapters/julia.js",
+@@ -82,6 +82,10 @@
+         "relative_path": "src/effects/adapters/palette.js",
+         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+       },
++      {
++        "relative_path": "src/effects/adapters/remap.js",
++        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++      },
+       {
+         "relative_path": "src/effects/adapters/snow.js",
+         "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -100,7 +104,7 @@
+       },
+       {
+         "relative_path": "src/effects/generated/canonical-kernels.js",
+-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+       },
+       {
+         "relative_path": "src/effects/generated/kernels.js",
+@@ -108,7 +112,7 @@
+       },
+       {
+         "relative_path": "src/effects/generated/upstream-snapshot.js",
+-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+       },
+       {
+         "relative_path": "src/effects/registry.js",
+@@ -136,9 +140,9 @@
+   },
+   "provenance": {
+     "source": {
+-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/noise/noise.glsl",
+-      "bytes": 31255,
+-      "sha256": "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663"
++      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/noise/noise.glsl",
++      "bytes": 31258,
++      "sha256": "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138"
+     },
+     "generator": {
+       "relative_path": "docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs"
+diff --git a/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json.sha256 b/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json.sha256
+index 4fd5fe4..17449d9 100644
+--- a/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json.sha256
++++ b/docs/port-engineering/classic-noise-parity/classic-noise-oracles.json.sha256
+@@ -1 +1 @@
+-a0e39957155553cb21e814339e502d272db1c6640f5bfc9ea6a47a659032877d  classic-noise-oracles.json
++8e7d95f1102b684122e28b44e25d9f6c94f951f4a6864384feff214c0749bd7c  classic-noise-oracles.json
+diff --git a/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs b/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs
+index f42fd6b..20ae9ed 100644
+--- a/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs
++++ b/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs
+@@ -7,11 +7,17 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
+ 
+ const here = path.dirname(fileURLToPath(import.meta.url))
+ const cppRoot = fs.realpathSync(path.resolve(here, '../../..'))
++function deriveCorpusRevision(root) {
++  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
++  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
++  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
++  return match[1]
++}
+ const key = 'classicNoisedeck/noise:noise'
+ const effect = 'classicNoisedeck/noise'
+-const corpus = 'a024dc3a960cc44af454abc7aebce50456c194e6'
++const corpus = deriveCorpusRevision(cppRoot)
+ const sourceRelative = `tools/glslcpp/corpus/${corpus}/sources/classicNoisedeck/noise/noise.glsl`
+-const sourceShaExpected = '4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663'
++const sourceShaExpected = '8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138'
+ const factoryShaExpected = 'b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424'
+ const sha = value => crypto.createHash('sha256').update(value).digest('hex')
+ const f = Math.fround
+@@ -20,8 +26,12 @@ const words = value => Array.from(new Uint32Array(value.buffer, value.byteOffset
+ const equal = (a, b) => a.length === b.length && a.every((x, i) => x === b[i])
+ const beneath = (a, b) => a === b || b.startsWith(`${a}${path.sep}`)
+ function rejectSymlink(candidate, label) { const resolved = path.resolve(candidate); try { if (fs.lstatSync(resolved).isSymbolicLink()) throw Error(`${label} must not be a symlink: ${candidate}`) } catch (error) { if (error?.code !== 'ENOENT') throw error } }
++// Recomputed against CPU authority 61aa869 (see docs/port-engineering/classic-noise-parity/
++// classic-noise-oracle-report.md). Cardinality grew 22 -> 23 vs the prior e17dd02 authority
++// because src/effects/adapters/index.js now imports src/effects/adapters/remap.js (the
++// authority added a canonical `synth/remap:remap` adapter between e17dd02 and 61aa869).
+ const expectedClosure = [
+-  ['src/csl/glsl-kernel.js','a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],['src/csl/glsl-runtime.js','a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],['src/csl/runtime.js','a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],['src/effects/adapters/bit-effects.js','5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],['src/effects/adapters/crt.js','c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],['src/effects/adapters/f32-color.js','b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],['src/effects/adapters/fractal.js','0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],['src/effects/adapters/index.js','40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],['src/effects/adapters/julia.js','0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],['src/effects/adapters/median.js','e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],['src/effects/adapters/palette.js','8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],['src/effects/adapters/snow.js','202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],['src/effects/catalog.js','d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],['src/effects/definition.js','fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],['src/effects/generated/canonical-adapter-data.js','ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],['src/effects/generated/canonical-kernels.js','66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],['src/effects/generated/kernels.js','b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],['src/effects/generated/upstream-snapshot.js','e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],['src/effects/registry.js','8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],['src/runtime/pass-runner.js','fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],['src/runtime/sampler.js','1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],['src/runtime/surface.js','0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
++  ['src/csl/glsl-kernel.js','a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],['src/csl/glsl-runtime.js','a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],['src/csl/runtime.js','a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee'],['src/effects/adapters/bit-effects.js','5044fc318e69deb1e03330f977af1f8a76376c69936ebf0a6d33fe350379d7c7'],['src/effects/adapters/crt.js','c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],['src/effects/adapters/f32-color.js','b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],['src/effects/adapters/fractal.js','0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],['src/effects/adapters/index.js','dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],['src/effects/adapters/julia.js','0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],['src/effects/adapters/median.js','e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],['src/effects/adapters/palette.js','8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],['src/effects/adapters/remap.js','91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],['src/effects/adapters/snow.js','202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],['src/effects/catalog.js','d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],['src/effects/definition.js','fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],['src/effects/generated/canonical-adapter-data.js','ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],['src/effects/generated/canonical-kernels.js','f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],['src/effects/generated/kernels.js','b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],['src/effects/generated/upstream-snapshot.js','6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],['src/effects/registry.js','8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],['src/runtime/pass-runner.js','fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],['src/runtime/sampler.js','1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],['src/runtime/surface.js','0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
+ ]
+ const modes = process.argv.filter(x => ['--write','--check','--self-test'].includes(x)); if (modes.length !== 1) throw Error('choose exactly one of --write, --check, or --self-test')
+ const mode = modes[0]; const ci = process.argv.indexOf('--cpu-root'); if (ci < 0 || !process.argv[ci + 1]) throw Error('--cpu-root <immutable snapshot> is required')
+@@ -31,9 +41,9 @@ let liveIdentity; try { liveIdentity = JSON.parse(fs.readFileSync(path.join(live
+ const live = fs.realpathSync(liveArg); if (beneath(live, cpuRoot) || beneath(cpuRoot, live) || beneath(cppRoot, cpuRoot) || beneath(cpuRoot, cppRoot)) throw Error('authority must be external to live/C++ checkout')
+ function importClosure() { const patterns=[/\bfrom\s*['"]([^'"\n]+)['"]/g,/\bimport\s*\(\s*['"]([^'"\n]+)['"]\s*\)/g,/^[ \t]*import\s+['"]([^'"\n]+)['"]/gm]; const entries=['src/effects/catalog.js','src/effects/generated/upstream-snapshot.js','src/csl/glsl-kernel.js','src/csl/glsl-runtime.js','src/runtime/pass-runner.js','src/runtime/surface.js']; const stack=entries.map(x=>path.join(cpuRoot,x)), seen=new Map(); while(stack.length){const candidate=stack.pop(); rejectSymlink(candidate,'import closure file'); const resolved=fs.realpathSync(candidate); if(!beneath(cpuRoot,resolved)||beneath(live,resolved)) throw Error('import escaped immutable snapshot'); if(seen.has(resolved))continue; const payload=fs.readFileSync(resolved), text=payload.toString('utf8'); seen.set(resolved,sha(payload)); if(/\bimport\s*\(\s*(?!['"])/.test(text)) throw Error(`nonliteral dynamic import: ${path.relative(cpuRoot,resolved)}`); for(const pattern of patterns){pattern.lastIndex=0; let match; while((match=pattern.exec(text))){const spec=match[1]; if(spec.startsWith('node:'))continue; if(spec.startsWith('/')||(!spec.startsWith('./')&&!spec.startsWith('../'))) throw Error(`invalid module specifier ${spec}`); const next=path.resolve(path.dirname(resolved),spec); rejectSymlink(next,'import closure file'); const nr=fs.realpathSync(next); if(!beneath(cpuRoot,nr)||beneath(live,nr)) throw Error('import escaped immutable snapshot'); stack.push(nr)}}} return [...seen].map(([file,hash])=>[path.relative(cpuRoot,file),hash]).sort((a,b)=>a[0].localeCompare(b[0])) }
+ const actualClosure=importClosure(), expectedClosureSorted=[...expectedClosure].sort((a,b)=>a[0].localeCompare(b[0])); if(JSON.stringify(actualClosure)!==JSON.stringify(expectedClosureSorted)) throw Error(`CPU import closure mismatch`); for(const [rel,expected] of expectedClosureSorted) if(sha(fs.readFileSync(path.join(cpuRoot,rel)))!==expected) throw Error(`pinned CPU provenance drift: ${rel}`)
+-const load=relative=>import(pathToFileURL(path.join(cpuRoot,relative)).href); const [{canonicalKernelFactories,canonicalAdapterFactories,kernelFactories},{bindCanonicalKernel},{runPass},{Surface},{UPSTREAM_REVISION}]=await Promise.all([load('src/effects/catalog.js'),load('src/csl/glsl-kernel.js'),load('src/runtime/pass-runner.js'),load('src/runtime/surface.js'),load('src/effects/generated/upstream-snapshot.js')]); if(process.version!=='v24.7.0') throw Error('Classic Noise authority Node drift')
++const load=relative=>import(pathToFileURL(path.join(cpuRoot,relative)).href); const [{canonicalKernelFactories,canonicalAdapterFactories,kernelFactories},{bindCanonicalKernel},{runPass},{Surface},{UPSTREAM_REVISION}]=await Promise.all([load('src/effects/catalog.js'),load('src/csl/glsl-kernel.js'),load('src/runtime/pass-runner.js'),load('src/runtime/surface.js'),load('src/effects/generated/upstream-snapshot.js')]); if(process.version!=='v26.0.0') throw Error('Classic Noise authority Node drift')
+ const canonical=canonicalKernelFactories[key], publicFactory=kernelFactories.get(key); if(typeof canonical!=='function'||publicFactory!==canonical||canonicalAdapterFactories[key]!==undefined||canonical.name!=='canonicalFactory12'||sha(canonical.toString())!==factoryShaExpected) throw Error('canonical/public factory identity or hash drift')
+-const sourceBytes=fs.readFileSync(path.join(cppRoot,sourceRelative)); if(sourceBytes.length!==31255||sha(sourceBytes)!==sourceShaExpected) throw Error('corpus source drift')
++const sourceBytes=fs.readFileSync(path.join(cppRoot,sourceRelative)); if(sourceBytes.length!==31258||sha(sourceBytes)!==sourceShaExpected) throw Error('corpus source drift')
+ const names=['NOISE_TYPE','REFRACT_MODE','LOOP_OFFSET','METRIC','COLOR_MODE','time','seed','resolution','tileOffset','fullResolution','xScale','yScale','octaves','ridges','refractAmt','kaleido','loopScale','speed','paletteMode','paletteOffset','paletteAmp','paletteFreq','palettePhase','cyclePalette','rotatePalette','repeatPalette','hueRange','hueRotation','wrap']
+ const runtimeAbi={NOISE_TYPE:'int32',REFRACT_MODE:'int32',LOOP_OFFSET:'int32',METRIC:'int32',COLOR_MODE:'int32',time:'float',seed:'int32',resolution:'Vec2',tileOffset:'Vec2',fullResolution:'Vec2',xScale:'float',yScale:'float',octaves:'int32',ridges:'bool',refractAmt:'float',kaleido:'float',loopScale:'float',speed:'float',paletteMode:'int32',paletteOffset:'Vec3',paletteAmp:'Vec3',paletteFreq:'Vec3',palettePhase:'Vec3',cyclePalette:'int32',rotatePalette:'float',repeatPalette:'float',hueRange:'float',hueRotation:'float',wrap:'bool'}
+ const sourceAbi={time:'float',seed:'int',resolution:'vec2',tileOffset:'vec2',fullResolution:'vec2',xScale:'float',yScale:'float',octaves:'int',ridges:'bool',refractAmt:'float',kaleido:'float',loopScale:'float',speed:'float',paletteMode:'int',paletteOffset:'vec3',paletteAmp:'vec3',paletteFreq:'vec3',palettePhase:'vec3',cyclePalette:'int',rotatePalette:'float',repeatPalette:'float',hueRange:'float',hueRotation:'float',wrap:'bool'}
+@@ -63,5 +73,5 @@ const comparer=comparerSelfTests();if(!Object.values(comparer).every(Boolean))th
+ const document={schema:'noisemaker-for-cpp.classic-noise.pixel-parity.v1',schema_version:1,program_key:key,effect_key:effect,runtime_key:key,corpus_revision:corpus,upstream_revision:UPSTREAM_REVISION,defines:{NOISE_TYPE:10,REFRACT_MODE:2,LOOP_OFFSET:300,METRIC:0,COLOR_MODE:6},exactness_contract:{float32:'raw little-endian uint32 words; signed zero and NaN payloads significant',rgba8:'complete independent RGBA8 bytes',tolerance:'none',comparison:'dimensions, counts, every uint32 word, every RGBA8 byte'},comparer_self_tests:comparer,authority:{node_version:process.version,oracle:'unmodified canonical Classic Noise factory from immutable CPU snapshot',cpu_root_argument:'<immutable-cpu-snapshot-root>',immutable_snapshot:true,realpath_containment_checked:true,live_checkout_rejected:true,closure_cardinality:actualClosure.length,import_closure:actualClosure.map(([relative_path,sha256])=>({relative_path,sha256}))},factory:{name:canonical.name,text_sha256:factoryShaExpected,public_factory_is_canonical_identity:true,canonical_adapter_factories_own_key:false},provenance:{source:{relative_path:sourceRelative,bytes:sourceBytes.length,sha256:sha(sourceBytes)},generator:{relative_path:'docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs'},materializer:{relative_path:'tools/glslcpp/generate_classic_noise_native_oracle_include.py'}},runtime_binding_names:names,runtime_binding_abi:runtimeAbi,source_uniform_abi:sourceAbi,output_abi:{name:'fragColor',source_type:'vec4',runtime_type:'Vec4',role:'output'},render_cases:rendered,mutation_anchor_cardinality:{total:mutationLedger.length,anchors:Object.fromEntries(mutationLedger.map(item=>[item.name,item.anchor_cardinality]))},mutation_ledger:mutationLedger,prepared_mechanisms:[{name:'mutable_global_frame_profile',profile:'mutable-global-frame-noise-v1',status:'prepared_not_admitted',reason:'typed slice is not admitted in this oracle-only task'},{name:'runtime_loop_bound_profile',profile:'runtime-loop-bound-v1',status:'prepared_not_admitted',reason:'runtime profile integration remains outside oracle scope'},{name:'scalar_uint_xor_profile',profile:'scalar-uint-xor-v1',status:'prepared_not_admitted',reason:'scalar XOR path is unreachable under NOISE_TYPE=10'},{name:'typed_expression_index',profile:'typed-expression-index-v1',status:'prepared_not_admitted',reason:'indexed color conversion paths are unreachable under COLOR_MODE=6'}],claim_boundaries:{canonical_factory_only:true,typed_slice_landing:false,shared_emitter_modified:false,samplers:false,input_textures:false,dead_bindings_not_branch_claims:true}}
+ const payload=Buffer.from(`${JSON.stringify(document,null,2)}\n`);const report=Buffer.from(`# Classic Noise exact-pixel CPU oracle\n\nAuthenticated canonicalFactory12 for **${key}** from an external immutable CPU snapshot with fixed defines NOISE_TYPE=10, COLOR_MODE=6, REFRACT_MODE=2, LOOP_OFFSET=300, METRIC=0. The package binds all 24 uniforms plus five defines. Dead bindings are checked for acceptance and invariance, never presented as branch coverage.\n\nComparison is exact raw little-endian Float32 words and complete RGBA8 bytes. Dimensions and counts precede lane access. Eight cases execute twice with independent output storage, unchanged controls, and retained input state. Five independent factory mutations require positive Float32/RGBA8 witnesses.\n\nReproduction:\n\n    NOISEMAKER_FOR_CPU=/Users/aayars/platform/noisemaker-for-cpu node docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs --check --cpu-root /private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu\n    PYTHONDONTWRITEBYTECODE=1 python3 -B tools/glslcpp/generate_classic_noise_native_oracle_include.py --check\n`)
+ function checked(file,expected){if(!fs.existsSync(file)||!equal([...fs.readFileSync(file)],[...expected]))throw Error(`drift: ${file}`)}
+-function selfTest(){const checks=[['closure',actualClosure.length===22],['comparer',Object.values(comparer).every(Boolean)],['cases',rendered.length===8&&JSON.stringify(rendered.at(-2).expected)===JSON.stringify(rendered.at(-1).expected)],['repeat/storage',rendered.every(x=>x.repeat.exact&&x.storage.distinct_surface_objects&&x.storage.distinct_f32_backing_stores&&x.controls_snapshot.unchanged)],['mutations',mutationLedger.length===5&&mutationLedger.every(x=>x.independent&&x.anchor_cardinality===1&&x.witnesses.length>0&&x.results.some(row=>x.witnesses.includes(row.case)&&row.changed_float32_lanes>0&&row.changed_rgba8_bytes>0))]];checks.forEach(([name,ok])=>console.log(`  [${ok?'ok':'FAIL'}] ${name}`));if(!checks.every(([,ok])=>ok))throw Error('Classic Noise oracle self-test failed')}
++function selfTest(){const checks=[['closure',actualClosure.length===23],['comparer',Object.values(comparer).every(Boolean)],['cases',rendered.length===8&&JSON.stringify(rendered.at(-2).expected)===JSON.stringify(rendered.at(-1).expected)],['repeat/storage',rendered.every(x=>x.repeat.exact&&x.storage.distinct_surface_objects&&x.storage.distinct_f32_backing_stores&&x.controls_snapshot.unchanged)],['mutations',mutationLedger.length===5&&mutationLedger.every(x=>x.independent&&x.anchor_cardinality===1&&x.witnesses.length>0&&x.results.some(row=>x.witnesses.includes(row.case)&&row.changed_float32_lanes>0&&row.changed_rgba8_bytes>0))]];checks.forEach(([name,ok])=>console.log(`  [${ok?'ok':'FAIL'}] ${name}`));if(!checks.every(([,ok])=>ok))throw Error('Classic Noise oracle self-test failed')}
+ const outPath=path.join(here,'classic-noise-oracles.json'),reportPath=path.join(here,'classic-noise-oracle-report.md');if(mode==='--write'){fs.mkdirSync(here,{recursive:true});fs.writeFileSync(outPath,payload);fs.writeFileSync(`${outPath}.sha256`,`${sha(payload)}  classic-noise-oracles.json\n`);fs.writeFileSync(reportPath,report);fs.writeFileSync(`${reportPath}.sha256`,`${sha(report)}  classic-noise-oracle-report.md\n`);console.log(`classic noise oracle written (${rendered.length} cases, ${mutationLedger.length} mutations)`)}else{checked(outPath,payload);checked(reportPath,report);if(mode==='--self-test'){selfTest();console.log('strict comparer, authority, and mutation witnesses verified')}else console.log('classic noise oracle check passed')}
+diff --git a/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs.sha256 b/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs.sha256
+index 6e530b3..26570d4 100644
+--- a/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs.sha256
++++ b/docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs.sha256
+@@ -1 +1 @@
+-7768dad900e68e565eb9a5857f423dbbe4a892234b56116f3cf705456664f28d  classic_noise_oracle_generator.mjs
++f07910ceeb420ced4bb6c5f03a4331339af12728238f0e6eedac855e591c5dba  classic_noise_oracle_generator.mjs
+diff --git a/docs/port-engineering/distortion-parity/distortion-oracle-report.md b/docs/port-engineering/distortion-parity/distortion-oracle-report.md
+index 26961b3..809bde4 100644
+--- a/docs/port-engineering/distortion-parity/distortion-oracle-report.md
++++ b/docs/port-engineering/distortion-parity/distortion-oracle-report.md
+@@ -2,7 +2,7 @@
+ 
+ Authenticated canonical CPU oracle for **mixer/distortion:distortion**. It covers displacement, refraction, reflection, map-source routing, mirror/repeat/clamp wrapping, chromatic aberration, antialias sampling, tiled coordinates, exact Float32 words, RGBA8 bytes, repeatability, and three independent factory mutation witnesses.
+ 
+-The authority is an unmodified public canonical factory from an immutable CPU snapshot. Its recursively traversed, realpath-confined literal-import closure contains 22 hash-pinned files; bare specifiers, missing/escaping imports, and nonliteral dynamic imports fail before any oracle import executes.
++The authority is an unmodified public canonical factory from an immutable CPU snapshot. Its recursively traversed, realpath-confined literal-import closure contains 23 hash-pinned files; bare specifiers, missing/escaping imports, and nonliteral dynamic imports fail before any oracle import executes.
+ 
+ Each canonical run snapshots both `inputTex` and `tex` before `runPass`, then compares exact Float32 words and backing bytes on those same surfaces immediately after the run. The assertion throws on any mutation; each case's `input_immutable: true` flag is emitted only after both checks succeed. The authenticated binding order is `inputTex:Surface/sampler2D`, `tex:Surface/sampler2D`, followed by the ten scalar/vector controls.
+ 
+diff --git a/docs/port-engineering/distortion-parity/distortion-oracle-report.md.sha256 b/docs/port-engineering/distortion-parity/distortion-oracle-report.md.sha256
+index 7eb9101..3390305 100644
+--- a/docs/port-engineering/distortion-parity/distortion-oracle-report.md.sha256
++++ b/docs/port-engineering/distortion-parity/distortion-oracle-report.md.sha256
+@@ -1 +1 @@
+-edf3158ec03b887cd23d9f7f1d0b1849285cb7a03ca11d0231c190a0e31293d3  distortion-oracle-report.md
++39f7f071da0ef0292483dbd8b5af81700ec198203f5a7be48c1ec8525016db03  distortion-oracle-report.md
+diff --git a/docs/port-engineering/distortion-parity/distortion-oracles.json b/docs/port-engineering/distortion-parity/distortion-oracles.json
+index 57a9e91..f8a8590 100644
+--- a/docs/port-engineering/distortion-parity/distortion-oracles.json
++++ b/docs/port-engineering/distortion-parity/distortion-oracles.json
+@@ -3,8 +3,8 @@
+   "schema_version": 1,
+   "program_key": "mixer/distortion:distortion",
+   "effect_key": "mixer/distortion",
+-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
++  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+   "factory": {
+     "name": "canonicalFactory194",
+     "text_sha256": "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5",
+@@ -55,7 +55,7 @@
+   },
+   "provenance": {
+     "source": {
+-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl",
++      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl",
+       "bytes": 8117,
+       "sha256": "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8"
+     },
+@@ -94,7 +94,7 @@
+         },
+         {
+           "relative_path": "src/effects/adapters/index.js",
+-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+         },
+         {
+           "relative_path": "src/effects/adapters/julia.js",
+@@ -108,6 +108,10 @@
+           "relative_path": "src/effects/adapters/palette.js",
+           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+         },
++        {
++          "relative_path": "src/effects/adapters/remap.js",
++          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++        },
+         {
+           "relative_path": "src/effects/adapters/snow.js",
+           "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -126,7 +130,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         {
+           "relative_path": "src/effects/generated/kernels.js",
+@@ -134,7 +138,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/upstream-snapshot.js",
+-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+         },
+         {
+           "relative_path": "src/effects/registry.js",
+@@ -153,7 +157,7 @@
+           "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+         }
+       ],
+-      "closure_cardinality": 22
++      "closure_cardinality": 23
+     }
+   },
+   "comparer_self_tests": {
+diff --git a/docs/port-engineering/distortion-parity/distortion-oracles.json.sha256 b/docs/port-engineering/distortion-parity/distortion-oracles.json.sha256
+index c70d155..c1ee79b 100644
+--- a/docs/port-engineering/distortion-parity/distortion-oracles.json.sha256
++++ b/docs/port-engineering/distortion-parity/distortion-oracles.json.sha256
+@@ -1 +1 @@
+-68460b78ee521ab90b605f2fbec8bd178b0d2167333fd1aa55bde5e4ee9dff2b  distortion-oracles.json
++7a9e79771957b8ab06dacd3e78d4b2b41ac9c7160bf1e91089c3b1b6a1402b63  distortion-oracles.json
+diff --git a/docs/port-engineering/distortion-parity/distortion_oracle_generator.mjs b/docs/port-engineering/distortion-parity/distortion_oracle_generator.mjs
+index be0717f..11fb92a 100644
+--- a/docs/port-engineering/distortion-parity/distortion_oracle_generator.mjs
++++ b/docs/port-engineering/distortion-parity/distortion_oracle_generator.mjs
+@@ -10,7 +10,13 @@ const here = path.dirname(fileURLToPath(import.meta.url))
+ const cppRoot = fs.realpathSync(path.resolve(here, '../../..'))
+ const key = 'mixer/distortion:distortion'
+ const effect = 'mixer/distortion'
+-const corpus = 'a024dc3a960cc44af454abc7aebce50456c194e6'
++function deriveCorpusRevision(root) {
++  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
++  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
++  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
++  return match[1]
++}
++const corpus = deriveCorpusRevision(cppRoot)
+ const sourceRelative = `tools/glslcpp/corpus/${corpus}/sources/mixer/distortion/distortion.glsl`
+ const outPath = path.join(here, 'distortion-oracles.json')
+ const reportPath = path.join(here, 'distortion-oracle-report.md')
+@@ -33,6 +39,10 @@ function rejectSymlinkLeaf(candidate, label) {
+ }
+ const factoryShaExpected = '4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5'
+ const sourceShaExpected = '569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8'
++// Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
++// prior e17dd02 authority because src/effects/adapters/index.js now imports
++// src/effects/adapters/remap.js (the authority added a canonical
++// `synth/remap:remap` adapter between e17dd02 and 61aa869).
+ const expectedClosure = Object.freeze([
+   ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
+   ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+@@ -41,17 +51,18 @@ const expectedClosure = Object.freeze([
+   ['src/effects/adapters/crt.js', 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+   ['src/effects/adapters/f32-color.js', 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
+   ['src/effects/adapters/fractal.js', '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+-  ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
++  ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+   ['src/effects/adapters/julia.js', '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
+   ['src/effects/adapters/median.js', 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
+   ['src/effects/adapters/palette.js', '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
++  ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
+   ['src/effects/adapters/snow.js', '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+   ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
+   ['src/effects/definition.js', 'fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
+   ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
+-  ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
++  ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+   ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
+-  ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
++  ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
+   ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+   ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
+   ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+@@ -145,7 +156,7 @@ const [{ canonicalKernelFactories, kernelFactories }, { bindCanonicalKernel }, {
+   load('src/effects/catalog.js'), load('src/csl/glsl-kernel.js'), load('src/runtime/pass-runner.js'),
+   load('src/runtime/surface.js'), load('src/effects/generated/upstream-snapshot.js'),
+ ])
+-if (process.version !== 'v24.7.0') throw Error('Distortion authority Node drift')
++if (process.version !== 'v26.0.0') throw Error('Distortion authority Node drift')
+ const canonical = canonicalKernelFactories[key]
+ const publicFactory = kernelFactories.get(key)
+ if (typeof canonical !== 'function' || publicFactory !== canonical) throw Error('canonical/public factory identity drift')
+diff --git a/docs/port-engineering/dither-parity/dither-oracle-report.md b/docs/port-engineering/dither-parity/dither-oracle-report.md
+index 5052948..1f98abf 100644
+--- a/docs/port-engineering/dither-parity/dither-oracle-report.md
++++ b/docs/port-engineering/dither-parity/dither-oracle-report.md
+@@ -1,3 +1,3 @@
+ # Dither pixel-parity oracle
+ 
+-Frozen Node v24.7.0 authority for filter/dither:dither. The exact twelve cases are the nine baseline records (bayer2-input, bayer8-tiled, dot-input, line-input, crosshatch-input, noise-input, fallback-type, error-diffusion-input, error-diffusion-input-tiled) followed by the three adversarial controls (error-diffusion-negative-tile, levels-2-boundary, levels-16-boundary). All positive cases use palette=0 and carry exact Float32 words, RGBA8 bytes, repeat storage, input immutability, public/direct parity, comparer policy/self-tests, and the three mutation witnesses. The negative-tile case carries a source-bound signed global/cell/block-origin/clamp trace derived from the pinned corpus source. The non-input palette authority blocker is independently executed for canonical and public factories and must throw ditherWithPalette(...).reduce is not a function. Typed-slice integration remains prepared-only.
++Frozen Node v26.0.0 authority for filter/dither:dither. The exact twelve cases are the nine baseline records (bayer2-input, bayer8-tiled, dot-input, line-input, crosshatch-input, noise-input, fallback-type, error-diffusion-input, error-diffusion-input-tiled) followed by the three adversarial controls (error-diffusion-negative-tile, levels-2-boundary, levels-16-boundary). All positive cases use palette=0 and carry exact Float32 words, RGBA8 bytes, repeat storage, input immutability, public/direct parity, comparer policy/self-tests, and the three mutation witnesses. The negative-tile case carries a source-bound signed global/cell/block-origin/clamp trace derived from the pinned corpus source. The non-input palette authority blocker is independently executed for canonical and public factories and must throw ditherWithPalette(...).reduce is not a function. Typed-slice integration remains prepared-only.
+diff --git a/docs/port-engineering/dither-parity/dither-oracle-report.md.sha256 b/docs/port-engineering/dither-parity/dither-oracle-report.md.sha256
+index 6f41f8e..c487a52 100644
+--- a/docs/port-engineering/dither-parity/dither-oracle-report.md.sha256
++++ b/docs/port-engineering/dither-parity/dither-oracle-report.md.sha256
+@@ -1 +1 @@
+-57098a98674a7e9bc359362cb6f2eaa7baef77ffa7d94a1aa5b34ff2d4e6f98c  dither-oracle-report.md
++b8f4c93cdae01a8d2c5bfc4dc929fd46775363706c2d2af2058ddb21a04cf8b3  dither-oracle-report.md
+diff --git a/docs/port-engineering/dither-parity/dither-oracles.json b/docs/port-engineering/dither-parity/dither-oracles.json
+index 37d5df9..d033047 100644
+--- a/docs/port-engineering/dither-parity/dither-oracles.json
++++ b/docs/port-engineering/dither-parity/dither-oracles.json
+@@ -2,12 +2,12 @@
+   "schema": "noisemaker-for-cpp.dither.pixel-parity.v1",
+   "program_key": "filter/dither:dither",
+   "provenance": {
+-    "authority_node": "v24.7.0",
+-    "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
++    "authority_node": "v26.0.0",
++    "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+     "source": {
+       "relative_path": "src/effects/generated/canonical-kernels.js",
+-      "bytes": 1713290,
+-      "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++      "bytes": 1747097,
++      "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+     },
+     "factory": {
+       "name": "canonicalFactory48",
+@@ -17,7 +17,7 @@
+       "public_factory_is_canonical_identity": true
+     },
+     "corpus_source": {
+-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl",
++      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl",
+       "raw_bytes": 19391,
+       "raw_sha256": "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb"
+     },
+@@ -53,7 +53,7 @@
+         },
+         {
+           "relative_path": "src/effects/adapters/index.js",
+-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
++          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
+         },
+         {
+           "relative_path": "src/effects/adapters/julia.js",
+@@ -67,6 +67,10 @@
+           "relative_path": "src/effects/adapters/palette.js",
+           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+         },
++        {
++          "relative_path": "src/effects/adapters/remap.js",
++          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
++        },
+         {
+           "relative_path": "src/effects/adapters/snow.js",
+           "sha256": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"
+@@ -85,7 +89,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/canonical-kernels.js",
+-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
++          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
+         },
+         {
+           "relative_path": "src/effects/generated/kernels.js",
+@@ -93,7 +97,7 @@
+         },
+         {
+           "relative_path": "src/effects/generated/upstream-snapshot.js",
+-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
++          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
+         },
+         {
+           "relative_path": "src/effects/registry.js",
+@@ -112,7 +116,7 @@
+           "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
+         }
+       ],
+-      "closure_sha256": "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5",
++      "closure_sha256": "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3",
+       "immutable_snapshot": true,
+       "live_checkout_rejected": true,
+       "realpath_containment_checked": true,
+@@ -5842,7 +5846,7 @@
+       "signed_trace": {
+         "method": "source-derived-error-diffusion-trace-v1",
+         "source": {
+-          "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl",
++          "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl",
+           "raw_sha256": "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb",
+           "block_span": "508-566",
+           "fetch_span": "500-506"
+diff --git a/docs/port-engineering/dither-parity/dither-oracles.json.sha256 b/docs/port-engineering/dither-parity/dither-oracles.json.sha256
+index 5b152d8..e16da3e 100644
+--- a/docs/port-engineering/dither-parity/dither-oracles.json.sha256
++++ b/docs/port-engineering/dither-parity/dither-oracles.json.sha256
+@@ -1 +1 @@
+-e9b3e5f0ef7d5c8c1b43181ea73403c16112dd307f36499c78cb2f3deb485a67  dither-oracles.json
++093588b5c3a81567f44034b9ab55aeb350a39097fd12db12778d1723ea938647  dither-oracles.json
+diff --git a/docs/port-engineering/dither-parity/dither_oracle_generator.mjs b/docs/port-engineering/dither-parity/dither_oracle_generator.mjs
+index efd20df..0359471 100644
+--- a/docs/port-engineering/dither-parity/dither_oracle_generator.mjs
++++ b/docs/port-engineering/dither-parity/dither_oracle_generator.mjs
+@@ -15,14 +15,24 @@ const baselineNames = ['bayer2-input', 'bayer8-tiled', 'dot-input', 'line-input'
+ const adversarialNames = ['error-diffusion-negative-tile', 'levels-2-boundary', 'levels-16-boundary']
+ const caseNames = [...baselineNames, ...adversarialNames]
+ const mutationNames = ['fallback-default', 'quantize-levels', 'error-diffusion-route']
+-const corpusSourceRelative = 'tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl'
++function deriveCorpusRevision(cppRoot) {
++  const text = fs.readFileSync(path.join(cppRoot, 'tools/glslcpp/check_corpus.py'), 'utf8')
++  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
++  if (!match) throw new Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
++  return match[1]
++}
++const corpusSourceRelative = `tools/glslcpp/corpus/${deriveCorpusRevision(root)}/sources/filter/dither/dither.glsl`
+ const corpusSourcePath = path.join(root, corpusSourceRelative)
+ const sha = value => crypto.createHash('sha256').update(value).digest('hex')
+ const corpusSourceBytes = fs.readFileSync(corpusSourcePath)
+ const corpusSourceSha256 = sha(corpusSourceBytes)
+-const expectedUpstreamRevision = '117a236679d1db3ab8f0e278230ece277b57564c'
+-const expectedCanonicalSource = { relative_path: 'src/effects/generated/canonical-kernels.js', bytes: 1713290, sha256: '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe' }
++const expectedUpstreamRevision = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
++const expectedCanonicalSource = { relative_path: 'src/effects/generated/canonical-kernels.js', bytes: 1747097, sha256: 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c' }
+ const expectedFactory = { name: 'canonicalFactory48', text_bytes: 22898, text_sha256: '28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820', public_factory_name: 'canonicalFactory48', public_factory_is_canonical_identity: true }
++// Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
++// prior e17dd02 authority because src/effects/adapters/index.js now imports
++// src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
++// added between e17dd02 and 61aa869).
+ const expectedClosure = [
+   ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
+   ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
+@@ -31,23 +41,24 @@ const expectedClosure = [
+   ['src/effects/adapters/crt.js', 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc'],
+   ['src/effects/adapters/f32-color.js', 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046'],
+   ['src/effects/adapters/fractal.js', '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29'],
+-  ['src/effects/adapters/index.js', '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267'],
++  ['src/effects/adapters/index.js', 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e'],
+   ['src/effects/adapters/julia.js', '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5'],
+   ['src/effects/adapters/median.js', 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583'],
+   ['src/effects/adapters/palette.js', '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452'],
++  ['src/effects/adapters/remap.js', '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79'],
+   ['src/effects/adapters/snow.js', '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366'],
+   ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
+   ['src/effects/definition.js', 'fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02'],
+   ['src/effects/generated/canonical-adapter-data.js', 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab'],
+-  ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
++  ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
+   ['src/effects/generated/kernels.js', 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01'],
+-  ['src/effects/generated/upstream-snapshot.js', 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090'],
++  ['src/effects/generated/upstream-snapshot.js', '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7'],
+   ['src/effects/registry.js', '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618'],
+   ['src/runtime/pass-runner.js', 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa'],
+   ['src/runtime/sampler.js', '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328'],
+   ['src/runtime/surface.js', '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59'],
+ ].map(([relative_path, sha256]) => ({ relative_path, sha256 }))
+-const expectedClosureSha256 = 'b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5'
++const expectedClosureSha256 = sha(Buffer.from(JSON.stringify(expectedClosure)))
+ const expectedMutationIdentities = {
+   'fallback-default': { anchor_sha256: '8e35a9b15829e194b90777d8f38e5709ec2e1f8cfa875d4294496fade9f67683', replacement_sha256: '8fb42fd196d8a5e5bff6ba3a7a1dd24a87fe4dfb2b0f07a75146dc5bdcd1251b', mutated_factory_sha256: '85c2335ba2395a5d80f05fff460de3ddf5779b39524a927ee506618c36e0f611' },
+   'quantize-levels': { anchor_sha256: '4af10b05bcf97c256bedc908d8fc491d9a7d53b3bd16508493a436d742f602ac', replacement_sha256: 'aa8311a86e4e743a9c84375b905a6c66581039145887910832a63625c2ef4b34', mutated_factory_sha256: 'c48b59a286a1178abe723287b9ea9869600425609971827b37bb4b2d5b6ea007' },
+diff --git a/tests/oracles/cellrefract186_expected.inc b/tests/oracles/cellrefract186_expected.inc
+index dc8ca15..3f436a4 100644
+--- a/tests/oracles/cellrefract186_expected.inc
++++ b/tests/oracles/cellrefract186_expected.inc
+@@ -11,9 +11,9 @@
+ 
+ namespace cellrefract186_oracle {
+ 
+-inline constexpr std::string_view kOracleSha256 = "dd026ed5a7f14bd7710e8d876f3656adb3fe91394d5afb1ee422df9ac155cbe8";
++inline constexpr std::string_view kOracleSha256 = "4564e48493a373d035e0f51a7a62b03cb2755a7aa7cd49bdbfc5b69f52c06bfc";
+ inline constexpr std::string_view kProgramKey = "classicNoisedeck/cellRefract:cellRefract";
+-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
++inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
+ inline constexpr std::int32_t kKernelDefine = 0;
+ inline constexpr std::int32_t kShapeDefine = 1;
+ inline constexpr std::size_t kCaseCount = 4U;
+diff --git a/tests/oracles/cellrefract186_expected.inc.sha256 b/tests/oracles/cellrefract186_expected.inc.sha256
+index 45d8d57..ed047f5 100644
+--- a/tests/oracles/cellrefract186_expected.inc.sha256
++++ b/tests/oracles/cellrefract186_expected.inc.sha256
+@@ -1 +1 @@
+-1a6b086b567877f7e8211fb69b2b738f0c8577761d9027ddd478645eb8272156  cellrefract186_expected.inc
++5d265c7c8de053d0885a171257497e880fffefec6c489bcec2cb0fdefa2e54d5  cellrefract186_expected.inc
+diff --git a/tests/oracles/classic_noise_expected.inc b/tests/oracles/classic_noise_expected.inc
+index 256bf32..6ceed19 100644
+--- a/tests/oracles/classic_noise_expected.inc
++++ b/tests/oracles/classic_noise_expected.inc
+@@ -11,9 +11,9 @@ struct Mutation { const char* name; const char* anchor; const char* replacement;
+ inline constexpr const char* kSchema = "noisemaker-for-cpp.classic-noise.pixel-parity.v1";
+ inline constexpr const char* kProgramKey = "classicNoisedeck/noise:noise";
+ inline constexpr const char* kFactorySha256 = "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424";
+-inline constexpr const char* kSourceSha256 = "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663";
+-inline constexpr std::uint32_t kSourceBytes = 31255U;
+-inline constexpr std::uint32_t kImportClosureCardinality = 22U;
++inline constexpr const char* kSourceSha256 = "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138";
++inline constexpr std::uint32_t kSourceBytes = 31258U;
++inline constexpr std::uint32_t kImportClosureCardinality = 23U;
+ inline constexpr std::uint32_t kRuntimeBindingCardinality = 29U;
+ inline const std::vector<Binding> kRuntimeBindings = {
+   {"NOISE_TYPE", "int32", "define"},
+diff --git a/tests/oracles/classic_noise_expected.inc.sha256 b/tests/oracles/classic_noise_expected.inc.sha256
+index f150ef2..770f7b4 100644
+--- a/tests/oracles/classic_noise_expected.inc.sha256
++++ b/tests/oracles/classic_noise_expected.inc.sha256
+@@ -1 +1 @@
+-10929bb8b1cbef422f433bb8f7b75146e815cbeb6df73842b711f65e258f1b9b  classic_noise_expected.inc
++9562d6b92b243717b6902cbef1c42561f8b82f3bf233c86820419dccfef1384e  classic_noise_expected.inc
+diff --git a/tests/oracles/distortion_expected.inc b/tests/oracles/distortion_expected.inc
+index 29366d4..ae1adaf 100644
+--- a/tests/oracles/distortion_expected.inc
++++ b/tests/oracles/distortion_expected.inc
+@@ -6,16 +6,16 @@
+ namespace distortion_oracle {
+ inline constexpr std::string_view kSchema = "noisemaker-for-cpp.distortion.pixel-parity.v1";
+ inline constexpr std::string_view kProgramKey = "mixer/distortion:distortion";
+-inline constexpr std::string_view kOracleJsonSha256 = "68460b78ee521ab90b605f2fbec8bd178b0d2167333fd1aa55bde5e4ee9dff2b";
++inline constexpr std::string_view kOracleJsonSha256 = "7a9e79771957b8ab06dacd3e78d4b2b41ac9c7160bf1e91089c3b1b6a1402b63";
+ inline constexpr std::string_view kOracleSha256 = kOracleJsonSha256;
+ inline constexpr std::string_view kFactoryTextSha256 = "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5";
+ inline constexpr std::string_view kFactorySha256 = kFactoryTextSha256;
+ inline constexpr std::string_view kSourceSha256 = "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8";
+ inline constexpr std::uint32_t kSourceBytes = 8117U;
+-inline constexpr std::string_view kSourceRelativePath = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl";
++inline constexpr std::string_view kSourceRelativePath = "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl";
+ struct ImportClosureEntry { std::string_view relativePath; std::string_view sha256; };
+-inline constexpr std::uint32_t kImportClosureCardinality = 22U;
+-inline constexpr std::array<ImportClosureEntry, 22> kImportClosure = {
++inline constexpr std::uint32_t kImportClosureCardinality = 23U;
++inline constexpr std::array<ImportClosureEntry, 23> kImportClosure = {
+   ImportClosureEntry{"src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"},
+   ImportClosureEntry{"src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"},
+   ImportClosureEntry{"src/csl/runtime.js", "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"},
+@@ -23,17 +23,18 @@ inline constexpr std::array<ImportClosureEntry, 22> kImportClosure = {
+   ImportClosureEntry{"src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"},
+   ImportClosureEntry{"src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"},
+   ImportClosureEntry{"src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"},
+-  ImportClosureEntry{"src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"},
++  ImportClosureEntry{"src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"},
+   ImportClosureEntry{"src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"},
+   ImportClosureEntry{"src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"},
+   ImportClosureEntry{"src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"},
++  ImportClosureEntry{"src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"},
+   ImportClosureEntry{"src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"},
+   ImportClosureEntry{"src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"},
+   ImportClosureEntry{"src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"},
+   ImportClosureEntry{"src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"},
+-  ImportClosureEntry{"src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"},
++  ImportClosureEntry{"src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"},
+   ImportClosureEntry{"src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"},
+-  ImportClosureEntry{"src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"},
++  ImportClosureEntry{"src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"},
+   ImportClosureEntry{"src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"},
+   ImportClosureEntry{"src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"},
+   ImportClosureEntry{"src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"},
+diff --git a/tests/oracles/distortion_expected.inc.sha256 b/tests/oracles/distortion_expected.inc.sha256
+index ca546c3..307792e 100644
+--- a/tests/oracles/distortion_expected.inc.sha256
++++ b/tests/oracles/distortion_expected.inc.sha256
+@@ -1 +1 @@
+-36406de23992d21e92e2ff1eaa6f1df71df22bcf2029feb91701e1023aec2de5  distortion_expected.inc
++531e813c556ec7cf009bc48524b30a9172af757843e6844464444f28752e28f0  distortion_expected.inc
+diff --git a/tests/oracles/dither_expected.inc b/tests/oracles/dither_expected.inc
+index 0659672..36fb558 100644
+--- a/tests/oracles/dither_expected.inc
++++ b/tests/oracles/dither_expected.inc
+@@ -17,17 +17,17 @@ struct ComparerPolicy { bool f32_words_exact, rgba8_bytes_exact, dimensions_befo
+ struct ComparerSelfTests { bool good_equal, dimensions_mismatch, short_lane_count, rgba8_mismatch, signed_zero; };
+ inline constexpr std::string_view kSchema = "noisemaker-for-cpp.dither.pixel-parity.v1";
+ inline constexpr std::string_view kProgramKey = "filter/dither:dither";
+-inline constexpr std::string_view kAuthorityNode = "v24.7.0";
+-inline constexpr std::string_view kUpstreamRevision = "117a236679d1db3ab8f0e278230ece277b57564c";
++inline constexpr std::string_view kAuthorityNode = "v26.0.0";
++inline constexpr std::string_view kUpstreamRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
+ inline constexpr std::string_view kSourceRelativePath = "src/effects/generated/canonical-kernels.js";
+-inline constexpr std::string_view kSourceSha256 = "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe";
++inline constexpr std::string_view kSourceSha256 = "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c";
+ inline constexpr std::string_view kFactoryName = "canonicalFactory48";
+ inline constexpr std::string_view kFactoryTextSha256 = "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820";
+ inline constexpr std::string_view kPublicFactoryName = "canonicalFactory48";
+ inline constexpr bool kPublicFactoryIsCanonicalIdentity = true;
+-inline constexpr std::string_view kCorpusSourceRelativePath = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl";
++inline constexpr std::string_view kCorpusSourceRelativePath = "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl";
+ inline constexpr std::string_view kCorpusSourceSha256 = "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb";
+-inline constexpr std::string_view kClosureSha256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5";
++inline constexpr std::string_view kClosureSha256 = "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3";
+ inline constexpr bool kImmutableSnapshot = true;
+ inline constexpr bool kLiveCheckoutRejected = true;
+ inline constexpr bool kRealpathContainmentChecked = true;
+@@ -137,10 +137,10 @@ inline constexpr std::array<TracePoint, 3> kSignedTracePoints0 = {
+   TracePoint{{5, 0}, {-3.5f, 2.5f}, {-2, 1}, {0, 0}},
+ };
+ inline constexpr std::array<SignedTrace, 1> kSignedTraces = {
+-  SignedTrace{"error-diffusion-negative-tile", "source-derived-error-diffusion-trace-v1", "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl", "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb", "508-566", "500-506", "truncate_toward_zero", 4, 2.0f, true, true, kSignedTracePoints0, {0, 0}, {-4, 0}, {-4, -4}, {-8, -4}, {-6, -9}, {0, 0}, {-15.0f, -7.0f}, true, true},
++  SignedTrace{"error-diffusion-negative-tile", "source-derived-error-diffusion-trace-v1", "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl", "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb", "508-566", "500-506", "truncate_toward_zero", 4, 2.0f, true, true, kSignedTracePoints0, {0, 0}, {-4, 0}, {-4, -4}, {-8, -4}, {-6, -9}, {0, 0}, {-15.0f, -7.0f}, true, true},
+ };
+ inline constexpr AuthorityBlocker kAuthorityBlocker{"palette != PALETTE_INPUT", "ditherWithPalette(...).reduce is not a function", "ditherWithPalette(...).reduce((res,el,i)=>(res[i] = el, res), result)", "palette-blocker", "ditherWithPalette(...).reduce is not a function", "ditherWithPalette(...).reduce is not a function", 2u, true, true, true};
+-inline constexpr std::array<ClosureEntry, 22> kCpuClosure = {
++inline constexpr std::array<ClosureEntry, 23> kCpuClosure = {
+   ClosureEntry{"src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"},
+   ClosureEntry{"src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"},
+   ClosureEntry{"src/csl/runtime.js", "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"},
+@@ -148,17 +148,18 @@ inline constexpr std::array<ClosureEntry, 22> kCpuClosure = {
+   ClosureEntry{"src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"},
+   ClosureEntry{"src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"},
+   ClosureEntry{"src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"},
+-  ClosureEntry{"src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"},
++  ClosureEntry{"src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"},
+   ClosureEntry{"src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"},
+   ClosureEntry{"src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"},
+   ClosureEntry{"src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"},
++  ClosureEntry{"src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"},
+   ClosureEntry{"src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"},
+   ClosureEntry{"src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"},
+   ClosureEntry{"src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"},
+   ClosureEntry{"src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"},
+-  ClosureEntry{"src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"},
++  ClosureEntry{"src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"},
+   ClosureEntry{"src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"},
+-  ClosureEntry{"src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"},
++  ClosureEntry{"src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"},
+   ClosureEntry{"src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"},
+   ClosureEntry{"src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"},
+   ClosureEntry{"src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"},
+diff --git a/tests/oracles/dither_expected.inc.sha256 b/tests/oracles/dither_expected.inc.sha256
+index 22c493a..db34d6b 100644
+--- a/tests/oracles/dither_expected.inc.sha256
++++ b/tests/oracles/dither_expected.inc.sha256
+@@ -1 +1 @@
+-f8a4d5ec2840658116dace18d408df4d815632ba9c07a90dfe2be0b7d70b8a82  dither_expected.inc
++bf04a020cc12b283754b25a4d4bac34e7846be61434aef01209a0f7cb3c9b79e  dither_expected.inc
+diff --git a/tests/test_generated_kernels.cpp b/tests/test_generated_kernels.cpp
+index 8971ea1..a1b6b5a 100644
+--- a/tests/test_generated_kernels.cpp
++++ b/tests/test_generated_kernels.cpp
+@@ -14649,24 +14649,24 @@ void require_oracle_metadata() {
+   }
+   REQUIRE(noisemaker_dither_oracle::kBaselineCaseCount == 9U);
+   REQUIRE(noisemaker_dither_oracle::kAdversarialCaseCount == 3U);
+-  REQUIRE(noisemaker_dither_oracle::kAuthorityNode == "v24.7.0");
++  REQUIRE(noisemaker_dither_oracle::kAuthorityNode == "v26.0.0");
+   REQUIRE(noisemaker_dither_oracle::kUpstreamRevision ==
+-          "117a236679d1db3ab8f0e278230ece277b57564c");
++          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+   REQUIRE(noisemaker_dither_oracle::kSourceRelativePath ==
+           "src/effects/generated/canonical-kernels.js");
+   REQUIRE(noisemaker_dither_oracle::kSourceSha256 ==
+-          "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
++          "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
+   REQUIRE(noisemaker_dither_oracle::kFactoryName == "canonicalFactory48");
+   REQUIRE(noisemaker_dither_oracle::kFactoryTextSha256 ==
+           "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820");
+   REQUIRE(noisemaker_dither_oracle::kPublicFactoryName == "canonicalFactory48");
+   REQUIRE(noisemaker_dither_oracle::kPublicFactoryIsCanonicalIdentity);
+   REQUIRE(noisemaker_dither_oracle::kCorpusSourceRelativePath ==
+-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
++          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
+   REQUIRE(noisemaker_dither_oracle::kCorpusSourceSha256 ==
+           "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
+   REQUIRE(noisemaker_dither_oracle::kClosureSha256 ==
+-          "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5");
++          "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3");
+   constexpr std::array<std::array<std::string_view, 2>, 22> closure{{
+       {{"src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"}},
+       {{"src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"}},
+@@ -14769,7 +14769,7 @@ void require_oracle_metadata() {
+   const auto& trace = noisemaker_dither_oracle::kSignedTraces[0];
+   REQUIRE(trace.case_name == "error-diffusion-negative-tile");
+   REQUIRE(trace.method == "source-derived-error-diffusion-trace-v1");
+-  REQUIRE(trace.source_path == "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
++  REQUIRE(trace.source_path == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
+   REQUIRE(trace.source_sha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
+   REQUIRE(trace.source_block_span == "508-566");
+   REQUIRE(trace.source_fetch_span == "500-506");
+@@ -20625,11 +20625,11 @@ TEST(typed_cellrefract186_custom_comparer_rejects_all_independent_failure_modes)
+ 
+ TEST(typed_cellrefract186_matches_all_four_independent_js_oracles) {
+   REQUIRE(cellrefract186_oracle::kOracleSha256 ==
+-          "dd026ed5a7f14bd7710e8d876f3656adb3fe91394d5afb1ee422df9ac155cbe8");
++          "4564e48493a373d035e0f51a7a62b03cb2755a7aa7cd49bdbfc5b69f52c06bfc");
+   REQUIRE(cellrefract186_oracle::kProgramKey ==
+           "classicNoisedeck/cellRefract:cellRefract");
+   REQUIRE(cellrefract186_oracle::kCorpusRevision ==
+-          "a024dc3a960cc44af454abc7aebce50456c194e6");
++          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+   REQUIRE(cellrefract186_oracle::kKernelDefine == 0);
+   REQUIRE(cellrefract186_oracle::kShapeDefine == 1);
+   REQUIRE(cellrefract186_oracle::kCaseCount == 4U);
+@@ -26263,7 +26263,7 @@ void distortion_native_integration_require_oracle_metadata() {
+   REQUIRE(distortion_oracle::kFrontendBlocker ==
+           "sampler-parameter:calculateNormal:26:1-72:2");
+   REQUIRE(distortion_oracle::kOracleJsonSha256 ==
+-          "68460b78ee521ab90b605f2fbec8bd178b0d2167333fd1aa55bde5e4ee9dff2b");
++          "7a9e79771957b8ab06dacd3e78d4b2b41ac9c7160bf1e91089c3b1b6a1402b63");
+   REQUIRE(distortion_oracle::kOracleSha256 == distortion_oracle::kOracleJsonSha256);
+   REQUIRE(distortion_oracle::kFactoryTextSha256 ==
+           "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5");
+@@ -26272,7 +26272,7 @@ void distortion_native_integration_require_oracle_metadata() {
+           "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8");
+   REQUIRE(distortion_oracle::kSourceBytes == 8117U);
+   REQUIRE(distortion_oracle::kSourceRelativePath ==
+-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl");
++          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl");
+ 
+   // The generated include now carries the source-bound control tuples; keep
+   // this harness consuming CaseSummary::controls rather than duplicating them.
+@@ -29647,7 +29647,7 @@ void require_oracle_metadata() {
+   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kSourceSha256) ==
+           "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138");
+   REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 31258U);
+-  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 22U);
++  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 23U);
+   REQUIRE(noisemaker_classic_noise_oracle::kRuntimeBindingCardinality == 29U);
+   constexpr std::array<std::string_view, 29> names{
+       "NOISE_TYPE", "REFRACT_MODE", "LOOP_OFFSET", "METRIC", "COLOR_MODE", "time", "seed",
+diff --git a/tools/glslcpp/generate_cellrefract_native_oracle_include.py b/tools/glslcpp/generate_cellrefract_native_oracle_include.py
+index f33a07f..49e1d10 100644
+--- a/tools/glslcpp/generate_cellrefract_native_oracle_include.py
++++ b/tools/glslcpp/generate_cellrefract_native_oracle_include.py
+@@ -44,7 +44,11 @@ SCHEMA = "noisemaker-for-cpp.cellrefract186.pixel-parity.v1"
+ SCHEMA_VERSION = 1
+ PROGRAM_KEY = "classicNoisedeck/cellRefract:cellRefract"
+ EFFECT_KEY = "classicNoisedeck/cellRefract"
+-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
++# Derived from the single source of truth (never transcribed): this script's
++# own directory (tools/glslcpp) is on sys.path[0] when run directly.
++sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
++import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
++CORPUS_REVISION = _check_corpus.REVISION
+ DEFINES = {"KERNEL": 0, "SHAPE": 1}
+ FACTORY_NAME = "canonicalFactory3"
+ FACTORY_SHA256 = "329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3"
+@@ -56,7 +60,7 @@ SOURCE_SHA256 = "aa93167faa07ee22ff0be9c653b5602ac88b1b962e405548cafab43b9e867a7
+ PINNED_CPU_FILES = {
+     "canonical_kernels": (
+         "src/effects/generated/canonical-kernels.js",
+-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
++        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
+     "public_catalog": (
+         "src/effects/catalog.js",
+         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
+@@ -79,11 +83,14 @@ PINNED_CPU_FILES = {
+ # frozen copy against another frozen copy proves nothing, and would stay green
+ # if `classicNoisedeck/cellRefract` were ever added to the real table.
+ CORPUS_ADAPTER_SOURCE = "tools/glslcpp/check_corpus.py"
++# Grew from 4 to 5 at CPU authority 61aa869: check_corpus.py's `_ADAPTERS`
++# census now also carries `synth/remap:remap`.
+ CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
+     "classicNoisedeck/fractal:fractal",
+     "filter/historicPalette:historicPalette",
+     "filter/palette:palette",
+     "synth/julia:julia",
++    "synth/remap:remap",
+ })
+ 
+ 
+diff --git a/tools/glslcpp/generate_cellrefract_native_oracle_include.py.sha256 b/tools/glslcpp/generate_cellrefract_native_oracle_include.py.sha256
+index 6822865..f5850ee 100644
+--- a/tools/glslcpp/generate_cellrefract_native_oracle_include.py.sha256
++++ b/tools/glslcpp/generate_cellrefract_native_oracle_include.py.sha256
+@@ -1 +1 @@
+-96f4e7b62a4678448e1050334bde4b2b60867d6c6c036e6c818b8ccdfbf9dce8  generate_cellrefract_native_oracle_include.py
++d1ad2185e0abb767aa1f955d159f7922f7a113f7efef3b5c3941cfcbeb45fb32  generate_cellrefract_native_oracle_include.py
+diff --git a/tools/glslcpp/generate_classic_noise_native_oracle_include.py b/tools/glslcpp/generate_classic_noise_native_oracle_include.py
+index 7c24fa5..b1f4af9 100644
+--- a/tools/glslcpp/generate_classic_noise_native_oracle_include.py
++++ b/tools/glslcpp/generate_classic_noise_native_oracle_include.py
+@@ -1,7 +1,13 @@
+ #!/usr/bin/env python3
+ """Fail-closed materializer for the Classic Noise canonical CPU oracle."""
+ from __future__ import annotations
+-import argparse, copy, hashlib, json, math, pathlib, re, struct
++import argparse, copy, hashlib, json, math, pathlib, re, struct, sys
++
++# Derive the corpus revision from the single source of truth (never transcribe it):
++# the script's own directory (tools/glslcpp) is on sys.path[0] when run directly.
++sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
++import check_corpus  # noqa: E402  (deliberately late and local)
++CORPUS_REVISION = check_corpus.REVISION
+ 
+ ROOT = pathlib.Path(__file__).resolve().parents[2]
+ PACKAGE = ROOT / "docs/port-engineering/classic-noise-parity"
+@@ -9,7 +15,7 @@ ORACLE = PACKAGE / "classic-noise-oracles.json"
+ GENERATOR = PACKAGE / "classic_noise_oracle_generator.mjs"
+ REPORT = PACKAGE / "classic-noise-oracle-report.md"
+ TARGET = ROOT / "tests/oracles/classic_noise_expected.inc"
+-SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/noise/noise.glsl"
++SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/noise/noise.glsl"
+ SCHEMA = "noisemaker-for-cpp.classic-noise.pixel-parity.v1"
+ KEY = "classicNoisedeck/noise:noise"
+ FACTORY_SHA256 = "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424"
+@@ -90,10 +96,12 @@ def validate(document):
+         raise OracleError("output ABI drift")
+     provenance = document["provenance"]
+     exact(provenance, {"source","generator","materializer"}, "provenance")
+-    if provenance["source"] != {"relative_path":SOURCE,"bytes":31255,"sha256":"4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663"}:
++    if provenance["source"] != {"relative_path":SOURCE,"bytes":31258,"sha256":"8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138"}:
+         raise OracleError("source provenance drift")
+     exact(document["authority"], {"node_version","oracle","cpu_root_argument","immutable_snapshot","realpath_containment_checked","live_checkout_rejected","closure_cardinality","import_closure"}, "authority")
+-    if document["authority"]["closure_cardinality"] != 22 or len(document["authority"]["import_closure"]) != 22:
++    # Cardinality is 23 (not 22) at CPU authority 61aa869: src/effects/adapters/index.js
++    # now imports src/effects/adapters/remap.js (added between e17dd02 and 61aa869).
++    if document["authority"]["closure_cardinality"] != 23 or len(document["authority"]["import_closure"]) != 23:
+         raise OracleError("closure cardinality drift")
+     if not all(isinstance(x, dict) and set(x) == {"relative_path","sha256"} and isinstance(x["relative_path"], str) and SHA.fullmatch(x["sha256"]) for x in document["authority"]["import_closure"]):
+         raise OracleError("closure entry drift")
+diff --git a/tools/glslcpp/generate_classic_noise_native_oracle_include.py.sha256 b/tools/glslcpp/generate_classic_noise_native_oracle_include.py.sha256
+index f2d8e71..182d82c 100644
+--- a/tools/glslcpp/generate_classic_noise_native_oracle_include.py.sha256
++++ b/tools/glslcpp/generate_classic_noise_native_oracle_include.py.sha256
+@@ -1 +1 @@
+-e6330a8ea475f1d4464436e0f71d063ee72c2ab90acf9d804180872795afd02a  generate_classic_noise_native_oracle_include.py
++eebd86f9aa142736da6fdeb4f1530adcd4ac335ceb535c3196413bb72ecc1285  generate_classic_noise_native_oracle_include.py
+diff --git a/tools/glslcpp/generate_distortion_native_oracle_include.py b/tools/glslcpp/generate_distortion_native_oracle_include.py
+index 4a0be88..dc51317 100644
+--- a/tools/glslcpp/generate_distortion_native_oracle_include.py
++++ b/tools/glslcpp/generate_distortion_native_oracle_include.py
+@@ -10,6 +10,13 @@ import math
+ from pathlib import Path
+ import re
+ import struct
++import sys
++
++# Derived from the single source of truth (never transcribed): this script's
++# own directory (tools/glslcpp) is on sys.path[0] when run directly.
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++import check_corpus  # noqa: E402  (deliberately late and local)
++CORPUS_REVISION = check_corpus.REVISION
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+ PACKAGE = ROOT / "docs/port-engineering/distortion-parity"
+@@ -18,10 +25,14 @@ REPORT = PACKAGE / "distortion-oracle-report.md"
+ OUTPUT = ROOT / "tests/oracles/distortion_expected.inc"
+ SCHEMA = "noisemaker-for-cpp.distortion.pixel-parity.v1"
+ KEY = "mixer/distortion:distortion"
+-SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl"
++SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/mixer/distortion/distortion.glsl"
+ SOURCE_SHA = "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8"
+ FACTORY_SHA = "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5"
+ HEX = re.compile(r"^0x[0-9a-f]{8}$")
++# Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
++# prior e17dd02 authority because src/effects/adapters/index.js now imports
++# src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
++# added between e17dd02 and 61aa869).
+ EXPECTED_CLOSURE = [
+     ("src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"),
+     ("src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"),
+@@ -30,17 +41,18 @@ EXPECTED_CLOSURE = [
+     ("src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"),
+     ("src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"),
+     ("src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"),
+-    ("src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"),
++    ("src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"),
+     ("src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"),
+     ("src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"),
+     ("src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"),
++    ("src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"),
+     ("src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"),
+     ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
+     ("src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"),
+     ("src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"),
+-    ("src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
++    ("src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
+     ("src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"),
+-    ("src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"),
++    ("src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"),
+     ("src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"),
+     ("src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
+     ("src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"),
+@@ -194,7 +206,7 @@ def validate(doc: dict) -> None:
+         raise OracleError("schema or program identity mismatch")
+     if set(doc) != TOP_LEVEL_FIELDS:
+         raise OracleError("document fields mismatch")
+-    if doc.get("effect_key") != "mixer/distortion" or doc.get("corpus_revision") != "a024dc3a960cc44af454abc7aebce50456c194e6" or doc.get("upstream_revision") != "117a236679d1db3ab8f0e278230ece277b57564c":
++    if doc.get("effect_key") != "mixer/distortion" or doc.get("corpus_revision") != CORPUS_REVISION or doc.get("upstream_revision") != CORPUS_REVISION:
+         raise OracleError("revision provenance mismatch")
+     if doc.get("runtime_binding_names") != EXPECTED_BINDING_NAMES or doc.get("runtime_binding_abi") != EXPECTED_RUNTIME_ABI or doc.get("source_uniform_abi") != EXPECTED_SOURCE_ABI:
+         raise OracleError("runtime/source binding ABI mismatch")
+diff --git a/tools/glslcpp/generate_distortion_native_oracle_include.py.sha256 b/tools/glslcpp/generate_distortion_native_oracle_include.py.sha256
+index 8d2a689..fde0282 100644
+--- a/tools/glslcpp/generate_distortion_native_oracle_include.py.sha256
++++ b/tools/glslcpp/generate_distortion_native_oracle_include.py.sha256
+@@ -1 +1 @@
+-0b2debc192ab16fd9d12395addfd4adce3679bc2e5232269af2fcf96115a1e69  generate_distortion_native_oracle_include.py
++355b652734e7a4a02143e5586b14ea0d24093bf9d93982cb96a6152f9b50e20a  generate_distortion_native_oracle_include.py
+diff --git a/tools/glslcpp/generate_dither_native_oracle_include.py b/tools/glslcpp/generate_dither_native_oracle_include.py
+index 123a8c8..e26a668 100644
+--- a/tools/glslcpp/generate_dither_native_oracle_include.py
++++ b/tools/glslcpp/generate_dither_native_oracle_include.py
+@@ -7,6 +7,13 @@ import json
+ import math
+ from pathlib import Path
+ import struct
++import sys
++
++# Derived from the single source of truth (never transcribed): this script's
++# own directory (tools/glslcpp) is on sys.path[0] when run directly.
++sys.path.insert(0, str(Path(__file__).resolve().parent))
++import check_corpus  # noqa: E402  (deliberately late and local)
++CORPUS_REVISION = check_corpus.REVISION
+ 
+ ROOT = Path(__file__).resolve().parents[2]
+ ORACLE = ROOT / "docs/port-engineering/dither-parity/dither-oracles.json"
+@@ -53,11 +60,15 @@ EXPECTED_BLOCKER = {
+     "reproducible": True,
+ }
+ EXPECTED_POLICY = {"f32_words_exact", "rgba8_bytes_exact", "dimensions_before_data", "signed_zero_exact", "input_bits_exact", "public_direct_exact", "repeat_identity_exact"}
+-CORPUS_SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl"
++CORPUS_SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/dither/dither.glsl"
+ CORPUS_SOURCE_SHA256 = "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb"
+-EXPECTED_UPSTREAM_REVISION = "117a236679d1db3ab8f0e278230ece277b57564c"
+-EXPECTED_SOURCE = {"relative_path": "src/effects/generated/canonical-kernels.js", "bytes": 1713290, "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"}
++EXPECTED_UPSTREAM_REVISION = CORPUS_REVISION
++EXPECTED_SOURCE = {"relative_path": "src/effects/generated/canonical-kernels.js", "bytes": 1747097, "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"}
+ EXPECTED_FACTORY = {"name": "canonicalFactory48", "text_bytes": 22898, "text_sha256": "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820", "public_factory_name": "canonicalFactory48", "public_factory_is_canonical_identity": True}
++# Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
++# prior e17dd02 authority because src/effects/adapters/index.js now imports
++# src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
++# added between e17dd02 and 61aa869).
+ EXPECTED_CLOSURE = (
+     ("src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"),
+     ("src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"),
+@@ -66,23 +77,24 @@ EXPECTED_CLOSURE = (
+     ("src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"),
+     ("src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"),
+     ("src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"),
+-    ("src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"),
++    ("src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"),
+     ("src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"),
+     ("src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"),
+     ("src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"),
++    ("src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"),
+     ("src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"),
+     ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
+     ("src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"),
+     ("src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"),
+-    ("src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
++    ("src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
+     ("src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"),
+-    ("src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"),
++    ("src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"),
+     ("src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"),
+     ("src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
+     ("src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"),
+     ("src/runtime/surface.js", "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"),
+ )
+-EXPECTED_CLOSURE_SHA256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5"
++EXPECTED_CLOSURE_SHA256 = hashlib.sha256(json.dumps([{"relative_path": r, "sha256": s} for r, s in EXPECTED_CLOSURE], separators=(",", ":")).encode()).hexdigest()
+ EXPECTED_MUTATION_IDENTITIES = {
+     "fallback-default": {"anchor_sha256": "8e35a9b15829e194b90777d8f38e5709ec2e1f8cfa875d4294496fade9f67683", "replacement_sha256": "8fb42fd196d8a5e5bff6ba3a7a1dd24a87fe4dfb2b0f07a75146dc5bdcd1251b", "mutated_factory_sha256": "85c2335ba2395a5d80f05fff460de3ddf5779b39524a927ee506618c36e0f611"},
+     "quantize-levels": {"anchor_sha256": "4af10b05bcf97c256bedc908d8fc491d9a7d53b3bd16508493a436d742f602ac", "replacement_sha256": "aa8311a86e4e743a9c84375b905a6c66581039145887910832a63625c2ef4b34", "mutated_factory_sha256": "c48b59a286a1178abe723287b9ea9869600425609971827b37bb4b2d5b6ea007"},
+@@ -209,7 +221,7 @@ def validate(document: dict) -> None:
+     if (not isinstance(closure, list) or tuple((item.get("relative_path"), item.get("sha256")) for item in closure) != EXPECTED_CLOSURE
+             or any(Path(item.get("relative_path", "")).is_absolute() for item in closure)
+             or any(".." in Path(item.get("relative_path", "")).parts for item in closure)
+-            or len({item.get("relative_path") for item in closure}) != 22
++            or len({item.get("relative_path") for item in closure}) != 23
+             or _sha(json.dumps(closure, separators=(",", ":")).encode()) != EXPECTED_CLOSURE_SHA256
+             or snapshot.get("closure_sha256") != EXPECTED_CLOSURE_SHA256
+             or snapshot.get("immutable_snapshot") is not True
+-- 
+2.50.1 (Apple Git-155)
+

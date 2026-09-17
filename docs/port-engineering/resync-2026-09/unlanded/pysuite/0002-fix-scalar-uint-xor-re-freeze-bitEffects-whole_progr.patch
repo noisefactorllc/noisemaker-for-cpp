@@ -1,0 +1,64 @@
+From a3deae79f0eefb222d6e2dca6cf8a5645e28ebf6 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 22:33:43 -0600
+Subject: [PATCH 02/29] fix(scalar-uint-xor): re-freeze bitEffects'
+ whole_program_sha256 for corpus 0ed489ec
+
+The 0ed489ec corpus bump changed classicNoisedeck/bitEffects/bitEffects.glsl
+by exactly one comment line (the noisemaker source-URL rename from
+noisedeck/noisemaker@master to noisefactorllc/noisemaker@main). Whoever
+carried the corpus bump through this profile updated raw_sha256/
+raw_bytes/normalized_sha256/normalized_bytes/functions_sha256 correctly
+(all of those already matched the new corpus), but missed
+whole_program_sha256 -- the one fingerprint that hashes program.raw_source
+verbatim (byte-for-byte, comment included) rather than the
+comment-stripped normalized source or derived structures.
+
+Verified directly: re-parsed the new corpus source through the same
+analyze_program(parse_program(...)) pipeline the test/profile use, and
+every other field in the frozen record (raw/normalized bytes+sha,
+functions_sha256, interface_sha256, function_inventory_sha256,
+bindings_sha256, resources, loop) already matched -- only
+whole_program_sha256 was stale. Recomputed it from the live analyzed
+program and pinned the new value.
+
+This was the sole cause of 5 errors + 2 failures in test_scalar_uint_xor.py
+(test_all_seven_exact_carriers_authenticate_three_owned_lanes,
+test_authentication_returns_objects_from_each_supplied_tree,
+test_biteffects_signed_and_vector_xors_are_not_authorized,
+test_each_carrier_rejects_missing_duplicate_reordered_and_retyped_sites,
+test_exact_uint_to_float_census_selects_only_grain_observable_site,
+test_the_other_six_keys_keep_the_stricter_absent_set); all 19 tests in the
+module now pass (Ran 19 tests ... OK).
+
+Note: _PROFILES["synth/noise:noise"] has the same latent staleness (same
+whole_program_sha256 drift) but is never exercised by the current suite --
+_load_program() always routes synth/noise:noise through
+apply_runtime_loop_bound first, which converts it to a dynamic program
+before authenticate_scalar_uint_xor ever consults _PROFILES for that key.
+Left alone: no test exercises it, and I don't have proof of the entry's
+correct exercised shape to re-freeze it responsibly. Flagging for whoever
+next touches noise's runtime-define profile.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tools/glslcpp/frontend/scalar_uint_xor_profile.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/glslcpp/frontend/scalar_uint_xor_profile.py b/tools/glslcpp/frontend/scalar_uint_xor_profile.py
+index 187300a..b478243 100644
+--- a/tools/glslcpp/frontend/scalar_uint_xor_profile.py
++++ b/tools/glslcpp/frontend/scalar_uint_xor_profile.py
+@@ -55,7 +55,7 @@ _PROFILES: dict[str, dict[str, object]] = {
+         "raw_bytes": 12748, "raw_sha256": "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b",
+         "normalized_bytes": 8169, "normalized_sha256": "70c88967c308368f81a8739296786c3e501005e536e987446bdc9c1dc93b7bb0",
+         "functions_sha256": "c2ffa4525ea4f39ba9e2395e2e755f580d450b645dee628408ddb089281377f5",
+-        "whole_program_sha256": "5156fbfe252da7e0be21a216e420ca385aac31ab6d4e658a842a5baf4030a234",
++        "whole_program_sha256": "ae7c66f434f86a1c5b72bfb55faba6dada4b3be5ea5b967885fd6cce1ac6de44",
+         "interface_sha256": "22a5c8be48bbe78e87c503b1bbce3bdfeead3e452259dd46057ceccd1f2dc664",
+         "defines": (("COLOR_SCHEME", "int", "20"), ("FORMULA", "int", "0"),
+                     ("INTERP", "int", "0"), ("MASK_COLOR_SCHEME", "int", "1"),
+-- 
+2.50.1 (Apple Git-155)
+

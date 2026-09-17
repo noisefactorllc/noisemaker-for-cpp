@@ -1,0 +1,84 @@
+From 0c35da6d791f5cd72b97ef2cf7a24ac0ceacfe98 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 23:58:23 -0600
+Subject: [PATCH 09/29] fix(snow): route sin/cos/pow through fdlibm; fix stale
+ newton log assertion
+
+src/effects/snow.cpp's hand-written custom_adapter kernel (sine(),
+cosine(), and the limiter_mask pow call) was still calling bare
+std::sin/std::cos/std::pow. That's a real hole in the V8-exact math lane
+(intended change (a)): every other call site was migrated to
+noisemaker::fdlibm during that pass, but this hand-ported adapter
+predates it and was missed. tests/test_no_raw_transcendentals.py is the
+enforcement gate for exactly this, and it caught it. Switched all three
+calls to noisemaker::fdlibm::sin/cos/pow (already reachable via the
+transitively-included noisemaker/fdlibm.hpp). Rebuilt and reran the native
+suite: snow_kernel_matches_the_frozen_authority_oracle_byte_for_byte and
+the other two snow_kernel_* tests still pass byte-for-byte, confirming
+fdlibm agrees with the frozen V8-derived oracle (as expected -- fdlibm
+exists to match V8, std:: does not).
+
+tests/test_newton_emitter_lowering.py's
+test_emits_authenticated_struct_array_out_and_log_lanes asserted
+rendered.count("std::log(") == 2 and rendered.count("std::log2(") == 1.
+The actual emission (verified against the live render_typed_cpp output)
+uses glsl::log()/glsl::log2(), which dispatch to noisemaker::fdlibm, never
+bare std::log/std::log2 -- same fdlibm-lane class as the earlier
+mandelbrot/fractal fixes. Updated the counts accordingly (0 std::log(y/log2(,
+2 glsl::log(, 1 glsl::log2().
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ src/effects/snow.cpp                  | 6 +++---
+ tests/test_newton_emitter_lowering.py | 9 +++++++--
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/src/effects/snow.cpp b/src/effects/snow.cpp
+index 2e39f1c..7410a50 100644
+--- a/src/effects/snow.cpp
++++ b/src/effects/snow.cpp
+@@ -60,9 +60,9 @@ constexpr double kInvTau = 1.0 / 6.283185307179586;  // rounded to float32 below
+ [[nodiscard]] double sine(double value) noexcept {
+   const double turns = f32(value * f32(kInvTau));
+   const double phase = turns - std::floor(turns);
+-  return f32(std::sin(phase * f32(kTau)));
++  return f32(noisemaker::fdlibm::sin(phase * f32(kTau)));
+ }
+-[[nodiscard]] double cosine(double value) noexcept { return f32(std::cos(value)); }
++[[nodiscard]] double cosine(double value) noexcept { return f32(noisemaker::fdlibm::cos(value)); }
+ 
+ [[nodiscard]] double periodic_value(double time, double value) noexcept {
+   return mul(add(sine(mul(sub(time, value), f32(kTau))), 1.0), 0.5);
+@@ -148,7 +148,7 @@ void pixel(const KernelState& base, const glsl::PixelContext& ctx, Vec4& out) no
+   const double density = std::max(mul(s.density, f32(0.01)), f32(0.0001));
+   const double exponent = div(sub(1.0, density), density);
+   const double limiter_mask =
+-      mul(f32(std::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
++      mul(f32(noisemaker::fdlibm::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
+   const double inverse_mask = sub(1.0, limiter_mask);
+ 
+   out[0] = noisemaker::f32(static_cast<double>(texel[0]) * inverse_mask +
+diff --git a/tests/test_newton_emitter_lowering.py b/tests/test_newton_emitter_lowering.py
+index 1dddcb1..67040e2 100644
+--- a/tests/test_newton_emitter_lowering.py
++++ b/tests/test_newton_emitter_lowering.py
+@@ -38,8 +38,13 @@ class NewtonEmitterLoweringTests(unittest.TestCase):
+         self.assertIn("std::array<glsl::Vec2, 8> roots{};", rendered)
+         self.assertIn("glsl::Vec2& rr", rendered)
+         self.assertIn("glsl::Vec2& ri", rendered)
+-        self.assertEqual(2, rendered.count("std::log("))
+-        self.assertEqual(1, rendered.count("std::log2("))
++        self.assertEqual(0, rendered.count("std::log("))
++        self.assertEqual(0, rendered.count("std::log2("))
++        # glsl::log()/glsl::log2() route through noisemaker::fdlibm, never
++        # std::log/std::log2 -- see emit_typed_cpp.py's log-call emission
++        # comment and tests/test_no_raw_transcendentals.py.
++        self.assertEqual(2, rendered.count("glsl::log("))
++        self.assertEqual(1, rendered.count("glsl::log2("))
+         self.assertIn("7.771800092370995e-09", rendered)
+ 
+     def test_struct_and_root_mutations_fail_closed(self):
+-- 
+2.50.1 (Apple Git-155)
+

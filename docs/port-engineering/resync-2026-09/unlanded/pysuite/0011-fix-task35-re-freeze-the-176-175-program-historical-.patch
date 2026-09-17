@@ -1,0 +1,76 @@
+From 31c202dade9ac4aac48644752a273ca7ec55d3e2 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 00:14:12 -0600
+Subject: [PATCH 11/29] fix(task35): re-freeze the 176/175-program historical
+ projection hashes for 0ed489ec
+
+test_current_and_task35_absent_generation_are_exact_and_isolated
+regenerates two historical typed-slice projections (the 176-program
+Task-35/Grain-175 boundary, and that set minus synth/bitwise:bitwise
+itself) and compares them to frozen shas. Three of its four frozen
+values had gone stale under the 0ed489ec corpus bump.
+
+Audit (rule 2, done in place of reconstruction_audit.py since no old/new
+regen-cache pair exists for this pin -- see method below):
+
+1. Diffed the two corpus source trees directly (a024dc3a vs 0ed489ec):
+   exactly 17 files differ, matching intended change (f).
+2. Cross-referenced those 17 program keys against this test's own
+   exclusion set (the historical milestone's fixed removal list, read
+   from the test itself). 10 of the 17 changed programs are NOT excluded
+   and so are part of both the 176- and 175-program projections:
+   filter/adjust:adjust, filter/chrome:chMap, filter/grade:primary,
+   filter/grade:vignette, filter/invert:inv, filter/text:text,
+   filter/tint:colorize, mixer/alphaMask:alphaMask,
+   mixer/blendMode:blendMode, synth/media:mediaInput.
+3. Regenerated both projections from the live tree (same
+   generate_outputs/historical_cross_lane call path the test itself
+   uses) and confirmed: the isolated synth/bitwise:bitwise block hash is
+   UNCHANGED (bitwise's own corpus source isn't one of the 17 -- this
+   assertion was already passing), while the three aggregate/whole-file
+   hashes that span the other 175 programs are exactly the three that
+   were stale. No other difference exists between the frozen and live
+   projections; the drift is fully accounted for by the 10 included
+   changed programs.
+
+Re-pinned all three: the 175-program aggregate block hash, and the
+without-task35 175-program projection's typed_slice.cpp and
+typed_manifest.json whole-file hashes. All 4 tests in the module now
+pass (Ran 4 tests ... OK).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_task35_bitwise_number_profile.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/tests/test_task35_bitwise_number_profile.py b/tests/test_task35_bitwise_number_profile.py
+index 2887c31..e79511d 100644
+--- a/tests/test_task35_bitwise_number_profile.py
++++ b/tests/test_task35_bitwise_number_profile.py
+@@ -350,7 +350,7 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
+         # measured regeneration of this test's own projection; see
+         # task-7-typed-generator-census-repair.md.
+         self.assertEqual(
+-            "d3c92da2c5525fea1a8db61c94d5419700fc00d6e0095adf76ff4303b42147e2",
++            "721f252a2e71767964ae1677a702ddf75cbd350dc8d99a88176538178ccab3a5",
+             hashlib.sha256("".join(
+                 block for key, block in current.items() if key != KEY
+             ).encode()).hexdigest())
+@@ -377,11 +377,11 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
+         # this test's own projection; see
+         # task-7-typed-generator-census-repair.md.
+         self.assertEqual(
+-            "2a5923048865ece3fb02d5ca8d3854ab783b18f1bd538f79656b41606f4b0331",
++            "10a86340da0a79eb55e1a6e6141994617179f4385eea4bf1a7e5bcd8473a5e4f",
+             hashlib.sha256(without_task35[
+                 "src/typed_generated/typed_slice.cpp"]).hexdigest())
+         self.assertEqual(
+-            "5bf088ec3650eb86be25173e5ba96cf19f952ddb4c82f3e0f1f6c293b9d01274",
++            "4896d196d4b50bf7bb28cb395baa317163539671ecfe37ddc039a74f991cc0b0",
+             hashlib.sha256(without_task35[
+                 "src/typed_generated/typed_manifest.json"]).hexdigest())
+ 
+-- 
+2.50.1 (Apple Git-155)
+

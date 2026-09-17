@@ -1,66 +1,119 @@
 # noisemaker-for-cpp Continuation Plan
 
-> ## RESYNC CHECKPOINT 2026-09-17 — READ THIS FIRST
+> ## RESYNC CHECKPOINT 2026-09-17: READ THIS FIRST
 >
-> This block supersedes the 2026-08-30 publication checkpoint below (kept as history).
+> This supersedes the 2026-08-30 publication checkpoint below, which is kept as history. The session ended on the operator's
+> instruction to wrap up. Parity with the authority is **not** complete. This block records what landed, what did not, and
+> exactly how to continue.
 >
-> ### What went wrong
+> ### What went wrong before this session
 >
-> - CI pinned `noisemaker-for-cpu@e17dd02` and stayed green for weeks while the authority moved
->   to upstream `0ed489ec`. The 2026-09-04 sync bumped the authority but left the GLSL corpus at
->   `a024dc3a`. The compatibility table then absorbed the gap: six programs were marked
->   `semantic_exact`, and `filter/text` was marked incompatible.
-> - The only pixel gate rendered each effect once, at 17x11, with default parameters. A 208-effect
->   sweep over sizes, seeds, times and parameter domains later found 91 fully exact effects,
->   74 divergent cases, and thousands of C++-only refusals of values the authority accepts.
-> - The export kit listed every effect whose passes were admitted, including effects that refuse
->   every non-default define value.
+> - CI pinned `noisemaker-for-cpu@e17dd02` and stayed green for weeks while the authority moved to upstream `0ed489ec`.
+>   The 2026-09-04 sync bumped the authority but not the GLSL corpus (`a024dc3a`). The compatibility table absorbed the gap
+>   by marking 6 programs `semantic_exact` and `filter/text` incompatible.
+> - The only pixel gate rendered each effect once, at 17x11, with default parameters. A 208-effect parameter sweep then
+>   found 91 fully exact effects, 74 divergent cases, and thousands of C++-only refusals of values the authority accepts.
+> - The export kit listed every effect whose passes had an admitted kernel. That included effects that refuse every
+>   non-default define value.
+> - The authority's own `export-kit/compat-effects.json` listed 205 effects while its snapshot renders 208. That was fixed
+>   and pushed in noisemaker-for-cpu `7a99aaa`, with a test that fails on drift. kits.noisedeck.app serves it.
 >
-> ### What is in place now
+> ### What landed (this push)
 >
-> - **Resync:** corpus `0ed489ec` (17 changed programs, profile locks re-proven from old/new
->   programs) and authority `61aa869` (ledger 719, behavioral lock 91 files). The compatibility
->   table has 212 raw-exact programs, 0 semantic-exact and 0 incompatible.
-> - **Gates:**
->   - `tools/parity/sweep.py --gate kit` in CI: RGBA8 plus float32 comparison, and the
->     `--define-enum` mode.
->   - The `Authority drift` workflow: the live cpu `main` behavioral lock must equal the pin,
->     and `export-kit/check-authority-coverage.mjs` must find the kit covering all 208 authority
->     effects. This gate stays red until parity.
->   - The kit claims only the effects in `export-kit/verified-effects.json`, derived from sweep
->     results by `tools/parity/verified_effects.py`.
-> - **Ported since the resync:**
->   - Hand-written adapters: remap (double precision), snow, median (all radii), the worm
->     overlays, and all seven scatter deposit adapters.
->   - Executor: scatter dispatch (`filter/wormhole` end to end), the classicNoisedeck palette
->     override, the generic runtime-define contract, and multi-render-target passes.
->   - Iteration groups: ported but not yet wired into `execute()`.
->   - Numerics: V8-exact fdlibm (FMA contraction per translation unit), and scalar `float`
->     effect parameters bound as double. The authority frounds only its reserved uniforms.
+> - **Resync.** Corpus `0ed489ec` (17 changed programs; profile locks re-proven from old and new programs). Authority
+>   `61aa869` (ledger 719; behavioral lock 91 files). Compatibility is 212 raw-exact, 0 semantic-exact, 0 incompatible.
+>   33 oracle packages re-derived against `61aa869`/`0ed489ec`.
+> - **Gates.**
+>   - `tools/parity/sweep.py` runs in CI with `--gate kit`. It compares RGBA8 and the float32 surface, runs a
+>     define-enumeration mode, and retries a timeout alone before counting it.
+>   - The `Authority drift` workflow fails when noisemaker-for-cpu `main`'s behavioral lock leaves the pin. It also fails
+>     until `export-kit/check-authority-coverage.mjs` finds the kit covering all 208 authority effects, so it is red by
+>     design until parity.
+>   - The kit claims only `export-kit/verified-effects.json`, which `tools/parity/verified_effects.py` derives from sweep
+>     results.
+> - **Executor.**
+>   - Scatter dispatch, with all seven deposit adapters ported (0 divergent over 75,000 randomized cases); `filter/wormhole`
+>     renders end to end.
+>   - MRT passes: N-output emitter plus `run_mrt_pass`.
+>   - Iteration groups wired into `execute()`: N-loop, step-persistent resources, selfTex/feedback, group-shared
+>     resources, and MRT inside groups.
+>   - The `{image, volume, geometry, volumeSize}` chain bundle.
+>   - External textures in the corpus/sweep driver.
+>   - The classicNoisedeck palette override.
+> - **Adapters.** remap (double precision), snow, median (all radii), worm overlays.
+> - **Numerics.**
+>   - V8-exact fdlibm with explicit, architecture-gated FMA fusion, identical in Debug and Release.
+>   - Ordinary scalar and vector effect parameters bound at double precision (the authority frounds only its reserved
+>     uniforms).
+>   - Reserved time/seed/deltaTime frounded for hand adapters.
+>   - The runtime-define contract for 11 programs.
+> - **Tooling.** Now in `tools/resync/` (paths come from environment variables):
+>   - `regen_all.sh`: dependency-ordered regeneration to a fixed point.
+>   - `repin_registry.py`: live catalog pins.
+>   - `reconstruction_audit.py`: per-program audit before re-freezing historical pins.
+>   - `derive_revision.py`: turns hardcoded corpus revisions in tests into `check_corpus.REVISION`.
+>   - `pyshards.sh`: parallel Python suite.
+>   - `ci-local.sh`: local CI including the sweep gates.
 >
-> ### Remaining work to 208/208 (live, in landing order)
+> ### Measured state at this push
 >
-> 1. **Corpus expansion:** vendor all 304 authority programs (92 missing) with a ratcheted
->    blocked set. Blocker classes are listed in the frontier-92 census.
-> 2. **Executor:** wire iteration groups, step-persistent resources, selfTex/feedback,
->    loop regions/`global_accum`, particle groups and volume bundles, then admit Families B–E.
-> 3. **Define values:** make every define-backed parameter value render (about 21 programs
->    still refuse non-default values).
-> 4. **Float precision:** vector-typed effect parameters must carry double precision
->    (gradient, mandala, pattern, sacredGeometry), and snow has a 192-pixel divergence.
-> 5. **Oracle packages:** re-derive every historical package against `61aa869`/`0ed489ec`.
-> 6. **Authority kit list:** the authority's own `export-kit/compat-effects.json` lists 205 while
->    its snapshot renders 208 (heightGrid, renderLandscape3d, heightmap3d are missing from it).
+> - The authority renders 208 effects. The kit claims 137, all sweep-verified. That list comes from the 20-variant plus
+>   define-enumeration sweep of the integration tree before the vector-precision and runtime-core merges. Re-derive it
+>   (next steps, item 1).
+> - The native suite passes in Debug and Release, and the corpus lane passes. The CI checks below are expected to be red:
+>   - **Kit coverage:** red until 208/208.
+>   - **Sweep gate:** re-derive the verified list on CI's own sweep first.
+>   - **Python suite:** historical-reconstruction pins still stale in `test_typed_generator` and the milestone modules.
+>     The committed-but-unlanded fixes are in `resync-2026-09/unlanded/pysuite`.
+>
+> ### Not landed: work saved as patches in `docs/port-engineering/resync-2026-09/unlanded/`
+>
+> Generated-file hunks are excluded; regenerate after applying. None of these were verified on the pushed tree.
+>
+> - `pysuite/`: 29 commits against base 06d77bd.
+>   - Test-pin re-freezes, each with an audit in its commit message.
+>   - fdlibm emitter assertion updates, the kaleido byte count, and the color-lab DVec3 ABI table.
+>   - Apply them, re-run `tools/resync/pyshards.sh`, and re-audit any pin that moved again.
+> - `defines2/`: runtime defines for filter/oilPaint, filter/strokes (stkPost), filter/stipple and filter/pondRipples,
+>   verified at 0 divergence on its own base. Its uncommitted merge work is in `defines2-uncommitted.patch`.
+>   - Found: filter/halftone MODE=1 diverges. The authority leaks the ink/paper hex alpha into the output alpha.
+>   - Found: synth/noise NOISE_TYPE=4 has float32-only divergences.
+>   - Found: filter/scatter MODE=3 has a cross-lane assignment divergence.
+>   - Still refused: hatch (needs a node-scoped `degrees` profile), strokes stkSmear, extrude, emboss, lowPoly, texture,
+>     perlin dimensions, shape loop offsets.
+> - `corpus2-uncommitted.patch`: expands the vendored corpus toward all 304 authority programs. The design is a ratcheted
+>   `pending` record of blocked programs, with every count derived from the authority. It was in progress when stopped.
+> - `definescn-uncommitted.patch`: runtime defines for the classicNoisedeck family (noise, caustic, moodscape,
+>   cellRefract, effects, kaleido, shapeMixer, shapes). Barely started.
+>
+> ### Next steps, in order
+>
+> 1. **Re-derive the verified kit list.** Build, run `tools/parity/sweep.py --variants 20` plus `--define-enum` with
+>    `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main> --sweep <defines>` and
+>    `node export-kit/generate-compat.mjs`. The vector-precision merge should add gradient, mandala, pattern,
+>    sacredGeometry, snow and julia.
+> 2. **Land the Python pin fixes** (`unlanded/pysuite`) and get the CI Python job green.
+> 3. **Finish the corpus expansion** (`unlanded/corpus2`): vendor every program that passes the typed pipeline, record
+>    the rest in the ratchet, and admit Families B–E through the executor, which is already wired. Sweep each family to
+>    0 divergence.
+> 4. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
+>    MODE=3 divergences.
+> 5. **Close the frontier construct blockers** for the remaining pending programs (frontier-92 classes): counted-for
+>    proofs, scalar uint XOR, sampler parameters, vecN % scalar, cross/acos/any/isnan/lessThan/floatBitsToUint, vec4[9],
+>    postfix ++, vector index.
+> 6. **Render options.** Port `oneShot: 'initial'` (renderer.js:83-93, 414) and audit the other JS render options.
 >
 > ### Rules learned the hard way
 >
-> - Parity means the live authority HEAD, full kit coverage, and a sweep with zero divergences.
->   A green gate against a frozen pin is not parity.
-> - A report tool that exits 0 is not a gate. Every gate must fail on divergence, on a timeout
->   that persists after the solo retry, and on a refusal of a claimed effect.
-> - Never hand-edit generated files. Integration means regenerating to a fixed point, and a
->   hand-spliced include was lost exactly that way.
-> - Tests derive revisions and counts from the single source (`check_corpus.REVISION`,
+> - **What "parity" means.** It means the live authority HEAD, full kit coverage, and a sweep with zero divergences. A
+>   green gate against a frozen pin is not parity.
+> - **Gates must fail.** A report tool that exits 0 is not a gate. Every gate fails on divergence, on a timeout that
+>   survives the solo retry, and on a refusal of a claimed effect.
+> - **Never hand-edit generated files.** Integration means regenerating to a fixed point.
+> - **Build after every integration merge or cherry-pick.** A conflict-free merge dropped a brace in `execute()`, and
+>   three lanes branched from the broken commit.
+> - **Sweep in Debug as well as Release.** Compiler contraction at -O2 hid a Debug-only fdlibm divergence.
+> - **Derive, don't hardcode.** Tests derive revisions and counts from the single source (`check_corpus.REVISION`,
 >   manifests, provenance). Reconstruction pins move only with a per-program audit.
 >
 > ## PUBLICATION CHECKPOINT 2026-08-30 — READ THIS FIRST

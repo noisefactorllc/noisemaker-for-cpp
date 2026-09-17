@@ -1,0 +1,127 @@
+From 831289239a718b2a2eac8fd00782968160932005 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 00:04:17 -0600
+Subject: [PATCH 16/29] sweep: strip the scratch-path prefix from cpp_reason
+
+Task 2 of 3. sweep.py's cpp_reason recorded the C++ driver's refusal
+detail verbatim, but corpus_case.cpp's refusal_record(schema, const
+std::exception&) uses error.what() for the "exception" code, and
+dsl::DslError (and anything the DSL compiler decorates with a source
+location, e.g. EffectRegistry's parameter-validation
+std::invalid_argument, rethrown with position context) leads that
+string with "<sourceFile>:<line>:<col>: ". Every sweep case's
+--source-file is a fresh scratch path, so the report read as a file
+path with the real reason buried after it -- 698 cases across ~39
+effects in the coordinator's last full-catalog sweep.
+
+Fix: _strip_source_location_prefix(detail, source_path) removes
+exactly the current job's own source_path prefix (never a guess at
+"looks like a path") plus the trailing "<line>:<col>: " it leads,
+leaving the compiler's real message. _cpp_detail() now takes
+source_path and applies the strip to both the JSON-parsed detail and
+the raw-stdout fallback.
+
+Verification:
+- Targeted repro: --effects filter/dither --variants 6 (the 3 cases
+  from an earlier 167-effect/6-variant sweep that were affected) --
+  cpp_reason now reads 'Parameter "palette" is not renderable by the
+  authority: ...' instead of the scratch path.
+- Full JS-catalog sweep, no --effects filter, --variants 8 --workers 6
+  --no-chains (208 effects, 1664 cases, sweep-out/full-catalog-check):
+  391 refused cases, 0 remaining with a path-shaped cpp_reason (checked
+  both the "exception" code, 273 cases / 36 effects, and the
+  GraphErrorCode "7" compile-define-mismatch code, 118 cases / 21
+  effects). Every refusal now carries a clean, actionable message, e.g.
+  filter/dither -> 'Parameter "palette" is not renderable by the
+  authority: only input(0) and monochrome(1) avoid its
+  findClosestPaletteColor NaN-corruption bug', or
+  synth3d/noise3d -> 'Effect pass "synth3d/noise3d:precompute"
+  unavailable: missing_backend_program (synth3d/noise3d:precompute)'.
+- ctest (native + Python CLI suites): same two pre-existing failures as
+  before this change, both predating this lane's base commit 9edf5fb
+  (confirmed via git merge-base --is-ancestor) and unrelated to this
+  string-only fix: the stale classic-noise-oracle SHA in
+  tests/oracles/classic_noise_expected.inc, and test_render_cli.py's
+  test_a_refused_program_exits_nonzero_and_carries_the_executor_reason,
+  whose REFUSED_PROGRAM (median radius:3) stopped refusing once
+  fdc95ee's all-radii median custom adapter landed -- also before
+  9edf5fb, so the test's fixture was already stale at this lane's
+  starting point. No new failures.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tools/parity/sweep.py | 47 +++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 43 insertions(+), 4 deletions(-)
+
+diff --git a/tools/parity/sweep.py b/tools/parity/sweep.py
+index 281b681..d952f93 100644
+--- a/tools/parity/sweep.py
++++ b/tools/parity/sweep.py
+@@ -717,12 +717,51 @@ def compare_float32(width: int, height: int, expected: bytes, actual: bytes) ->
+             "mismatchCount": mismatch_count, "firstMismatch": first}
+ 
+ 
+-def _cpp_detail(stdout: str) -> tuple[str, str]:
++_SOURCE_LOCATION_PREFIX = re.compile(r"^\d+:\d+:\s*")
++
++
++def _strip_source_location_prefix(detail: str, source_path: Path) -> str:
++    """Strips a DSL compiler diagnostic's own ``<file>:<line>:<col>: `` prefix.
++
++    ``dsl::DslError::what()`` (and anything the DSL compiler decorates with a
++    source location -- e.g. ``EffectRegistry``'s parameter-validation
++    ``std::invalid_argument``s, rethrown with position context) conventionally
++    leads with exactly that: correct, ordinary compiler behavior for a human
++    reading a real file. Every sweep case's ``--source-file`` is a fresh,
++    disposable scratch path, though, so that prefix is never portable or
++    actionable in a report -- it just buries the real refusal reason under a
++    long, per-case absolute path (this is the "``cpp_reason`` reads as a
++    scratch file path instead of the refusal message" bug: a report skims as
++    the path, even though the real message follows it). ``source_path`` is
++    the exact path this job's own case was compiled from, so the strip is
++    exact, never a guess at what "looks like a path".
++    """
++    prefix = f"{source_path}:"
++    if not detail.startswith(prefix):
++        return detail
++    rest = detail[len(prefix):]
++    match = _SOURCE_LOCATION_PREFIX.match(rest)
++    return rest[match.end():] if match else rest
++
++
++def _cpp_detail(stdout: str, source_path: Path) -> tuple[str, str]:
++    """The driver's actual refusal code and message, JSON-parsed off its
++    stdout (``run_cpp_case.cpp``'s ``refusal_record``:
++    ``{"code": ..., "detail": ...}``) -- ``code`` is the numeric
++    ``GraphErrorCode`` as a string for a structured refusal, or the literal
++    string ``"exception"`` for any other ``std::exception`` (a DSL compile
++    error, most commonly). Never the file path a "cannot parse this as JSON"
++    fallback used to return: a malformed/non-JSON stdout is itself a driver
++    contract violation worth seeing verbatim, so the raw text is kept, just
++    still put through the same source-location strip.
++    """
+     try:
+         parsed = json.loads(stdout or "{}")
+-        return parsed.get("code", ""), parsed.get("detail", "")
++        code = parsed.get("code", "")
++        detail = parsed.get("detail", "")
+     except json.JSONDecodeError:
+-        return "", stdout.strip()[:300]
++        code, detail = "", stdout.strip()[:300]
++    return code, _strip_source_location_prefix(detail, source_path)
+ 
+ 
+ def run_job(job_dict: dict) -> dict:
+@@ -792,7 +831,7 @@ def run_job(job_dict: dict) -> dict:
+ 
+         js_ok = js_rc == 0
+         cpp_ok = cpp_rc == 0
+-        cpp_code, cpp_detail = _cpp_detail(cpp_out)
++        cpp_code, cpp_detail = _cpp_detail(cpp_out, source_path)
+ 
+         if not js_ok and not cpp_ok:
+             result["classification"] = "both_refused"
+-- 
+2.50.1 (Apple Git-155)
+

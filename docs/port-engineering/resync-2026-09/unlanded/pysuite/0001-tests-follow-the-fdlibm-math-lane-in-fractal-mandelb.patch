@@ -1,0 +1,67 @@
+From 4659d05fa333fa4e17188baedf20236462061438 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 21:50:08 -0600
+Subject: [PATCH 01/29] tests: follow the fdlibm math lane in
+ fractal/mandelbrot emitter assertions
+
+The V8-exact math lane (glsl::pow/glsl::log routing through
+noisemaker::fdlibm, not std::pow/std::log) landed for the typed emitter
+generally, but two emitter-regression tests still pinned the stale
+std:: call text:
+
+- test_fractal_frontend_profile.py's
+  test_emitter_preserves_adapter_number_hsv_path expected
+  "1.055 * std::pow(value, 1.0 / 2.4) - 0.055;" in the rendered
+  linear-to-sRGB helper; the emitter now renders
+  "noisemaker::fdlibm::pow(value, 1.0 / 2.4)" there.
+- test_mandelbrot_emitter_lowering.py's
+  test_emits_authenticated_out_calls_logs_and_sequential_dz_lanes
+  asserted rendered.count("std::log(") == 3; the actual emission uses
+  glsl::log( (which itself dispatches to noisemaker::fdlibm::log),
+  never std::log. Now asserts std::log( is absent and glsl::log(
+  appears exactly 3 times, verified against the actual rendered
+  program.
+
+Both updates confirmed against the real render_typed_cpp output, not
+guessed.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_fractal_frontend_profile.py    | 2 +-
+ tests/test_mandelbrot_emitter_lowering.py | 6 +++++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/tests/test_fractal_frontend_profile.py b/tests/test_fractal_frontend_profile.py
+index 97338bc..c2c4830 100644
+--- a/tests/test_fractal_frontend_profile.py
++++ b/tests/test_fractal_frontend_profile.py
+@@ -564,7 +564,7 @@ class FractalPreparedFrontendTests(unittest.TestCase):
+         self.assertIn(
+             "return adapter_color;", rendered)
+         self.assertIn(
+-            "1.055 * std::pow(value, 1.0 / 2.4) - 0.055;", rendered)
++            "1.055 * noisemaker::fdlibm::pow(value, 1.0 / 2.4) - 0.055;", rendered)
+         self.assertNotIn(
+             "d = (static_cast<double>(d) * static_cast<double>((static_cast<double>(state.hueRange) * "
+             "static_cast<double>(static_cast<float>(0.01)))));", rendered)
+diff --git a/tests/test_mandelbrot_emitter_lowering.py b/tests/test_mandelbrot_emitter_lowering.py
+index f1d6f97..6885705 100644
+--- a/tests/test_mandelbrot_emitter_lowering.py
++++ b/tests/test_mandelbrot_emitter_lowering.py
+@@ -69,7 +69,11 @@ class MandelbrotEmitterLoweringTests(unittest.TestCase):
+         self.assertIn("glsl::set_swizzle<0>(dz", rendered)
+         self.assertIn("glsl::set_swizzle<1>(dz", rendered)
+         self.assertNotIn("dz = glsl::Vec2", rendered)
+-        self.assertEqual(3, rendered.count("std::log("))
++        self.assertEqual(0, rendered.count("std::log("))
++        # glsl::log() routes through noisemaker::fdlibm::log (V8's own
++        # ieee754::log), not std::log -- see emit_typed_cpp.py's log-call
++        # emission comment.
++        self.assertEqual(3, rendered.count("glsl::log("))
+ 
+     def test_mandelbrot_lowering_requires_all_three_authenticated_profiles(self):
+         program = _program()
+-- 
+2.50.1 (Apple Git-155)
+

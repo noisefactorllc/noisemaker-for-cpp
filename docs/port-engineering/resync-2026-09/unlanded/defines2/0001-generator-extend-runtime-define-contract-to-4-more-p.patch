@@ -1,0 +1,489 @@
+From 987a9c1bb3a7a014885aace66d37412f6b6d6832 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 04:36:30 -0600
+Subject: [PATCH] generator: extend runtime-define contract to 4 more programs;
+ find + exclude halftone
+
+Four more define-backed parameters move from default-only to the generic
+runtime-int contract (tools/glslcpp/generate_typed_slice.py's
+GENERIC_DYNAMIC_DEFINE_TYPES): filter/oilPaint:oilFlatten+oilPost (MODE),
+filter/strokes:stkPost (MODE, unreferenced by this pass's own source -- a
+pure bookkeeping uniform), filter/stipple:stipple (MODE), and
+filter/pondRipples:pondRipples (STYLE, WRAP). Each validates and lowers
+cleanly under the existing frontend (preprocess.py's runtime-if lowering,
+dynamic_define_hoist.py) with no new capability or construct -- oilPost and
+stkPost needed nothing beyond the table entry; oilFlatten needed a relock of
+its existing ceil_admission_profile (the int(ceil(fr)) site is unconditional
+on MODE, only its node ids shifted); stipple and pondRipples needed a relock
+of the existing multi-key derivative_admission_profile (their fwidth/dFdx/
+dFdy call sites are likewise unconditional on the promoted defines).
+
+filter/halftone:halftone (MODE, PATTERN) was promoted, relocked, and then
+REVERTED after tools/parity/sweep.py's ordinary (non-define-enum) sweep --
+which draws random ink/paper hex colors, unlike the define-enum mode's
+default-held-elsewhere isolation -- found a real divergence at MODE=1
+(mono): the JS authority's tonemap2(t, inkColor, paperColor) mix leaks the
+hex color's alpha nibble into the rendered alpha channel, even though the
+GLSL declares inkColor/paperColor as vec3. The C++ port correctly narrows
+to Vec3 at bind time and threads the separately-sampled input alpha instead,
+so every MODE=1 pixel comes out fully opaque (255) against the authority's
+actual (translucent) alpha. MODE=0 (color/CMYK) never calls tonemap2 and is
+unaffected -- confirmed by an isolated ordinary sweep against the pre-change
+baseline binary, which only ever draws MODE=0 (every non-default MODE
+request is refused there) and shows zero divergence. GENERIC_DYNAMIC_DEFINE_TYPES
+promotes a whole program, not one value, so halftone stays default-only
+until the vec4-vs-vec3 ink/paper materialization contract is modeled --
+same posture this lane inherited for filter/scatter's excluded MODE=3.
+
+filter/strokes:stkSmear (also MODE) is untouched and still default-only:
+its MODE lives inside a called function (srcSample), gated by a forward
+declaration, and needs its own scoped proof. Because "mode" is one catalog
+parameter bound to both strokes passes, the whole effect still correctly
+reports cpp_refused_only for non-default MODE.
+
+Regenerated via regen_all.sh to REGEN OK. Native suite: 586 pass, 1 fail
+(typed_classic_noise_oracle_metadata_is_complete_and_load_bearing, owned
+elsewhere per the task brief). tests.test_dsl_corpus_parity: pass.
+test_semantic.py: 33/33. test_typed_generator.py: fixed three real
+regressions this landing caused (Task33DerivativeAdmissionTests.exact_program
+now builds the dynamic tree for stipple/pondRipples, matching what
+generate_outputs() actually emits; test_committed_manifest_...'s and
+test_task25_...'s frozen define_contract/whole-file-hash pins updated to the
+new correct values) and left ~19 other failing methods (~48 assertions)
+alone after reproducing every one of them identically against a pristine
+06d77bd archive -- confirmed pre-existing, unrelated to this change.
+
+Sweep evidence (NOISEMAKER_DSL_CPU_CASE built from this tree):
+- --define-enum --effects oilPaint,strokes,stipple,pondRipples: 156
+  byte_exact, 0 divergent, 0 both_refused, 0 timeout, 24 cpp_refused_only
+  (all filter/strokes, the untouched stkSmear pass).
+- ordinary --variants 20, same effects: 75 byte_exact + 10/12 chains
+  byte_exact, 0 divergent, 0 timeout, 17+2 cpp_refused_only (same strokes
+  cause).
+- Full-corpus regression, --variants 6, before (06d77bd baseline binary)
+  vs after (this tree), 1423/1423 matched case_ids: 15 cpp_refused_only ->
+  byte_exact (exactly the 4 landed programs' cases), 0 -> divergent, 0
+  genuine regressions. 31 cases flipped cpp_refused_only -> timeout, all
+  unrelated 3D programs (render3d family, synth3d/*) never touched here;
+  an isolated single-worker, 180s-budget re-run of one of them
+  (render/render3d) reproduces the baseline's cpp_refused_only exactly,
+  confirming shared-machine CPU contention (other concurrent lanes) as the
+  cause, not a code regression.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ src/effects/registry.cpp                      |  4 +--
+ tests/test_dsl_frontend_oracle.py             |  2 +-
+ tests/test_effect_catalog.cpp                 |  2 +-
+ tests/test_generated_kernels.cpp              | 16 +++++----
+ tests/test_typed_generator.py                 | 35 +++++++++++++------
+ tests/test_typed_slice.cpp                    |  4 ++-
+ tools/dsl/generate_backend_compatibility.py   |  2 ++
+ tools/dsl/generate_effect_catalog.py          |  2 +-
+ tools/dsl/generate_executable_corpus.mjs      |  2 +-
+ tools/dsl/js_frontend_oracle.mjs              |  6 ++--
+ .../frontend/ceil_admission_profile.py        | 16 ++++-----
+ .../frontend/derivative_admission_profile.py  |  4 +--
+ tools/glslcpp/generate_typed_slice.py         | 17 +++++++++
+ tools/glslcpp/typed_slice.json                | 15 +++++---
+ 14 files changed, 85 insertions(+), 42 deletions(-)
+
+diff --git a/src/effects/registry.cpp b/src/effects/registry.cpp
+index 90c6cd6..67edf16 100644
+--- a/src/effects/registry.cpp
++++ b/src/effects/registry.cpp
+@@ -673,9 +673,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
+   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
+       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
+       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
+-      provenance_.generated_payload_sha256 != "b0128a22cdf2a53247b782fda97f1e164e4434972960e9dcdc582ff9e7e96e59" ||
++      provenance_.generated_payload_sha256 != "cda5e425fe99d8b862fef4cdef9280d81b22b82e300c399651793826040a12b5" ||
+       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
+-      provenance_.compatibility_sha256 != "43af91aeead278fe4381dba974a950e8521ebcb960595d3734cfd205e56d334d" ||
++      provenance_.compatibility_sha256 != "263a09a7835ad2fe25664f7a83e2d5cfc1c3f1996d943ce70234ddc01156e92b" ||
+       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
+       provenance_.cpu_behavioral_file_count != 91 ||
+       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
+diff --git a/tests/test_dsl_frontend_oracle.py b/tests/test_dsl_frontend_oracle.py
+index 5989f65..ae7e957 100644
+--- a/tests/test_dsl_frontend_oracle.py
++++ b/tests/test_dsl_frontend_oracle.py
+@@ -25,7 +25,7 @@ COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
+ COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
+ COMPILER_ORACLE_JS = ORACLE_JS
+ COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
+-COMPILER_EXPECTED_SHA256 = "aa3dd7f5eed224a7d668a54a2c8f8ec55c9a1e76937e5bf7b0cfcc39e58ed946"
++COMPILER_EXPECTED_SHA256 = "490dc5f675344f0d9a72063e1f78aa9abddb6cf210454f51991e30ed0cb5ed29"
+ CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
+ 
+ 
+diff --git a/tests/test_effect_catalog.cpp b/tests/test_effect_catalog.cpp
+index 4146559..6408c9b 100644
+--- a/tests/test_effect_catalog.cpp
++++ b/tests/test_effect_catalog.cpp
+@@ -115,5 +115,5 @@ TEST(effect_catalog_value_preserves_negative_zero) {
+ 
+ TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
+   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
+-  REQUIRE(provenance.generated_payload_sha256 == "b0128a22cdf2a53247b782fda97f1e164e4434972960e9dcdc582ff9e7e96e59");
++  REQUIRE(provenance.generated_payload_sha256 == "cda5e425fe99d8b862fef4cdef9280d81b22b82e300c399651793826040a12b5");
+ }
+diff --git a/tests/test_generated_kernels.cpp b/tests/test_generated_kernels.cpp
+index 8971ea1..42628cb 100644
+--- a/tests/test_generated_kernels.cpp
++++ b/tests/test_generated_kernels.cpp
+@@ -11234,13 +11234,13 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
+ }
+ 
+ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact) {
+-  // Case "small-cells-jitter": w6 h5, phase 120, MODE pinned to 0 at
+-  // generation time (the "defines read as runtime uniforms in JS" hazard --
+-  // MODE is deliberately NOT among the bound uniforms below, because the
+-  // C++ program's resources tuple never declares it; see
+-  // filter/stipple:stipple's `_defaults()`-authorized define map). The
+-  // fwidth call is unconditional under this pinned define -- 1 ordinal,
+-  // no antialias uniform at all.
++  // Case "small-cells-jitter": w6 h5, phase 120. MODE is now a runtime-int
++  // compile define (filter/stipple:stipple's generic runtime-define
++  // contract): the C++ program's resources tuple declares it, so it must be
++  // bound explicitly, here at the frozen default 0 the oracle was generated
++  // at -- the same liveness discipline filter/wind's METHOD binding
++  // established. The fwidth call is unconditional at MODE == 0 -- 1
++  // ordinal, no antialias uniform at all.
+   const Task33Case fixture{
+       "filter/stipple:stipple", 6U, 5U, 120,
+       "558d41dbe6da042f6e39679d80e96f1f455d7a8d529db9145cbeca00f6456d8d",
+@@ -11263,6 +11263,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
+   direct.set_uniform("paperColor",
+                       noisemaker::glsl::Vec3(0.98f, 0.96f, 0.9f));
+   direct.set_uniform("seed", std::int32_t{7});
++  direct.set_uniform("MODE", std::int32_t{0});
+   task33_verify(noisemaker::generated::bind_filter_stipple_stipple(direct),
+                fixture);
+ 
+@@ -11276,6 +11277,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
+   via_public.set_uniform("paperColor",
+                          noisemaker::glsl::Vec3(0.98f, 0.96f, 0.9f));
+   via_public.set_uniform("seed", std::int32_t{7});
++  via_public.set_uniform("MODE", std::int32_t{0});
+   const auto direct_output = noisemaker::run_pass(
+       noisemaker::generated::bind_filter_stipple_stipple(direct),
+       fixture.width, fixture.height);
+diff --git a/tests/test_typed_generator.py b/tests/test_typed_generator.py
+index 65eac53..fe1dc30 100644
+--- a/tests/test_typed_generator.py
++++ b/tests/test_typed_generator.py
+@@ -8009,21 +8009,21 @@ and item["program_key"] != "filter/wobble:wobble"
+             # substitutions: the JS reference has no preprocessor and its
+             # factories read $bindings["MODE"] at runtime.
+             "filter/halftone:halftone": ("default-only", {"MODE": 0, "PATTERN": 0}),
+-            "filter/pondRipples:pondRipples": ("default-only", {"STYLE": 2, "WRAP": 0}),
+-            "filter/stipple:stipple": ("default-only", {"MODE": 0}),
++            "filter/pondRipples:pondRipples": ("runtime-int", {"STYLE": 2, "WRAP": 0}),
++            "filter/stipple:stipple": ("runtime-int", {"MODE": 0}),
+             "filter/lensFlare:lensFlare": ("runtime-int", {"LENS_TYPE": 0}),
+             "filter/lowPoly:lowPoly": ("default-only", {"LP_BORDER": 0, "LP_LIGHT": 0}),
+             "filter/morphology:morphA": ("runtime-int", {"SHAPE": 0}),
+             "filter/morphology:morphB": ("runtime-int", {"SHAPE": 0}),
+             "filter/mosaicTiles:mosaicTiles": ("runtime-int", {"MODE": 0}),
+-            "filter/oilPaint:oilFlatten": ("default-only", {"MODE": 1}),
+-            "filter/oilPaint:oilPost": ("default-only", {"MODE": 1}),
++            "filter/oilPaint:oilFlatten": ("runtime-int", {"MODE": 1}),
++            "filter/oilPaint:oilPost": ("runtime-int", {"MODE": 1}),
+             "filter/relief:rlBlurH": ("runtime-int", {"MODE": 0}),
+             "filter/relief:rlBlurV": ("runtime-int", {"MODE": 0}),
+             "filter/relief:rlShade": ("runtime-int", {"MODE": 0}),
+             "filter/scatter:scatterJitter": ("default-only", {"MODE": 0}),
+             "filter/scatter:scatterSmooth": ("default-only", {"MODE": 0}),
+-            "filter/strokes:stkPost": ("default-only", {"MODE": 0}),
++            "filter/strokes:stkPost": ("runtime-int", {"MODE": 0}),
+             "filter/strokes:stkSmear": ("default-only", {"MODE": 0}),
+             "filter/texture:texture": ("default-only", {"MODE": 3}),
+             "filter/wind:wind": ("runtime-int", {"METHOD": 1}),
+@@ -11338,7 +11338,7 @@ synth/subdivide:subdivide""".splitlines())
+                     {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
+                      'kind': 'typed_emitter',
+                      'source': 'src/typed_generated/typed_slice.cpp',
+-                     'source_sha256': '3f949057e2004902ca3ac69cd80243484f326cc4c65fb852e14ec03a21dc44ac'},
++                     'source_sha256': 'e1965dd139da6d9dc51e54e4059d2d6aadee52599fad223f1bb23aa99f8befb4'},
+                 "typed_abi":
+                     {'outputs': ['fragColor'],
+                      'samplers': ['inputTex'],
+@@ -11394,7 +11394,7 @@ synth/subdivide:subdivide""".splitlines())
+                     {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
+                      'kind': 'typed_emitter',
+                      'source': 'src/typed_generated/typed_slice.cpp',
+-                     'source_sha256': '3f949057e2004902ca3ac69cd80243484f326cc4c65fb852e14ec03a21dc44ac'},
++                     'source_sha256': 'e1965dd139da6d9dc51e54e4059d2d6aadee52599fad223f1bb23aa99f8befb4'},
+                 "typed_abi":
+                     {'outputs': ['fragColor'],
+                      'samplers': ['inputTex'],
+@@ -11466,7 +11466,7 @@ synth/subdivide:subdivide""".splitlines())
+         # the pin on the pre-rename bytes f704ac4c...; the suite was red on
+         # every platform from that commit until this one.
+         self.assertEqual(
+-            "af04534ed4f57a606cb28da961e7cb2e64f55cfe479ed1537112f14f813ac8b6",
++            "118ddc20bb313319f6ab77d5fa019a27d4b59f788373de30e1a66b71aa04c5c3",
+             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
+                            ).hexdigest())
+ 
+@@ -19408,15 +19408,30 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
+         from tools.glslcpp import check_corpus
+         from tools.glslcpp.frontend import parse_program
+         from tools.glslcpp.frontend.semantic import analyze_program
+-        from tools.glslcpp.generate_typed_slice import _defaults
++        from tools.glslcpp.generate_typed_slice import (
++            GENERIC_DYNAMIC_DEFINE_TYPES, _defaults,
++            transform_generic_dynamic_source)
+ 
+         root = check_corpus._corpus_root(REPOSITORY)
+         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
+         entries = {item["program_key"]: item
+                   for item in check_corpus._validate_manifest(manifest)}
+         source = (root / entries[key]["source"]).read_text()
++        source_hash = hashlib.sha256(source.encode()).hexdigest()
++        # Three of the 17 derivative-cluster keys (halftone, pondRipples,
++        # stipple) are ALSO generic runtime-define programs now: the real
++        # generator builds their dynamic (uniform-backed MODE/PATTERN/
++        # STYLE/WRAP) tree, not the historically-baked one, so this must
++        # match -- same source text, same source_hash, different (dynamic)
++        # parsed shape, exactly like generate_outputs() itself.
++        if key in GENERIC_DYNAMIC_DEFINE_TYPES:
++            dynamic_defines = GENERIC_DYNAMIC_DEFINE_TYPES[key]
++            parsed = parse_program(
++                transform_generic_dynamic_source(source, key), key, dynamic_defines)
++            parsed["raw_source"] = source
++            return source, source_hash, analyze_program(parsed, key)
+         defines = _defaults(REPOSITORY, key)
+-        return (source, hashlib.sha256(source.encode()).hexdigest(),
++        return (source, source_hash,
+                 analyze_program(parse_program(source, key, defines), key))
+ 
+     def test_task33_all_seventeen_authenticate_and_lower_with_narrow_abi(self) -> None:
+diff --git a/tests/test_typed_slice.cpp b/tests/test_typed_slice.cpp
+index d15b5aa..8f501ba 100644
+--- a/tests/test_typed_slice.cpp
++++ b/tests/test_typed_slice.cpp
+@@ -2274,7 +2274,7 @@ struct Task15OracleUniform {
+   std::array<double, 3> value;
+ };
+ 
+-constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
++constexpr std::array<Task15OracleUniform, 195> kTask15OracleUniforms{{
+     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
+     {"filter/chrome:chBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+@@ -2331,6 +2331,7 @@ constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
+     {"filter/oilPaint:oilPost", "detail", Task15BindingType::scalar, {50.0, 0.0, 0.0}},
+     {"filter/oilPaint:oilPost", "textureAmount", Task15BindingType::scalar, {20.0, 0.0, 0.0}},
+     {"filter/oilPaint:oilPost", "seed", Task15BindingType::integer, {1.0, 0.0, 0.0}},
++    {"filter/oilPaint:oilPost", "MODE", Task15BindingType::integer, {1.0, 0.0, 0.0}},
+     {"filter/patchwork:patchwork", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+     {"filter/patchwork:patchwork", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
+     {"filter/patchwork:patchwork", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
+@@ -2365,6 +2366,7 @@ constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
+     {"filter/stamp:stBlurV", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
+     {"filter/strokes:stkPost", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+     {"filter/strokes:stkPost", "sharpness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
++    {"filter/strokes:stkPost", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
+     {"filter/unsharpMask:usmBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+     {"filter/unsharpMask:usmBlurH", "radius", Task15BindingType::scalar, {4.0, 0.0, 0.0}},
+     {"filter/unsharpMask:usmBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
+diff --git a/tools/dsl/generate_backend_compatibility.py b/tools/dsl/generate_backend_compatibility.py
+index 31f7e77..1608180 100644
+--- a/tools/dsl/generate_backend_compatibility.py
++++ b/tools/dsl/generate_backend_compatibility.py
+@@ -93,6 +93,8 @@ PASS_DERIVED_BINDINGS = {
+     "OCTAVES": "typed_compile_define",
+     "OUTPUT_MODE": "typed_compile_define",
+     "RIDGES": "typed_compile_define",
++    "STYLE": "typed_compile_define",
++    "WRAP": "typed_compile_define",
+ }
+ CPP_TYPES = {
+     "float": "float", "int": "std::int32_t", "uint": "std::uint32_t",
+diff --git a/tools/dsl/generate_effect_catalog.py b/tools/dsl/generate_effect_catalog.py
+index 97bd13f..88fc11f 100644
+--- a/tools/dsl/generate_effect_catalog.py
++++ b/tools/dsl/generate_effect_catalog.py
+@@ -25,7 +25,7 @@ CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
+ GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
+ BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
+ CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+-COMPATIBILITY_SHA256 = "43af91aeead278fe4381dba974a950e8521ebcb960595d3734cfd205e56d334d"
++COMPATIBILITY_SHA256 = "263a09a7835ad2fe25664f7a83e2d5cfc1c3f1996d943ce70234ddc01156e92b"
+ EFFECT_KEYS = frozenset({
+     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
+     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
+diff --git a/tools/dsl/generate_executable_corpus.mjs b/tools/dsl/generate_executable_corpus.mjs
+index c5876f6..689207f 100644
+--- a/tools/dsl/generate_executable_corpus.mjs
++++ b/tools/dsl/generate_executable_corpus.mjs
+@@ -8,7 +8,7 @@ const ROOT = path.resolve(new URL('.', import.meta.url).pathname, '../..')
+ const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
+ const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
+ const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
+-const BACKEND_SHA256 = '43af91aeead278fe4381dba974a950e8521ebcb960595d3734cfd205e56d334d'
++const BACKEND_SHA256 = '263a09a7835ad2fe25664f7a83e2d5cfc1c3f1996d943ce70234ddc01156e92b'
+ 
+ function usage(message) {
+   if (message) console.error(`generate_executable_corpus: ${message}`)
+diff --git a/tools/dsl/js_frontend_oracle.mjs b/tools/dsl/js_frontend_oracle.mjs
+index a6b0b53..f11a6e9 100644
+--- a/tools/dsl/js_frontend_oracle.mjs
++++ b/tools/dsl/js_frontend_oracle.mjs
+@@ -188,7 +188,7 @@ else process.stdout.write(text)
+ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath }) {
+   function fail(message) { console.error(`js_frontend_oracle: ${message}`); process.exit(2) }
+   const FIXTURE_SHA256 = '2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6'
+-  const EXPECTED_STREAM_SHA256 = 'aa3dd7f5eed224a7d668a54a2c8f8ec55c9a1e76937e5bf7b0cfcc39e58ed946'
++  const EXPECTED_STREAM_SHA256 = '490dc5f675344f0d9a72063e1f78aa9abddb6cf210454f51991e30ed0cb5ed29'
+   if (!cpuRoot || (!fixturesPath && !args.includes('--list')) || !path.isAbsolute(cpuRoot)) fail('explicit absolute --cpu-root is required')
+   const root = path.resolve(cpuRoot)
+   if (!fs.existsSync(root) || !fs.lstatSync(root).isDirectory()) fail('CPU root is not a directory')
+@@ -250,7 +250,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath
+   if (snapshot) {
+     const compatibilityBytes = fs.readFileSync(compatibilityPath)
+     const compatibilityHash = crypto.createHash('sha256').update(compatibilityBytes).digest('hex')
+-    if (compatibilityHash !== '43af91aeead278fe4381dba974a950e8521ebcb960595d3734cfd205e56d334d') fail('compatibility manifest sha256 mismatch')
++    if (compatibilityHash !== '263a09a7835ad2fe25664f7a83e2d5cfc1c3f1996d943ce70234ddc01156e92b') fail('compatibility manifest sha256 mismatch')
+     compatibility = JSON.parse(compatibilityBytes)
+   }
+   function customDefinitions() {
+@@ -564,7 +564,7 @@ async function runCompilerOracle({ cpuRoot, fixturesPath, outputPath, checkPath
+         throw Object.assign(new Error(`${step.loc.sourceName}:${step.loc.line}:${step.loc.column}: Effect pass "${unavailable.programKey}" unavailable: ${unavailable.reasons.map((reason) => `${reason.code} (${reason.detail})`).join(': ')}`), { sourceName: step.loc.sourceName, line: step.loc.line, column: step.loc.column })
+       }
+       const provenance = fixture.registryMode === 'catalog_records'
+-        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: catalogProvenance.corpus_revision, generatedPayloadSha256: catalogProvenance.generated_payload_sha256, normalizedRecordStreamSha256: catalogProvenance.normalized_record_stream_sha256, authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: '43af91aeead278fe4381dba974a950e8521ebcb960595d3734cfd205e56d334d', counts: { definitions: catalogProvenance.counts.definitions, passes: catalogProvenance.counts.passes, referenceProgramKeys: catalogProvenance.counts.reference_program_keys, backendPrograms: catalogProvenance.counts.backend_programs, compatiblePrograms: catalogProvenance.counts.compatible_programs, incompatiblePrograms: catalogProvenance.counts.incompatible_programs, missingPasses: catalogProvenance.counts.missing_passes, scatterPasses: catalogProvenance.counts.scatter_passes, executableDefinitions: catalogProvenance.counts.executable_definitions, incompleteDefinitions: catalogProvenance.counts.incomplete_definitions } }
++        ? { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'manifest', schema: 'noisemaker-cpp.effect-catalog-generator.v1', backendSchema: 'noisemaker-cpp.backend-compatibility.v1', corpusRevision: catalogProvenance.corpus_revision, generatedPayloadSha256: catalogProvenance.generated_payload_sha256, normalizedRecordStreamSha256: catalogProvenance.normalized_record_stream_sha256, authorityLock: compatibility.authority?.cpu_behavioral_lock ?? '', cpuRevision: compatibility.authority?.cpu_revision ?? compatibility.authority?.cpu_behavioral_lock ?? '', sourceLockSha256: compatibility.authority?.source_lock_sha256 ?? '', cpuPackageSha256: compatibility.authority?.cpu_package_sha256 ?? '', cpuPackageLockSha256: compatibility.authority?.cpu_package_lock_sha256 ?? '', cpuSourceLockSha256: compatibility.authority?.cpu_source_lock_sha256 ?? '', upstreamRevision: compatibility.authority?.upstream_revision ?? '', upstreamTree: 'cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6', upstreamPackageSha256: compatibility.authority?.upstream_package_sha256 ?? '', upstreamPackageLockSha256: compatibility.authority?.upstream_package_lock_sha256 ?? '', compatibilitySha256: '263a09a7835ad2fe25664f7a83e2d5cfc1c3f1996d943ce70234ddc01156e92b', counts: { definitions: catalogProvenance.counts.definitions, passes: catalogProvenance.counts.passes, referenceProgramKeys: catalogProvenance.counts.reference_program_keys, backendPrograms: catalogProvenance.counts.backend_programs, compatiblePrograms: catalogProvenance.counts.compatible_programs, incompatiblePrograms: catalogProvenance.counts.incompatible_programs, missingPasses: catalogProvenance.counts.missing_passes, scatterPasses: catalogProvenance.counts.scatter_passes, executableDefinitions: catalogProvenance.counts.executable_definitions, incompleteDefinitions: catalogProvenance.counts.incomplete_definitions } }
+         : { sourceSha256: crypto.createHash('sha256').update(Buffer.from(fixture.source, 'utf8')).digest('hex'), sourceName: fixture.sourceName ?? fixture.name, planPayloadSha256: '', kind: 'custom', schema: 'noisemaker-cpp.execution-plan.custom', backendSchema: '', corpusRevision: '', generatedPayloadSha256: '', normalizedRecordStreamSha256: 'custom', authorityLock: 'custom', cpuRevision: '', sourceLockSha256: '', cpuPackageSha256: '', cpuPackageLockSha256: '', cpuSourceLockSha256: '', upstreamRevision: '', upstreamTree: '', upstreamPackageSha256: '', upstreamPackageLockSha256: '', compatibilitySha256: 'custom', counts: { definitions: 0, passes: 0, referenceProgramKeys: 0, backendPrograms: 0, compatiblePrograms: 0, incompatiblePrograms: 0, missingPasses: 0, scatterPasses: 0, executableDefinitions: 0, incompleteDefinitions: 0 } }
+       const plan = { schema: 'noisemaker-cpp.execution-plan.v1', search: [...compiled.search], effects: snapshots, chains, renderSurface: compiled.renderSurface, requireExecutable: !!fixture.options?.requireExecutable, executable, availability, provenance }
+       const renderLocation = compiled.ast?.render?.loc ?? [...chains].reverse().flatMap((chain) => [...chain.steps].reverse()).find((step) => step.kind === 'write')?.surfaceLocation ?? null
+diff --git a/tools/glslcpp/frontend/ceil_admission_profile.py b/tools/glslcpp/frontend/ceil_admission_profile.py
+index a892564..0f1811c 100644
+--- a/tools/glslcpp/frontend/ceil_admission_profile.py
++++ b/tools/glslcpp/frontend/ceil_admission_profile.py
+@@ -69,15 +69,15 @@ _PROFILES: dict[str, dict] = {
+     "filter/oilPaint:oilFlatten": {
+         "raw_bytes": 7321,
+         "raw_sha256": "f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690",
+-        "normalized_bytes": 3848,
+-        "normalized_sha256": "df987ae05a4c205dca831caf371149282df69df4126b0b4bee0bee8b1621688f",
+-        "functions_sha256": "91c009cc90ad59185b27ddb811225f220fd6534c82b320802fecc0919253e5e8",
+-        "whole_program_sha256": "0588fd1573bdae1e905201ab12ae1bd5942fcde7cb3cfc15395c936142877f35",
+-        "interface_sha256": "fe4f1c3967051d64d125eeda77ebb3dba3278139078bf55a6a8520edac47dca5",
++        "normalized_bytes": 3931,
++        "normalized_sha256": "2c3df202449636be575a4e5dad4ffe2ea45cd06179cb7dcce88062afc9af1cec",
++        "functions_sha256": "843b8fa8d65f4f3508bd0a559b70b264638ac9ca9da157dc4f4900a70acd102e",
++        "whole_program_sha256": "8b189cb2e633fbfdcc2a6ab427f8a6210d16ef49edc691cf982a80eb4eb978dd",
++        "interface_sha256": "a292ee0fb7b8c029197e606a74be59737c46196dfcbfd0cda2038e2bf6146be6",
+         "ceil_sites": (
+-            ("main", "19:27-19:35",
+-             "e9df662a9e0a9eb7672ab8eed22ccdc02c9c4f86171a1e29478bdde8ab1dc4ff",
+-             "ad166f3d991e11d816b08b1c4b7cf1a8641bc442b692efefbc8a4685c8a76d2e"),
++            ("main", "25:27-25:35",
++             "8f2f404e8d2bad6e59019d757fd9a575350b9e1d3fec311f37a3ae5e3de896fd",
++             "a611d9adb9074ed9a3cc6177f1651f0f6f3f0fd11169b1f6d3964630af71d24d"),
+         ),
+     },
+     "filter/smooth:smoothBlend": {
+diff --git a/tools/glslcpp/frontend/derivative_admission_profile.py b/tools/glslcpp/frontend/derivative_admission_profile.py
+index 0cfefd4..dd0b8ee 100644
+--- a/tools/glslcpp/frontend/derivative_admission_profile.py
++++ b/tools/glslcpp/frontend/derivative_admission_profile.py
+@@ -60,8 +60,8 @@ DERIVATIVE_ADMISSION_KEYS = frozenset({
+ 
+ _DERIVATIVE_BUILTINS = frozenset({"dFdx", "dFdy", "fwidth"})
+ 
+-_PROFILE_SHA256 = "b3418a5fb5d70d3167677892a82c85d12018c9812682cf6fb25997555a8bb551"
+-_FROZEN_PROFILE_TUPLE_REPR = """(('filter/bulge:bulge', 2352, '87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170', 1953, '3526dd01153e7def1e3eb6f1dff1b39cfdb1ba275aa81b92732c07206d41d060', (), '9b1c1b27669b99f6ef51a1f7796a570acf7b4be401a67402e9b59da02d7c7154', '11cd75f0fc758ad6de796bc1a1448902214f946dba727120bce3603c7e4a3faf', 'b5e71e3377314023e8738e808a6634b7827f0408447bea21a405e4a9a0aae949', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-85:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '74:19-74:33', 'vec2', '20a71d7a29d19cf3678048b7dedfac7c2710f431af3433bdab05f469296f2477', 'declaration', ('vec2',), ('ec32dffcc8ca18b768b2a5c4ef7da06c62e2a5e0fb3f1c19031378605d732666',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '75:19-75:33', 'vec2', '4046755cbb6e29423861ccac3ca587a7d22675ff06a0f828b30b6367e69d9735', 'declaration', ('vec2',), ('f722ccaa9f9b3fa6db42275e9910f4b5ec336b5a5f876f75eb44e84ebb3fd5d9',))), ((('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '74:9-74:34')), (('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '75:9-75:34')))), ('filter/celShading:celShadingColor', 2780, '90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4', 2530, '52086cb69a9db0eccff5d37d369f94f672a8290a006999f00ca81742ca1e3d4f', (), 'ab51cb78b516454f8be97ab2bb226f31efb2f3daacba4521ab93bc325a0924cd', '9012723f042dcc2fc823ffb36ef7e4cdbff48529f8ec074bd89cd00c58b9e53a', '337682508a486618d2deb6bc1c0275078132c3e5c24fc16b8e54c4553cb2e684', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias', 'lightDirection', 'strength'), ('inputTex',), ('fragColor',), True, True), ((17, 'linear_to_srgb_component', 'float', 1, 2, '24:1-29:2'), (18, 'linear_to_srgb_rgb', 'vec3', 1, 1, '39:1-45:2'), (19, 'main', 'void', 0, 22, '55:1-94:2'), (20, 'pow_vec3', 'vec3', 2, 1, '47:1-53:2'), (21, 'srgb_to_linear_component', 'float', 1, 2, '17:1-22:2'), (22, 'srgb_to_linear_rgb', 'vec3', 1, 1, '31:1-37:2')), (('fwidth', 19, (18, 's0', 's1', 'e0', 0), '84:19-84:33', 'vec3', '9f8bb2f21d35491406e75523546eefe77eb61d9887980880bd7853fc869117c6', 'declaration', ('vec3',), ('c24b82eb573678af3e3fa7704350683d23b7965ad2474e416dd7e460f55bf4b2',)),), ((('if', 'block', 'decl'), ('82:5-89:6', '82:20-87:6', '84:9-84:34')),)), ('filter/halftone:halftone', 8440, '063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7', 3828, 'f62382b453796c16948943e002b2498021827314793ab80f0fd66473c4fcb307', (('MODE', 'int', '0'), ('PATTERN', 'int', '0')), '9d055dcad8dc24cfa85c7a1a4317b0fe849e7202c512affb4c682cab23d3cebd', '5ddb9ed688497772657c9d3eda11e90eb703b151b779a580ba234f49f236697e', '2f2bdb794aeb2fbb252bf6c80fda24f0d73bb20754b11eed0a051b982cb5722f', (2, 0, 2, 9, 48, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'frequency', 'cyanAngle', 'magentaAngle', 'yellowAngle', 'blackAngle', 'monoAngle', 'sharpness', 'inkColor', 'paperColor'), ('inputTex',), ('fragColor',), True, True), ((37, 'boxBlur3', 'vec3', 2, 3, '55:1-64:2'), (38, 'cellSampleFromRuv', 'vec3', 3, 4, '71:1-76:2'), (39, 'halftoneCoverage', 'float', 3, 4, '84:1-89:2'), (40, 'lum', 'float', 1, 1, '26:1-28:2'), (41, 'main', 'void', 0, 19, '115:1-137:2'), (42, 'rgbToCmyk', 'vec4', 1, 4, '36:1-41:2'), (43, 'rotate2D', 'vec2', 2, 4, '48:1-53:2'), (44, 'roundDotCoverage', 'float', 3, 8, '100:1-113:2'), (45, 'tonemap2', 'vec3', 3, 1, '30:1-32:2')), (('fwidth', 39, (2, 'e0', 0, 0, 0, 0), '87:24-87:33', 'float', '93f6be1083c4c3ddfd255ec24766618c50d933d5354a3e73df010b8b3ce7fa20', 'binary', ('float',), ('ba4d6eb504a6e888e500072b8e9446c58652a2814eaf52ec23816d76c5ecb81b',)), ('fwidth', 44, (5, 'e0', 0, 0, 0, 0), '109:30-109:52', 'float', 'c51209ca4742a638cb51182aad20b498dd365c8b4921b3dc195f8c69b20e0ed6', 'binary', ('float',), ('7a44ce7e86059a35c92decafd790c1b407b65fc9fe13479b7af6f410ca286313',))), ((('decl',), ('87:5-87:67',)), (('decl',), ('109:5-109:86',)))), ('filter/lens:lens', 2909, '6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5', 2194, '72c7169c1f606090fd80c1a9763b757af6aed98ac54543580c480d2a04a95d61', (), '4eaba58099b88677cb99c1a603433a77be8638868cf4e3fd6ddedbc57555e249', '7ea51ed2362674cb6fddae77b82a0c5b49280021c28d3504033f98e8a99e1fa0', '370d530b1fd84b9a3e0ddb8665f189bc10bf6d4da1f84349aac583dc6fd29e7a', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'lensDisplacement', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((9, 'main', 'void', 0, 23, '15:1-79:2'),), (('dFdx', 9, (22, 's0', 's0', 'e0', 0), '66:19-66:34', 'vec2', '70aa57fde35df66eb6a2211a91c66bb2c270444463a2383023076435acf50ebc', 'declaration', ('vec2',), ('d2011ab14b62182633bbb70ccabf923ed3bd8a773465c5c65b2c806c61f36ceb',)), ('dFdy', 9, (22, 's0', 's1', 'e0', 0), '67:19-67:34', 'vec2', '33e9b6c11a26ca9b478315003742b5ee491e0ab7dad9557269c3a2d5c30465bd', 'declaration', ('vec2',), ('ebf32dce1141226c2b4d2a36f7a6f2859d90eb3e0c2ab04d31d68c677e5ccf10',))), ((('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '66:9-66:35')), (('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '67:9-67:35')))), ('filter/lensWarp:lensWarp', 4033, '543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480', 3446, '4d2c5e5d33e31c902b0506daa6f8ec0a1c76dfc3355c6c5f5604e752a6ed862d', (), 'f8c4e268beaa15b2dc4c4bdaae870d0c14d180c75440c8db57aa831ab4b67286', '8dfa839595d6a87429845ed4015cb25ac9ee162631d1b5d491ee0bfeeca2c647', 'aad79dc32807a531c08566f437e17df28d5d5f54c552626488211aa5de6c11da', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'displacement', 'speed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((20, 'grid', 'float', 2, 5, '44:1-50:2'), (21, 'main', 'void', 0, 18, '65:1-118:2'), (22, 'pcg', 'uvec3', 1, 9, '17:1-27:2'), (23, 'perlinNoise', 'float', 2, 10, '52:1-63:2'), (24, 'prng', 'vec3', 1, 4, '29:1-34:2'), (25, 'smootherstep', 'float', 1, 1, '36:1-38:2'), (26, 'smoothlerp', 'float', 3, 1, '40:1-42:2')), (('dFdx', 21, (17, 's0', 's0', 'e0', 0), '98:19-98:27', 'vec2', 'd57ec902e546cfe31dc4ba727d82799d83cc0e4b87f58ca25316ac2697acc75c', 'declaration', ('vec2',), ('0a2776c07711c1be968a90cb80fcc51bea59310315d978435c186df0144540e5',)), ('dFdy', 21, (17, 's0', 's1', 'e0', 0), '99:19-99:27', 'vec2', '18a2210cba6baa219781eac3cdefdbc5d771ba488fc5f292b6d7a66a16574d47', 'declaration', ('vec2',), ('08474a87a0cb11063848af4a6c0928758c9ad555b181bd22ccb9364fed867afe',))), ((('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '98:9-98:28')), (('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '99:9-99:28')))), ('filter/octaveWarp:octaveWarp', 4902, 'ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea', 4110, 'f2b635bd9858cc2f9f33d5490844fc331ca3f8d52f10c76b30f52d3492918a4b', (), '44d5a0bd997f31c441f25ab198858bc7fc902949014c0c350172947e0ef21ea8', '8bb2272c78dba6aa780c7b934852617e478bec35dfe47af03fb2aaffc546e492', '4b6c99dad1fc3289edd53b8d830722ab7aaec2cb6c442939c80508064de20fb7', (1, 0, 1, 10, 10, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'frequency', 'octaves', 'displacement', 'speed', 'wrap', 'seed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((25, 'hash21', 'float', 1, 2, '32:1-39:2'), (26, 'main', 'void', 0, 15, '86:1-157:2'), (27, 'noise', 'float', 1, 8, '41:1-52:2'), (28, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (29, 'simplexNoise', 'float', 4, 7, '59:1-67:2'), (30, 'wrapFloat', 'float', 3, 4, '69:1-84:2')), (('dFdx', 26, (14, 's0', 's0', 'e0', 0), '146:19-146:32', 'vec2', '7a345f7b0084acf0484dd8a2c7fb04b28ca2373f1efb876faefe3323552cf9ac', 'declaration', ('vec2',), ('b46d9fd9654f0b5a289370d87e124e9bfe49deccad329cb32943b7a7ea1d404c',)), ('dFdy', 26, (14, 's0', 's1', 'e0', 0), '147:19-147:32', 'vec2', 'e5c56800891c24d1b0eaccac2b6eb4765fabcc6a3e190ba029359dc63322453c', 'declaration', ('vec2',), ('df3d1f50ed9076235d9fa22f89facd0fb26f99b5668cf147e9c14e18b1439bbf',))), ((('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '146:9-146:33')), (('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '147:9-147:33')))), ('filter/pinch:pinch', 2296, '031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c', 1954, '2f6e983bdc1a21b043ef40ccdf5f02902a38274fcbac7db5c5f9cd231749427d', (), '9d5adc1c2e6f6976072522df0066fdf1a3c2dc490246173675fff139e9ffc7cf', 'c5c15b401c3e8601a4a2ebe97be02840fc3327b3e9ea6a94628db76e1b19f5d1', 'c502a3f375d985c7c8a74c1bbbbf32f1cc44d78b3a98fb61ef26ee5fcf03d600', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-84:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '73:19-73:33', 'vec2', 'c0114126cb10c4ec21376e314bc26874cb2bd7ffde8e38fb36a7e9208f9ba969', 'declaration', ('vec2',), ('8dd2f772f646141247b6e980c9ca35220fccf4b290b086496bab79c98d471b3c',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '74:19-74:33', 'vec2', 'a1e7cd3eae483f8d05b85afdbf660006ed369f8359dba2d444a8ad1ba9225ef5', 'declaration', ('vec2',), ('0b96611b00b4e44055db6b25b6535b4860e2267372b9819eb58712016624af35',))), ((('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '73:9-73:34')), (('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '74:9-74:34')))), ('filter/polar:polar', 2027, '391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d', 1933, 'c928b6cbc717ec436c915e763a00f23ce67eb4dd338f0bdd365dbd8dfc217785', (), '8d507070121c5ad9020357677186846e9e133b82d6f27421efafdc367699a22d', '5486890330682b31c6df1ea2e5fdcb1b4cdb1ca461efcce72007d7e327abfe9a', 'a812e3ae963a9cf4bc898d90678f536d5e502aa78efec86eb52eb2116f94aa41', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'polarMode', 'speed', 'rotation', 'scale', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((21, 'main', 'void', 0, 8, '46:1-72:2'), (22, 'polarCoords', 'vec2', 2, 6, '27:1-34:2'), (23, 'smod', 'float', 2, 1, '19:1-21:2'), (24, 'smod2', 'vec2', 2, 1, '23:1-25:2'), (25, 'vortexCoords', 'vec2', 2, 7, '36:1-44:2')), (('dFdx', 21, (7, 's0', 's0', 'e0', 0), '61:19-61:30', 'vec2', '525d95a395790c5d91788b4fa72762abf89b54d2ef11a2d472549fd9ffade116', 'declaration', ('vec2',), ('414058d43f2566233f4dd03862f071e8ea8518d536c6800e3e92d50da851ffd0',)), ('dFdy', 21, (7, 's0', 's1', 'e0', 0), '62:19-62:30', 'vec2', 'f3ad5a9e25263699d2296f69c4ab70ca6086aeb645035176ddf95c3ac19d45ce', 'declaration', ('vec2',), ('8a1d3d95ef0ab16ad0e61ae5ab84350d6c8b8991dc14f1cbddaa00bf47446c7f',))), ((('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '61:9-61:31')), (('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '62:9-62:31')))), ('filter/pondRipples:pondRipples', 5187, '2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d', 2017, '4c67016be6c30065f90ac45df03be2c633a3809bfcf992a226d9aec956710f91', (('STYLE', 'int', '2'), ('WRAP', 'int', '0')), '0a92078091db5118a786f4236ae51102d437f4ff412ff31be4c383d7ee066721', '90f998dff32ff548fcf155301f942f78009a6832483ddb3de9207be6c752de1e', 'b077289afefd2696448b3217df31da05be3f37a746431183656ae4f68094ca7f', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'amount', 'ridges', 'speed', 'time', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((11, 'main', 'void', 0, 25, '22:1-95:2'),), (('dFdx', 11, (24, 's0', 's0', 'e0', 0), '84:19-84:33', 'vec2', '5067f94b6fa789e93e1af4c7c7db81c195c29277ee417e53946f8721da4813a4', 'declaration', ('vec2',), ('b1aeb7f6e113902453c337a9a4f2b926eace9954624b08c2dc0a4204b502b008',)), ('dFdy', 11, (24, 's0', 's1', 'e0', 0), '85:19-85:33', 'vec2', '37470c371104cc1e7fd11abfb151a535ce3d742c44524e0f38d6dfdb7e7542fb', 'declaration', ('vec2',), ('02059af9182619848414f863411afc56a0942e4896ef8beabf7e3216f63a980d',))), ((('if', 'block', 'decl'), ('83:5-94:6', '83:20-92:6', '84:9-84:34')), (('if', 'block', 'decl'), ('83:5-94:6', '83:20-92:6', '85:9-85:34')))), ('filter/posterize:posterize', 2630, '460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2', 2471, '4781d189690f57de2b57aebaaa946eba004b1c57272f32a18d1f0ce06ce44393', (), '7bdcf13444da35b93bcae7c4758f92d46c26f0316f1ec4308bd1bc6e1c93e977', '74adeb96fe8c6d4a916b0b54b29ce0f9ca2dbce7f7609f3582dcf51d82f4b6e8', 'e53cc14ee2e987c2682722edd2870f0b617f1c28cae66e56e47aebe82548b81d', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((17, 'clamp_01', 'float', 1, 1, '16:1-18:2'), (18, 'linear_to_srgb_component', 'float', 1, 2, '27:1-32:2'), (19, 'linear_to_srgb_rgb', 'vec3', 1, 1, '42:1-48:2'), (20, 'main', 'void', 0, 19, '54:1-96:2'), (21, 'pow_vec3', 'vec3', 2, 1, '50:1-52:2'), (22, 'srgb_to_linear_component', 'float', 1, 2, '20:1-25:2'), (23, 'srgb_to_linear_rgb', 'vec3', 1, 1, '34:1-40:2')), (('fwidth', 20, (15, 's0', 's1', 'e0', 0), '80:19-80:33', 'vec3', 'f1315d63b64d28eedd7f82ebae6bfac6f23c59290c6a605dfb8c09329f459288', 'declaration', ('vec3',), ('6967522f9a182704ee53070549a6b1aa8ddbb4f263a61b57c9c2fc6b1a8709bd',)),), ((('if', 'block', 'decl'), ('78:5-85:6', '78:20-83:6', '80:9-80:34')),)), ('filter/spiral:spiral', 2869, '3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a', 2107, '6e516a2d27e14fbbe0c6c1b200625efbdad09283e5ee09cc8d69e5c372b3ca34', (), '96d3129f74aa9f70b713b8b66d99219c4ea9c5359bac7512e007c683b5d30516', '694cd7517a81e3aebe8b24a18e529f06fd5b534c541f1475e34f97c6a561874d', '076dcb4d51978fa60df5a9186a5a7447df28a3078e1157eafe9e64912d2d97b8', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'speed', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 17, '29:1-96:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (16, 's0', 's0', 'e0', 0), '85:19-85:33', 'vec2', '2d69beddbd2285adbc92b181d6e8ffea9d79f67366ffa4f4c1e75e887f310e21', 'declaration', ('vec2',), ('f079d8dca3fead496edf9da0e6432166bf43b914e15740804d0958599293fad6',)), ('dFdy', 16, (16, 's0', 's1', 'e0', 0), '86:19-86:33', 'vec2', '536129cbb6d8a4ed549c5113a32d2910f82e3ac541125b5358dcddc7540cb381', 'declaration', ('vec2',), ('a027e66cdba6a3004a851b7adc6517a2cbe39db7ff104b761f4b5e7680e44172',))), ((('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '85:9-85:34')), (('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '86:9-86:34')))), ('filter/stamp:stThreshold', 3467, 'd93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94', 1565, 'f6593ec857c845845201652026bd375e8860d4e107e7528a82e4519c9b085bbe', (), 'fccb3a9d9cf9b02f1f30087c58827ce3f5de4c659168c843cc283748edbcc9d1', '7a5f47aeda690b1bc649e54662dd2b47aed69f68bded0a5fc1e658bd448c456d', 'ef70990afd3060826ca720c7419901188c453957b62df786272a3f41244905cd', (1, 0, 1, 5, 5, True), (('inputTex', 'blurTex', 'resolution', 'tileOffset', 'balance', 'roughness', 'inkColor', 'paperColor'), ('inputTex', 'blurTex'), ('fragColor',), True, True), ((17, 'fbm', 'float', 1, 4, '31:1-40:2'), (18, 'hash12', 'float', 1, 3, '17:1-21:2'), (19, 'lum', 'float', 1, 1, '15:1-15:67'), (20, 'main', 'void', 0, 12, '46:1-65:2'), (21, 'tonemap2', 'vec3', 3, 1, '42:1-44:2'), (22, 'vnoise', 'float', 1, 4, '23:1-29:2')), (('fwidth', 20, (8, 'e0', 0, 0, 0), '60:20-60:29', 'float', '90dbf96779f56fe2a99dff03f9e12829706830d7d423f03e4c8b848bccd4c8d1', 'builtin', ('float',), ('5ac5381033586f5f051e3e2b9b35e6538cfe3793b3c314ba0e4b7bdb016c4b71',)),), ((('decl',), ('60:5-60:66',)),)), ('filter/step:step', 709, '4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf', 592, 'd77e236beca61d709a7b0e5320aa76b3a1e068ee0014bd3e41c31bd3fd4b0f6f', (), '52e93d37d80c993d92ee8910fa4c6804fcd5ebe3933e722c0c385ec70ba3ace8', '0aa2574412206287d46dddc3504e9909788870874a2514202270c39b0415bef2', '405fbda2028d8696ca0b0e620efeebded0037a5bbd6705b3f59aef6f84b1e08f', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'threshold', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((7, 'main', 'void', 0, 6, '12:1-26:2'),), (('fwidth', 7, (4, 's0', 's0', 'e0', 0), '19:19-19:36', 'vec3', '4e60a910e83e13ad110a54fc08afad0b3a262eb309b087358bc0099e797635d2', 'declaration', ('vec3',), ('871f69c735c5bd378c876e123b6abe14400a4829b473c2715b18f9fc93c436a3',)),), ((('if', 'block', 'decl'), ('18:5-23:6', '18:20-21:6', '19:9-19:37')),)), ('filter/stipple:stipple', 8490, '69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609', 2598, '5bf1e7ef4187d31b9b6d7836537eb7a9ba3df04eaf782629a899a47ca6ccc64f', (('MODE', 'int', '0'),), '7b5f228b32b8a64996ceaa6a54629ea640816469dffb6cc9a3268c954c9c6162', 'ccb94ec0b07abeea1f047aafe38627c4309f84f80a623c302a5ed4b4f1e7a37b', '5a609da7b87f4e672c3bc02c80393f216b9efc7ba03781a927b67a1221e8c89d', (3, 0, 2, 9, 12, True), (('inputTex', 'resolution', 'tileOffset', 'cellSize', 'grainSize', 'density', 'paperColor', 'seed'), ('inputTex',), ('fragColor',), True, True), ((23, 'fbm', 'float', 1, 4, '47:1-56:2'), (24, 'hash12', 'float', 1, 3, '21:1-25:2'), (25, 'hash22', 'vec2', 1, 3, '27:1-31:2'), (26, 'lum', 'float', 1, 1, '34:1-36:2'), (27, 'main', 'void', 0, 15, '95:1-117:2'), (28, 'rotate2D', 'vec2', 2, 4, '88:1-93:2'), (29, 'tonemap2', 'vec3', 3, 1, '82:1-84:2'), (30, 'vnoise', 'float', 1, 4, '39:1-45:2'), (31, 'voronoiCell', 'vec4', 3, 6, '62:1-79:2')), (('fwidth', 27, (11, 'e0', 0, 0, 0), '112:20-112:29', 'float', '7fdc46282f7011e6058b576dc4488a2720a84b9f33db1ecd78078083cfb06515', 'binary', ('float',), ('78e670e9c2dc2fbe6a4c618af698d3f0d8093a659cc83402e3e94a52364a7b80',)),), ((('decl',), ('112:5-112:46',)),)), ('filter/tunnel:tunnel', 3062, 'c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193', 2637, '38d97378dc7d3b0e558f08717a40a03d0369ff9776260e42cbed3e7f5ec7033c', (), '14de75890dea3ba98f0df57ecadb98a6f06bf4b3d64a6706d1c4138e110bcb5a', 'a6b7ecb1d5ab1c08a5a476e58f0b34102ff7a7a4566dabc9dd28b8c2c9d5d18a', 'd8540a43bc855db657b2f93b6910a463eadf77ba85e7cd6c5fb6cd165188baca', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'shape', 'speed', 'rotation', 'scale', 'center', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((19, 'main', 'void', 0, 16, '31:1-104:2'), (20, 'polygonShape', 'float', 2, 3, '21:1-25:2'), (21, 'smod', 'vec2', 2, 1, '27:1-29:2')), (('dFdx', 19, (13, 's0', 's0', 'e0', 0), '80:19-80:37', 'vec2', 'ad03275c33c292482bb7d39cb68276dd182a403d7c65515af00b403d59ee9e6b', 'declaration', ('vec2',), ('e1a8b82acf43a65063759ed05cfee478a4f0f54638a5d42bdbdbbdc6a3c4e17c',)), ('dFdy', 19, (13, 's0', 's1', 'e0', 0), '81:19-81:37', 'vec2', '44afbee4b3ac996e52e5c03f349b74ce4b4b69dba640507a8d3c6994e77abd33', 'declaration', ('vec2',), ('e9994e5fc09c259f4aabb033a393d94d50af0b02c90cecd41ec65391b3f0b553',))), ((('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '80:9-80:38')), (('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '81:9-81:38')))), ('filter/warp:warp', 3095, 'f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee', 2840, 'f3b4c97572bf2868710033cb82244c52233434df8c91ebde50d181983ab89e60', (), '85a83512222d058b07514fbb35aeaa78d6762434fc945bd3c9bff8e152df08bf', '6e2aa3c9af8aadcc4de8bbae83259be59902873db002ed39aca31d54750e3a9b', '55bc224d9217f43f4fff711cb897cd48fe5cff0e446305ada90b61d42a35d611', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'seed', 'speed', 'wrap', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((23, 'grid', 'float', 2, 5, '47:1-53:2'), (24, 'main', 'void', 0, 11, '68:1-105:2'), (25, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (26, 'perlinNoise', 'float', 2, 10, '55:1-66:2'), (27, 'prng', 'vec3', 1, 4, '32:1-37:2'), (28, 'smootherstep', 'float', 1, 1, '39:1-41:2'), (29, 'smoothlerp', 'float', 3, 1, '43:1-45:2')), (('dFdx', 24, (10, 's0', 's0', 'e0', 0), '94:19-94:27', 'vec2', 'a9b4fa5fe4803cab408ce7c3817daa9e49f96f4ed0e1f167ecc55bdfe383b2cc', 'declaration', ('vec2',), ('4e736d8d126b6a9b8c0555a8a7265ec517934302b94af3f9630681470b7921f0',)), ('dFdy', 24, (10, 's0', 's1', 'e0', 0), '95:19-95:27', 'vec2', '33f8835fb114c665173aa44ab38b2ef25e29a2ea6d6594ae9bac49d6e5989c74', 'declaration', ('vec2',), ('b9fb0341fd643a9b547f941684abc487ab610319feb65e9fdc65aa8d2f3ed356',))), ((('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '94:9-94:28')), (('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '95:9-95:28')))), ('filter/waves:waves', 2622, 'f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa', 2167, 'f823bcdbac0ff15096e92fcded5c07611077fb7eece203d48f9f08256e968621', (), '0c9efa54e5863e2022d6e4bc8832bfc3f5a9e11c2ffa3114c623a7faf23ec15f', '5e6ed7428f47fdc2037d08c76d7b32a24009a76ce9644bc9386922bd9ab5279e', '7e683c0e5c6ae52a90cd2481a28f96e2a163a315bc58bba7b3b7ae564605e753', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'speed', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 12, '29:1-81:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (11, 's0', 's0', 'e0', 0), '70:19-70:33', 'vec2', '60666d3f0330b9835f195e9c85456c8117fc3052756eff06d04854a2f050a34b', 'declaration', ('vec2',), ('180a8ea02aa1997c2880f94d196bf5230cd2eaa4f6027daeea1fa6f5e5c3eb1b',)), ('dFdy', 16, (11, 's0', 's1', 'e0', 0), '71:19-71:33', 'vec2', '1554f75e9231732d9eb8c318ef577983fe47c6378a5a60a75b4c6ecaa439a3a9', 'declaration', ('vec2',), ('bb7735ece0c8413f55e402e08670634885ac1b503c8549e9bfc43fa28d2e064a',))), ((('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '70:9-70:34')), (('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '71:9-71:34')))))"""
++_PROFILE_SHA256 = "48a0d8017a77078d44ddff2f3ceaa852ab4cc95604605278639ad5f67daced02"
++_FROZEN_PROFILE_TUPLE_REPR = """(('filter/bulge:bulge', 2352, '87f26ffa13ffe946d94d92a00bd45ca3a9787b9ee402dfe04ebc3d4a911eb170', 1953, '3526dd01153e7def1e3eb6f1dff1b39cfdb1ba275aa81b92732c07206d41d060', (), '9b1c1b27669b99f6ef51a1f7796a570acf7b4be401a67402e9b59da02d7c7154', '11cd75f0fc758ad6de796bc1a1448902214f946dba727120bce3603c7e4a3faf', 'b5e71e3377314023e8738e808a6634b7827f0408447bea21a405e4a9a0aae949', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-85:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '74:19-74:33', 'vec2', '20a71d7a29d19cf3678048b7dedfac7c2710f431af3433bdab05f469296f2477', 'declaration', ('vec2',), ('ec32dffcc8ca18b768b2a5c4ef7da06c62e2a5e0fb3f1c19031378605d732666',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '75:19-75:33', 'vec2', '4046755cbb6e29423861ccac3ca587a7d22675ff06a0f828b30b6367e69d9735', 'declaration', ('vec2',), ('f722ccaa9f9b3fa6db42275e9910f4b5ec336b5a5f876f75eb44e84ebb3fd5d9',))), ((('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '74:9-74:34')), (('if', 'block', 'decl'), ('72:5-84:6', '72:20-82:6', '75:9-75:34')))), ('filter/celShading:celShadingColor', 2780, '90fa87484d3549bdaa2ddca4836a7ca8602ad4f1f30aa87a72841d4e013521f4', 2530, '52086cb69a9db0eccff5d37d369f94f672a8290a006999f00ca81742ca1e3d4f', (), 'ab51cb78b516454f8be97ab2bb226f31efb2f3daacba4521ab93bc325a0924cd', '9012723f042dcc2fc823ffb36ef7e4cdbff48529f8ec074bd89cd00c58b9e53a', '337682508a486618d2deb6bc1c0275078132c3e5c24fc16b8e54c4553cb2e684', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias', 'lightDirection', 'strength'), ('inputTex',), ('fragColor',), True, True), ((17, 'linear_to_srgb_component', 'float', 1, 2, '24:1-29:2'), (18, 'linear_to_srgb_rgb', 'vec3', 1, 1, '39:1-45:2'), (19, 'main', 'void', 0, 22, '55:1-94:2'), (20, 'pow_vec3', 'vec3', 2, 1, '47:1-53:2'), (21, 'srgb_to_linear_component', 'float', 1, 2, '17:1-22:2'), (22, 'srgb_to_linear_rgb', 'vec3', 1, 1, '31:1-37:2')), (('fwidth', 19, (18, 's0', 's1', 'e0', 0), '84:19-84:33', 'vec3', '9f8bb2f21d35491406e75523546eefe77eb61d9887980880bd7853fc869117c6', 'declaration', ('vec3',), ('c24b82eb573678af3e3fa7704350683d23b7965ad2474e416dd7e460f55bf4b2',)),), ((('if', 'block', 'decl'), ('82:5-89:6', '82:20-87:6', '84:9-84:34')),)), ('filter/halftone:halftone', 8440, '063ddb13f5fffc6f957d4be0a60b0408ff706d6111fd4e3ba52582f7507c7ad7', 3828, 'f62382b453796c16948943e002b2498021827314793ab80f0fd66473c4fcb307', (('MODE', 'int', '0'), ('PATTERN', 'int', '0')), '9d055dcad8dc24cfa85c7a1a4317b0fe849e7202c512affb4c682cab23d3cebd', '5ddb9ed688497772657c9d3eda11e90eb703b151b779a580ba234f49f236697e', '2f2bdb794aeb2fbb252bf6c80fda24f0d73bb20754b11eed0a051b982cb5722f', (2, 0, 2, 9, 48, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'frequency', 'cyanAngle', 'magentaAngle', 'yellowAngle', 'blackAngle', 'monoAngle', 'sharpness', 'inkColor', 'paperColor'), ('inputTex',), ('fragColor',), True, True), ((37, 'boxBlur3', 'vec3', 2, 3, '55:1-64:2'), (38, 'cellSampleFromRuv', 'vec3', 3, 4, '71:1-76:2'), (39, 'halftoneCoverage', 'float', 3, 4, '84:1-89:2'), (40, 'lum', 'float', 1, 1, '26:1-28:2'), (41, 'main', 'void', 0, 19, '115:1-137:2'), (42, 'rgbToCmyk', 'vec4', 1, 4, '36:1-41:2'), (43, 'rotate2D', 'vec2', 2, 4, '48:1-53:2'), (44, 'roundDotCoverage', 'float', 3, 8, '100:1-113:2'), (45, 'tonemap2', 'vec3', 3, 1, '30:1-32:2')), (('fwidth', 39, (2, 'e0', 0, 0, 0, 0), '87:24-87:33', 'float', '93f6be1083c4c3ddfd255ec24766618c50d933d5354a3e73df010b8b3ce7fa20', 'binary', ('float',), ('ba4d6eb504a6e888e500072b8e9446c58652a2814eaf52ec23816d76c5ecb81b',)), ('fwidth', 44, (5, 'e0', 0, 0, 0, 0), '109:30-109:52', 'float', 'c51209ca4742a638cb51182aad20b498dd365c8b4921b3dc195f8c69b20e0ed6', 'binary', ('float',), ('7a44ce7e86059a35c92decafd790c1b407b65fc9fe13479b7af6f410ca286313',))), ((('decl',), ('87:5-87:67',)), (('decl',), ('109:5-109:86',)))), ('filter/lens:lens', 2909, '6633d8c7b1ab23600cb25bb87f3f67c5d1d148b0626169f24de520fbce9e64a5', 2194, '72c7169c1f606090fd80c1a9763b757af6aed98ac54543580c480d2a04a95d61', (), '4eaba58099b88677cb99c1a603433a77be8638868cf4e3fd6ddedbc57555e249', '7ea51ed2362674cb6fddae77b82a0c5b49280021c28d3504033f98e8a99e1fa0', '370d530b1fd84b9a3e0ddb8665f189bc10bf6d4da1f84349aac583dc6fd29e7a', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'lensDisplacement', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((9, 'main', 'void', 0, 23, '15:1-79:2'),), (('dFdx', 9, (22, 's0', 's0', 'e0', 0), '66:19-66:34', 'vec2', '70aa57fde35df66eb6a2211a91c66bb2c270444463a2383023076435acf50ebc', 'declaration', ('vec2',), ('d2011ab14b62182633bbb70ccabf923ed3bd8a773465c5c65b2c806c61f36ceb',)), ('dFdy', 9, (22, 's0', 's1', 'e0', 0), '67:19-67:34', 'vec2', '33e9b6c11a26ca9b478315003742b5ee491e0ab7dad9557269c3a2d5c30465bd', 'declaration', ('vec2',), ('ebf32dce1141226c2b4d2a36f7a6f2859d90eb3e0c2ab04d31d68c677e5ccf10',))), ((('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '66:9-66:35')), (('if', 'block', 'decl'), ('65:5-78:6', '65:20-76:6', '67:9-67:35')))), ('filter/lensWarp:lensWarp', 4033, '543b53a26b14dfdcf979e2601eaad32d6ec683c41427301b851173334a670480', 3446, '4d2c5e5d33e31c902b0506daa6f8ec0a1c76dfc3355c6c5f5604e752a6ed862d', (), 'f8c4e268beaa15b2dc4c4bdaae870d0c14d180c75440c8db57aa831ab4b67286', '8dfa839595d6a87429845ed4015cb25ac9ee162631d1b5d491ee0bfeeca2c647', 'aad79dc32807a531c08566f437e17df28d5d5f54c552626488211aa5de6c11da', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'displacement', 'speed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((20, 'grid', 'float', 2, 5, '44:1-50:2'), (21, 'main', 'void', 0, 18, '65:1-118:2'), (22, 'pcg', 'uvec3', 1, 9, '17:1-27:2'), (23, 'perlinNoise', 'float', 2, 10, '52:1-63:2'), (24, 'prng', 'vec3', 1, 4, '29:1-34:2'), (25, 'smootherstep', 'float', 1, 1, '36:1-38:2'), (26, 'smoothlerp', 'float', 3, 1, '40:1-42:2')), (('dFdx', 21, (17, 's0', 's0', 'e0', 0), '98:19-98:27', 'vec2', 'd57ec902e546cfe31dc4ba727d82799d83cc0e4b87f58ca25316ac2697acc75c', 'declaration', ('vec2',), ('0a2776c07711c1be968a90cb80fcc51bea59310315d978435c186df0144540e5',)), ('dFdy', 21, (17, 's0', 's1', 'e0', 0), '99:19-99:27', 'vec2', '18a2210cba6baa219781eac3cdefdbc5d771ba488fc5f292b6d7a66a16574d47', 'declaration', ('vec2',), ('08474a87a0cb11063848af4a6c0928758c9ad555b181bd22ccb9364fed867afe',))), ((('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '98:9-98:28')), (('if', 'block', 'decl'), ('97:5-117:6', '97:20-115:6', '99:9-99:28')))), ('filter/octaveWarp:octaveWarp', 4902, 'ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea', 4110, 'f2b635bd9858cc2f9f33d5490844fc331ca3f8d52f10c76b30f52d3492918a4b', (), '44d5a0bd997f31c441f25ab198858bc7fc902949014c0c350172947e0ef21ea8', '8bb2272c78dba6aa780c7b934852617e478bec35dfe47af03fb2aaffc546e492', '4b6c99dad1fc3289edd53b8d830722ab7aaec2cb6c442939c80508064de20fb7', (1, 0, 1, 10, 10, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'frequency', 'octaves', 'displacement', 'speed', 'wrap', 'seed', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((25, 'hash21', 'float', 1, 2, '32:1-39:2'), (26, 'main', 'void', 0, 15, '86:1-157:2'), (27, 'noise', 'float', 1, 8, '41:1-52:2'), (28, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (29, 'simplexNoise', 'float', 4, 7, '59:1-67:2'), (30, 'wrapFloat', 'float', 3, 4, '69:1-84:2')), (('dFdx', 26, (14, 's0', 's0', 'e0', 0), '146:19-146:32', 'vec2', '7a345f7b0084acf0484dd8a2c7fb04b28ca2373f1efb876faefe3323552cf9ac', 'declaration', ('vec2',), ('b46d9fd9654f0b5a289370d87e124e9bfe49deccad329cb32943b7a7ea1d404c',)), ('dFdy', 26, (14, 's0', 's1', 'e0', 0), '147:19-147:32', 'vec2', 'e5c56800891c24d1b0eaccac2b6eb4765fabcc6a3e190ba029359dc63322453c', 'declaration', ('vec2',), ('df3d1f50ed9076235d9fa22f89facd0fb26f99b5668cf147e9c14e18b1439bbf',))), ((('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '146:9-146:33')), (('if', 'block', 'decl'), ('145:5-156:6', '145:20-154:6', '147:9-147:33')))), ('filter/pinch:pinch', 2296, '031405e087822fd10b07d972e53f2f6d2da95f67d9c56605cbc104e0b955d71c', 1954, '2f6e983bdc1a21b043ef40ccdf5f02902a38274fcbac7db5c5f9cd231749427d', (), '9d5adc1c2e6f6976072522df0066fdf1a3c2dc490246173675fff139e9ffc7cf', 'c5c15b401c3e8601a4a2ebe97be02840fc3327b3e9ea6a94628db76e1b19f5d1', 'c502a3f375d985c7c8a74c1bbbbf32f1cc44d78b3a98fb61ef26ee5fcf03d600', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'strength', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((14, 'main', 'void', 0, 16, '27:1-84:2'), (15, 'rotate2D', 'vec2', 3, 7, '17:1-25:2')), (('dFdx', 14, (15, 's0', 's0', 'e0', 0), '73:19-73:33', 'vec2', 'c0114126cb10c4ec21376e314bc26874cb2bd7ffde8e38fb36a7e9208f9ba969', 'declaration', ('vec2',), ('8dd2f772f646141247b6e980c9ca35220fccf4b290b086496bab79c98d471b3c',)), ('dFdy', 14, (15, 's0', 's1', 'e0', 0), '74:19-74:33', 'vec2', 'a1e7cd3eae483f8d05b85afdbf660006ed369f8359dba2d444a8ad1ba9225ef5', 'declaration', ('vec2',), ('0b96611b00b4e44055db6b25b6535b4860e2267372b9819eb58712016624af35',))), ((('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '73:9-73:34')), (('if', 'block', 'decl'), ('72:5-83:6', '72:20-81:6', '74:9-74:34')))), ('filter/polar:polar', 2027, '391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d', 1933, 'c928b6cbc717ec436c915e763a00f23ce67eb4dd338f0bdd365dbd8dfc217785', (), '8d507070121c5ad9020357677186846e9e133b82d6f27421efafdc367699a22d', '5486890330682b31c6df1ea2e5fdcb1b4cdb1ca461efcce72007d7e327abfe9a', 'a812e3ae963a9cf4bc898d90678f536d5e502aa78efec86eb52eb2116f94aa41', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'polarMode', 'speed', 'rotation', 'scale', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((21, 'main', 'void', 0, 8, '46:1-72:2'), (22, 'polarCoords', 'vec2', 2, 6, '27:1-34:2'), (23, 'smod', 'float', 2, 1, '19:1-21:2'), (24, 'smod2', 'vec2', 2, 1, '23:1-25:2'), (25, 'vortexCoords', 'vec2', 2, 7, '36:1-44:2')), (('dFdx', 21, (7, 's0', 's0', 'e0', 0), '61:19-61:30', 'vec2', '525d95a395790c5d91788b4fa72762abf89b54d2ef11a2d472549fd9ffade116', 'declaration', ('vec2',), ('414058d43f2566233f4dd03862f071e8ea8518d536c6800e3e92d50da851ffd0',)), ('dFdy', 21, (7, 's0', 's1', 'e0', 0), '62:19-62:30', 'vec2', 'f3ad5a9e25263699d2296f69c4ab70ca6086aeb645035176ddf95c3ac19d45ce', 'declaration', ('vec2',), ('8a1d3d95ef0ab16ad0e61ae5ab84350d6c8b8991dc14f1cbddaa00bf47446c7f',))), ((('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '61:9-61:31')), (('if', 'block', 'decl'), ('60:5-71:6', '60:20-69:6', '62:9-62:31')))), ('filter/pondRipples:pondRipples', 5187, '2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d', 2259, 'fe12162607ad0264af3e81e45459f2a126d54c759ebd5307a753b8bdf1d0221d', (('STYLE', 'str', 'int'), ('WRAP', 'str', 'int')), 'd8588b986e98ad0440d28dc751a291be1b2959856d4852480e6e9b3ce05901b8', '4810e06c10903912aa2a804ab31e1c6c38d085a2a570d903158c67296c9107e5', 'e745389f99bc9a0c29fb1ce81d29a90e492274d92bc5941d653634958e8dbcb1', (0, 0, 0, 0, 0, True), (('STYLE', 'WRAP', 'inputTex', 'resolution', 'tileOffset', 'fullResolution', 'amount', 'ridges', 'speed', 'time', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((13, 'main', 'void', 0, 24, '24:1-113:2'),), (('dFdx', 13, (23, 's0', 's0', 'e0', 0), '102:19-102:33', 'vec2', '4e00ca66a03328caec9562ed3ad058114a27dce547610fdf8944331358c7bf49', 'declaration', ('vec2',), ('f0bdf9190fa6c37eaafe6bc8a65a7a44d014ccd75529debf450e053e6b6343b3',)), ('dFdy', 13, (23, 's0', 's1', 'e0', 0), '103:19-103:33', 'vec2', 'f1dbf8a14fca3bc9523ceef088578137d840742515eec28e0a6f94a45380a1a1', 'declaration', ('vec2',), ('63f82d18a9c6d42c58fe0da84117e554cd22a700812270bef2e9fb34442f223e',))), ((('if', 'block', 'decl'), ('101:5-112:6', '101:20-110:6', '102:9-102:34')), (('if', 'block', 'decl'), ('101:5-112:6', '101:20-110:6', '103:9-103:34')))), ('filter/posterize:posterize', 2630, '460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2', 2471, '4781d189690f57de2b57aebaaa946eba004b1c57272f32a18d1f0ce06ce44393', (), '7bdcf13444da35b93bcae7c4758f92d46c26f0316f1ec4308bd1bc6e1c93e977', '74adeb96fe8c6d4a916b0b54b29ce0f9ca2dbce7f7609f3582dcf51d82f4b6e8', 'e53cc14ee2e987c2682722edd2870f0b617f1c28cae66e56e47aebe82548b81d', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'levels', 'gamma', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((17, 'clamp_01', 'float', 1, 1, '16:1-18:2'), (18, 'linear_to_srgb_component', 'float', 1, 2, '27:1-32:2'), (19, 'linear_to_srgb_rgb', 'vec3', 1, 1, '42:1-48:2'), (20, 'main', 'void', 0, 19, '54:1-96:2'), (21, 'pow_vec3', 'vec3', 2, 1, '50:1-52:2'), (22, 'srgb_to_linear_component', 'float', 1, 2, '20:1-25:2'), (23, 'srgb_to_linear_rgb', 'vec3', 1, 1, '34:1-40:2')), (('fwidth', 20, (15, 's0', 's1', 'e0', 0), '80:19-80:33', 'vec3', 'f1315d63b64d28eedd7f82ebae6bfac6f23c59290c6a605dfb8c09329f459288', 'declaration', ('vec3',), ('6967522f9a182704ee53070549a6b1aa8ddbb4f263a61b57c9c2fc6b1a8709bd',)),), ((('if', 'block', 'decl'), ('78:5-85:6', '78:20-83:6', '80:9-80:34')),)), ('filter/spiral:spiral', 2869, '3d609c5028c859d82c060af21b0675dd0dd0ec6f720dbc9e3b3b21a65893ef4a', 2107, '6e516a2d27e14fbbe0c6c1b200625efbdad09283e5ee09cc8d69e5c372b3ca34', (), '96d3129f74aa9f70b713b8b66d99219c4ea9c5359bac7512e007c683b5d30516', '694cd7517a81e3aebe8b24a18e529f06fd5b534c541f1475e34f97c6a561874d', '076dcb4d51978fa60df5a9186a5a7447df28a3078e1157eafe9e64912d2d97b8', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'speed', 'aspectLens', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 17, '29:1-96:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (16, 's0', 's0', 'e0', 0), '85:19-85:33', 'vec2', '2d69beddbd2285adbc92b181d6e8ffea9d79f67366ffa4f4c1e75e887f310e21', 'declaration', ('vec2',), ('f079d8dca3fead496edf9da0e6432166bf43b914e15740804d0958599293fad6',)), ('dFdy', 16, (16, 's0', 's1', 'e0', 0), '86:19-86:33', 'vec2', '536129cbb6d8a4ed549c5113a32d2910f82e3ac541125b5358dcddc7540cb381', 'declaration', ('vec2',), ('a027e66cdba6a3004a851b7adc6517a2cbe39db7ff104b761f4b5e7680e44172',))), ((('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '85:9-85:34')), (('if', 'block', 'decl'), ('84:5-95:6', '84:20-93:6', '86:9-86:34')))), ('filter/stamp:stThreshold', 3467, 'd93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94', 1565, 'f6593ec857c845845201652026bd375e8860d4e107e7528a82e4519c9b085bbe', (), 'fccb3a9d9cf9b02f1f30087c58827ce3f5de4c659168c843cc283748edbcc9d1', '7a5f47aeda690b1bc649e54662dd2b47aed69f68bded0a5fc1e658bd448c456d', 'ef70990afd3060826ca720c7419901188c453957b62df786272a3f41244905cd', (1, 0, 1, 5, 5, True), (('inputTex', 'blurTex', 'resolution', 'tileOffset', 'balance', 'roughness', 'inkColor', 'paperColor'), ('inputTex', 'blurTex'), ('fragColor',), True, True), ((17, 'fbm', 'float', 1, 4, '31:1-40:2'), (18, 'hash12', 'float', 1, 3, '17:1-21:2'), (19, 'lum', 'float', 1, 1, '15:1-15:67'), (20, 'main', 'void', 0, 12, '46:1-65:2'), (21, 'tonemap2', 'vec3', 3, 1, '42:1-44:2'), (22, 'vnoise', 'float', 1, 4, '23:1-29:2')), (('fwidth', 20, (8, 'e0', 0, 0, 0), '60:20-60:29', 'float', '90dbf96779f56fe2a99dff03f9e12829706830d7d423f03e4c8b848bccd4c8d1', 'builtin', ('float',), ('5ac5381033586f5f051e3e2b9b35e6538cfe3793b3c314ba0e4b7bdb016c4b71',)),), ((('decl',), ('60:5-60:66',)),)), ('filter/step:step', 709, '4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf', 592, 'd77e236beca61d709a7b0e5320aa76b3a1e068ee0014bd3e41c31bd3fd4b0f6f', (), '52e93d37d80c993d92ee8910fa4c6804fcd5ebe3933e722c0c385ec70ba3ace8', '0aa2574412206287d46dddc3504e9909788870874a2514202270c39b0415bef2', '405fbda2028d8696ca0b0e620efeebded0037a5bbd6705b3f59aef6f84b1e08f', (0, 0, 0, 0, 0, True), (('tileOffset', 'fullResolution', 'inputTex', 'threshold', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((7, 'main', 'void', 0, 6, '12:1-26:2'),), (('fwidth', 7, (4, 's0', 's0', 'e0', 0), '19:19-19:36', 'vec3', '4e60a910e83e13ad110a54fc08afad0b3a262eb309b087358bc0099e797635d2', 'declaration', ('vec3',), ('871f69c735c5bd378c876e123b6abe14400a4829b473c2715b18f9fc93c436a3',)),), ((('if', 'block', 'decl'), ('18:5-23:6', '18:20-21:6', '19:9-19:37')),)), ('filter/stipple:stipple', 8490, '69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609', 3485, '38028046e66b673bd7412e123629b2f70d7ade76cf793ff9758dcf85ab8ce8c6', (('MODE', 'str', 'int'),), '24e0bb8713f449332f0746feed1719cd914e567f9c00661cfeda7b5ebbe26ef7', 'd13af4a646a51263d36f9ae2e9dcfe7bf73737a8f695c15c961f7eb9b15af34a', 'a72b1d8942dd1e51b095a0974064926379185c4c91f08e12530f1fd34785482d', (3, 0, 2, 9, 12, True), (('MODE', 'inputTex', 'resolution', 'tileOffset', 'cellSize', 'grainSize', 'density', 'paperColor', 'seed'), ('inputTex',), ('fragColor',), True, True), ((24, 'fbm', 'float', 1, 4, '48:1-57:2'), (25, 'hash12', 'float', 1, 3, '22:1-26:2'), (26, 'hash22', 'vec2', 1, 3, '28:1-32:2'), (27, 'lum', 'float', 1, 1, '35:1-37:2'), (28, 'main', 'void', 0, 6, '96:1-161:2'), (29, 'rotate2D', 'vec2', 2, 4, '89:1-94:2'), (30, 'tonemap2', 'vec3', 3, 1, '83:1-85:2'), (31, 'vnoise', 'float', 1, 4, '40:1-46:2'), (32, 'voronoiCell', 'vec4', 3, 6, '63:1-80:2')), (('fwidth', 28, (4, 's0', 's7', 'e0', 0, 0, 0), '114:20-114:29', 'float', 'e666dd12fd2064be0257af00c66d37a05636ba23dafd9e699ab226026ee4788d', 'binary', ('float',), ('60142c9edb26093755e861e150963ed120668c5993f74a63877c842b65efdc15',)),), ((('if', 'block', 'decl'), ('102:1-158:2', '102:16-117:2', '114:5-114:46')),)), ('filter/tunnel:tunnel', 3062, 'c0ebe43eead7a1c040dd4a37162d634fe4b1a93ea0b8704bac502fbc5a978193', 2637, '38d97378dc7d3b0e558f08717a40a03d0369ff9776260e42cbed3e7f5ec7033c', (), '14de75890dea3ba98f0df57ecadb98a6f06bf4b3d64a6706d1c4138e110bcb5a', 'a6b7ecb1d5ab1c08a5a476e58f0b34102ff7a7a4566dabc9dd28b8c2c9d5d18a', 'd8540a43bc855db657b2f93b6910a463eadf77ba85e7cd6c5fb6cd165188baca', (0, 0, 0, 0, 0, True), (('inputTex', 'tileOffset', 'fullResolution', 'time', 'shape', 'speed', 'rotation', 'scale', 'center', 'aspectLens', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((19, 'main', 'void', 0, 16, '31:1-104:2'), (20, 'polygonShape', 'float', 2, 3, '21:1-25:2'), (21, 'smod', 'vec2', 2, 1, '27:1-29:2')), (('dFdx', 19, (13, 's0', 's0', 'e0', 0), '80:19-80:37', 'vec2', 'ad03275c33c292482bb7d39cb68276dd182a403d7c65515af00b403d59ee9e6b', 'declaration', ('vec2',), ('e1a8b82acf43a65063759ed05cfee478a4f0f54638a5d42bdbdbbdc6a3c4e17c',)), ('dFdy', 19, (13, 's0', 's1', 'e0', 0), '81:19-81:37', 'vec2', '44afbee4b3ac996e52e5c03f349b74ce4b4b69dba640507a8d3c6994e77abd33', 'declaration', ('vec2',), ('e9994e5fc09c259f4aabb033a393d94d50af0b02c90cecd41ec65391b3f0b553',))), ((('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '80:9-80:38')), (('if', 'block', 'decl'), ('79:5-90:6', '79:20-88:6', '81:9-81:38')))), ('filter/warp:warp', 3095, 'f3034ac02a2926b819ff874d2d1d0d3dacebf2b7a409c983237d6a71865942ee', 2840, 'f3b4c97572bf2868710033cb82244c52233434df8c91ebde50d181983ab89e60', (), '85a83512222d058b07514fbb35aeaa78d6762434fc945bd3c9bff8e152df08bf', '6e2aa3c9af8aadcc4de8bbae83259be59902873db002ed39aca31d54750e3a9b', '55bc224d9217f43f4fff711cb897cd48fe5cff0e446305ada90b61d42a35d611', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'seed', 'speed', 'wrap', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((23, 'grid', 'float', 2, 5, '47:1-53:2'), (24, 'main', 'void', 0, 11, '68:1-105:2'), (25, 'pcg', 'uvec3', 1, 9, '20:1-30:2'), (26, 'perlinNoise', 'float', 2, 10, '55:1-66:2'), (27, 'prng', 'vec3', 1, 4, '32:1-37:2'), (28, 'smootherstep', 'float', 1, 1, '39:1-41:2'), (29, 'smoothlerp', 'float', 3, 1, '43:1-45:2')), (('dFdx', 24, (10, 's0', 's0', 'e0', 0), '94:19-94:27', 'vec2', 'a9b4fa5fe4803cab408ce7c3817daa9e49f96f4ed0e1f167ecc55bdfe383b2cc', 'declaration', ('vec2',), ('4e736d8d126b6a9b8c0555a8a7265ec517934302b94af3f9630681470b7921f0',)), ('dFdy', 24, (10, 's0', 's1', 'e0', 0), '95:19-95:27', 'vec2', '33f8835fb114c665173aa44ab38b2ef25e29a2ea6d6594ae9bac49d6e5989c74', 'declaration', ('vec2',), ('b9fb0341fd643a9b547f941684abc487ab610319feb65e9fdc65aa8d2f3ed356',))), ((('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '94:9-94:28')), (('if', 'block', 'decl'), ('93:5-104:6', '93:20-102:6', '95:9-95:28')))), ('filter/waves:waves', 2622, 'f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa', 2167, 'f823bcdbac0ff15096e92fcded5c07611077fb7eece203d48f9f08256e968621', (), '0c9efa54e5863e2022d6e4bc8832bfc3f5a9e11c2ffa3114c623a7faf23ec15f', '5e6ed7428f47fdc2037d08c76d7b32a24009a76ce9644bc9386922bd9ab5279e', '7e683c0e5c6ae52a90cd2481a28f96e2a163a315bc58bba7b3b7ae564605e753', (0, 0, 0, 0, 0, True), (('inputTex', 'resolution', 'tileOffset', 'fullResolution', 'time', 'strength', 'scale', 'speed', 'wrap', 'rotation', 'antialias'), ('inputTex',), ('fragColor',), True, True), ((16, 'main', 'void', 0, 12, '29:1-81:2'), (17, 'rotate2D', 'vec2', 3, 7, '19:1-27:2')), (('dFdx', 16, (11, 's0', 's0', 'e0', 0), '70:19-70:33', 'vec2', '60666d3f0330b9835f195e9c85456c8117fc3052756eff06d04854a2f050a34b', 'declaration', ('vec2',), ('180a8ea02aa1997c2880f94d196bf5230cd2eaa4f6027daeea1fa6f5e5c3eb1b',)), ('dFdy', 16, (11, 's0', 's1', 'e0', 0), '71:19-71:33', 'vec2', '1554f75e9231732d9eb8c318ef577983fe47c6378a5a60a75b4c6ecaa439a3a9', 'declaration', ('vec2',), ('bb7735ece0c8413f55e402e08670634885ac1b503c8549e9bfc43fa28d2e064a',))), ((('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '70:9-70:34')), (('if', 'block', 'decl'), ('69:5-80:6', '69:20-78:6', '71:9-71:34')))))"""
+ 
+ _OPTIONAL_PROOF_FIELDS = (
+     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
+diff --git a/tools/glslcpp/generate_typed_slice.py b/tools/glslcpp/generate_typed_slice.py
+index 0c1e8b3..0eb4dc6 100644
+--- a/tools/glslcpp/generate_typed_slice.py
++++ b/tools/glslcpp/generate_typed_slice.py
+@@ -797,7 +797,24 @@ GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
+     "filter/relief:rlShade": {"MODE": "int"},
+     "filter/wind:wind": {"METHOD": "int"},
+     "synth/curl:curl": {"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES": "bool"},
++    "filter/oilPaint:oilFlatten": {"MODE": "int"},
++    "filter/oilPaint:oilPost": {"MODE": "int"},
++    "filter/strokes:stkPost": {"MODE": "int"},
++    "filter/stipple:stipple": {"MODE": "int"},
++    "filter/pondRipples:pondRipples": {"STYLE": "int", "WRAP": "int"},
+ }
++# filter/halftone:halftone is deliberately NOT in this table. A structured
++# ordinary sweep (random ink/paper hex colors) found a real byte-exact
++# divergence at MODE=1 (mono): the JS authority's tonemap2(t, inkColor,
++# paperColor) mix leaks the RGBA hex color's alpha channel into the output
++# alpha, even though the GLSL declares inkColor/paperColor as vec3 -- a
++# vec4-vs-vec3 uniform-binding materialization quirk the C++ port does not
++# reproduce (it correctly narrows to Vec3 at bind time and threads the
++# separately-sampled input alpha instead). MODE=0 (color/CMYK) never calls
++# tonemap2 and is unaffected, but this table promotes MODE for the whole
++# program, not per-value, so halftone stays default-only until that
++# materialization contract is modeled -- same posture as filter/scatter's
++# excluded MODE=3.
+ # filter/scatter:scatterJitter/scatterSmooth are deliberately NOT in this
+ # table. A structured (non-solid-input) sweep found a real byte-exact
+ # divergence at MODE=3 (anisotropic): `offset = dot(offset, perp) * perp;`
+diff --git a/tools/glslcpp/typed_slice.json b/tools/glslcpp/typed_slice.json
+index dba27df..a0a71d3 100644
+--- a/tools/glslcpp/typed_slice.json
++++ b/tools/glslcpp/typed_slice.json
+@@ -553,13 +553,15 @@
+       "defines": {
+         "MODE": 1
+       },
+-      "program_key": "filter/oilPaint:oilFlatten"
++      "program_key": "filter/oilPaint:oilFlatten",
++      "runtime_define_profile": "runtime-defines-generic-v1"
+     },
+     {
+       "defines": {
+         "MODE": 1
+       },
+-      "program_key": "filter/oilPaint:oilPost"
++      "program_key": "filter/oilPaint:oilPost",
++      "runtime_define_profile": "runtime-defines-generic-v1"
+     },
+     {
+       "defines": {},
+@@ -661,7 +663,8 @@
+         "WRAP": 0
+       },
+       "derivative_admission_profile": "derivative-admission-v1",
+-      "program_key": "filter/pondRipples:pondRipples"
++      "program_key": "filter/pondRipples:pondRipples",
++      "runtime_define_profile": "runtime-defines-generic-v1"
+     },
+     {
+       "defines": {},
+@@ -837,7 +840,8 @@
+         "MODE": 0
+       },
+       "derivative_admission_profile": "derivative-admission-v1",
+-      "program_key": "filter/stipple:stipple"
++      "program_key": "filter/stipple:stipple",
++      "runtime_define_profile": "runtime-defines-generic-v1"
+     },
+     {
+       "defines": {},
+@@ -847,7 +851,8 @@
+       "defines": {
+         "MODE": 0
+       },
+-      "program_key": "filter/strokes:stkPost"
++      "program_key": "filter/strokes:stkPost",
++      "runtime_define_profile": "runtime-defines-generic-v1"
+     },
+     {
+       "defines": {
+-- 
+2.50.1 (Apple Git-155)
+

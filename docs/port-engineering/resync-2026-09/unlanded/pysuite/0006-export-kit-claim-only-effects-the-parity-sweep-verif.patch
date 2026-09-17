@@ -1,0 +1,323 @@
+From f3497016b67e4c6c9e2722f5a6cb58b53945fcc1 Mon Sep 17 00:00:00 2001
+From: Alex Ayars <aayars@gmail.com>
+Date: Wed, 16 Sep 2026 23:34:01 -0600
+Subject: [PATCH 06/29] export kit: claim only effects the parity sweep
+ verified; retry load-induced timeouts alone
+
+Backend admission says a kernel exists for every pass, not that the effect
+renders exactly across its parameter domain: the kit listed effects that
+refuse every non-default define value. export-kit/verified-effects.json is
+derived by tools/parity/verified_effects.py from sweep results (every
+single-effect case byte-exact on RGBA8 and float32, or refused by both
+sides), and generate-compat.mjs lists only those effects. From the 20-variant
+and define-enumeration sweeps of this tree: 137 verified effects (the
+admission-only list claimed 167).
+
+sweep.py now reruns a timed-out case alone with 4x the budget before
+reporting it, so a loaded machine cannot turn a slow case into a failure
+while a real hang still fails the gate.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ export-kit/generate-compat.mjs   |   9 ++
+ export-kit/verified-effects.json | 155 +++++++++++++++++++++++++++++++
+ tools/parity/sweep.py            |  21 ++++-
+ tools/parity/verified_effects.py |  57 ++++++++++++
+ 4 files changed, 241 insertions(+), 1 deletion(-)
+ create mode 100644 export-kit/verified-effects.json
+ create mode 100644 tools/parity/verified_effects.py
+
+diff --git a/export-kit/generate-compat.mjs b/export-kit/generate-compat.mjs
+index fc89080..4980e90 100644
+--- a/export-kit/generate-compat.mjs
++++ b/export-kit/generate-compat.mjs
+@@ -90,6 +90,15 @@ if (!cliSuppliesExternalTextures) {
+   for (const id of externalTextureEffects) effects.delete(id)
+ }
+ for (const id of overlayEffects) effects.delete(id)
++// Backend admission says a kernel exists for every pass; it does not say the effect renders
++// exactly across its parameter domain. List only effects the parity sweep verified
++// (export-kit/verified-effects.json, derived by tools/parity/verified_effects.py).
++const verified = JSON.parse(await readFile(new URL('export-kit/verified-effects.json', root), 'utf8'))
++assert.equal(verified.schema, 'noisemaker-cpp.verified-effects.v1')
++const verifiedEffects = new Set(verified.effects)
++for (const id of [...effects.keys()]) {
++  if (!verifiedEffects.has(id)) effects.delete(id)
++}
+ const output = JSON.stringify([...effects].filter(([, admitted]) => admitted).map(([id]) => id).sort(), null, 2) + '\n'
+ const target = new URL('export-kit/compat-effects.json', root)
+ assert.ok(process.argv.slice(2).every(arg => arg === '--check'), 'usage: node export-kit/generate-compat.mjs [--check]')
+diff --git a/export-kit/verified-effects.json b/export-kit/verified-effects.json
+new file mode 100644
+index 0000000..409df98
+--- /dev/null
++++ b/export-kit/verified-effects.json
+@@ -0,0 +1,155 @@
++{
++  "schema": "noisemaker-cpp.verified-effects.v1",
++  "sweeps": [
++    {
++      "seed": 20260916,
++      "variants": 20,
++      "cases": 4685
++    },
++    {
++      "seed": 20260916,
++      "variants": 24,
++      "cases": 4872
++    }
++  ],
++  "swept_effects": 208,
++  "effects": [
++    "classicNoisedeck/bitEffects",
++    "classicNoisedeck/cellNoise",
++    "classicNoisedeck/coalesce",
++    "classicNoisedeck/colorLab",
++    "classicNoisedeck/composite",
++    "classicNoisedeck/fractal",
++    "classicNoisedeck/glitch",
++    "classicNoisedeck/lensDistortion",
++    "classicNoisedeck/refract",
++    "classicNoisedeck/splat",
++    "filter/adjust",
++    "filter/bc",
++    "filter/bloom",
++    "filter/blur",
++    "filter/bulge",
++    "filter/celShading",
++    "filter/channel",
++    "filter/chroma",
++    "filter/chromaticAberration",
++    "filter/chrome",
++    "filter/clouds",
++    "filter/colorReplace",
++    "filter/colorspace",
++    "filter/corrupt",
++    "filter/craquelure",
++    "filter/crt",
++    "filter/degauss",
++    "filter/deriv",
++    "filter/directionalBlur",
++    "filter/dither",
++    "filter/edge",
++    "filter/fibers",
++    "filter/flipMirror",
++    "filter/fxaa",
++    "filter/glowingEdge",
++    "filter/glyphMap",
++    "filter/grade",
++    "filter/grain",
++    "filter/grime",
++    "filter/highPass",
++    "filter/historicPalette",
++    "filter/hs",
++    "filter/invert",
++    "filter/lens",
++    "filter/lensFlare",
++    "filter/lensWarp",
++    "filter/lightLeak",
++    "filter/lighting",
++    "filter/median",
++    "filter/morphology",
++    "filter/mosaicTiles",
++    "filter/normalMap",
++    "filter/normalize",
++    "filter/octaveWarp",
++    "filter/osd",
++    "filter/outline",
++    "filter/palette",
++    "filter/parallax",
++    "filter/patchwork",
++    "filter/photocopy",
++    "filter/pinch",
++    "filter/pixelSort",
++    "filter/pixels",
++    "filter/plasticWrap",
++    "filter/polar",
++    "filter/posterize",
++    "filter/prismaticAberration",
++    "filter/reindex",
++    "filter/relief",
++    "filter/repeat",
++    "filter/reverb",
++    "filter/ridge",
++    "filter/rotate",
++    "filter/scale",
++    "filter/scanlineError",
++    "filter/scratches",
++    "filter/scroll",
++    "filter/seamless",
++    "filter/sharpen",
++    "filter/simpleAberration",
++    "filter/sine",
++    "filter/skew",
++    "filter/smooth",
++    "filter/smoothstep",
++    "filter/sobel",
++    "filter/spatter",
++    "filter/spinBlur",
++    "filter/spiral",
++    "filter/spookyTicker",
++    "filter/stamp",
++    "filter/step",
++    "filter/strayHair",
++    "filter/tetraColorArray",
++    "filter/tetraCosine",
++    "filter/threshold",
++    "filter/tile",
++    "filter/tint",
++    "filter/translate",
++    "filter/tunnel",
++    "filter/unsharpMask",
++    "filter/vaseline",
++    "filter/vignette",
++    "filter/warp",
++    "filter/watercolor",
++    "filter/waves",
++    "filter/wind",
++    "filter/wobble",
++    "filter/wormhole",
++    "filter/zoomBlur",
++    "mixer/alphaMask",
++    "mixer/applyMode",
++    "mixer/blendMode",
++    "mixer/cellSplit",
++    "mixer/centerMask",
++    "mixer/channelCombine",
++    "mixer/distortion",
++    "mixer/focusBlur",
++    "mixer/mashup",
++    "mixer/patternMix",
++    "mixer/shadow",
++    "mixer/shapeMask",
++    "mixer/split",
++    "mixer/thresholdMix",
++    "mixer/uvRemap",
++    "synth/bitwise",
++    "synth/cell",
++    "synth/curl",
++    "synth/gabor",
++    "synth/mandelbrot",
++    "synth/modPattern",
++    "synth/newton",
++    "synth/osc2d",
++    "synth/polygon",
++    "synth/remap",
++    "synth/solid",
++    "synth/subdivide",
++    "synth/testPattern"
++  ]
++}
+diff --git a/tools/parity/sweep.py b/tools/parity/sweep.py
+index a9a7e54..81e8ad1 100644
+--- a/tools/parity/sweep.py
++++ b/tools/parity/sweep.py
+@@ -89,7 +89,7 @@ import subprocess
+ import sys
+ import time
+ import traceback
+-from dataclasses import dataclass, field
++from dataclasses import dataclass, field, replace
+ from pathlib import Path
+ from typing import Any
+ 
+@@ -1032,6 +1032,9 @@ def main() -> int:
+     parser.add_argument("--seed", type=int, default=20260916)
+     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4)))
+     parser.add_argument("--max-seconds-per-case", type=float, default=45.0)
++    parser.add_argument("--timeout-retry-factor", type=float, default=4.0,
++                        help="rerun every timed-out case alone, one at a time, with this multiple of "
++                             "--max-seconds-per-case before reporting it as a timeout (0 disables)")
+     parser.add_argument("--no-chains", action="store_true")
+     parser.add_argument("--force", action="store_true", help="ignore existing results and rerun everything")
+     parser.add_argument("--define-enum", action="store_true",
+@@ -1120,6 +1123,22 @@ def main() -> int:
+                         elapsed = time.monotonic() - started
+                         print(f"[sweep] {completed}/{len(pending)} done ({elapsed:.1f}s elapsed)", file=sys.stderr)
+ 
++        # A parallel sweep on a loaded machine can push an expensive case past its budget. Retry
++        # every timed-out case alone with a longer budget; only a case that times out again is
++        # reported as a timeout, so the gate still fails on a real hang.
++        if args.timeout_retry_factor > 0:
++            rows = load_existing(results_path)
++            retry = [j for j in jobs if rows.get(j.case_id, {}).get("classification") == "timeout"
++                     and not rows[j.case_id].get("timeout_retry")]
++            if retry:
++                print(f"[sweep] retrying {len(retry)} timed-out cases serially", file=sys.stderr)
++                _init_worker(replace(config, timeout=config.timeout * args.timeout_retry_factor))
++                for job in retry:
++                    result = run_job(vars(job))
++                    result["timeout_retry"] = True
++                    sink.write(json.dumps(result) + "\n")
++                    sink.flush()
++
+     all_rows = list(load_existing(results_path).values())
+     meta = {
+         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+diff --git a/tools/parity/verified_effects.py b/tools/parity/verified_effects.py
+new file mode 100644
+index 0000000..4ce9498
+--- /dev/null
++++ b/tools/parity/verified_effects.py
+@@ -0,0 +1,57 @@
++"""Derive export-kit/verified-effects.json from parity sweep results.
++
++An effect is verified only when every one of its single-effect sweep cases, in every sweep given,
++was byte-exact on RGBA8 and float32, or was refused by both the authority and this port. Any
++divergent, timed-out, or C++-only refused case disqualifies it, and so does having no byte-exact
++case at all. export-kit/generate-compat.mjs lists only verified effects.
++
++usage: python3 tools/parity/verified_effects.py --sweep <out-dir> [--sweep <out-dir> ...] [--check]
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[2]
++TARGET = ROOT / "export-kit/verified-effects.json"
++SCHEMA = "noisemaker-cpp.verified-effects.v1"
++ACCEPTED = {"byte_exact", "both_refused"}
++
++
++def verified(sweeps: list[Path]) -> dict:
++    classes: dict[str, set[str]] = {}
++    runs = []
++    for sweep in sweeps:
++        document = json.loads((sweep / "results.json").read_text(encoding="utf-8"))
++        rows = [json.loads(line) for line in (sweep / "results.jsonl").read_text(encoding="utf-8").splitlines() if line]
++        meta = document["meta"]
++        runs.append({"seed": meta["seed"], "variants": meta["variants"], "cases": len(rows)})
++        for row in rows:
++            if row["kind"] == "chain":
++                continue
++            classes.setdefault(row["effect_id"], set()).add(row["classification"])
++    effects = sorted(effect for effect, seen in classes.items() if seen <= ACCEPTED and "byte_exact" in seen)
++    return {"schema": SCHEMA, "sweeps": runs, "swept_effects": len(classes), "effects": effects}
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("--sweep", action="append", type=Path, required=True)
++    parser.add_argument("--check", action="store_true")
++    arguments = parser.parse_args(argv)
++    output = json.dumps(verified(arguments.sweep), indent=2) + "\n"
++    if arguments.check:
++        if TARGET.read_text(encoding="utf-8") != output:
++            print("verified_effects: export-kit/verified-effects.json does not match these sweeps", file=sys.stderr)
++            return 1
++    else:
++        TARGET.write_text(output, encoding="utf-8")
++    print(f"verified_effects: {len(json.loads(output)['effects'])} verified effects")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+-- 
+2.50.1 (Apple Git-155)
+

@@ -1,0 +1,373 @@
+From 3caa3b0d67860ac9e3ba063e6cad5c8aeb8b92c5 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 01:47:33 -0600
+Subject: [PATCH 25/29] test(oracles): fix the oracle test files' own stale
+ closure/factory/revision literals
+
+These twelve tests/test_*.py files each keep an independent copy of the
+same provenance data the resync (bbb48dc, 5d99466) just corrected --
+either as a hardcoded Python literal compared against the live oracle
+JSON, or as a Python string embedded in a generated C++20 smoke-test
+source that the test compiles with -fsyntax-only. Before this change every
+one of them still asserted the stale 22-file authority closure, and a
+few carried their own separately-stale value:
+
+  - test_mandelbrot_oracle.py / test_newton_oracle.py: the old canonical
+    factory name (canonicalFactory252 / canonicalFactory264) instead of
+    the renumbered 260 / 272.
+  - test_testpattern_oracle.py: the old testPattern-oracle-coherence.json
+    anchor hash, plus a second, separate `== 22` on the closure length.
+  - test_lightleak192_oracle.py: a mutation test that intentionally
+    corrupts the authority to add one dynamic-import file and asserts the
+    resulting rejection message names the pinned/observed cardinality --
+    updated from "expected 22, found 23" to "expected 23, found 24".
+  - test_fractal_oracle.py / test_dither_preparation.py: an even older
+    stale upstream_revision, "117a236679d1db3ab8f0e278230ece277b57564c"
+    (older than the a024dc3a corpus hash the rest of the campaign was
+    keyed on), plus -- for dither -- the pre-remap canonical-kernels.js
+    sha256 and byte count (1713290 -> 1747097, since canonical-kernels.js
+    grew when the authority added the remapFactory) and the pre-remap
+    23-entry inline closure fixture used by its own -Wall -Wextra -Werror
+    C++ smoke test.
+
+Also fixes a real, unrelated-to-any-of-the-above bug this run turned up:
+eight generator/materializer .sha256 sidecars (median, distortion,
+fractal, dither, texture x1, glitch x2, and
+generate_parallax_native_oracle_include.py) were left recording a stale
+digest after an editing pass that touched the target file after the
+sidecar had already been refreshed. Every *.sha256 sidecar in the tree was
+swept and reconciled against hashlib.sha256() of its target file's current
+bytes; the eight mismatches were corrected in place (fixed in bbb48dc's
+tree, since the affected files live under docs/port-engineering and
+tools/glslcpp already staged there) and the sweep re-run clean.
+
+No package's render_cases/mutation_ledger pixel data is touched by this
+commit -- every change here is a test file asserting the same provenance
+facts bbb48dc already established in the generators/materializers/.inc
+files, or a test file's independent copy of a closure/revision fixture
+brought back in sync with them.
+
+Verified: the 16 affected test modules (the twelve above, plus
+test_kaleido_oracle.py, test_median_preparation.py, test_texture_oracle.py,
+and test_top_level_oracle_unittest_bridge.py, all of which needed no text
+change but were re-run to confirm the sidecar fix alone cleared them) now
+pass 161 passed, 4 skipped, 0 failed under the CI-style authority env.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_distortion_oracle.py       | 10 +++----
+ tests/test_dither_preparation.py      | 43 ++++++++++++++-------------
+ tests/test_fractal_oracle.py          |  6 ++--
+ tests/test_historic_palette_oracle.py |  4 +--
+ tests/test_lightleak192_oracle.py     |  4 +--
+ tests/test_mandelbrot_oracle.py       |  4 +--
+ tests/test_moodscape_oracle.py        |  6 ++--
+ tests/test_newton_oracle.py           |  6 ++--
+ tests/test_noise_oracle.py            |  2 +-
+ tests/test_palette_oracle.py          |  2 +-
+ tests/test_testpattern_oracle.py      |  4 +--
+ 11 files changed, 46 insertions(+), 45 deletions(-)
+
+diff --git a/tests/test_distortion_oracle.py b/tests/test_distortion_oracle.py
+index f94462c..fe2336e 100644
+--- a/tests/test_distortion_oracle.py
++++ b/tests/test_distortion_oracle.py
+@@ -52,8 +52,8 @@ class DistortionOracleTests(unittest.TestCase):
+         self.assertEqual(6, len(document["render_cases"]))
+         self.assertEqual(3, len(document["mutation_ledger"]))
+         snapshot = document["provenance"]["cpu_snapshot"]
+-        self.assertEqual(22, snapshot["closure_cardinality"])
+-        self.assertEqual(22, len(snapshot["import_closure"]))
++        self.assertEqual(23, snapshot["closure_cardinality"])
++        self.assertEqual(23, len(snapshot["import_closure"]))
+         self.assertEqual(sorted(item["relative_path"] for item in snapshot["import_closure"]),
+                          [item["relative_path"] for item in snapshot["import_closure"]])
+         self.assertTrue(snapshot["realpath_containment_checked"])
+@@ -302,7 +302,7 @@ class DistortionOracleTests(unittest.TestCase):
+         self.assertIn("kRuntimeBindings", text)
+         self.assertIn("kMutations", text)
+         self.assertIn("kImportClosure", text)
+-        self.assertIn("kImportClosureCardinality = 22U", text)
++        self.assertIn("kImportClosureCardinality = 23U", text)
+         self.assertIn("kCase0Controls", text)
+ 
+     def test_include_compiles_as_cxx20(self):
+@@ -319,8 +319,8 @@ class DistortionOracleTests(unittest.TestCase):
+                 "  static_assert(distortion_oracle::kCase0Rgba8.size() == 8 * 6 * 4);\n"
+                 "  static_assert(distortion_oracle::kCase0Controls.intensity.bits == 0x42820000U);\n"
+                 "  static_assert(distortion_oracle::kRuntimeBindings.size() == 12);\n"
+-                "  static_assert(distortion_oracle::kImportClosureCardinality == 22);\n"
+-                "  static_assert(distortion_oracle::kImportClosure.size() == 22);\n"
++                "  static_assert(distortion_oracle::kImportClosureCardinality == 23);\n"
++                "  static_assert(distortion_oracle::kImportClosure.size() == 23);\n"
+                 "  static_assert(distortion_oracle::kMutations.size() == 3);\n"
+                 "  return distortion_oracle::kCases[0].width == 8U ? 0 : 1;\n"
+                 "}\n")
+diff --git a/tests/test_dither_preparation.py b/tests/test_dither_preparation.py
+index 95f1b13..cd7918b 100644
+--- a/tests/test_dither_preparation.py
++++ b/tests/test_dither_preparation.py
+@@ -436,12 +436,12 @@ class DitherPreparedFrontendTests(unittest.TestCase):
+         })
+         self.assertEqual("508-566", trace["source"]["block_span"])
+         self.assertEqual("500-506", trace["source"]["fetch_span"])
+-        self.assertEqual("117a236679d1db3ab8f0e278230ece277b57564c",
++        self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+                          document["provenance"]["upstream_revision"])
+         self.assertEqual("src/effects/generated/canonical-kernels.js",
+                          document["provenance"]["source"]["relative_path"])
+-        self.assertEqual(1713290, document["provenance"]["source"]["bytes"])
+-        self.assertEqual("66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
++        self.assertEqual(1747097, document["provenance"]["source"]["bytes"])
++        self.assertEqual("f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+                          document["provenance"]["source"]["sha256"])
+         self.assertEqual("canonicalFactory48", document["provenance"]["factory"]["name"])
+         self.assertEqual("canonicalFactory48", document["provenance"]["factory"]["public_factory_name"])
+@@ -461,7 +461,7 @@ class DitherPreparedFrontendTests(unittest.TestCase):
+                           "signed_zero_exact", "input_bits_exact", "public_direct_exact",
+                           "repeat_identity_exact"}, set(document["comparer_policy"]))
+         self.assertTrue(all(document["comparer_policy"].values()))
+-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
++        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+         self.assertEqual(64, len(document["provenance"]["cpu_snapshot"]["closure_sha256"]))
+         self.assertTrue(document["provenance"]["cpu_snapshot"]["immutable_snapshot"])
+         self.assertTrue(document["provenance"]["cpu_snapshot"]["live_checkout_rejected"])
+@@ -612,17 +612,17 @@ int main() {
+   static_assert(kMutations[2].results.size() == 2U && kMutations[2].results[0].case_name == "error-diffusion-input" && kMutations[2].results[0].mismatched_lanes == 25U && kMutations[2].results[0].mismatched_bytes == 22U && kMutations[2].results[1].case_name == "error-diffusion-input-tiled" && kMutations[2].results[1].mismatched_lanes == 13U && kMutations[2].results[1].mismatched_bytes == 13U);
+   static_assert(kSchema == "noisemaker-for-cpp.dither.pixel-parity.v1");
+   static_assert(kProgramKey == "filter/dither:dither");
+-  static_assert(kAuthorityNode == "v24.7.0");
+-  static_assert(kUpstreamRevision == "117a236679d1db3ab8f0e278230ece277b57564c");
++  static_assert(kAuthorityNode == "v26.0.0");
++  static_assert(kUpstreamRevision == "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+   static_assert(kSourceRelativePath == "src/effects/generated/canonical-kernels.js");
+-  static_assert(kSourceSha256 == "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
++  static_assert(kSourceSha256 == "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
+   static_assert(kFactoryName == "canonicalFactory48");
+   static_assert(kFactoryTextSha256 == "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820");
+   static_assert(kPublicFactoryName == "canonicalFactory48");
+   static_assert(kPublicFactoryIsCanonicalIdentity);
+   static_assert(kCorpusSourceRelativePath == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
+   static_assert(kCorpusSourceSha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
+-  static_assert(kClosureSha256 == "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5");
++  static_assert(kClosureSha256 == "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3");
+   static_assert(kImmutableSnapshot);
+   static_assert(kLiveCheckoutRejected);
+   static_assert(kRealpathContainmentChecked);
+@@ -690,7 +690,7 @@ int main() {
+   static_assert(kAuthorityBlocker.reproducible && kAuthorityBlocker.direct_throws && kAuthorityBlocker.public_throws);
+   static_assert(kComparerPolicy.f32_words_exact && kComparerPolicy.rgba8_bytes_exact && kComparerPolicy.dimensions_before_data && kComparerPolicy.signed_zero_exact && kComparerPolicy.input_bits_exact && kComparerPolicy.public_direct_exact && kComparerPolicy.repeat_identity_exact);
+   static_assert(kComparerSelfTests.good_equal && kComparerSelfTests.dimensions_mismatch && kComparerSelfTests.short_lane_count && kComparerSelfTests.rgba8_mismatch && kComparerSelfTests.signed_zero);
+-  static_assert(kCpuClosure.size() == 22U);
++  static_assert(kCpuClosure.size() == 23U);
+   static_assert(kCpuClosure[0].relative_path == "src/csl/glsl-kernel.js" && kCpuClosure[0].sha256 == "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa");
+   static_assert(kCpuClosure[1].relative_path == "src/csl/glsl-runtime.js" && kCpuClosure[1].sha256 == "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072");
+   static_assert(kCpuClosure[2].relative_path == "src/csl/runtime.js" && kCpuClosure[2].sha256 == "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee");
+@@ -698,21 +698,22 @@ int main() {
+   static_assert(kCpuClosure[4].relative_path == "src/effects/adapters/crt.js" && kCpuClosure[4].sha256 == "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc");
+   static_assert(kCpuClosure[5].relative_path == "src/effects/adapters/f32-color.js" && kCpuClosure[5].sha256 == "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046");
+   static_assert(kCpuClosure[6].relative_path == "src/effects/adapters/fractal.js" && kCpuClosure[6].sha256 == "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29");
+-  static_assert(kCpuClosure[7].relative_path == "src/effects/adapters/index.js" && kCpuClosure[7].sha256 == "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267");
++  static_assert(kCpuClosure[7].relative_path == "src/effects/adapters/index.js" && kCpuClosure[7].sha256 == "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e");
+   static_assert(kCpuClosure[8].relative_path == "src/effects/adapters/julia.js" && kCpuClosure[8].sha256 == "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5");
+   static_assert(kCpuClosure[9].relative_path == "src/effects/adapters/median.js" && kCpuClosure[9].sha256 == "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583");
+   static_assert(kCpuClosure[10].relative_path == "src/effects/adapters/palette.js" && kCpuClosure[10].sha256 == "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452");
+-  static_assert(kCpuClosure[11].relative_path == "src/effects/adapters/snow.js" && kCpuClosure[11].sha256 == "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366");
+-  static_assert(kCpuClosure[12].relative_path == "src/effects/catalog.js" && kCpuClosure[12].sha256 == "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4");
+-  static_assert(kCpuClosure[13].relative_path == "src/effects/definition.js" && kCpuClosure[13].sha256 == "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02");
+-  static_assert(kCpuClosure[14].relative_path == "src/effects/generated/canonical-adapter-data.js" && kCpuClosure[14].sha256 == "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab");
+-  static_assert(kCpuClosure[15].relative_path == "src/effects/generated/canonical-kernels.js" && kCpuClosure[15].sha256 == "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
+-  static_assert(kCpuClosure[16].relative_path == "src/effects/generated/kernels.js" && kCpuClosure[16].sha256 == "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01");
+-  static_assert(kCpuClosure[17].relative_path == "src/effects/generated/upstream-snapshot.js" && kCpuClosure[17].sha256 == "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090");
+-  static_assert(kCpuClosure[18].relative_path == "src/effects/registry.js" && kCpuClosure[18].sha256 == "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618");
+-  static_assert(kCpuClosure[19].relative_path == "src/runtime/pass-runner.js" && kCpuClosure[19].sha256 == "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa");
+-  static_assert(kCpuClosure[20].relative_path == "src/runtime/sampler.js" && kCpuClosure[20].sha256 == "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328");
+-  static_assert(kCpuClosure[21].relative_path == "src/runtime/surface.js" && kCpuClosure[21].sha256 == "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59");
++  static_assert(kCpuClosure[11].relative_path == "src/effects/adapters/remap.js" && kCpuClosure[11].sha256 == "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79");
++  static_assert(kCpuClosure[12].relative_path == "src/effects/adapters/snow.js" && kCpuClosure[12].sha256 == "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366");
++  static_assert(kCpuClosure[13].relative_path == "src/effects/catalog.js" && kCpuClosure[13].sha256 == "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4");
++  static_assert(kCpuClosure[14].relative_path == "src/effects/definition.js" && kCpuClosure[14].sha256 == "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02");
++  static_assert(kCpuClosure[15].relative_path == "src/effects/generated/canonical-adapter-data.js" && kCpuClosure[15].sha256 == "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab");
++  static_assert(kCpuClosure[16].relative_path == "src/effects/generated/canonical-kernels.js" && kCpuClosure[16].sha256 == "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
++  static_assert(kCpuClosure[17].relative_path == "src/effects/generated/kernels.js" && kCpuClosure[17].sha256 == "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01");
++  static_assert(kCpuClosure[18].relative_path == "src/effects/generated/upstream-snapshot.js" && kCpuClosure[18].sha256 == "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7");
++  static_assert(kCpuClosure[19].relative_path == "src/effects/registry.js" && kCpuClosure[19].sha256 == "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618");
++  static_assert(kCpuClosure[20].relative_path == "src/runtime/pass-runner.js" && kCpuClosure[20].sha256 == "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa");
++  static_assert(kCpuClosure[21].relative_path == "src/runtime/sampler.js" && kCpuClosure[21].sha256 == "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328");
++  static_assert(kCpuClosure[22].relative_path == "src/runtime/surface.js" && kCpuClosure[22].sha256 == "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59");
+   static_assert(kBaselineCaseCount == 9U);
+   static_assert(kAdversarialCaseCount == 3U);
+   return 0;
+diff --git a/tests/test_fractal_oracle.py b/tests/test_fractal_oracle.py
+index 8f4348d..d46e4cd 100644
+--- a/tests/test_fractal_oracle.py
++++ b/tests/test_fractal_oracle.py
+@@ -20,9 +20,9 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_fractal_native_oracle_include.py"
+ ORACLE = PACKAGE / "fractal-oracles.json"
+ REPORT = PACKAGE / "fractal-oracle-report.md"
+ INCLUDE = ROOT / "tests/oracles/fractal_expected.inc"
+-EXPECTED_UPSTREAM = "117a236679d1db3ab8f0e278230ece277b57564c"
++EXPECTED_UPSTREAM = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+ EXPECTED_AUTHORITY_PROVENANCE = "<external-authority-root>"
+-EXPECTED_CLOSURE_SHA256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5"
++EXPECTED_CLOSURE_SHA256 = "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3"
+ 
+ 
+ def f32_word(value: str) -> str:
+@@ -59,7 +59,7 @@ class FractalOracleTests(unittest.TestCase):
+         snapshot = doc["provenance"]["cpu_snapshot"]
+         self.assertEqual(EXPECTED_AUTHORITY_PROVENANCE, snapshot["root_realpath"])
+         self.assertEqual(EXPECTED_CLOSURE_SHA256, snapshot["import_closure_sha256"])
+-        self.assertEqual(22, len(snapshot["import_closure"]))
++        self.assertEqual(23, len(snapshot["import_closure"]))
+         self.assertEqual("julia:261:5-269:6", doc["claim_boundaries"]["first_blocker_span"])
+         cases = {case["name"]: case for case in doc["render_cases"]}
+         self.assertEqual(0, cases["julia-distance-mode1"]["bindings"]["type"])
+diff --git a/tests/test_historic_palette_oracle.py b/tests/test_historic_palette_oracle.py
+index 6c0f14c..300c1ba 100644
+--- a/tests/test_historic_palette_oracle.py
++++ b/tests/test_historic_palette_oracle.py
+@@ -42,8 +42,8 @@ class HistoricPaletteOracleTests(unittest.TestCase):
+         self.assertEqual(doc["program_key"], "filter/historicPalette:historicPalette")
+         self.assertEqual(doc["runtime_key"], doc["program_key"])
+         self.assertTrue(doc["factory"]["adapter_own_key"])
+-        self.assertEqual(doc["provenance"]["cpu_snapshot"]["closure_cardinality"], 22)
+-        self.assertEqual(len(doc["provenance"]["cpu_snapshot"]["import_closure"]), 22)
++        self.assertEqual(doc["provenance"]["cpu_snapshot"]["closure_cardinality"], 23)
++        self.assertEqual(len(doc["provenance"]["cpu_snapshot"]["import_closure"]), 23)
+         self.assertEqual(doc["runtime_binding_names"], ["tileOffset", "fullResolution", "inputTex", "paletteIndex", "smoothness", "rotation", "offset", "repeat", "alpha", "time"])
+         self.assertEqual(len(doc["render_cases"]), 21)
+         self.assertEqual(sorted({case["bindings"]["paletteIndex"] for case in doc["render_cases"]}), list(range(21)))
+diff --git a/tests/test_lightleak192_oracle.py b/tests/test_lightleak192_oracle.py
+index 4176348..4bd8bb1 100644
+--- a/tests/test_lightleak192_oracle.py
++++ b/tests/test_lightleak192_oracle.py
+@@ -60,7 +60,7 @@ class LightLeak192OracleTests(unittest.TestCase):
+         self.assertEqual("noisemaker-for-cpp.lightleak192.pixel-parity.v1",
+                          oracle["schema"])
+         self.assertEqual("filter/lightLeak:lightLeak", oracle["program_key"])
+-        self.assertEqual(22, len(oracle["provenance"]["import_closure"]))
++        self.assertEqual(23, len(oracle["provenance"]["import_closure"]))
+         self.assertEqual(11, len(oracle["render_cases"]))
+         self.assertEqual({
+             "schema", "source_function", "source_function_sha256",
+@@ -338,7 +338,7 @@ class LightLeak192OracleTests(unittest.TestCase):
+             dynamic.write_text(dynamic.read_text() + "\nvoid import('./literal-dynamic.js')\n")
+             traversed = self._node("--check", cpu_root=clone)
+             self.assertNotEqual(0, traversed.returncode)
+-            self.assertIn("CPU import closure mismatch: expected 22, found 23",
++            self.assertIn("CPU import closure mismatch: expected 23, found 24",
+                           traversed.stderr)
+             dynamic.write_text(dynamic.read_text() + "\nvoid import(runtimeSpecifier)\n")
+             rejected = self._node("--check", cpu_root=clone)
+diff --git a/tests/test_mandelbrot_oracle.py b/tests/test_mandelbrot_oracle.py
+index f60c440..3872ab6 100644
+--- a/tests/test_mandelbrot_oracle.py
++++ b/tests/test_mandelbrot_oracle.py
+@@ -43,9 +43,9 @@ def test_package_and_sidecars_are_exact_and_semantic() -> None:
+     doc = json.loads(ORACLE.read_text())
+     assert doc["schema"] == "noisemaker-for-cpp.mandelbrot.pixel-parity.v1"
+     assert doc["program_key"] == "synth/mandelbrot:mandelbrot"
+-    assert doc["factory"]["name"] == "canonicalFactory252"
++    assert doc["factory"]["name"] == "canonicalFactory260"
+     assert doc["provenance"]["cpu_snapshot"]["immutable_snapshot"] is True
+-    assert len(doc["provenance"]["cpu_snapshot"]["import_closure"]) == 22
++    assert len(doc["provenance"]["cpu_snapshot"]["import_closure"]) == 23
+     assert len(doc["render_cases"]) >= 6
+     assert len(doc["render_cases"]) == 7
+     assert doc["comparer_self_tests"] == {
+diff --git a/tests/test_moodscape_oracle.py b/tests/test_moodscape_oracle.py
+index 9891eb9..9d17134 100644
+--- a/tests/test_moodscape_oracle.py
++++ b/tests/test_moodscape_oracle.py
+@@ -75,8 +75,8 @@ class MoodscapeOracleTests(unittest.TestCase):
+                           "refractAmt": "float", "speed": "float", "hueRotation": "float",
+                           "hueRange": "float", "intensity": "float", "ridges": "bool"},
+                          document["source_uniform_abi"])
+-        self.assertEqual(22, document["authority"]["closure_cardinality"])
+-        self.assertEqual(22, len(document["authority"]["import_closure"]))
++        self.assertEqual(23, document["authority"]["closure_cardinality"])
++        self.assertEqual(23, len(document["authority"]["import_closure"]))
+         self.assertEqual(6, len(document["render_cases"]))
+         self.assertEqual(5, len(document["mutation_ledger"]))
+         self.assertEqual("canonicalFactory11", document["factory"]["name"])
+@@ -235,7 +235,7 @@ class MoodscapeOracleTests(unittest.TestCase):
+                 "int main() {\n"
+                 "  static_assert(noisemaker_moodscape_oracle::kCases.size() == 6);\n"
+                 "  static_assert(noisemaker_moodscape_oracle::kRuntimeBindings.size() == 15);\n"
+-                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 22);\n"
++                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 23);\n"
+                 "  static_assert(noisemaker_moodscape_oracle::kMutations.size() == 5);\n"
+                 "  return 0;\n}\n"
+             )
+diff --git a/tests/test_newton_oracle.py b/tests/test_newton_oracle.py
+index aaa959f..d225503 100644
+--- a/tests/test_newton_oracle.py
++++ b/tests/test_newton_oracle.py
+@@ -47,11 +47,11 @@ class NewtonOracleTests(unittest.TestCase):
+         document = json.loads(ORACLE.read_text())
+         self.assertEqual("noisemaker-for-cpp.newton.pixel-parity.v1", document["schema"])
+         self.assertEqual("synth/newton:newton", document["program_key"])
+-        self.assertEqual("canonicalFactory264", document["factory"]["name"])
++        self.assertEqual("canonicalFactory272", document["factory"]["name"])
+         self.assertTrue(document["factory"]["public_factory_is_canonical_identity"])
+         self.assertFalse(document["factory"]["adapter_own_key"])
+-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+-        self.assertEqual(22, document["provenance"]["cpu_snapshot"]["closure_cardinality"])
++        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
++        self.assertEqual(23, document["provenance"]["cpu_snapshot"]["closure_cardinality"])
+         self.assertTrue(document["provenance"]["cpu_snapshot"]["live_checkout_rejected"])
+         self.assertTrue(document["provenance"]["cpu_snapshot"]["realpath_containment_checked"])
+         self.assertNotRegex(ORACLE.read_text() + REPORT.read_text(),
+diff --git a/tests/test_noise_oracle.py b/tests/test_noise_oracle.py
+index b73109f..a3531d1 100644
+--- a/tests/test_noise_oracle.py
++++ b/tests/test_noise_oracle.py
+@@ -44,7 +44,7 @@ class NoiseOracleTests(unittest.TestCase):
+     r=run('node',str(GEN),'--self-test','--cpu-root',str(forged))
+     self.assertNotEqual(r.returncode,0); self.assertIn('nonliteral dynamic import',r.stderr); target.write_text(original)
+  def test_json_contains_no_absolute_strings(self):
+-  d=json.loads(ORACLE.read_text()); text=json.dumps(d); self.assertNotRegex(text,r'/(?:Users|private|tmp|home)/'); self.assertEqual(len(d['authority']['import_closure']),22); self.assertEqual(d['control_group']['public_direct_identity'],True); self.assertEqual(d['control_group']['canonical_own_key'],True); self.assertEqual(d['control_group']['adapter_own_key'],False); self.assertEqual(d['control_group']['input_lifetime']['stable_after_independent_render'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_data_objects'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_backing_buffers'],True); self.assertIn('owner_speed_control',d['claim_boundaries']); self.assertEqual(len(d['prepared_mechanisms']),4)
++  d=json.loads(ORACLE.read_text()); text=json.dumps(d); self.assertNotRegex(text,r'/(?:Users|private|tmp|home)/'); self.assertEqual(len(d['authority']['import_closure']),23); self.assertEqual(d['control_group']['public_direct_identity'],True); self.assertEqual(d['control_group']['canonical_own_key'],True); self.assertEqual(d['control_group']['adapter_own_key'],False); self.assertEqual(d['control_group']['input_lifetime']['stable_after_independent_render'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_data_objects'],True); self.assertEqual(d['control_group']['independent_output_storage']['distinct_backing_buffers'],True); self.assertIn('owner_speed_control',d['claim_boundaries']); self.assertEqual(len(d['prepared_mechanisms']),4)
+  def test_selector_matrix_covers_all_runtime_noise_branches(self):
+   d=json.loads(ORACLE.read_text()); cases=d['render_cases']; self.assertEqual(len(cases),19)
+   controls=[case['controls'] for case in cases]
+diff --git a/tests/test_palette_oracle.py b/tests/test_palette_oracle.py
+index f5d41d5..270c36d 100644
+--- a/tests/test_palette_oracle.py
++++ b/tests/test_palette_oracle.py
+@@ -40,7 +40,7 @@ class PaletteOracleTests(unittest.TestCase):
+         self.assertEqual("paletteFactory", document["factory"]["name"])
+         self.assertTrue(document["factory"]["adapter_own_key"])
+         self.assertTrue(document["factory"]["public_factory_is_direct_identity"])
+-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
++        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+         self.assertGreaterEqual(len(document["render_cases"]), 8)
+         self.assertGreaterEqual(len(document["mutation_ledger"]), 12)
+         self.assertTrue(all(document["comparer_self_tests"].values()))
+diff --git a/tests/test_testpattern_oracle.py b/tests/test_testpattern_oracle.py
+index 83f3236..70ed210 100644
+--- a/tests/test_testpattern_oracle.py
++++ b/tests/test_testpattern_oracle.py
+@@ -10,7 +10,7 @@ MATERIALIZER = ROOT / 'tools/glslcpp/generate_testpattern_native_oracle_include.
+ ORACLE = PACKAGE / 'testPattern-oracles.json'
+ INCLUDE = ROOT / 'tests/oracles/testPattern_expected.inc'
+ COHERENCE = PACKAGE / 'testPattern-oracle-coherence.json'
+-EXPECTED_COHERENCE_SHA256 = 'cf188502dcdab8b4bee35fb18cb77dd2c54837ae22365d95abba58b9c4a51792'
++EXPECTED_COHERENCE_SHA256 = '4cb351964732fd9a95f223884f5e99b5e3d5b8decca1cd9998cba0f40900b1ff'
+ 
+ def run_generator(*args, env=None):
+     return subprocess.run(['node', str(GENERATOR), *args], cwd=ROOT, env=env or os.environ.copy(), text=True, capture_output=True)
+@@ -60,7 +60,7 @@ def test_package_files_and_contract():
+     assert doc['program_key']=='synth/testPattern:testPattern'
+     assert doc['input_contract']=={'kind':'source-only','runtime_input_path':'none','lifetime_claimed':False,'immutability_claimed':False,'reason':'Test Pattern has no sampler or input texture path'}
+     assert all('input' not in c and 'input_lifetime_stable' not in c and 'input_immutable_exact_bits' not in c for c in doc['render_cases'])
+-    assert len(doc['authority']['import_closure'])==22
++    assert len(doc['authority']['import_closure'])==23
+     assert len(doc['render_cases'])==9
+     assert {c['pattern'] for c in doc['render_cases']} == set(range(7))
+     assert len(doc['behavioral_mutation_ledger'])==9
+-- 
+2.50.1 (Apple Git-155)
+

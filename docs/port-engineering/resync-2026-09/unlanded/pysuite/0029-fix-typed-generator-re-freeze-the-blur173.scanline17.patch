@@ -1,0 +1,135 @@
+From 87e652d472a27167c5462d78f48b8f91326bd0f9 Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 05:06:23 -0600
+Subject: [PATCH 29/29] fix(typed-generator): re-freeze the
+ blur173..scanline177 milestone chain
+
+Same class as every other milestone-chain fix this session: the 0ed489ec
+corpus bump's unexcluded programs (filter/adjust, filter/chrome:chMap,
+filter/grade:primary/vignette, filter/invert:inv, filter/text:text,
+filter/tint:colorize, mixer/alphaMask, mixer/blendMode,
+synth/media:mediaInput -- 8 of the 10 non-grade ones ride in here
+unexcluded; grade:primary/vignette are excluded by this chain's own set)
+ride into every one of these four adjacent reconstructions, and the
+post-integ4-merge MRT/julia/texture-driver emitter changes move them
+again on top of that.
+
+Important correction caught by cross-checking rather than trusted by
+label: this chain's "scanline177" is NOT the same program-set
+composition as test_glyph_map_nonnegative_int_shift.py's/
+test_emboss_color_style.py's "scanline177"/"glyph178" milestones despite
+the identical name -- this chain's own exclusion set additionally
+excludes filter/grime:grime and 8 more early-landing programs that the
+edge/glyph-map/emboss chain does not, so it lands on a different actual
+196-... program composition at the same nominal count. Recomputing this
+chain's own four states directly (via each test's own literal exclusion
+set, never reusing a same-named state from a different test file) is
+what caught this before it became a wrong re-freeze; a first attempt
+reusing the wrong "scanline177" value produced completely different
+hashes, exposing the mismatch immediately.
+
+Re-pinned all four tests' current+prior artifact hashes (typed_slice.cpp
++ typed_manifest.json; catalog.hpp was already correct throughout,
+confirmed unchanged). All four pass together (Ran 4 tests ... OK).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_typed_generator.py | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/tests/test_typed_generator.py b/tests/test_typed_generator.py
+index 65eac53..2c38a15 100644
+--- a/tests/test_typed_generator.py
++++ b/tests/test_typed_generator.py
+@@ -8119,17 +8119,17 @@ and item["program_key"] != "filter/wobble:wobble"
+         # internally consistent. cpp/catalog digests were unaffected.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "cd3beb3b74768dfc0590938779187bb0c8c2fd0c1611b18f91ab4c49d5481e62",
++                "453b6a2caaa8dc33d0e066a18b57ea202df8e1d1e6ef2b9d38551067b31e167f",
+             "src/typed_generated/typed_manifest.json":
+-                "0cd003346b6b1c9f5dfe5adc10c5a02664136ce3fc51fe27e044c5a5dc457120",
++                "7466993f1fe0601eeadff4b5362ee171a6c56ed2f5efd753bfdc7de6726161d6",
+             "include/noisemaker/generated/catalog.hpp":
+                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "22262a4776423214e8671dfae1dc60f51e4e71a58358b963399361eb63817810",
++                "91995ffc50313e74c476fb24d870bab3cc6e1376c0c4828f52da1ca6fe1b46cc",
+             "src/typed_generated/typed_manifest.json":
+-                "4a6173b4d4591601429b0fef46bd835be6dcbea08d57e3e15814c95f2be38185",
++                "426a1a365273d123f3b65892218664ce3c322c864892bb1989167a38bdd34bc4",
+             "include/noisemaker/generated/catalog.hpp":
+                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
+         }
+@@ -8253,17 +8253,17 @@ and item["program_key"] != "filter/wobble:wobble"
+         # internally consistent. cpp/catalog digests were unaffected.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "d666cae2eec533668b81717023ece4b774731b3b373670243872e90d18906fae",
++                "a8c5b902c15297ed27bb7d8a0e569f17a58bc25b2ed46ad42d64e93679159173",
+             "src/typed_generated/typed_manifest.json":
+-                "8736814b93dd3fc3ddffd1d5457af86e6ddf3fd778be556698589a7853104c70",
++                "f14b78e66149ab8612d3610e6504f63a108749aa5efd84de5897a14d182f2961",
+             "include/noisemaker/generated/catalog.hpp":
+                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "cd3beb3b74768dfc0590938779187bb0c8c2fd0c1611b18f91ab4c49d5481e62",
++                "453b6a2caaa8dc33d0e066a18b57ea202df8e1d1e6ef2b9d38551067b31e167f",
+             "src/typed_generated/typed_manifest.json":
+-                "0cd003346b6b1c9f5dfe5adc10c5a02664136ce3fc51fe27e044c5a5dc457120",
++                "7466993f1fe0601eeadff4b5362ee171a6c56ed2f5efd753bfdc7de6726161d6",
+             "include/noisemaker/generated/catalog.hpp":
+                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
+         }
+@@ -8388,17 +8388,17 @@ and item["program_key"] != "filter/wobble:wobble"
+         # internally consistent. cpp/catalog digests were unaffected.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "61d14a8932d9dfb2f749aa31024aa028ae3c073c3a377dc6c9e28505c1a5e2cc",
++                "13e8cfbe93ac11c65f259f80c579549d3aa5c0f1a618ebe95827736997a4403a",
+             "src/typed_generated/typed_manifest.json":
+-                "f0b7e0725c3001675b09d5e2eae6db8338add7d8b695d10ffdaad316919fe035",
++                "d373b04bb13a99150d3e7ac27e8c9194f279408627b0acffbf20bc0417d8f5e0",
+             "include/noisemaker/generated/catalog.hpp":
+                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "d666cae2eec533668b81717023ece4b774731b3b373670243872e90d18906fae",
++                "a8c5b902c15297ed27bb7d8a0e569f17a58bc25b2ed46ad42d64e93679159173",
+             "src/typed_generated/typed_manifest.json":
+-                "8736814b93dd3fc3ddffd1d5457af86e6ddf3fd778be556698589a7853104c70",
++                "f14b78e66149ab8612d3610e6504f63a108749aa5efd84de5897a14d182f2961",
+             "include/noisemaker/generated/catalog.hpp":
+                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
+         }
+@@ -8521,17 +8521,17 @@ and item["program_key"] != "filter/wobble:wobble"
+         # internally consistent. cpp/catalog digests were unaffected.
+         expected_current = {
+             "src/typed_generated/typed_slice.cpp":
+-                "8824804b73a5acbd0a969cba55d7ecb33ce09f836f9438a0727b762090d32ccf",
++                "3ef1e67967b557853580d83e33b5e50427bb6e2043f0db3dd7692168965d7e76",
+             "src/typed_generated/typed_manifest.json":
+-                "8a66c515c9cf0e8b98049da8c018888ddde9a0753db9b97e0c967edec21140fb",
++                "61142cc831aa479e8da13eed0b78a30a6d95c7098bfe2a9f63acecdb6b90de6b",
+             "include/noisemaker/generated/catalog.hpp":
+                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
+         }
+         expected_prior = {
+             "src/typed_generated/typed_slice.cpp":
+-                "61d14a8932d9dfb2f749aa31024aa028ae3c073c3a377dc6c9e28505c1a5e2cc",
++                "13e8cfbe93ac11c65f259f80c579549d3aa5c0f1a618ebe95827736997a4403a",
+             "src/typed_generated/typed_manifest.json":
+-                "f0b7e0725c3001675b09d5e2eae6db8338add7d8b695d10ffdaad316919fe035",
++                "d373b04bb13a99150d3e7ac27e8c9194f279408627b0acffbf20bc0417d8f5e0",
+             "include/noisemaker/generated/catalog.hpp":
+                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
+         }
+-- 
+2.50.1 (Apple Git-155)
+

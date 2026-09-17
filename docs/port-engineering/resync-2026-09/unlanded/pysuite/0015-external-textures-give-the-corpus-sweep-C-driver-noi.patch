@@ -1,0 +1,758 @@
+From a606921bd2af2d3717b89cbf507a0d2d857d12fe Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Wed, 16 Sep 2026 23:38:43 -0600
+Subject: [PATCH 15/29] external textures: give the corpus/sweep C++ driver
+ noisemaker-render's capability
+
+Task 1 of 3. filter/text and synth/media refused in every sweep case on the
+C++ side ("input resource is not produced") because noisemaker-dsl-cpu-case
+had no way to supply an externalTexture-declared effect's bound input --
+noisemaker-render already gained --input/--texture (an earlier, unrelated
+landing), but the corpus driver never did.
+
+tools/benchmark/run_cpp_case.cpp: new --external-texture NAME=WxH:HEX flag
+(repeatable), decoding hex bytes via Surface::from_rgba8 and populating
+ExecutionInputs::external_textures -- the same executor field
+noisemaker-render already uses, so this is wiring, not new engine capability.
+Deliberately NOT a PNG-file flag like noisemaker-render's --texture: this
+driver's inputs are always synthesized in-process by sweep.py/corpus_lane.py,
+so inline hex avoids a needless PNG round trip through a scratch file per
+case, and reuses the exact {name,width,height,rgba8} shape
+run_cpu_case.mjs's record.externalTextures already decodes via
+api.Surface.fromRgba8 -- one JSON field, one hex string, no second encoding
+anywhere in the path.
+
+tools/benchmark/corpus_lane.py: record_flags() now emits one
+--external-texture flag per record.externalTextures entry. Since neither of
+the two static executable-corpus.json records for filter/text/synth/media
+carries that field, this is a no-op for tests/test_dsl_corpus_parity.py --
+confirmed by rerunning it (still OK, same authorityRefused pair). It only
+activates for tools/parity/sweep.py, which already builds
+record["externalTextures"] for the JS lane; both lanes now render from the
+exact same bytes.
+
+Verification -- proof of the capability alone (before the divergence found
+and fixed below): tools/parity/sweep.py --effects filter/text,synth/media
+--variants 20 went from cpp_refused_only on every case to a real render on
+both lanes.
+
+Divergence found and fixed once both lanes could finally render synth/media
+for real (never possible before this task, since the C++ side always
+refused): 3 of 20 variants' float32 surface diverged from the authority by
+exactly one half-float ULP (2^-12) at a couple of pixels, RGBA8 still
+byte-exact. Root cause, traced to source: renderer.js's
+createCanonicalBindings() spreads `...uniforms` (buildBindings()'s raw,
+unrounded params[name]) for every ordinary effect-parameter uniform and only
+explicitly Math.fround()'s a few reserved names (time/seed/deltaTime/aspect/
+aspectRatio/renderScale) -- confirmed by grep, zero Math.fround calls
+anywhere in mediaInput's emitted kernel body. `imageSize` (a vec2 DSL
+parameter) is therefore carried by the authority as a full, un-rounded JS
+double all the way into getImage()/rotate2D()'s arithmetic; the typed
+emitter bound it as `glsl::Vec2` (float lanes), narrowing one step earlier
+than the authority ever does. Exactly the same bug class this port already
+has a precedent and mechanism for -- classicNoisedeck's palette uniforms
+carried as `glsl::DVec3` instead of `glsl::Vec3` (see
+_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS) -- generalized one vec width
+down for one uniform on one program outside classicNoisedeck:
+
+- include/noisemaker/glsl_types.hpp: `using DVec2 = Vec<2, double>;`
+  (Vec<N,T> is already generic; DVec3/DVec4 existed, DVec2 didn't).
+- include/noisemaker/glsl_runtime.hpp: DVec2 added to the UniformValue
+  variant.
+- src/graph/executor.cpp: vector_width/validate_uniform_abi_shape/
+  materialize_plan_value all learn "glsl::DVec2" alongside the existing
+  DVec3/DVec4 cases -- the same generic, ABI-driven uniform materialization
+  path classicNoisedeck's carrier already flows through, no new special
+  case needed there.
+- tools/glslcpp/emit_typed_cpp.py: new, narrowly-scoped
+  _DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = {("synth/media:mediaInput",
+  "imageSize")} plus _double_precision_vec2_uniform_type (mirrors
+  _classic_noisedeck_double_uniform_type exactly). Getting the local alias
+  (`vec2 size = imageSize;`, read in getImage/rotate2D) to actually carry
+  double precision needed two more pieces neither exists for the
+  classicNoisedeck carrier (which never mixes its double vectors with an
+  ordinary float vector in one expression): the local declaration itself
+  needs the same DVec2 override
+  (_double_precision_vec2_alias_declaration), and every binary op or
+  compound assignment that mixes a `size`-derived (or, transitively, `size`-
+  arithmetic-derived) subtree against an ordinary Vec2 operand needs the
+  ordinary operand promoted to `glsl::DVec2(...)` explicitly in the emitted
+  text, since GLSL itself has no implicit vec-vec precision conversion and
+  neither does this port's operator set
+  (_references_double_precision_vec2_alias walks the subtree;
+  double_precision_vec2_alias_symbol_ids records which locals got the
+  override so a later expression node can recognize a reference to one).
+- tools/dsl/generate_backend_compatibility.py: the identical, independently
+  duplicated carrier list and cpp_type override, kept in sync with
+  emit_typed_cpp.py by construction (matching how the classicNoisedeck list
+  is already duplicated there for the same reason).
+- Regenerated in dependency order (typed_slice -> backend_compatibility
+  fixed point -> compat sha re-pinned into 4 consumers -> effect_catalog ->
+  registry/test_effect_catalog re-pinned -> executable-corpus ->
+  compiler-oracle stream -> export-kit compat list): every diff outside
+  hash-cascade churn is confined to the one (program, uniform) pair, cross-
+  checked by grep after each step. compat-effects.json stays at 167 (no
+  admission changed). tests/test_typed_slice.cpp's own hand-written
+  imageSize fixture updated from glsl::Vec2 to glsl::DVec2 to match (one
+  line; the OTHER task11 fixture binding imageStill float32-scalar `1.0f`
+  to imageSize to prove fail-closed-on-wrong-type is unaffected, since a
+  scalar is still the wrong type against either vector width).
+
+Verification:
+- tools/parity/sweep.py --effects filter/text,synth/media --variants 20
+  (--no-chains) and again --variants 60 (chains included): 40/40 then
+  120/120 byte_exact, 0 divergent, both RGBA8 and float32.
+- Regression: swept all 167 now-admitted effects (1002 cases, --seed
+  20260916, --variants 6) and diffed case-by-case against this same lane's
+  pre-existing 166-effect/996-case baseline (from the prior scatter-dispatch
+  commit): 0 cases regressed (byte_exact -> anything worse). 37 cases
+  improved -- 5 are filter/text now rendering instead of refusing (this
+  task); the rest are pre-existing effects whose divergence had already
+  been fixed by the lanes/integ4 merge's scalar-uniform narrowing fix,
+  newly visible here because this is the first full regression sweep run
+  since that merge. Two pre-existing, unrelated float32-only divergences
+  remain (synth/gradient, synth/mandala) -- confirmed present in the
+  original base-commit (9edf5fb) baseline too, same bug class (an ordinary
+  vec2/vec3 uniform likely needing the same double-carrier treatment) but
+  out of this task's scope.
+- python3 -B -m unittest tests.test_dsl_corpus_parity: OK, unchanged
+  (167 records, same authorityRefused pair -- the static corpus fixture
+  carries no externalTextures for either effect, so this test's own
+  behavior is untouched by this change, only the sweep's).
+- noisemaker-cpu-tests: 586 pass / 1 pre-existing unrelated failure
+  (typed_classic_noise_oracle_metadata_is_complete_and_load_bearing, noted
+  in prior commits).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ include/noisemaker/glsl_runtime.hpp         |   2 +-
+ include/noisemaker/glsl_types.hpp           |   2 +-
+ src/graph/executor.cpp                      |  18 ++-
+ tests/test_typed_slice.cpp                  |   2 +-
+ tools/benchmark/corpus_lane.py              |  17 +-
+ tools/benchmark/run_cpp_case.cpp            | 103 ++++++++++++-
+ tools/dsl/generate_backend_compatibility.py |  12 ++
+ tools/glslcpp/emit_typed_cpp.py             | 163 +++++++++++++++++++-
+ tools/parity/sweep.py                       |  52 +++----
+ 9 files changed, 331 insertions(+), 40 deletions(-)
+
+diff --git a/include/noisemaker/glsl_runtime.hpp b/include/noisemaker/glsl_runtime.hpp
+index 0b68b31..a08978b 100644
+--- a/include/noisemaker/glsl_runtime.hpp
++++ b/include/noisemaker/glsl_runtime.hpp
+@@ -283,7 +283,7 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edg
+ struct RemapUniformData {
+   std::array<Vec4, 275> data{};
+ };
+-using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
++using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
+ class KernelBindingError : public std::runtime_error { public: using std::runtime_error::runtime_error; };
+ class Bindings {
+  public:
+diff --git a/include/noisemaker/glsl_types.hpp b/include/noisemaker/glsl_types.hpp
+index e1d1371..7f79dce 100644
+--- a/include/noisemaker/glsl_types.hpp
++++ b/include/noisemaker/glsl_types.hpp
+@@ -444,6 +444,6 @@ using BVec2=Vec<2,bool>; using BVec3=Vec<3,bool>; using BVec4=Vec<4,bool>;
+ // authority for any component that is not already float32-exact (most
+ // authored decimals are not). These reuse the existing generic Vec<N,T>
+ // template at T=double; no new class, no change to any existing alternative.
+-using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
++using DVec2=Vec<2,double>; using DVec3=Vec<3,double>; using DVec4=Vec<4,double>;
+ using Mat2=Mat<2>; using Mat3=Mat<3>; using Mat4=Mat<4>;
+ }  // namespace noisemaker::glsl
+diff --git a/src/graph/executor.cpp b/src/graph/executor.cpp
+index f3170ec..9438f39 100644
+--- a/src/graph/executor.cpp
++++ b/src/graph/executor.cpp
+@@ -1299,7 +1299,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
+ }
+ 
+ [[nodiscard]] std::size_t vector_width(std::string_view cpp_type) noexcept {
+-  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2") return 2U;
++  if (cpp_type == "glsl::Vec2" || cpp_type == "glsl::IVec2" || cpp_type == "glsl::DVec2") return 2U;
+   if (cpp_type == "glsl::Vec3" || cpp_type == "glsl::IVec3" || cpp_type == "glsl::DVec3") return 3U;
+   if (cpp_type == "glsl::Vec4" || cpp_type == "glsl::IVec4" || cpp_type == "glsl::DVec4") return 4U;
+   return 0U;
+@@ -1315,8 +1315,16 @@ void validate_uniform_abi_shape(const EffectStep& step,
+   // paletteAmp/paletteFreq/paletteOffset/palettePhase on exactly five
+   // programs declares this cpp_type instead of the ordinary "glsl::Vec3",
+   // and only because their generated kernel actually reads a
+-  // `glsl::DVec3`-typed uniform there.
+-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 12>
++  // `glsl::DVec3`-typed uniform there. "vec2"->"glsl::DVec2" is the same
++  // carrier shape for exactly one uniform on one program --
++  // `synth/media:mediaInput`'s `imageSize` (tools/glslcpp/emit_typed_cpp.py's
++  // `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`): the authority's
++  // createCanonicalBindings() spreads `...uniforms` for an ordinary
++  // effect-parameter vec2 with no Math.fround anywhere on the path, so a
++  // `glsl::Vec2` (float lanes) ABI narrows it to float32 at bind time, one
++  // rounding earlier than the authority ever does -- measurably not
++  // byte-exact (rare, boundary-triggered) against it.
++  static constexpr std::array<std::pair<std::string_view, std::string_view>, 13>
+       kTypes = {{{"float", "float"},
+                  // A GLSL-declared scalar `float` uniform whose value the JS
+                  // CPU authority never rounds to float32 (an ordinary DSL
+@@ -1335,6 +1343,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
+                  {"uint", "std::uint32_t"},
+                  {"bool", "bool"},
+                  {"vec2", "glsl::Vec2"},
++                 {"vec2", "glsl::DVec2"},
+                  {"vec3", "glsl::Vec3"},
+                  {"vec3", "glsl::DVec3"},
+                  {"vec4", "glsl::Vec4"},
+@@ -1491,12 +1500,13 @@ void validate_uniform_abi_shape(const EffectStep& step,
+     // authority's semantic $bindings are plain, unrounded JS doubles; a
+     // float32 lane here would silently reintroduce exactly the divergence
+     // that ruled out typed generation for this program (see remap.cpp).
+-    if (cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
++    if (cpp_type == "glsl::DVec2" || cpp_type == "glsl::DVec3" || cpp_type == "glsl::DVec4") {
+       std::array<double, 4> d{};
+       for (std::size_t index = 0; index < width; ++index) {
+         if (!is_finite_plan_number(value.array[index])) return fail("vector has an invalid lane");
+         d[index] = value.array[index].number;
+       }
++      if (cpp_type == "glsl::DVec2") return glsl::DVec2(d[0], d[1]);
+       if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
+       return glsl::DVec4(d[0], d[1], d[2], d[3]);
+     }
+diff --git a/tests/test_typed_slice.cpp b/tests/test_typed_slice.cpp
+index d15b5aa..cea8b05 100644
+--- a/tests/test_typed_slice.cpp
++++ b/tests/test_typed_slice.cpp
+@@ -725,7 +725,7 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
+     else { uniform("shape", std::int32_t{2}); uniform("blendMode", std::int32_t{task11_suffix(fixture.variant, "blend")}); }
+   } else if (fixture.key == "synth/media:mediaInput") {
+     texture("imageTex", fixture.variant == "transparent" ? transparent : media);
+-    uniform("imageSize", noisemaker::glsl::Vec2(17.0f, 13.0f)); uniform("position", std::int32_t{0});
++    uniform("imageSize", noisemaker::glsl::DVec2(17.0, 13.0)); uniform("position", std::int32_t{0});
+     uniform("rotation", 0.0f); uniform("scaleAmt", 100.0f); uniform("offsetX", 0.0f);
+     uniform("offsetY", 0.0f); uniform("tiling", std::int32_t{0}); uniform("flip", std::int32_t{0});
+     uniform("bgColor", noisemaker::glsl::Vec3(0.12f, 0.34f, 0.56f)); uniform("bgAlpha", 0.71f);
+diff --git a/tools/benchmark/corpus_lane.py b/tools/benchmark/corpus_lane.py
+index 46f11b8..abc84b9 100644
+--- a/tools/benchmark/corpus_lane.py
++++ b/tools/benchmark/corpus_lane.py
+@@ -117,15 +117,30 @@ def record_flags(record: dict, source_path: os.PathLike[str] | str) -> list[str]
+     ``repr`` is the float spelling the parity lane has always used for
+     ``time`` and ``seed``; it must stay exactly that so the JS runner and both
+     C++ drivers receive identical decimal text for the same record.
++
++    ``record["externalTextures"]`` (an ``externalTexture``-declared effect's
++    bound input -- ``filter/text``'s ``textTex``, ``synth/media``'s
++    ``imageTex``) becomes one ``--external-texture NAME=WxH:HEX`` flag per
++    entry, the exact same ``{name, width, height, rgba8}`` shape
++    ``run_cpu_case.mjs`` decodes via ``api.Surface.fromRgba8`` -- so a caller
++    that sets this field on a record (``tools/parity/sweep.py``) feeds
++    byte-identical bytes to both lanes from one source of truth, never a
++    second, driftable copy. Absent (the common case, and the only case
++    ``tests/fixtures/dsl/executable-corpus.json``'s static records ever
++    carry), this emits nothing and both drivers behave exactly as before.
+     """
+     options = record["options"]
+-    return [
++    flags = [
+         "--source-file", str(source_path),
+         "--source-sha256", record["sourceSha256"],
+         "--width", str(options["width"]), "--height", str(options["height"]),
+         "--time", repr(options["time"]), "--frame", str(options["frame"]),
+         "--seed", repr(options["seed"]),
+     ]
++    for texture in record.get("externalTextures") or []:
++        flags += ["--external-texture",
++                  f"{texture['name']}={texture['width']}x{texture['height']}:{texture['rgba8']}"]
++    return flags
+ 
+ 
+ def _canonical_field(name: str, values: Iterable[str]) -> str:
+diff --git a/tools/benchmark/run_cpp_case.cpp b/tools/benchmark/run_cpp_case.cpp
+index 08824e0..880e7c9 100644
+--- a/tools/benchmark/run_cpp_case.cpp
++++ b/tools/benchmark/run_cpp_case.cpp
+@@ -15,7 +15,9 @@
+ #include "noisemaker/graph/execution_plan.hpp"
+ #include "noisemaker/graph/executor.hpp"
+ #include "noisemaker/renderer.hpp"
++#include "noisemaker/surface.hpp"
+ 
++#include <cstdint>
+ #include <cstdio>
+ #include <cstdlib>
+ #include <cstring>
+@@ -38,7 +40,8 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
+                " --width N --height N --time D --frame N --seed D"
+                " --rgba8-output ABS --metadata-output ABS"
+                " [--record-id STRING] [--repo-root ABS]"
+-               " [--plan-relation-output ABS] [--float32-output ABS]\n";
++               " [--plan-relation-output ABS] [--float32-output ABS]"
++               " [--external-texture NAME=WxH:HEX ...]\n";
+   std::exit(nb::kExitUsage);
+ }
+ 
+@@ -58,6 +61,20 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
+   return {};
+ }
+ 
++// Every occurrence of a repeatable flag, in argument order -- unlike
++// `argument()` above, which returns only the first. `--external-texture` is
++// the one repeatable flag this driver accepts, mirroring how `record_flags`
++// (tools/benchmark/corpus_lane.py) emits one `--external-texture` per entry
++// in a corpus record's `externalTextures` list.
++[[nodiscard]] std::vector<std::string> arguments_all(
++    const std::vector<std::string>& args, std::string_view name) {
++  std::vector<std::string> values;
++  for (std::size_t index = 0; index + 1 < args.size(); ++index) {
++    if (args[index] == name) values.push_back(args[index + 1]);
++  }
++  return values;
++}
++
+ [[nodiscard]] double number(const std::string& text, std::string_view name) {
+   try {
+     std::size_t consumed = 0;
+@@ -69,6 +86,89 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
+   }
+ }
+ 
++[[nodiscard]] std::size_t positive_integer(const std::string& text, std::string_view name) {
++  const double value = number(text, name);
++  if (value <= 0.0 || value != static_cast<double>(static_cast<std::size_t>(value))) {
++    usage(std::string(name) + " must be a positive integer");
++  }
++  return static_cast<std::size_t>(value);
++}
++
++[[nodiscard]] std::uint8_t hex_nibble(char digit, std::string_view spec) {
++  if (digit >= '0' && digit <= '9') return static_cast<std::uint8_t>(digit - '0');
++  if (digit >= 'a' && digit <= 'f') return static_cast<std::uint8_t>(digit - 'a' + 10);
++  if (digit >= 'A' && digit <= 'F') return static_cast<std::uint8_t>(digit - 'A' + 10);
++  usage("--external-texture " + std::string(spec) + " has non-hex byte data");
++}
++
++[[nodiscard]] std::vector<std::uint8_t> decode_hex_bytes(std::string_view hex,
++                                                          std::string_view spec) {
++  if (hex.size() % 2 != 0) {
++    usage("--external-texture " + std::string(spec) + " has an odd number of hex digits");
++  }
++  std::vector<std::uint8_t> bytes;
++  bytes.reserve(hex.size() / 2);
++  for (std::size_t index = 0; index < hex.size(); index += 2) {
++    const auto high = hex_nibble(hex[index], spec);
++    const auto low = hex_nibble(hex[index + 1], spec);
++    bytes.push_back(static_cast<std::uint8_t>((high << 4) | low));
++  }
++  return bytes;
++}
++
++// Parses one `--external-texture` value: `NAME=WIDTHxHEIGHT:HEXBYTES`, the
++// same `{name, width, height, rgba8}` shape a corpus record's
++// `externalTextures` entry carries (and the identical construction
++// `run_cpu_case.mjs` performs: `api.Surface.fromRgba8(width, height, bytes)`
++// off the record's own hex string) -- so `record_flags` can pass the exact
++// same bytes to both lanes without either side decoding a PNG. Unlike
++// `noisemaker-render`'s `--texture NAME=FILE` (a real file path, the right
++// shape for a human at a terminal), this driver's inputs are always
++// synthesized in-process by `tools/parity/sweep.py`/`corpus_lane.py`, so hex
++// bytes inline in argv avoid a needless PNG round trip through a scratch
++// file for every case.
++[[nodiscard]] noisemaker::graph::NamedSurface parse_external_texture(
++    const std::string& spec) {
++  const auto name_end = spec.find('=');
++  if (name_end == std::string::npos || name_end == 0) {
++    usage("--external-texture must be NAME=WIDTHxHEIGHT:HEX, not \"" + spec + "\"");
++  }
++  const std::string name = spec.substr(0, name_end);
++  const auto dims_and_hex = std::string_view(spec).substr(name_end + 1);
++  const auto x_pos = dims_and_hex.find('x');
++  const auto colon_pos = dims_and_hex.find(':');
++  if (x_pos == std::string_view::npos || colon_pos == std::string_view::npos ||
++      colon_pos < x_pos) {
++    usage("--external-texture must be NAME=WIDTHxHEIGHT:HEX, not \"" + spec + "\"");
++  }
++  const std::string width_text(dims_and_hex.substr(0, x_pos));
++  const std::string height_text(dims_and_hex.substr(x_pos + 1, colon_pos - x_pos - 1));
++  const auto width = positive_integer(width_text, "--external-texture width");
++  const auto height = positive_integer(height_text, "--external-texture height");
++  const auto hex = dims_and_hex.substr(colon_pos + 1);
++  const auto bytes = decode_hex_bytes(hex, spec);
++  if (bytes.size() != width * height * 4U) {
++    usage("--external-texture " + spec + " byte length does not match width*height*4");
++  }
++  noisemaker::Surface surface = noisemaker::Surface::from_rgba8(width, height, bytes);
++  return noisemaker::graph::NamedSurface{name, std::move(surface)};
++}
++
++[[nodiscard]] std::vector<noisemaker::graph::NamedSurface> parse_external_textures(
++    const std::vector<std::string>& args) {
++  std::vector<noisemaker::graph::NamedSurface> textures;
++  for (const auto& spec : arguments_all(args, "--external-texture")) {
++    auto texture = parse_external_texture(spec);
++    for (auto& existing : textures) {
++      if (existing.name == texture.name) {
++        usage("--external-texture " + texture.name + " was given more than once");
++      }
++    }
++    textures.push_back(std::move(texture));
++  }
++  return textures;
++}
++
+ }  // namespace
+ 
+ int main(int argc, char** argv) {
+@@ -118,6 +218,7 @@ int main(int argc, char** argv) {
+   options.time = number(argument(args, "--time"), "--time");
+   options.frame = static_cast<std::uint32_t>(number(argument(args, "--frame"), "--frame"));
+   options.seed = number(argument(args, "--seed"), "--seed");
++  options.external_textures = parse_external_textures(args);
+ 
+   std::vector<std::uint8_t> bytes;
+   std::vector<std::uint8_t> float32_bytes;
+diff --git a/tools/dsl/generate_backend_compatibility.py b/tools/dsl/generate_backend_compatibility.py
+index 31f7e77..67ebd77 100644
+--- a/tools/dsl/generate_backend_compatibility.py
++++ b/tools/dsl/generate_backend_compatibility.py
+@@ -128,6 +128,16 @@ CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
+     for program_key in CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
+     for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
+ )
++# Mirrors tools/glslcpp/emit_typed_cpp.py's
++# `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS` exactly, for the same reason as
++# the classicNoisedeck list above, one vec width down and one program
++# outside classicNoisedeck: `synth/media:mediaInput`'s `imageSize`. Two
++# independent generators (this one and emit_typed_cpp.py) each compute a
++# uniform's cpp_type; they must agree, so this list is deliberately kept
++# identical to, not derived from, the other.
++DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = frozenset({
++    ("synth/media:mediaInput", "imageSize"),
++})
+ SUPPORTED_DRAW_MODES = frozenset({"fragment", "triangles"})
+ 
+ 
+@@ -524,6 +534,8 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
+         cpp_type = (
+             "glsl::DVec3"
+             if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS
++            else "glsl::DVec2"
++            if (program_key, name) in DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS
+             else _cpp_type(typ, name, source, program_key))
+         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
+                 "source_name": source_name}
+diff --git a/tools/glslcpp/emit_typed_cpp.py b/tools/glslcpp/emit_typed_cpp.py
+index b76a263..d078f18 100644
+--- a/tools/glslcpp/emit_typed_cpp.py
++++ b/tools/glslcpp/emit_typed_cpp.py
+@@ -811,6 +811,26 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
+ # parameter, but its corpus record is `recordKind: "excluded"` (unrelated
+ # 3D/volume-output limitation): it is never admitted by this port's executor
+ # at all, so it is not on the carrier list either.
++
++# The identical carrier shape as `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`
++# above, for one vec2 uniform on one non-classicNoisedeck program:
++# `synth/media:mediaInput`'s `imageSize`. renderer.js's
++# `createCanonicalBindings()` spreads `...uniforms` (buildBindings()'s raw,
++# unrounded `params[name]`) for every ordinary effect-parameter uniform, and
++# only explicitly `f32()`'s a handful of reserved names (time/seed/
++# deltaTime/aspect/aspectRatio/renderScale) -- `imageSize` is none of those,
++# so the authority carries it as a full, un-rounded JS double all the way
++# into the kernel body (confirmed: zero `Math.fround` calls anywhere in
++# canonicalFactory261's emitted body). A `glsl::Vec2` (float lanes) uniform
++# ABI narrows it to float32 one step earlier than the authority ever does --
++# measurably not byte-exact (rare, boundary-triggered: 3 of 4096 pixels in
++# one `tools/parity/sweep.py` variant with a non-round `imageSize`/
++# `rotation` combination). `glsl::DVec2` doesn't exist as a carrier
++# elsewhere in this port; this is its first and, today, only use.
++_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = frozenset({
++    ("synth/media:mediaInput", "imageSize"),
++})
++
+ # Identifiers the emitter itself binds inside every generated pixel function
+ # and helper signature. A GLSL local or parameter with one of these names would
+ # shadow them and either change meaning silently or fail to compile — e.g. a
+@@ -1544,6 +1564,14 @@ class _Emitter:
+     # scoped to these named symbols in this one authenticated program.
+     emitted_testpattern_digit_extraction_declarations: list[object] = field(
+         init=False, default_factory=list)
++    # Symbol ids of every local declaration this render authored as
++    # `glsl::DVec2` via `_double_precision_vec2_alias_declaration` -- so a
++    # later binary-expression emission referencing one of them by `id` (see
++    # the "binary" expression case) knows to promote its OTHER operand to
++    # `glsl::DVec2` explicitly rather than emit a mixed Vec<N,float>/
++    # Vec<N,double> operator that does not exist.
++    double_precision_vec2_alias_symbol_ids: list[int] = field(
++        init=False, default_factory=list)
+     emitted_testpattern_digit_extraction_remainder: TypedExpression | None = field(
+         init=False, default=None)
+     emitted_testpattern_digit_extraction_call: TypedExpression | None = field(
+@@ -1878,6 +1906,7 @@ class _Emitter:
+         self.authorized_testpattern_glyph_mask = None
+         self.emitted_testpattern_bitwise = []
+         self.emitted_testpattern_digit_extraction_declarations = []
++        self.double_precision_vec2_alias_symbol_ids = []
+         self.emitted_testpattern_digit_extraction_remainder = None
+         self.emitted_testpattern_digit_extraction_call = None
+         self.authorized_remap_proof = None
+@@ -5905,6 +5934,79 @@ class _Emitter:
+             return "glsl::DVec3"
+         return None
+ 
++    def _double_precision_vec2_uniform_type(self, symbol_name: str) -> str | None:
++        """The declared double-precision vec2 uniform carrier override.
++
++        Returns "glsl::DVec2" for exactly the (program, uniform) pairs in
++        `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`; `None` for every other
++        program or uniform, which then falls through to the ordinary
++        `glsl::Vec2` (float lanes) uniform type unchanged. Mirrors
++        `_classic_noisedeck_double_uniform_type` exactly, one vec width
++        down, for a program outside the classicNoisedeck namespace.
++        """
++        if (self.program.key, symbol_name) in _DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS:
++            return "glsl::DVec2"
++        return None
++
++    def _double_precision_vec2_alias_declaration(self, declaration) -> bool:
++        """True for a local `vec2 x = imageSize;` (or any other declared
++        double-precision vec2 uniform carrier), unmodified.
++
++        Narrowing such a declaration to `glsl::Vec2` would reintroduce
++        exactly the float32 rounding the carrier override above exists to
++        avoid, just one statement later than the uniform read itself.
++        Scoped tightly: a direct, single-child identifier initializer
++        naming exactly one of `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`'s
++        uniforms for the current program. Any other shape (arithmetic, a
++        second local aliasing the first, a different program) is not
++        recognized and keeps the ordinary float carrier -- only the two
++        directly-uniform-aliasing declarations in synth/media's own
++        getImage/rotate2D (`size = imageSize`) are proven to need this.
++        """
++        if declaration.type.display() != "vec2" or len(declaration.children) != 1:
++            return False
++        initializer = declaration.children[0]
++        if initializer.kind != "id" or initializer.symbol_id is None:
++            return False
++        uniform_symbol = next(
++            (item.symbol for item in self.program.declarations
++             if item.symbol.storage == "uniform"
++             and item.symbol.id == initializer.symbol_id),
++            None)
++        if uniform_symbol is None:
++            return False
++        return self._double_precision_vec2_uniform_type(uniform_symbol.name) == "glsl::DVec2"
++
++    def _is_double_precision_vec2_alias_symbol(self, symbol_id: int) -> bool:
++        """True for exactly the local symbol ids
++        `_double_precision_vec2_alias_declaration` already promoted to
++        `glsl::DVec2` for the CURRENT program (recorded at their own
++        declaration site into `double_precision_vec2_alias_symbol_ids`)."""
++        return symbol_id in self.double_precision_vec2_alias_symbol_ids
++
++    def _references_double_precision_vec2_alias(self, value: TypedExpression) -> bool:
++        """True when `value`'s own subtree reads a `glsl::DVec2`-promoted
++        local ANYWHERE within it -- not only when `value` itself is that
++        direct identifier.
++
++        Needed because the promotion above must propagate upward through
++        every enclosing expression until the next explicit narrowing
++        constructor (the emitter's existing `glsl::Vec2(...)` wrapper at
++        each assignment -- the single rounding point that matches the
++        authority's own single Float32Array store): `size` directly is
++        `glsl::DVec2`, so is `(gl_FragCoord.xy / size)`, so is
++        `(1.0 / size)`, and so is `st + (1.0 / size)` even though `st`
++        itself is an ordinary, already-narrowed `glsl::Vec2` local --
++        narrowing any INTERMEDIATE step back to float32 before the
++        assignment's own outer wrapper would round one step earlier than
++        the authority ever does, exactly the divergence this whole carrier
++        exists to avoid.
++        """
++        if value.kind == "id" and value.symbol_id is not None:
++            return self._is_double_precision_vec2_alias_symbol(value.symbol_id)
++        return any(self._references_double_precision_vec2_alias(child)
++                   for child in value.children)
++
+     @staticmethod
+     def _contains_vector_value_boundary(value: TypedExpression) -> bool:
+         if value.kind in {"builtin", "call"} and value.type.display() in {"vec2", "vec3", "vec4"}:
+@@ -7500,6 +7602,36 @@ class _Emitter:
+                             left = materialized
+                         else:
+                             right = materialized
++            if value.type.display() == "vec2":
++                # One operand's subtree reads our declared double-precision
++                # vec2 uniform carrier alias (`size`, see
++                # `_double_precision_vec2_alias_declaration`) -- directly
++                # (`size` itself) or transitively (e.g. `1.0 / size`, or
++                # `st + (1.0 / size)`) -- while the OTHER does not. The
++                # non-referencing operand must be promoted to `glsl::DVec2`
++                # explicitly in the emitted text, since no implicit mixed
++                # Vec<N,float>/Vec<N,double> operator exists (deliberately:
++                # GLSL itself has no implicit vec-vec precision conversion
++                # either) -- see `_references_double_precision_vec2_alias`
++                # for why this has to check the whole subtree, not just an
++                # immediate `id` child. Scoped to exactly the vec2 binary
++                # ops synth/media's own getImage/rotate2D perform against
++                # `size` and its descendants; this never fires for any
++                # other program, since that helper only ever recognizes
++                # symbols this same render already promoted. When BOTH
++                # operands already reference it, both are already
++                # `glsl::DVec2` and the ordinary same-type operator applies
++                # unchanged.
++                referencing = [self._references_double_precision_vec2_alias(child)
++                              for child in value.children]
++                if referencing[0] != referencing[1]:
++                    other_index = 0 if referencing[1] else 1
++                    other = left if other_index == 0 else right
++                    promoted = f"glsl::DVec2({other})"
++                    if other_index == 0:
++                        left = promoted
++                    else:
++                        right = promoted
+             result = f"({left} {value.operator} {right})"
+             if vector_with_boundary:
+                 # Vector-vector helpers return an ordinary Array with rounded
+@@ -8674,6 +8806,11 @@ class _Emitter:
+                     declaration_type = "glsl::BVec3"
+                 else:
+                     declaration_type = self.local_type(declaration.type)
++                if self._double_precision_vec2_alias_declaration(declaration):
++                    declaration_type = "glsl::DVec2"
++                    if declaration.symbol.id not in self.double_precision_vec2_alias_symbol_ids:
++                        self.double_precision_vec2_alias_symbol_ids.append(
++                            declaration.symbol.id)
+                 if self._testpattern_digit_extraction_declaration(declaration):
+                     declaration_type = "double"
+                 if self._osd_js_number_declaration(declaration):
+@@ -9076,7 +9213,25 @@ class _Emitter:
+                 if operation == "=":
+                     if vector_type is not None: right = f"{vector_type}({right})"
+                     return [f"{indent}{target} = {right};"]
+-                combined = f"({target} {operation[:-1]} {right})"
++                # A compound assignment (`st += 1.0 / size;`) builds its own
++                # `target OP right` text directly, never through the
++                # "binary" expression cascade above -- so the same
++                # double-precision vec2 alias promotion has to be
++                # duplicated here, or a compound assignment whose RHS (or,
++                # symmetrically, whose target) references the carrier
++                # mixes `glsl::Vec2`/`glsl::DVec2` with no operator to
++                # match, exactly like the plain binary case.
++                combined_target, combined_right = target, right
++                if assignment.children[0].type.display() == "vec2":
++                    target_refs = self._references_double_precision_vec2_alias(
++                        assignment.children[0])
++                    right_refs = self._references_double_precision_vec2_alias(
++                        assignment.children[1])
++                    if right_refs and not target_refs:
++                        combined_target = f"glsl::DVec2({target})"
++                    elif target_refs and not right_refs:
++                        combined_right = f"glsl::DVec2({right})"
++                combined = f"({combined_target} {operation[:-1]} {combined_right})"
+                 if vector_type is not None: combined = f"{vector_type}({combined})"
+                 return [f"{indent}{target} = {combined};"]
+             if operation == "=":
+@@ -11194,7 +11349,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
+         lines.append("struct State final : KernelState {")
+         constructor_parts = [
+             f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else
+-            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
++            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
+             for symbol in uniforms]
+         if remap is not None:
+             constructor_parts.insert(0, "glsl::RemapUniformData data_value")
+@@ -11219,7 +11374,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
+             lines.append("  glsl::RemapUniformData data;")
+         for symbol in uniforms:
+             type_name = ("const Surface*" if symbol.type.kind == "sampler" else
+-                        self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type))
++                        self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type))
+             lines.append(f"  {type_name} {symbol.name};")
+         if (self.runtime_loop_contract is not None
+                 and self.runtime_loop_contract.kind == "blur-radius"):
+@@ -11434,7 +11589,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
+                 arguments.append(symbol.name)
+             elif symbol.type.display() == "float": arguments.append(f"bindings.get_number(\"{symbol.name}\")")
+             else:
+-                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self.type(symbol.type)
++                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.type(symbol.type)
+                 arguments.append(f"bindings.get<{cpp_type}>(\"{symbol.name}\")")
+         if remap_data_argument is not None:
+             arguments.insert(0, remap_data_argument)
+diff --git a/tools/parity/sweep.py b/tools/parity/sweep.py
+index 81e8ad1..281b681 100644
+--- a/tools/parity/sweep.py
++++ b/tools/parity/sweep.py
+@@ -53,15 +53,17 @@ coverage):
+   default in every variant. Nothing in the catalog gives this tool a safe
+   domain to sample for them, and guessing one (e.g. a huge ``stateSize``) risks
+   turning a parity question into a resource-exhaustion question.
+-- Only the JS lane can accept an external texture (via the already-supported
+-  ``record.seedSurfaces`` -> ``api.Surface.fromRgba8`` path in
+-  ``run_cpu_case.mjs``): ``filter/text`` and ``synth/media`` get a small
+-  synthetic checkerboard fed to the JS runner. Neither
+-  ``noisemaker-dsl-cpu-case`` nor ``noisemaker-render`` has ANY external-image
+-  input (no CLI flag, no wiring) -- adding real image decoding and texture
+-  wiring to the C++ engine is new engine capability, not a harness need, so
+-  this tool does not add it; the C++ side is expected to keep refusing these
+-  two (correctly reported as ``cpp_refused_only``, not ``both_refused``).
++- ``filter/text`` and ``synth/media`` (the two ``externalTexture``-declared
++  effects) get a small synthetic checkerboard fed to BOTH lanes from the
++  exact same bytes: the JS runner via the already-supported
++  ``record.externalTextures`` -> ``api.Surface.fromRgba8`` path in
++  ``run_cpu_case.mjs``, and the C++ driver via ``--external-texture
++  NAME=WxH:HEX`` (``tools/benchmark/run_cpp_case.cpp``, wired through
++  ``record_flags`` in ``tools/benchmark/corpus_lane.py``) -- one JSON field,
++  one hex string, no second encoding anywhere in the path. Both drivers
++  decode it with the same construction (``Surface.fromRgba8`` /
++  ``Surface::from_rgba8``), so this is a real byte-exact comparison, not a
++  reclassification of an expected refusal.
+ - A chain variant exercises the swept effect plus two deterministically
+   chosen helper effects (for the two roles it doesn't itself occupy). A
+   divergence or refusal in a chain is reported against the chain (all three
+@@ -424,15 +426,12 @@ def sanitize(effect_id: str) -> str:
+ 
+ 
+ # A small deterministic checkerboard fed to effects declaring
+-# ``externalTexture`` (filter/text, synth/media). Neither driver accepts a
+-# real image file (no CLI flag exists on either side for one -- see the
+-# module docstring); this uses the ALREADY-SUPPORTED `record.seedSurfaces`
+-# path in run_cpu_case.mjs (api.Surface.fromRgba8) so the JS lane renders
+-# instead of refusing. The C++ driver has no equivalent input at all, so it
+-# still refuses -- correctly reclassifying these two effects from
+-# both_refused (misleadingly implies neither lane can do this) to
+-# cpp_refused_only (the true shape: JS can given an image, C++ cannot accept
+-# one at all).
++# ``externalTexture`` (filter/text, synth/media) -- identically, to both
++# lanes: the JS runner via ``record.externalTextures`` ->
++# ``api.Surface.fromRgba8`` in run_cpu_case.mjs, the C++ driver via
++# ``--external-texture NAME=WxH:HEX`` (record_flags in corpus_lane.py ->
++# run_cpp_case.cpp). Neither lane refuses this case any more; it is a real
++# byte-exact comparison like every other admitted effect.
+ _EXTERNAL_TEXTURE_SIZE = 4
+ 
+ 
+@@ -745,15 +744,14 @@ def run_job(job_dict: dict) -> dict:
+             "sourceSha256": source_sha256, "options": options, "plan": None,
+         }
+         if job.external_texture:
+-            # JS-only: run_cpp_case.cpp has no external-texture input at all
+-            # (no CLI flag, no wiring), so the C++ side still refuses. This
+-            # only changes the JS side from a matching refusal to a real
+-            # render, which reclassifies the case as cpp_refused_only
+-            # (accurate: JS can do this given an image, C++ cannot accept
+-            # one) instead of both_refused (implies neither can). Distinct
+-            # from `seedSurfaces` (named oN pre-seeding): externalTexture-
+-            # declared effects read `renderOptions.externalTextures` instead
+-            # (see run_cpu_case.mjs).
++            # Fed to BOTH lanes from this one field: the JS runner via
++            # run_cpu_case.mjs's `record.externalTextures` ->
++            # `api.Surface.fromRgba8`, and the C++ driver via
++            # `record_flags`' `--external-texture NAME=WxH:HEX` (below, at
++            # `cpp_cmd`) -> `run_cpp_case.cpp`'s `Surface::from_rgba8`.
++            # Distinct from `seedSurfaces` (named oN pre-seeding):
++            # externalTexture-declared effects read
++            # `renderOptions.externalTextures` instead (see run_cpu_case.mjs).
+             record["externalTextures"] = [{
+                 "name": job.external_texture, "width": _EXTERNAL_TEXTURE_SIZE,
+                 "height": _EXTERNAL_TEXTURE_SIZE, "rgba8": synthetic_texture_rgba8_hex(),
+-- 
+2.50.1 (Apple Git-155)
+

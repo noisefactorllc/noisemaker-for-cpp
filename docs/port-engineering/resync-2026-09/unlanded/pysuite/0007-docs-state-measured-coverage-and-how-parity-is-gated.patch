@@ -1,0 +1,84 @@
+From 2667c2a21c16ec61b590b01fe39be5b309c40d39 Mon Sep 17 00:00:00 2001
+From: Alex Ayars <aayars@gmail.com>
+Date: Wed, 16 Sep 2026 23:34:34 -0600
+Subject: [PATCH 07/29] docs: state measured coverage and how parity is gated
+
+The kit now claims 137 sweep-verified effects of the 208 the authority
+renders. The README says so, derives each count from a named file, and
+describes the corpus lane, the parameter and define-enumeration sweeps, and
+the kit coverage gate.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ README.md | 47 +++++++++++++++++++++++++++--------------------
+ 1 file changed, 27 insertions(+), 20 deletions(-)
+
+diff --git a/README.md b/README.md
+index cf7c6b4..6c3ea65 100644
+--- a/README.md
++++ b/README.md
+@@ -40,33 +40,40 @@ differs by a single byte. CI runs that check on every push.
+ 
+ ## Coverage
+ 
+-This port is **in progress** and is measured against a pinned JavaScript authority,
+-`noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which itself pins the
+-upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that
+-exact authority commit; it does not follow the authority's `main`.
++This port is **incomplete**. It does not yet render every effect its JavaScript authority renders.
++
++The authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares the pin with the authority's `main` every day and on every push, and fails when they differ.
+ 
+ | | Count | Derived from |
+ |---|---:|---|
+-| Effect definitions in the authority | 208 | `counts.definitions` in `src/effects/generated/effect_catalog.provenance.json` |
+-| Effects this port can execute | 167 | `counts.executable_definitions` in the same file |
+-| Effects with at least one unported pass | 41 | `counts.incomplete_definitions` in the same file |
+-| Effects listed by this port's export kit | 160 | `export-kit/compat-effects.json` |
+-| Effects listed by the authority's export kit | 205 | `export-kit/compat-effects.json` in the authority checkout |
+-| Corpus programs | 212 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
++| Effects the authority renders | 208 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
++| Effects this port's export kit claims | 137 | `export-kit/compat-effects.json` |
++| Effects the parameter sweep verified byte-exact | 137 | `export-kit/verified-effects.json` |
++| Effects whose every pass has an admitted kernel | 167 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
++| Authority GLSL programs | 304 | `counts.reference_program_keys` in the same file |
++| Corpus programs vendored here | 212 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
+ | Typed-slice programs | 211 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+-| Catalog entries | 213 | `kCatalog` in `src/typed_generated/typed_slice.cpp`: the 211 typed program keys, plus a second, earlier-generation factory registered under `filter/invert:inv` and under `synth/solid:solid` |
+ 
+-Where the authority runs a hand-written adapter instead of its generated kernel, this port either routes the program to a hand-written C++ kernel (the `custom_adapter` routes) or proves its generated kernel equivalent to the adapter with an oracle package under `docs/port-engineering/`.
++The kit claims an effect only when the parameter sweep verified it. An admitted kernel is not enough.
++
++The effects still missing need the following work:
++
++- Iterated simulations, particle groups, volume atlases and loop regions in the executor. Scatter dispatch and multi-render-target passes already exist.
++- The 92 authority programs the corpus does not yet vendor.
++- Every value of each compile-define parameter, where some effects still refuse non-default values.
++- A small set of float-precision divergences.
++
++The live list is the top block of [`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
++
++### How parity is measured
+ 
+-The remaining effects need runtime features this executor does not have yet: iterated simulations, particle groups, volume atlases, multi-render-target passes, and loop regions. The live list of remaining work is the top block of
+-[`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
++- **Corpus lane** (`tests/test_dsl_corpus_parity.py`): every admitted effect renders once at 17x11 with default parameters, and must match the authority byte for byte. This single point is not enough on its own to prove parity.
++- **Parameter sweep** (`tools/parity/sweep.py --gate kit`): every authority effect renders at many sizes, including 1x1 and non-square, with many seeds and times, randomized parameter values, and generator/filter/mixer chains. Each render is compared on RGBA8 and on the float32 surface behind it.
++- **Define enumeration** (`--define-enum`): every compile-define parameter renders at each value in its domain.
++- **Gates**: both sweeps run in CI and fail on any divergence, any timeout, or any refusal of an effect the kit claims.
++- **Kit coverage** (`export-kit/check-authority-coverage.mjs`): fails until the kit claims every effect the authority renders.
+ 
+-The corpus itself is vendored, not authored here. Its GLSL sources under
+-`tools/glslcpp/corpus/` come from
+-[`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at
+-revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`, and are MIT-licensed
+-there. The earlier `a024dc3a960cc44af454abc7aebce50456c194e6` corpus is kept as frozen
+-evidence for the oracle packages that cite it.
++The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/` come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`, and are MIT-licensed there.
+ 
+ ### Parity and its documented exceptions
+ 
+-- 
+2.50.1 (Apple Git-155)
+

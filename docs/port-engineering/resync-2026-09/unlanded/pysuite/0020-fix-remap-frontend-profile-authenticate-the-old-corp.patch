@@ -1,0 +1,54 @@
+From b1e4b68e3a743bcbd3629b91071512996bead80b Mon Sep 17 00:00:00 2001
+From: lane <lane@local>
+Date: Thu, 17 Sep 2026 01:55:32 -0600
+Subject: [PATCH 20/29] fix(remap-frontend-profile): authenticate the old
+ corpus source, not the live one
+
+remap_profile.py's own module docstring says its
+authenticate_remap_frontend/preflight_remap_bindings are SUPERSEDED: kept
+unmodified as a correct record of the OLD 267-slot remap.glsl's exact
+shape (corpus a024dc3a...), deliberately never run against the pinned
+0ed489ec... source (which grew to 275 slots and introduced `struct
+ZoneTest` -- the same construct that made the JS authority's own
+transpiler give up on remap; see synth/remap:remap's "adapter" corpus
+status and src/effects/remap.cpp/bind_remap).
+
+test_remap_frontend_profile.py's SOURCE constant pointed at the NEW
+(0ed489ec) remap.glsl -- the corpus-path-move commit (cf26f99) moved it
+along with every other test's corpus path without noticing this one
+profile is intentionally pinned to the OLD source. Confirmed directly:
+the OLD corpus's synth/remap/remap.glsl is exactly 5117 bytes with
+sha256 e70bb491b2838bc2e5632a458fb2aeb5488d772d734b6e4caf7958afa9737e7f
+-- matching remap_profile.py's own RAW_BYTES/RAW_SHA256 constants
+exactly. Pointed SOURCE back at the a024dc3a corpus tree. All 4 tests
+now pass (Ran 4 tests ... OK).
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01EU6jaFnvpzrcsgg8pXrwK2
+---
+ tests/test_remap_frontend_profile.py | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/tests/test_remap_frontend_profile.py b/tests/test_remap_frontend_profile.py
+index 9a22b34..795c729 100644
+--- a/tests/test_remap_frontend_profile.py
++++ b/tests/test_remap_frontend_profile.py
+@@ -12,7 +12,14 @@ from tools.glslcpp.frontend import remap_profile
+ 
+ 
+ ROOT = pathlib.Path(__file__).resolve().parents[1]
+-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
++# remap_profile.py's authenticate_remap_frontend/preflight_remap_bindings are
++# SUPERSEDED (see that module's docstring): they are kept, unmodified, as a
++# correct record of the OLD 267-slot remap.glsl's exact shape (corpus
++# a024dc3a...), and are deliberately never run against the pinned
++# 0ed489ec... source, which grew to 275 slots and introduced `struct
++# ZoneTest`. This test authenticates that frozen historical record, so it
++# must read the OLD corpus, not the live one.
++SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+           / "sources/synth/remap/remap.glsl")
+ KEY = remap_profile.KEY
+ 
+-- 
+2.50.1 (Apple Git-155)
+
