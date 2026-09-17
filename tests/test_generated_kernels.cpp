@@ -22,6 +22,7 @@
 #include <variant>
 #include <vector>
 
+#include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/remap.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/pass_runner.hpp"
