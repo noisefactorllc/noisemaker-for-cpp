@@ -3498,6 +3498,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               auto& stored = arena.insert(output_route, std::move(destination),
                                           format, ResourceLifetime::transient);
               effect_output = &stored;
+              wrote_output_tex = output_route == "outputTex";
               ++pass_count;
             } else {
             auto bindings = materialize_uniform_bindings(step, admission, pass,
@@ -3522,6 +3523,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             effect_output = &destination;
             wrote_output_tex = output_route == "outputTex";
             ++pass_count;
+            }
             }
           } catch (const GraphError& error) {
             release_borrowed();
