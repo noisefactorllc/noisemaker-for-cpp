@@ -2,6 +2,7 @@
 // Revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/effects/bit_effects.hpp"
+#include "noisemaker/effects/median.hpp"
 #include "noisemaker/effects/remap.hpp"
 #include "noisemaker/effects/snow.hpp"
 
