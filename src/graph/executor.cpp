@@ -1481,6 +1481,16 @@ void validate_uniform_abi_shape(const EffectStep& step,
       // produces different bytes. Reproduce the poisoning instead of
       // silently dropping the alpha.
       if (step.effect.id == "classicNoisedeck/composite" && binding_name == "inputColor") {
+        // `inputColor` is now an ordinary double-vector-uniform carrier
+        // (see generate_backend_compatibility.py's
+        // `is_double_vector_uniform`), so the poisoned sentinel this
+        // returns must match whichever variant alternative the kernel's
+        // ABI actually declares, or a later `bindings.get<T>("inputColor")`
+        // would throw on a variant-type mismatch instead of reading NaN.
+        if (cpp_type == "glsl::DVec3") {
+          const double nan = std::numeric_limits<double>::quiet_NaN();
+          return glsl::DVec3(nan, nan, nan);
+        }
         const float nan = std::numeric_limits<float>::quiet_NaN();
         return glsl::Vec3(nan, nan, nan);
       }
@@ -2880,6 +2890,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             wrote_output_tex = output_route == "outputTex";
             ++pass_count;
             }
+          }
           } catch (const GraphError& error) {
             release_borrowed();
             if (error.effect_id().empty()) {

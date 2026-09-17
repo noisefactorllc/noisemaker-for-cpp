@@ -95,10 +95,14 @@ TEST(typed_gradient_cross_lane_public_path_matches_authority_float32_and_rgba8) 
   bindings.set_uniform("seed", std::int32_t(7));
   bindings.set_uniform("time", 0.25);
   bindings.set_uniform("colorCount", std::int32_t(2));
-  bindings.set_uniform("color1", noisemaker::glsl::Vec3(0.0f, 0.0f, 0.0f));
-  bindings.set_uniform("color2", noisemaker::glsl::Vec3(1.0f, 1.0f, 1.0f));
-  bindings.set_uniform("color3", noisemaker::glsl::Vec3(0.5f, 0.5f, 0.5f));
-  bindings.set_uniform("color4", noisemaker::glsl::Vec3(0.2f, 0.2f, 0.2f));
+  // synth/gradient:gradient's color1..color4 are ordinary effect-parameter
+  // vec3 uniforms, now double-precision carriers (see emit_typed_cpp.py's
+  // `_is_double_vector_uniform`); the generated State constructor expects
+  // `glsl::DVec3`.
+  bindings.set_uniform("color1", noisemaker::glsl::DVec3(0.0, 0.0, 0.0));
+  bindings.set_uniform("color2", noisemaker::glsl::DVec3(1.0, 1.0, 1.0));
+  bindings.set_uniform("color3", noisemaker::glsl::DVec3(0.5, 0.5, 0.5));
+  bindings.set_uniform("color4", noisemaker::glsl::DVec3(0.2, 0.2, 0.2));
   const noisemaker::Surface image = noisemaker::run_pass(
       noisemaker::generated::bind_synth_gradient_gradient(bindings), 6U, 5U,
       0.25f, 7.0f);
@@ -1014,7 +1018,11 @@ TEST(typed_task20_sacred_geometry_binding_abi_is_exact) {
       if (name == wrong) result.set_uniform(std::string(name), 1.0);
       else result.set_uniform(std::string(name), value);
     };
-    const auto vector3 = [&](std::string_view name, noisemaker::glsl::Vec3 value) {
+    // synth/sacredGeometry:sacredGeometry's fgColor/bgColor are ordinary
+    // effect-parameter vec3 uniforms, now double-precision carriers (see
+    // emit_typed_cpp.py's `_is_double_vector_uniform`); the generated State
+    // constructor expects `glsl::DVec3`.
+    const auto vector3 = [&](std::string_view name, noisemaker::glsl::DVec3 value) {
       if (name == skipped) return;
       if (name == wrong) result.set_uniform(std::string(name), 1.0);
       else result.set_uniform(std::string(name), value);
@@ -1036,8 +1044,8 @@ TEST(typed_task20_sacred_geometry_binding_abi_is_exact) {
     number("thickness", 0.2); number("smoothness", 0.02);
     integer("geometry", 0); integer("rings", 3); integer("starPoints", 5);
     integer("animation", 0); number("speed", 1.0); number("pulseDepth", 0.15);
-    number("time", 0.0); vector3("fgColor", noisemaker::glsl::Vec3(1.0f));
-    vector3("bgColor", noisemaker::glsl::Vec3(0.0f));
+    number("time", 0.0); vector3("fgColor", noisemaker::glsl::DVec3(1.0));
+    vector3("bgColor", noisemaker::glsl::DVec3(0.0));
     return result;
   };
   const std::array names{
@@ -4724,7 +4732,11 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
     else
       bindings.set_uniform(std::string(name), value);
   };
-  const auto vector3 = [&](std::string_view name, noisemaker::glsl::Vec3 value) {
+  // classicNoisedeck/lensDistortion:lensDistortion's `tint` is an ordinary
+  // effect-parameter vec3 uniform, now a double-precision carrier (see
+  // emit_typed_cpp.py's `_is_double_vector_uniform`); the generated State
+  // constructor expects `glsl::DVec3`.
+  const auto vector3 = [&](std::string_view name, noisemaker::glsl::DVec3 value) {
     if (name == skipped) return;
     if (name == wrong)
       bindings.set_uniform(std::string(name), 1.0f);
@@ -4767,7 +4779,7 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
   if (fixture.lens) {
     boolean("aspectLens", fixture.flags[0]);
     integer("shape", static_cast<std::int32_t>(fixture.integers[0]));
-    vector3("tint", noisemaker::glsl::Vec3(
+    vector3("tint", noisemaker::glsl::DVec3(
         task25_f32(fixture.number_bits[0]),
         task25_f32(fixture.number_bits[1]),
         task25_f32(fixture.number_bits[2])));
@@ -4857,7 +4869,7 @@ void task25_require_binding_round_trip(
     REQUIRE(bindings.get<bool>("aspectLens") == fixture.flags[0]);
     REQUIRE(bindings.get<std::int32_t>("shape") ==
             static_cast<std::int32_t>(fixture.integers[0]));
-    const auto tint = bindings.get<noisemaker::glsl::Vec3>("tint");
+    const auto tint = bindings.get<noisemaker::glsl::DVec3>("tint");
     for (std::size_t lane = 0; lane < 3U; ++lane)
       REQUIRE(noisemaker::float_bits_to_uint(tint[lane]) ==
               fixture.number_bits[lane]);
@@ -10817,8 +10829,13 @@ struct Task32GradeCase {
 TEST(typed_task32_grade_cluster_public_and_direct_binders_are_exposed_and_deterministic) {
   const noisemaker::Surface input = task32_solid_input(3U, 3U, 90U, 140U, 200U);
   const auto vec2 = [](float x, float y) { return noisemaker::glsl::Vec2(x, y); };
+  // filter/grade:wheels' wheelShadows/wheelMidtones/wheelHighlights and
+  // filter/grade:creative's shadowTint/highlightTint are ordinary
+  // effect-parameter vec3 uniforms, now double-precision carriers (see
+  // emit_typed_cpp.py's `_is_double_vector_uniform`) -- the only vec3
+  // uniforms this test's `vec3(...)` constructs.
   const auto vec3 = [](float x, float y, float z) {
-    return noisemaker::glsl::Vec3(x, y, z);
+    return noisemaker::glsl::DVec3(static_cast<double>(x), static_cast<double>(y), static_cast<double>(z));
   };
 
   const std::array<Task32GradeCase, 6> cases{{
@@ -11207,7 +11224,7 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
   direct.set_uniform("gamma", 0.4f);
   direct.set_uniform("antialias", true);
   direct.set_uniform("lightDirection",
-                      noisemaker::glsl::Vec3(0.8f, 0.2f, 0.5f));
+                      noisemaker::glsl::DVec3(0.8, 0.2, 0.5));
   direct.set_uniform("strength", 0.9f);
   task33_verify(
       noisemaker::generated::bind_filter_celShading_celShadingColor(direct),
@@ -11221,7 +11238,7 @@ TEST(typed_task33_celshadingcolor_fwidth_vec3_matches_vendored_oracle_bit_exact)
   via_public.set_uniform("gamma", 0.4f);
   via_public.set_uniform("antialias", true);
   via_public.set_uniform("lightDirection",
-                         noisemaker::glsl::Vec3(0.8f, 0.2f, 0.5f));
+                         noisemaker::glsl::DVec3(0.8, 0.2, 0.5));
   via_public.set_uniform("strength", 0.9f);
   const auto direct_output = noisemaker::run_pass(
       noisemaker::generated::bind_filter_celShading_celShadingColor(direct),
@@ -11241,14 +11258,27 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   // filter/stipple:stipple's `_defaults()`-authorized define map). The
   // fwidth call is unconditional under this pinned define -- 1 ordinal,
   // no antialias uniform at all.
+  // f32_sha256 and the {0,4} probe's third lane were repinned against the
+  // real, unmodified JS authority (bindGlslKernel(canonicalKernelFactories
+  // ['filter/stipple:stipple'], createCanonicalBindings(...)) with paperColor
+  // left as a raw, un-rounded JS array [0.98, 0.96, 0.9]), not against
+  // docs/port-engineering/derivatives/oracle/derivative_oracle_generator.mjs's
+  // own `normalizeUniformsTyped`, which narrows every vec3 uniform to a
+  // `Float32Array` before binding (glsl-kernel.js's createCanonicalBindings
+  // never does this itself for an ordinary effect-parameter uniform -- see
+  // emit_typed_cpp.py's `_is_double_vector_uniform`) -- so that generator's
+  // own oracle output, and the hash/probe lane this test used to pin from it,
+  // reflected that generator's premature float32 narrowing, not the
+  // authority. The rgba8_sha256 and every other probe lane are unaffected
+  // (the ~1 ULP float32 difference does not survive RGBA8 quantization).
   const Task33Case fixture{
       "filter/stipple:stipple", 6U, 5U, 120,
-      "558d41dbe6da042f6e39679d80e96f1f455d7a8d529db9145cbeca00f6456d8d",
+      "617f13a0ac8c435a5527ca72085eaeba3e6d037d8ea9fe6b5ed129c357a6d8e8",
       "a6272d86f087781c300a5babe6c5a9b32d09e29d59e4ec27920e9d4c8706371b",
       120U,
       {{{0U, 0U, {0x3f1079aaU, 0x3e13cb37U, 0x3f697e98U, 0x3e0ee23cU}},
         {5U, 0U, {0x3e367ebcU, 0x3f507eaeU, 0x3f09d89eU, 0x3e8ee23cU}},
-        {0U, 4U, {0x3f061348U, 0x3f534902U, 0x3eeaaff5U, 0x3efa0be8U}},
+        {0U, 4U, {0x3f061348U, 0x3f534902U, 0x3eeaaff6U, 0x3efa0be8U}},
         {5U, 4U, {0x3f60a616U, 0x3f18ebdaU, 0x3f497736U, 0x3f20be83U}},
         {3U, 2U, {0x3f498529U, 0x3f383248U, 0x3ebf4ee7U, 0x3eee23b9U}}}}};
   const auto input = task33_patterned_surface(fixture.width, fixture.height,
@@ -11261,7 +11291,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   direct.set_uniform("grainSize", 2.0f);
   direct.set_uniform("density", 50.0f);
   direct.set_uniform("paperColor",
-                      noisemaker::glsl::Vec3(0.98f, 0.96f, 0.9f));
+                      noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
   direct.set_uniform("seed", std::int32_t{7});
   task33_verify(noisemaker::generated::bind_filter_stipple_stipple(direct),
                fixture);
@@ -11274,7 +11304,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   via_public.set_uniform("grainSize", 2.0f);
   via_public.set_uniform("density", 50.0f);
   via_public.set_uniform("paperColor",
-                         noisemaker::glsl::Vec3(0.98f, 0.96f, 0.9f));
+                         noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
   via_public.set_uniform("seed", std::int32_t{7});
   const auto direct_output = noisemaker::run_pass(
       noisemaker::generated::bind_filter_stipple_stipple(direct),
@@ -11722,7 +11752,11 @@ struct TaskLightingCase {
   int phase;
   double tile_offset_x, tile_offset_y;
   double full_resolution_x, full_resolution_y;
-  noisemaker::glsl::Vec3 diffuse_color, specular_color, ambient_color, light_direction;
+  // filter/lighting:lighting's diffuseColor/specularColor/ambientColor/
+  // lightDirection are ordinary effect-parameter vec3 uniforms, now
+  // double-precision carriers (see emit_typed_cpp.py's
+  // `_is_double_vector_uniform`).
+  noisemaker::glsl::DVec3 diffuse_color, specular_color, ambient_color, light_direction;
   double specular_intensity, shininess, normal_strength, smoothing, render_scale;
   double reflection, refraction, aberration;
   std::string_view f32_sha256, rgba8_sha256;
@@ -11798,17 +11832,33 @@ TEST(typed_lighting_reflection_strong_sign_matters_matches_vendored_oracle_bit_e
   const TaskLightingCase fixture{
       "reflection-strong-sign-matters", 6U, 5U, 820,
       0.0, 0.0, 6.0, 5.0,
-      noisemaker::glsl::Vec3(0.6f, 0.5f, 0.4f), noisemaker::glsl::Vec3(0.9f, 0.9f, 0.8f),
-      noisemaker::glsl::Vec3(0.1f, 0.1f, 0.12f), noisemaker::glsl::Vec3(0.4f, 0.6f, 0.5f),
+      noisemaker::glsl::DVec3(0.6, 0.5, 0.4), noisemaker::glsl::DVec3(0.9, 0.9, 0.8),
+      noisemaker::glsl::DVec3(0.1, 0.1, 0.12), noisemaker::glsl::DVec3(0.4, 0.6, 0.5),
       0.7, 24.0, 2.5, 1.2, 1.0,
       60.0, 0.0, 0.0,
-      "35b9d0303cdbac02e7ce466de6500fe6d4f36b52ae430d7910daddc3ad8d3117",
+      // f32_sha256 and the two affected probe lanes were repinned against
+      // the real, unmodified JS authority (bindGlslKernel(
+      // canonicalKernelFactories['filter/lighting:lighting'],
+      // createCanonicalBindings(...)) with diffuseColor/specularColor/
+      // ambientColor/lightDirection left as raw, un-rounded JS arrays), not
+      // against docs/port-engineering/builtins/oracle/
+      // builtin_oracle_generator.mjs's own `normalizeUniformsTyped`, which
+      // narrows every vec3 uniform to a `Float32Array` before binding
+      // (glsl-kernel.js's createCanonicalBindings never does this itself for
+      // an ordinary effect-parameter uniform -- see emit_typed_cpp.py's
+      // `_is_double_vector_uniform`) -- so that generator's own oracle
+      // output, and the hash/probe lanes this test used to pin from it,
+      // reflected that generator's premature float32 narrowing, not the
+      // authority. The rgba8_sha256 and every other probe lane are
+      // unaffected (the ~1 ULP float32 difference does not survive RGBA8
+      // quantization).
+      "599e9523309736f7129c43d8c362a3017a73faa2ca15cf86144e14d0ba18180b",
       "393f9e9ea80c1905e9946be18284d53f4f0339041e52feca7163f4829cabb6bc",
       120U,
-      {{{{0x3e6fd37bU, 0x3eb25377U, 0x3e243057U, 0x3ef7aa45U}},
-        {{0x3e2c4c59U, 0x3e4d9953U, 0x3ed78354U, 0x3edb16a0U}},
+      {{{{0x3e6fd37aU, 0x3eb25377U, 0x3e243057U, 0x3ef7aa45U}},
+        {{0x3e2c4c58U, 0x3e4d9953U, 0x3ed78354U, 0x3edb16a0U}},
         {{0x3e15a55cU, 0x3e460b30U, 0x3ee70a9aU, 0x3edb169fU}},
-        {{0x3f40fa5aU, 0x3ea09f04U, 0x3e8e70b3U, 0x3d3e82faU}},
+        {{0x3f40fa59U, 0x3ea09f04U, 0x3e8e70b3U, 0x3d3e82faU}},
         {{0x3db74e5fU, 0x3d2fa9dbU, 0x3eccd853U, 0x3f009869U}}}},
       {{{0U, 0U}, {5U, 0U}, {0U, 4U}, {5U, 4U}, {3U, 2U}}},
   };
@@ -11842,14 +11892,16 @@ TEST(typed_lighting_all_off_diagnostic_no_reflect_call_matches_vendored_oracle_b
   const TaskLightingCase fixture{
       "all-off-diagnostic-no-reflect-call", 4U, 7U, 823,
       0.0, 0.0, 4.0, 7.0,
-      noisemaker::glsl::Vec3(0.5f, 0.5f, 0.5f), noisemaker::glsl::Vec3(0.5f, 0.5f, 0.5f),
-      noisemaker::glsl::Vec3(0.1f, 0.1f, 0.1f), noisemaker::glsl::Vec3(0.3f, 0.4f, 0.8f),
+      noisemaker::glsl::DVec3(0.5, 0.5, 0.5), noisemaker::glsl::DVec3(0.5, 0.5, 0.5),
+      noisemaker::glsl::DVec3(0.1, 0.1, 0.1), noisemaker::glsl::DVec3(0.3, 0.4, 0.8),
       0.5, 12.0, 1.0, 1.0, 1.0,
       0.0, 0.0, 0.0,
-      "e72ea07339688d23ab36ae23ba2b6abca5ba8dc97e4ae5efd484c5767881a964",
+      // Repinned against the real JS authority for the same reason as
+      // "reflection-strong-sign-matters" above.
+      "18b48b9db34ddf4a4a8253a799f63901655baa2abc2a799e53d400d5894c062a",
       "3fab7fb930d21a8968e5ec01ba5d9bfef560643054f831b0098f5cc5b079ae44",
       112U,
-      {{{{0x3de26f0dU, 0x3e9b3af2U, 0x3e68b3d8U, 0x3e9aca6bU}},
+      {{{{0x3de26f0cU, 0x3e9b3af2U, 0x3e68b3d8U, 0x3e9aca6bU}},
         {{0x3d50785eU, 0x3d5910c6U, 0x3d109f3cU, 0x3dee23b9U}},
         {{0x3e93abc4U, 0x3e8c3024U, 0x3f173ce3U, 0x3efa0be8U}},
         {{0x3d22757fU, 0x3dc652c8U, 0x3d8be598U, 0x3e9aca6bU}},
@@ -11949,15 +12001,18 @@ constexpr std::array<TetraRuntimeCase, 8> kTetraRuntimeCases{{
 [[nodiscard]] noisemaker::glsl::Bindings tetra_runtime_bindings(
     const TetraRuntimeCase& fixture, const noisemaker::Surface& input,
     std::int32_t count_override = 0) {
-  constexpr std::array<noisemaker::glsl::Vec3, 8> colors{
-      noisemaker::glsl::Vec3(0.96f, 0.04f, 0.18f),
-      noisemaker::glsl::Vec3(0.98f, 0.72f, 0.06f),
-      noisemaker::glsl::Vec3(0.12f, 0.88f, 0.26f),
-      noisemaker::glsl::Vec3(0.05f, 0.35f, 0.96f),
-      noisemaker::glsl::Vec3(0.74f, 0.08f, 0.94f),
-      noisemaker::glsl::Vec3(0.08f, 0.90f, 0.82f),
-      noisemaker::glsl::Vec3(0.96f, 0.96f, 0.90f),
-      noisemaker::glsl::Vec3(0.04f, 0.03f, 0.08f)};
+  // filter/tetraColorArray:tetraColorArray's color0..color7 are ordinary
+  // effect-parameter vec3 uniforms, now double-precision carriers (see
+  // emit_typed_cpp.py's `_is_double_vector_uniform`).
+  constexpr std::array<noisemaker::glsl::DVec3, 8> colors{
+      noisemaker::glsl::DVec3(0.96, 0.04, 0.18),
+      noisemaker::glsl::DVec3(0.98, 0.72, 0.06),
+      noisemaker::glsl::DVec3(0.12, 0.88, 0.26),
+      noisemaker::glsl::DVec3(0.05, 0.35, 0.96),
+      noisemaker::glsl::DVec3(0.74, 0.08, 0.94),
+      noisemaker::glsl::DVec3(0.08, 0.90, 0.82),
+      noisemaker::glsl::DVec3(0.96, 0.96, 0.90),
+      noisemaker::glsl::DVec3(0.04, 0.03, 0.08)};
   noisemaker::glsl::Bindings bindings;
   bindings.set_texture("inputTex", input);
   bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f));
@@ -22758,10 +22813,13 @@ TEST(typed_wobble189_mutant_ledger_and_native_necessary_conditions) {
   bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(
       parallax190_float(fixture.full_resolution_x_word),
       parallax190_float(fixture.full_resolution_y_word)));
-  bindings.set_uniform("direction", noisemaker::glsl::Vec3(
-      parallax190_float(fixture.direction_x_word),
-      parallax190_float(fixture.direction_y_word),
-      parallax190_float(fixture.direction_z_word)));
+  // filter/parallax:parallax's direction is an ordinary
+  // effect-parameter vec3 uniform, now a double-precision carrier (see
+  // emit_typed_cpp.py's `_is_double_vector_uniform`).
+  bindings.set_uniform("direction", noisemaker::glsl::DVec3(
+      static_cast<double>(parallax190_float(fixture.direction_x_word)),
+      static_cast<double>(parallax190_float(fixture.direction_y_word)),
+      static_cast<double>(parallax190_float(fixture.direction_z_word))));
   bindings.set_uniform("pivot",
                        static_cast<double>(parallax190_float(fixture.pivot_word)));
   return bindings;
@@ -22930,7 +22988,7 @@ TEST(typed_parallax190_binding_abi_and_catalog_are_exact) {
     if (omitted != "fullResolution")
       bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(5.0f, 4.0f));
     if (omitted != "direction")
-      bindings.set_uniform("direction", noisemaker::glsl::Vec3(0.6f, -0.3f, 0.75f));
+      bindings.set_uniform("direction", noisemaker::glsl::DVec3(0.6, -0.3, 0.75));
     if (omitted != "pivot") bindings.set_uniform("pivot", 0.35);
     bool threw = false;
     try {
@@ -23471,12 +23529,15 @@ void shared_native_integration_require_abi() {
   }
 }
 
-[[nodiscard]] noisemaker::glsl::Vec3 lightleak_vec3(
+// filter/lightLeak:lightLeak's `color` is an ordinary effect-parameter vec3
+// uniform, now a double-precision carrier (see emit_typed_cpp.py's
+// `_is_double_vector_uniform`).
+[[nodiscard]] noisemaker::glsl::DVec3 lightleak_vec3(
     const lightleak192_oracle::Vec3Control& control) {
-  return noisemaker::glsl::Vec3(
-      noisemaker::uint_bits_to_float(control.words[0]),
-      noisemaker::uint_bits_to_float(control.words[1]),
-      noisemaker::uint_bits_to_float(control.words[2]));
+  return noisemaker::glsl::DVec3(
+      static_cast<double>(noisemaker::uint_bits_to_float(control.words[0])),
+      static_cast<double>(noisemaker::uint_bits_to_float(control.words[1])),
+      static_cast<double>(noisemaker::uint_bits_to_float(control.words[2])));
 }
 
 void lightleak_require_binding_table() {
@@ -30059,24 +30120,21 @@ constexpr std::array<Controls, 9> kControls{{
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
     else result.set_uniform(std::string(name), noisemaker::glsl::Vec2(value[0], value[1]));
   };
-  // classicNoisedeck/fractal:fractal is on the double-precision
-  // palette-uniform carrier list (see executor.cpp's
-  // classic_noisedeck_palette_uses_double_carrier); only its four palette
-  // uniforms bind `glsl::DVec3` -- bgColor (fractal's other vec3 uniform)
-  // is unaffected and keeps `glsl::Vec3`.
-  const auto is_double_palette_uniform = [](std::string_view name) {
-    return name == "paletteOffset" || name == "paletteAmp" ||
-           name == "paletteFreq" || name == "palettePhase";
-  };
+  // classicNoisedeck/fractal:fractal's four palette uniforms were already on
+  // the double-precision palette-uniform carrier list (see executor.cpp's
+  // classic_noisedeck_palette_uses_double_carrier); `bgColor` (fractal's
+  // other vec3 uniform) is now ALSO a double-vector carrier under the
+  // generalized rule (emit_typed_cpp.py's `_is_double_vector_uniform`: every
+  // ordinary effect-parameter vec3/vec4 uniform is one, with no per-program
+  // exceptions left in this program). Every vec3 uniform this fixture binds
+  // is therefore `glsl::DVec3`.
   const auto put_vec3 = [&](std::string_view name, const std::array<float, 3>& value) {
     if (skip(name)) return;
     if (wrong_type(name)) result.set_uniform(std::string(name), 1.0);
-    else if (is_double_palette_uniform(name))
-      result.set_uniform(std::string(name),
-                         noisemaker::glsl::DVec3(static_cast<double>(value[0]),
-                                                 static_cast<double>(value[1]),
-                                                 static_cast<double>(value[2])));
-    else result.set_uniform(std::string(name), noisemaker::glsl::Vec3(value[0], value[1], value[2]));
+    else result.set_uniform(std::string(name),
+                            noisemaker::glsl::DVec3(static_cast<double>(value[0]),
+                                                    static_cast<double>(value[1]),
+                                                    static_cast<double>(value[2])));
   };
   const auto put_number = [&](std::string_view name, float value) {
     if (skip(name)) return;

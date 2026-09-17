@@ -107,10 +107,12 @@ CPP_TYPES = {
 # un-rounded JS doubles (renderer.js buildBindings()), narrowing to float32
 # only where its own per-op arithmetic narrows; a `glsl::Vec3` (float lanes)
 # uniform ABI narrows at construction instead, before that arithmetic runs,
-# which is measurably not byte-exact against the authority. This is the only
-# uniform/program carrier list this generator's `_cpp_type()` override
-# applies to; every other program or uniform keeps its ordinary CPP_TYPES
-# mapping unconditionally. Two independent generators (this one and
+# which is measurably not byte-exact against the authority. This was once
+# the only carrier list `_cpp_type()` applied; `is_double_vector_uniform()`
+# below generalizes the same rule to every vec3/vec4 effect-parameter
+# uniform in the corpus (this five-program list is kept only because it is
+# already proven, not because the general rule wouldn't also reach it: it
+# would, identically). Two independent generators (this one and
 # emit_typed_cpp.py) each compute a uniform's cpp_type; they must agree, so
 # this list is deliberately kept identical to, not derived from, the other.
 CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES = (
@@ -128,7 +130,77 @@ CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
     for program_key in CLASSIC_NOISEDECK_DOUBLE_PALETTE_PROGRAMS
     for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
 )
+# classicNoisedeck/noise:noise also declares the same four palette-typed
+# uniforms as the carriers above (routed through the identical catalog
+# "palette" parameter mechanism, so `source == "effect_parameter"` too),
+# but its generated typed route bakes `colorMode` to a compile-time
+# constant that never reaches `pal()` -- dead code in this port, so there
+# is no live path to prove a widened ABI against, and
+# src/graph/executor.cpp's `apply_classic_noisedeck_palette_override`
+# deliberately keeps binding it `glsl::Vec3`. `is_double_vector_uniform`'s
+# general rule below would otherwise also widen it (it IS an ordinary
+# effect-parameter vec3 uniform); this is the one deliberate carve-out,
+# mirrored exactly in tools/glslcpp/emit_typed_cpp.py's
+# `_CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION`.
+CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION = frozenset(
+    (program_key, uniform_name)
+    for program_key in ("classicNoisedeck/noise:noise",)
+    for uniform_name in CLASSIC_NOISEDECK_PALETTE_UNIFORM_NAMES
+)
+# The only vec3/vec4 uniform NAMES, anywhere in the pinned corpus, that are
+# not sourced from an ordinary DSL effect parameter: filter/normalMap's
+# `uniform vec4 size|motion`, defaulted from createCanonicalBindings()'s own
+# `Float32Array(4)` (PASS_DERIVED_BINDINGS's "canonical_size_default"/
+# "canonical_motion_default" above) because no catalog parameter maps onto
+# either name anywhere in the corpus. Kept as an explicit name list (not
+# derived) for the same reason PASS_DERIVED_BINDINGS itself is explicit: an
+# unlisted vec3/vec4 uniform that is genuinely not effect-parameter-sourced
+# must fail closed via `source`, not silently widen.
+DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES = frozenset({"size", "motion"})
+# `synth/solid:solid`'s `color` is an ordinary effect-parameter vec3
+# uniform, but this port's frozen, hand-written
+# `src/generated/synth_solid.cpp` legacy factory (dispatched over the typed
+# emitter's own row for the same key) reads it with a literal
+# `bindings.get_or<glsl::Vec3>("color", ...)` -- `_legacy_factories` below
+# authenticates the typed row's ABI against that exact literal, so widening
+# this uniform without also hand-editing the frozen file would fail that
+# authentication. `solid.glsl`'s only use of `color` is `color * alpha`
+# (vector-times-scalar, which narrows unconditionally either way -- see
+# tools/glslcpp/emit_typed_cpp.py's `_double_vector_expression` docstring),
+# so this carve-out changes nothing observable. Mirrored exactly in that
+# file's `_FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION`.
+FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
+    ("synth/solid:solid", "color"),
+})
 SUPPORTED_DRAW_MODES = frozenset({"fragment", "triangles"})
+
+
+def is_double_vector_uniform(display: str, name: str | None, source: str | None,
+                              program_key: str | None = None) -> bool:
+    """Whether a vec3/vec4 uniform still carries the authority's raw,
+    un-rounded JS double all the way to bind time.
+
+    Generalizes `CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS` (see its
+    docstring) from five hand-picked programs to every vec3/vec4 uniform
+    the authority actually sources the same way theirs are: spread
+    verbatim from `options.uniforms` in createCanonicalBindings()
+    (noisemaker-for-cpu's src/csl/glsl-kernel.js) -- exactly
+    `source == "effect_parameter"` in this generator's own classification
+    a few lines above, which is already computed from the authority's own
+    catalog metadata (`params`/`paramAliases`/`param_by_uniform`/
+    `param_by_color_mode_uniform`), not guessed from names. `resolution`/
+    `fullResolution`/`tileOffset` (vec2, `reserved_runtime_state`) come from
+    a `Float32Array` instead, but nothing vec2 is in scope here. See
+    `DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES` for the two names this still
+    excludes despite being technically reachable as "effect_parameter" in
+    principle (empirically neither ever is, in this corpus) -- kept as a
+    fail-closed belt alongside the `source` check itself, matching
+    tools/glslcpp/emit_typed_cpp.py's `_is_double_vector_uniform`, which has
+    no `source` to check and relies on this name list alone.
+    """
+    return (display in {"vec3", "vec4"} and source == "effect_parameter"
+            and name not in DOUBLE_VECTOR_UNIFORM_EXCLUDED_NAMES
+            and (program_key, name) not in FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION)
 
 
 class CompatibilityError(ValueError):
@@ -366,6 +438,11 @@ def _cpp_type(display: str, name: str | None = None, source: str | None = None,
         return "float"
     if display == "float" and (name, source) not in _FROUNDED_SCALAR_UNIFORMS:
         return "double"
+    if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS:
+        return "glsl::DVec3"
+    if (program_key, name) not in CLASSIC_NOISEDECK_NOISE_PALETTE_EXCLUSION \
+            and is_double_vector_uniform(display, name, source, program_key):
+        return "glsl::DVec3" if display == "vec3" else "glsl::DVec4"
     if display in CPP_TYPES:
         return CPP_TYPES[display]
     if display.startswith("sampler"):
@@ -521,10 +598,7 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
             source = None
             source_name = mapped
         program_key = typed_record.get("program_key")
-        cpp_type = (
-            "glsl::DVec3"
-            if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS
-            else _cpp_type(typ, name, source, program_key))
+        cpp_type = _cpp_type(typ, name, source, program_key)
         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
                 "source_name": source_name}
         uniforms.append(item)
