@@ -23029,7 +23029,8 @@ BoundKernel bind_filter_waves_waves(const glsl::Bindings& bindings) {
 // Source SHA-256: 68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22
 namespace typed_169 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, std::int32_t direction_value, double strength_value, double threshold_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), direction(direction_value), strength(strength_value), threshold(threshold_value) {}
+  State(std::int32_t METHOD_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, std::int32_t direction_value, double strength_value, double threshold_value) : METHOD(METHOD_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), direction(direction_value), strength(strength_value), threshold(threshold_value) {}
+  std::int32_t METHOD;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -23074,6 +23075,9 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double reach = (static_cast<double>(MAX_REACH) * static_cast<double>(amount));
   [[maybe_unused]] double marchDir = ((state.direction == std::int32_t(0)) ? static_cast<float>(-1.0) : static_cast<float>(1.0));
   [[maybe_unused]] double staggerPhase = static_cast<float>(0.0);
+  if (state.METHOD == std::int32_t(2)) {
+    staggerPhase = (static_cast<double>((static_cast<double>(static_cast<float>(0.5)) + static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::sin((static_cast<double>(glsl::swizzle<1>(globalCoord)) * static_cast<double>(static_cast<float>(0.22))))))))) * static_cast<double>(glsl::component_min(static_cast<float>(12.0), (static_cast<double>(reach) * static_cast<double>(static_cast<float>(0.18))))));
+  }
   [[maybe_unused]] glsl::Vec3 accumColor = glsl::FloatExpr<3>(static_cast<float>(0.0));
   [[maybe_unused]] double accumWeight = static_cast<float>(0.0);
   [[maybe_unused]] double baseLum = lum(state, context, glsl::swizzle<0, 1, 2>(src));
@@ -23089,17 +23093,41 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     [[maybe_unused]] double contrast = (static_cast<double>((static_cast<double>(lum(state, context, candidate)) - static_cast<double>(baseLum))) - static_cast<double>(edge));
     [[maybe_unused]] double activation = glsl::smoothstep(static_cast<float>(0.0), static_cast<float>(0.08), contrast);
     [[maybe_unused]] double alongRun = (static_cast<double>(distancePx) / static_cast<double>(glsl::component_max(reach, static_cast<float>(1.0))));
-    [[maybe_unused]] double decayRate = static_cast<float>(0.8);
-    [[maybe_unused]] double taperStart = static_cast<float>(0.82);
+    [[maybe_unused]] double taperStart = {};
+    [[maybe_unused]] double decayRate = {};
+    if (state.METHOD == std::int32_t(1)) {
+      decayRate = static_cast<float>(0.8);
+    } else {
+      if (state.METHOD == std::int32_t(2)) {
+        decayRate = static_cast<float>(2.0);
+      } else {
+        decayRate = static_cast<float>(3.4);
+      }
+    }
+    if (state.METHOD == std::int32_t(1)) {
+      taperStart = static_cast<float>(0.82);
+    } else {
+      taperStart = static_cast<float>(0.72);
+    }
     [[maybe_unused]] double endTaper = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep(taperStart, static_cast<float>(1.0), alongRun)));
     [[maybe_unused]] double weight = (static_cast<double>((static_cast<double>(activation) * static_cast<double>(glsl::exp((static_cast<double>((-decayRate)) * static_cast<double>(alongRun)))))) * static_cast<double>(endTaper));
     accumColor = glsl::Vec3((accumColor + (candidate * weight)));
     accumWeight = (accumWeight + weight);
   }
   [[maybe_unused]] glsl::Vec3 integrated = (accumColor / glsl::component_max(accumWeight, static_cast<float>(0.00001)));
-  [[maybe_unused]] double densityRate = static_cast<float>(0.12);
+  [[maybe_unused]] double methodGain = {};
+  [[maybe_unused]] double densityRate = {};
+  if (state.METHOD == std::int32_t(1)) {
+    densityRate = static_cast<float>(0.12);
+  } else {
+    densityRate = static_cast<float>(0.16);
+  }
   [[maybe_unused]] double density = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::exp((static_cast<double>((-accumWeight)) * static_cast<double>(densityRate)))));
-  [[maybe_unused]] double methodGain = static_cast<float>(1.0);
+  if (state.METHOD == std::int32_t(1)) {
+    methodGain = static_cast<float>(1.0);
+  } else {
+    methodGain = static_cast<float>(0.88);
+  }
   [[maybe_unused]] double blendAmount = glsl::clamp((static_cast<double>((static_cast<double>(density) * static_cast<double>(amount))) * static_cast<double>(methodGain)), static_cast<float>(0.0), static_cast<float>(1.0));
   [[maybe_unused]] glsl::Vec3 streak = glsl::mix(glsl::swizzle<0, 1, 2>(src), integrated, blendAmount);
   output = glsl::Vec4(glsl::Vec4(glsl::component_max(glsl::swizzle<0, 1, 2>(src), streak), glsl::swizzle<3>(src)));
@@ -23107,7 +23135,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_169
 
 BoundKernel bind_filter_wind_wind(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_169::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<std::int32_t>("direction"), bindings.get_number("strength"), bindings.get_number("threshold"));
+  const auto state = std::make_shared<typed_169::State>(bindings.get<std::int32_t>("METHOD"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<std::int32_t>("direction"), bindings.get_number("strength"), bindings.get_number("threshold"));
   (void)bindings;
   return BoundKernel(state, &typed_169::pixel);
 }
@@ -25477,7 +25505,10 @@ BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings) {
 // Source SHA-256: 33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce
 namespace typed_191 {
 struct State final : KernelState {
-  State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, double speed_value, double intensity_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), speed(speed_value), intensity(intensity_value) {}
+  State(std::int32_t OCTAVES_value, std::int32_t OUTPUT_MODE_value, bool RIDGES_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, double speed_value, double intensity_value) : OCTAVES(OCTAVES_value), OUTPUT_MODE(OUTPUT_MODE_value), RIDGES(RIDGES_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), speed(speed_value), intensity(intensity_value) {}
+  std::int32_t OCTAVES;
+  std::int32_t OUTPUT_MODE;
+  bool RIDGES;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
   glsl::Vec2 fullResolution;
@@ -25509,8 +25540,8 @@ struct State final : KernelState {
 
 [[nodiscard]] glsl::Vec3 curlNoise3D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
   [[maybe_unused]] double eps = static_cast<float>(1.0);
-  [[maybe_unused]] double a = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::sin((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(std::int32_t(1))))) * static_cast<double>(static_cast<float>(0.2)));
-  [[maybe_unused]] double b = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(std::int32_t(1))))) * static_cast<double>(static_cast<float>(0.2)));
+  [[maybe_unused]] double a = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::sin((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(state.OCTAVES)))) * static_cast<double>(static_cast<float>(0.2)));
+  [[maybe_unused]] double b = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(glsl::cos((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(6.28318))))) * static_cast<double>(state.speed))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(float(state.OCTAVES)))) * static_cast<double>(static_cast<float>(0.2)));
   [[maybe_unused]] glsl::Vec3 offset1 = glsl::FloatExpr<3>(a, b, static_cast<float>(0.0));
   [[maybe_unused]] glsl::Vec3 offset2 = glsl::FloatExpr<3>((static_cast<double>(static_cast<float>(31.416)) - static_cast<double>(a)), (static_cast<double>(static_cast<float>(47.853)) - static_cast<double>(b)), static_cast<float>(12.793));
   [[maybe_unused]] glsl::Vec3 offset3 = glsl::FloatExpr<3>((static_cast<double>(static_cast<float>(93.719)) - static_cast<double>(b)), (static_cast<double>(static_cast<float>(61.248)) - static_cast<double>(a)), static_cast<float>(73.561));
@@ -25540,7 +25571,7 @@ struct State final : KernelState {
   [[maybe_unused]] double amp = static_cast<float>(1.0);
   [[maybe_unused]] double freq = static_cast<float>(1.0);
   [[maybe_unused]] double maxAmp = static_cast<float>(0.0);
-  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(1)); ++i) {
+  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < state.OCTAVES); ++i) {
     [[maybe_unused]] double n = simplex3D(state, context, (p * freq));
     sum = (sum + (static_cast<double>(n) * static_cast<double>(amp)));
     maxAmp = (maxAmp + amp);
@@ -25618,8 +25649,28 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 curl = curlNoise3D(state, context, p);
   curl = glsl::Vec3(glsl::Vec3((glsl::Vec3((glsl::tanh_lanewise((curl * state.intensity)) * static_cast<float>(0.5))) + static_cast<float>(0.5))));
   [[maybe_unused]] glsl::Vec3 color = {};
-  color = glsl::Vec3(curl);
-  if (true) {
+  if (state.OUTPUT_MODE == std::int32_t(0)) {
+    color = glsl::Vec3(glsl::FloatExpr<3>(glsl::swizzle<0>(curl)));
+  } else {
+    if (state.OUTPUT_MODE == std::int32_t(1)) {
+      color = glsl::Vec3(glsl::FloatExpr<3>(glsl::swizzle<1>(curl)));
+    } else {
+      if (state.OUTPUT_MODE == std::int32_t(2)) {
+        color = glsl::Vec3(glsl::FloatExpr<3>(glsl::swizzle<2>(curl)));
+      } else {
+        if (state.OUTPUT_MODE == std::int32_t(3)) {
+          color = glsl::Vec3(curl);
+        } else {
+          {
+            [[maybe_unused]] glsl::Vec3 curlCentered = ((curl * static_cast<float>(2.0)) - static_cast<float>(1.0));
+            [[maybe_unused]] double mag = glsl::length(curlCentered);
+            color = glsl::Vec3(glsl::FloatExpr<3>(mag));
+          }
+        }
+      }
+    }
+  }
+  if (state.RIDGES) {
     color = glsl::Vec3(glsl::Vec3((static_cast<float>(1.0) - glsl::abs(((color * static_cast<float>(2.0)) - static_cast<float>(1.0))))));
   }
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
@@ -25627,7 +25678,11 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_191
 
 BoundKernel bind_synth_curl_curl(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_191::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("intensity"));
+  const auto OCTAVES = bindings.get<std::int32_t>("OCTAVES");
+  if (OCTAVES < 1 || OCTAVES > 3) {
+    throw glsl::KernelBindingError("synth/curl:curl octaves must be in [1,3]");
+  }
+  const auto state = std::make_shared<typed_191::State>(OCTAVES, bindings.get<std::int32_t>("OUTPUT_MODE"), bindings.get<bool>("RIDGES"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("intensity"));
   (void)bindings;
   return BoundKernel(state, &typed_191::pixel);
 }
@@ -30697,7 +30752,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"filter/watercolor:wcSeed", "bind_filter_watercolor_wcSeed", "bind_filter_watercolor_wcSeed", "typed_emitter", "e3158e856ebb45df82222fcf26708c83d5bdba7b9af2f017e18f4fde696633da", "201fe41cf7cc53bd60a793b580cef02524c70a446a38fd400a3699ec2a0109b6", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "292d32bd6aadcf063588ca7fc8f938cf85e72949631680fd7e902ce12bc04b29", "0b4106ddf6b5a799d2d8721b00cd11cbb0498cd89adb2c35296f1188ab34fc09", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_watercolor_wcSeed},
     {"filter/watercolor:wcSimplify", "bind_filter_watercolor_wcSimplify", "bind_filter_watercolor_wcSimplify", "typed_emitter", "81e668d554920b70353a2cccaaa414f1ad4eebd83bd1d7100ca05f44a11f8b5c", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "7e9c8b6b03ddb424dfa9ee55ab52ae94732506a272715573edc6e277042a4df4", "60635dd32add52eb47f8725e2eb3d4f11fcb068081159d97141eafdacbcf75af", "0b4106ddf6b5a799d2d8721b00cd11cbb0498cd89adb2c35296f1188ab34fc09", "9a699ac603bcd424dc36f584c51e9e2b9bdf3947e71af2b0b605347787d6928a", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_watercolor_wcSimplify},
     {"filter/waves:waves", "bind_filter_waves_waves", "bind_filter_waves_waves", "typed_emitter", "f4cddf1b3a6c9c68aa677b6743af313e1cdb2bf0a857ce9a1c13edc80f54e3aa", "3a78bd7d965fbb77fe00a4c0b2d19b9081a71ae404df67c437d8cd8e02afee6c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "49b575b8bf1c2476d17d6865acb0d0b2ceadb4d323d8b7764451cfd9fad8faa6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_waves_waves},
-    {"filter/wind:wind", "bind_filter_wind_wind", "bind_filter_wind_wind", "typed_emitter", "68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22", "b01a55457d8e33d7cb77ed84595fbe8658ac14c3d7235a19f9dd38e1dad8b725", "default-only", "METHOD=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d0b1e678feb4411d49f27569f72ae991d268363cedea14842de8b0b324de0479", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_wind_wind},
+    {"filter/wind:wind", "bind_filter_wind_wind", "bind_filter_wind_wind", "typed_emitter", "68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22", "3d805daa008c8d73987c199889114dd6e6caf529a81ae23490039d7e2c2c4db4", "runtime-int", "METHOD=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8ba31c4a93bd010557afc38043925f10bf0fa8a7285c7ce02a7eb86c904f2a5f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_wind_wind},
     {"filter/wobble:wobble", "bind_filter_wobble_wobble", "bind_filter_wobble_wobble", "typed_emitter", "1bdd1e3bed9111743dfeb7e3418e14c42aa8d93ed4636167a99d17cb143a38cc", "2fc15c75c70f097ef50e76964c377ad4c9cab64a8b9373dc5e34b9dc8179fcce", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "2feaa80d9c36690f443b881467a509af791170afa1079e7c15c0aaa74eb172e7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_wobble_wobble},
     {"filter/wormhole:blend", "bind_filter_wormhole_blend", "bind_filter_wormhole_blend", "typed_emitter", "dee5cfdc0f16be116355c951be3d4f185d49d64c85578bef71001253c1920377", "99413f0a013f79c99f431c7353e0e53ac343f678e7e737a741a3a781ac029675", "none", "", "6e702c49097592538fde048240f76c994da9e66f9644ee248ba4ecbc777b524d", "4c0e9a262ab9e6ec332a5525bc512301a1e33f5c80b43702ed8839d9907241ae", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_wormhole_blend},
     {"filter/wormhole:clear", "bind_filter_wormhole_clear", "bind_filter_wormhole_clear", "typed_emitter", "4d3b8edd70ff43d7291b965861622ce0303e7b4c1f4de61c7a3b74e9aa1c171f", "4f0c6ee034ecc8eec56c973c334d551dcef74a8a6652966d3e1071d6b237e6b7", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "569e27679dd1248d86a564daa26051a9565693caa0ec11c3a697f420669992bd", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_wormhole_clear},
@@ -30719,7 +30774,7 @@ constexpr std::array<FactoryRoute, 211> kCanonicalRoutes{{
     {"mixer/uvRemap:uvRemap", "bind_mixer_uvRemap_uvRemap", "bind_mixer_uvRemap_uvRemap", "typed_emitter", "ec2514ab283fa6cd67687c3cbf717d4d8596d3bdc075a7ea3d7c7dab800694e5", "5c0bc8cb43e1175372ad8503606e022aa089439cbf6f9f8f360089bc53aadbf8", "none", "", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "7b68f4b21fb31bfe572c0155c51ce1ef721559e0495ad3d9d21dfc20005ef194", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_mixer_uvRemap_uvRemap},
     {"synth/bitwise:bitwise", "bind_synth_bitwise_bitwise", "bind_synth_bitwise_bitwise", "typed_emitter", "1beb9d4b4fff3466587b9c942af3b1a46c0f35a1bf41874c7461c18dcf2f923f", "2162ae1cb06f361aa88e91d435e9dc4f4ce207f08e93ff4dc579987064b868ca", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "97d9955e99ceb34c3b433e3d795fa2ba5128dda06c847d9c29e120a7dcc68854", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_bitwise_bitwise},
     {"synth/cell:cell", "bind_synth_cell_cell", "bind_synth_cell_cell", "typed_emitter", "b2cae5ecdfd315194d4b3b04d2c5b39d1b48c56a9bd1a10396827e3b8d413a18", "6a61608d7ddf0c96bd77e06a730dc1d7d0cf352d2d1a5aa535657a86a4d3a2d8", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "47cb208c1152c59404a3e2b4b03c9bbeea506db24179d3891425100142b90d10", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_cell_cell},
-    {"synth/curl:curl", "bind_synth_curl_curl", "bind_synth_curl_curl", "typed_emitter", "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce", "798917783cfd880d0ecc11447f9f0aba48b438358515a65f59ec9a412bcb8e8c", "default-only", "OCTAVES=1;OUTPUT_MODE=3;RIDGES=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "940bc892c615a8af6940a97c87ccbb39e9ed1fee39fa9aa6947e19d9d3aa5f19", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_curl_curl},
+    {"synth/curl:curl", "bind_synth_curl_curl", "bind_synth_curl_curl", "typed_emitter", "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce", "1bac543a8b6c4e0e2d67ad1246c88c42a0ed17c43fef14d7c19c9eb109704bd4", "runtime-int", "OCTAVES=1;OUTPUT_MODE=3;RIDGES=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "4e0612d606faccb602ac30a33c70aed6131e936a195209f0972f6d112da8721c", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_curl_curl},
     {"synth/gabor:gabor", "bind_synth_gabor_gabor", "bind_synth_gabor_gabor", "typed_emitter", "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5", "e9c1d22f4c2ac8c2c72fe595130a56b7b4fb81e3d7433eab6dc8be44b658b88c", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "4628baf57739b5008830ab533b47aeca9f11811659412ae1f00d8bac10e9e8c6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gabor_gabor},
     {"synth/gradient:gradient", "bind_synth_gradient_gradient", "bind_synth_gradient_gradient", "typed_emitter", "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75", "e49ea0cadc23009e3633af3b0a1bf259cbe6b3d91cb30cc32b42923c92575900", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "8ca4bfda0ef79078869ef0b6936ab01bbc7622d3efd699400b4be9543a44e7d3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gradient_gradient},
     {"synth/julia:julia", "bind_synth_julia_julia", "bind_synth_julia_julia", "typed_emitter", "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0", "2ef898fd02c7f283ee34ff3bde8bc4c43f09285cbc1814a02ce84991cfe614d8", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "89a4227df665f58752c8fae3ec1efe9f4b7a504cc03f5f94d7c2fe8501de19f0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_julia_julia},

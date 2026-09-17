@@ -43,10 +43,16 @@ BLUR_V_KEY = "filter/blur:blurV"
 BLUR_KEYS = frozenset({BLUR_H_KEY, BLUR_V_KEY})
 STATS_KEY = "filter/normalize:statsFinal"
 NOISE_KEY = "synth/noise:noise"
+# synth/curl's fifth key and the module's first *global-uniform-direct* record:
+# OCTAVES (promoted from a compile-time define to a runtime uniform by the
+# generic dynamic-define contract) is read directly in fbmSimplex3D's own
+# `for (i = 0; i < OCTAVES; i++)`, with no helper-parameter indirection to
+# authenticate -- one loop, one program, one uniform read in its condition.
+CURL_KEY = "synth/curl:curl"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
-    {TETRA_KEY, STATS_KEY, NOISE_KEY, *BLUR_KEYS})
+    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, *BLUR_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -197,6 +203,31 @@ _NOISE_EXPECTED = {
 }
 
 
+# synth/curl:curl -- OCTAVES promoted to a dynamic define (the generic
+# runtime-define contract's own RIDGES/OUTPUT_MODE/OCTAVES table) is read
+# directly inside fbmSimplex3D's `for (i = 0; i < OCTAVES; i++)`. Every
+# figure below was computed once, mechanically, by parsing this exact pinned
+# corpus source with `{"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES":
+# "bool"}` as runtime defines and hashing the resulting typed program the
+# same way `_authenticate_noise` does -- not hand-derived.
+_CURL_EXPECTED = {
+    "raw_bytes": 7290,
+    "raw_sha256": "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce",
+    "normalized_bytes": 5114,
+    "normalized_sha256": "6a1392aefe3c9536deda3b2ff413596cf5e259046b537ae4c09b0cc928372b6d",
+    "defines": (("OCTAVES", "str", "int"), ("OUTPUT_MODE", "str", "int"),
+               ("RIDGES", "str", "bool")),
+    "functions_sha256": "fa11df43f344b9a549f7a86fe9d0f0919b8283546447680e00f24a108d7ec6f4",
+    "whole_program_sha256": "f4f92cd97e89041f2b4dfae1ef35f90bd003254ecf7730e7d0a1fba3c9de8c71",
+    "interface_sha256": "2b00785b906ff64e016ea416d50e6106c2494dc34f3655f29037ff72bbb939af",
+    "uniform": (1, "OCTAVES", "int", "uniform", False, "1:1-1:21"),
+    "helper": (20, "fbmSimplex3D", "117:1-133:2"),
+    "loop": ("123:5-130:6",
+             "d1c662a6a330b57959864b7ab4732f81fae93241fe3008f427e4230f34e6c441"),
+    "metadata": ("int", 1, 1, 3),
+}
+
+
 _STATS_EXPECTED = {
     "raw_bytes": 959,
     "raw_sha256": "0b8daf6d5a38dc34bbd98800fdd46f9cdfa0b97f00196382023456a0b6eb1dfa",
@@ -313,11 +344,22 @@ def validate_runtime_loop_contract(
              and contract.lane_seeds == ()
              and contract.seed.provenance
              == "runtime-metadata-uniform-direct-parameter")
+    curl = (contract.seed is not None
+            and contract.key == CURL_KEY and contract.kind == "integer-range"
+            and contract.uniform_name == "OCTAVES"
+            and contract.minimum == 1 and contract.uniform_maximum == 3
+            and contract.default == 1
+            and contract.maximum == 3
+            and contract.render_scale_name is None
+            and contract.radius_declaration is None
+            and contract.lane_seeds == ()
+            and contract.seed.provenance
+            == "runtime-metadata-uniform-direct-global")
     malformed_scalar = (contract.seed is not None
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
-    if not (tetra or blur or stats or noise) or malformed_scalar:
+    if not (tetra or blur or stats or noise or curl) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -366,6 +408,23 @@ def validate_noise_metadata(effect: object) -> None:
         raise _fail("metadata contract mismatch")
 
 
+def validate_curl_metadata(effect: object) -> None:
+    """Validate synth/curl's authoritative ``octaves`` metadata record.
+
+    The corpus ``metadata.json`` and the shipped ``specs.js`` agree: int,
+    minimum 1, default 1, maximum 3. The seed's maximum (3) is this record's,
+    by construction.
+    """
+    try:
+        record = effect["params"]["octaves"]  # type: ignore[index]
+        actual = (record["type"], record["min"], record["default"],
+                  record["max"])
+    except (KeyError, TypeError):
+        raise _fail("metadata contract mismatch") from None
+    if actual != _CURL_EXPECTED["metadata"]:
+        raise _fail("metadata contract mismatch")
+
+
 def authenticate_runtime_loop_bound(
         program: TypedProgram, source_hash: str | None,
         profile: str | None) -> RuntimeLoopBoundContract | None:
@@ -390,6 +449,8 @@ def authenticate_runtime_loop_bound(
         return _authenticate_stats(program, source_hash)
     if program.key == NOISE_KEY:
         return _authenticate_noise(program, source_hash)
+    if program.key == CURL_KEY:
+        return _authenticate_curl(program, source_hash)
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
@@ -603,6 +664,91 @@ def _authenticate_noise(program: TypedProgram,
         f"{NOISE_KEY} octaves must be in [1,8]"))
 
 
+def _authenticate_curl(program: TypedProgram,
+                       source_hash: str | None) -> RuntimeLoopBoundContract:
+    """Authenticate synth/curl's OCTAVES loop bound.
+
+    Structurally simpler than noise's: OCTAVES is read directly as a global
+    uniform inside fbmSimplex3D's own `for (i = 0; i < OCTAVES; i++)` --
+    there is no helper-parameter indirection and no call site to
+    authenticate, and the whole program holds exactly one loop, so (unlike
+    noise's "exactly one *unproved* loop amid proved companions" census) this
+    census requires exactly one loop, full stop.
+    """
+    expected = _CURL_EXPECTED
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    if (source_hash != expected["raw_sha256"]
+            or len(raw) != expected["raw_bytes"]
+            or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
+            or len(normalized) != expected["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest()
+            != expected["normalized_sha256"]
+            or defines != expected["defines"]
+            or program.body_status != "analyzed"):
+        raise _fail("source or define profile mismatch")
+
+    functions = _cleared_functions(program)
+    whole = (program.key, program.source, program.raw_source,
+             program.declarations, functions, program.resources,
+             program.body_status, program.local_type_names, program.structs,
+             program.uniform_blocks, program.interface_symbols,
+             program.builtin_symbols, program.preprocessor_defines)
+    interface = (program.declarations, program.resources,
+                 program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.preprocessor_defines)
+    if (_sha(functions) != expected["functions_sha256"]
+            or _sha(whole) != expected["whole_program_sha256"]
+            or _sha(interface) != expected["interface_sha256"]):
+        raise _fail("interface, function, or call-graph profile mismatch")
+
+    uniform = next((item.symbol for item in program.declarations
+                    if item.symbol.id == expected["uniform"][0]), None)
+    if (uniform is None
+            or (uniform.id, uniform.name, uniform.type.display(), uniform.storage,
+                uniform.writable, _span(uniform)) != expected["uniform"]):
+        raise _fail("uniform profile mismatch")
+
+    helper = next((item for item in functions
+                   if item.signature.id == expected["helper"][0]), None)
+    if (helper is None
+            or (helper.signature.id, helper.name, _span(helper)) != expected["helper"]):
+        raise _fail("helper profile mismatch")
+
+    loops: list[tuple[object, TypedStatement]] = []
+    for function in program.functions:
+        for statement in function.body:
+            for value in _walk_statement(statement):
+                if isinstance(value, TypedStatement) and value.kind in {"for", "while", "dowhile"}:
+                    loops.append((function, value))
+    if len(loops) != 1:
+        raise _fail("loop-site profile mismatch")
+    loop_owner, loop = loops[0]
+    if (loop_owner.signature.id != helper.signature.id
+            or _span(loop) != expected["loop"][0]):
+        raise _fail("loop-site profile mismatch")
+    if loop.loop_proof is None:
+        if _sha(loop) != expected["loop"][1]:
+            raise _fail("loop-site profile mismatch")
+    else:
+        proof = loop.loop_proof
+        if ((proof.start_value, proof.bound_value, proof.comparison,
+             proof.update, proof.trip_count, proof.bound_kind)
+                != (0, 3, "<", "++", 3,
+                    "runtime-metadata-uniform-direct-global")):
+            raise _fail("loop-site profile mismatch")
+
+    seed = RuntimeScalarBoundSeed(uniform.id, 3,
+                                  "runtime-metadata-uniform-direct-global",
+                                  uniform)
+    return validate_runtime_loop_contract(RuntimeLoopBoundContract(
+        CURL_KEY, seed, "integer-range", "OCTAVES", 1, 3, 1,
+        f"{CURL_KEY} octaves must be in [1,3]"))
+
+
 def _authenticate_blur(program: TypedProgram,
                        source_hash: str | None) -> RuntimeLoopBoundContract:
     expected = _BLUR_EXPECTED[program.key]
@@ -804,9 +950,10 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 
 __all__ = (
     "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS", "STATS_KEY",
-    "NOISE_KEY", "RUNTIME_LOOP_BOUND_KEYS", "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
+    "NOISE_KEY", "CURL_KEY", "RUNTIME_LOOP_BOUND_KEYS",
+    "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
     "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeLoopBoundContract",
     "authenticate_runtime_loop_bound", "apply_runtime_loop_bound",
     "validate_runtime_loop_contract", "validate_tetra_metadata",
-    "validate_blur_metadata", "validate_noise_metadata",
+    "validate_blur_metadata", "validate_noise_metadata", "validate_curl_metadata",
 )

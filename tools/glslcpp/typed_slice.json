@@ -737,15 +737,13 @@
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/scatter:scatterJitter",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/scatter:scatterJitter"
     },
     {
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/scatter:scatterSmooth",
-      "runtime_define_profile": "runtime-defines-generic-v1"
+      "program_key": "filter/scatter:scatterSmooth"
     },
     {
       "defines": {},
@@ -946,7 +944,8 @@
       "defines": {
         "METHOD": 1
       },
-      "program_key": "filter/wind:wind"
+      "program_key": "filter/wind:wind",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -1043,7 +1042,9 @@
         "OUTPUT_MODE": 3,
         "RIDGES": true
       },
-      "program_key": "synth/curl:curl"
+      "program_key": "synth/curl:curl",
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
     },
     {
       "defines": {},

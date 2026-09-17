@@ -89,6 +89,10 @@ PASS_DERIVED_BINDINGS = {
     "LENS_TYPE": "typed_compile_define",
     "MODE": "typed_compile_define",
     "SHAPE": "typed_compile_define",
+    "METHOD": "typed_compile_define",
+    "OCTAVES": "typed_compile_define",
+    "OUTPUT_MODE": "typed_compile_define",
+    "RIDGES": "typed_compile_define",
 }
 CPP_TYPES = {
     "float": "float", "int": "std::int32_t", "uint": "std::uint32_t",

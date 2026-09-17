@@ -37,61 +37,75 @@ from .typed_ir import TypedExpression, TypedFunction, TypedProgram, TypedStateme
 PROFILE = "curl-vector-math-tanh-wide-mod-v1"
 CURL_KEY = "synth/curl:curl"
 
+# Relocked for the generic runtime-define contract: OCTAVES/OUTPUT_MODE/
+# RIDGES moved from literal int/bool defines to dynamic uniforms, so
+# normalize() prepends three `uniform` declaration lines ahead of everything
+# else in the source. That single cause explains every field below that
+# moved: every function id shifts +3 (16-22 -> 19-25), every span shifts by
+# the same three prepended lines, `program.resources.uniforms` gains the
+# three new uniform names ahead of the eight already there, and the entrypoint
+# charge rises from 12 to 36 (OCTAVES's own loop trip count -- authenticated
+# separately by runtime_loop_bound_profile's own CURL_KEY carrier -- multiplies
+# curlNoise3D's twelve unrolled fbmSimplex3D calls: 3 * 12 = 36, matching the
+# source's own "36 simplex3D inlines" comment). No site moved, was added, or
+# was removed; recomputed mechanically with this module's own _sha/_span/
+# _whole/_interface helpers against the dynamic tree, then round-trip
+# verified through authenticate_curl_vector_math before landing.
 _RAW_BYTES = 7290
 _RAW_SHA256 = "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce"
-_NORMALIZED_BYTES = 4673
-_NORMALIZED_SHA256 = "405774c12a29bff814b92ffbe2cc5f3b267367aa40832befc59b509573be91e9"
-_FUNCTIONS_SHA256 = "06632686b2a2a1938389722409a109a71b6fb66fb2e1afd9b459e4fedb8b16fe"
-_WHOLE_SHA256 = "a7c44947e08fdf478857d1f9c400cd5072df99a14ae4d63aebcbd6d1fc1d9374"
-_INTERFACE_SHA256 = "0ff5180a4e2bbbf81e9a2705e99a155d9e9c378fbcbe5729eaa43a941c0227ae"
+_NORMALIZED_BYTES = 5114
+_NORMALIZED_SHA256 = "6a1392aefe3c9536deda3b2ff413596cf5e259046b537ae4c09b0cc928372b6d"
+_FUNCTIONS_SHA256 = "b92fc0929b856b340ae11103c23a58e9e3834f6b5b02227f244d1b73170c7ff2"
+_WHOLE_SHA256 = "52ce4382357c168e8806e379fe75fb71fb8afd071e3a8d766391b86246de0af8"
+_INTERFACE_SHA256 = "2b00785b906ff64e016ea416d50e6106c2494dc34f3655f29037ff72bbb939af"
 
-_DEFINES = (("OCTAVES", "int", "1"), ("OUTPUT_MODE", "int", "3"),
-            ("RIDGES", "bool", "true"))
-_LOOP_PROOF = (1, 0, 1, 1, 12, True)
+_DEFINES = (("OCTAVES", "str", "int"), ("OUTPUT_MODE", "str", "int"),
+            ("RIDGES", "str", "bool"))
+_LOOP_PROOF = (1, 0, 1, 3, 36, True)
 
 # Every function, so an added or renamed helper is a hard failure.
 _FUNCTIONS = (
-    (16, "curlNoise3D", "vec3", 1, 25, "137:1-181:2"),
-    (17, "fbmSimplex3D", "float", 1, 6, "114:1-130:2"),
-    (18, "main", "void", 0, 11, "183:1-208:2"),
-    (19, "permute", "vec3", 1, 1, "31:1-33:2"),
-    (20, "permute", "vec4", 1, 1, "34:1-36:2"),
-    (21, "simplex3D", "float", 1, 41, "43:1-110:2"),
-    (22, "taylorInvSqrt", "vec4", 1, 1, "38:1-40:2"),
+    (19, "curlNoise3D", "vec3", 1, 25, "140:1-184:2"),
+    (20, "fbmSimplex3D", "float", 1, 6, "117:1-133:2"),
+    (21, "main", "void", 0, 11, "186:1-229:2"),
+    (22, "permute", "vec3", 1, 1, "34:1-36:2"),
+    (23, "permute", "vec4", 1, 1, "37:1-39:2"),
+    (24, "simplex3D", "float", 1, 41, "46:1-113:2"),
+    (25, "taylorInvSqrt", "vec4", 1, 1, "41:1-43:2"),
 )
 
 # Exactly the four authenticated nodes, ordered by owning function id. Each row
 # is (callee, owning function id, path, span, result type, node sha, parent
 # kind, child type tuple, child sha tuple).
 _NODES = (
-    ("tanh", 18, (6, "e0", 1, 0, 0), "196:12-196:34", "vec3",
-     "bc83ca6fd3369ed6ac8321eb38db83a78569233a404563f491eb95736c27c09a",
+    ("tanh", 21, (6, "e0", 1, 0, 0), "199:12-199:34", "vec3",
+     "65277325ba652ae7f6f918fa89c67e09b0d5b1b3f7869e35d5e126899ea8afbb",
      "binary", ("vec3",),
-     ("f4e778bb127f3924bc93fd0b7beea12879fbf17dfb3fb557d25bc097f848c7be",)),
-    ("mod", 19, (0, "e0"), "32:12-32:47", "vec3",
-     "9e296505e841a30c1211828e3bc255acf00250f53572c992fc948c4a953eb208",
+     ("ce00823e91c194aaf60f4a1ee7776c2428520bc5836dfb0b5aac519241eccda4",)),
+    ("mod", 22, (0, "e0"), "35:12-35:47", "vec3",
+     "53e130f2d7565914c75b80f240994ba52b76b1886aca4800ba0a6e14009810c2",
      "None", ("vec3", "float"),
-     ("0e3bf42a81dd8ac63534ced244edbc02e3910e8a8f34c70530951adbf61e0b5c",
-      "428f06112f27901a71a78a75eea7ce4163e0bb3d60bf377232af739c2b084fe3")),
-    ("mod", 20, (0, "e0"), "35:12-35:47", "vec4",
-     "e0063fe65cbef6674dbb68fe752ddb24dfa7f419c15816227d24d24c8b3de39d",
+     ("c234aaafca741a1524b395dfd56ebaabd3ac6c68cf55e1e61fe0d6d93dae2af3",
+      "586ebb838e95f08141d35c9b498e42fccfecbe2c3165f6f86361037c1227e962")),
+    ("mod", 23, (0, "e0"), "38:12-38:47", "vec4",
+     "b85a4366c924a40674a36921bdf6faee9bd8a7bd435fcae9e68de25e671d885b",
      "None", ("vec4", "float"),
-     ("1754c609d6ec486f066d9cc518c08ce3e870ed7bd4a38ce67285b51a2f52b75c",
-      "a37a9afeb11211283c1314b5d163604986bf55f197f0dba043f40f7a201d73bb")),
-    ("mod", 21, (12, "e0", 1), "65:9-65:22", "vec3",
-     "5e8842bf171ffb0d63398609deaad1e1c6171bafed84b10e83f5967b337bc466",
+     ("823afbf3ac8d95a17912e085d80b51ddb1f707d32ce43eb1179f7bea07e20c7e",
+      "653034c76f5bbecef25cda10ca6f681ad52d57cc82d81d8578192c6930574f04")),
+    ("mod", 24, (12, "e0", 1), "68:9-68:22", "vec3",
+     "bf8f941004345a0b2b801543add17510799ac31d3fec0cc765dfb200e2bc13c9",
      "assign", ("vec3", "float"),
-     ("c2725ce361f7540980fe47e0e05f5703bb2353263f26e478a6a9ba1c6380730a",
-      "45961f58255d5a42e2f1264ee759fc43cd4ee3fa4241262452e8f96c16dccd2f")),
+     ("144bb779c287c434417940e95ec776b384368057252f86312fcfc7387e36e5aa",
+      "be3987cbf82fa8cc4450fffa0aaca8cceaeff97349df42cf288f1ae822ec79d4")),
 )
 
 # Every site sits directly under one statement; none is nested in the counted
 # loop, unlike Extrude's.
 _ANCESTORS = (
-    (("expr",), ("196:5-196:47",)),
-    (("return",), ("32:5-32:48",)),
+    (("expr",), ("199:5-199:47",)),
     (("return",), ("35:5-35:48",)),
-    (("expr",), ("65:5-65:23",)),
+    (("return",), ("38:5-38:48",)),
+    (("expr",), ("68:5-68:23",)),
 )
 
 # The mod overload shapes already admitted generally. Curl's three calls must
@@ -99,8 +113,9 @@ _ANCESTORS = (
 _GENERAL_MOD_OVERLOADS = frozenset({("float", "float"), ("vec2", "float"),
                                     ("vec2", "vec2")})
 
-_PROFILE_SHA256 = "c32f8b601aed72e9085d17f068eb5602c9fba8e4b1876c4aabbdc19ee4e53d93"
-_FROZEN_PROFILE_TUPLE_REPR = """('curl-vector-math-tanh-wide-mod-v1', 'synth/curl:curl', '33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce', (('OCTAVES', 'int', '1'), ('OUTPUT_MODE', 'int', '3'), ('RIDGES', 'bool', 'true')), 'glsl-f32', '06632686b2a2a1938389722409a109a71b6fb66fb2e1afd9b459e4fedb8b16fe', 'a7c44947e08fdf478857d1f9c400cd5072df99a14ae4d63aebcbd6d1fc1d9374', '0ff5180a4e2bbbf81e9a2705e99a155d9e9c378fbcbe5729eaa43a941c0227ae', (1, 0, 1, 1, 12, True), ((16, 'curlNoise3D', 'vec3', 1, 25, '137:1-181:2'), (17, 'fbmSimplex3D', 'float', 1, 6, '114:1-130:2'), (18, 'main', 'void', 0, 11, '183:1-208:2'), (19, 'permute', 'vec3', 1, 1, '31:1-33:2'), (20, 'permute', 'vec4', 1, 1, '34:1-36:2'), (21, 'simplex3D', 'float', 1, 41, '43:1-110:2'), (22, 'taylorInvSqrt', 'vec4', 1, 1, '38:1-40:2')), (('tanh', 18, (6, 'e0', 1, 0, 0), '196:12-196:34', 'vec3', 'bc83ca6fd3369ed6ac8321eb38db83a78569233a404563f491eb95736c27c09a', 'binary', ('vec3',), ('f4e778bb127f3924bc93fd0b7beea12879fbf17dfb3fb557d25bc097f848c7be',)), ('mod', 19, (0, 'e0'), '32:12-32:47', 'vec3', '9e296505e841a30c1211828e3bc255acf00250f53572c992fc948c4a953eb208', 'None', ('vec3', 'float'), ('0e3bf42a81dd8ac63534ced244edbc02e3910e8a8f34c70530951adbf61e0b5c', '428f06112f27901a71a78a75eea7ce4163e0bb3d60bf377232af739c2b084fe3')), ('mod', 20, (0, 'e0'), '35:12-35:47', 'vec4', 'e0063fe65cbef6674dbb68fe752ddb24dfa7f419c15816227d24d24c8b3de39d', 'None', ('vec4', 'float'), ('1754c609d6ec486f066d9cc518c08ce3e870ed7bd4a38ce67285b51a2f52b75c', 'a37a9afeb11211283c1314b5d163604986bf55f197f0dba043f40f7a201d73bb')), ('mod', 21, (12, 'e0', 1), '65:9-65:22', 'vec3', '5e8842bf171ffb0d63398609deaad1e1c6171bafed84b10e83f5967b337bc466', 'assign', ('vec3', 'float'), ('c2725ce361f7540980fe47e0e05f5703bb2353263f26e478a6a9ba1c6380730a', '45961f58255d5a42e2f1264ee759fc43cd4ee3fa4241262452e8f96c16dccd2f'))), ((('expr',), ('196:5-196:47',)), (('return',), ('32:5-32:48',)), (('return',), ('35:5-35:48',)), (('expr',), ('65:5-65:23',))))"""
+_PROFILE_SHA256 = "b067523ba841fdf0068778fc758d876f56d3eae50608438407938627ac3c76d6"
+_FROZEN_PROFILE_TUPLE_REPR = """('curl-vector-math-tanh-wide-mod-v1', 'synth/curl:curl', '33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce', (('OCTAVES', 'str', 'int'), ('OUTPUT_MODE', 'str', 'int'), ('RIDGES', 'str', 'bool')), 'glsl-f32', 'b92fc0929b856b340ae11103c23a58e9e3834f6b5b02227f244d1b73170c7ff2', '52ce4382357c168e8806e379fe75fb71fb8afd071e3a8d766391b86246de0af8', '2b00785b906ff64e016ea416d50e6106c2494dc34f3655f29037ff72bbb939af', (1, 0, 1, 3, 36, True), ((19, 'curlNoise3D', 'vec3', 1, 25, '140:1-184:2'), (20, 'fbmSimplex3D', 'float', 1, 6, '117:1-133:2'), (21, 'main', 'void', 0, 11, '186:1-229:2'), (22, 'permute', 'vec3', 1, 1, '34:1-36:2'), (23, 'permute', 'vec4', 1, 1, '37:1-39:2'), (24, 'simplex3D', 'float', 1, 41, '46:1-113:2'), (25, 'taylorInvSqrt', 'vec4', 1, 1, '41:1-43:2')), (('tanh', 21, (6, 'e0', 1, 0, 0), '199:12-199:34', 'vec3', '65277325ba652ae7f6f918fa89c67e09b0d5b1b3f7869e35d5e126899ea8afbb', 'binary', ('vec3',), ('ce00823e91c194aaf60f4a1ee7776c2428520bc5836dfb0b5aac519241eccda4',)), ('mod', 22, (0, 'e0'), '35:12-35:47', 'vec3', '53e130f2d7565914c75b80f240994ba52b76b1886aca4800ba0a6e14009810c2', 'None', ('vec3', 'float'), ('c234aaafca741a1524b395dfd56ebaabd3ac6c68cf55e1e61fe0d6d93dae2af3', '586ebb838e95f08141d35c9b498e42fccfecbe2c3165f6f86361037c1227e962')), ('mod', 23, (0, 'e0'), '38:12-38:47', 'vec4', 'b85a4366c924a40674a36921bdf6faee9bd8a7bd435fcae9e68de25e671d885b', 'None', ('vec4', 'float'), ('823afbf3ac8d95a17912e085d80b51ddb1f707d32ce43eb1179f7bea07e20c7e', '653034c76f5bbecef25cda10ca6f681ad52d57cc82d81d8578192c6930574f04')), ('mod', 24, (12, 'e0', 1), '68:9-68:22', 'vec3', 'bf8f941004345a0b2b801543add17510799ac31d3fec0cc765dfb200e2bc13c9', 'assign', ('vec3', 'float'), ('144bb779c287c434417940e95ec776b384368057252f86312fcfc7387e36e5aa', 'be3987cbf82fa8cc4450fffa0aaca8cceaeff97349df42cf288f1ae822ec79d4'))), ((('expr',), ('199:5-199:47',)), (('return',), ('35:5-35:48',)), (('return',), ('38:5-38:48',)), (('expr',), ('68:5-68:23',))))"""
+
 
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
@@ -231,7 +246,8 @@ def authenticate_curl_vector_math(
     if ((program.resources.uniforms, program.resources.samplers,
          program.resources.outputs, program.resources.uses_texture,
          program.resources.uses_derivatives)
-            != (("resolution", "tileOffset", "fullResolution", "time", "scale",
+            != (("OCTAVES", "OUTPUT_MODE", "RIDGES",
+                 "resolution", "tileOffset", "fullResolution", "time", "scale",
                  "seed", "speed", "intensity"),
                 (), ("fragColor",), False, False)):
         raise _fail("resource or binding signature mismatch")

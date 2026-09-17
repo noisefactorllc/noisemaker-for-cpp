@@ -369,10 +369,12 @@ if __package__ in (None, ""):
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from tools.glslcpp.frontend.runtime_loop_bound_profile import (
         BLUR_KEYS,
+        CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata,
+        validate_curl_metadata,
         validate_noise_metadata, validate_tetra_metadata)
     from tools.glslcpp.frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
@@ -745,10 +747,11 @@ else:
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from .frontend.runtime_loop_bound_profile import (
         BLUR_KEYS,
+        CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
-        apply_runtime_loop_bound, validate_blur_metadata,
+        apply_runtime_loop_bound, validate_blur_metadata, validate_curl_metadata,
         validate_noise_metadata, validate_tetra_metadata)
     from .frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
@@ -792,9 +795,18 @@ GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
     "filter/relief:rlBlurH": {"MODE": "int"},
     "filter/relief:rlBlurV": {"MODE": "int"},
     "filter/relief:rlShade": {"MODE": "int"},
-    "filter/scatter:scatterJitter": {"MODE": "int"},
-    "filter/scatter:scatterSmooth": {"MODE": "int"},
+    "filter/wind:wind": {"METHOD": "int"},
+    "synth/curl:curl": {"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES": "bool"},
 }
+# filter/scatter:scatterJitter/scatterSmooth are deliberately NOT in this
+# table. A structured (non-solid-input) sweep found a real byte-exact
+# divergence at MODE=3 (anisotropic): `offset = dot(offset, perp) * perp;`
+# evaluates as a whole-vector RHS here, but the JS authority lowers it
+# per-lane with dot() re-evaluated after lane 0 is already overwritten (the
+# same per-component-assignment quirk cross_lane_assignment_profile.py
+# already admits for synth/gradient). MODE 0/1/2/4 are byte-exact; MODE 3
+# needs its own identity-scoped cross-lane admission before scatter can be
+# readmitted here.
 
 
 def _same_object_sequence(actual, expected) -> bool:
@@ -1012,8 +1024,10 @@ _MUTABLE_GLOBAL_FRAME_DEFINES = {
     MUTABLE_GLOBAL_FRAME_NOISE_KEY: _NOISE_DEFINES,
     MUTABLE_GLOBAL_FRAME_SHAPE_KEY: _SHAPE_DEFINES,
 }
+_CURL_DEFINES = {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}
 _RUNTIME_LOOP_BOUND_DEFINES = {
-    key: (_NOISE_DEFINES if key == RUNTIME_LOOP_BOUND_NOISE_KEY else {})
+    key: (_NOISE_DEFINES if key == RUNTIME_LOOP_BOUND_NOISE_KEY
+          else _CURL_DEFINES if key == RUNTIME_LOOP_BOUND_CURL_KEY else {})
     for key in RUNTIME_LOOP_BOUND_KEYS
 }
 # The mutable-global array carriers' exact admitted defines, PER KEY since
@@ -1675,6 +1689,12 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         # onto their other, unrelated members).
         if key in GENERIC_DYNAMIC_DEFINE_TYPES:
             expected = expected | {"runtime_define_profile"}
+        # Same reasoning for curl's additional loop-bound carrier: CURL_KEY
+        # already has its own exact arm above (curl_vector_math_profile);
+        # this adds the one extra field without touching the shared
+        # RUNTIME_LOOP_BOUND_KEYS arm the other four members rely on.
+        if key == RUNTIME_LOOP_BOUND_CURL_KEY:
+            expected = expected | {"runtime_loop_bound_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
     keys = [item["program_key"] for item in programs]
@@ -3387,7 +3407,14 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or focus_blur_borrowed_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
-                or curl_vector_math_profile is not None
+                # synth/curl is the one member of this cluster that ALSO
+                # carries curl_vector_math_profile (the tanh/wide-mod
+                # closure): a second, independent companion authenticated
+                # by its own exact block below, not by this one. Every
+                # other member of RUNTIME_LOOP_BOUND_KEYS still requires it
+                # absent.
+                or (curl_vector_math_profile is not None
+                    and typed.key != RUNTIME_LOOP_BOUND_CURL_KEY)
                 or grade_luma_weights_profile is not None
                 or grade_index_expression_profile is not None
                 or derivative_admission_profile is not None
@@ -8306,6 +8333,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 elif key == RUNTIME_LOOP_BOUND_NOISE_KEY:
                     validate_noise_metadata(
                         metadata.get("effects", {}).get("synth/noise"))
+                elif key == RUNTIME_LOOP_BOUND_CURL_KEY:
+                    validate_curl_metadata(
+                        metadata.get("effects", {}).get("synth/curl"))
                 typed = apply_runtime_loop_bound(
                     typed, source_hash, runtime_loop_bound_profile)
             except ValueError as error:

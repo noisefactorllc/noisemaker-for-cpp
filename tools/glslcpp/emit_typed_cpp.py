@@ -2183,7 +2183,14 @@ class _Emitter:
                     or self.focus_blur_borrowed_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
-                    or self.curl_vector_math_profile is not None
+                    # synth/curl carries curl_vector_math_profile (the
+                    # tanh/wide-mod closure) ALONGSIDE this loop-bound
+                    # profile -- a second, independent companion
+                    # authenticated by its own exact block elsewhere, not by
+                    # this one. Every other member of this cluster still
+                    # requires it absent.
+                    or (self.curl_vector_math_profile is not None
+                        and self.program.key != CURL_KEY)
                     or self.grade_luma_weights_profile is not None
                     or self.grade_index_expression_profile is not None
                     or self.derivative_admission_profile is not None

@@ -108,19 +108,33 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "831676d46152cd861a4f658fb6bfe75c06c3a8275d2b9acaae00ae8038cc39a6",
         "interface": "fc9fd33b3e14a9808c66c17f3b358d79be3b97c11c6fd6ea281ce51118e0de9e",
     },
+    # Relocked for the generic runtime-define contract: METHOD moved from a
+    # literal int define to a dynamic uniform, so normalize() prepends one
+    # `uniform int METHOD;` declaration line ahead of everything else in the
+    # source. That is the entire cause of every field below that moved: every
+    # symbol id after it (MAX_STEPS 8->9, STEP_PX 9->10, MAX_REACH 10->11)
+    # shifts by exactly +1, the read site's line/column shift by the same one
+    # prepended line, and every hash that folds in the source text, the
+    # define tuple, or a declaration/read touching those ids changes with it.
+    # No other declaration, read, or loop shape moved -- recomputed
+    # mechanically with this module's own helpers
+    # (rebuild_authenticated_counted_loop_proofs /
+    # validate_source_global_literal_int_program) against the dynamic tree,
+    # then round-trip verified through validate_source_global_literal_int_program
+    # before landing.
     "filter/wind:wind": {
         "raw": "68eb0f4deca51ab5352307fa06509b153cf19a29cea4820d054adafa42655f22",
-        "source": "665e842850e766cbf988212669457fb9fd76dff59e52a2f7b2cedd242e490fa4",
-        "defines": (("METHOD", "int", "1"),), "integer": ("MAX_STEPS", 8, "128", 128),
-        "globals": (("MAX_STEPS", 8, "int", "128"),
-                    ("STEP_PX", 9, "float", "1.0"),
-                    ("MAX_REACH", 10, "float", "128.0")),
-        "reads": (("main", 13, 46, 26, 46, 35),),
-        "pre_functions": "214d03b9c58da73392e8b05200035b6e81244dbec06705302a237da23081ef6d",
-        "post_functions": "70e4d4612ed144e0beb110e8fbbaf5d02b60e27e23fbf6961a30ac8d43bbb8e4",
-        "pre_whole": "b08edc234c42aa039867a7c549eff408e7c3c51cfa28d0951a437a00043a2dc0",
-        "post_whole": "6a5cb2724a9dfa61aaf5f7879a65fe9ec3cd353b7e815f20eb0915e4a103f9e0",
-        "interface": "455e2e5350b3a027556adc181e5ce3099ca395f801add229956b750d31acdf85",
+        "source": "f459c408a2f76df8398a961f2e7aeaa33429b7e96f4182149cfba6debe7f1efa",
+        "defines": (("METHOD", "str", "int"),), "integer": ("MAX_STEPS", 9, "128", 128),
+        "globals": (("MAX_STEPS", 9, "int", "128"),
+                    ("STEP_PX", 10, "float", "1.0"),
+                    ("MAX_REACH", 11, "float", "128.0")),
+        "reads": (("main", 14, 53, 26, 53, 35),),
+        "pre_functions": "c9739b5aee98d2f0055be755dbe8976d9f0a98ca3b0482b0d69c9cb2729ace99",
+        "post_functions": "dcd8b41bdc9b7b3063d9b976fa2602a64a62dcc14981d7b544cc5e1902e6b204",
+        "pre_whole": "98396b66f7ee8a78ad489a6f1174e629bbed89986a74ed65123fceb7d7fcd7d3",
+        "post_whole": "80ad69e1f215d2ae84db10834d5c58aa5dd311ea30366721c2580f766cea9c3a",
+        "interface": "0eb70d16be69494a13ca856356a467bc8391e9bed0e3347fae04400c9061e1df",
     },
     # Task 34/35 -- clean fingerprint-only reuse, no budget change. Verified
     # per-program against the loop-proof study (loopproof-oracles.json):
