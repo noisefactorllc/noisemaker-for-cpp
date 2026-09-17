@@ -333,7 +333,8 @@ def _assemble(namespaces: list[str], aux_lines: list[str], chain: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def source_for_single(effect: dict, overrides: dict[str, Any], aux_rng: random.Random) -> str:
+def source_for_single(effect: dict, overrides: dict[str, Any], aux_rng: random.Random,
+                      filter_input: str = "solid(color: #3a7)") -> str:
     """Builds one complete DSL program exercising ``effect`` with ``overrides``.
 
     Dispatch mirrors noisemaker-for-cpu's own reference CLI
@@ -379,7 +380,7 @@ def source_for_single(effect: dict, overrides: dict[str, Any], aux_rng: random.R
     if effect["kind"] == "generator":
         chain = call
     else:
-        chain = f"solid(color: #3a7).{call}"
+        chain = f"{filter_input}.{call}"
         namespaces.add("synth")
     ordered = [effect["namespace"]] + sorted(n for n in namespaces if n != effect["namespace"])
     return _assemble(ordered, aux_lines, chain)
@@ -511,6 +512,129 @@ def build_chain_jobs(effect: dict, by_kind: dict[str, list[dict]], n_variants: i
             source=source, width=size[0], height=size[1], time=t, seed=seed,
             chain_effects=[roles["generator"]["id"], roles["filter"]["id"], roles["mixer"]["id"]],
         ))
+    return jobs
+
+
+# ---------------------------------------------------------------------------
+# Deterministic define-parameter enumeration.
+#
+# ``build_single_jobs``'s "sampled" variants randomize every parameter
+# together, so a case that would fail on a non-default `define` value can
+# easily be masked (or confounded) by an unrelated parameter -- e.g. an
+# effect whose color-vector parameter has its own, unrelated bug will show
+# every non-default variant as "refused" for THAT reason before the define
+# admission is ever exercised. This section isolates each `define`-backed
+# parameter, holding everything else at its declared default, and
+# separately samples joint combinations for effects with more than one
+# `define` parameter (to catch a real cross-define interaction without
+# paying for the full cartesian product).
+# ---------------------------------------------------------------------------
+
+DEFINE_SIZES: list[tuple[int, int]] = [(17, 11), (64, 64), (97, 61)]  # square and non-square
+DEFINE_TIMES: list[float] = [0.0, 0.999]
+# Every (size, time) pair, each with its own derived render seed.
+DEFINE_DRAWS: list[tuple[tuple[int, int], float]] = [(s, t) for s in DEFINE_SIZES for t in DEFINE_TIMES]
+# A filter fed the usual constant `solid()` input hides most of what a
+# `define` selects (dilate/erode or scatter of a constant image is that same
+# constant), which makes a byte-exact result vacuous. Define-enumeration
+# filter cases read a structured image instead: synth/noise at its defaults
+# is itself runtime-int and byte-exact across the whole prior sweep, and
+# gives every pixel a distinct value at 17x11.
+DEFINE_FILTER_INPUT = "noise(seed: 7)"
+
+
+def pinned_seed_override(effect: dict, eff_id: str, global_seed: int, draw: int) -> dict[str, Any]:
+    """An explicit per-draw `seed` for effects that declare one.
+
+    When a step's `seed` parameter is not named in the DSL, both lanes replace
+    it with the render seed (renderer.js effectParams / the executor's
+    reserved-uniform substitution). That substitution path has its own,
+    define-independent parity gaps (observed: the executor refuses render
+    seeds >= 2^31 with "seed: expected int32", and diverges for some smaller
+    ones), which would otherwise confound every define case on an effect that
+    owns a seed. Naming the seed explicitly keeps a varied, in-domain seed per
+    draw while keeping the define proof about the define. Also why the filter
+    input above names its seed.
+    """
+    param = effect["params"].get("seed")
+    if not isinstance(param, dict) or param.get("type") != "int":
+        return {}
+    lo = int(param.get("min", 1))
+    hi = int(param.get("max", 100))
+    return {"seed": lo + stable_uint32(f"{global_seed}:{eff_id}#defseed#{draw}") % (hi - lo + 1)}
+
+
+def define_params(effect: dict) -> list[tuple[str, dict]]:
+    return [(name, param) for name, param in effect["params"].items() if param.get("define")]
+
+
+def define_domain(param: dict) -> list[Any]:
+    """Every value in a `define`-backed parameter's declared domain."""
+    if "choices" in param:
+        values: list[Any] = []
+        for value in param["choices"].values():
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and value not in values:
+                values.append(value)
+        return values or [param.get("default")]
+    if param.get("type") in ("bool", "boolean"):
+        return [False, True]
+    if "min" in param and "max" in param:
+        lo, hi, step = param["min"], param["max"], param.get("step", 1)
+        count = int(round((hi - lo) / step))
+        return [lo + i * step for i in range(count + 1)]
+    return [param.get("default")]
+
+
+def build_define_jobs(effect: dict, global_seed: int, joint_samples: int = 8) -> list[Job]:
+    eff_id = effect["id"]
+    defines = define_params(effect)
+    if not defines:
+        return []
+    jobs: list[Job] = []
+
+    # Isolated: vary exactly one `define` parameter across its FULL declared
+    # domain, holding every other parameter (including every other define)
+    # at its default, at every (size, time) pair in DEFINE_DRAWS, each with
+    # its own render seed.
+    for name, param in defines:
+        domain = define_domain(param)
+        for value_index, value in enumerate(domain):
+            for draw, (size, t) in enumerate(DEFINE_DRAWS):
+                aux_rng = rng_for(str(global_seed), eff_id, "defenum", name, str(value_index), str(draw))
+                overrides = {**pinned_seed_override(effect, eff_id, global_seed, draw), name: value}
+                source = source_for_single(effect, overrides, aux_rng, DEFINE_FILTER_INPUT)
+                seed = stable_uint32(f"{global_seed}:{eff_id}#defenum#{name}#{draw}")
+                jobs.append(Job(
+                    case_id=f"{sanitize(eff_id)}__define__{name}__{value_index}__{draw}",
+                    effect_id=eff_id, kind="define_isolated",
+                    source=source, width=size[0], height=size[1], time=t, seed=seed,
+                    note=f"{name}={value!r} (every other parameter at its default)",
+                ))
+
+    # Joint: random draws across the cartesian product of every `define`
+    # parameter simultaneously -- only meaningful with more than one.
+    if len(defines) > 1:
+        rng = rng_for(str(global_seed), eff_id, "defjoint")
+        domains = {name: define_domain(param) for name, param in defines}
+        seen: set[tuple] = set()
+        attempts = 0
+        while len(seen) < joint_samples and attempts < joint_samples * 8:
+            attempts += 1
+            combo = tuple(rng.choice(domains[name]) for name, _ in defines)
+            seen.add(combo)
+        for combo_index, combo in enumerate(sorted(seen, key=repr)):
+            base_overrides = {name: value for (name, _), value in zip(defines, combo)}
+            for draw, (size, t) in enumerate(DEFINE_DRAWS):
+                aux_rng = rng_for(str(global_seed), eff_id, "defjointaux", str(combo_index), str(draw))
+                overrides = {**pinned_seed_override(effect, eff_id, global_seed, draw), **base_overrides}
+                source = source_for_single(effect, overrides, aux_rng, DEFINE_FILTER_INPUT)
+                seed = stable_uint32(f"{global_seed}:{eff_id}#defjoint#{combo_index}#{draw}")
+                jobs.append(Job(
+                    case_id=f"{sanitize(eff_id)}__definejoint__{combo_index}__{draw}",
+                    effect_id=eff_id, kind="define_joint",
+                    source=source, width=size[0], height=size[1], time=t, seed=seed,
+                    note=f"joint {base_overrides!r}",
+                ))
     return jobs
 
 
@@ -698,6 +822,8 @@ def run_job(job_dict: dict) -> dict:
             result["float32_ok"] = float_diff["ok"]
 
         result["classification"] = "byte_exact" if diff["ok"] and (float_diff is None or float_diff["ok"]) else "divergent"
+        if result["classification"] == "byte_exact":
+            result["rgba8_sha256"] = hashlib.sha256(cpp_raw.read_bytes()).hexdigest()
         if not diff["ok"]:
             result["diagnostics"] = format_diagnostics(diff)
             result["first_mismatch"] = diff.get("firstMismatch")
@@ -841,6 +967,9 @@ def write_summary(all_rows: list[dict], out_dir: Path, meta: dict) -> None:
     lines.append("")
     lines.append(", ".join(sorted(timeout_effects.keys())) if timeout_effects else "(none)")
     lines.append("")
+    define_rows = [r for r in all_rows if r["kind"] == "define_isolated"]
+    if define_rows:
+        lines.extend(define_liveness_lines(define_rows))
     lines.append(f"## Chained (generator -> filter -> mixer) programs: {len(chains)} run")
     lines.append("")
     for c in CLASSIFICATIONS:
@@ -852,6 +981,30 @@ def write_summary(all_rows: list[dict], out_dir: Path, meta: dict) -> None:
             lines.append(f"- {row['case_id']}: {row['chain_effects']}")
     lines.append("")
     (out_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def define_liveness_lines(rows: list[dict]) -> list[str]:
+    """Anti-vacuity check for --define-enum: within one (effect, parameter,
+    draw) the render seed, size and time are fixed and only the parameter's
+    value changes, so a parameter whose agreed output hash never changes
+    across its values in any draw is not demonstrably reaching the kernel."""
+    groups: dict[tuple[str, str, str], set[str]] = {}
+    params: dict[tuple[str, str], int] = {}
+    for row in rows:
+        parts = row["case_id"].split("__define__", 1)[1].rsplit("__", 2)
+        name, _value_index, draw = parts
+        key = (row["effect_id"], name)
+        params.setdefault(key, 0)
+        if row.get("classification") != "byte_exact" or "rgba8_sha256" not in row:
+            continue
+        groups.setdefault((row["effect_id"], name, draw), set()).add(row["rgba8_sha256"])
+    lines = ["## Define liveness (distinct agreed outputs across a parameter's values, per draw)", ""]
+    for (effect_id, name) in sorted(params):
+        counts = [len(v) for (e, n, _), v in sorted(groups.items()) if (e, n) == (effect_id, name)]
+        verdict = "live" if counts and max(counts) > 1 else "NOT DEMONSTRATED"
+        lines.append(f"- {effect_id} `{name}`: {verdict} (distinct per draw: {counts})")
+    lines.append("")
+    return lines
 
 
 # ---------------------------------------------------------------------------
@@ -881,6 +1034,15 @@ def main() -> int:
     parser.add_argument("--max-seconds-per-case", type=float, default=45.0)
     parser.add_argument("--no-chains", action="store_true")
     parser.add_argument("--force", action="store_true", help="ignore existing results and rerun everything")
+    parser.add_argument("--define-enum", action="store_true",
+                        help="deterministic define-parameter enumeration mode: for each "
+                             "effect, isolate every `define`-backed parameter across its "
+                             "full declared domain (others at default) plus a joint sample "
+                             "for effects with more than one, instead of the usual random "
+                             "single/chain variants. --variants is ignored in this mode.")
+    parser.add_argument("--joint-samples", type=int, default=8,
+                        help="--define-enum only: random joint-combination draws per effect "
+                             "with more than one `define` parameter")
     args = parser.parse_args()
 
     if not args.cpu_root:
@@ -920,6 +1082,9 @@ def main() -> int:
 
     jobs: list[Job] = []
     for effect in effects:
+        if args.define_enum:
+            jobs.extend(build_define_jobs(effect, args.seed, args.joint_samples))
+            continue
         jobs.extend(build_single_jobs(effect, args.variants, args.seed))
         if not args.no_chains:
             jobs.extend(build_chain_jobs(effect, by_kind, args.variants, args.seed))
