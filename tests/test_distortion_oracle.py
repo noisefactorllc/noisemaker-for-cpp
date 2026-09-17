@@ -52,8 +52,8 @@ class DistortionOracleTests(unittest.TestCase):
         self.assertEqual(6, len(document["render_cases"]))
         self.assertEqual(3, len(document["mutation_ledger"]))
         snapshot = document["provenance"]["cpu_snapshot"]
-        self.assertEqual(22, snapshot["closure_cardinality"])
-        self.assertEqual(22, len(snapshot["import_closure"]))
+        self.assertEqual(23, snapshot["closure_cardinality"])
+        self.assertEqual(23, len(snapshot["import_closure"]))
         self.assertEqual(sorted(item["relative_path"] for item in snapshot["import_closure"]),
                          [item["relative_path"] for item in snapshot["import_closure"]])
         self.assertTrue(snapshot["realpath_containment_checked"])
@@ -302,7 +302,7 @@ class DistortionOracleTests(unittest.TestCase):
         self.assertIn("kRuntimeBindings", text)
         self.assertIn("kMutations", text)
         self.assertIn("kImportClosure", text)
-        self.assertIn("kImportClosureCardinality = 22U", text)
+        self.assertIn("kImportClosureCardinality = 23U", text)
         self.assertIn("kCase0Controls", text)
 
     def test_include_compiles_as_cxx20(self):
@@ -319,8 +319,8 @@ class DistortionOracleTests(unittest.TestCase):
                 "  static_assert(distortion_oracle::kCase0Rgba8.size() == 8 * 6 * 4);\n"
                 "  static_assert(distortion_oracle::kCase0Controls.intensity.bits == 0x42820000U);\n"
                 "  static_assert(distortion_oracle::kRuntimeBindings.size() == 12);\n"
-                "  static_assert(distortion_oracle::kImportClosureCardinality == 22);\n"
-                "  static_assert(distortion_oracle::kImportClosure.size() == 22);\n"
+                "  static_assert(distortion_oracle::kImportClosureCardinality == 23);\n"
+                "  static_assert(distortion_oracle::kImportClosure.size() == 23);\n"
                 "  static_assert(distortion_oracle::kMutations.size() == 3);\n"
                 "  return distortion_oracle::kCases[0].width == 8U ? 0 : 1;\n"
                 "}\n")

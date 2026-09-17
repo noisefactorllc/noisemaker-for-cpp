@@ -75,8 +75,8 @@ class MoodscapeOracleTests(unittest.TestCase):
                           "refractAmt": "float", "speed": "float", "hueRotation": "float",
                           "hueRange": "float", "intensity": "float", "ridges": "bool"},
                          document["source_uniform_abi"])
-        self.assertEqual(22, document["authority"]["closure_cardinality"])
-        self.assertEqual(22, len(document["authority"]["import_closure"]))
+        self.assertEqual(23, document["authority"]["closure_cardinality"])
+        self.assertEqual(23, len(document["authority"]["import_closure"]))
         self.assertEqual(6, len(document["render_cases"]))
         self.assertEqual(5, len(document["mutation_ledger"]))
         self.assertEqual("canonicalFactory11", document["factory"]["name"])
@@ -235,7 +235,7 @@ class MoodscapeOracleTests(unittest.TestCase):
                 "int main() {\n"
                 "  static_assert(noisemaker_moodscape_oracle::kCases.size() == 6);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kRuntimeBindings.size() == 15);\n"
-                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 22);\n"
+                "  static_assert(noisemaker_moodscape_oracle::kImportClosureCardinality == 23);\n"
                 "  static_assert(noisemaker_moodscape_oracle::kMutations.size() == 5);\n"
                 "  return 0;\n}\n"
             )

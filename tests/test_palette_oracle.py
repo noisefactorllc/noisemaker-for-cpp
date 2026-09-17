@@ -40,7 +40,7 @@ class PaletteOracleTests(unittest.TestCase):
         self.assertEqual("paletteFactory", document["factory"]["name"])
         self.assertTrue(document["factory"]["adapter_own_key"])
         self.assertTrue(document["factory"]["public_factory_is_direct_identity"])
-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
         self.assertGreaterEqual(len(document["render_cases"]), 8)
         self.assertGreaterEqual(len(document["mutation_ledger"]), 12)
         self.assertTrue(all(document["comparer_self_tests"].values()))
