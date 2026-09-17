@@ -1,9 +1,7 @@
 {
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
-  "byteExactCount": 155,
-  "executorRefused": {
-    "filter/wormhole": "scatter is not enabled in Task 6"
-  },
+  "byteExactCount": 163,
+  "executorRefused": {},
   "authorityRefused": [
     "filter/lighting",
     "filter/parallax",

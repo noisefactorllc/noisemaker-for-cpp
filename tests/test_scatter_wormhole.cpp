@@ -1,12 +1,16 @@
 #include "test_harness.hpp"
 
 #include <cstdint>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "noisemaker/effects/scatter/catalog.hpp"
 #include "noisemaker/effects/scatter/registry.hpp"
 #include "noisemaker/effects/scatter/wormhole.hpp"
+#include "noisemaker/graph/execution_plan.hpp"
 #include "noisemaker/numeric.hpp"
+#include "noisemaker/renderer.hpp"
 #include "noisemaker/surface.hpp"
 
 namespace {
@@ -146,4 +150,35 @@ TEST(scatter_wormhole_rejects_mismatched_dimensions) {
   noisemaker::Surface destination(3, 3);
   noisemaker::scatter::wormhole::Uniforms uniforms;
   REQUIRE_THROWS_AS(noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms), std::invalid_argument);
+}
+
+// Drives the real, live `GraphExecutor::execute()` dispatch branch end to
+// end (compile -> validate_plan_before_allocation -> the scatter branch in
+// execute()'s per-pass loop -> quantize/store), through `filter/wormhole`'s
+// full three-pass chain (`clear` -> `deposit` -> `blend`, the last two
+// ordinary typed-emitter passes, `deposit` alone dispatched by
+// `resolve_scatter_adapter`) -- not just the standalone adapter function the
+// tests above exercise directly. The expected digest was captured from the
+// live, unmodified JS authority
+// (`node tools/benchmark/run_cpu_case.mjs --case <this exact source/options>
+// --rgba8-output ...`, NOISEMAKER_CPU_ROOT/-LEDGER pinned at 61aa869), not
+// hand-computed.
+TEST(scatter_wormhole_dispatches_through_the_real_graph_executor) {
+  noisemaker::Renderer renderer;
+  const std::string source =
+      "search synth, filter\n"
+      "solid(color: #3a7).wormhole(kink: 1.3, stride: 0.6, rotation: 40, wrap: 0, alpha: 0.8).write(o0)\n"
+      "render(o0)\n";
+  noisemaker::RenderOptions options;
+  options.width = 6U;
+  options.height = 5U;
+  options.time = 0.25;
+  options.frame = 0U;
+  options.seed = 17.0;
+  const auto result = renderer.render(source, options, "wormhole-dispatch.dsl");
+  const auto bytes = result.to_rgba8();
+  REQUIRE(bytes.size() == options.width * options.height * 4U);
+  const auto digest = noisemaker::graph::detail::sha256(std::string_view(
+      reinterpret_cast<const char*>(bytes.data()), bytes.size()));
+  REQUIRE(digest == "6758e75a660d3251cc0fe7e7d9ac8252c74c9240975e419d50578f5da994678d");
 }

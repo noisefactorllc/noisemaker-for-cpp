@@ -70,10 +70,8 @@
 //     statics anywhere in `src/generated` or `src/typed_generated`) and
 //     avoids static-initialization-order hazards across translation units.
 //
-// FUTURE DISPATCH SITE (not yet built -- see wormhole-report.md's
-// integration section): whatever eventually plays `renderer.js`'s role of
-// iterating an effect's `pass` list and calling `run_pass` per pass should
-// gain exactly one new branch, mirroring `renderer.js`'s own
+// DISPATCH SITE: `GraphExecutor::execute` (src/graph/executor.cpp) gains
+// exactly one new branch, mirroring `renderer.js`'s own
 // `pass.drawMode === 'points' || pass.drawMode === 'billboards'` check:
 //
 //   if (pass.draw_mode == DrawMode::Points || pass.draw_mode == DrawMode::Billboards) {
@@ -84,9 +82,10 @@
 //     destination = run_pass(bound_kernel, width, height, ...);
 //   }
 //
-// That branch is the ENTIRE integration surface -- everything else (Surface
-// lifetime, uniform binding, quantization, output storage) is already
-// shared with the gather path.
+// The executor builds `scatter_pass` itself, generically, from the compiled
+// `effects::PassDefinition` (`pass.blend`/`pass.count`) rather than any
+// per-effect special case -- see `scatter_pass_from_definition` in
+// executor.cpp.
 
 #include <cstddef>
 #include <optional>
