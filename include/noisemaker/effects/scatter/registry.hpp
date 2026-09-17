@@ -22,13 +22,32 @@
 //
 // DESIGN, mirroring the JS contract 1:1 so the six remaining adapters need
 // no new machinery when they're ported:
-//   - Adapter signature: `(const glsl::Bindings&, Surface& destination) ->
-//     std::size_t`. `bindings` is the SAME `glsl::Bindings` an ordinary
-//     `bind_*` kernel factory already receives (see
-//     `noisemaker/generated/catalog.hpp`) -- ONE uniform/texture-resolution
-//     code path for both pass shapes, not a second parallel one. `bindings`
-//     supplies both the scatter's uniforms (`get_number`/`get<T>`) and its
-//     input texture(s) (`texture(name)`).
+//   - Adapter signature: `(const glsl::Bindings&, const ScatterPass&,
+//     Surface& destination) -> std::size_t`. `bindings` is the SAME
+//     `glsl::Bindings` an ordinary `bind_*` kernel factory already receives
+//     (see `noisemaker/generated/catalog.hpp`) -- ONE uniform/texture-
+//     resolution code path for both pass shapes, not a second parallel one.
+//     `bindings` supplies both the scatter's uniforms (`get_number`/
+//     `get<T>`) and its input texture(s) (`texture(name)`) -- multiple
+//     named input textures (JS's `inputs: { uniformName: Surface }`) need no
+//     extra machinery either, since `Bindings::set_texture`/`texture(name)`
+//     already key by name.
+//   - `pass` carries the SAME minimal slice of the JS `pass` record
+//     (`registry.hpp`'s `ScatterPass`, see below) that the JS scatter
+//     adapters actually read off their own `pass` parameter --
+//     `pass.blend` (`render/pointsBillboardRender:deposit`'s
+//     `isPremultipliedBlend`) and `pass.count` (`filter3d/flow3d:deposit`).
+//     This was added (wormhole shipped without it) once porting the six
+//     remaining adapters showed two of them genuinely read `pass` fields
+//     `bindings`/`inputs`/`destination` cannot carry; every other JS `pass`
+//     field (`name`, `program`, `inputs`, `outputs`, `uniforms`) is either
+//     already carried elsewhere in this signature or unread by any shipped
+//     adapter (including wormhole, which takes a `ScatterPass` purely for a
+//     uniform function-pointer type and never reads it), so `ScatterPass`
+//     stays exactly as wide as what is observably read -- not as wide as
+//     the JS `pass` object's full shape, and JS's scalar `bindings` context
+//     (`time`/`frame`/`seed`/...) and `params` are deliberately NOT added:
+//     no shipped adapter, old or new, reads either.
 //   - `destination` is the output Surface, pre-seeded by the (future)
 //     multi-pass driver with the previous contents of the named output
 //     texture (or cleared, if none) -- the adapter accumulates into it IN
@@ -60,7 +79,7 @@
 //   if (pass.draw_mode == DrawMode::Points || pass.draw_mode == DrawMode::Billboards) {
 //     const ScatterAdapter adapter = resolve_scatter_adapter(scatter_key);
 //     if (adapter == nullptr) throw std::runtime_error("missing scatter adapter: " + scatter_key);
-//     adapter(bindings, destination);
+//     adapter(bindings, scatter_pass, destination);
 //   } else {
 //     destination = run_pass(bound_kernel, width, height, ...);
 //   }
@@ -70,14 +89,39 @@
 // shared with the gather path.
 
 #include <cstddef>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "noisemaker/glsl_runtime.hpp"
 #include "noisemaker/surface.hpp"
 
 namespace noisemaker::scatter {
 
-using ScatterAdapter = std::size_t (*)(const glsl::Bindings& bindings, Surface& destination);
+// The minimal slice of a JS scatter `pass` record that any shipped adapter
+// actually reads (see the header comment above for the full rationale).
+struct ScatterPass {
+  // `pass.blend`, ONLY when it is a two-element array (JS's
+  // `Array.isArray(pass.blend)` true branch) -- e.g. `{"ONE",
+  // "ONE_MINUS_SRC_ALPHA"}`. `std::nullopt` covers every other JS shape
+  // (`true`, `false`, `undefined`/absent), matching
+  // `isPremultipliedBlend`'s `!Array.isArray(pass.blend)` early `false`.
+  // Values are compared case-insensitively at the one read site
+  // (`points_billboard_render::is_premultiplied_blend`), matching JS's
+  // `String(x).toUpperCase()`.
+  std::optional<std::pair<std::string, std::string>> blend_factors;
+  // `pass.count`, when the pass record has one (JS `pass?.count`).
+  // `std::nullopt` mirrors JS `undefined` (no `count` field at all, or no
+  // `pass` object) at the one read site (`flow3dDepositAdapter`'s
+  // `pass?.count ?? capacity`) -- a `double` rather than an integer type
+  // because JS's `??`/`Math.min` never coerce or truncate `pass.count`
+  // before comparing it against the other two (already-integer-valued)
+  // operands.
+  std::optional<double> count;
+};
+
+using ScatterAdapter = std::size_t (*)(const glsl::Bindings& bindings, const ScatterPass& pass, Surface& destination);
 
 // Registers `adapter` under `key` (e.g. "filter/wormhole:deposit"). Throws
 // `std::invalid_argument` if `key` is empty or already registered -- a

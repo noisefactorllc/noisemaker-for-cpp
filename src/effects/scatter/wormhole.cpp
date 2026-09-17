@@ -98,7 +98,10 @@ constexpr double kPi = 3.141592653589793;  // identical double to JS Math.PI
   return decode_float16(static_cast<std::uint16_t>(half_bits));
 }
 
-std::size_t adapter(const glsl::Bindings& bindings, Surface& destination) {
+std::size_t adapter(const glsl::Bindings& bindings, const scatter::ScatterPass& /*pass*/, Surface& destination) {
+  // wormhole reads no `pass` field -- see registry.hpp's contract comment;
+  // the parameter exists only because `ScatterAdapter` is now one function
+  // pointer type shared by all seven registered adapters.
   const Surface& input = bindings.texture("inputTex");
   Uniforms uniforms;
   uniforms.kink = bindings.get_number("kink");

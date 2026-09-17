@@ -99,7 +99,8 @@ TEST(scatter_wormhole_via_registry_matches_js_oracle_repeat_3x4) {
   bindings.set_uniform("rotation", -95.0);
   bindings.set_uniform("wrap", 1.0);  // repeat
 
-  const std::size_t pixels = adapter(bindings, destination);
+  const noisemaker::scatter::ScatterPass pass;
+  const std::size_t pixels = adapter(bindings, pass, destination);
   REQUIRE(pixels == 3U * 4U);
 
   const auto got = destination.data();
