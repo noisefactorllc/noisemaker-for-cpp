@@ -34,6 +34,13 @@ add_library(noisemaker-cpu
   src/typed_generated/typed_slice.cpp
   src/effects/scatter/registry.cpp
   src/effects/scatter/wormhole.cpp
+  src/effects/scatter/points_deposit_support.cpp
+  src/effects/scatter/dla.cpp
+  src/effects/scatter/lenia.cpp
+  src/effects/scatter/physarum.cpp
+  src/effects/scatter/points_render.cpp
+  src/effects/scatter/points_billboard_render.cpp
+  src/effects/scatter/flow3d.cpp
   src/effects/scatter/catalog.cpp
   src/effects/generated/effect_catalog.cpp
   src/dsl/error.cpp
@@ -162,6 +169,12 @@ add_executable(noisemaker-cpu-tests
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
   tests/test_scatter_wormhole.cpp
+  tests/test_scatter_dla.cpp
+  tests/test_scatter_lenia.cpp
+  tests/test_scatter_physarum.cpp
+  tests/test_scatter_points_render.cpp
+  tests/test_scatter_points_billboard_render.cpp
+  tests/test_scatter_flow3d.cpp
   tests/test_worm_overlay.cpp
   tests/test_effect_catalog.cpp
   tests/test_dsl_lexer.cpp
@@ -185,6 +198,12 @@ target_compile_options(noisemaker-cpu-tests PRIVATE
 add_executable(noisemaker-cpu-example-perlin examples/perlin.cpp)
 target_link_libraries(noisemaker-cpu-example-perlin PRIVATE noisemaker-cpu)
 target_compile_options(noisemaker-cpu-example-perlin PRIVATE
+  $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
+)
+
+add_executable(scatter-fuzz-verify tools/parity/scatter_fuzz_verify.cpp)
+target_link_libraries(scatter-fuzz-verify PRIVATE noisemaker-cpu)
+target_compile_options(scatter-fuzz-verify PRIVATE
   $<$<CXX_COMPILER_ID:AppleClang,Clang,GNU>:-Wall -Wextra -Wpedantic -Werror -ffp-contract=off>
 )
 
