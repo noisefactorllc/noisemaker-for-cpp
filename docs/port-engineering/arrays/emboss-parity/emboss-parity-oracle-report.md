@@ -1,6 +1,6 @@
 # Emboss181 exact-parity oracle
 
-Program `filter/emboss:emboss`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`.
+Program `filter/emboss:emboss`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.
 
 ## Result
 

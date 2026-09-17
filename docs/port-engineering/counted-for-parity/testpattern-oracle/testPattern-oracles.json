@@ -4,11 +4,11 @@
   "program_key": "synth/testPattern:testPattern",
   "effect_key": "synth/testPattern",
   "runtime_key": "synth/testPattern:testPattern",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
-    "name": "canonicalFactory277",
-    "text_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
+    "name": "canonicalFactory285",
+    "text_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
     "public_direct_identity": true,
     "canonical_own_key": true,
     "adapter_own_key": false
@@ -93,7 +93,7 @@
       },
       {
         "relative_path": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path": "src/effects/adapters/julia.js",
@@ -106,6 +106,10 @@
       {
         "relative_path": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
@@ -125,7 +129,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -133,7 +137,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -155,13 +159,13 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "bytes": 5919,
       "sha256": "f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20"
     },
     "factory": {
       "relative_path": "src/effects/generated/canonical-kernels.js",
-      "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+      "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },
@@ -1316,14 +1320,14 @@
       "name": "digit-extraction-trip-count",
       "group": "digit",
       "mechanism": "digit extraction trip-count off-by-one",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "for (var i = 0; i < 3; i++)",
       "replacement": "for (var i = 0; i < 2; i++)",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "a1057fa61f01858f306ab6dcf5b834e3bdbb903a31c463e4dc6db8339ae2588f",
       "replacement_sha256": "9c466f62670dd6c0fb92c58f15b924e8110d9b87270a4ee283397ec853cb66ee",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "42320d68ba7bd9937764460c1b059247ae55b15af3a6d131f10b9226bfb8059c",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "c62dea58fd9fd86621f7c39d1ca778a8a1b82be4c3615abb4a5bd9daef803341",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1417,14 +1421,14 @@
       "name": "glyph-bit-sample",
       "group": "glyph",
       "mechanism": "glyph bit sample forced",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "return ((GLYPH[digit] >> bitIndex) & 1) == 1;",
       "replacement": "return true;",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "0a4914cc9b5eb2a2cafff43a74b98de946f5c5cde5760b633cd87b6949216659",
       "replacement_sha256": "10e0fa08a73f0cd151617165a96e7df8c8d14ecfc63d6f1f343559f16198939f",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "e933087ec5eff804bd5f77de0cf04588a9afa62948a199e08fe5c2ffdc42ffec",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "9120307f3cedceb0a64a97031fab4471db09ada64e1f484d18a8ca86dedea55c",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1518,14 +1522,14 @@
       "name": "checker-grid-clamp",
       "group": "checker",
       "mechanism": "minimum grid-size clamp",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "function checkerboard (uv) {\n  \tuv = $runtime.copy(uv);\n  \tvar n = max(gridSize, 1);",
       "replacement": "function checkerboard (uv) {\n  \tuv = $runtime.copy(uv);\n  \tvar n = max(gridSize, 2);",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "79cbacea2c8d1fe3cbedcc756b26b4d16578a7d7dce85a530574893136b4b8e9",
       "replacement_sha256": "97e03d7af108facfd831680b40a4f6fde2eb95e32ab88344dc6e30d358d046b3",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "3cf0616bf7c56f73239e23b3ff7060176424dd466de8037840b3a462729452ee",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "03b3faf4729986f31cfb3bde1c43a22125ffa4974a4ecf8651e5df631643a7db",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1619,14 +1623,14 @@
       "name": "pattern-bars-dispatch",
       "group": "pattern",
       "mechanism": "pattern branch dispatch",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "if (pattern == 1)",
       "replacement": "if (pattern == 9)",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "14900d33a3cc3cfe6177563c778d4b6ddb92bbff17e97fe8e4c6707a2d8d8b58",
       "replacement_sha256": "17a205440af929e287fe4dc3861923ce3d4cdf41f3ae33fe3c4e0f5439767502",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "e567bb5b2875500f7c7b5473c8b81df692140c6b4d4ef6ea705ad33b339d36a7",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "738c5794af773c9484a943f9688714db56e06990a4cf05046fd8c87321fbd65e",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1720,14 +1724,14 @@
       "name": "bars-upper-clamp",
       "group": "bars",
       "mechanism": "SMPTE bar upper clamp",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "clamp(bar, 0, 7)",
       "replacement": "clamp(bar, 0, 6)",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "72a76b4cb5a241f4a57b8d6453c3a3e4446239c591b8d3152a1ade23a0aa3b90",
       "replacement_sha256": "cffdb70ad4615a8c0e71f534034cf1e13b9675c44af508be64599eb365d40d4a",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "0c6b9c6ac8bee389ac1c72f85257d26e2d4fa363b8476b2fc110377b76a47824",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "dc7e8445cf68c005a300ab898bc5df1af34f00193e5bcd093d85106ab5e0ce6e",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1821,14 +1825,14 @@
       "name": "gradient-axis",
       "group": "gradient",
       "mechanism": "gradient axis",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "globalCoord[0] / fullResolution[0]",
       "replacement": "globalCoord[1] / fullResolution[1]",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "18df2315091eb491b49874a46ea3846f105c835076d6fcf30fb56e4974aed4ab",
       "replacement_sha256": "1cac07e96cbeaa5712d57839373b476094154075749c1afafcdac92874b5bb37",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "a7920cbd70384c44c7d9fc8d588786f18fb6a3cd8703920b4f115c79414f1974",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "865f75e0e2c399be1fdc9f326dfd2f7b3f535e570c8a6fe255ce9bf9427ba003",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -1922,14 +1926,14 @@
       "name": "uv-axis",
       "group": "uv",
       "mechanism": "UV axis swap",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "[globalCoord[0] / fullResolution[0], globalCoord[1] / fullResolution[1]]",
       "replacement": "[globalCoord[1] / fullResolution[1], globalCoord[0] / fullResolution[0]]",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "648fe4b6a0bdbcd218fab7001f67a7f37524fbcf7b71875a5be0ba3967370bd3",
       "replacement_sha256": "e1410da2b889b3b91d5b444ef4e428f03dcc14e3d3d7b13f04857f5c4635a71e",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "3827fbd1ec9b3ad502db795d9ef682dc54081a9cc1ef89e46dd049c5e08e1c9f",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "1054d2e6a9d5fb5acd68545d0617b78f5dbfedf6da4755f42eda80bc14c518d9",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -2023,14 +2027,14 @@
       "name": "color-grid-golden-ratio",
       "group": "color",
       "mechanism": "cell hue progression",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "0.6180340051651001",
       "replacement": "0.5",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "65f8e0708d51cd479dc2481a3798d82b630985eddf1e266aba658ffe715affa3",
       "replacement_sha256": "d2cbad71ff333de67d07ec676e352ab7f38248eb69c942950157220607c55e84",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "5030bbc0bf4a38fe966e404711ac3616106df3dbcc3de64d8afb20a924742cdc",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "22e1b7d8177d520d51f9362c44736465fee9321d6b04b42c7a2d2f45d8539e34",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -2124,14 +2128,14 @@
       "name": "dot-grid-threshold",
       "group": "dot",
       "mechanism": "dot radius threshold",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor": "smoothstep(0.11999999731779099, 0.15000000596046448, dist)",
       "replacement": "smoothstep(0.5, 0.6000000238418579, dist)",
       "anchor_occurrence_count": 1,
       "source_anchor_sha256": "6afb33eda84032aca64633c46e349f73c357a56fc8d9ea1ed2af16af9ea6a181",
       "replacement_sha256": "00a3de96b5a7d4c27856b1c161ceaad18153433f8c03ef53bc6a385dcc685a18",
-      "canonical_factory_sha256": "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15",
-      "mutated_factory_sha256": "85c678351a4a1dfe2b7a3b13e9b971f75a6da02f762011d9924c84596086e6ce",
+      "canonical_factory_sha256": "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0",
+      "mutated_factory_sha256": "7734b9f028bf00f216b383f8c550bfe5dda402c4f121d802140f1c4427aa096a",
       "results": [
         {
           "case": "checker-hundreds-digit",
@@ -2228,7 +2232,7 @@
       "anchor": "function cpu_float (value)",
       "replacement": "function cpu_float_unused (value)",
       "mechanism": "structural-only dead helper rename",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor_sha256": "fa320fa55eca7b08958ff35a1a73587ab20b1aee88de373bbfa2db326ba5a602",
       "replacement_sha256": "9f1b8ad2adc324c8514b719fa85358727e039ecaceb1f3312525dd72271b7e81",
       "no_pixel_witness_claimed": true
@@ -2238,7 +2242,7 @@
       "anchor": "Render a number at a position within a cell",
       "replacement": "Render a number at a position within a cell (authenticated)",
       "mechanism": "structural-only comment mutation",
-      "source_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl",
+      "source_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl",
       "source_anchor_sha256": "d050918c5c5b4b61b2b8b02472e0cfc7e66fcdab9a105bf65c85f641666d8aa7",
       "replacement_sha256": "cd7bbc75a0f111484a78846c1e21fef2d58b859f1e03f9aa0ffe84afc0b98097",
       "no_pixel_witness_claimed": true

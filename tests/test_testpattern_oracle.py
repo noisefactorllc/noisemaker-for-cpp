@@ -10,7 +10,7 @@ MATERIALIZER = ROOT / 'tools/glslcpp/generate_testpattern_native_oracle_include.
 ORACLE = PACKAGE / 'testPattern-oracles.json'
 INCLUDE = ROOT / 'tests/oracles/testPattern_expected.inc'
 COHERENCE = PACKAGE / 'testPattern-oracle-coherence.json'
-EXPECTED_COHERENCE_SHA256 = 'cf188502dcdab8b4bee35fb18cb77dd2c54837ae22365d95abba58b9c4a51792'
+EXPECTED_COHERENCE_SHA256 = '4cb351964732fd9a95f223884f5e99b5e3d5b8decca1cd9998cba0f40900b1ff'
 
 def run_generator(*args, env=None):
     return subprocess.run(['node', str(GENERATOR), *args], cwd=ROOT, env=env or os.environ.copy(), text=True, capture_output=True)
@@ -60,7 +60,7 @@ def test_package_files_and_contract():
     assert doc['program_key']=='synth/testPattern:testPattern'
     assert doc['input_contract']=={'kind':'source-only','runtime_input_path':'none','lifetime_claimed':False,'immutability_claimed':False,'reason':'Test Pattern has no sampler or input texture path'}
     assert all('input' not in c and 'input_lifetime_stable' not in c and 'input_immutable_exact_bits' not in c for c in doc['render_cases'])
-    assert len(doc['authority']['import_closure'])==22
+    assert len(doc['authority']['import_closure'])==23
     assert len(doc['render_cases'])==9
     assert {c['pattern'] for c in doc['render_cases']} == set(range(7))
     assert len(doc['behavioral_mutation_ledger'])==9

@@ -1,6 +1,6 @@
 # Shape184 exact-parity oracle
 
-Program `synth/shape:shape`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; exact defines
+Program `synth/shape:shape`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; exact defines
 `LOOP_A_OFFSET=40`, `LOOP_B_OFFSET=30`.
 
 ## The two contracts this program exists to prove
@@ -21,15 +21,15 @@ The shipped binding set also contains an unrelated `aspectRatio` uniform. The fa
 
 ## Authority
 
-This oracle is produced by the unmodified public canonicalFactory274 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates. The generator refuses to run unless
+This oracle is produced by the unmodified public canonicalFactory282 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates. The generator refuses to run unless
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
-`canonicalFactory274`, its `Function.prototype.toString` SHA-256 is `870d97a811e5720f827f5616057483a43b27224240ac95c04a8084dd257a6125`, neither
+`canonicalFactory282`, its `Function.prototype.toString` SHA-256 is `2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4`, neither
 adapter table owns the key, `canonicalAdapterFactories` matches its
-11-key census exactly, the key is absent from the
-4-key `check_corpus._ADAPTERS` eligibility table
+12-key census exactly, the key is absent from the
+5-key `check_corpus._ADAPTERS` eligibility table
 **parsed out of the live `tools/glslcpp/check_corpus.py`**
 rather than transcribed, all six pinned CPU files match, and every module in the
-22-file import closure resolves by real path beneath the immutable snapshot.
+23-file import closure resolves by real path beneath the immutable snapshot.
 Bare module specifiers other than `node:` builtins are rejected, and the live checkout is refused as
 a `--cpu-root`.
 

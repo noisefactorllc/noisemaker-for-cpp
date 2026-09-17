@@ -1,7 +1,7 @@
 {
  "schema": "parallax190-oracles-v1",
  "program_key": "filter/parallax:parallax",
- "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+ "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
  "source_sha256": "5ce5dce2ec8e8d7ebd3024c6a5bd5dcb068d0cf322bfd105c4fb3546e1b97642",
  "authority": {
   "cpu_root_argument": "<immutable-cpu-snapshot-root>",
@@ -18,7 +18,7 @@
  "authority_files": {
   "canonical_kernels": {
    "path": "src/effects/generated/canonical-kernels.js",
-   "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+   "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
   },
   "public_catalog": {
    "path": "src/effects/catalog.js",

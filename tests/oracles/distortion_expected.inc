@@ -6,16 +6,16 @@
 namespace distortion_oracle {
 inline constexpr std::string_view kSchema = "noisemaker-for-cpp.distortion.pixel-parity.v1";
 inline constexpr std::string_view kProgramKey = "mixer/distortion:distortion";
-inline constexpr std::string_view kOracleJsonSha256 = "68460b78ee521ab90b605f2fbec8bd178b0d2167333fd1aa55bde5e4ee9dff2b";
+inline constexpr std::string_view kOracleJsonSha256 = "7a9e79771957b8ab06dacd3e78d4b2b41ac9c7160bf1e91089c3b1b6a1402b63";
 inline constexpr std::string_view kOracleSha256 = kOracleJsonSha256;
 inline constexpr std::string_view kFactoryTextSha256 = "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5";
 inline constexpr std::string_view kFactorySha256 = kFactoryTextSha256;
 inline constexpr std::string_view kSourceSha256 = "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8";
 inline constexpr std::uint32_t kSourceBytes = 8117U;
-inline constexpr std::string_view kSourceRelativePath = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl";
+inline constexpr std::string_view kSourceRelativePath = "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl";
 struct ImportClosureEntry { std::string_view relativePath; std::string_view sha256; };
-inline constexpr std::uint32_t kImportClosureCardinality = 22U;
-inline constexpr std::array<ImportClosureEntry, 22> kImportClosure = {
+inline constexpr std::uint32_t kImportClosureCardinality = 23U;
+inline constexpr std::array<ImportClosureEntry, 23> kImportClosure = {
   ImportClosureEntry{"src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"},
   ImportClosureEntry{"src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"},
   ImportClosureEntry{"src/csl/runtime.js", "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"},
@@ -23,17 +23,18 @@ inline constexpr std::array<ImportClosureEntry, 22> kImportClosure = {
   ImportClosureEntry{"src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"},
   ImportClosureEntry{"src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"},
   ImportClosureEntry{"src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"},
-  ImportClosureEntry{"src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"},
+  ImportClosureEntry{"src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"},
   ImportClosureEntry{"src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"},
   ImportClosureEntry{"src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"},
   ImportClosureEntry{"src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"},
+  ImportClosureEntry{"src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"},
   ImportClosureEntry{"src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"},
   ImportClosureEntry{"src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"},
   ImportClosureEntry{"src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"},
   ImportClosureEntry{"src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"},
-  ImportClosureEntry{"src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"},
+  ImportClosureEntry{"src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"},
   ImportClosureEntry{"src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"},
-  ImportClosureEntry{"src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"},
+  ImportClosureEntry{"src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"},
   ImportClosureEntry{"src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"},
   ImportClosureEntry{"src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"},
   ImportClosureEntry{"src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"},

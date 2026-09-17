@@ -1,13 +1,13 @@
 {
   "schema": "noisemaker-for-cpp.effects188.pixel-parity.v1",
   "program_key": "classicNoisedeck/effects:effects",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "defines": {
     "EFFECT": 0,
     "FLIP": 0
   },
   "source": {
-    "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/effects/effects.glsl",
+    "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/effects/effects.glsl",
     "bytes": 21087,
     "sha256": "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c"
   },
@@ -17,12 +17,12 @@
     "source_slice_sha256": "a029e3a32e400d3d9fb0cd9c7e9914f4fd2132ddd848c0a7210f690ed21f3970"
   },
   "authority": {
-    "node": "v24.7.0",
+    "node": "v26.0.0",
     "oracle": "unmodified public canonical factory from immutable snapshot",
     "pinned_files": {
       "canonical_kernels": [
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       ],
       "public_catalog": [
         "src/effects/catalog.js",
@@ -80,7 +80,7 @@
       },
       {
         "relative_path": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path": "src/effects/adapters/julia.js",
@@ -93,6 +93,10 @@
       {
         "relative_path": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
@@ -112,7 +116,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -120,7 +124,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -142,7 +146,7 @@
   },
   "generator_provenance": {
     "relative_path": "docs/port-engineering/effects-parity/effects188_oracle_generator.mjs",
-    "sha256": "d49e94f797f19dc4b2038b0420c6f044bb55ed6f74bfd04283d054d765a1f195"
+    "sha256": "f4f4a8ebb60af23924117c1d2c391daa643dec5946c3ca49f9b9fbc291627c8f"
   },
   "table_contract": {
     "names": [

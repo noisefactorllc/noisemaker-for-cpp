@@ -4,9 +4,9 @@
 
 namespace kaleido187_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "c5ec36429d5dc64ab9f058277ec763e2badb5fd3828aa351fb9342e9d8b109a5";
+inline constexpr std::string_view kOracleSha256 = "5acebba86967527b3484b64e53cbbff54d62a9a1b6def7326a1df5a1748b720b";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/kaleido:kaleido";
-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
+inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::string_view kFactoryTextSha256 = "4ab626fda5e91e7f89b93c9d863cda497b85d79239183499785c03607cce19a3";
 
 inline constexpr std::array<std::uint32_t, 80> kCase0InputWords{{

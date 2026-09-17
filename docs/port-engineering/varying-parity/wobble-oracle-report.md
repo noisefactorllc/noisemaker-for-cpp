@@ -1,6 +1,6 @@
 # Wobble exact-parity oracle
 
-Program `filter/wobble:wobble`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; no preprocessor defines.
+Program `filter/wobble:wobble`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; no preprocessor defines.
 This is the first **varying-admission** oracle: the parity target is the materialization of
 `in vec2 v_texCoord;` (raw `wobble.glsl:14`), which the JavaScript equates with `context.uv` -- the
 pixel center's destination-local coordinate, aliased per pixel by `beginPixel` and copied by the canonical
@@ -29,11 +29,11 @@ This oracle is produced by the unmodified public canonicalFactory178 from an imm
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
 `canonicalFactory178`, its `Function.prototype.toString` SHA-256 is `e09f2ef4c49b33b06febfac20d4eeea3563270f6edab6cb1f6761f2dd20759d4`, neither
 adapter table owns the key, `canonicalAdapterFactories` matches its
-11-key census exactly, the key is absent from the
-4-key `check_corpus._ADAPTERS` eligibility table
+12-key census exactly, the key is absent from the
+5-key `check_corpus._ADAPTERS` eligibility table
 **parsed out of the live `tools/glslcpp/check_corpus.py`**
 rather than transcribed, all six pinned CPU files match, and every module in the
-22-file import closure resolves by real path
+23-file import closure resolves by real path
 beneath the immutable snapshot. Bare module specifiers other than `node:` builtins are rejected, and
 the live checkout is refused as a `--cpu-root`.
 

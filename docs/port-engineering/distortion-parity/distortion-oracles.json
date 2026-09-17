@@ -3,8 +3,8 @@
   "schema_version": 1,
   "program_key": "mixer/distortion:distortion",
   "effect_key": "mixer/distortion",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
     "name": "canonicalFactory194",
     "text_sha256": "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5",
@@ -55,7 +55,7 @@
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl",
       "bytes": 8117,
       "sha256": "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8"
     },
@@ -94,7 +94,7 @@
         },
         {
           "relative_path": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path": "src/effects/adapters/julia.js",
@@ -107,6 +107,10 @@
         {
           "relative_path": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path": "src/effects/adapters/snow.js",
@@ -126,7 +130,7 @@
         },
         {
           "relative_path": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path": "src/effects/generated/kernels.js",
@@ -134,7 +138,7 @@
         },
         {
           "relative_path": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path": "src/effects/registry.js",
@@ -153,7 +157,7 @@
           "sha256": "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"
         }
       ],
-      "closure_cardinality": 22
+      "closure_cardinality": 23
     }
   },
   "comparer_self_tests": {

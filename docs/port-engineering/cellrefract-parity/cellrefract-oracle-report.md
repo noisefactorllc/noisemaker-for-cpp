@@ -1,6 +1,6 @@
 # Cellrefract186 exact-parity oracle
 
-Program `classicNoisedeck/cellRefract:cellRefract`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; exact defines
+Program `classicNoisedeck/cellRefract:cellRefract`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; exact defines
 `KERNEL=0`, `SHAPE=1`.
 
 ## The contract this program exists to prove
@@ -31,11 +31,11 @@ This oracle is produced by the unmodified public canonicalFactory3 from an immut
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
 `canonicalFactory3`, its `Function.prototype.toString` SHA-256 is `329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3`, neither
 adapter table owns the key, `canonicalAdapterFactories` matches its
-11-key census exactly, the key is absent from the
-4-key `check_corpus._ADAPTERS` eligibility table
+12-key census exactly, the key is absent from the
+5-key `check_corpus._ADAPTERS` eligibility table
 **parsed out of the live `tools/glslcpp/check_corpus.py`**
 rather than transcribed, all six pinned CPU files match, and every module in the
-22-file import closure resolves by real path
+23-file import closure resolves by real path
 beneath the immutable snapshot. Bare module specifiers other than `node:` builtins are rejected, and
 the live checkout is refused as a `--cpu-root`.
 

@@ -14649,25 +14649,25 @@ void require_oracle_metadata() {
   }
   REQUIRE(noisemaker_dither_oracle::kBaselineCaseCount == 9U);
   REQUIRE(noisemaker_dither_oracle::kAdversarialCaseCount == 3U);
-  REQUIRE(noisemaker_dither_oracle::kAuthorityNode == "v24.7.0");
+  REQUIRE(noisemaker_dither_oracle::kAuthorityNode == "v26.0.0");
   REQUIRE(noisemaker_dither_oracle::kUpstreamRevision ==
-          "117a236679d1db3ab8f0e278230ece277b57564c");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(noisemaker_dither_oracle::kSourceRelativePath ==
           "src/effects/generated/canonical-kernels.js");
   REQUIRE(noisemaker_dither_oracle::kSourceSha256 ==
-          "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
+          "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
   REQUIRE(noisemaker_dither_oracle::kFactoryName == "canonicalFactory48");
   REQUIRE(noisemaker_dither_oracle::kFactoryTextSha256 ==
           "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820");
   REQUIRE(noisemaker_dither_oracle::kPublicFactoryName == "canonicalFactory48");
   REQUIRE(noisemaker_dither_oracle::kPublicFactoryIsCanonicalIdentity);
   REQUIRE(noisemaker_dither_oracle::kCorpusSourceRelativePath ==
-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
+          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
   REQUIRE(noisemaker_dither_oracle::kCorpusSourceSha256 ==
           "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
   REQUIRE(noisemaker_dither_oracle::kClosureSha256 ==
-          "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5");
-  constexpr std::array<std::array<std::string_view, 2>, 22> closure{{
+          "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3");
+  constexpr std::array<std::array<std::string_view, 2>, 23> closure{{
       {{"src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"}},
       {{"src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"}},
       {{"src/csl/runtime.js", "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee"}},
@@ -14675,17 +14675,18 @@ void require_oracle_metadata() {
       {{"src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"}},
       {{"src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"}},
       {{"src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"}},
-      {{"src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"}},
+      {{"src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"}},
       {{"src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"}},
       {{"src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"}},
       {{"src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"}},
+      {{"src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"}},
       {{"src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"}},
       {{"src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"}},
       {{"src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"}},
       {{"src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"}},
-      {{"src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"}},
+      {{"src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"}},
       {{"src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"}},
-      {{"src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"}},
+      {{"src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"}},
       {{"src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"}},
       {{"src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"}},
       {{"src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"}},
@@ -14769,7 +14770,7 @@ void require_oracle_metadata() {
   const auto& trace = noisemaker_dither_oracle::kSignedTraces[0];
   REQUIRE(trace.case_name == "error-diffusion-negative-tile");
   REQUIRE(trace.method == "source-derived-error-diffusion-trace-v1");
-  REQUIRE(trace.source_path == "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
+  REQUIRE(trace.source_path == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
   REQUIRE(trace.source_sha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
   REQUIRE(trace.source_block_span == "508-566");
   REQUIRE(trace.source_fetch_span == "500-506");
@@ -15537,7 +15538,7 @@ TEST(typed_glitch_exact_comparer_rejects_shape_and_signed_zero) {
 
 TEST(typed_glitch_matches_all_eight_authoritative_js_oracles) {
   REQUIRE(glitch_native_oracle::kOracleSha256 ==
-          "535dda6aff731f41974b0f37277949a7d18a2c311c0795ac846a1497acc22e55");
+          "4d336018f947f0356d2a876fadf7fdeaf89a07c23bb0b8f52ba140f95c630a57");
   REQUIRE(glitch_native_oracle::kProgramKey ==
           "classicNoisedeck/glitch:glitch");
   REQUIRE(glitch_native_oracle::kTotalFloatWords == 2468U);
@@ -15940,7 +15941,7 @@ TEST(typed_emboss_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_emboss_matches_all_seventeen_independent_js_oracles) {
   REQUIRE(emboss181_oracle::kOracleSha256 ==
-          "ac1c6a140c5588130e5478abf7f77b5ae91d33c90fb600611c987b8f4f7f85e5");
+          "7cb35cdb5d36de75816e6c48a31897be96ec2d8fa19e022477f6b94184848999");
   REQUIRE(emboss181_oracle::kProgramKey == "filter/emboss:emboss");
   REQUIRE(emboss181_oracle::kTotalFloatWords == 2784U);
   REQUIRE(emboss181_oracle::kTotalRgbaBytes == 2784U);
@@ -16392,11 +16393,11 @@ TEST(typed_shape_mixer_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape_mixer_matches_all_forty_two_independent_js_oracles) {
   REQUIRE(shape_mixer182_oracle::kOracleSha256 ==
-          "512227a80d040c7c7f72a7a142554ce45ccc353796c01ef3bec468c97cbe62a0");
+          "0dd9f536aa8a3e57dba91c701e1f25b5f35617011c8e49a6cdfbb1bcdbcad6c8");
   REQUIRE(shape_mixer182_oracle::kProgramKey ==
           "classicNoisedeck/shapeMixer:shapeMixer");
   REQUIRE(shape_mixer182_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(shape_mixer182_oracle::kCaseCount == 42U);
 
   std::size_t total_float_words = 0U;
@@ -17254,10 +17255,10 @@ TEST(typed_shapes_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shapes_matches_all_six_independent_js_oracles) {
   REQUIRE(shapes183_oracle::kOracleSha256 ==
-          "a39ce03c7a3642b60fada0c473355afd1269d20c82d110a5386777f998668c35");
+          "daf15bc1bab2acda80c953ff035206eacfa5a577c20b1ff5bceafc18f89830f0");
   REQUIRE(shapes183_oracle::kProgramKey == "classicNoisedeck/shapes:shapes");
   REQUIRE(shapes183_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(shapes183_oracle::kCaseCount == 6U);
   REQUIRE(shapes183_oracle::kCases.size() == 6U);
   REQUIRE(shapes183_oracle::kLoopAOffset == 40);
@@ -18346,10 +18347,10 @@ TEST(typed_shape184_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_shape184_matches_all_eight_independent_js_oracles) {
   REQUIRE(shape184_oracle::kOracleSha256 ==
-          "901eeeb1178945823a955f69776c7fb478e7b82d651f5b67495f4c8e61b6d4dc");
+          "067947c6b241bf6a4fced605a793e8204afb40a74730de63d1301eed6d7a3624");
   REQUIRE(shape184_oracle::kProgramKey == "synth/shape:shape");
   REQUIRE(shape184_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(shape184_oracle::kCaseCount == 8U);
   REQUIRE(shape184_oracle::kCases.size() == 8U);
   REQUIRE(shape184_oracle::kLoopAOffset == 40);
@@ -19497,10 +19498,10 @@ TEST(typed_normalmap185_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_normalmap185_matches_all_eight_independent_js_oracles) {
   REQUIRE(normalmap185_oracle::kOracleSha256 ==
-          "1c222a5031e1dd58240344bcb2c4806c0bd01d2aceebb98d43e4e00589f2685d");
+          "affe8be8c85922fa49b0cbad5869db89146a9a354b51bd51caf6b7b96e3f0a25");
   REQUIRE(normalmap185_oracle::kProgramKey == "filter/normalMap:normalMap");
   REQUIRE(normalmap185_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(normalmap185_oracle::kCaseCount == 8U);
   REQUIRE(normalmap185_oracle::kCases.size() ==
           normalmap185_oracle::kCaseCount);
@@ -20625,11 +20626,11 @@ TEST(typed_cellrefract186_custom_comparer_rejects_all_independent_failure_modes)
 
 TEST(typed_cellrefract186_matches_all_four_independent_js_oracles) {
   REQUIRE(cellrefract186_oracle::kOracleSha256 ==
-          "dd026ed5a7f14bd7710e8d876f3656adb3fe91394d5afb1ee422df9ac155cbe8");
+          "4564e48493a373d035e0f51a7a62b03cb2755a7aa7cd49bdbfc5b69f52c06bfc");
   REQUIRE(cellrefract186_oracle::kProgramKey ==
           "classicNoisedeck/cellRefract:cellRefract");
   REQUIRE(cellrefract186_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(cellrefract186_oracle::kKernelDefine == 0);
   REQUIRE(cellrefract186_oracle::kShapeDefine == 1);
   REQUIRE(cellrefract186_oracle::kCaseCount == 4U);
@@ -21931,10 +21932,10 @@ TEST(typed_wobble189_custom_comparer_rejects_all_independent_failure_modes) {
 
 TEST(typed_wobble189_matches_all_four_independent_js_oracles) {
   REQUIRE(wobble189_oracle::kOracleSha256 ==
-          "b6b3f7d7919c9193098eacd84661a9cc1ac0e07033e925e1c7220086afd8d750");
+          "b5e2e699a52f7cdd3607c1caba0cd4b00e13a7bbe905446eab3c922fa02a226e");
   REQUIRE(wobble189_oracle::kProgramKey == "filter/wobble:wobble");
   REQUIRE(wobble189_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(wobble189_oracle::kCaseCount == 4U);
   REQUIRE(wobble189_oracle::kCases.size() == 4U);
   REQUIRE(wobble189_oracle::kBindingCount == 5U);
@@ -22779,7 +22780,7 @@ TEST(typed_wobble189_mutant_ledger_and_native_necessary_conditions) {
 TEST(typed_parallax190_matches_every_independent_js_oracle_case) {
   REQUIRE(parallax190_oracle::kProgramKey == "filter/parallax:parallax");
   REQUIRE(parallax190_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(parallax190_oracle::kCaseCount == 6U);
   REQUIRE(parallax190_oracle::kCases.size() == 6U);
   REQUIRE(parallax190_oracle::kBindingCount == 6U);
@@ -25430,18 +25431,18 @@ void testpattern_native_integration_require_oracle_metadata() {
   REQUIRE(noisemaker_testpattern_oracle::kSourceSha256 ==
           "f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20");
   REQUIRE(noisemaker_testpattern_oracle::kCorpusRevision ==
-          "a024dc3a960cc44af454abc7aebce50456c194e6");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(noisemaker_testpattern_oracle::kUpstreamRevision ==
-          "117a236679d1db3ab8f0e278230ece277b57564c");
+          "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   REQUIRE(noisemaker_testpattern_oracle::kSourceRelativePath ==
-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/testPattern/testPattern.glsl");
-  REQUIRE(noisemaker_testpattern_oracle::kFactoryName == "canonicalFactory277");
+          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/testPattern/testPattern.glsl");
+  REQUIRE(noisemaker_testpattern_oracle::kFactoryName == "canonicalFactory285");
   REQUIRE(noisemaker_testpattern_oracle::kFactoryRelativePath ==
           "src/effects/generated/canonical-kernels.js");
   REQUIRE(noisemaker_testpattern_oracle::kFactorySha256 ==
-          "93db20150da0135c4169afbb013c6d86c5cb4d35a24c42358ad714e1d4a4ee15");
+          "d56e89aa136496ba3eb9229a0219db26063a6682dd0e44cbc4871a6fefe8ffe0");
   REQUIRE(noisemaker_testpattern_oracle::kFactoryClosureSha256 ==
-          "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
+          "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
   REQUIRE(noisemaker_testpattern_oracle::kProgramKey ==
           "synth/testPattern:testPattern");
   REQUIRE(noisemaker_testpattern_oracle::kEffectKey == "synth/testPattern");
@@ -25883,12 +25884,12 @@ void texture_native_integration_require_oracle_metadata() {
   REQUIRE(noisemaker_texture_oracle::kMutations.size() == 4U);
   constexpr std::string_view schema = "noisemaker-for-cpp.texture.pixel-parity.v1";
   constexpr std::string_view program_key = "filter/texture:texture";
-  constexpr std::string_view upstream_revision = "117a236679d1db3ab8f0e278230ece277b57564c";
-  constexpr std::string_view source_path = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/texture/texture.glsl";
+  constexpr std::string_view upstream_revision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
+  constexpr std::string_view source_path = "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/texture/texture.glsl";
   constexpr std::string_view source_sha256 = "8e95251ef9a7789b1de4e51718ab3bebd9fc6d20db8acd0969191e288ec7454c";
   constexpr std::string_view factory_name = "canonicalFactory161";
   constexpr std::string_view factory_sha256 = "56ebbc34fb2862b31754fc5e66537d982a5932d2f708f1ed29e66fcbbdd6a9a0";
-  constexpr std::string_view canonical_kernels_sha256 = "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe";
+  constexpr std::string_view canonical_kernels_sha256 = "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c";
   constexpr std::string_view oracle_include_sha256 = "5686e8b14574110386527c38a63f3b3fcd2006c8b0abdb5f16696f1bf8efcd88";
   REQUIRE(schema == "noisemaker-for-cpp.texture.pixel-parity.v1");
   REQUIRE(program_key == "filter/texture:texture");
@@ -26263,7 +26264,7 @@ void distortion_native_integration_require_oracle_metadata() {
   REQUIRE(distortion_oracle::kFrontendBlocker ==
           "sampler-parameter:calculateNormal:26:1-72:2");
   REQUIRE(distortion_oracle::kOracleJsonSha256 ==
-          "68460b78ee521ab90b605f2fbec8bd178b0d2167333fd1aa55bde5e4ee9dff2b");
+          "7a9e79771957b8ab06dacd3e78d4b2b41ac9c7160bf1e91089c3b1b6a1402b63");
   REQUIRE(distortion_oracle::kOracleSha256 == distortion_oracle::kOracleJsonSha256);
   REQUIRE(distortion_oracle::kFactoryTextSha256 ==
           "4f962484b211546300a659acde664df1d9430ceff7108d0877c13cf47d5a3fa5");
@@ -26272,7 +26273,7 @@ void distortion_native_integration_require_oracle_metadata() {
           "569fbab57b57baad275a60facfd70b913afe76d69a724b682e821883d40dcae8");
   REQUIRE(distortion_oracle::kSourceBytes == 8117U);
   REQUIRE(distortion_oracle::kSourceRelativePath ==
-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/mixer/distortion/distortion.glsl");
+          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl");
 
   // The generated include now carries the source-bound control tuples; keep
   // this harness consuming CaseSummary::controls rather than duplicating them.
@@ -29049,16 +29050,16 @@ void require_oracle_metadata() {
   REQUIRE(noisemaker_moodscape_oracle::kProgramKey ==
           "classicNoisedeck/moodscape:moodscape");
   REQUIRE(noisemaker_moodscape_oracle::kOracleJsonSha256 ==
-          "113ef3878d8b7887a7bc2d1f12fb56304f65d858dc8ff7102e2ff6b3a330d23f");
+          "fb147952d885ba1c6d8837cc3b8fdb6ba9ddf8b2496f7acabe85f02c91b9c10e");
   REQUIRE(noisemaker_moodscape_oracle::kFactorySha256 ==
           "70db1168604045e22ac0c74f4b58a96d5e4ed2c6e107ec2fe3b2beab08ca479d");
   REQUIRE(noisemaker_moodscape_oracle::kSourceSha256 ==
           "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44");
   REQUIRE(noisemaker_moodscape_oracle::kSourceBytes == 19559U);
   REQUIRE(noisemaker_moodscape_oracle::kSourceRelativePath ==
-          "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/moodscape/moodscape.glsl");
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 22U);
-  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 22U);
+          "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/moodscape/moodscape.glsl");
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosureCardinality == 23U);
+  REQUIRE(noisemaker_moodscape_oracle::kImportClosure.size() == 23U);
   constexpr std::array<std::string_view, 15> runtime_names{
       "NOISE_TYPE", "COLOR_MODE", "time", "seed", "wrap", "resolution",
       "tileOffset", "fullResolution", "noiseScale", "refractAmt", "speed",
@@ -29647,7 +29648,7 @@ void require_oracle_metadata() {
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kSourceSha256) ==
           "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138");
   REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 31258U);
-  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 22U);
+  REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 23U);
   REQUIRE(noisemaker_classic_noise_oracle::kRuntimeBindingCardinality == 29U);
   constexpr std::array<std::string_view, 29> names{
       "NOISE_TYPE", "REFRACT_MODE", "LOOP_OFFSET", "METRIC", "COLOR_MODE", "time", "seed",

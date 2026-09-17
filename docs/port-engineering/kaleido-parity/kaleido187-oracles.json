@@ -4,8 +4,8 @@
   "program_key": "classicNoisedeck/kaleido:kaleido",
   "effect_key": "classicNoisedeck/kaleido",
   "runtime_key": "classicNoisedeck/kaleido:kaleido",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "defines": {
     "DIRECTION": 2,
     "KERNEL": 0,
@@ -172,14 +172,14 @@
     "alpha": "sampled alpha is exactly 1.0 in every input and output"
   },
   "provenance": {
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "generator": {
       "relative_path": "docs/port-engineering/kaleido-parity/kaleido187_oracle_generator.mjs",
-      "sha256": "f3d07209a319154ee0a3077eec79ca32b9e57013a8f06082d0b0266a94229b24"
+      "sha256": "209d48277aa645f585baa7e75cc1f5e534bcc67f2bd7eb1ec4585510c97d861f"
     },
     "native_include_generator": {
       "relative_path": "tools/glslcpp/generate_kaleido_native_oracle_include.py",
-      "sha256": "aaa2a4d8d4a7be740645212f5527518c3ae46f23d0503605c084453dc81e6d7b"
+      "sha256": "a1b62f73fc099034e142ae91136301eb64266e43c848c8cbbd2cdbf74da827f4"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",
@@ -217,7 +217,7 @@
         },
         {
           "relative_path": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path": "src/effects/adapters/julia.js",
@@ -230,6 +230,10 @@
         {
           "relative_path": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path": "src/effects/adapters/snow.js",
@@ -249,7 +253,7 @@
         },
         {
           "relative_path": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path": "src/effects/generated/kernels.js",
@@ -257,7 +261,7 @@
         },
         {
           "relative_path": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path": "src/effects/registry.js",
@@ -278,9 +282,9 @@
       ]
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/kaleido/kaleido.glsl",
-      "bytes": 27567,
-      "sha256": "3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9"
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/kaleido/kaleido.glsl",
+      "bytes": 27570,
+      "sha256": "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52"
     },
     "canonical_factory": {
       "name": "canonicalFactory9",
@@ -299,19 +303,21 @@
       "filter/reindex:nmReindexApply",
       "filter/reindex:nmReindexStats",
       "filter/snow:snow",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_keys": [
       "classicNoisedeck/fractal:fractal",
       "filter/historicPalette:historicPalette",
       "filter/palette:palette",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_source": "tools/glslcpp/check_corpus.py",
     "pinned_cpu_files": {
       "canonical_kernels": {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       "public_catalog": {
         "relative_path": "src/effects/catalog.js",

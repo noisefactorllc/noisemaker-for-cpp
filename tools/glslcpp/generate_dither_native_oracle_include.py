@@ -7,6 +7,13 @@ import json
 import math
 from pathlib import Path
 import struct
+import sys
+
+# Derived from the single source of truth (never transcribed): this script's
+# own directory (tools/glslcpp) is on sys.path[0] when run directly.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = check_corpus.REVISION
 
 ROOT = Path(__file__).resolve().parents[2]
 ORACLE = ROOT / "docs/port-engineering/dither-parity/dither-oracles.json"
@@ -53,11 +60,15 @@ EXPECTED_BLOCKER = {
     "reproducible": True,
 }
 EXPECTED_POLICY = {"f32_words_exact", "rgba8_bytes_exact", "dimensions_before_data", "signed_zero_exact", "input_bits_exact", "public_direct_exact", "repeat_identity_exact"}
-CORPUS_SOURCE = "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl"
+CORPUS_SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/dither/dither.glsl"
 CORPUS_SOURCE_SHA256 = "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb"
-EXPECTED_UPSTREAM_REVISION = "117a236679d1db3ab8f0e278230ece277b57564c"
-EXPECTED_SOURCE = {"relative_path": "src/effects/generated/canonical-kernels.js", "bytes": 1713290, "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"}
+EXPECTED_UPSTREAM_REVISION = CORPUS_REVISION
+EXPECTED_SOURCE = {"relative_path": "src/effects/generated/canonical-kernels.js", "bytes": 1747097, "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"}
 EXPECTED_FACTORY = {"name": "canonicalFactory48", "text_bytes": 22898, "text_sha256": "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820", "public_factory_name": "canonicalFactory48", "public_factory_is_canonical_identity": True}
+# Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
+# prior e17dd02 authority because src/effects/adapters/index.js now imports
+# src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
+# added between e17dd02 and 61aa869).
 EXPECTED_CLOSURE = (
     ("src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"),
     ("src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"),
@@ -66,23 +77,24 @@ EXPECTED_CLOSURE = (
     ("src/effects/adapters/crt.js", "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc"),
     ("src/effects/adapters/f32-color.js", "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046"),
     ("src/effects/adapters/fractal.js", "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"),
-    ("src/effects/adapters/index.js", "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"),
+    ("src/effects/adapters/index.js", "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"),
     ("src/effects/adapters/julia.js", "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5"),
     ("src/effects/adapters/median.js", "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583"),
     ("src/effects/adapters/palette.js", "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"),
+    ("src/effects/adapters/remap.js", "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"),
     ("src/effects/adapters/snow.js", "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366"),
     ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
     ("src/effects/definition.js", "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02"),
     ("src/effects/generated/canonical-adapter-data.js", "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab"),
-    ("src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+    ("src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     ("src/effects/generated/kernels.js", "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01"),
-    ("src/effects/generated/upstream-snapshot.js", "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"),
+    ("src/effects/generated/upstream-snapshot.js", "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"),
     ("src/effects/registry.js", "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618"),
     ("src/runtime/pass-runner.js", "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa"),
     ("src/runtime/sampler.js", "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328"),
     ("src/runtime/surface.js", "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59"),
 )
-EXPECTED_CLOSURE_SHA256 = "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5"
+EXPECTED_CLOSURE_SHA256 = hashlib.sha256(json.dumps([{"relative_path": r, "sha256": s} for r, s in EXPECTED_CLOSURE], separators=(",", ":")).encode()).hexdigest()
 EXPECTED_MUTATION_IDENTITIES = {
     "fallback-default": {"anchor_sha256": "8e35a9b15829e194b90777d8f38e5709ec2e1f8cfa875d4294496fade9f67683", "replacement_sha256": "8fb42fd196d8a5e5bff6ba3a7a1dd24a87fe4dfb2b0f07a75146dc5bdcd1251b", "mutated_factory_sha256": "85c2335ba2395a5d80f05fff460de3ddf5779b39524a927ee506618c36e0f611"},
     "quantize-levels": {"anchor_sha256": "4af10b05bcf97c256bedc908d8fc491d9a7d53b3bd16508493a436d742f602ac", "replacement_sha256": "aa8311a86e4e743a9c84375b905a6c66581039145887910832a63625c2ef4b34", "mutated_factory_sha256": "c48b59a286a1178abe723287b9ea9869600425609971827b37bb4b2d5b6ea007"},
@@ -209,7 +221,7 @@ def validate(document: dict) -> None:
     if (not isinstance(closure, list) or tuple((item.get("relative_path"), item.get("sha256")) for item in closure) != EXPECTED_CLOSURE
             or any(Path(item.get("relative_path", "")).is_absolute() for item in closure)
             or any(".." in Path(item.get("relative_path", "")).parts for item in closure)
-            or len({item.get("relative_path") for item in closure}) != 22
+            or len({item.get("relative_path") for item in closure}) != 23
             or _sha(json.dumps(closure, separators=(",", ":")).encode()) != EXPECTED_CLOSURE_SHA256
             or snapshot.get("closure_sha256") != EXPECTED_CLOSURE_SHA256
             or snapshot.get("immutable_snapshot") is not True

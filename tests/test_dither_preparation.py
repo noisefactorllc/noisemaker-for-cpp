@@ -436,12 +436,12 @@ class DitherPreparedFrontendTests(unittest.TestCase):
         })
         self.assertEqual("508-566", trace["source"]["block_span"])
         self.assertEqual("500-506", trace["source"]["fetch_span"])
-        self.assertEqual("117a236679d1db3ab8f0e278230ece277b57564c",
+        self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5",
                          document["provenance"]["upstream_revision"])
         self.assertEqual("src/effects/generated/canonical-kernels.js",
                          document["provenance"]["source"]["relative_path"])
-        self.assertEqual(1713290, document["provenance"]["source"]["bytes"])
-        self.assertEqual("66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+        self.assertEqual(1747097, document["provenance"]["source"]["bytes"])
+        self.assertEqual("f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
                          document["provenance"]["source"]["sha256"])
         self.assertEqual("canonicalFactory48", document["provenance"]["factory"]["name"])
         self.assertEqual("canonicalFactory48", document["provenance"]["factory"]["public_factory_name"])
@@ -461,7 +461,7 @@ class DitherPreparedFrontendTests(unittest.TestCase):
                           "signed_zero_exact", "input_bits_exact", "public_direct_exact",
                           "repeat_identity_exact"}, set(document["comparer_policy"]))
         self.assertTrue(all(document["comparer_policy"].values()))
-        self.assertEqual(22, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
+        self.assertEqual(23, len(document["provenance"]["cpu_snapshot"]["import_closure"]))
         self.assertEqual(64, len(document["provenance"]["cpu_snapshot"]["closure_sha256"]))
         self.assertTrue(document["provenance"]["cpu_snapshot"]["immutable_snapshot"])
         self.assertTrue(document["provenance"]["cpu_snapshot"]["live_checkout_rejected"])
@@ -612,17 +612,17 @@ int main() {
   static_assert(kMutations[2].results.size() == 2U && kMutations[2].results[0].case_name == "error-diffusion-input" && kMutations[2].results[0].mismatched_lanes == 25U && kMutations[2].results[0].mismatched_bytes == 22U && kMutations[2].results[1].case_name == "error-diffusion-input-tiled" && kMutations[2].results[1].mismatched_lanes == 13U && kMutations[2].results[1].mismatched_bytes == 13U);
   static_assert(kSchema == "noisemaker-for-cpp.dither.pixel-parity.v1");
   static_assert(kProgramKey == "filter/dither:dither");
-  static_assert(kAuthorityNode == "v24.7.0");
-  static_assert(kUpstreamRevision == "117a236679d1db3ab8f0e278230ece277b57564c");
+  static_assert(kAuthorityNode == "v26.0.0");
+  static_assert(kUpstreamRevision == "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
   static_assert(kSourceRelativePath == "src/effects/generated/canonical-kernels.js");
-  static_assert(kSourceSha256 == "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
+  static_assert(kSourceSha256 == "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
   static_assert(kFactoryName == "canonicalFactory48");
   static_assert(kFactoryTextSha256 == "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820");
   static_assert(kPublicFactoryName == "canonicalFactory48");
   static_assert(kPublicFactoryIsCanonicalIdentity);
   static_assert(kCorpusSourceRelativePath == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
   static_assert(kCorpusSourceSha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
-  static_assert(kClosureSha256 == "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5");
+  static_assert(kClosureSha256 == "05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3");
   static_assert(kImmutableSnapshot);
   static_assert(kLiveCheckoutRejected);
   static_assert(kRealpathContainmentChecked);
@@ -690,7 +690,7 @@ int main() {
   static_assert(kAuthorityBlocker.reproducible && kAuthorityBlocker.direct_throws && kAuthorityBlocker.public_throws);
   static_assert(kComparerPolicy.f32_words_exact && kComparerPolicy.rgba8_bytes_exact && kComparerPolicy.dimensions_before_data && kComparerPolicy.signed_zero_exact && kComparerPolicy.input_bits_exact && kComparerPolicy.public_direct_exact && kComparerPolicy.repeat_identity_exact);
   static_assert(kComparerSelfTests.good_equal && kComparerSelfTests.dimensions_mismatch && kComparerSelfTests.short_lane_count && kComparerSelfTests.rgba8_mismatch && kComparerSelfTests.signed_zero);
-  static_assert(kCpuClosure.size() == 22U);
+  static_assert(kCpuClosure.size() == 23U);
   static_assert(kCpuClosure[0].relative_path == "src/csl/glsl-kernel.js" && kCpuClosure[0].sha256 == "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa");
   static_assert(kCpuClosure[1].relative_path == "src/csl/glsl-runtime.js" && kCpuClosure[1].sha256 == "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072");
   static_assert(kCpuClosure[2].relative_path == "src/csl/runtime.js" && kCpuClosure[2].sha256 == "a34ac04d63bb0865081ad3964b1ff5a427664a80e35f43c1761d91b0ea8e7dee");
@@ -698,21 +698,22 @@ int main() {
   static_assert(kCpuClosure[4].relative_path == "src/effects/adapters/crt.js" && kCpuClosure[4].sha256 == "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc");
   static_assert(kCpuClosure[5].relative_path == "src/effects/adapters/f32-color.js" && kCpuClosure[5].sha256 == "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046");
   static_assert(kCpuClosure[6].relative_path == "src/effects/adapters/fractal.js" && kCpuClosure[6].sha256 == "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29");
-  static_assert(kCpuClosure[7].relative_path == "src/effects/adapters/index.js" && kCpuClosure[7].sha256 == "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267");
+  static_assert(kCpuClosure[7].relative_path == "src/effects/adapters/index.js" && kCpuClosure[7].sha256 == "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e");
   static_assert(kCpuClosure[8].relative_path == "src/effects/adapters/julia.js" && kCpuClosure[8].sha256 == "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5");
   static_assert(kCpuClosure[9].relative_path == "src/effects/adapters/median.js" && kCpuClosure[9].sha256 == "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583");
   static_assert(kCpuClosure[10].relative_path == "src/effects/adapters/palette.js" && kCpuClosure[10].sha256 == "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452");
-  static_assert(kCpuClosure[11].relative_path == "src/effects/adapters/snow.js" && kCpuClosure[11].sha256 == "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366");
-  static_assert(kCpuClosure[12].relative_path == "src/effects/catalog.js" && kCpuClosure[12].sha256 == "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4");
-  static_assert(kCpuClosure[13].relative_path == "src/effects/definition.js" && kCpuClosure[13].sha256 == "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02");
-  static_assert(kCpuClosure[14].relative_path == "src/effects/generated/canonical-adapter-data.js" && kCpuClosure[14].sha256 == "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab");
-  static_assert(kCpuClosure[15].relative_path == "src/effects/generated/canonical-kernels.js" && kCpuClosure[15].sha256 == "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe");
-  static_assert(kCpuClosure[16].relative_path == "src/effects/generated/kernels.js" && kCpuClosure[16].sha256 == "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01");
-  static_assert(kCpuClosure[17].relative_path == "src/effects/generated/upstream-snapshot.js" && kCpuClosure[17].sha256 == "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090");
-  static_assert(kCpuClosure[18].relative_path == "src/effects/registry.js" && kCpuClosure[18].sha256 == "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618");
-  static_assert(kCpuClosure[19].relative_path == "src/runtime/pass-runner.js" && kCpuClosure[19].sha256 == "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa");
-  static_assert(kCpuClosure[20].relative_path == "src/runtime/sampler.js" && kCpuClosure[20].sha256 == "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328");
-  static_assert(kCpuClosure[21].relative_path == "src/runtime/surface.js" && kCpuClosure[21].sha256 == "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59");
+  static_assert(kCpuClosure[11].relative_path == "src/effects/adapters/remap.js" && kCpuClosure[11].sha256 == "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79");
+  static_assert(kCpuClosure[12].relative_path == "src/effects/adapters/snow.js" && kCpuClosure[12].sha256 == "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366");
+  static_assert(kCpuClosure[13].relative_path == "src/effects/catalog.js" && kCpuClosure[13].sha256 == "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4");
+  static_assert(kCpuClosure[14].relative_path == "src/effects/definition.js" && kCpuClosure[14].sha256 == "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02");
+  static_assert(kCpuClosure[15].relative_path == "src/effects/generated/canonical-adapter-data.js" && kCpuClosure[15].sha256 == "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab");
+  static_assert(kCpuClosure[16].relative_path == "src/effects/generated/canonical-kernels.js" && kCpuClosure[16].sha256 == "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c");
+  static_assert(kCpuClosure[17].relative_path == "src/effects/generated/kernels.js" && kCpuClosure[17].sha256 == "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01");
+  static_assert(kCpuClosure[18].relative_path == "src/effects/generated/upstream-snapshot.js" && kCpuClosure[18].sha256 == "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7");
+  static_assert(kCpuClosure[19].relative_path == "src/effects/registry.js" && kCpuClosure[19].sha256 == "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618");
+  static_assert(kCpuClosure[20].relative_path == "src/runtime/pass-runner.js" && kCpuClosure[20].sha256 == "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa");
+  static_assert(kCpuClosure[21].relative_path == "src/runtime/sampler.js" && kCpuClosure[21].sha256 == "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328");
+  static_assert(kCpuClosure[22].relative_path == "src/runtime/surface.js" && kCpuClosure[22].sha256 == "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59");
   static_assert(kBaselineCaseCount == 9U);
   static_assert(kAdversarialCaseCount == 3U);
   return 0;

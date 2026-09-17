@@ -47,9 +47,15 @@ const schema = 'noisemaker-for-cpp.cellrefract186.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'classicNoisedeck/cellRefract:cellRefract'
 const effectKey = 'classicNoisedeck/cellRefract'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const upstreamRevisionExpected = '117a236679d1db3ab8f0e278230ece277b57564c'
-const authorityNode = 'v24.7.0'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw new Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
+const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const authorityNode = 'v26.0.0'
 const defines = { KERNEL: 0, SHAPE: 1 }
 const factoryName = 'canonicalFactory3'
 const factoryTextSha256 = '329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3'
@@ -102,7 +108,7 @@ const bindingAbi = Object.freeze({
 const vecLanes = Object.freeze({ Vec2: 2 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
@@ -118,19 +124,26 @@ const pinnedCpuFiles = Object.freeze({
 // another frozen copy proves nothing, and would stay green if
 // `classicNoisedeck/cellRefract` were ever added to the real table.
 const corpusAdapterSourceRelative = 'tools/glslcpp/check_corpus.py'
+// Grew from 4 to 5 at CPU authority 61aa869: check_corpus.py's `_ADAPTERS`
+// census now also carries `synth/remap:remap` (the authority added a
+// canonical remap adapter between e17dd02 and 61aa869; see cellrefract-oracle-report.md).
 const corpusAdapterCensusExpected = Object.freeze([
   'classicNoisedeck/fractal:fractal', 'filter/historicPalette:historicPalette',
-  'filter/palette:palette', 'synth/julia:julia',
+  'filter/palette:palette', 'synth/julia:julia', 'synth/remap:remap',
 ])
 // `canonicalAdapterFactories` (the JavaScript-side override table) is a larger,
 // separate set. It is pinned by census here so a new override cannot silently
 // take over this key.
+// Grew from 11 to 12 at CPU authority 61aa869 for the same reason as the
+// `_ADAPTERS` census above: `synth/remap:remap` is a new canonical-adapter
+// override.
 const canonicalAdapterKeys = Object.freeze([
   'classicNoisedeck/bitEffects:bitEffects', 'classicNoisedeck/fractal:fractal',
   'filter/crt:crt', 'filter/historicPalette:historicPalette',
   'filter/median:median', 'filter/palette:palette',
   'filter/pixelSort:luminance', 'filter/reindex:nmReindexApply',
   'filter/reindex:nmReindexStats', 'filter/snow:snow', 'synth/julia:julia',
+  'synth/remap:remap',
 ])
 
 const f = Math.fround

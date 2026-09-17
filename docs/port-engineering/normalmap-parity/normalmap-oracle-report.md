@@ -1,6 +1,6 @@
 # Normalmap185 exact-parity oracle
 
-Program `filter/normalMap:normalMap`; corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; **no preprocessor defines**.
+Program `filter/normalMap:normalMap`; corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; **no preprocessor defines**.
 
 ## The contracts this program exists to prove
 
@@ -28,11 +28,11 @@ This oracle is produced by the unmodified public canonicalFactory86 from an immu
 `kernelFactories.get(key) === canonicalKernelFactories[key]`, the factory is named
 `canonicalFactory86`, its `Function.prototype.toString` SHA-256 is `9b1348836825b6efe90109747ca5ef341651527077d8ad7dbbcbc7080369842a`, neither
 adapter table owns the key, `canonicalAdapterFactories` matches its
-11-key census exactly, the key is absent from the
-4-key `check_corpus._ADAPTERS` eligibility table
+12-key census exactly, the key is absent from the
+5-key `check_corpus._ADAPTERS` eligibility table
 **parsed out of the live `tools/glslcpp/check_corpus.py`**
 rather than transcribed, all six pinned CPU files match, and every module in the
-22-file import closure resolves by real path
+23-file import closure resolves by real path
 beneath the immutable snapshot. Bare module specifiers other than `node:` builtins are rejected,
 and the live checkout is refused as a `--cpu-root`.
 

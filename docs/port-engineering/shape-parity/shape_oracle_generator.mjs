@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Shape184 canonical JavaScript oracle generator (`synth/shape:shape`).
 //
-// Authority: the unmodified public canonical factory `canonicalFactory274` from
+// Authority: the unmodified public canonical factory `canonicalFactory282` from
 // an immutable snapshot of `noisemaker-for-cpu`, executed through the pinned
 // `bindCanonicalKernel` / `GlslCpuRuntime` / `runPass` path. No C++ output
 // participates in any expected array. A locally reimplemented formula is not an
@@ -37,13 +37,19 @@ const schema = 'noisemaker-for-cpp.shape184.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'synth/shape:shape'
 const effectKey = 'synth/shape'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const upstreamRevisionExpected = '117a236679d1db3ab8f0e278230ece277b57564c'
-const authorityNode = 'v24.7.0'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
+const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const authorityNode = 'v26.0.0'
 const defines = { LOOP_A_OFFSET: 40, LOOP_B_OFFSET: 30 }
-const factoryName = 'canonicalFactory274'
-const factoryTextSha256 = '870d97a811e5720f827f5616057483a43b27224240ac95c04a8084dd257a6125'
-const nextFactoryName = 'canonicalFactory275'
+const factoryName = 'canonicalFactory282'
+const factoryTextSha256 = '2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4'
+const nextFactoryName = 'canonicalFactory283'
 
 // The live checkout is DERIVED, never hardcoded: a machine-specific absolute
 // path in a checked-in gate is unrunnable on any other machine and leaks a home
@@ -78,7 +84,7 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
@@ -96,7 +102,7 @@ const pinnedCpuFiles = Object.freeze({
 const corpusAdapterSourceRelative = 'tools/glslcpp/check_corpus.py'
 const corpusAdapterCensusExpected = Object.freeze([
   'classicNoisedeck/fractal:fractal', 'filter/historicPalette:historicPalette',
-  'filter/palette:palette', 'synth/julia:julia',
+  'filter/palette:palette', 'synth/julia:julia', 'synth/remap:remap',
 ])
 // `canonicalAdapterFactories` (the JavaScript-side override table) is a larger,
 // separate set. It is pinned by census here so a new override cannot silently
@@ -107,6 +113,7 @@ const canonicalAdapterKeys = Object.freeze([
   'filter/median:median', 'filter/palette:palette',
   'filter/pixelSort:luminance', 'filter/reindex:nmReindexApply',
   'filter/reindex:nmReindexStats', 'filter/snow:snow', 'synth/julia:julia',
+  'synth/remap:remap',
 ])
 
 const f = Math.fround

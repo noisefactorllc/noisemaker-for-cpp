@@ -1,6 +1,6 @@
 # LightLeak192 exact-parity oracle
 
-Canonical `filter/lightLeak:lightLeak` from corpus `a024dc3a960cc44af454abc7aebce50456c194e6`; factory `canonicalFactory77`.
+Canonical `filter/lightLeak:lightLeak` from corpus `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; factory `canonicalFactory77`.
 
 The oracle stores complete raw little-endian Float32 words and independently captured RGBA8 bytes for 11 deterministic cases. Each case also stores a source-bound input-texture phase, complete input Float32 words/hash, and complete input RGBA8 bytes/hash; native consumers must use those frozen payloads and never infer phase from case order or reimplement the generator formula. Dimensions, lane counts, signed zero, NaN payloads, repeat identity, input immutability, canonical/public identity, and binding tables are checked exactly.
 
@@ -17,4 +17,4 @@ python3 -B tools/glslcpp/generate_lightleak192_native_oracle_include.py --write
 python3 -B tools/glslcpp/generate_lightleak192_native_oracle_include.py --check
 ```
 
-Behavioral mutations: 11; structural-only mutations: 2; frozen CPU import closure files: 22.
+Behavioral mutations: 11; structural-only mutations: 2; frozen CPU import closure files: 23.

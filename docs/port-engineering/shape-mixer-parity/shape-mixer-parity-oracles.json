@@ -4,8 +4,8 @@
   "define": {
     "LOOP_OFFSET": 10
   },
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "oracle_authority": "clean pinned noisemaker-for-cpu canonicalFactory15 under pinned Node; no C++ output participates",
   "exactness_contract": {
     "float32": "complete raw little-endian uint32 lane arrays; signed zero and NaN payloads are significant",
@@ -20,7 +20,7 @@
     "live_checkout_required": true,
     "authority_live_distinct": true,
     "authority_live_non_symlink_directories": true,
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "import_closure": [
       {
         "relative_path": "src/csl/glsl-kernel.js",
@@ -52,7 +52,7 @@
       },
       {
         "relative_path": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path": "src/effects/adapters/julia.js",
@@ -65,6 +65,10 @@
       {
         "relative_path": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path": "src/effects/adapters/snow.js",
@@ -84,7 +88,7 @@
       },
       {
         "relative_path": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path": "src/effects/generated/kernels.js",
@@ -92,7 +96,7 @@
       },
       {
         "relative_path": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path": "src/effects/registry.js",
@@ -114,7 +118,7 @@
     "files": {
       "canonical_kernels": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       "public_catalog": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -122,11 +126,11 @@
       },
       "adapter_index": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       "upstream_snapshot": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       "glsl_kernel": {
         "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -146,9 +150,9 @@
       }
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
-      "bytes": 21718,
-      "sha256": "704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/shapeMixer/shapeMixer.glsl",
+      "bytes": 21721,
+      "sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
       "normalized_loop_offset_10_bytes": 17664,
       "normalized_loop_offset_10_sha256": "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8"
     },
@@ -456,7 +460,7 @@
         "symbol_id": 30
       }
     ],
-    "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+    "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
     "counts": {
       "declarations": 25,
       "dynamic_indexes": 5,
@@ -609,12 +613,12 @@
       "function_inventory_sha256": "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81",
       "functions_sha256": "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd",
       "interface_sha256": "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d",
-      "whole_program_sha256": "57ad82d28eb34f2ea014122b03d2333099123d7b51dfe91629035ef5f41634f9"
+      "whole_program_sha256": "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684"
     },
     "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
     "raw_source": {
-      "bytes": 21718,
-      "sha256": "704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4"
+      "bytes": 21721,
+      "sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
     },
     "reachable_function_ids": [
       99,

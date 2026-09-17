@@ -18,8 +18,8 @@ This package authenticates `classicNoisedeck/kaleido:kaleido` against the unmodi
 
 ## Provenance locks
 
-- Corpus revision `a024dc3a960cc44af454abc7aebce50456c194e6`; source `3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9`; CPU import closure is confined to the immutable snapshot.
-- The complete 22-file CPU import closure is frozen by path and SHA-256; any modified, missing, or extra dependency fails closed.
+- Corpus revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`; source `18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52`; CPU import closure is confined to the immutable snapshot.
+- The complete 23-file CPU import closure is frozen by path and SHA-256; any modified, missing, or extra dependency fails closed.
 - Live/foreign imports, adapter routing, absolute-looking provenance strings, schema drift, and sidecar drift fail closed.
 
 ## TDD evidence
@@ -31,11 +31,11 @@ This package authenticates `classicNoisedeck/kaleido:kaleido` against the unmodi
 
 ## Files and hashes
 
-- Oracle JSON SHA-256: `c5ec36429d5dc64ab9f058277ec763e2badb5fd3828aa351fb9342e9d8b109a5` (sidecar is authoritative for the exact bytes).
-- kaleido187_oracle_generator.mjs: 39006 bytes, SHA-256 `f3d07209a319154ee0a3077eec79ca32b9e57013a8f06082d0b0266a94229b24`
-- kaleido187-oracles.json: 46493 bytes, SHA-256 `c5ec36429d5dc64ab9f058277ec763e2badb5fd3828aa351fb9342e9d8b109a5`
-- generate_kaleido_native_oracle_include.py: 50312 bytes, SHA-256 `aaa2a4d8d4a7be740645212f5527518c3ae46f23d0503605c084453dc81e6d7b`
-- kaleido187_expected.inc: 17892 bytes, SHA-256 `3bacea2893d622e894cf66b52c2974757a8667546b7a081ba536ef2f325fb304`
+- Oracle JSON SHA-256: `5acebba86967527b3484b64e53cbbff54d62a9a1b6def7326a1df5a1748b720b` (sidecar is authoritative for the exact bytes).
+- kaleido187_oracle_generator.mjs: 39420 bytes, SHA-256 `209d48277aa645f585baa7e75cc1f5e534bcc67f2bd7eb1ec4585510c97d861f`
+- kaleido187-oracles.json: 46715 bytes, SHA-256 `5acebba86967527b3484b64e53cbbff54d62a9a1b6def7326a1df5a1748b720b`
+- generate_kaleido_native_oracle_include.py: 50598 bytes, SHA-256 `a1b62f73fc099034e142ae91136301eb64266e43c848c8cbbd2cdbf74da827f4`
+- kaleido187_expected.inc: 17892 bytes, SHA-256 `5679591fb69e08b320130aa43c2b54b4ca5d94691035b311489debc8b989e6a9`
 - Generator, report, native materializer, include, and each sidecar are generated/checked as one package.
 
 ## Concerns
