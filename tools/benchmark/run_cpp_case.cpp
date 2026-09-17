@@ -15,7 +15,9 @@
 #include "noisemaker/graph/execution_plan.hpp"
 #include "noisemaker/graph/executor.hpp"
 #include "noisemaker/renderer.hpp"
+#include "noisemaker/surface.hpp"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -38,7 +40,8 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
                " --width N --height N --time D --frame N --seed D"
                " --rgba8-output ABS --metadata-output ABS"
                " [--record-id STRING] [--repo-root ABS]"
-               " [--plan-relation-output ABS] [--float32-output ABS]\n";
+               " [--plan-relation-output ABS] [--float32-output ABS]"
+               " [--external-texture NAME=WxH:HEX ...]\n";
   std::exit(nb::kExitUsage);
 }
 
@@ -58,6 +61,20 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
   return {};
 }
 
+// Every occurrence of a repeatable flag, in argument order -- unlike
+// `argument()` above, which returns only the first. `--external-texture` is
+// the one repeatable flag this driver accepts, mirroring how `record_flags`
+// (tools/benchmark/corpus_lane.py) emits one `--external-texture` per entry
+// in a corpus record's `externalTextures` list.
+[[nodiscard]] std::vector<std::string> arguments_all(
+    const std::vector<std::string>& args, std::string_view name) {
+  std::vector<std::string> values;
+  for (std::size_t index = 0; index + 1 < args.size(); ++index) {
+    if (args[index] == name) values.push_back(args[index + 1]);
+  }
+  return values;
+}
+
 [[nodiscard]] double number(const std::string& text, std::string_view name) {
   try {
     std::size_t consumed = 0;
@@ -67,6 +84,89 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
   } catch (const std::exception&) {
     usage(std::string(name) + " is not a number");
   }
+}
+
+[[nodiscard]] std::size_t positive_integer(const std::string& text, std::string_view name) {
+  const double value = number(text, name);
+  if (value <= 0.0 || value != static_cast<double>(static_cast<std::size_t>(value))) {
+    usage(std::string(name) + " must be a positive integer");
+  }
+  return static_cast<std::size_t>(value);
+}
+
+[[nodiscard]] std::uint8_t hex_nibble(char digit, std::string_view spec) {
+  if (digit >= '0' && digit <= '9') return static_cast<std::uint8_t>(digit - '0');
+  if (digit >= 'a' && digit <= 'f') return static_cast<std::uint8_t>(digit - 'a' + 10);
+  if (digit >= 'A' && digit <= 'F') return static_cast<std::uint8_t>(digit - 'A' + 10);
+  usage("--external-texture " + std::string(spec) + " has non-hex byte data");
+}
+
+[[nodiscard]] std::vector<std::uint8_t> decode_hex_bytes(std::string_view hex,
+                                                          std::string_view spec) {
+  if (hex.size() % 2 != 0) {
+    usage("--external-texture " + std::string(spec) + " has an odd number of hex digits");
+  }
+  std::vector<std::uint8_t> bytes;
+  bytes.reserve(hex.size() / 2);
+  for (std::size_t index = 0; index < hex.size(); index += 2) {
+    const auto high = hex_nibble(hex[index], spec);
+    const auto low = hex_nibble(hex[index + 1], spec);
+    bytes.push_back(static_cast<std::uint8_t>((high << 4) | low));
+  }
+  return bytes;
+}
+
+// Parses one `--external-texture` value: `NAME=WIDTHxHEIGHT:HEXBYTES`, the
+// same `{name, width, height, rgba8}` shape a corpus record's
+// `externalTextures` entry carries (and the identical construction
+// `run_cpu_case.mjs` performs: `api.Surface.fromRgba8(width, height, bytes)`
+// off the record's own hex string) -- so `record_flags` can pass the exact
+// same bytes to both lanes without either side decoding a PNG. Unlike
+// `noisemaker-render`'s `--texture NAME=FILE` (a real file path, the right
+// shape for a human at a terminal), this driver's inputs are always
+// synthesized in-process by `tools/parity/sweep.py`/`corpus_lane.py`, so hex
+// bytes inline in argv avoid a needless PNG round trip through a scratch
+// file for every case.
+[[nodiscard]] noisemaker::graph::NamedSurface parse_external_texture(
+    const std::string& spec) {
+  const auto name_end = spec.find('=');
+  if (name_end == std::string::npos || name_end == 0) {
+    usage("--external-texture must be NAME=WIDTHxHEIGHT:HEX, not \"" + spec + "\"");
+  }
+  const std::string name = spec.substr(0, name_end);
+  const auto dims_and_hex = std::string_view(spec).substr(name_end + 1);
+  const auto x_pos = dims_and_hex.find('x');
+  const auto colon_pos = dims_and_hex.find(':');
+  if (x_pos == std::string_view::npos || colon_pos == std::string_view::npos ||
+      colon_pos < x_pos) {
+    usage("--external-texture must be NAME=WIDTHxHEIGHT:HEX, not \"" + spec + "\"");
+  }
+  const std::string width_text(dims_and_hex.substr(0, x_pos));
+  const std::string height_text(dims_and_hex.substr(x_pos + 1, colon_pos - x_pos - 1));
+  const auto width = positive_integer(width_text, "--external-texture width");
+  const auto height = positive_integer(height_text, "--external-texture height");
+  const auto hex = dims_and_hex.substr(colon_pos + 1);
+  const auto bytes = decode_hex_bytes(hex, spec);
+  if (bytes.size() != width * height * 4U) {
+    usage("--external-texture " + spec + " byte length does not match width*height*4");
+  }
+  noisemaker::Surface surface = noisemaker::Surface::from_rgba8(width, height, bytes);
+  return noisemaker::graph::NamedSurface{name, std::move(surface)};
+}
+
+[[nodiscard]] std::vector<noisemaker::graph::NamedSurface> parse_external_textures(
+    const std::vector<std::string>& args) {
+  std::vector<noisemaker::graph::NamedSurface> textures;
+  for (const auto& spec : arguments_all(args, "--external-texture")) {
+    auto texture = parse_external_texture(spec);
+    for (auto& existing : textures) {
+      if (existing.name == texture.name) {
+        usage("--external-texture " + texture.name + " was given more than once");
+      }
+    }
+    textures.push_back(std::move(texture));
+  }
+  return textures;
 }
 
 }  // namespace
@@ -118,6 +218,7 @@ int main(int argc, char** argv) {
   options.time = number(argument(args, "--time"), "--time");
   options.frame = static_cast<std::uint32_t>(number(argument(args, "--frame"), "--frame"));
   options.seed = number(argument(args, "--seed"), "--seed");
+  options.external_textures = parse_external_textures(args);
 
   std::vector<std::uint8_t> bytes;
   std::vector<std::uint8_t> float32_bytes;

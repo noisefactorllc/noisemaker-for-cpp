@@ -811,6 +811,26 @@ _CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS = frozenset(
 # parameter, but its corpus record is `recordKind: "excluded"` (unrelated
 # 3D/volume-output limitation): it is never admitted by this port's executor
 # at all, so it is not on the carrier list either.
+
+# The identical carrier shape as `_CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS`
+# above, for one vec2 uniform on one non-classicNoisedeck program:
+# `synth/media:mediaInput`'s `imageSize`. renderer.js's
+# `createCanonicalBindings()` spreads `...uniforms` (buildBindings()'s raw,
+# unrounded `params[name]`) for every ordinary effect-parameter uniform, and
+# only explicitly `f32()`'s a handful of reserved names (time/seed/
+# deltaTime/aspect/aspectRatio/renderScale) -- `imageSize` is none of those,
+# so the authority carries it as a full, un-rounded JS double all the way
+# into the kernel body (confirmed: zero `Math.fround` calls anywhere in
+# canonicalFactory261's emitted body). A `glsl::Vec2` (float lanes) uniform
+# ABI narrows it to float32 one step earlier than the authority ever does --
+# measurably not byte-exact (rare, boundary-triggered: 3 of 4096 pixels in
+# one `tools/parity/sweep.py` variant with a non-round `imageSize`/
+# `rotation` combination). `glsl::DVec2` doesn't exist as a carrier
+# elsewhere in this port; this is its first and, today, only use.
+_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS = frozenset({
+    ("synth/media:mediaInput", "imageSize"),
+})
+
 # Identifiers the emitter itself binds inside every generated pixel function
 # and helper signature. A GLSL local or parameter with one of these names would
 # shadow them and either change meaning silently or fail to compile — e.g. a
@@ -1543,6 +1563,14 @@ class _Emitter:
     # scoped to these named symbols in this one authenticated program.
     emitted_testpattern_digit_extraction_declarations: list[object] = field(
         init=False, default_factory=list)
+    # Symbol ids of every local declaration this render authored as
+    # `glsl::DVec2` via `_double_precision_vec2_alias_declaration` -- so a
+    # later binary-expression emission referencing one of them by `id` (see
+    # the "binary" expression case) knows to promote its OTHER operand to
+    # `glsl::DVec2` explicitly rather than emit a mixed Vec<N,float>/
+    # Vec<N,double> operator that does not exist.
+    double_precision_vec2_alias_symbol_ids: list[int] = field(
+        init=False, default_factory=list)
     emitted_testpattern_digit_extraction_remainder: TypedExpression | None = field(
         init=False, default=None)
     emitted_testpattern_digit_extraction_call: TypedExpression | None = field(
@@ -1877,6 +1905,7 @@ class _Emitter:
         self.authorized_testpattern_glyph_mask = None
         self.emitted_testpattern_bitwise = []
         self.emitted_testpattern_digit_extraction_declarations = []
+        self.double_precision_vec2_alias_symbol_ids = []
         self.emitted_testpattern_digit_extraction_remainder = None
         self.emitted_testpattern_digit_extraction_call = None
         self.authorized_remap_proof = None
@@ -5872,6 +5901,79 @@ class _Emitter:
             return "glsl::DVec3"
         return None
 
+    def _double_precision_vec2_uniform_type(self, symbol_name: str) -> str | None:
+        """The declared double-precision vec2 uniform carrier override.
+
+        Returns "glsl::DVec2" for exactly the (program, uniform) pairs in
+        `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`; `None` for every other
+        program or uniform, which then falls through to the ordinary
+        `glsl::Vec2` (float lanes) uniform type unchanged. Mirrors
+        `_classic_noisedeck_double_uniform_type` exactly, one vec width
+        down, for a program outside the classicNoisedeck namespace.
+        """
+        if (self.program.key, symbol_name) in _DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS:
+            return "glsl::DVec2"
+        return None
+
+    def _double_precision_vec2_alias_declaration(self, declaration) -> bool:
+        """True for a local `vec2 x = imageSize;` (or any other declared
+        double-precision vec2 uniform carrier), unmodified.
+
+        Narrowing such a declaration to `glsl::Vec2` would reintroduce
+        exactly the float32 rounding the carrier override above exists to
+        avoid, just one statement later than the uniform read itself.
+        Scoped tightly: a direct, single-child identifier initializer
+        naming exactly one of `_DOUBLE_PRECISION_VEC2_UNIFORM_CARRIERS`'s
+        uniforms for the current program. Any other shape (arithmetic, a
+        second local aliasing the first, a different program) is not
+        recognized and keeps the ordinary float carrier -- only the two
+        directly-uniform-aliasing declarations in synth/media's own
+        getImage/rotate2D (`size = imageSize`) are proven to need this.
+        """
+        if declaration.type.display() != "vec2" or len(declaration.children) != 1:
+            return False
+        initializer = declaration.children[0]
+        if initializer.kind != "id" or initializer.symbol_id is None:
+            return False
+        uniform_symbol = next(
+            (item.symbol for item in self.program.declarations
+             if item.symbol.storage == "uniform"
+             and item.symbol.id == initializer.symbol_id),
+            None)
+        if uniform_symbol is None:
+            return False
+        return self._double_precision_vec2_uniform_type(uniform_symbol.name) == "glsl::DVec2"
+
+    def _is_double_precision_vec2_alias_symbol(self, symbol_id: int) -> bool:
+        """True for exactly the local symbol ids
+        `_double_precision_vec2_alias_declaration` already promoted to
+        `glsl::DVec2` for the CURRENT program (recorded at their own
+        declaration site into `double_precision_vec2_alias_symbol_ids`)."""
+        return symbol_id in self.double_precision_vec2_alias_symbol_ids
+
+    def _references_double_precision_vec2_alias(self, value: TypedExpression) -> bool:
+        """True when `value`'s own subtree reads a `glsl::DVec2`-promoted
+        local ANYWHERE within it -- not only when `value` itself is that
+        direct identifier.
+
+        Needed because the promotion above must propagate upward through
+        every enclosing expression until the next explicit narrowing
+        constructor (the emitter's existing `glsl::Vec2(...)` wrapper at
+        each assignment -- the single rounding point that matches the
+        authority's own single Float32Array store): `size` directly is
+        `glsl::DVec2`, so is `(gl_FragCoord.xy / size)`, so is
+        `(1.0 / size)`, and so is `st + (1.0 / size)` even though `st`
+        itself is an ordinary, already-narrowed `glsl::Vec2` local --
+        narrowing any INTERMEDIATE step back to float32 before the
+        assignment's own outer wrapper would round one step earlier than
+        the authority ever does, exactly the divergence this whole carrier
+        exists to avoid.
+        """
+        if value.kind == "id" and value.symbol_id is not None:
+            return self._is_double_precision_vec2_alias_symbol(value.symbol_id)
+        return any(self._references_double_precision_vec2_alias(child)
+                   for child in value.children)
+
     @staticmethod
     def _contains_vector_value_boundary(value: TypedExpression) -> bool:
         if value.kind in {"builtin", "call"} and value.type.display() in {"vec2", "vec3", "vec4"}:
@@ -7458,6 +7560,36 @@ class _Emitter:
                             left = materialized
                         else:
                             right = materialized
+            if value.type.display() == "vec2":
+                # One operand's subtree reads our declared double-precision
+                # vec2 uniform carrier alias (`size`, see
+                # `_double_precision_vec2_alias_declaration`) -- directly
+                # (`size` itself) or transitively (e.g. `1.0 / size`, or
+                # `st + (1.0 / size)`) -- while the OTHER does not. The
+                # non-referencing operand must be promoted to `glsl::DVec2`
+                # explicitly in the emitted text, since no implicit mixed
+                # Vec<N,float>/Vec<N,double> operator exists (deliberately:
+                # GLSL itself has no implicit vec-vec precision conversion
+                # either) -- see `_references_double_precision_vec2_alias`
+                # for why this has to check the whole subtree, not just an
+                # immediate `id` child. Scoped to exactly the vec2 binary
+                # ops synth/media's own getImage/rotate2D perform against
+                # `size` and its descendants; this never fires for any
+                # other program, since that helper only ever recognizes
+                # symbols this same render already promoted. When BOTH
+                # operands already reference it, both are already
+                # `glsl::DVec2` and the ordinary same-type operator applies
+                # unchanged.
+                referencing = [self._references_double_precision_vec2_alias(child)
+                              for child in value.children]
+                if referencing[0] != referencing[1]:
+                    other_index = 0 if referencing[1] else 1
+                    other = left if other_index == 0 else right
+                    promoted = f"glsl::DVec2({other})"
+                    if other_index == 0:
+                        left = promoted
+                    else:
+                        right = promoted
             result = f"({left} {value.operator} {right})"
             if vector_with_boundary:
                 # Vector-vector helpers return an ordinary Array with rounded
@@ -8632,6 +8764,11 @@ class _Emitter:
                     declaration_type = "glsl::BVec3"
                 else:
                     declaration_type = self.local_type(declaration.type)
+                if self._double_precision_vec2_alias_declaration(declaration):
+                    declaration_type = "glsl::DVec2"
+                    if declaration.symbol.id not in self.double_precision_vec2_alias_symbol_ids:
+                        self.double_precision_vec2_alias_symbol_ids.append(
+                            declaration.symbol.id)
                 if self._testpattern_digit_extraction_declaration(declaration):
                     declaration_type = "double"
                 if self._osd_js_number_declaration(declaration):
@@ -9034,7 +9171,25 @@ class _Emitter:
                 if operation == "=":
                     if vector_type is not None: right = f"{vector_type}({right})"
                     return [f"{indent}{target} = {right};"]
-                combined = f"({target} {operation[:-1]} {right})"
+                # A compound assignment (`st += 1.0 / size;`) builds its own
+                # `target OP right` text directly, never through the
+                # "binary" expression cascade above -- so the same
+                # double-precision vec2 alias promotion has to be
+                # duplicated here, or a compound assignment whose RHS (or,
+                # symmetrically, whose target) references the carrier
+                # mixes `glsl::Vec2`/`glsl::DVec2` with no operator to
+                # match, exactly like the plain binary case.
+                combined_target, combined_right = target, right
+                if assignment.children[0].type.display() == "vec2":
+                    target_refs = self._references_double_precision_vec2_alias(
+                        assignment.children[0])
+                    right_refs = self._references_double_precision_vec2_alias(
+                        assignment.children[1])
+                    if right_refs and not target_refs:
+                        combined_target = f"glsl::DVec2({target})"
+                    elif target_refs and not right_refs:
+                        combined_right = f"glsl::DVec2({right})"
+                combined = f"({combined_target} {operation[:-1]} {combined_right})"
                 if vector_type is not None: combined = f"{vector_type}({combined})"
                 return [f"{indent}{target} = {combined};"]
             if operation == "=":
@@ -11152,7 +11307,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
         lines.append("struct State final : KernelState {")
         constructor_parts = [
             f"const Surface* {symbol.name}_value" if symbol.type.kind == "sampler" else
-            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
+            f"{self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type)} {symbol.name}_value"
             for symbol in uniforms]
         if remap is not None:
             constructor_parts.insert(0, "glsl::RemapUniformData data_value")
@@ -11177,7 +11332,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
             lines.append("  glsl::RemapUniformData data;")
         for symbol in uniforms:
             type_name = ("const Surface*" if symbol.type.kind == "sampler" else
-                        self._classic_noisedeck_double_uniform_type(symbol.name) or self.uniform_type(symbol.type))
+                        self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.uniform_type(symbol.type))
             lines.append(f"  {type_name} {symbol.name};")
         if (self.runtime_loop_contract is not None
                 and self.runtime_loop_contract.kind == "blur-radius"):
@@ -11360,7 +11515,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 arguments.append(symbol.name)
             elif symbol.type.display() == "float": arguments.append(f"bindings.get_number(\"{symbol.name}\")")
             else:
-                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self.type(symbol.type)
+                cpp_type = self._classic_noisedeck_double_uniform_type(symbol.name) or self._double_precision_vec2_uniform_type(symbol.name) or self.type(symbol.type)
                 arguments.append(f"bindings.get<{cpp_type}>(\"{symbol.name}\")")
         if remap_data_argument is not None:
             arguments.insert(0, remap_data_argument)

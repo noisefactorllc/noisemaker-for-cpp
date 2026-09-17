@@ -117,15 +117,30 @@ def record_flags(record: dict, source_path: os.PathLike[str] | str) -> list[str]
     ``repr`` is the float spelling the parity lane has always used for
     ``time`` and ``seed``; it must stay exactly that so the JS runner and both
     C++ drivers receive identical decimal text for the same record.
+
+    ``record["externalTextures"]`` (an ``externalTexture``-declared effect's
+    bound input -- ``filter/text``'s ``textTex``, ``synth/media``'s
+    ``imageTex``) becomes one ``--external-texture NAME=WxH:HEX`` flag per
+    entry, the exact same ``{name, width, height, rgba8}`` shape
+    ``run_cpu_case.mjs`` decodes via ``api.Surface.fromRgba8`` -- so a caller
+    that sets this field on a record (``tools/parity/sweep.py``) feeds
+    byte-identical bytes to both lanes from one source of truth, never a
+    second, driftable copy. Absent (the common case, and the only case
+    ``tests/fixtures/dsl/executable-corpus.json``'s static records ever
+    carry), this emits nothing and both drivers behave exactly as before.
     """
     options = record["options"]
-    return [
+    flags = [
         "--source-file", str(source_path),
         "--source-sha256", record["sourceSha256"],
         "--width", str(options["width"]), "--height", str(options["height"]),
         "--time", repr(options["time"]), "--frame", str(options["frame"]),
         "--seed", repr(options["seed"]),
     ]
+    for texture in record.get("externalTextures") or []:
+        flags += ["--external-texture",
+                  f"{texture['name']}={texture['width']}x{texture['height']}:{texture['rgba8']}"]
+    return flags
 
 
 def _canonical_field(name: str, values: Iterable[str]) -> str:
