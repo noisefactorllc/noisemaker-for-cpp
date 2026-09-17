@@ -4,6 +4,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <span>
 #include <unordered_map>
 #include <vector>
 
@@ -182,6 +183,47 @@ Surface run_pass(const BoundKernel& kernel, std::size_t width, std::size_t heigh
   }
   derivative.mode = glsl::DerivativeMode::Approximate;
   return result;
+}
+
+std::vector<Surface> run_mrt_pass(const BoundKernelMrt& kernel, std::size_t width,
+                                  std::size_t height, float time, float seed,
+                                  std::uint32_t frame, float delta_time) {
+  kernel.validate_pass(width, height);
+  const std::size_t output_count = kernel.output_count();
+  std::vector<Surface> results;
+  results.reserve(output_count);
+  for (std::size_t index = 0; index < output_count; ++index) {
+    results.emplace_back(width, height);
+  }
+  std::vector<std::span<float>> pixels;
+  pixels.reserve(output_count);
+  for (auto& surface : results) pixels.push_back(surface.data());
+  const glsl::Vec2 resolution(static_cast<float>(width), static_cast<float>(height));
+
+  // No admitted MRT kernel uses derivatives (BoundKernelMrt's constructor
+  // refuses uses_derivatives=true outright), so this is the only path --
+  // the exact non-derivative half of run_pass's raster order and fragCoord
+  // convention, generalized from one Vec4 per pixel to `output_count` of
+  // them, scattered exactly like `runCanonicalMrtPass`'s `out` scratch
+  // buffer (renderer.js:450-490): one kernel call per pixel produces every
+  // output atomically, then each 4-lane chunk is stored into its own
+  // destination at the same pixel offset.
+  std::vector<glsl::Vec4> outputs(output_count);
+  for (std::size_t y = 0; y < height; ++y) {
+    for (std::size_t x = 0; x < width; ++x) {
+      const glsl::PixelContext context =
+          make_context(resolution, static_cast<float>(x) + 0.5f,
+                       static_cast<float>(height - y) - 0.5f, time, seed, frame, delta_time);
+      kernel.run_pixel(context, outputs.data());
+      const std::size_t offset = (y * width + x) * 4U;
+      for (std::size_t slot = 0; slot < output_count; ++slot) {
+        for (std::size_t lane = 0; lane < 4U; ++lane) {
+          pixels[slot][offset + lane] = outputs[slot][lane];
+        }
+      }
+    }
+  }
+  return results;
 }
 
 }  // namespace noisemaker

@@ -671,10 +671,18 @@ void validate_ordinary_pass_metadata(const EffectStep& step,
   }
 }
 
-// The single authenticated fragment output symbol.  Every one of the 211
-// canonical compatibility rows declares exactly one `fragColor` /
-// `glsl::Vec4` output; the authority pass may name its own key ("color" on
-// 19 rows), so the two names are checked against their own authorities.
+// The single authenticated fragment output symbol for an ordinary
+// (single-output) pass.  Every one of the 211 canonical single-output
+// compatibility rows declares exactly one `fragColor` / `glsl::Vec4`
+// output; the authority pass may name its own key ("color" on 19 rows), so
+// the two names are checked against their own authorities.
+//
+// An MRT (drawBuffers >= 2) pass has no such legacy alias: JS's own
+// `canonicalMrtDestinations` (renderer.js:519-533) looks up
+// `pass.outputs[outputVariable]` BY the real GLSL output-variable name
+// (`factory.outputNames`), so a pass's own declared key must already be
+// that literal symbol -- verified against every pinned upstream MRT source
+// (fragColor/geoOut, outXYZ/outVel/outRGBA[/outData], outState1/2/3).
 constexpr std::string_view kFragmentOutputSymbol = "fragColor";
 
 void validate_pass_output_abi(const EffectStep& step,
@@ -725,21 +733,26 @@ void validate_pass_output_abi(const EffectStep& step,
     }
     return;
   }
-  if (pass.outputs.size() != 1U || admission.outputs.size() != 1U) {
+  if (pass.outputs.empty() || pass.outputs.size() != admission.outputs.size()) {
     throw GraphError(GraphErrorCode::unsupported_mrt,
-                     "exactly one fragment output is supported",
+                     "pass output count differs from the admitted output ABI",
                      step.effect.id, pass_index, pass.name,
                      std::string(program_key));
   }
-  const auto& declared = pass.outputs.front();
-  const auto& output = admission.outputs.front();
-  if (output.slot != 0U || output.physical_name != kFragmentOutputSymbol ||
-      output.logical_route != declared.second || declared.second.empty() ||
-      declared.first.empty() || output.cpp_type != "glsl::Vec4") {
-    throw GraphError(GraphErrorCode::invalid_snapshot,
-                     "pass output ABI differs from owned definition",
-                     step.effect.id, pass_index, pass.name,
-                     std::string(program_key));
+  const bool single = pass.outputs.size() == 1U;
+  for (std::size_t slot = 0; slot < pass.outputs.size(); ++slot) {
+    const auto& declared = pass.outputs[slot];
+    const auto& output = admission.outputs[slot];
+    const std::string_view expected_symbol =
+        single ? kFragmentOutputSymbol : std::string_view(declared.first);
+    if (output.slot != slot || output.physical_name != expected_symbol ||
+        output.logical_route != declared.second || declared.second.empty() ||
+        declared.first.empty() || output.cpp_type != "glsl::Vec4") {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "pass output ABI differs from owned definition",
+                       step.effect.id, pass_index, pass.name,
+                       std::string(program_key));
+    }
   }
 }
 
@@ -1227,12 +1240,26 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                              effect->effect.id, index, admission.identity.name, admission.identity.program_key);
           }
         }
+        // `drawBuffers` (JS: `renderer.js:126`, "MRT (drawBuffers >= 2)") is
+        // the authority's own declared render-target count for this pass;
+        // an ordinary single-output pass never declares it at all (implicit
+        // 1). The only real invariant is that it agrees with how many
+        // outputs the pass itself declares -- a MISMATCH is what
+        // `unsupported_mrt` means now, not "more than one output": N>1 with
+        // a correctly-matching count runs through run_mrt_pass below.
         if (pass.draw_buffers.has_value() &&
             (pass.draw_buffers->kind != effects::ValueKind::number ||
-             !std::isfinite(pass.draw_buffers->number) ||
-             pass.draw_buffers->number != 1.0)) {
+             !std::isfinite(pass.draw_buffers->number))) {
           throw GraphError(GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported",
                            effect->effect.id, index, admission.identity.name, admission.identity.program_key);
+        }
+        {
+          const double declared_draw_buffers =
+              pass.draw_buffers.has_value() ? pass.draw_buffers->number : 1.0;
+          if (declared_draw_buffers != static_cast<double>(pass.outputs.size())) {
+            throw GraphError(GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported",
+                             effect->effect.id, index, admission.identity.name, admission.identity.program_key);
+          }
         }
         validate_pass_identity_and_output(*effect, snapshot.definition, pass,
                                           admission, index);
@@ -1651,7 +1678,11 @@ void validate_pass_controls(const EffectStep& step, const PassAdmission& admissi
     if (admission.dimensionality != "image") throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only image dimensionality is supported");
     if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
   }
-  if (pass.draw_buffers.has_value() && (pass.draw_buffers->kind != effects::ValueKind::number || !std::isfinite(pass.draw_buffers->number) || pass.draw_buffers->number != 1.0)) throw binding_error(step, admission, GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported");
+  // See the sibling check in the plan dry-run loop above: `unsupported_mrt`
+  // now means "declared drawBuffers disagrees with the pass's own output
+  // count", not "more than one output".
+  if (pass.draw_buffers.has_value() && (pass.draw_buffers->kind != effects::ValueKind::number || !std::isfinite(pass.draw_buffers->number))) throw binding_error(step, admission, GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported");
+  if ((pass.draw_buffers.has_value() ? pass.draw_buffers->number : 1.0) != static_cast<double>(pass.outputs.size())) throw binding_error(step, admission, GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported");
   if (pass.repeat.has_value() && pass.repeat->kind != effects::ValueKind::number && pass.repeat->kind != effects::ValueKind::string) throw binding_error(step, admission, GraphErrorCode::invalid_options, "repeat must be numeric or a uniform name");
   if (pass.repeat.has_value() && pass.repeat->kind == effects::ValueKind::number && (!std::isfinite(pass.repeat->number) || pass.repeat->number < 0.0)) throw binding_error(step, admission, GraphErrorCode::invalid_options, "repeat must be finite and non-negative");
   if (pass.conditions.has_value() && pass.conditions->kind != effects::ValueKind::object) throw binding_error(step, admission, GraphErrorCode::invalid_options, "conditions must be an object");
@@ -1838,6 +1869,117 @@ noisemaker::BoundKernel bind_factory_route(
     std::span<const FactoryRouteDescriptor> routes) {
   const auto* route = authenticate_factory_route(step, admission, routes);
   authenticate_compile_define_parameters(step, admission, definition, *route);
+  authenticate_palette_override(step, admission, definition);
+  authenticate_measured_parity(step, admission);
+  return route->bind(bindings);
+}
+
+const FactoryRouteDescriptorMrt* find_factory_route_mrt(
+    std::span<const FactoryRouteDescriptorMrt> routes,
+    std::string_view program_key,
+    std::string_view canonical_factory) noexcept {
+  for (const auto& route : routes) {
+    if (route.program_key == program_key &&
+        route.canonical_factory == canonical_factory) {
+      return &route;
+    }
+  }
+  return nullptr;
+}
+
+std::span<const FactoryRouteDescriptorMrt> canonical_factory_routes_mrt() {
+  // Always empty: no MRT program has been compiled by the typed-slice
+  // generator yet (no admitted effect declares more than one output --
+  // validate_pass_output_abi/validate_pass_controls now check that
+  // generically for any N, but zero currently-admitted passes exercise
+  // N>1). This exists so the dispatch path below is real and reachable
+  // once a generated MRT registry exists, not dead scaffolding waiting on
+  // a future rewrite; a test (or the eventual generated wiring) supplies
+  // its own `routes` span exactly like `bind_factory_route` allows for the
+  // single-output table.
+  static const std::vector<FactoryRouteDescriptorMrt> routes;
+  return routes;
+}
+
+const FactoryRouteDescriptorMrt* authenticate_factory_route_mrt(
+    const EffectStep& step, const PassAdmission& admission,
+    std::span<const FactoryRouteDescriptorMrt> routes) {
+  const auto table = routes.empty() ? canonical_factory_routes_mrt() : routes;
+  const auto* route = find_factory_route_mrt(table, admission.identity.program_key,
+                                             admission.canonical_factory);
+  if (route == nullptr || route->bind == nullptr) {
+    throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
+                        "canonical MRT factory route is not admitted");
+  }
+  if (route->emitted_factory != admission.emitted_factory ||
+      route->route_kind != admission.route_kind ||
+      route->source_sha256 != admission.source_sha256 ||
+      route->typed_abi_sha256 != admission.typed_abi_sha256) {
+    throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
+                        "generated MRT route metadata differs from the admission");
+  }
+  // Mirrors authenticate_factory_route's ordered-ABI cross-check exactly;
+  // binding_abi_sections() is already output-count-generic (it walks the
+  // whole admission.outputs vector), so no MRT-specific section grammar was
+  // needed here.
+  const auto sections = binding_abi_sections(admission);
+  const std::array<std::tuple<const std::string*, std::string_view, GraphErrorCode,
+                              std::string_view>, 5>
+      anchored = {{
+          {&sections.samplers, route->sampler_abi_sha256, GraphErrorCode::missing_binding,
+           "ordered sampler ABI differs from the generated route anchor"},
+          {&sections.uniforms, route->uniform_abi_sha256, GraphErrorCode::binding_type,
+           "ordered uniform ABI differs from the generated route anchor"},
+          {&sections.outputs, route->output_abi_sha256, GraphErrorCode::invalid_snapshot,
+           "output ABI differs from the generated route anchor"},
+          {&sections.extent, route->output_extent_sha256, GraphErrorCode::invalid_format,
+           "output extent differs from the generated route anchor"},
+          {&sections.defines, route->compile_define_abi_sha256,
+           GraphErrorCode::unavailable_pass,
+           "compile define ABI differs from the generated route anchor"},
+      }};
+  for (const auto& [bytes, expected, code, detail] : anchored) {
+    if (detail::sha256(*bytes) != expected) {
+      throw binding_error(step, admission, code, std::string(detail));
+    }
+  }
+  if (detail::sha256(sections.samplers + sections.uniforms + sections.outputs +
+                     sections.extent + sections.defines) !=
+      admission.binding_abi_sha256) {
+    throw binding_error(step, admission, GraphErrorCode::invalid_snapshot,
+                        "admission binding ABI digest differs from its own ordered ABI");
+  }
+  if (admission.route_kind != "custom_adapter" && !admission.compile_defines.empty()) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type,
+                        "compile defines are only valid for a custom adapter route");
+  }
+  for (const auto& define : admission.compile_defines) {
+    if (define.name.empty() || define.cpp_type.empty() ||
+        define.source != "custom_adapter") {
+      throw binding_error(step, admission, GraphErrorCode::binding_type,
+                          "compile define ABI is invalid");
+    }
+    for (const auto& uniform : admission.uniforms) {
+      if (uniform.name == define.name) {
+        throw binding_error(step, admission, GraphErrorCode::binding_type,
+                            "compile define collides with a uniform ABI name");
+      }
+    }
+  }
+  return route;
+}
+
+// The MRT sibling of bind_factory_route. No compile-define-backed parameter
+// authentication yet (authenticate_compile_define_parameters is typed to
+// FactoryRouteDescriptor): unreachable today since no MRT effect declares
+// any parameters, and authenticate_factory_route_mrt above already refuses
+// a route whose compile-define ABI is malformed or non-empty on a
+// non-custom-adapter kind.
+noisemaker::BoundKernelMrt bind_factory_route_mrt(
+    const EffectStep& step, const PassAdmission& admission,
+    const effects::EffectDefinition& definition, const glsl::Bindings& bindings,
+    std::span<const FactoryRouteDescriptorMrt> routes) {
+  const auto* route = authenticate_factory_route_mrt(step, admission, routes);
   authenticate_palette_override(step, admission, definition);
   authenticate_measured_parity(step, admission);
   return route->bind(bindings);
@@ -2550,11 +2692,90 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             resolved.entries.push_back({sampler.resource, route.surface});
           }
           const std::string output_route = pass.outputs.front().second;
-          const auto* texture = texture_for(snapshot.definition, output_route);
-          std::size_t width = inputs.width;
-          std::size_t height = inputs.height;
-          TextureFormat format = TextureFormat::rgba16f;
+          bool wrote_output_tex = false;
           try {
+            if (admission.outputs.size() > 1U) {
+              // MRT (drawBuffers >= 2): resolve every declared output's own
+              // destination texture spec independently and require they
+              // share dimensions BEFORE binding a kernel or allocating any
+              // Surface -- the direct analog of the JS authority's
+              // canonicalMrtDestinations/assertMrtDestinationsShareDimensions
+              // (renderer.js:519-533), which run before its shared pixel
+              // loop, not inside it (run_mrt_pass mirrors that split too;
+              // see pass_runner.hpp).
+              struct MrtDestination { std::string route; TextureFormat format; };
+              std::vector<MrtDestination> destinations;
+              destinations.reserve(pass.outputs.size());
+              std::size_t mrt_width = inputs.width;
+              std::size_t mrt_height = inputs.height;
+              for (std::size_t slot = 0; slot < pass.outputs.size(); ++slot) {
+                const std::string& route = pass.outputs[slot].second;
+                const auto* texture = texture_for(snapshot.definition, route);
+                std::size_t width = inputs.width;
+                std::size_t height = inputs.height;
+                TextureFormat format = TextureFormat::rgba16f;
+                if (texture != nullptr) {
+                  width = resolve_dimension(texture->width, step, arena, inputs.width, true);
+                  height = resolve_dimension(texture->height, step, arena, inputs.height, false);
+                  try {
+                    format = resolve_texture_format(texture->format);
+                  } catch (const std::invalid_argument& error) {
+                    throw GraphError(GraphErrorCode::invalid_format, error.what(),
+                                     step.effect.id, pass_index, pass.name,
+                                     admission.identity.program_key);
+                  }
+                }
+                if (format != resolve_texture_format(admission.output_extent.format)) {
+                  throw GraphError(GraphErrorCode::invalid_format,
+                                   "destination format differs from the authenticated output extent",
+                                   step.effect.id, pass_index, pass.name,
+                                   admission.identity.program_key);
+                }
+                if (slot == 0U) {
+                  mrt_width = width;
+                  mrt_height = height;
+                } else if (width != mrt_width || height != mrt_height) {
+                  throw GraphError(GraphErrorCode::unsupported_mrt,
+                                   "MRT destinations must share dimensions",
+                                   step.effect.id, pass_index, pass.name,
+                                   admission.identity.program_key);
+                }
+                destinations.push_back({route, format});
+              }
+              const BindingMaterializationContext binding_context{
+                  &inputs, &snapshot.definition, mrt_width, mrt_height,
+                  &lookup_resolved_sampler_route, &resolved};
+              preflight_pass_abi(step, admission, pass, binding_context);
+              auto bindings = materialize_uniform_bindings(step, admission, pass,
+                                                           binding_context);
+              materialize_sampler_bindings(bindings, admission, binding_context,
+                                           step, pass);
+              apply_classic_noisedeck_palette_override(bindings, step,
+                                                       snapshot.definition);
+              auto kernel = bind_factory_route_mrt(step, admission, snapshot.definition,
+                                                   bindings);
+              // Render and quantize off-route, exactly like the
+              // single-output path: a failed factory or kernel must never
+              // publish a partially initialized destination.
+              auto rendered = noisemaker::run_mrt_pass(
+                  kernel, mrt_width, mrt_height, noisemaker::f32(inputs.time),
+                  noisemaker::f32(inputs.seed), inputs.frame,
+                  noisemaker::f32(inputs.delta_time));
+              for (std::size_t slot = 0; slot < destinations.size(); ++slot) {
+                noisemaker::quantize_texture(rendered[slot], destinations[slot].format);
+                auto& destination = arena.insert(destinations[slot].route,
+                                                 std::move(rendered[slot]),
+                                                 destinations[slot].format,
+                                                 ResourceLifetime::transient);
+                effect_output = &destination;
+                if (destinations[slot].route == "outputTex") wrote_output_tex = true;
+              }
+              ++pass_count;
+            } else {
+            const auto* texture = texture_for(snapshot.definition, output_route);
+            std::size_t width = inputs.width;
+            std::size_t height = inputs.height;
+            TextureFormat format = TextureFormat::rgba16f;
             if (texture != nullptr) {
               width = resolve_dimension(texture->width, step, arena, inputs.width, true);
               height = resolve_dimension(texture->height, step, arena, inputs.height, false);
@@ -2656,6 +2877,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             auto& destination = arena.insert(output_route, std::move(rendered),
                                               format, ResourceLifetime::transient);
             effect_output = &destination;
+            wrote_output_tex = output_route == "outputTex";
             ++pass_count;
             }
           } catch (const GraphError& error) {
@@ -2676,7 +2898,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             throw GraphError(GraphErrorCode::execution_failure, "pass execution failed", step.effect.id, pass_index, pass.name, admission.identity.program_key);
           }
           release_borrowed();
-          if (output_route == "outputTex") current = effect_output;
+          if (wrote_output_tex) current = effect_output;
           }
         }
         current = effect_output;

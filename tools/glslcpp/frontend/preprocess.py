@@ -54,6 +54,46 @@ def normalize(source: str, runtime_defines: dict | None = None) -> dict:
             outputs.append(m.group(2))
             out_lines.append(f"{m.group(1)} {m.group(2)};")
             continue
+        # MRT declarations carry an explicit `layout(location=N)` qualifier
+        # ahead of `out`: `layout(location = 1) out vec4 geoOut;`. The parser
+        # already discards the layout(...) prefix and recovers `out` from the
+        # surviving qualifier list (frontend/parser.py's qualifiers()), so
+        # this branch only needs to grow the `outputs` census -- it
+        # deliberately leaves the line itself untouched, exactly like the
+        # catch-all branch below would have for it, so no already-pinned
+        # corpus entry's normalized bytes/hash can move under this fix.
+        #
+        # The JS authority builds its own `outputNames` by sorting declared
+        # outputs BY location (scripts/upstream/compile-glsl.js: `[
+        # ...normalized.outputLocations].sort((a,b) => a.location -
+        # b.location)`), not by declaration order. Every pinned upstream MRT
+        # source declares locations 0,1,2[,3] in strictly ascending source
+        # order (verified across every `layout(location` occurrence in the
+        # upstream tree), so appending in source order always agrees with
+        # sorting by location today -- but this is a real authority rule,
+        # not a coincidence to leave unchecked. When the location is the
+        # literal, unambiguous `location = N` form, assert N against this
+        # output's own ascending position instead of trusting source order
+        # blindly; an unrecognized layout(...) shape (no other one appears
+        # anywhere in the corpus) falls back to the same source-order
+        # append as before.
+        m = re.match(r"\s*layout\s*\(\s*location\s*=\s*(\d+)\s*\)\s*out\s+(\w+)\s+(\w+)\s*;\s*$", line)
+        if m:
+            location = int(m.group(1))
+            if location != len(outputs):
+                raise PreprocessError(
+                    f"output {m.group(3)!r} declares layout(location = {location}) "
+                    f"but is the {len(outputs)}-th declared output; the JS authority "
+                    "sorts its own outputNames by location, so a mismatch here would "
+                    "silently reorder which destination each output's writes land in")
+            outputs.append(m.group(3))
+            out_lines.append(line)
+            continue
+        m = re.match(r"\s*layout\s*\([^)]*\)\s*out\s+(\w+)\s+(\w+)\s*;\s*$", line)
+        if m:
+            outputs.append(m.group(2))
+            out_lines.append(line)
+            continue
         m = re.match(r"\s*(?:flat\s+)?in\s+(\w+)\s+(\w+)\s*;\s*$", line)
         if m:
             varyings.append(m.group(2))
