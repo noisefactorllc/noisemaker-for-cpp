@@ -13,8 +13,14 @@ const outPath = path.join(here, 'fractal-oracles.json')
 const reportPath = path.join(here, 'fractal-oracle-report.md')
 const key = 'classicNoisedeck/fractal:fractal'
 const effect = 'classicNoisedeck/fractal'
-const corpus = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const upstream = '117a236679d1db3ab8f0e278230ece277b57564c'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpus = deriveCorpusRevision(cppRoot)
+const upstream = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const sourceRelative = `tools/glslcpp/corpus/${corpus}/sources/classicNoisedeck/fractal/fractal.glsl`
 const factorySourceRelative = 'src/effects/adapters/fractal.js'
 const schema = 'noisemaker-for-cpp.fractal.pixel-parity.v1'
@@ -37,23 +43,24 @@ const importClosureExpected = Object.freeze([
   { relative_path: 'src/effects/adapters/crt.js', sha256: 'c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc' },
   { relative_path: 'src/effects/adapters/f32-color.js', sha256: 'b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046' },
   { relative_path: 'src/effects/adapters/fractal.js', sha256: '0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29' },
-  { relative_path: 'src/effects/adapters/index.js', sha256: '40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267' },
+  { relative_path: 'src/effects/adapters/index.js', sha256: 'dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e' },
   { relative_path: 'src/effects/adapters/julia.js', sha256: '0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5' },
   { relative_path: 'src/effects/adapters/median.js', sha256: 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583' },
   { relative_path: 'src/effects/adapters/palette.js', sha256: '8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452' },
+  { relative_path: 'src/effects/adapters/remap.js', sha256: '91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79' },
   { relative_path: 'src/effects/adapters/snow.js', sha256: '202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366' },
   { relative_path: 'src/effects/catalog.js', sha256: 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4' },
   { relative_path: 'src/effects/definition.js', sha256: 'fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02' },
   { relative_path: 'src/effects/generated/canonical-adapter-data.js', sha256: 'ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab' },
-  { relative_path: 'src/effects/generated/canonical-kernels.js', sha256: '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe' },
+  { relative_path: 'src/effects/generated/canonical-kernels.js', sha256: 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c' },
   { relative_path: 'src/effects/generated/kernels.js', sha256: 'b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01' },
-  { relative_path: 'src/effects/generated/upstream-snapshot.js', sha256: 'e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090' },
+  { relative_path: 'src/effects/generated/upstream-snapshot.js', sha256: '6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7' },
   { relative_path: 'src/effects/registry.js', sha256: '8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618' },
   { relative_path: 'src/runtime/pass-runner.js', sha256: 'fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa' },
   { relative_path: 'src/runtime/sampler.js', sha256: '1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328' },
   { relative_path: 'src/runtime/surface.js', sha256: '0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59' },
 ])
-const importClosureShaExpected = 'b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5'
+const importClosureShaExpected = '05bee3781331c3ebcc78b9eb397b30b350d9fbdec3447cc2a767fb782adbbdd3'
 const authorityRootProvenance = '<external-authority-root>'
 const adversarialWitness = Object.freeze({
   case: 'julia-near-escape-nonrepresentable',
@@ -98,7 +105,7 @@ const [{ canonicalAdapterFactories, kernelFactories }, { createCanonicalBindings
 if (UPSTREAM_REVISION !== upstream) throw Error(`upstream revision mismatch: expected ${upstream}, got ${UPSTREAM_REVISION}`)
 const actualClosure = closure(cpuRoot); if (sha(JSON.stringify(actualClosure)) !== importClosureShaExpected || JSON.stringify(actualClosure) !== JSON.stringify(importClosureExpected)) throw Error('authority import closure mismatch')
 validateAdversarialWitness()
-if (process.version !== 'v24.7.0') throw Error('Fractal authority Node drift')
+if (process.version !== 'v26.0.0') throw Error('Fractal authority Node drift')
 const canonical = canonicalAdapterFactories[key]; const publicFactory = kernelFactories.get(key); if (typeof canonical !== 'function' || publicFactory !== canonical) throw Error('canonical/public adapter identity drift')
 const factoryText = Function.prototype.toString.call(canonical); if (sha(factoryText) !== factoryShaExpected) throw Error('factory text provenance drift')
 const factorySourceText = fs.readFileSync(path.join(cpuRoot, factorySourceRelative), 'utf8')

@@ -18,7 +18,10 @@ PACKAGE = ROOT / "docs/port-engineering/shape-mixer-parity"
 ORACLE = PACKAGE / "shape-mixer-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/shape_mixer182_expected.inc"
 PROGRAM_KEY = "classicNoisedeck/shapeMixer:shapeMixer"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 SCHEMA = "noisemaker-for-cpp.shape-mixer182.pixel-parity.v1"
 WORD = re.compile(r"0x[0-9a-f]{8}")
 HEX64 = re.compile(r"[0-9a-f]{64}")
@@ -350,7 +353,7 @@ def load() -> tuple[dict[str, Any], str]:
     if (provenance.get("authority_commit") !=
             "4834b0144ee0524588144a482cca0067b15f68ec"
             or provenance.get("authority_checkout_clean") is not True
-            or provenance.get("node_version") != "v24.7.0"
+            or provenance.get("node_version") != "v26.0.0"
             or provenance.get("public_factory_is_canonical_identity") is not True
             or provenance.get("adapter_override_absent") is not True):
         raise OracleError("Shape Mixer authority provenance mismatch")
@@ -365,8 +368,8 @@ def load() -> tuple[dict[str, Any], str]:
     if (source.get("bytes"), source.get("sha256"),
             source.get("normalized_loop_offset_10_bytes"),
             source.get("normalized_loop_offset_10_sha256")) != (
-                21718,
-                "704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4",
+                21721,
+                "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
                 17664,
                 "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8"):
         raise OracleError("Shape Mixer source provenance mismatch")

@@ -44,8 +44,11 @@ SCHEMA = "noisemaker-for-cpp.wobble189.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "filter/wobble:wobble"
 EFFECT_KEY = "filter/wobble"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
-UPSTREAM_REVISION = "117a236679d1db3ab8f0e278230ece277b57564c"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
+UPSTREAM_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 DEFINES: dict[str, int] = {}
 FACTORY_NAME = "canonicalFactory178"
 FACTORY_SHA256 = "e09f2ef4c49b33b06febfac20d4eeea3563270f6edab6cb1f6761f2dd20759d4"
@@ -60,7 +63,7 @@ SOURCE_SHA256 = "1bdd1e3bed9111743dfeb7e3418e14c42aa8d93ed4636167a99d17cb143a38c
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
@@ -88,6 +91,7 @@ CORPUS_ADAPTER_CENSUS_EXPECTED = frozenset({
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
     "synth/julia:julia",
+    "synth/remap:remap",
 })
 CANONICAL_ADAPTER_KEYS = (
     "classicNoisedeck/bitEffects:bitEffects",
@@ -101,6 +105,7 @@ CANONICAL_ADAPTER_KEYS = (
     "filter/reindex:nmReindexStats",
     "filter/snow:snow",
     "synth/julia:julia",
+    "synth/remap:remap",
 )
 
 

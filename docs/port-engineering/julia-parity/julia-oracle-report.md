@@ -8,10 +8,10 @@ This checked report is generated from the authenticated JSON document below. It 
 
 ## Authority and identity
 
-- Source: tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl; SHA-256: 825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0.
+- Source: tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/julia/julia.glsl; SHA-256: 825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0.
 - Factory source: src/effects/adapters/julia.js; SHA-256: 0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5.
 - Canonical factory: juliaFactory; text SHA-256: ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6; public/direct identity is canonical; adapter owns the key.
-- Corpus revision: a024dc3a960cc44af454abc7aebce50456c194e6; upstream revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5.
+- Corpus revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5; upstream revision: 0ed489ec46842bffba33ee2ec65a218b6dda51f5.
 - Import closure: 23 files, each realpath-confined and hash-pinned; checked data stores only the stable placeholder <immutable-cpu-snapshot-root>.
 - Authority contract: --cpu-root, NOISEMAKER_CPU_ROOT, and NOISEMAKER_FOR_CPU were the same non-symlink external pinned root; live checkout and symlink roots are rejected.
 
@@ -26,7 +26,7 @@ The following canonical JSON record is emitted directly from the generator docum
   "program_key": "synth/julia:julia",
   "effect_key": "synth/julia",
   "runtime_key": "synth/julia:julia",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "factory": {
     "name": "juliaFactory",
@@ -198,7 +198,7 @@ The following canonical JSON record is emitted directly from the generator docum
   },
   "provenance": {
     "source": {
-      "relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl",
+      "relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/julia/julia.glsl",
       "sha256": "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0"
     },
     "factory_source": {
@@ -307,11 +307,11 @@ The following canonical JSON record is emitted directly from the generator docum
     },
     "generator": {
       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
-      "sha256": "9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e"
+      "sha256": "7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
-      "sha256": "f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7"
+      "sha256": "f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86"
     }
   },
   "render_cases": [
@@ -4195,7 +4195,7 @@ The following canonical JSON record is emitted directly from the generator docum
   "source_mutation_contract": {
     "source_relative_path": "src/effects/adapters/julia.js",
     "source_sha256": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
-    "shader_relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/julia/julia.glsl",
+    "shader_relative_path": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/julia/julia.glsl",
     "shader_sha256": "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0",
     "canonical_factory_text_sha256": "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6",
     "execution": "each exact adapter source anchor/replacement is evaluated as a mutated juliaFactory and executed through bindCanonicalKernel/runPass"
@@ -10732,7 +10732,7 @@ The Task34 brief records the required pre-expansion baseline as the 8-case/23-mu
 - Owned authored/tool files: docs/port-engineering/julia-parity/julia_oracle_generator.mjs; tools/glslcpp/generate_julia_native_oracle_include.py; tests/test_julia_oracle.py.
 - Owned generated artifacts and sidecars: docs/port-engineering/julia-parity/julia-oracles.json(.sha256); docs/port-engineering/julia-parity/julia-oracle-report.md(.sha256); tests/oracles/julia_expected.inc(.sha256).
 - No frontend, emitter, generated typed slice/catalog/runtime, corpus metadata, authority snapshot, unrelated tests/docs, build outputs, or Git files were changed.
-- JSON SHA-256: b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf.
+- JSON SHA-256: 707a127c01d927bc6b9eedab18a4390dae74cbaca9815f81992b6e39c2d8e491.
 
 ## Remaining concerns
 
@@ -10746,14 +10746,14 @@ This table supersedes the earlier abbreviated audit. It is the complete Task34-o
 
 | Task34-owned relative path | Frozen baseline SHA-256 | Current SHA-256 or generation marker | Disposition |
 | --- | --- | --- | --- |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 9fbc8da322276c7baaf42eafb09ccf21148a7c0fb3ce3bf9088b058a2f17db6e | changed |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 67b3200eeba8ba5bb37863152f24459990d59d425563001fae485210bef87a59 | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | b9b4cb0c7f596cd4cd55cb4c595aca6c6e7c88f3372942c4430d44b91aefcabf | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 22365b6f154e89dd946c875ec2db868ae025efac0c693b4a7d6d8fe2f0272356 | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031 | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 868e4aa3e210a5b0229b940f7670201c81b9cd849cbc54ad7c15a5d45776e9e2 | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | 707a127c01d927bc6b9eedab18a4390dae74cbaca9815f81992b6e39c2d8e491 | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 868c3d6cd6980309b817b712bfcf04e969afe91c6665a8199075c4bf74a3d81b | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md | c3813c7024c861fcba27809c66997f97947bcd621842c4ef396a4f827d25bccf | generated-by-this-report | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md.sha256 | c3c3da4de0568075bbc18dadb9cbc12e007b7d8d18c9ef9a888ee9c848f51479 | generated-by-this-report | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | f9090bde7232991cbfb7c7d4b49680a465ee7e65169aacffb51c40d609041af7 | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | e0626dd7cb9b9e399892705aa9e660888acd05a4a773f1fcf126118fa0c19613 | new |
+| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86 | changed |
+| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | 8a5becb34bee12999524d8ffa89c60ee571ddd7e28ea901dd677ba9e9aa80b35 | new |
 | tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | f2750a281665d2c55375502325820b861e4d9efe681687ec072962c938e36776 | changed |
 | tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 24249a39f39046768c762d56fe772e9add131f59b1c66ca5486faabf382cb93d | changed |
 | tests/test_generated_kernels.cpp | d2210b840fa6ffe3b07b73330f7a336d01683c163e5887f276c254de40beb685 | e375c33914a968634ab7276c1f1146031c57ea182ae63c269bad72e81559649b | changed (recorded at Task34; cross-lane file, not re-read) |

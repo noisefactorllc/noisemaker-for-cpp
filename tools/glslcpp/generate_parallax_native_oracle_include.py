@@ -29,7 +29,10 @@ ORACLE = REPOSITORY / "docs/port-engineering/counted-for-parity/parallax190-orac
 TARGET = REPOSITORY / "tests/oracles/parallax190_expected.inc"
 PROGRAM_KEY = "filter/parallax:parallax"
 SCHEMA = "parallax190-oracles-v1"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 
 
 class MaterializationError(RuntimeError):

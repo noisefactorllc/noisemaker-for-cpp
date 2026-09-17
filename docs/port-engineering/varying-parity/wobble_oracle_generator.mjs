@@ -56,9 +56,15 @@ const schema = 'noisemaker-for-cpp.wobble189.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'filter/wobble:wobble'
 const effectKey = 'filter/wobble'
-const corpusRevision = 'a024dc3a960cc44af454abc7aebce50456c194e6'
-const upstreamRevisionExpected = '117a236679d1db3ab8f0e278230ece277b57564c'
-const authorityNode = 'v24.7.0'
+function deriveCorpusRevision(root) {
+  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
+  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
+  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
+  return match[1]
+}
+const corpusRevision = deriveCorpusRevision(cppRoot)
+const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const authorityNode = 'v26.0.0'
 const defines = {}
 const factoryName = 'canonicalFactory178'
 const factoryTextSha256 = 'e09f2ef4c49b33b06febfac20d4eeea3563270f6edab6cb1f6761f2dd20759d4'
@@ -103,7 +109,7 @@ const bindingAbi = Object.freeze({
 })
 
 const pinnedCpuFiles = Object.freeze({
-  canonical_kernels: ['src/effects/generated/canonical-kernels.js', '66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe'],
+  canonical_kernels: ['src/effects/generated/canonical-kernels.js', 'f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c'],
   public_catalog: ['src/effects/catalog.js', 'd8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4'],
   glsl_kernel: ['src/csl/glsl-kernel.js', 'a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa'],
   glsl_runtime: ['src/csl/glsl-runtime.js', 'a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072'],
@@ -117,7 +123,7 @@ const pinnedCpuFiles = Object.freeze({
 const corpusAdapterSourceRelative = 'tools/glslcpp/check_corpus.py'
 const corpusAdapterCensusExpected = Object.freeze([
   'classicNoisedeck/fractal:fractal', 'filter/historicPalette:historicPalette',
-  'filter/palette:palette', 'synth/julia:julia',
+  'filter/palette:palette', 'synth/julia:julia', 'synth/remap:remap',
 ])
 const canonicalAdapterKeys = Object.freeze([
   'classicNoisedeck/bitEffects:bitEffects', 'classicNoisedeck/fractal:fractal',
@@ -125,6 +131,7 @@ const canonicalAdapterKeys = Object.freeze([
   'filter/median:median', 'filter/palette:palette',
   'filter/pixelSort:luminance', 'filter/reindex:nmReindexApply',
   'filter/reindex:nmReindexStats', 'filter/snow:snow', 'synth/julia:julia',
+  'synth/remap:remap',
 ])
 
 const f = Math.fround

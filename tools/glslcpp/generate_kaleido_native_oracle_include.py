@@ -28,12 +28,15 @@ TARGET = REPOSITORY / "tests/oracles/kaleido187_expected.inc"
 SCHEMA = "noisemaker-for-cpp.kaleido187.pixel-parity.v1"
 PROGRAM_KEY = "classicNoisedeck/kaleido:kaleido"
 EFFECT_KEY = "classicNoisedeck/kaleido"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 FACTORY_TEXT_SHA256 = "4ab626fda5e91e7f89b93c9d863cda497b85d79239183499785c03607cce19a3"
-SOURCE_SHA256 = "3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9"
+SOURCE_SHA256 = "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52"
 ORACLE_AUTHORITY = "unmodified public canonicalFactory9 from the immutable noisemaker-for-cpu snapshot through bindCanonicalKernel/GlslCpuRuntime/runPass; no C++ output participates"
 PINNED_CPU_FILES = {
-    "canonical_kernels": ("src/effects/generated/canonical-kernels.js", "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+    "canonical_kernels": ("src/effects/generated/canonical-kernels.js", "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": ("src/effects/catalog.js", "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),
     "glsl_kernel": ("src/csl/glsl-kernel.js", "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa"),
     "glsl_runtime": ("src/csl/glsl-runtime.js", "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072"),
@@ -48,17 +51,18 @@ EXPECTED_IMPORT_CLOSURE = {
     "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
     "src/effects/adapters/f32-color.js": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046",
     "src/effects/adapters/fractal.js": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29",
-    "src/effects/adapters/index.js": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+    "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
     "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
     "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
     "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
+    "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
     "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
     "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
     "src/effects/definition.js": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02",
     "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-    "src/effects/generated/canonical-kernels.js": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+    "src/effects/generated/canonical-kernels.js": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
     "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
-    "src/effects/generated/upstream-snapshot.js": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090",
+    "src/effects/generated/upstream-snapshot.js": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
     "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
     "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
     "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
@@ -192,7 +196,7 @@ def validate_document(doc: Any) -> dict[str, Any]:
         raise OracleError("Kaleido187 program identity mismatch")
     if top["oracle_authority"] != ORACLE_AUTHORITY:
         raise OracleError("Kaleido187 oracle authority drift")
-    if top["corpus_revision"] != CORPUS_REVISION or top["upstream_revision"] != "117a236679d1db3ab8f0e278230ece277b57564c":
+    if top["corpus_revision"] != CORPUS_REVISION or top["upstream_revision"] != "0ed489ec46842bffba33ee2ec65a218b6dda51f5":
         raise OracleError("Kaleido187 provenance revision mismatch")
     defines = require_keys(top["defines"], {"DIRECTION", "KERNEL", "LOOP_OFFSET", "METRIC"}, "defines")
     if any(require_int(defines[name], f"defines.{name}") != expected for name, expected in {"DIRECTION": 2, "KERNEL": 0, "LOOP_OFFSET": 10, "METRIC": 0}.items()):
@@ -240,7 +244,7 @@ def validate_document(doc: Any) -> dict[str, Any]:
         if row != {"binding_name": binding_name, "authenticated_expected_abi_category": source_type, "native_wrong_variant": wrong_variant, "native_wrong_value": wrong_value, "missing_case": f"missing {binding_name}", "status": "pending_shared_native_integration"}:
             raise OracleError(f"Kaleido187 native ABI row drift: {binding_name}")
     provenance = require_keys(top["provenance"], {"node_version", "generator", "native_include_generator", "cpu_snapshot", "source", "canonical_factory", "adapter_override_absent", "adapter_routed_keys", "corpus_adapter_keys", "corpus_adapter_source", "pinned_cpu_files"}, "provenance")
-    if provenance["node_version"] != "v24.7.0" or provenance["corpus_adapter_source"] != "tools/glslcpp/check_corpus.py":
+    if provenance["node_version"] != "v26.0.0" or provenance["corpus_adapter_source"] != "tools/glslcpp/check_corpus.py":
         raise OracleError("Kaleido187 authority runtime provenance drift")
     canonical_factory = require_keys(provenance["canonical_factory"], {"name", "text_sha256", "public_factory_is_canonical_identity"}, "provenance.canonical_factory")
     if canonical_factory != {"name": "canonicalFactory9", "text_sha256": FACTORY_TEXT_SHA256, "public_factory_is_canonical_identity": True}:
@@ -252,7 +256,7 @@ def validate_document(doc: Any) -> dict[str, Any]:
     if native_generator["relative_path"] != "tools/glslcpp/generate_kaleido_native_oracle_include.py" or native_generator["sha256"] != digest(TOOL.read_bytes()):
         raise OracleError("Kaleido187 materializer provenance drift")
     source = require_keys(provenance["source"], {"relative_path_from_noisemaker_for_cpp", "bytes", "sha256"}, "provenance.source")
-    if source["bytes"] != 27567 or source["sha256"] != SOURCE_SHA256 or source["relative_path_from_noisemaker_for_cpp"] != "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/kaleido/kaleido.glsl":
+    if source["bytes"] != 27570 or source["sha256"] != SOURCE_SHA256 or source["relative_path_from_noisemaker_for_cpp"] != f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/kaleido/kaleido.glsl":
         raise OracleError("Kaleido187 source provenance drift")
     snapshot = require_keys(provenance["cpu_snapshot"], {"argument", "immutable_snapshot", "live_checkout_rejected", "containment_checked", "import_closure"}, "provenance.cpu_snapshot")
     if snapshot["argument"] != "<immutable-cpu-snapshot-root>" or snapshot["immutable_snapshot"] is not True or snapshot["live_checkout_rejected"] is not True or snapshot["containment_checked"] is not True:
@@ -274,9 +278,9 @@ def validate_document(doc: Any) -> dict[str, Any]:
         "classicNoisedeck/bitEffects:bitEffects", "classicNoisedeck/fractal:fractal", "filter/crt:crt",
         "filter/historicPalette:historicPalette", "filter/median:median", "filter/palette:palette",
         "filter/pixelSort:luminance", "filter/reindex:nmReindexApply", "filter/reindex:nmReindexStats",
-        "filter/snow:snow", "synth/julia:julia",
+        "filter/snow:snow", "synth/julia:julia", "synth/remap:remap",
     ] or provenance["corpus_adapter_keys"] != [
-        "classicNoisedeck/fractal:fractal", "filter/historicPalette:historicPalette", "filter/palette:palette", "synth/julia:julia",
+        "classicNoisedeck/fractal:fractal", "filter/historicPalette:historicPalette", "filter/palette:palette", "synth/julia:julia", "synth/remap:remap",
     ]:
         raise OracleError("Kaleido187 adapter census drift")
     pinned = provenance["pinned_cpu_files"]

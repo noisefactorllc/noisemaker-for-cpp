@@ -4,8 +4,8 @@
   "program_key": "filter/wobble:wobble",
   "effect_key": "filter/wobble",
   "runtime_key": "filter/wobble:wobble",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "defines": {},
   "runtime_binding_names": [
     "inputTex",
@@ -59,14 +59,14 @@
     "alpha": "the program copies the sampled alpha through (`fragColor = sampled`); every input alpha is exactly 1, so every output alpha float word is exactly 0x3f800000 and every RGBA8 alpha byte is exactly 255"
   },
   "provenance": {
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/varying-parity/wobble_oracle_generator.mjs",
-      "sha256": "a15af71b3dd23dd10b840faaedc41dea73dbfc9f3280ab76f5be44dd41a5835e"
+      "sha256": "23c2e15d77a5a1530e4e529a21d852a55f945d3300f588374a6028597d40e780"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_wobble_native_oracle_include.py",
-      "sha256": "2f3f0c91fbe32af29a3f9dddc136017949fa78bcebe1c45d103537e46e1c9531"
+      "sha256": "b97d718307f99b6ff3e2e84da6344d45e65eefc3f3d565583ac63d53a556db99"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",
@@ -74,7 +74,7 @@
       "live_checkout_rejected": "<live-noisemaker-for-cpu-checkout>",
       "live_checkout_resolution": "process.env.NOISEMAKER_FOR_CPU when set, else $HOME/platform/noisemaker-for-cpu",
       "imports_confined_beneath_snapshot": true,
-      "import_closure_file_count": 22,
+      "import_closure_file_count": 23,
       "import_closure": [
         {
           "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -106,7 +106,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/julia.js",
@@ -119,6 +119,10 @@
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/snow.js",
@@ -138,7 +142,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/kernels.js",
@@ -146,7 +150,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/registry.js",
@@ -168,7 +172,7 @@
       "pinned_files": {
         "canonical_kernels": {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         "public_catalog": {
           "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -193,7 +197,7 @@
       }
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/wobble/wobble.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/wobble/wobble.glsl",
       "bytes": 3105,
       "sha256": "1bdd1e3bed9111743dfeb7e3418e14c42aa8d93ed4636167a99d17cb143a38cc",
       "preprocessor_defines": []
@@ -223,13 +227,15 @@
       "filter/reindex:nmReindexApply",
       "filter/reindex:nmReindexStats",
       "filter/snow:snow",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_keys": [
       "classicNoisedeck/fractal:fractal",
       "filter/historicPalette:historicPalette",
       "filter/palette:palette",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_source": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/check_corpus.py",

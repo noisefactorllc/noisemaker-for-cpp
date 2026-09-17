@@ -8,6 +8,11 @@ import json
 import pathlib
 import re
 import struct
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = check_corpus.REVISION
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/historic-palette-parity"
@@ -63,7 +68,7 @@ def validate(document: dict) -> dict:
     if any(set(row) != {"relative_path", "sha256"} or not isinstance(row["relative_path"], str) or row["relative_path"].startswith("../") or "/../" in row["relative_path"] or not HEX_HASH.fullmatch(row["sha256"]) for row in closure): raise MaterializationError("closure hash drift")
     if [row["relative_path"] for row in closure] != sorted({row["relative_path"] for row in closure}) or len({row["relative_path"] for row in closure}) != len(closure): raise MaterializationError("closure ordering/cardinality drift")
     source = document["provenance"]["source"]
-    if source != {"relative_path": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/historicPalette/historicPalette.glsl", "sha256": "cc0feb09e2f90505766a0b8b0d61ca0cf83a1121ec7b104eea5ff806c9ce0c33"}: raise MaterializationError("source provenance drift")
+    if source != {"relative_path": f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/historicPalette/historicPalette.glsl", "sha256": "cc0feb09e2f90505766a0b8b0d61ca0cf83a1121ec7b104eea5ff806c9ce0c33"}: raise MaterializationError("source provenance drift")
     cases = document["render_cases"]
     if len(cases) != 21 or [case.get("name") for case in cases] != [f"palette-{i}" for i in range(21)]: raise MaterializationError("case cardinality/order drift")
     case_fields = {"name", "width", "height", "time", "paletteIndex", "smoothness", "rotation", "offset", "repeat", "alpha", "tileX", "tileY", "salt", "input", "input_f32_words_le", "input_f32_sha256", "expected", "input_immutable_exact_bits", "input_lifetime", "input_surface_not_released", "bindings", "binding_words", "repeat_identity", "repeat_output_object_distinct", "repeat_output_data_distinct", "public_direct_identity", "independent_output_storage"}

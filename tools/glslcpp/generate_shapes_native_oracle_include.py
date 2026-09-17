@@ -35,19 +35,22 @@ SCHEMA = "noisemaker-for-cpp.shapes183.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "classicNoisedeck/shapes:shapes"
 EFFECT_KEY = "classicNoisedeck/shapes"
-CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+import sys as _sys
+_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
+import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
+CORPUS_REVISION = _check_corpus.REVISION
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
 FACTORY_NAME = "canonicalFactory16"
 FACTORY_SHA256 = "a4e1aeaf8cbc3d748517369e054b7ec4a2fd5f70962cbafef61d5e473527c2c3"
 SOURCE_RELATIVE = (
     f"tools/glslcpp/corpus/{CORPUS_REVISION}"
     "/sources/classicNoisedeck/shapes/shapes.glsl")
-SOURCE_BYTES = 21289
-SOURCE_SHA256 = "60bc6e76ac9d9f5bc83638fa934b279499559f7733806e462cea16a4cbe85eb0"
+SOURCE_BYTES = 21292
+SOURCE_SHA256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e"
 PINNED_CPU_FILES = {
     "canonical_kernels": (
         "src/effects/generated/canonical-kernels.js",
-        "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"),
+        "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"),
     "public_catalog": (
         "src/effects/catalog.js",
         "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4"),

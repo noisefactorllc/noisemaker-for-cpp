@@ -1,8 +1,8 @@
 {
   "schema": "noisemaker-for-cpp.emboss181.pixel-parity.v1",
   "program_key": "filter/emboss:emboss",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "oracle_authority": "clean pinned noisemaker-for-cpu canonicalFactory50 under pinned Node; no C++ output participates",
   "exactness_contract": {
     "float32": "complete raw little-endian uint32 lane arrays; signed zero and NaN payloads are significant",
@@ -13,11 +13,11 @@
   "provenance": {
     "authority_commit": "4834b0144ee0524588144a482cca0067b15f68ec",
     "authority_checkout_clean": true,
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "files": {
       "canonical_kernels": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       "public_catalog": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -25,11 +25,11 @@
       },
       "adapter_index": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       "upstream_snapshot": {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       "glsl_kernel": {
         "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -79,7 +79,7 @@
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
-        "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+        "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/julia.js",
@@ -92,6 +92,10 @@
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/palette.js",
         "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+      },
+      {
+        "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/remap.js",
+        "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/snow.js",
@@ -111,7 +115,7 @@
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/kernels.js",
@@ -119,7 +123,7 @@
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-        "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+        "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
       },
       {
         "relative_path_from_noisemaker_for_cpu": "src/effects/registry.js",
@@ -139,7 +143,7 @@
       }
     ],
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/emboss/emboss.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/emboss/emboss.glsl",
       "bytes": 5160,
       "sha256": "872eff00bdfe411a0dceb66e8b203b5ea1c03015e3eea041d821966354713191",
       "style0_normalized_bytes": 4052,

@@ -12,7 +12,12 @@ const materializerPath = path.join(rootRepo, "tools/glslcpp/generate_effects_nat
 const expectedIncludePath = path.join(rootRepo, "tests/oracles/effects188_expected.inc");
 const key = "classicNoisedeck/effects:effects",
   effectKey = "classicNoisedeck/effects",
-  rev = "a024dc3a960cc44af454abc7aebce50456c194e6",
+  rev = (() => {
+    const text = fs.readFileSync(path.join(rootRepo, "tools/glslcpp/check_corpus.py"), "utf8");
+    const match = text.match(/^REVISION = "([0-9a-f]{40})"/m);
+    if (!match) throw Error("cannot derive corpus revision from tools/glslcpp/check_corpus.py");
+    return match[1];
+  })(),
   srcRel =
     "tools/glslcpp/corpus/" +
     rev +
@@ -55,7 +60,7 @@ const names = [
 const files = {
   canonical_kernels: [
     "src/effects/generated/canonical-kernels.js",
-    "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+    "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
   ],
   public_catalog: [
     "src/effects/catalog.js",
@@ -78,6 +83,10 @@ const files = {
     "0cd69c920a710f636a5208e05b49633fc2747cdc2f5fc61113433ceb9ec8ba59",
   ],
 };
+// Recomputed against CPU authority 61aa869. Cardinality grew 22 -> 23 vs the
+// prior e17dd02 authority because src/effects/adapters/index.js now imports
+// src/effects/adapters/remap.js (a canonical `synth/remap:remap` adapter
+// added between e17dd02 and 61aa869).
 const closureExpected = {
   "src/csl/glsl-kernel.js": "a684b1bc16f095c550e488d1db35b9cea9c69b761db6ad3af175110e6a2e2baa",
   "src/csl/glsl-runtime.js": "a20421c56aa3274746f6887555445b8c7f7bb8318921fe6f75f6aa8ffe71c072",
@@ -86,17 +95,18 @@ const closureExpected = {
   "src/effects/adapters/crt.js": "c424c45169894e1d39eb11dc97c1835991fa9e990f3dd7c1aeefafbfe9f3a5cc",
   "src/effects/adapters/f32-color.js": "b0d2562969029701f44b049dbfa17fc7a13f97758c3750f05ad57a836269b046",
   "src/effects/adapters/fractal.js": "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29",
-  "src/effects/adapters/index.js": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267",
+  "src/effects/adapters/index.js": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e",
   "src/effects/adapters/julia.js": "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb57048eadd5",
   "src/effects/adapters/median.js": "e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583",
   "src/effects/adapters/palette.js": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452",
+  "src/effects/adapters/remap.js": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79",
   "src/effects/adapters/snow.js": "202e0dbf9b1b8e0e7278c87527d6e2b740eb0a23385115c4805a389caab96366",
   "src/effects/catalog.js": "d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4",
   "src/effects/definition.js": "fdade0a1f2ab0773b08b9778807d9901583a540c409a9a275cf2fc1c67f6af02",
   "src/effects/generated/canonical-adapter-data.js": "ca0b139d776f9433b72534f58df9ff182ec55369e85ce37d422990dc0184baab",
-  "src/effects/generated/canonical-kernels.js": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
+  "src/effects/generated/canonical-kernels.js": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
   "src/effects/generated/kernels.js": "b535b989f0f130c44261815d90678deb9996ab3098bb8d1cb5591a8f8d8d3c01",
-  "src/effects/generated/upstream-snapshot.js": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090",
+  "src/effects/generated/upstream-snapshot.js": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
   "src/effects/registry.js": "8b3eac7fd4df8699bf27995987eb534625adbce5fe7aa432649a83f278af9618",
   "src/runtime/pass-runner.js": "fbfd53470735a07dca317c384b9985bb55383961199815e67aee9adda7e881aa",
   "src/runtime/sampler.js": "1e7dc92a20de983ce8b4afd03f3ea83bc86c010e622c4edc4a0aa702027ed328",
@@ -190,8 +200,8 @@ const { bindCanonicalKernel } = await load("src/csl/glsl-kernel.js");
 const { runPass } = await load("src/runtime/pass-runner.js");
 const { Surface } = await load("src/runtime/surface.js");
 if (
-  process.version !== "v24.7.0" ||
-  UPSTREAM_REVISION !== "117a236679d1db3ab8f0e278230ece277b57564c"
+  process.version !== "v26.0.0" ||
+  UPSTREAM_REVISION !== "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 )
   throw Error("authority drift");
 const factory = canonicalKernelFactories[key];
@@ -675,7 +685,7 @@ const fixture = {
     source_slice_sha256: sha(source.slice(a, b)),
   },
   authority: {
-    node: "v24.7.0",
+    node: "v26.0.0",
     oracle: "unmodified public canonical factory from immutable snapshot",
     pinned_files: files,
     cpu_root: "<immutable-cpu-snapshot-root>",

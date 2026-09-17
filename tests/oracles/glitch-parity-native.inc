@@ -4,9 +4,9 @@
 
 namespace glitch_native_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "535dda6aff731f41974b0f37277949a7d18a2c311c0795ac846a1497acc22e55";
+inline constexpr std::string_view kOracleSha256 = "4d336018f947f0356d2a876fadf7fdeaf89a07c23bb0b8f52ba140f95c630a57";
 inline constexpr std::string_view kProgramKey = "classicNoisedeck/glitch:glitch";
-inline constexpr std::string_view kCorpusRevision = "a024dc3a960cc44af454abc7aebce50456c194e6";
+inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::size_t kTotalFloatWords = 2468U;
 inline constexpr std::size_t kTotalRgbaBytes = 2468U;
 

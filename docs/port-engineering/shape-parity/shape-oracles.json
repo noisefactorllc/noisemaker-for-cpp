@@ -4,8 +4,8 @@
   "program_key": "synth/shape:shape",
   "effect_key": "synth/shape",
   "runtime_key": "synth/shape:shape",
-  "corpus_revision": "a024dc3a960cc44af454abc7aebce50456c194e6",
-  "upstream_revision": "117a236679d1db3ab8f0e278230ece277b57564c",
+  "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "upstream_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
   "defines": {
     "LOOP_A_OFFSET": 40,
     "LOOP_B_OFFSET": 30
@@ -35,7 +35,7 @@
     "speedB": "number"
   },
   "compile_time_defines_are_not_bindings": true,
-  "oracle_authority": "unmodified public canonicalFactory274 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates",
+  "oracle_authority": "unmodified public canonicalFactory282 from an immutable noisemaker-for-cpu snapshot, executed through the pinned bindCanonicalKernel/GlslCpuRuntime/runPass path; no C++ output participates",
   "mutable_global_contracts": {
     "aspectRatio": {
       "javascript_declaration": "var aspectRatio = 0;",
@@ -62,14 +62,14 @@
     "alpha": "every output alpha float word is exactly 0x3f800000 and every RGBA8 alpha byte is exactly 255"
   },
   "provenance": {
-    "node_version": "v24.7.0",
+    "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/shape-parity/shape_oracle_generator.mjs",
-      "sha256": "b53945ddc54ca15419069ce71394de46bd818346e096dcc6a2b46e8ea2da4874"
+      "sha256": "4e8d2a1189c07c53076e9b6cd625f56c8b2b6be823f2e63cd47e253ded557d84"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_shape_native_oracle_include.py",
-      "sha256": "58532983d76710a7ed7d94aff0c0eca186d58e08757051fcb3f4682011215e59"
+      "sha256": "d1ef04e6c4a28aaaf01dac1a51b6fcc6fd06304312be86cbaffbde0955f2599f"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",
@@ -77,7 +77,7 @@
       "live_checkout_rejected": "<live-noisemaker-for-cpu-checkout>",
       "live_checkout_resolution": "process.env.NOISEMAKER_FOR_CPU when set, else $HOME/platform/noisemaker-for-cpu",
       "imports_confined_beneath_snapshot": true,
-      "import_closure_file_count": 22,
+      "import_closure_file_count": 23,
       "import_closure": [
         {
           "relative_path_from_noisemaker_for_cpu": "src/csl/glsl-kernel.js",
@@ -109,7 +109,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/index.js",
-          "sha256": "40c690ff6ef58619006d0819c5f0f4d419cdfd59a08db55e2276aa9f61430267"
+          "sha256": "dd2ca7681884fbc3fa2687faeb52aced50076a5f0856736b63831e859073d22e"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/julia.js",
@@ -122,6 +122,10 @@
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/palette.js",
           "sha256": "8b7c83ea52c3be218866570517335141f9203905115fc90d2e69b1d8cba54452"
+        },
+        {
+          "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/remap.js",
+          "sha256": "91fd829ba2ad68fabab4124f5464994fc267daa097af4f3dd5a7e20f075f9e79"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/adapters/snow.js",
@@ -141,7 +145,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/kernels.js",
@@ -149,7 +153,7 @@
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/upstream-snapshot.js",
-          "sha256": "e8f8a421f08b0f5cb495f845a97da321038300b7d0dd41392a60653ce2a82090"
+          "sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7"
         },
         {
           "relative_path_from_noisemaker_for_cpu": "src/effects/registry.js",
@@ -171,7 +175,7 @@
       "pinned_files": {
         "canonical_kernels": {
           "relative_path_from_noisemaker_for_cpu": "src/effects/generated/canonical-kernels.js",
-          "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+          "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
         },
         "public_catalog": {
           "relative_path_from_noisemaker_for_cpu": "src/effects/catalog.js",
@@ -196,16 +200,16 @@
       }
     },
     "source": {
-      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/shape/shape.glsl",
+      "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/shape/shape.glsl",
       "bytes": 15986,
       "sha256": "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f"
     },
     "canonical_factory": {
-      "name": "canonicalFactory274",
+      "name": "canonicalFactory282",
       "bytes": 20489,
-      "sha256": "870d97a811e5720f827f5616057483a43b27224240ac95c04a8084dd257a6125",
+      "sha256": "2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4",
       "source_slice_bytes": 20491,
-      "source_slice_sha256": "7aceef4b48109559959a6312edb459691a99660514b5e1bcbe97d4154bca54c3"
+      "source_slice_sha256": "b3978f678535a4275d03cd12f9bd356abe1464b55d5ec3ffadc472a692f63324"
     },
     "public_factory_is_canonical_identity": true,
     "adapter_override_absent": true,
@@ -220,13 +224,15 @@
       "filter/reindex:nmReindexApply",
       "filter/reindex:nmReindexStats",
       "filter/snow:snow",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_keys": [
       "classicNoisedeck/fractal:fractal",
       "filter/historicPalette:historicPalette",
       "filter/palette:palette",
-      "synth/julia:julia"
+      "synth/julia:julia",
+      "synth/remap:remap"
     ],
     "corpus_adapter_source": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/check_corpus.py",
@@ -30559,7 +30565,7 @@
     ],
     "probe_anchor_sha256": "dd779c01c916fac90bafbc70f839126c24e313b26f2681c13bc6614777b720c7",
     "probe_replacement_sha256": "24021f0c7d4636631ed77094bf477403ad1c32eff55699f02c1fedf18ebf98dc",
-    "probe_factory_sha256": "4b18466a41049f1a54d0aad30daf346a7613eaeeaa8e3c828eb16abd6325e870",
+    "probe_factory_sha256": "55dfcc671ac481f78c1ebe8199a420d082239cdaf0e9c8cea722e760ddae5e4a",
     "classification": "instrumented canonical-JS probe factory; NOT a parity array and never compared to a rendered shade",
     "lane_order": "top-down raster order; two lanes per pixel, globalCoord.x then globalCoord.y",
     "f32_words_le": [
@@ -30961,7 +30967,7 @@
       "classification": "rendered canonical-JS one-anchor/one-replacement mutant",
       "anchor_sha256": "e944eabf1744c9a892c0f094a679ceade1521743345e00bcd77d38acc65ba679",
       "replacement_sha256": "53a0cfbf19061e4f0769c9fec9b6d2de98ec273aea69dbed26a881e9a86dbf14",
-      "mutated_factory_sha256": "2ff8808a4d12d7a44aca3d9b4f0180d9b2fcb4230bae2de6c1ba26d447bb0e15",
+      "mutated_factory_sha256": "b600fa9207b2d92ca302a315cec4c10e12111531ace562c5f986752299c296a3",
       "anchor_occurrences": 1,
       "witness_cases": [
         "shape-landscape-16x9",
@@ -31114,7 +31120,7 @@
       "classification": "rendered canonical-JS one-anchor/one-replacement mutant",
       "anchor_sha256": "a66a4c1abb24c3d5996a5298c1b57ec75606f1fdb8bef17c16fb619815a9b01b",
       "replacement_sha256": "30f7e17afe19e684486dd2dc29e76a5f4f92019c51412e94c76e5da1ac6fd58d",
-      "mutated_factory_sha256": "6534ed584de76b0ee57c7347bd9dcad70d7065ec15d412a717c8cf480a4b5691",
+      "mutated_factory_sha256": "46a428797115d10e9222c3a5209e6a9a8842967f08e760fdbc229e2dd1035e32",
       "anchor_occurrences": 1,
       "witness_cases": [
         "shape-extreme-tile-offset"
