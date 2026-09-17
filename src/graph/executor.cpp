@@ -1,6 +1,8 @@
 #include "noisemaker/graph/executor.hpp"
 
 #include "noisemaker/effects/cpu/worm_overlay.hpp"
+#include "noisemaker/effects/scatter/catalog.hpp"
+#include "noisemaker/effects/scatter/registry.hpp"
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/graph/generated/classic_noisedeck_palette_table.hpp"
@@ -225,6 +227,27 @@ struct BindingAbiSections {
 [[nodiscard]] bool is_worm_overlay_resource(std::string_view effect_id,
                                             std::string_view texture) noexcept {
   return texture == "overlayTex" && effects::cpu::is_worm_overlay_effect(effect_id);
+}
+
+// Mirrors the JS renderer's own scatter call sites (`renderer.js:963-965` and
+// its three siblings): a pass whose admission is `scatter`-status is only
+// actually dispatchable when the authenticated catalog also carries a
+// `ScatterContract` for it AND a real C++ adapter has been registered under
+// its exact program key -- an admitted-but-unported scatter program (any of
+// the six not yet in the registry) must keep failing exactly like today.
+// `noisemaker::scatter::register_builtin_scatter_adapters()` is idempotent
+// by design (see its own doc comment), so calling it from every independent
+// check below -- rather than requiring one designated startup call -- keeps
+// each call site self-sufficient regardless of process/test init order,
+// matching the existing "same four checks at both the dry-run and the real
+// authentication, no way to get past them by any current code path" defense
+// in depth this file already practices for the other blanket refusals.
+[[nodiscard]] bool scatter_adapter_available(const PassAdmission& admission) {
+  if (admission.status != AvailabilityStatus::scatter || !admission.scatter.has_value()) {
+    return false;
+  }
+  noisemaker::scatter::register_builtin_scatter_adapters();
+  return noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key) != nullptr;
 }
 
 [[nodiscard]] std::unordered_set<std::string> unproduced_declared_textures(
@@ -625,6 +648,21 @@ void validate_ordinary_pass_metadata(const EffectStep& step,
                                      const PassAdmission& admission,
                                      const effects::PassDefinition& pass,
                                      std::size_t pass_index) {
+  // A dispatchable scatter pass legitimately declares `count` (JS's
+  // `count:"input"` -- the adapter itself iterates once per source pixel,
+  // never the ordinary ABI's ordinary-count/viewport machinery). Its own
+  // metadata is authenticated by validate_pass_output_abi's scatter branch
+  // instead. `viewport` stays refused even here: no registered adapter uses
+  // it today, so admitting it would be unproven.
+  if (scatter_adapter_available(admission)) {
+    if (pass.viewport.has_value()) {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "ordinary count or viewport is unsupported",
+                       step.effect.id, pass_index, pass.name,
+                       admission.identity.program_key);
+    }
+    return;
+  }
   if (pass.count.has_value() || pass.viewport.has_value()) {
     throw GraphError(GraphErrorCode::invalid_snapshot,
                      "ordinary count or viewport is unsupported",
@@ -644,6 +682,49 @@ void validate_pass_output_abi(const EffectStep& step,
                               const PassAdmission& admission,
                               std::size_t pass_index) {
   const std::string_view program_key = admission.identity.program_key;
+  if (scatter_adapter_available(admission)) {
+    // The scatter contract carries its own single-output record (empty for
+    // an ordinary admission, since scatter's admission() early-returns
+    // before populating admission.outputs -- see registry.cpp). Authenticate
+    // against that instead, plus the two facts specific to a scatter pass
+    // that the ordinary branch below has no field for: `drawMode` must be
+    // exactly the adapter's own registered draw mode, and `count` (JS's
+    // `count:"input"` -- the adapter iterates once per source pixel itself)
+    // must be present and hold that literal string. `viewport` stays
+    // unconditionally refused (validate_ordinary_pass_metadata) since no
+    // registered adapter uses it.
+    if (pass.outputs.size() != 1U || admission.scatter->outputs.size() != 1U) {
+      throw GraphError(GraphErrorCode::unsupported_mrt,
+                       "exactly one fragment output is supported",
+                       step.effect.id, pass_index, pass.name,
+                       std::string(program_key));
+    }
+    const auto& declared = pass.outputs.front();
+    const auto& output = admission.scatter->outputs.front();
+    if (output.slot != 0U || output.physical_name != kFragmentOutputSymbol ||
+        output.logical_route != declared.second || declared.second.empty() ||
+        declared.first.empty() || output.cpp_type != "glsl::Vec4") {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "pass output ABI differs from owned definition",
+                       step.effect.id, pass_index, pass.name,
+                       std::string(program_key));
+    }
+    if (!pass.draw_mode.has_value() || *pass.draw_mode != admission.scatter->draw_mode ||
+        (*pass.draw_mode != "points" && *pass.draw_mode != "billboards")) {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "scatter pass draw mode differs from the admitted contract",
+                       step.effect.id, pass_index, pass.name,
+                       std::string(program_key));
+    }
+    if (!pass.count.has_value() || pass.count->kind != effects::ValueKind::string ||
+        pass.count->string != admission.scatter->count) {
+      throw GraphError(GraphErrorCode::invalid_snapshot,
+                       "scatter pass count differs from the admitted contract",
+                       step.effect.id, pass_index, pass.name,
+                       std::string(program_key));
+    }
+    return;
+  }
   if (pass.outputs.size() != 1U || admission.outputs.size() != 1U) {
     throw GraphError(GraphErrorCode::unsupported_mrt,
                      "exactly one fragment output is supported",
@@ -887,13 +968,14 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
          ++pass_index) {
       const auto& admission = snapshot.admissions[pass_index];
       if (admission.status == AvailabilityStatus::scatter) {
-        throw GraphError(GraphErrorCode::unsupported_scatter,
-                         "scatter is not enabled in Task 6",
-                         snapshot.definition.id, pass_index,
-                         admission.identity.name,
-                         admission.identity.program_key);
-      }
-      if (admission.status != AvailabilityStatus::compatible) {
+        if (!scatter_adapter_available(admission)) {
+          throw GraphError(GraphErrorCode::unsupported_scatter,
+                           "no scatter adapter is registered for this program",
+                           snapshot.definition.id, pass_index,
+                           admission.identity.name,
+                           admission.identity.program_key);
+        }
+      } else if (admission.status != AvailabilityStatus::compatible) {
         throw GraphError(GraphErrorCode::unavailable_pass,
                          "pass is not executable", snapshot.definition.id,
                          pass_index, admission.identity.name,
@@ -990,9 +1072,16 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           const BindingMaterializationContext preflight_context{
               &inputs, &snapshot.definition, inputs.width, inputs.height};
           preflight_pass_abi(effect, admission, pass, preflight_context);
-          const auto* route = authenticate_factory_route(effect, admission);
-          authenticate_compile_define_parameters(effect, admission,
-                                                 snapshot.definition, *route);
+          // A scatter pass has no canonical/emitted factory to authenticate
+          // (admission.canonical_factory etc. are empty for it -- see
+          // registry.cpp's `admission()` early return); its dispatch route
+          // is authenticated by `preflight_scatter_pass_abi` above and, at
+          // real execution, by resolving its adapter directly.
+          if (!scatter_adapter_available(admission)) {
+            const auto* route = authenticate_factory_route(effect, admission);
+            authenticate_compile_define_parameters(effect, admission,
+                                                   snapshot.definition, *route);
+          }
           authenticate_palette_override(effect, admission, snapshot.definition);
           authenticate_measured_parity(effect, admission);
           bool enabled = true;
@@ -1112,22 +1201,31 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                            effect->effect.id, index, admission.identity.name,
                            admission.identity.program_key);
         }
-        if (admission.status != AvailabilityStatus::compatible) {
+        const bool dispatchable_scatter = admission.status == AvailabilityStatus::scatter &&
+                                          scatter_adapter_available(admission);
+        if (admission.status != AvailabilityStatus::compatible && !dispatchable_scatter) {
           if (admission.status == AvailabilityStatus::scatter) {
-            throw GraphError(GraphErrorCode::unsupported_scatter, "scatter is not enabled in Task 6",
+            throw GraphError(GraphErrorCode::unsupported_scatter, "no scatter adapter is registered for this program",
                              effect->effect.id, index, admission.identity.name, admission.identity.program_key);
           }
           throw GraphError(GraphErrorCode::unavailable_pass, "pass is not executable",
                            effect->effect.id, index, admission.identity.name, admission.identity.program_key);
         }
-        if (admission.authority_pass.blend || (pass.blend.has_value() && pass.blend->enabled)) {
-          throw GraphError(GraphErrorCode::unsupported_blend, "blend is not enabled in Task 6",
-                           effect->effect.id, index, admission.identity.name, admission.identity.program_key);
-        }
-        if (admission.draw_mode != "fragment" ||
-            (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) {
-          throw GraphError(GraphErrorCode::unsupported_draw_mode, "draw mode is not fragment",
-                           effect->effect.id, index, admission.identity.name, admission.identity.program_key);
+        // A dispatchable scatter pass's own blend/draw-mode semantics are
+        // the adapter's `destination_mutation`/`draw_mode` contract, not
+        // this ordinary fragment-gather refusal pair -- both are
+        // authenticated instead by `validate_pass_output_abi`'s scatter
+        // branch, called below via `validate_pass_identity_and_output`.
+        if (!dispatchable_scatter) {
+          if (admission.authority_pass.blend || (pass.blend.has_value() && pass.blend->enabled)) {
+            throw GraphError(GraphErrorCode::unsupported_blend, "blend is not enabled in Task 6",
+                             effect->effect.id, index, admission.identity.name, admission.identity.program_key);
+          }
+          if (admission.draw_mode != "fragment" ||
+              (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) {
+            throw GraphError(GraphErrorCode::unsupported_draw_mode, "draw mode is not fragment",
+                             effect->effect.id, index, admission.identity.name, admission.identity.program_key);
+          }
         }
         if (pass.draw_buffers.has_value() &&
             (pass.draw_buffers->kind != effects::ValueKind::number ||
@@ -1146,9 +1244,13 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                              effect->effect.id, index, admission.identity.name, admission.identity.program_key);
           }
         }
-        authenticate_compile_define_parameters(
-            *effect, admission, snapshot.definition,
-            *authenticate_factory_route(*effect, admission));
+        // A scatter pass has no canonical/emitted factory to authenticate
+        // (see the identical guard in the pre-allocation loop above).
+        if (!dispatchable_scatter) {
+          authenticate_compile_define_parameters(
+              *effect, admission, snapshot.definition,
+              *authenticate_factory_route(*effect, admission));
+        }
       }
     }
   }
@@ -1517,12 +1619,26 @@ void validate_uniform_abi_shape(const EffectStep& step,
 void validate_pass_controls(const EffectStep& step, const PassAdmission& admission,
                             const effects::PassDefinition& pass) {
   if (admission.status != AvailabilityStatus::compatible) {
-    throw binding_error(step, admission,
-                        admission.status == AvailabilityStatus::scatter ? GraphErrorCode::unsupported_scatter : GraphErrorCode::unavailable_pass,
-                        "pass is not compatible");
+    // A dispatchable scatter pass never carries `admission.dimensionality`/
+    // `admission.draw_mode` (empty for a scatter admission -- see
+    // registry.cpp's `admission()` early return), so it skips only those
+    // two admission-field checks below rather than the ordinary
+    // pass-shaped ones (draw_buffers/repeat/conditions), which still apply
+    // uniformly. The equivalent authentication for the fields it skips
+    // lives in `validate_pass_output_abi`'s scatter branch and
+    // `preflight_scatter_pass_abi`. This still re-derives dispatchability
+    // itself rather than trusting a caller already checked it, matching
+    // this file's existing "no way to get past them by any current code
+    // path" defense in depth for the other blanket refusals.
+    if (!(admission.status == AvailabilityStatus::scatter && scatter_adapter_available(admission))) {
+      throw binding_error(step, admission,
+                          admission.status == AvailabilityStatus::scatter ? GraphErrorCode::unsupported_scatter : GraphErrorCode::unavailable_pass,
+                          "pass is not compatible");
+    }
+  } else {
+    if (admission.dimensionality != "image") throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only image dimensionality is supported");
+    if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
   }
-  if (admission.dimensionality != "image") throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only image dimensionality is supported");
-  if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
   if (pass.draw_buffers.has_value() && (pass.draw_buffers->kind != effects::ValueKind::number || !std::isfinite(pass.draw_buffers->number) || pass.draw_buffers->number != 1.0)) throw binding_error(step, admission, GraphErrorCode::unsupported_mrt, "multiple draw buffers are unsupported");
   if (pass.repeat.has_value() && pass.repeat->kind != effects::ValueKind::number && pass.repeat->kind != effects::ValueKind::string) throw binding_error(step, admission, GraphErrorCode::invalid_options, "repeat must be numeric or a uniform name");
   if (pass.repeat.has_value() && pass.repeat->kind == effects::ValueKind::number && (!std::isfinite(pass.repeat->number) || pass.repeat->number < 0.0)) throw binding_error(step, admission, GraphErrorCode::invalid_options, "repeat must be finite and non-negative");
@@ -1924,9 +2040,86 @@ void materialize_compile_defines(glsl::Bindings& bindings, const EffectStep& ste
   }
 }
 
+// The scatter analog of the ordinary ABI preflight below: a scatter pass's
+// authenticated ABI lives entirely in `admission.scatter` (empty for an
+// ordinary admission and vice versa -- see registry.cpp's `admission()`),
+// so it is checked against that contract instead of `admission.samplers`/
+// `admission.uniforms` (both structurally empty for a scatter admission).
+// Every fact this proves is resolvability/shape, exactly like the ordinary
+// branch: the real values are read again, identically, when the dispatch
+// branch in `execute()` actually builds the adapter's `Bindings`.
+void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& admission,
+                                const effects::PassDefinition& pass,
+                                const BindingMaterializationContext& context) {
+  validate_pass_controls(step, admission, pass);
+  if (context.destination_width == 0U || context.destination_height == 0U) {
+    throw binding_error(step, admission, GraphErrorCode::invalid_dimension,
+                        "output dimensions must be positive");
+  }
+  const auto& scatter = *admission.scatter;
+  // Exactly one declared input route, matching the adapter's single
+  // input-texture contract (mirrors JS's `buildScatterBindings`, which hands
+  // a scatter adapter exactly one resolved input surface today).
+  if (pass.inputs.size() != 1U || pass.inputs.front().first != scatter.input_texture ||
+      pass.inputs.front().second.empty()) {
+    throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                        "scatter input route is invalid");
+  }
+  // Unlike the ordinary branch, this does not additionally probe
+  // `context.lookup_surface`: that table is populated from
+  // `admission.samplers` (structurally empty for a scatter admission -- see
+  // registry.cpp's `admission()` early return), so it is never populated
+  // with the scatter route at all and would spuriously fail here even on a
+  // fully resolvable plan. The route's actual availability is authenticated
+  // twice already: generically for every pass's `pass.inputs`, scatter
+  // included, by `validate_plan_before_allocation`'s own read-before-write
+  // loop; and again, for real, by the dispatch branch in `execute()` itself
+  // (`resolve_route` there throws `read_before_write` on the same miss).
+  validate_pass_output_abi(step, pass, admission, admission.identity.index);
+  std::unordered_set<std::string> uniform_names;
+  for (const auto& uniform : scatter.uniforms) {
+    if (!uniform_names.insert(uniform.name).second) {
+      throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                          "duplicate uniform ABI binding name");
+    }
+    // registry.cpp's own construction-time authentication already requires
+    // every scatter uniform to be exactly this shape (`scatter_contract()`,
+    // "Malformed scatter compatibility contract"); re-checked here too, so
+    // this function fails closed on its own rather than trusting that an
+    // upstream check already ran. `source_name` is legitimately empty for
+    // every currently-generated scatter uniform (the raw
+    // `CompatibilityBindingEvidence` never populates it -- see
+    // `effect_catalog.cpp`'s `ScatterCompatibility` literal): the binding
+    // NAME doubles as the effect-parameter name to resolve, since a scatter
+    // uniform is always an identity `{uniform: "x"}` mapping in the JS
+    // source. A future adapter with a real, distinct `source_name` still
+    // works: that value wins whenever it is non-empty.
+    if (uniform.cpp_type != "double" || uniform.source != "effect_parameter" ||
+        uniform.name.empty()) {
+      throw binding_error(step, admission, GraphErrorCode::binding_type,
+                          "scatter uniform ABI is invalid");
+    }
+    if (context.definition == nullptr) {
+      throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                          "scatter uniform value is missing");
+    }
+    const std::string_view lookup_name =
+        uniform.source_name.empty() ? std::string_view(uniform.name) : std::string_view(uniform.source_name);
+    PlanValue owned;
+    if (bound_uniform_value(*context.definition, step, lookup_name, owned) == nullptr) {
+      throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                          "scatter uniform value is missing");
+    }
+  }
+}
+
 void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
                         const effects::PassDefinition& pass,
                         const BindingMaterializationContext& context) {
+  if (scatter_adapter_available(admission)) {
+    preflight_scatter_pass_abi(step, admission, pass, context);
+    return;
+  }
   validate_pass_controls(step, admission, pass);
   if (context.destination_width == 0U || context.destination_height == 0U) {
     throw binding_error(step, admission, GraphErrorCode::invalid_dimension,
@@ -2019,6 +2212,82 @@ void materialize_sampler_bindings(
                           error.what());
     }
   }
+}
+
+// Builds the `glsl::Bindings` a scatter adapter reads, mirroring JS's
+// `buildScatterBindings` (renderer.js:819-830): the adapter's one input
+// texture plus its uniforms, each sourced from an ordinary effect parameter
+// (registry.cpp's construction-time authentication guarantees every scatter
+// uniform is `cpp_type=="double"`/`source=="effect_parameter"`). This is a
+// smaller, single-input analog of `materialize_uniform_bindings`/
+// `materialize_sampler_bindings` above, not a reuse of them, because a
+// scatter admission's own `admission.samplers`/`admission.uniforms` are
+// structurally empty (see registry.cpp's `admission()` early return) --
+// everything a scatter pass needs instead lives in `admission.scatter`.
+glsl::Bindings materialize_scatter_bindings(
+    const EffectStep& step, const PassAdmission& admission,
+    const effects::EffectDefinition& definition,
+    const noisemaker::Surface& input_surface) {
+  glsl::Bindings bindings;
+  const auto& scatter = *admission.scatter;
+  try {
+    bindings.set_texture(scatter.input_texture, input_surface);
+  } catch (const glsl::KernelBindingError& error) {
+    throw binding_error(step, admission, GraphErrorCode::binding_type, error.what());
+  }
+  for (const auto& uniform : scatter.uniforms) {
+    // `source_name` is legitimately empty for every currently-generated
+    // scatter uniform -- see the matching comment in
+    // `preflight_scatter_pass_abi`. The binding name doubles as the
+    // effect-parameter name to resolve in that case.
+    const std::string_view lookup_name =
+        uniform.source_name.empty() ? std::string_view(uniform.name) : std::string_view(uniform.source_name);
+    PlanValue owned;
+    const auto* value = bound_uniform_value(definition, step, lookup_name, owned);
+    if (value == nullptr) {
+      throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                          "scatter uniform value is missing");
+    }
+    const double number_value = plan_number(value);
+    if (!std::isfinite(number_value)) {
+      throw binding_error(step, admission, GraphErrorCode::binding_type,
+                          "scatter uniform value is not finite");
+    }
+    try {
+      bindings.set_uniform(uniform.name, number_value);
+    } catch (const glsl::KernelBindingError& error) {
+      throw binding_error(step, admission, GraphErrorCode::binding_type, error.what());
+    }
+  }
+  return bindings;
+}
+
+// Builds the minimal `ScatterPass` slice a scatter adapter reads, generically,
+// from the compiled `effects::PassDefinition` -- no per-effect special case
+// (see registry.hpp's `ScatterPass` for exactly which two JS `pass` fields
+// any shipped adapter reads, and why nothing else is carried).
+noisemaker::scatter::ScatterPass scatter_pass_from_definition(const effects::PassDefinition& pass) {
+  noisemaker::scatter::ScatterPass result;
+  // `pass.blend`, ONLY the two-element-factors shape (JS's
+  // `Array.isArray(pass.blend)` true branch) -- a boolean-kind blend (or no
+  // blend at all, wormhole's own shape) leaves `blend_factors` unset,
+  // matching `isPremultipliedBlend`'s `!Array.isArray(pass.blend)` early
+  // `false`.
+  if (pass.blend.has_value() && pass.blend->kind == effects::BlendKind::factors) {
+    result.blend_factors = std::make_pair(pass.blend->factors[0], pass.blend->factors[1]);
+  }
+  // `pass.count`, only when it is an actual JS number (JS `pass?.count`,
+  // read by flow3d's adapter). The string sentinel `"input"` some scatter
+  // passes declare (wormhole's own `deposit`) is a different, DSL-level
+  // concept -- "run once per source pixel", authenticated separately via
+  // `admission.scatter->count` -- not the numeric agent-count field a
+  // shipped adapter reads off `pass`, so it maps to `nullopt` here exactly
+  // like an absent `count`.
+  if (pass.count.has_value() && pass.count->kind == effects::ValueKind::number &&
+      std::isfinite(pass.count->number)) {
+    result.count = pass.count->number;
+  }
+  return result;
 }
 
 GraphError::GraphError(GraphErrorCode code, std::string detail,
@@ -2285,10 +2554,16 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                                  admission.identity.program_key);
               }
             }
+            const bool dispatch_scatter = scatter_adapter_available(admission);
             // The destination quantization must be the authenticated output
             // extent's format; a forged texture format would otherwise change
-            // the quantization of every published byte.
-            if (format != resolve_texture_format(admission.output_extent.format)) {
+            // the quantization of every published byte. A scatter admission
+            // carries no `output_extent` at all (see registry.cpp's
+            // `admission()` early return) -- its destination format is
+            // simply whatever the effect's own declared texture says, the
+            // same source `format` above was already resolved from.
+            if (!dispatch_scatter &&
+                format != resolve_texture_format(admission.output_extent.format)) {
               throw GraphError(GraphErrorCode::invalid_format,
                                "destination format differs from the authenticated output extent",
                                step.effect.id, pass_index, pass.name,
@@ -2298,6 +2573,57 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                 &inputs, &snapshot.definition, width, height,
                 &lookup_resolved_sampler_route, &resolved};
             preflight_pass_abi(step, admission, pass, binding_context);
+            if (dispatch_scatter) {
+              // Mirrors the JS scatter call sites (renderer.js:963-965 and
+              // its three siblings): resolve the adapter's one input route
+              // exactly like an ordinary sampler (retained for the
+              // dispatch's lifetime), build its small scalar `Bindings`
+              // (buildScatterBindings), pre-seed the destination with the
+              // previous contents of the named output texture -- or a
+              // cleared surface if this is its first write, matching
+              // `destination_mutation == "in_place_accumulate"` -- run the
+              // adapter IN PLACE, then quantize/store exactly like any
+              // other pass.
+              const auto& scatter = *admission.scatter;
+              const auto input_route = resolve_route(scatter.input_texture);
+              if (input_route.surface == nullptr) {
+                release_borrowed();
+                throw GraphError(GraphErrorCode::read_before_write,
+                                 "input resource is not produced", step.effect.id,
+                                 pass_index, pass.name,
+                                 admission.identity.program_key);
+              }
+              if (input_route.resource != nullptr &&
+                  std::find(borrowed.begin(), borrowed.end(), input_route.resource) == borrowed.end()) {
+                arena.retain(*input_route.resource);
+                borrowed.push_back(input_route.resource);
+              }
+              auto bindings = materialize_scatter_bindings(
+                  step, admission, snapshot.definition, *input_route.surface);
+              const noisemaker::scatter::ScatterAdapter adapter =
+                  noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
+              if (adapter == nullptr) {
+                // Unreachable: `dispatch_scatter` already proved this
+                // resolves. Guarded anyway so a future change to either
+                // side of that proof fails loud here rather than
+                // dereferencing a null function pointer.
+                throw GraphError(GraphErrorCode::unsupported_scatter,
+                                 "no scatter adapter is registered for this program",
+                                 step.effect.id, pass_index, pass.name,
+                                 admission.identity.program_key);
+              }
+              const auto* const existing = arena.find(output_route);
+              noisemaker::Surface destination =
+                  existing != nullptr ? existing->surface().clone()
+                                      : noisemaker::Surface(width, height);
+              const noisemaker::scatter::ScatterPass scatter_pass = scatter_pass_from_definition(pass);
+              adapter(bindings, scatter_pass, destination);
+              noisemaker::quantize_texture(destination, format);
+              auto& stored = arena.insert(output_route, std::move(destination),
+                                          format, ResourceLifetime::transient);
+              effect_output = &stored;
+              ++pass_count;
+            } else {
             auto bindings = materialize_uniform_bindings(step, admission, pass,
                                                          binding_context);
             materialize_sampler_bindings(bindings, admission, binding_context,
@@ -2319,6 +2645,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                                               format, ResourceLifetime::transient);
             effect_output = &destination;
             ++pass_count;
+            }
           } catch (const GraphError& error) {
             release_borrowed();
             if (error.effect_id().empty()) {

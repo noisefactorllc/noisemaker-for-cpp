@@ -36,11 +36,37 @@ if (overlayRefusalPresent) {
   overlayEffects = [...overlayGuard[1].matchAll(/effect_id\s*==\s*"([^"]+)"/g)].map(match => match[1])
   assert.ok(overlayEffects.length > 0, 'cannot read executor overlay exclusions')
 }
+// A `status: "scatter"` pass is admitted only when a real C++ adapter is
+// registered for its exact program key -- read from the SOURCE the same way
+// the parity-exclusion guard above is, not maintained as a second,
+// driftable list. `register_builtin_scatter_adapters()`
+// (src/effects/scatter/catalog.cpp) is the single aggregation point: every
+// un-commented `<ns>::register_adapter();` call inside it names a namespace
+// whose own `src/effects/scatter/<ns>.cpp` registers one or more keys via
+// `register_scatter_adapter("KEY", ...)`. This is exactly the executor's own
+// dispatch predicate (`scatter_adapter_available`, src/graph/executor.cpp) --
+// a "scatter" backend classification is a corpus-classification label, not
+// an adapter-registration flag, so this must be re-derived, never assumed
+// from the label alone.
+const scatterCatalogSource = await readFile(new URL('src/effects/scatter/catalog.cpp', root), 'utf8')
+const registeredScatterNamespaces = [...scatterCatalogSource.matchAll(
+  /^(?!\s*\/\/)\s*([A-Za-z_][A-Za-z0-9_]*)::register_adapter\(\);/gm,
+)].map(match => match[1])
+assert.ok(registeredScatterNamespaces.length > 0, 'cannot read any registered scatter adapter namespace')
+const registeredScatterKeys = new Set()
+for (const namespaceName of registeredScatterNamespaces) {
+  const adapterSource = await readFile(new URL(`src/effects/scatter/${namespaceName}.cpp`, root), 'utf8')
+  const keys = [...adapterSource.matchAll(/register_scatter_adapter\("([^"]+)"/g)].map(match => match[1])
+  assert.ok(keys.length > 0, `cannot read the registered key for scatter adapter namespace "${namespaceName}"`)
+  for (const key of keys) registeredScatterKeys.add(key)
+}
 const effects = new Map()
 for (const pass of backend.reference_passes) {
   assert.match(pass.effect_id, /^[A-Za-z0-9_]+\/[A-Za-z0-9_]+$/)
   assert.equal(typeof pass.program_key, 'string')
-  const admitted = pass.status === 'compatible' && !excluded.has(pass.program_key)
+  const dispatchable = pass.status === 'compatible' ||
+    (pass.status === 'scatter' && registeredScatterKeys.has(pass.program_key))
+  const admitted = dispatchable && !excluded.has(pass.program_key)
   effects.set(pass.effect_id, (effects.get(pass.effect_id) ?? true) && admitted)
 }
 // Which effects need an external texture is read from the generated catalog

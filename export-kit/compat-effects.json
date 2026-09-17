@@ -127,6 +127,7 @@
   "filter/waves",
   "filter/wind",
   "filter/wobble",
+  "filter/wormhole",
   "filter/zoomBlur",
   "mixer/alphaMask",
   "mixer/applyMode",

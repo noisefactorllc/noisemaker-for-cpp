@@ -98,7 +98,12 @@ constexpr double kPi = 3.141592653589793;  // identical double to JS Math.PI
   return decode_float16(static_cast<std::uint16_t>(half_bits));
 }
 
-std::size_t adapter(const glsl::Bindings& bindings, Surface& destination) {
+// `pass` is unread: wormhole's own JS adapter (`runWormholeDeposit`,
+// wormhole.js:34-76) never touches `pass.blend`/`pass.count` -- those two
+// fields exist on `ScatterPass` for pointsBillboardRender/flow3d, ported
+// separately (see registry.hpp's header comment).
+std::size_t adapter(const glsl::Bindings& bindings, const scatter::ScatterPass& pass, Surface& destination) {
+  (void)pass;
   const Surface& input = bindings.texture("inputTex");
   Uniforms uniforms;
   uniforms.kink = bindings.get_number("kink");
