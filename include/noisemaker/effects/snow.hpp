@@ -1,5 +1,10 @@
 #pragma once
 
+#include <array>
+#include <cstddef>
+#include <string_view>
+#include <utility>
+
 #include "noisemaker/kernel.hpp"
 
 namespace noisemaker::effects {
@@ -20,4 +25,19 @@ namespace noisemaker::effects {
 // including its two hash-noise samples, its clamped/Y-flipped texel
 // fetch, and its early alpha==0 passthrough, exactly.
 [[nodiscard]] BoundKernel bind_snow(const glsl::Bindings& bindings);
+
+// The declared custom_adapter binding ABI, in the exact order bind_snow()
+// reads it. tools/glslcpp/frontend/snow_profile.py's
+// verify_custom_adapter_binding_abi() cross-checks this table against its
+// own custom_adapter_binding_abi() declaration at generation time and fails
+// closed if the two ever drift -- keep them in lockstep by hand.
+inline constexpr std::size_t kSnowBindingAbiSize = 5U;
+inline constexpr std::array<std::pair<std::string_view, std::string_view>, kSnowBindingAbiSize>
+    kSnowBindingAbi{{
+        {"inputTex", "sampler2D"},
+        {"alpha", "double"},
+        {"time", "double"},
+        {"pause", "double"},
+        {"density", "double"},
+    }};
 }  // namespace noisemaker::effects

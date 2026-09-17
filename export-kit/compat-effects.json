@@ -99,6 +99,7 @@
   "filter/skew",
   "filter/smooth",
   "filter/smoothstep",
+  "filter/snow",
   "filter/sobel",
   "filter/spatter",
   "filter/spinBlur",
@@ -158,8 +159,10 @@
   "synth/pattern",
   "synth/perlin",
   "synth/polygon",
+  "synth/remap",
   "synth/sacredGeometry",
   "synth/shape",
   "synth/solid",
-  "synth/subdivide"
+  "synth/subdivide",
+  "synth/testPattern"
 ]

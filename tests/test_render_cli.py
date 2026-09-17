@@ -35,9 +35,11 @@ BLUR = ROOT / "tests/fixtures/dsl/blur.dsl"
 GENERATED_CATALOG = ROOT / "src/effects/generated/effect_catalog.cpp"
 PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
 
-# A program the executor refuses: `filter/snow:snow` is on the measured parity
-# exclusion list in src/graph/executor.cpp, so it compiles and then refuses.
-REFUSED_PROGRAM = "search synth, filter\nsolid(color: #3a7).snow().write(o0)\nrender(o0)\n"
+# A program the executor refuses: `filter/median:median` requests
+# RADIUS=3, but the generated route only ever bakes RADIUS=2 -- see
+# authenticate_compile_define_parameters in src/graph/executor.cpp. It
+# compiles cleanly and then refuses at dispatch.
+REFUSED_PROGRAM = "search synth, filter\nsolid(color: #3a7).median(radius: 3).write(o0)\nrender(o0)\n"
 
 
 def catalog_row_count() -> int:
@@ -194,14 +196,19 @@ class RenderCliTests(unittest.TestCase):
             self.assertNotEqual(0, result.returncode)
             self.assertEqual(4, result.returncode)
             # The exact reason string the executor produced, not a paraphrase.
+            # (filter/snow:snow used to be the standing example of a
+            # measured-parity refusal; it dispatches for real now that
+            # filter/snow:snow is a wired custom_adapter route -- see
+            # src/effects/snow.cpp -- so this uses filter/median's own
+            # still-real RADIUS compile-define mismatch instead.)
             executor = (ROOT / "src/graph/executor.cpp").read_text(encoding="utf-8")
-            self.assertIn("measured divergent", executor)
+            self.assertIn("but the generated route bakes", executor)
             self.assertIn(
-                "the authority executes a hand-written CPU adapter for this program",
+                "requests compile define RADIUS=3 but the generated route bakes RADIUS=2",
                 result.stderr,
             )
             self.assertIn("unavailable_pass", result.stderr)
-            self.assertIn("filter/snow:snow", result.stderr)
+            self.assertIn("filter/median:median", result.stderr)
             self.assertEqual("", result.stdout)
             # Fail-closed means no half-written picture is left behind.
             self.assertFalse((work / "refused.png").exists())

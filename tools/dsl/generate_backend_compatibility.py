@@ -33,6 +33,12 @@ from tools.glslcpp.frontend.remap_profile import (
     CUSTOM_ADAPTER_SOURCE as REMAP_CUSTOM_ADAPTER_SOURCE,
     custom_adapter_binding_abi as remap_custom_adapter_binding_abi,
     verify_custom_adapter_binding_abi as remap_verify_custom_adapter_binding_abi)
+from tools.glslcpp.frontend.snow_profile import (
+    KEY as SNOW_KEY,
+    CUSTOM_ADAPTER_FACTORY as SNOW_CUSTOM_ADAPTER_FACTORY,
+    CUSTOM_ADAPTER_SOURCE as SNOW_CUSTOM_ADAPTER_SOURCE,
+    custom_adapter_binding_abi as snow_custom_adapter_binding_abi,
+    verify_custom_adapter_binding_abi as snow_verify_custom_adapter_binding_abi)
 from tools.glslcpp.frontend.lexer import tokenize
 from tools.glslcpp.frontend.preprocess import normalize
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -471,6 +477,40 @@ def _remap_top_level_binding_abi() -> tuple[dict[str, Any], list[dict[str, Any]]
     return {"unresolved": []}, uniforms, samplers
 
 
+def _snow_top_level_binding_abi() -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
+    """The real dispatch-time ABI for filter/snow:snow's custom_adapter route.
+
+    Every name in snow_custom_adapter_binding_abi(), classified by its real
+    executor source: inputTex is a resource (matching the effect's own
+    declared `inputTex` surface parameter and its pass.inputs route); time is
+    reserved_runtime_state (it is in RESERVED_RUNTIME like every other
+    filter's `time`, bound from the render's own clock, never an authored DSL
+    parameter); alpha/pause/density are effect_parameter, each matching a
+    declared DSL parameter of the same name. _binding_abi()'s generic logic
+    instead classifies snow.glsl's own DECLARED interface, which also
+    carries resolution/tileOffset/fullResolution -- every filter's GLSL
+    scaffold declares those three regardless of whether the shader body uses
+    them -- but bind_snow (the real, dispatched factory;
+    src/effects/snow.cpp) never reads either of them, exactly like snow.js
+    (its ground truth) never binds them either.
+    """
+    uniforms: list[dict[str, Any]] = []
+    samplers: list[dict[str, Any]] = []
+    for item in snow_custom_adapter_binding_abi():
+        name, cpp_type = item["name"], item["cpp_type"]
+        if cpp_type == "sampler2D":
+            samplers.append({"name": name, "type": "sampler2D", "cpp_type": "const Surface&",
+                             "source": "resource", "resource": name})
+            continue
+        if name in RESERVED_RUNTIME:
+            uniforms.append({"name": name, "type": "double", "cpp_type": cpp_type,
+                             "source": "reserved_runtime_state", "source_name": name})
+            continue
+        uniforms.append({"name": name, "type": "double", "cpp_type": cpp_type,
+                         "source": "effect_parameter", "source_name": name})
+    return {"unresolved": []}, uniforms, samplers
+
+
 def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any]], defines: dict[str, Any], effect: dict[str, Any], entry: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
     key = entry["program_key"]
     current_pass = _pass_index(effect, key)
@@ -516,6 +556,8 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
         # remap_custom_adapter_binding_abi() directly. This is the actual
         # dispatch-time ABI PassAdmission/resolve_uniform materializes.
         abi, uniforms, samplers = _remap_top_level_binding_abi()
+    elif key == SNOW_KEY:
+        abi, uniforms, samplers = _snow_top_level_binding_abi()
     else:
         abi, uniforms, samplers = _binding_abi(effect, current_pass, typed_record)
     typed_abi = typed_record["typed_abi"]
@@ -726,7 +768,7 @@ def _legacy_factories(repository: pathlib.Path, rows: dict[str, dict[str, Any]])
 # is declared explicitly by tools/glslcpp/frontend/remap_profile.py, since
 # bind_remap builds its names at runtime and has no such literal text to
 # scrape (see that module's docstring for the full rationale).
-_CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY})
+_CUSTOM_ADAPTER_KEYS = frozenset({"classicNoisedeck/bitEffects:bitEffects", REMAP_KEY, SNOW_KEY})
 
 
 def _remap_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
@@ -755,11 +797,39 @@ def _remap_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str,
     }
 
 
+def _snow_custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
+    source_path = repository / SNOW_CUSTOM_ADAPTER_SOURCE
+    if source_path.is_symlink() or not source_path.is_file():
+        raise CompatibilityError("custom factory source missing")
+    source = source_path.read_text(encoding="utf-8")
+    if not re.search(r"BoundKernel\s+bind_snow\s*\([^)]*\)", source):
+        raise CompatibilityError(f"{key}: custom factory identity missing")
+    try:
+        snow_verify_custom_adapter_binding_abi(repository)
+    except ValueError as error:
+        raise CompatibilityError(f"{key}: {error}") from error
+    calls = list(snow_custom_adapter_binding_abi())
+    emitted = "bind_" + key.replace("/", "_").replace(":", "_")
+    return {
+        "kind": "custom_adapter", "factory": SNOW_CUSTOM_ADAPTER_FACTORY,
+        "emitted_factory": emitted, "source": source_path.relative_to(repository).as_posix(),
+        "source_sha256": _sha(source_path.read_bytes()),
+        "binding_abi": {
+            "uniforms": [c for c in calls if c["cpp_type"] != "sampler2D"],
+            "samplers": [{"name": c["name"], "cpp_type": "const Surface&", "source": "custom_adapter"}
+                        for c in calls if c["cpp_type"] == "sampler2D"],
+        },
+        "output_abi": {"cardinality": 1, "cpp_type": "glsl::Vec4"},
+    }
+
+
 def _custom_factory_route(repository: pathlib.Path, key: str) -> dict[str, Any]:
     if key not in _CUSTOM_ADAPTER_KEYS:
         raise CompatibilityError(f"unknown custom factory route: {key}")
     if key == REMAP_KEY:
         return _remap_custom_factory_route(repository, key)
+    if key == SNOW_KEY:
+        return _snow_custom_factory_route(repository, key)
     source_path = repository / "src/effects/bit_effects.cpp"
     if source_path.is_symlink() or not source_path.is_file():
         raise CompatibilityError("custom factory source missing")

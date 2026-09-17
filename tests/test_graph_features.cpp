@@ -253,8 +253,8 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  REQUIRE(typed_emitter == 209U);
-  REQUIRE(custom_adapter == 2U);
+  REQUIRE(typed_emitter == 208U);
+  REQUIRE(custom_adapter == 3U);
 }
 
 TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {

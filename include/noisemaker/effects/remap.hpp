@@ -28,9 +28,9 @@ namespace noisemaker::effects {
 // vocabulary in src/graph/executor.cpp (double, glsl::Vec2, glsl::DVec3,
 // glsl::DVec4) except "sampler2D", which marks a `Bindings::texture()` read
 // rather than a `Bindings::get`/`get_or` uniform read.
-inline constexpr std::size_t kBindingAbiSize = 303U;
-inline constexpr std::array<std::pair<std::string_view, std::string_view>, kBindingAbiSize>
-    kBindingAbi{{
+inline constexpr std::size_t kRemapBindingAbiSize = 303U;
+inline constexpr std::array<std::pair<std::string_view, std::string_view>, kRemapBindingAbiSize>
+    kRemapBindingAbi{{
         {"tileOffset", "glsl::Vec2"}, {"fullResolution", "glsl::Vec2"}, {"resolution", "glsl::Vec2"}, {"zoneCount", "double"},
         {"smoothEdge", "double"}, {"bgColor", "glsl::DVec3"}, {"bgAlpha", "double"}, {"zone0_count", "double"},
         {"zone0_active", "double"}, {"zone0_alpha", "double"}, {"zone0_bounds", "glsl::DVec4"}, {"zone0_v0", "glsl::DVec4"},
