@@ -98,7 +98,7 @@
 >    0 divergence.
 > 4. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
 >    MODE=3 divergences.
-> 5. **Close the frontier construct blockers** for the remaining pending programs (frontier-92 classes): counted-for
+> 5. **Close the frontier construct blockers** for the remaining pending programs (`resync-2026-09/frontier-92.md`; executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for
 >    proofs, scalar uint XOR, sampler parameters, vecN % scalar, cross/acos/any/isnan/lessThan/floatBitsToUint, vec4[9],
 >    postfix ++, vector index.
 > 6. **Render options.** Port `oneShot: 'initial'` (renderer.js:83-93, 414) and audit the other JS render options.

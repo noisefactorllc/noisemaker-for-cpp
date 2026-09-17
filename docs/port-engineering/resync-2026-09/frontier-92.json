@@ -1,0 +1,4015 @@
+{
+ "blocker_class_ranking": [
+  {
+   "class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "count": 44,
+   "programs": [
+    "filter/convolutionFeedback:cfBlend",
+    "filter/feedback:copy",
+    "filter/motionBlur:copy",
+    "filter/motionBlur:motionBlur",
+    "filter/temporalAberration:delayShift",
+    "filter3d/flow3d:blend",
+    "filter3d/flow3d:copy",
+    "filter3d/flow3d:diffuse",
+    "points/attractor:passthrough",
+    "points/buddhabrot:passthrough",
+    "points/dla:copyGrid",
+    "points/dla:initGrid",
+    "points/dla:passthrough",
+    "points/flock:passthrough",
+    "points/flow:passthrough",
+    "points/heightGrid:passthrough",
+    "points/hydraulic:passthrough",
+    "points/lenia:clear",
+    "points/lenia:passthrough",
+    "points/life:passthrough",
+    "points/physarum:diffuse",
+    "points/physarum:passthrough",
+    "points/physical:passthrough",
+    "render/loopBegin:loopBegin",
+    "render/loopEnd:copy",
+    "render/pointsBillboardRender:blend",
+    "render/pointsBillboardRender:clearDefocus",
+    "render/pointsBillboardRender:copy",
+    "render/pointsBillboardRender:depthKeys",
+    "render/pointsBillboardRender:diffuse",
+    "render/pointsBillboardRender:spriteMean",
+    "render/pointsEmit:passthrough",
+    "render/pointsRender:blend",
+    "render/pointsRender:copy",
+    "render/pointsRender:diffuse",
+    "synth/cellularAutomata:caFb",
+    "synth/mnca:mncaFb",
+    "synth/navierStokes:ns",
+    "synth/navierStokes:nsAdvect",
+    "synth/navierStokes:nsDivergence",
+    "synth/navierStokes:nsGradient",
+    "synth/navierStokes:nsPressure",
+    "synth/navierStokes:nsSplat",
+    "synth3d/reactionDiffusion3d:simulate"
+   ]
+  },
+  {
+   "class": "loop-bound proof (counted-for)",
+   "count": 9,
+   "programs": [
+    "classicNoisedeck/noise3d:noise3d",
+    "classicNoisedeck/shapes3d:shapes3d",
+    "filter/convolutionFeedback:cfBlur",
+    "filter/convolutionFeedback:cfSharpen",
+    "points/lenia:convolve",
+    "render/pointsBillboardRender:depthMerge",
+    "render/renderCubemap3d:renderCubemap3d",
+    "render/renderCubemapSurface:renderCubemapSurface",
+    "render/renderLandscape3d:landscape"
+   ]
+  },
+  {
+   "class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "count": 7,
+   "programs": [
+    "filter3d/flow3d:agent",
+    "points/flow:agent",
+    "points/hydraulic:agent",
+    "points/life:matrix",
+    "points/physical:agent",
+    "render/pointsEmit:init",
+    "synth3d/noise3d:precompute"
+   ]
+  },
+  {
+   "class": "vertex/rasterization stage (points & billboards draw mode)",
+   "count": 5,
+   "programs": [
+    "filter3d/flow3d:deposit",
+    "points/dla:depositGrid",
+    "points/physarum:deposit",
+    "render/pointsBillboardRender:deposit",
+    "render/pointsRender:deposit"
+   ]
+  },
+  {
+   "class": "MRT fragment outputs (emitter aliases every `out` symbol to one physical slot -- SILENT wrong-output bug, not a raised error)",
+   "count": 4,
+   "programs": [
+    "points/heightGrid:agent",
+    "points/lenia:agentField",
+    "synth3d/cell3d:precompute",
+    "synth3d/shape3d:precompute"
+   ]
+  },
+  {
+   "class": "sampler2D passed as a function parameter",
+   "count": 4,
+   "programs": [
+    "synth/cellularAutomata:ca",
+    "synth/mnca:mnca",
+    "synth/reactionDiffusion:rd",
+    "synth/reactionDiffusion:rdFb"
+   ]
+  },
+  {
+   "class": "integer modulo operand-shape (vecN % scalar broadcast)",
+   "count": 3,
+   "programs": [
+    "points/flock:agent",
+    "points/life:agent",
+    "render/pointsBillboardRender:spriteMeanTiles"
+   ]
+  },
+  {
+   "class": "cross() builtin (3D vector cross product) missing",
+   "count": 3,
+   "programs": [
+    "render/render3d:render3d",
+    "render/renderLit3d:renderLit3d",
+    "synth3d/flythrough3d:precompute"
+   ]
+  },
+  {
+   "class": "fixed-size local array/table admission (generalize FIXED_NINE)",
+   "count": 2,
+   "programs": [
+    "filter/temporalAberration:temporalAberration",
+    "synth/navierStokes:nsSmooth"
+   ]
+  },
+  {
+   "class": "bvec relational-reduction builtins (any/all/isnan/lessThan/...)",
+   "count": 2,
+   "programs": [
+    "points/attractor:agent",
+    "synth3d/heightmap3d:precompute"
+   ]
+  },
+  {
+   "class": "loop-bound proof (counted-for, safety-charge variant)",
+   "count": 2,
+   "programs": [
+    "points/buddhabrot:agent",
+    "points/buddhabrot:zWrite"
+   ]
+  },
+  {
+   "class": "float/uint bit-reinterpretation builtins (floatBitsToUint/uintBitsToFloat)",
+   "count": 2,
+   "programs": [
+    "points/dla:agent",
+    "points/physarum:agent"
+   ]
+  },
+  {
+   "class": "vector component access by integer index (v[i], rvalue+lvalue)",
+   "count": 1,
+   "programs": [
+    "filter/feedback:feedback"
+   ]
+  },
+  {
+   "class": "const struct-array global table (adapter precedent: filter/palette)",
+   "count": 1,
+   "programs": [
+    "filter3d/palette3d:palette3d"
+   ]
+  },
+  {
+   "class": "no frontend/typed-pipeline blocker in the fragment kernel itself -- but the pass is drawMode:points/billboards and has no vertex/rasterization stage at all (see vertex_shader_involved)",
+   "count": 1,
+   "programs": [
+    "points/lenia:deposit"
+   ]
+  },
+  {
+   "class": "postfix increment/decrement operator (x++ / x--)",
+   "count": 1,
+   "programs": [
+    "synth3d/cellularAutomata3d:simulate"
+   ]
+  },
+  {
+   "class": "acos() builtin missing",
+   "count": 1,
+   "programs": [
+    "synth3d/fractal3d:precompute"
+   ]
+  }
+ ],
+ "corpus_revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+ "method": "frontier-92 direct pipeline probe (no corpus manifest; sources fetched from upstream noisemaker at 0ed489ec46842bffba33ee2ec65a218b6dda51f5)",
+ "programs": {
+  "classicNoisedeck/noise3d:noise3d": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {
+    "NOISE_TYPE": 12
+   },
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "classicNoisedeck/noise3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "classicNoisedeck/noise3d:noise3d",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "noise3d",
+   "raw_bytes": 19654,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "classicNoisedeck/shapes3d:shapes3d": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {
+    "BLEND_MODE": 10,
+    "SHAPE_A": 30,
+    "SHAPE_B": 10
+   },
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "classicNoisedeck/shapes3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": true,
+   "has_struct": true,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "classicNoisedeck/shapes3d:shapes3d",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "shapes3d",
+   "raw_bytes": 16152,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/convolutionFeedback:cfBlend": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/convolutionFeedback",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/convolutionFeedback:cfBlend",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "cfBlend",
+   "raw_bytes": 818,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/convolutionFeedback:cfBlur": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/convolutionFeedback",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/convolutionFeedback:cfBlur",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "cfBlur",
+   "raw_bytes": 1573,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/convolutionFeedback:cfSharpen": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/convolutionFeedback",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/convolutionFeedback:cfSharpen",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "cfSharpen",
+   "raw_bytes": 1642,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/feedback:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/feedback",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/feedback:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 351,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/feedback:feedback": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "vector component access by integer index (v[i], rvalue+lvalue)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/feedback",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported typed expression index",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/feedback:feedback",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "feedback",
+   "raw_bytes": 10931,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/motionBlur:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/motionBlur",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/motionBlur:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 351,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/motionBlur:motionBlur": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/motionBlur",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/motionBlur:motionBlur",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "motionBlur",
+   "raw_bytes": 954,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/temporalAberration:delayShift": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/temporalAberration",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/temporalAberration:delayShift",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "delayShift",
+   "raw_bytes": 677,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter/temporalAberration:temporalAberration": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "fixed-size local array/table admission (generalize FIXED_NINE)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "filter/temporalAberration",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported typed type vec4[9]",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter/temporalAberration:temporalAberration",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "temporalAberration",
+   "raw_bytes": 2291,
+   "sampler_count": 9,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter3d/flow3d:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {
+    "BEHAVIOR": 1
+   },
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/flow3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "filter3d/flow3d:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outState1",
+    "outState2",
+    "outState3"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outState1",
+    "outState2",
+    "outState3"
+   ],
+   "program": "agent",
+   "raw_bytes": 9859,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter3d/flow3d:blend": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {
+    "BEHAVIOR": 1
+   },
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/flow3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter3d/flow3d:blend",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "blend",
+   "raw_bytes": 1154,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter3d/flow3d:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {
+    "BEHAVIOR": 1
+   },
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/flow3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter3d/flow3d:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 466,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter3d/flow3d:deposit": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "points"
+   ],
+   "blocker_class": "vertex/rasterization stage (points & billboards draw mode)",
+   "defines_applied": {
+    "BEHAVIOR": 1
+   },
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/flow3d",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": "unsupported varying",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter3d/flow3d:deposit",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "deposit",
+   "raw_bytes": 191,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "frag+vert",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_TYPE: initializer requires int, got float",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "filter3d/flow3d:diffuse": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {
+    "BEHAVIOR": 1
+   },
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/flow3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter3d/flow3d:diffuse",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "diffuse",
+   "raw_bytes": 725,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "filter3d/palette3d:palette3d": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "const struct-array global table (adapter precedent: filter/palette)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-filter",
+   "effect_id": "filter3d/palette3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported global declaration",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": true,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "filter3d/palette3d:palette3d",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "palette3d",
+   "raw_bytes": 15170,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/attractor:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "bvec relational-reduction builtins (any/all/isnan/lessThan/...)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/attractor",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_NO_OVERLOAD: no exact overload for any",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/attractor:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "agent",
+   "raw_bytes": 4936,
+   "sampler_count": 3,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/attractor:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/attractor",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/attractor:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/buddhabrot:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for, safety-charge variant)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/buddhabrot",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for safety charge",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/buddhabrot:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 4826,
+   "sampler_count": 3,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/buddhabrot:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/buddhabrot",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/buddhabrot:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/buddhabrot:zWrite": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for, safety-charge variant)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/buddhabrot",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for safety charge",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/buddhabrot:zWrite",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "zWrite",
+   "raw_bytes": 874,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/dla:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "float/uint bit-reinterpretation builtins (floatBitsToUint/uintBitsToFloat)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/dla",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_NO_OVERLOAD: no exact overload for uintBitsToFloat",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/dla:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "agent",
+   "raw_bytes": 5928,
+   "sampler_count": 5,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/dla:copyGrid": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/dla",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/dla:copyGrid",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copyGrid",
+   "raw_bytes": 274,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/dla:depositGrid": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "points"
+   ],
+   "blocker_class": "vertex/rasterization stage (points & billboards draw mode)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/dla",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": "unsupported varying",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": true,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/dla:depositGrid",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "depositGrid",
+   "raw_bytes": 471,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "frag+vert",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_OPERATOR: ordered comparison requires same scalar numeric types",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "points/dla:initGrid": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/dla",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/dla:initGrid",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "initGrid",
+   "raw_bytes": 1811,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/dla:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/dla",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/dla:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 860,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/flock:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "integer modulo operand-shape (vecN % scalar broadcast)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/flock",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_OPERATOR: % requires same integral operands",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/flock:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "agent",
+   "raw_bytes": 9726,
+   "sampler_count": 3,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/flock:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/flock",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/flock:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/flow:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/flow",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/flow:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 5848,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/flow:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/flow",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/flow:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/heightGrid:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "MRT fragment outputs (emitter aliases every `out` symbol to one physical slot -- SILENT wrong-output bug, not a raised error)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/heightGrid",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/heightGrid:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 1037,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(MRT-silent)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/heightGrid:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/heightGrid",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/heightGrid:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/hydraulic:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/hydraulic",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/hydraulic:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 6329,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/hydraulic:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/hydraulic",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/hydraulic:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/lenia:agentField": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "MRT fragment outputs (emitter aliases every `out` symbol to one physical slot -- SILENT wrong-output bug, not a raised error)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/lenia",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/lenia:agentField",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agentField",
+   "raw_bytes": 3542,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(MRT-silent)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/lenia:clear": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/lenia",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/lenia:clear",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "clear",
+   "raw_bytes": 157,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/lenia:convolve": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/lenia",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/lenia:convolve",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "convolve",
+   "raw_bytes": 2019,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/lenia:deposit": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "points"
+   ],
+   "blocker_class": "no frontend/typed-pipeline blocker in the fragment kernel itself -- but the pass is drawMode:points/billboards and has no vertex/rasterization stage at all (see vertex_shader_involved)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/lenia",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/lenia:deposit",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "deposit",
+   "raw_bytes": 271,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "frag+vert",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_TYPE: initializer requires int, got float",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "points/lenia:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/lenia",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/lenia:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 266,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/life:agent": {
+   "authority_drawBuffers": [
+    4
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "integer modulo operand-shape (vecN % scalar broadcast)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/life",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_OPERATOR: % requires same integral operands",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/life:agent",
+   "mrt_output_count": 4,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA",
+    "outData"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "agent",
+   "raw_bytes": 9544,
+   "sampler_count": 6,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/life:matrix": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/life",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/life:matrix",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "matrix",
+   "raw_bytes": 1889,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/life:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/life",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/life:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 266,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/physarum:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "float/uint bit-reinterpretation builtins (floatBitsToUint/uintBitsToFloat)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physarum",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported builtin floatBitsToUint",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/physarum:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 4817,
+   "sampler_count": 5,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/physarum:deposit": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "points"
+   ],
+   "blocker_class": "vertex/rasterization stage (points & billboards draw mode)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physarum",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": "unsupported varying",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/physarum:deposit",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "deposit",
+   "raw_bytes": 175,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "frag+vert",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_OPERATOR: ordered comparison requires same scalar numeric types",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "points/physarum:diffuse": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physarum",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/physarum:diffuse",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "diffuse",
+   "raw_bytes": 708,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/physarum:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physarum",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/physarum:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 266,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/physical:agent": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physical",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "points/physical:agent",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "agent",
+   "raw_bytes": 4136,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "points/physical:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "points/physical",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "points/physical:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/loopBegin:loopBegin": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "loop-begin",
+   "effect_id": "render/loopBegin",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/loopBegin:loopBegin",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "loopBegin",
+   "raw_bytes": 1064,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/loopEnd:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "loop-end",
+   "effect_id": "render/loopEnd",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/loopEnd:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 351,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:blend": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:blend",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "blend",
+   "raw_bytes": 1302,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:clearDefocus": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:clearDefocus",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "clearDefocus",
+   "raw_bytes": 135,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 286,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:deposit": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "billboards"
+   ],
+   "blocker_class": "vertex/rasterization stage (points & billboards draw mode)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": "unsupported varying",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:deposit",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "deposit",
+   "raw_bytes": 4271,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "frag+vert",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_CONST_INITIALIZER: global initializer must be a constant expression",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "render/pointsBillboardRender:depthKeys": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {
+    "VIEW_MODE": 1
+   },
+   "defines_note": "VIEW_MODE is a PASS-level define computed dynamically by the JS authority's definition.js (line ~659: `defines: { VIEW_MODE: viewMode, ... }`), not a static per-effect param default; this census's default effect_defines() extraction (JS authority params table only) misses it, which produced a false E_CONST_INITIALIZER blocker with no define applied at all. Re-probed here with VIEW_MODE=1 (matching renderLandscape3d's own admitted default for the same macro name) confirms the program is otherwise clean end to end.",
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:depthKeys",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "depthKeys",
+   "raw_bytes": 1134,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:depthMerge": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:depthMerge",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "depthMerge",
+   "raw_bytes": 1570,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:diffuse": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:diffuse",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "diffuse",
+   "raw_bytes": 1358,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:spriteMean": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:spriteMean",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "spriteMean",
+   "raw_bytes": 1203,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsBillboardRender:spriteMeanTiles": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "integer modulo operand-shape (vecN % scalar broadcast)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsBillboardRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_OPERATOR: % requires same integral operands",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsBillboardRender:spriteMeanTiles",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "spriteMeanTiles",
+   "raw_bytes": 1125,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsEmit:init": {
+   "authority_drawBuffers": [
+    3
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsEmit",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "render/pointsEmit:init",
+   "mrt_output_count": 3,
+   "mrt_output_names": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "outXYZ",
+    "outVel",
+    "outRGBA"
+   ],
+   "program": "init",
+   "raw_bytes": 5236,
+   "sampler_count": 4,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsEmit:passthrough": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsEmit",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsEmit:passthrough",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "passthrough",
+   "raw_bytes": 214,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsRender:blend": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsRender:blend",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "blend",
+   "raw_bytes": 1055,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsRender:copy": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsRender:copy",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "copy",
+   "raw_bytes": 286,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/pointsRender:deposit": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [
+    "points"
+   ],
+   "blocker_class": "vertex/rasterization stage (points & billboards draw mode)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsRender",
+   "file": "fragment(.frag)",
+   "first_blocker_raw": "unsupported varying",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsRender:deposit",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "deposit",
+   "raw_bytes": 175,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "frag+vert",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": {
+    "unrecognized_vertex_builtins": [],
+    "vert_first_error": "E_CONST_INITIALIZER: global initializer must be a constant expression",
+    "vert_stage_reached": "semantic"
+   },
+   "vertex_shader_involved": true
+  },
+  "render/pointsRender:diffuse": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "render/pointsRender",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/pointsRender:diffuse",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "diffuse",
+   "raw_bytes": 620,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/render3d:render3d": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "cross() builtin (3D vector cross product) missing",
+   "defines_applied": {
+    "FILTERING": 0,
+    "INVERT": false
+   },
+   "defines_note": null,
+   "domain": "volume-renderer",
+   "effect_id": "render/render3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_TYPE: initializer requires vec3, got float",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": true,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/render3d:render3d",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "render3d",
+   "raw_bytes": 14169,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/renderCubemap3d:renderCubemap3d": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {
+    "FILTERING": 0,
+    "INVERT": false
+   },
+   "defines_note": null,
+   "domain": "volume-renderer",
+   "effect_id": "render/renderCubemap3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": true,
+   "has_struct": true,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/renderCubemap3d:renderCubemap3d",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "renderCubemap3d",
+   "raw_bytes": 14026,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/renderCubemapSurface:renderCubemapSurface": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-renderer",
+   "effect_id": "render/renderCubemapSurface",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": true,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/renderCubemapSurface:renderCubemapSurface",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "renderCubemapSurface",
+   "raw_bytes": 4410,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/renderLandscape3d:landscape": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "loop-bound proof (counted-for)",
+   "defines_applied": {
+    "VIEW_MODE": 1
+   },
+   "defines_note": null,
+   "domain": "volume-renderer",
+   "effect_id": "render/renderLandscape3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported counted-for program proof",
+   "has_bitops": false,
+   "has_bvec_type": true,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/renderLandscape3d:landscape",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "landscape",
+   "raw_bytes": 7781,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "render/renderLit3d:renderLit3d": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "cross() builtin (3D vector cross product) missing",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-renderer",
+   "effect_id": "render/renderLit3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_TYPE: initializer requires vec3, got float",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": true,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "render/renderLit3d:renderLit3d",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "renderLit3d",
+   "raw_bytes": 12143,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/cellularAutomata:ca": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "sampler2D passed as a function parameter",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/cellularAutomata",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported sampler parameter",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/cellularAutomata:ca",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "ca",
+   "raw_bytes": 11253,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/cellularAutomata:caFb": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/cellularAutomata",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/cellularAutomata:caFb",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "caFb",
+   "raw_bytes": 7949,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/mnca:mnca": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "sampler2D passed as a function parameter",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/mnca",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported sampler parameter",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/mnca:mnca",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "mnca",
+   "raw_bytes": 11142,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/mnca:mncaFb": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/mnca",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/mnca:mncaFb",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "mncaFb",
+   "raw_bytes": 5044,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:ns": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:ns",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "ns",
+   "raw_bytes": 1719,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsAdvect": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsAdvect",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsAdvect",
+   "raw_bytes": 1954,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsDivergence": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsDivergence",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsDivergence",
+   "raw_bytes": 1168,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsGradient": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsGradient",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsGradient",
+   "raw_bytes": 991,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsPressure": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsPressure",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsPressure",
+   "raw_bytes": 932,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsSmooth": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "fixed-size local array/table admission (generalize FIXED_NINE)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported typed type vec4[9]",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsSmooth",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsSmooth",
+   "raw_bytes": 5301,
+   "sampler_count": 1,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/navierStokes:nsSplat": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/navierStokes",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/navierStokes:nsSplat",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "nsSplat",
+   "raw_bytes": 3251,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/reactionDiffusion:rd": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "sampler2D passed as a function parameter",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/reactionDiffusion",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported sampler parameter",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/reactionDiffusion:rd",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "rd",
+   "raw_bytes": 12782,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth/reactionDiffusion:rdFb": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "sampler2D passed as a function parameter",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "image",
+   "effect_id": "synth/reactionDiffusion",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported sampler parameter",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth/reactionDiffusion:rdFb",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "rdFb",
+   "raw_bytes": 5763,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/cell3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "MRT fragment outputs (emitter aliases every `out` symbol to one physical slot -- SILENT wrong-output bug, not a raised error)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/cell3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "synth3d/cell3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "precompute",
+   "raw_bytes": 5081,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(MRT-silent)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/cellularAutomata3d:simulate": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "postfix increment/decrement operator (x++ / x--)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/cellularAutomata3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported typed expression post",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/cellularAutomata3d:simulate",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "simulate",
+   "raw_bytes": 8843,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/flythrough3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "cross() builtin (3D vector cross product) missing",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/flythrough3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_TYPE: initializer requires vec3, got float",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": true,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/flythrough3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "precompute",
+   "raw_bytes": 11404,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/fractal3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "acos() builtin missing",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/fractal3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "E_NO_OVERLOAD: no exact overload for acos",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/fractal3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": null,
+   "outputs_detected_post_semantic": null,
+   "program": "precompute",
+   "raw_bytes": 6912,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "semantic:body",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/heightmap3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "bvec relational-reduction builtins (any/all/isnan/lessThan/...)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/heightmap3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported builtin any",
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/heightmap3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "precompute",
+   "raw_bytes": 1777,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/noise3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "scalar/uint XOR admission (hash_uint-style PCG hash)",
+   "defines_applied": {
+    "COLOR_MODE": 0,
+    "OCTAVES": 1,
+    "RIDGES": false
+   },
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/noise3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": "unsupported binary operator ^",
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": true,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": true,
+   "has_while_loop": false,
+   "key": "synth3d/noise3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "precompute",
+   "raw_bytes": 7667,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "validator",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/reactionDiffusion3d:simulate": {
+   "authority_drawBuffers": [],
+   "authority_drawMode": [],
+   "blocker_class": "no frontend/typed-pipeline blocker -- gap is runtime/orchestration only (iteration groups, group-shared state, scatter-adapter wiring; see phase2-architecture.md section 4.1)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/reactionDiffusion3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": false,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/reactionDiffusion3d:simulate",
+   "mrt_output_count": 1,
+   "mrt_output_names": [
+    "fragColor"
+   ],
+   "normalize_outputs_ground_truth_mismatch": false,
+   "outputs_detected_post_semantic": [
+    "fragColor"
+   ],
+   "program": "simulate",
+   "raw_bytes": 6257,
+   "sampler_count": 2,
+   "sampler_types": [
+    "sampler2D"
+   ],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(clean)",
+   "uses_atlas_helper": true,
+   "uses_texelFetch": true,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  },
+  "synth3d/shape3d:precompute": {
+   "authority_drawBuffers": [
+    2
+   ],
+   "authority_drawMode": [],
+   "blocker_class": "MRT fragment outputs (emitter aliases every `out` symbol to one physical slot -- SILENT wrong-output bug, not a raised error)",
+   "defines_applied": {},
+   "defines_note": null,
+   "domain": "volume-generator",
+   "effect_id": "synth3d/shape3d",
+   "file": "fragment(.glsl)",
+   "first_blocker_raw": null,
+   "has_bitops": true,
+   "has_bvec_type": false,
+   "has_discard": false,
+   "has_for_loop": false,
+   "has_mat3_or_mat4": false,
+   "has_struct": false,
+   "has_uint": false,
+   "has_while_loop": false,
+   "key": "synth3d/shape3d:precompute",
+   "mrt_output_count": 2,
+   "mrt_output_names": [
+    "fragColor",
+    "geoOut"
+   ],
+   "normalize_outputs_ground_truth_mismatch": true,
+   "outputs_detected_post_semantic": [
+    "fragColor",
+    "geoOut"
+   ],
+   "program": "precompute",
+   "raw_bytes": 6508,
+   "sampler_count": 0,
+   "sampler_types": [],
+   "source_kind": "glsl",
+   "stage_reached": "emitter_pass(MRT-silent)",
+   "uses_atlas_helper": false,
+   "uses_texelFetch": false,
+   "vertex_detail": null,
+   "vertex_shader_involved": false
+  }
+ },
+ "schema": "noisemaker-for-cpp.frontier-92.v1",
+ "total_programs": 92
+}
