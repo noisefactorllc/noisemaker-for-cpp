@@ -5,6 +5,7 @@
 #include "noisemaker/effects/scatter/registry.hpp"
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
+#include "noisemaker/graph/chain_bundle.hpp"
 #include "noisemaker/graph/generated/classic_noisedeck_palette_table.hpp"
 #include "noisemaker/graph/iteration.hpp"
 #include "noisemaker/numeric.hpp"
@@ -2803,13 +2804,13 @@ struct GroupStepIterationResult {
   std::string output_route;
 };
 
-// renderer.js:943-1074 -- runGroupStepIterationSync. Structurally mirrors the
-// non-iterated EffectStep loop in GraphExecutor::execute() below (same two
-// pass shapes it supports: scatter, and ordinary single fragment output --
-// MRT needs no branch here either, see the design doc); the divergences are
-// exactly the persistent-resources, group-routing, and selfTex bookkeeping
-// this whole block exists for. Reuses every existing authenticated
-// materialization helper unchanged.
+// renderer.js:943-1074 -- runGroupStepIterationSync, plus groupMrtDestinations
+// (806-814) for the MRT shape. Structurally mirrors the non-iterated
+// EffectStep loop in GraphExecutor::execute() (the same three pass shapes it
+// supports: MRT, scatter, and ordinary single fragment output); the
+// divergences are exactly the persistent-resources, group-routing, and
+// selfTex bookkeeping this whole block exists for. Reuses every existing
+// authenticated materialization helper unchanged.
 [[nodiscard]] GroupStepIterationResult run_group_step_iteration(
     GroupStepState& state, const noisemaker::Surface* iteration_input,
     const std::vector<GroupStepState>& step_states, iteration::GroupResourceMap& group_resources,
@@ -2840,9 +2841,97 @@ struct GroupStepIterationResult {
     const bool dispatch_scatter = scatter_adapter_available(admission);
     const std::string output_route = pass.outputs.front().second;
 
+    const bool dispatch_mrt = admission.outputs.size() > 1U;
+
     for (std::size_t repeat = 0; repeat < repeats; ++repeat) {
       ensure_group_particle_inputs(pass, step_states, state.effective_step, group_resources,
                                    arena, iteration_inputs);
+
+      if (dispatch_mrt) {
+        // groupMrtDestinations (renderer.js:806-814): resolve every declared
+        // output's own destination independently (allocate_group_output_
+        // destination is the same per-route sizing the single-output branch
+        // below uses), assert they share dimensions BEFORE binding a kernel
+        // or running anything (assertMrtDestinationsShareDimensions,
+        // renderer.js:51-58 -- the non-iterated MRT branch above ports the
+        // same assertion), then run the whole pass through one shared
+        // pixel loop (run_mrt_pass, mirroring runCanonicalMrtPass).
+        struct MrtDestination { std::string route; noisemaker::TextureFormat format; };
+        std::vector<MrtDestination> destinations;
+        destinations.reserve(pass.outputs.size());
+        std::size_t mrt_width = iteration_inputs.width;
+        std::size_t mrt_height = iteration_inputs.height;
+        for (std::size_t slot = 0; slot < pass.outputs.size(); ++slot) {
+          noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
+          noisemaker::Surface probe = allocate_group_output_destination(
+              pass.outputs[slot].second, state, step_states, arena, iteration_inputs, format);
+          if (slot == 0U) {
+            mrt_width = probe.width();
+            mrt_height = probe.height();
+          } else if (probe.width() != mrt_width || probe.height() != mrt_height) {
+            throw GraphError(GraphErrorCode::unsupported_mrt,
+                             "MRT destinations must share dimensions",
+                             state.effective_step.effect.id, pass_index, pass.name,
+                             admission.identity.program_key);
+          }
+          destinations.push_back({pass.outputs[slot].second, format});
+        }
+        GroupStepRouteContext route_context{&state, &group_resources, &empty_surface};
+        const BindingMaterializationContext binding_context{
+            &iteration_inputs, &definition, mrt_width, mrt_height,
+            &lookup_group_step_route, &route_context};
+        try {
+          preflight_pass_abi(state.effective_step, admission, pass, binding_context);
+          auto bindings = materialize_uniform_bindings(state.effective_step, admission, pass,
+                                                        binding_context);
+          materialize_sampler_bindings(bindings, admission, binding_context, state.effective_step,
+                                       pass);
+          apply_classic_noisedeck_palette_override(bindings, state.effective_step, definition);
+          auto kernel = bind_factory_route_mrt(state.effective_step, admission, definition, bindings);
+          auto rendered = noisemaker::run_mrt_pass(kernel, mrt_width, mrt_height,
+                                                    noisemaker::f32(iteration_inputs.time),
+                                                    noisemaker::f32(iteration_inputs.seed),
+                                                    iteration_inputs.frame,
+                                                    noisemaker::f32(iteration_inputs.delta_time));
+          // renderer.js:1286 -- lastOutput = surfaceList[surfaceList.length
+          // - 1]: the group step's own returned/threaded surface is
+          // whichever slot ran last, by list position, matching the
+          // non-iterated MRT branch's identical "last slot wins" for
+          // effect_output -- never specifically the route named "outputTex"
+          // (that is a SEPARATE, additional latch this port's non-iterated
+          // path also keeps, `wrote_output_tex`, with no group-step analog
+          // needed since a group step's return value is always threaded
+          // forward regardless of route name, unlike the chain-level
+          // `current`).
+          for (std::size_t slot = 0; slot < destinations.size(); ++slot) {
+            noisemaker::quantize_texture(rendered[slot], destinations[slot].format);
+            noisemaker::Surface published_slot = rendered[slot].clone();
+            store_group_output(destinations[slot].route, std::move(rendered[slot]), state,
+                               group_resources);
+            result.surface = std::move(published_slot);
+            result.format = destinations[slot].format;
+            result.output_route = destinations[slot].route;
+          }
+        } catch (const GraphError& error) {
+          if (error.effect_id().empty()) {
+            throw GraphError(error.code(), std::string(error.detail()), state.effective_step.effect.id,
+                             pass_index, pass.name, admission.identity.program_key);
+          }
+          throw;
+        } catch (const glsl::KernelBindingError&) {
+          throw GraphError(GraphErrorCode::binding_type, "factory binding failed",
+                           state.effective_step.effect.id, pass_index, pass.name,
+                           admission.identity.program_key);
+        } catch (const std::exception&) {
+          throw GraphError(GraphErrorCode::execution_failure, "pass execution failed",
+                           state.effective_step.effect.id, pass_index, pass.name,
+                           admission.identity.program_key);
+        }
+        ++pass_count;
+        produced = true;
+        continue;
+      }
+
       noisemaker::TextureFormat format = noisemaker::TextureFormat::rgba16f;
       noisemaker::Surface destination = allocate_group_output_destination(
           output_route, state, step_states, arena, iteration_inputs, format);
@@ -3137,6 +3226,17 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
   }
 
   GraphResource* current = nullptr;
+  // renderer.js:97-124 -- the chain-bundle threading Family D needs
+  // (docs/port-engineering/chain-bundle-volume-geometry-threading.md).
+  // `current` (the image) is untouched by this: every currently admitted
+  // effect is domain "image", so these three stay null/nullopt for the
+  // entire life of any admitted chain, exactly mirroring
+  // `chainBundle(null)`'s own `{volume: null, geometry: null, volumeSize:
+  // null}` -- there is no `isChainBundle` check in this port because these
+  // are always-present fields, never a dynamic either/or.
+  GraphResource* current_volume = nullptr;
+  GraphResource* current_geometry = nullptr;
+  std::optional<double> current_volume_size;
   std::size_t pass_count = 0;
   for (const auto& chain : plan.chains) {
     // renderer.js:1616-1645 (render/renderAsync) -- computeIterationGroups
@@ -3170,8 +3270,42 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         }
         arena.alias(write->surface.name, *current);
       } else {
-        const auto& step = std::get<EffectStep>(variant);
-        const auto& snapshot = plan.effects[step.snapshot_index];
+        // renderer.js:1214 -- inheritVolumeSize runs before effectParams, so
+        // a modified "volumeSize" binding is visible everywhere downstream
+        // (dimension resolution, uniform resolution, ...). `effective_step`
+        // is a value copy, mutated once here if the override applies, then
+        // `step` is bound to it for the rest of this block -- every
+        // existing line below that reads `step` needs no change at all.
+        EffectStep effective_step = std::get<EffectStep>(variant);
+        const auto& snapshot = plan.effects[effective_step.snapshot_index];
+        GraphResource* const input_volume = current_volume;
+        GraphResource* const input_geometry = current_geometry;
+        const std::optional<double> input_volume_size = current_volume_size;
+        if (input_volume != nullptr) {
+          const auto& volume_surface = input_volume->surface();
+          const bool declares_volume_size = parameter(effective_step, "volumeSize") != nullptr;
+          try {
+            const auto override_size = bundle::inherit_volume_size(
+                effective_step.effect.id, snapshot.definition.domain, declares_volume_size,
+                volume_surface.width(), volume_surface.height());
+            if (override_size.has_value()) {
+              bool replaced = false;
+              for (auto& binding : effective_step.params) {
+                if (binding.name == "volumeSize") {
+                  binding.value = PlanValue::number_value(*override_size);
+                  replaced = true;
+                  break;
+                }
+              }
+              if (!replaced) {
+                effective_step.params.push_back({"volumeSize", PlanValue::number_value(*override_size)});
+              }
+            }
+          } catch (const std::invalid_argument& error) {
+            throw GraphError(GraphErrorCode::invalid_dimension, error.what(), effective_step.effect.id);
+          }
+        }
+        const auto& step = effective_step;
         GraphResource* effect_output = current;
         // The authority binds `inputTex` once per effect, before any pass of
         // that effect publishes an output; a later pass never re-reads its own
@@ -3292,6 +3426,12 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             return {};
           }
           if (route == "inputTex") return owned(effect_input);
+          // renderer.js:1217-1219 -- inputTex3d/inputGeo, seeded into the
+          // resource map alongside inputTex. Never true for an image-domain
+          // effect, since input_volume/input_geometry stay null the whole
+          // life of an all-image chain.
+          if (route == "inputTex3d") return owned(input_volume);
+          if (route == "inputGeo") return owned(input_geometry);
           return owned(arena.find(route));
         };
         for (std::size_t pass_index = 0; pass_index < snapshot.definition.passes.size(); ++pass_index) {
@@ -3546,7 +3686,50 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
           if (wrote_output_tex) current = effect_output;
           }
         }
+        // renderer.js:1317-1341 (identically at 1053-1067/1187-1201/1471-
+        // 1489, folded here into the one structural site this port's
+        // non-iterated path has): image is unchanged (`effect_output`,
+        // exactly as before this task -- this port's own "last pass wins"
+        // simplification of `bundleOutput(outputTex, ...)` is untouched);
+        // volume/geometry resolve via bundle_output's passthrough-name
+        // check, falling through to a real arena lookup only for a
+        // genuinely declared, non-passthrough route name -- never true for
+        // an image-domain effect, since it declares neither.
+        const auto resolve_bundle_output =
+            [&](const std::optional<std::string>& name, GraphResource* input) -> GraphResource* {
+          if (!name.has_value() || bundle::is_passthrough_output_name(*name)) return input;
+          return arena.find(*name);
+        };
+        GraphResource* const volume =
+            resolve_bundle_output(snapshot.definition.output_tex3d, input_volume);
+        GraphResource* const geometry =
+            resolve_bundle_output(snapshot.definition.output_geo, input_geometry);
+        const std::optional<std::size_t> produced_volume_width =
+            volume != nullptr ? std::optional<std::size_t>(volume->surface().width()) : std::nullopt;
+        const std::optional<std::size_t> produced_volume_height =
+            volume != nullptr ? std::optional<std::size_t>(volume->surface().height()) : std::nullopt;
+        std::optional<double> step_params_volume_size;
+        if (const auto* bound = parameter(step, "volumeSize");
+            bound != nullptr && bound->kind == PlanValue::Kind::number) {
+          step_params_volume_size = bound->number;
+        }
+        const auto volume_size = bundle::resolve_volume_size(
+            snapshot.definition.domain, step_params_volume_size, input_volume_size,
+            produced_volume_width);
+        try {
+          bundle::validate_volume_output_shape(step.effect.id, snapshot.definition.domain,
+                                               volume != nullptr, produced_volume_width,
+                                               produced_volume_height, volume_size);
+          if (effect_output == nullptr && bundle::requires_output_image(snapshot.definition.domain)) {
+            throw std::invalid_argument(std::string(step.effect.id) + " did not produce outputTex");
+          }
+        } catch (const std::invalid_argument& error) {
+          throw GraphError(GraphErrorCode::invalid_dimension, error.what(), step.effect.id);
+        }
         current = effect_output;
+        current_volume = volume;
+        current_geometry = geometry;
+        current_volume_size = volume_size;
       }
     }
   }
