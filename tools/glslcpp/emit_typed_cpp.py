@@ -954,7 +954,7 @@ _ASSIGNMENT_OPERATORS = frozenset({"*=", "+=", "-=", "/=", "=", "^="})
 _SWIZZLE = {"x": 0, "r": 0, "s": 0, "y": 1, "g": 1, "t": 1,
             "z": 2, "b": 2, "p": 2, "w": 3, "a": 3, "q": 3}
 _BUILTIN_NAMES = {
-    "abs": "abs", "atan": "atan", "clamp": "clamp", "cos": "cos", "degrees": "degrees",
+    "abs": "abs", "acos": "acos", "atan": "atan", "clamp": "clamp", "cos": "cos", "degrees": "degrees",
     "distance": "distance", "dot": "dot", "exp": "exp", "floor": "floor",
     "fract": "fract", "length": "length", "max": "component_max", "min": "component_min",
     "mix": "mix", "mod": "mod", "normalize": "normalize", "pow": "pow", "radians": "radians",

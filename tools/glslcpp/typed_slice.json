@@ -29,6 +29,7 @@
   "capabilities": [
     "assign",
     "abs",
+    "acos",
     "atan",
     "blocks",
     "clamp",

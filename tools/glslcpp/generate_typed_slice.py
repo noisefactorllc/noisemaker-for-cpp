@@ -972,7 +972,7 @@ _OUTPUTS = ("typed_manifest.json", "typed_slice.cpp")
 _TYPED_DIRECTORY = pathlib.PurePosixPath("src/typed_generated")
 _CATALOG_HEADER = pathlib.PurePosixPath("include/noisemaker/generated/catalog.hpp")
 APPROVED_CAPABILITIES = (
-    "assign", "abs", "atan", "blocks", "clamp", "conditional", "cos", "constructors", "distance", "dot", "exp",
+    "assign", "abs", "acos", "atan", "blocks", "clamp", "conditional", "cos", "constructors", "distance", "dot", "exp",
     "floor", "fract", "functions", "if", "integer-modulo", "length", "mat2-vector-multiply", "max", "min", "mix", "mod", "multi-declarations", "normalize", "pow",
     "radians", "scalar-vector-arithmetic", "sign", "sin", "smoothstep", "sqrt", "step",
     "swizzles", "texelFetch", "texture", "textureSize", "uint-vector-bitwise", "counted-for-v1",

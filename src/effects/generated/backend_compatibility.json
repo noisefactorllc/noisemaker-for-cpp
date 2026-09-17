@@ -305,6 +305,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -505,6 +506,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -797,6 +799,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -1028,6 +1031,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -1238,6 +1242,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -1528,6 +1533,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -1724,6 +1730,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -1944,6 +1951,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -2272,6 +2280,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -2501,6 +2510,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -2704,6 +2714,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -2977,6 +2988,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -3193,6 +3205,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -3484,6 +3497,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -3685,6 +3699,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -3953,6 +3968,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -4205,6 +4221,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -4469,6 +4486,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -4660,6 +4678,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -4821,6 +4840,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -4982,6 +5002,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -5150,6 +5171,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -5319,6 +5341,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -5480,6 +5503,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -5641,6 +5665,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -5830,6 +5855,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6005,6 +6031,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6189,6 +6216,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6357,6 +6385,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6525,6 +6554,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6693,6 +6723,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -6861,6 +6892,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7008,6 +7040,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7155,6 +7188,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7316,6 +7350,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7492,6 +7527,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7692,6 +7728,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -7846,6 +7883,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8000,6 +8038,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8232,6 +8271,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8407,6 +8447,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8596,6 +8637,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8789,6 +8831,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -8955,6 +8998,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -9109,6 +9153,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -9312,6 +9357,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -9522,6 +9568,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -9704,6 +9751,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -9879,6 +9927,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10011,6 +10060,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10158,6 +10208,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10315,6 +10366,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10490,6 +10542,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10665,6 +10718,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -10844,6 +10898,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11026,6 +11081,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11250,6 +11306,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11411,6 +11468,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11642,6 +11700,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11824,6 +11883,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -11999,6 +12059,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -12181,6 +12242,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -12352,6 +12414,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -12572,6 +12635,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -12761,6 +12825,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -12915,6 +12980,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13062,6 +13128,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13216,6 +13283,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13413,6 +13481,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13581,6 +13650,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13721,6 +13791,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -13889,6 +13960,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -14078,6 +14150,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -14260,6 +14333,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -14451,6 +14525,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -14694,6 +14769,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -14898,6 +14974,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15064,6 +15141,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15225,6 +15303,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15386,6 +15465,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15589,6 +15669,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15721,6 +15802,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -15882,6 +15964,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16044,6 +16127,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16198,6 +16282,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16346,6 +16431,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16493,6 +16579,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16625,6 +16712,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16835,6 +16923,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -16982,6 +17071,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -17166,6 +17256,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -17368,6 +17459,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -17534,6 +17626,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -17703,6 +17796,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -17850,6 +17944,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18039,6 +18134,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18207,6 +18303,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18383,6 +18480,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18530,6 +18628,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18677,6 +18776,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -18845,6 +18945,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19035,6 +19136,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19167,6 +19269,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19342,6 +19445,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19481,6 +19585,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19627,6 +19732,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19761,6 +19867,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -19929,6 +20036,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20088,6 +20196,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20235,6 +20344,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20382,6 +20492,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20550,6 +20661,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20747,6 +20859,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -20936,6 +21049,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21104,6 +21218,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21307,6 +21422,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21475,6 +21591,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21610,6 +21727,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21742,6 +21860,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -21896,6 +22015,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22050,6 +22170,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22253,6 +22374,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22450,6 +22572,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22625,6 +22748,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22784,6 +22908,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -22947,6 +23072,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -23143,6 +23269,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -23339,6 +23466,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -23507,6 +23635,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -23654,6 +23783,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -23801,6 +23931,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24007,6 +24138,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24161,6 +24293,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24322,6 +24455,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24483,6 +24617,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24646,6 +24781,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -24824,6 +24960,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25020,6 +25157,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25182,6 +25320,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25343,6 +25482,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25540,6 +25680,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25712,6 +25853,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -25901,6 +26043,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26081,6 +26224,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26284,6 +26428,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26459,6 +26604,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26611,6 +26757,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26758,6 +26905,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -26940,6 +27088,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -27102,6 +27251,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -27284,6 +27434,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -27452,6 +27603,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -27609,6 +27761,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -27780,6 +27933,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -28106,6 +28260,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -28379,6 +28534,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -28554,6 +28710,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -28747,6 +28904,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -28914,6 +29072,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29110,6 +29269,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29278,6 +29438,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29446,6 +29607,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29649,6 +29811,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29796,6 +29959,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -29943,6 +30107,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30104,6 +30269,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30273,6 +30439,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30436,6 +30603,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30639,6 +30807,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30807,6 +30976,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -30948,6 +31118,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31095,6 +31266,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31298,6 +31470,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31473,6 +31646,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31634,6 +31808,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31807,6 +31982,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -31934,6 +32110,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32086,6 +32263,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32240,6 +32418,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32395,6 +32574,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32555,6 +32735,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32752,6 +32933,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -32932,6 +33114,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -33110,6 +33293,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -33323,6 +33507,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -33513,6 +33698,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -33706,6 +33892,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -33918,6 +34105,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -34108,6 +34296,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -34375,6 +34564,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -34586,6 +34776,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -34818,6 +35009,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35043,6 +35235,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35247,6 +35440,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35486,6 +35680,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35683,6 +35878,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35824,6 +36020,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -35964,6 +36161,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36104,6 +36302,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36272,6 +36471,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36434,6 +36634,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36577,6 +36778,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36717,6 +36919,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -36910,6 +37113,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37059,6 +37263,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37199,6 +37404,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37406,6 +37612,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37540,6 +37747,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37670,6 +37878,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37802,6 +38011,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -37956,6 +38166,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38099,6 +38310,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38260,6 +38472,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38427,6 +38640,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38563,6 +38777,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38703,6 +38918,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -38878,6 +39094,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39038,6 +39255,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39182,6 +39400,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39343,6 +39562,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39487,6 +39707,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39634,6 +39855,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -39866,6 +40088,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -40073,6 +40296,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -40297,6 +40521,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -40513,6 +40738,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -40720,6 +40946,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -40941,6 +41168,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -41211,6 +41439,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -41481,6 +41710,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -41730,6 +41960,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -41945,6 +42176,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -42224,6 +42456,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -42478,6 +42711,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -42644,6 +42878,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -42812,6 +43047,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -42967,6 +43203,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -43129,6 +43366,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -43285,6 +43523,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -43482,6 +43721,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -43771,6 +44011,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -43999,6 +44240,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -44192,6 +44434,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -44420,6 +44663,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -44641,6 +44885,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -44848,6 +45093,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -48619,6 +48865,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -48870,6 +49117,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -49063,6 +49311,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -49200,6 +49449,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -49429,6 +49679,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -49589,6 +49840,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -49784,6 +50036,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -50027,6 +50280,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -50259,6 +50513,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -50442,6 +50697,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -50611,6 +50867,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -50944,6 +51201,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -51144,6 +51402,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -51436,6 +51695,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -51667,6 +51927,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -51877,6 +52138,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -52167,6 +52429,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -52363,6 +52626,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -52583,6 +52847,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -52911,6 +53176,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -53140,6 +53406,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -53343,6 +53610,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -53616,6 +53884,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -53832,6 +54101,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -54123,6 +54393,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -54324,6 +54595,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -54592,6 +54864,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -54844,6 +55117,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55108,6 +55382,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55299,6 +55574,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55460,6 +55736,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55621,6 +55898,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55789,6 +56067,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -55958,6 +56237,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56119,6 +56399,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56280,6 +56561,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56469,6 +56751,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56644,6 +56927,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56828,6 +57112,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -56996,6 +57281,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57164,6 +57450,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57332,6 +57619,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57500,6 +57788,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57647,6 +57936,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57794,6 +58084,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -57955,6 +58246,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -58131,6 +58423,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -58331,6 +58624,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -58485,6 +58779,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -58639,6 +58934,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -58871,6 +59167,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59046,6 +59343,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59235,6 +59533,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59428,6 +59727,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59594,6 +59894,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59748,6 +60049,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -59951,6 +60253,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60161,6 +60464,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60343,6 +60647,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60518,6 +60823,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60650,6 +60956,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60797,6 +61104,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -60954,6 +61262,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -61129,6 +61438,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -61304,6 +61614,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -61483,6 +61794,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -61665,6 +61977,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -61889,6 +62202,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62050,6 +62364,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62281,6 +62596,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62463,6 +62779,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62638,6 +62955,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62820,6 +63138,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -62991,6 +63310,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -63211,6 +63531,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -63400,6 +63721,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -63554,6 +63876,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -63701,6 +64024,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -63855,6 +64179,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64052,6 +64377,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64220,6 +64546,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64360,6 +64687,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64528,6 +64856,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64717,6 +65046,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -64899,6 +65229,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -65090,6 +65421,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -65333,6 +65665,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -65537,6 +65870,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -65703,6 +66037,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -65864,6 +66199,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66025,6 +66361,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66228,6 +66565,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66360,6 +66698,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66521,6 +66860,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66683,6 +67023,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66837,6 +67178,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -66985,6 +67327,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -67132,6 +67475,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -67264,6 +67608,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -67474,6 +67819,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -67621,6 +67967,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -67805,6 +68152,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68007,6 +68355,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68173,6 +68522,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68342,6 +68692,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68489,6 +68840,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68678,6 +69030,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -68846,6 +69199,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69022,6 +69376,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69169,6 +69524,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69316,6 +69672,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69484,6 +69841,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69674,6 +70032,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69806,6 +70165,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -69981,6 +70341,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70120,6 +70481,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70266,6 +70628,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70400,6 +70763,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70568,6 +70932,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70727,6 +71092,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -70874,6 +71240,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71021,6 +71388,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71189,6 +71557,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71386,6 +71755,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71575,6 +71945,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71743,6 +72114,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -71946,6 +72318,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72114,6 +72487,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72249,6 +72623,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72381,6 +72756,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72535,6 +72911,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72689,6 +73066,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -72892,6 +73270,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73089,6 +73468,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73264,6 +73644,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73423,6 +73804,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73586,6 +73968,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73782,6 +74165,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -73978,6 +74362,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74146,6 +74531,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74293,6 +74679,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74440,6 +74827,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74646,6 +75034,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74800,6 +75189,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -74961,6 +75351,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75122,6 +75513,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75285,6 +75677,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75463,6 +75856,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75659,6 +76053,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75821,6 +76216,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -75982,6 +76378,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -76179,6 +76576,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -76351,6 +76749,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -76540,6 +76939,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -76720,6 +77120,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -76923,6 +77324,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77098,6 +77500,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77250,6 +77653,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77397,6 +77801,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77579,6 +77984,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77741,6 +78147,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -77923,6 +78330,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -78091,6 +78499,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -78248,6 +78657,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -78419,6 +78829,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -78745,6 +79156,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79018,6 +79430,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79193,6 +79606,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79386,6 +79800,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79553,6 +79968,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79749,6 +80165,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -79917,6 +80334,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80085,6 +80503,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80288,6 +80707,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80435,6 +80855,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80582,6 +81003,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80743,6 +81165,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -80912,6 +81335,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81075,6 +81499,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81278,6 +81703,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81446,6 +81872,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81587,6 +82014,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81734,6 +82162,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -81937,6 +82366,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82112,6 +82542,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82273,6 +82704,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82446,6 +82878,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82573,6 +83006,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82725,6 +83159,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -82879,6 +83314,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83034,6 +83470,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83194,6 +83631,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83391,6 +83829,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83571,6 +84010,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83749,6 +84189,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -83962,6 +84403,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -84152,6 +84594,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -84345,6 +84788,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -84557,6 +85001,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -84747,6 +85192,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -85014,6 +85460,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -85225,6 +85672,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -85457,6 +85905,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -85682,6 +86131,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -85886,6 +86336,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86125,6 +86576,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86322,6 +86774,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86463,6 +86916,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86603,6 +87057,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86743,6 +87198,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -86911,6 +87367,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87073,6 +87530,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87216,6 +87674,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87356,6 +87815,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87549,6 +88009,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87698,6 +88159,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -87838,6 +88300,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88045,6 +88508,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88179,6 +88643,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88309,6 +88774,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88441,6 +88907,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88595,6 +89062,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88738,6 +89206,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -88899,6 +89368,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89066,6 +89536,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89202,6 +89673,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89342,6 +89814,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89517,6 +89990,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89677,6 +90151,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89821,6 +90296,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -89982,6 +90458,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -90126,6 +90603,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -90273,6 +90751,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -90505,6 +90984,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -90712,6 +91192,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -90936,6 +91417,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -91152,6 +91634,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -91359,6 +91842,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -91580,6 +92064,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -91850,6 +92335,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -92120,6 +92606,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -92369,6 +92856,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -92584,6 +93072,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -92863,6 +93352,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93117,6 +93607,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93283,6 +93774,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93451,6 +93943,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93606,6 +94099,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93768,6 +94262,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -93924,6 +94419,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -94121,6 +94617,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -94410,6 +94907,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -94638,6 +95136,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -94831,6 +95330,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -95059,6 +95559,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -95280,6 +95781,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -95487,6 +95989,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -99258,6 +99761,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -99509,6 +100013,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -99702,6 +100207,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -99839,6 +100345,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -100068,6 +100575,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -100228,6 +100736,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -100423,6 +100932,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -100666,6 +101176,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
@@ -100898,6 +101409,7 @@
       "capabilities": [
         "assign",
         "abs",
+        "acos",
         "atan",
         "blocks",
         "clamp",
