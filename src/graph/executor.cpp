@@ -1187,8 +1187,20 @@ void validate_uniform_abi_shape(const EffectStep& step,
   // programs declares this cpp_type instead of the ordinary "glsl::Vec3",
   // and only because their generated kernel actually reads a
   // `glsl::DVec3`-typed uniform there.
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 11>
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 12>
       kTypes = {{{"float", "float"},
+                 // A GLSL-declared scalar `float` uniform whose value the JS
+                 // CPU authority never rounds to float32 (an ordinary DSL
+                 // effect parameter, not one of the few reserved names
+                 // createCanonicalBindings() explicitly f32()'s -- time,
+                 // seed, deltaTime, aspect, renderScale, the pass-derived
+                 // speed/centerLo defaults) binds as C++ `double`, matching
+                 // the typed kernel's own `bindings.get_number(...)` read.
+                 // The GLSL-facing `type` stays "float" -- only the storage
+                 // representation widens. See
+                 // generate_backend_compatibility.py's
+                 // _FROUNDED_SCALAR_UNIFORMS.
+                 {"float", "double"},
                  {"double", "double"},
                  {"int", "std::int32_t"},
                  {"uint", "std::uint32_t"},

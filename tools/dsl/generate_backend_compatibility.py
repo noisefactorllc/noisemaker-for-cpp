@@ -319,7 +319,53 @@ def _canonical_token_hash(source: str) -> str:
     return _sha(json.dumps(stream, separators=(",", ":")).encode())
 
 
-def _cpp_type(display: str) -> str:
+# (name, source) pairs for which the JS CPU authority explicitly rounds a
+# scalar GLSL "float" uniform to float32 before a kernel ever reads it:
+# glsl-kernel.js's createCanonicalBindings wraps exactly `time`, `seed`
+# (render-seed fallback) and `renderScale` in `f32(...)`, and
+# src/graph/executor.cpp's resolve_authenticated_pass_derived() hardcodes
+# `noisemaker::f32(...)` for the "aspect"/"speed"/"centerLoX"/"centerLoY"
+# pass-derived defaults (aspect and the speed/centerLo zero-defaults) --
+# independent of `cpp_type`, so their ABI entry must keep the C++ `float`
+# variant or `resolve_uniform`'s variant-type check throws.
+#
+# Every OTHER scalar "float" uniform is an ordinary, UNROUNDED JS Number in
+# the authority: a DSL effect parameter or JSON pass literal, read and used
+# at full double precision with no `f32()`/PooledFloat32Array boundary
+# anywhere between the DSL value and the kernel body. Binding those as C++
+# `float` here rounds them once, silently, before the typed kernel (which
+# already declares them `double` via `bindings.get_number(...)`) ever sees
+# them -- a real value bug, not a rounding-boundary nuance.
+_FROUNDED_SCALAR_UNIFORMS = frozenset({
+    ("time", "reserved_runtime_state"),
+    ("renderScale", "reserved_runtime_state"),
+    ("seed", "effect_parameter"),
+    ("aspect", "pass_derived"),
+    ("centerLoX", "pass_derived"),
+    ("centerLoY", "pass_derived"),
+    ("speed", "pass_derived"),
+})
+
+# `synth/solid:solid` and `filter/invert:inv` are the two frozen-fragment
+# duplicates dispatched through a hand-written "legacy" factory
+# (src/generated/synth_solid.cpp, filter_invert.cpp) instead of the typed
+# emitter's own generated row for the same key -- _legacy_factories() below
+# authenticates that hand-written file's ACTUAL binding calls against this
+# census. synth_solid.cpp reads its one float parameter with
+# `bindings.get_or<float>("alpha", ...)`, an exact-type accessor (unlike the
+# typed emitter's `get_number`, which accepts either variant) -- so this one
+# binding genuinely needs the strict `float` variant, not `double`.
+_LEGACY_FACTORY_FLOAT_UNIFORMS = frozenset({
+    ("synth/solid:solid", "alpha"),
+})
+
+
+def _cpp_type(display: str, name: str | None = None, source: str | None = None,
+             program_key: str | None = None) -> str:
+    if display == "float" and (program_key, name) in _LEGACY_FACTORY_FLOAT_UNIFORMS:
+        return "float"
+    if display == "float" and (name, source) not in _FROUNDED_SCALAR_UNIFORMS:
+        return "double"
     if display in CPP_TYPES:
         return CPP_TYPES[display]
     if display.startswith("sampler"):
@@ -478,7 +524,7 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
         cpp_type = (
             "glsl::DVec3"
             if (program_key, name) in CLASSIC_NOISEDECK_DOUBLE_PALETTE_CARRIERS
-            else _cpp_type(typ))
+            else _cpp_type(typ, name, source, program_key))
         item = {"name": name, "type": typ, "cpp_type": cpp_type, "source": source,
                 "source_name": source_name}
         uniforms.append(item)
