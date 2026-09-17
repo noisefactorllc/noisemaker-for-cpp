@@ -201,8 +201,14 @@ def _task23_complete_ir_forgery_matrix(testcase, program, global_name):
 
     if program.preprocessor_defines:
         first_define = program.preprocessor_defines[0]
+        if first_define.kind == "str":
+            # A runtime-int define (e.g. filter/wind's METHOD) records its
+            # dynamic GLSL type rather than a literal; forge that type instead.
+            forged_value = "float" if first_define.canonical_value == "int" else "int"
+        else:
+            forged_value = str(int(first_define.canonical_value) + 1)
         forged_defines = (dataclasses.replace(
-            first_define, canonical_value=str(int(first_define.canonical_value) + 1)),
+            first_define, canonical_value=forged_value),
             *program.preprocessor_defines[1:])
     else:
         forged_defines = (PreprocessorDefine("TASK23_FORGED", "int", "1"),)
@@ -428,6 +434,8 @@ def _task23_complete_ir_forgery_matrix(testcase, program, global_name):
 class SemanticTests(unittest.TestCase):
     def test_task23_literal_source_global_int_profiles_attach_exact_counted_loop_proofs(self) -> None:
         from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.dynamic_define_hoist import (
+            transform_source as dynamic_define_hoist)
         from tools.glslcpp.frontend.semantic import analyze_program
 
         expected = {
@@ -436,7 +444,11 @@ class SemanticTests(unittest.TestCase):
             "filter/spinBlur:spinBlur": ("N", 9, 32, (32,), 1, 32, 32, {}),
             "filter/strokes:stkSmear": ("MAX_TAPS", 8, 24, (3, 3, 24), 2, 24, 72, {"MODE": 0}),
             "filter/vaseline:upsample": ("TAP_COUNT", 8, 32, (32,), 1, 32, 32, {}),
-            "filter/wind:wind": ("MAX_STEPS", 8, 128, (128,), 1, 128, 128, {"METHOD": 1}),
+            # filter/wind carries the generic runtime-int define contract: its
+            # program is parsed with METHOD as a dynamic uniform (after the
+            # dynamic-define hoist), so the prepended `uniform int METHOD;`
+            # declaration shifts MAX_STEPS from symbol id 8 to 9.
+            "filter/wind:wind": ("MAX_STEPS", 9, 128, (128,), 1, 128, 128, {"METHOD": "int"}),
         }
         root = _corpus_root(REPOSITORY)
         manifest = json.loads((root / "manifest.json").read_text())
@@ -458,8 +470,13 @@ class SemanticTests(unittest.TestCase):
             entry = next(item for item in manifest["programs"]
                          if item["program_key"] == key)
             raw = (root / entry["source"]).read_text()
+            # Mirrors generate_outputs(): parse the hoisted source (a no-op for
+            # keys without a hoist profile) but keep the pinned authority bytes
+            # as raw_source.
+            parsed = parse_program(dynamic_define_hoist(raw, key), key, defines)
+            parsed["raw_source"] = raw
             typed = analyze_program(
-                parse_program(raw, key, defines), key,
+                parsed, key,
                 source_global_literal_int_profile="source-global-literal-int-v1")
             declaration = next(item for item in typed.declarations
                                if item.symbol.name == name)
@@ -570,6 +587,8 @@ class SemanticTests(unittest.TestCase):
     def test_task23_six_key_forgery_and_four_mode_matrix_is_closed(self) -> None:
         import dataclasses
         from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.dynamic_define_hoist import (
+            transform_source as dynamic_define_hoist)
         from tools.glslcpp.frontend.loop_proof import (
             attach_counted_loop_proofs, clear_counted_loop_proofs,
             summarize_counted_loop_proofs,
@@ -583,7 +602,7 @@ class SemanticTests(unittest.TestCase):
             "filter/spinBlur:spinBlur": ({}, "N"),
             "filter/strokes:stkSmear": ({"MODE": 0}, "MAX_TAPS"),
             "filter/vaseline:upsample": ({}, "TAP_COUNT"),
-            "filter/wind:wind": ({"METHOD": 1}, "MAX_STEPS"),
+            "filter/wind:wind": ({"METHOD": "int"}, "MAX_STEPS"),  # runtime-int
         }
         root = _corpus_root(REPOSITORY)
         manifest = json.loads((root / "manifest.json").read_text())
@@ -632,8 +651,10 @@ class SemanticTests(unittest.TestCase):
             entry = next(item for item in manifest["programs"]
                          if item["program_key"] == key)
             raw = (root / entry["source"]).read_text()
+            parsed = parse_program(dynamic_define_hoist(raw, key), key, defines)
+            parsed["raw_source"] = raw  # as generate_outputs() does
             post = analyze_program(
-                parse_program(raw, key, defines), key,
+                parsed, key,
                 source_global_literal_int_profile=profile)
             pre_functions = attach_counted_loop_proofs(post.functions, key)
             pre = dataclasses.replace(

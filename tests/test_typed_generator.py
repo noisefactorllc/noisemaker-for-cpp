@@ -2612,6 +2612,8 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp.frontend.loop_proof import (
             attach_counted_loop_proofs, clear_counted_loop_proofs,
             summarize_counted_loop_proofs)
+        from tools.glslcpp.frontend.dynamic_define_hoist import (
+            transform_source as dynamic_define_hoist)
         from tools.glslcpp.frontend.semantic import analyze_program
         from tests.test_semantic import _task23_complete_ir_forgery_matrix
 
@@ -2622,7 +2624,8 @@ and item["program_key"] != "filter/wobble:wobble"
             "filter/spinBlur:spinBlur": ({}, "N"),
             "filter/strokes:stkSmear": ({"MODE": 0}, "MAX_TAPS"),
             "filter/vaseline:upsample": ({}, "TAP_COUNT"),
-            "filter/wind:wind": ({"METHOD": 1}, "MAX_STEPS"),
+            # runtime-int: parsed exactly as generate_outputs() does.
+            "filter/wind:wind": ({"METHOD": "int"}, "MAX_STEPS"),
         }
         root = check_corpus._corpus_root(REPOSITORY)
         manifest = json.loads((root / "manifest.json").read_text())
@@ -2691,8 +2694,10 @@ and item["program_key"] != "filter/wobble:wobble"
             raw = (root / entry["source"]).read_text()
             source_hash = hashlib.sha256(raw.encode()).hexdigest()
             self.assertEqual(entry["raw_sha256"], source_hash)
+            parsed = parse_program(dynamic_define_hoist(raw, key), key, defines)
+            parsed["raw_source"] = raw
             post = analyze_program(
-                parse_program(raw, key, defines), key,
+                parsed, key,
                 source_global_literal_int_profile=profile)
             generate_typed_slice.validate_capabilities(
                 post, capabilities, source_hash=source_hash,
@@ -3058,6 +3063,8 @@ and item["program_key"] != "filter/wobble:wobble"
             TypedEmissionError, _Emitter, render_typed_cpp,
         )
         from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.dynamic_define_hoist import (
+            transform_source as dynamic_define_hoist)
         from tools.glslcpp.frontend.semantic import analyze_program
         from tools.glslcpp.frontend.typed_ir import TypedExpression
 
@@ -3102,8 +3109,10 @@ and item["program_key"] != "filter/wobble:wobble"
              "0.0", 0.0),
             ("wind-global-bound-128-to-16", "filter/wind:wind", None,
              "MAX_STEPS", "global", 128, "16", 16),
+            # Line 38 -> 39: wind is parsed with METHOD as a runtime uniform, so
+            # the normalized program gains one prepended `uniform int METHOD;`.
             ("wind-direction-forced-right", "filter/wind:wind", "main", "marchDir",
-             "local", ("conditional", "float", None, None, 38, 23), "1.0", 1.0),
+             "local", ("conditional", "float", None, None, 39, 23), "1.0", 1.0),
         )
         mutations = sensitivity["mutations"]
         self.assertEqual(12, sensitivity["mutation_count"])
@@ -3118,6 +3127,7 @@ and item["program_key"] != "filter/wobble:wobble"
         slice_spec = generate_typed_slice.load_slice(REPOSITORY)
         defines_by_key = {item["program_key"]: item["defines"]
                           for item in slice_spec["programs"]}
+        dynamic_define_types = generate_typed_slice.GENERIC_DYNAMIC_DEFINE_TYPES
         profile = "source-global-literal-int-v1"
         programs = {}
         source_hashes = {}
@@ -3129,8 +3139,14 @@ and item["program_key"] != "filter/wobble:wobble"
             raw = (corpus_root / entry["source"]).read_text()
             source_hash = hashlib.sha256(raw.encode()).hexdigest()
             self.assertEqual(entry["raw_sha256"], source_hash)
+            if key in dynamic_define_types:
+                parsed = parse_program(dynamic_define_hoist(raw, key), key,
+                                       dynamic_define_types[key])
+                parsed["raw_source"] = raw
+            else:
+                parsed = parse_program(raw, key, defines_by_key[key])
             typed = analyze_program(
-                parse_program(raw, key, defines_by_key[key]), key,
+                parsed, key,
                 source_global_literal_int_profile=profile)
             generate_typed_slice.validate_capabilities(
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -3437,6 +3453,13 @@ and item["program_key"] != "filter/wobble:wobble"
                 native = (f"std::int32_t({value['value']})"
                           if value["glsl_type"] == "int"
                           else f32(value["f32_bits_le"]))
+                result.append(f'    bindings.set_uniform("{name}", {native});')
+            # A runtime-int define reaches the kernel as a bound uniform at the
+            # value the frozen oracle was generated with (the typed slice's
+            # recorded default).
+            for name in sorted(dynamic_define_types.get(key, {})):
+                value = defines_by_key[key][name]
+                native = "true" if value is True else "false" if value is False else f"std::int32_t({value})"
                 result.append(f'    bindings.set_uniform("{name}", {native});')
             return result
 
@@ -7975,8 +7998,12 @@ and item["program_key"] != "filter/wobble:wobble"
                 "default-only", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
             "filter/extrude:extrude": (
                 "default-only", {"DEPTH_SOURCE": 0, "EXTRUDE_TYPE": 0}),
+            # Generic runtime-int contract (GENERIC_DYNAMIC_DEFINE_TYPES): the
+            # defines stay recorded at their catalog defaults but reach the
+            # kernel as bound uniforms; see also lensFlare, morphology,
+            # mosaicTiles, relief and wind below.
             "synth/curl:curl": (
-                "default-only", {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}),
+                "runtime-int", {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}),
             # Task 33 derivative cluster — the three members carrying defines.
             # These reach the kernel as bound uniforms, not preprocessor
             # substitutions: the JS reference has no preprocessor and its
@@ -7984,22 +8011,22 @@ and item["program_key"] != "filter/wobble:wobble"
             "filter/halftone:halftone": ("default-only", {"MODE": 0, "PATTERN": 0}),
             "filter/pondRipples:pondRipples": ("default-only", {"STYLE": 2, "WRAP": 0}),
             "filter/stipple:stipple": ("default-only", {"MODE": 0}),
-            "filter/lensFlare:lensFlare": ("default-only", {"LENS_TYPE": 0}),
+            "filter/lensFlare:lensFlare": ("runtime-int", {"LENS_TYPE": 0}),
             "filter/lowPoly:lowPoly": ("default-only", {"LP_BORDER": 0, "LP_LIGHT": 0}),
-            "filter/morphology:morphA": ("default-only", {"SHAPE": 0}),
-            "filter/morphology:morphB": ("default-only", {"SHAPE": 0}),
-            "filter/mosaicTiles:mosaicTiles": ("default-only", {"MODE": 0}),
+            "filter/morphology:morphA": ("runtime-int", {"SHAPE": 0}),
+            "filter/morphology:morphB": ("runtime-int", {"SHAPE": 0}),
+            "filter/mosaicTiles:mosaicTiles": ("runtime-int", {"MODE": 0}),
             "filter/oilPaint:oilFlatten": ("default-only", {"MODE": 1}),
             "filter/oilPaint:oilPost": ("default-only", {"MODE": 1}),
-            "filter/relief:rlBlurH": ("default-only", {"MODE": 0}),
-            "filter/relief:rlBlurV": ("default-only", {"MODE": 0}),
-            "filter/relief:rlShade": ("default-only", {"MODE": 0}),
+            "filter/relief:rlBlurH": ("runtime-int", {"MODE": 0}),
+            "filter/relief:rlBlurV": ("runtime-int", {"MODE": 0}),
+            "filter/relief:rlShade": ("runtime-int", {"MODE": 0}),
             "filter/scatter:scatterJitter": ("default-only", {"MODE": 0}),
             "filter/scatter:scatterSmooth": ("default-only", {"MODE": 0}),
             "filter/strokes:stkPost": ("default-only", {"MODE": 0}),
             "filter/strokes:stkSmear": ("default-only", {"MODE": 0}),
             "filter/texture:texture": ("default-only", {"MODE": 3}),
-            "filter/wind:wind": ("default-only", {"METHOD": 1}),
+            "filter/wind:wind": ("runtime-int", {"METHOD": 1}),
             "filter/hatch:hatch": ("default-only", {"MODE": 0}),
             "synth/noise:noise": (
                 "runtime-int", {"LOOP_OFFSET": 300, "NOISE_TYPE": 10}),
@@ -17951,15 +17978,48 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         import hashlib
         from tools.glslcpp.frontend import parse_program
         from tools.glslcpp.frontend.curl_vector_math_profile import CURL_KEY
+        from tools.glslcpp.frontend.dynamic_define_hoist import transform_source
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            PROFILE as RUNTIME_LOOP_BOUND_PROFILE, apply_runtime_loop_bound)
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        # synth/curl carries the generic runtime-int define contract: parse
+        # exactly as generate_outputs() does -- OCTAVES/OUTPUT_MODE/RIDGES as
+        # dynamic uniforms, the pinned authority bytes kept as raw_source, and
+        # OCTAVES's runtime loop bound attached -- so every Task 31 test below
+        # exercises the carrier the generator actually authenticates.
+        source = (REPOSITORY / "tools/glslcpp/corpus/"
+                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "sources/synth/curl/curl.glsl").read_text()
+        source_hash = hashlib.sha256(source.encode()).hexdigest()
+        parsed = parse_program(
+            transform_source(source, CURL_KEY), CURL_KEY,
+            {"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES": "bool"})
+        parsed["raw_source"] = source
+        typed = apply_runtime_loop_bound(
+            analyze_program(parsed, CURL_KEY), source_hash,
+            RUNTIME_LOOP_BOUND_PROFILE)
+        return source, source_hash, typed
+
+    @staticmethod
+    def foreign_static_variant():
+        """A differently-keyed program carrying Curl's identical tanh/mod
+        closure, parsed at the literal catalog defines (OCTAVES=1 is then a
+        literal loop bound, not a runtime one), so the key-scoped
+        runtime-loop-bound carrier is not what rejects it: each authority
+        must reach and reject the closure nodes themselves."""
+        import dataclasses
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.curl_vector_math_profile import CURL_KEY
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
                   "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   "sources/synth/curl/curl.glsl").read_text()
-        return (source, hashlib.sha256(source.encode()).hexdigest(),
-                analyze_program(parse_program(
-                    source, CURL_KEY, {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}),
-                    CURL_KEY))
+        static = analyze_program(parse_program(
+            source, CURL_KEY, {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}),
+            CURL_KEY)
+        return dataclasses.replace(static, key="synth/curl:foreignvariant")
 
     def test_task31_exact_profile_authenticates_frozen_closure_and_narrow_abi_emission(self) -> None:
         import dataclasses
@@ -17980,7 +18040,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                          tuple(item.callee for item in proof.nodes))
         self.assertEqual(("vec3", "vec3", "vec4", "vec3"),
                          tuple(item.type.display() for item in proof.nodes))
-        self.assertEqual((18, 19, 20, 21), tuple(item.id for item in proof.owners))
+        # Function ids shift +3 from the three prepended runtime-define
+        # uniform declarations (OCTAVES, OUTPUT_MODE, RIDGES).
+        self.assertEqual((21, 22, 23, 24), tuple(item.id for item in proof.owners))
         self.assertEqual(("main", "permute", "permute", "simplex3D"),
                          tuple(item.name for item in proof.owners))
 
@@ -17989,7 +18051,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                     f"{value.span.end_line}:{value.span.end_column}")
 
         self.assertEqual(
-            ("196:12-196:34", "32:12-32:47", "35:12-35:47", "65:9-65:22"),
+            ("199:12-199:34", "35:12-35:47", "38:12-38:47", "68:9-68:22"),
             tuple(span(item) for item in proof.nodes))
         self.assertEqual((1, 3), (1, len(proof.mod_sites)))
         self.assertEqual(4, len(proof.statement_parent_chains))
@@ -18010,9 +18072,11 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             render_typed_cpp(exact, exact.key, source_hash)
         generate_typed_slice.validate_capabilities(
             exact, generate_typed_slice.APPROVED_CAPABILITIES,
-            source_hash=source_hash, curl_vector_math_profile=PROFILE)
+            source_hash=source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
         emitted = render_typed_cpp(
-            exact, exact.key, source_hash, curl_vector_math_profile=PROFILE)
+            exact, exact.key, source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
 
         # Narrow-ABI lowering: the one authenticated tanh site lowers to the
         # lane-wise, non-narrowing overload -- never plain glsl::tanh (which
@@ -18044,9 +18108,11 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                             for own in rebuilt_proof.consumed_objects))
         generate_typed_slice.validate_capabilities(
             rebuilt, generate_typed_slice.APPROVED_CAPABILITIES,
-            source_hash=source_hash, curl_vector_math_profile=PROFILE)
+            source_hash=source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
         render_typed_cpp(
-            rebuilt, rebuilt.key, source_hash, curl_vector_math_profile=PROFILE)
+            rebuilt, rebuilt.key, source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
 
         # Neither authority trusts a forged/stale proof: even if the
         # authenticate function is mocked to hand back a proof built from a
@@ -18059,12 +18125,14 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                     generate_typed_slice.GeneratorError):
             generate_typed_slice.validate_capabilities(
                 rebuilt, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=source_hash, curl_vector_math_profile=PROFILE)
+                source_hash=source_hash, curl_vector_math_profile=PROFILE,
+                runtime_loop_bound_profile="runtime-loop-bound-v1")
         with mock.patch(
                 "tools.glslcpp.emit_typed_cpp.authenticate_curl_vector_math",
                 return_value=proof), self.assertRaises(TypedEmissionError):
             render_typed_cpp(
-                rebuilt, rebuilt.key, source_hash, curl_vector_math_profile=PROFILE)
+                rebuilt, rebuilt.key, source_hash, curl_vector_math_profile=PROFILE,
+                runtime_loop_bound_profile="runtime-loop-bound-v1")
 
     def test_task31_exhaustive_single_axis_structural_mutations_reject_at_all_three_authorities(self) -> None:
         import dataclasses
@@ -18189,12 +18257,13 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                     generate_typed_slice.GeneratorError):
                 generate_typed_slice.validate_capabilities(
                     candidate, generate_typed_slice.APPROVED_CAPABILITIES,
-                    source_hash=source_hash, curl_vector_math_profile=PROFILE)
+                    source_hash=source_hash, curl_vector_math_profile=PROFILE,
+                    runtime_loop_bound_profile="runtime-loop-bound-v1")
             with self.subTest(axis=name, layer="emitter"), self.assertRaises(
                     TypedEmissionError):
                 render_typed_cpp(
                     candidate, candidate.key, source_hash,
-                    curl_vector_math_profile=PROFILE)
+                    curl_vector_math_profile=PROFILE, runtime_loop_bound_profile="runtime-loop-bound-v1")
 
     def test_task31_validator_and_emitter_authenticate_independently_without_trusting_each_other(self) -> None:
         import dataclasses
@@ -18203,7 +18272,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         from tools.glslcpp.frontend.curl_vector_math_profile import PROFILE
 
         _, source_hash, exact = self.exact_program()
-        foreign = dataclasses.replace(exact, key="synth/curl:foreignvariant")
+        foreign = self.foreign_static_variant()
 
         # The emitter fails closed on its own authority: no profile, a wrong
         # profile string, and a foreign (differently-keyed) program carrying
@@ -18212,7 +18281,8 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             render_typed_cpp(exact, exact.key, source_hash)
         with self.assertRaises(TypedEmissionError):
             render_typed_cpp(
-                exact, exact.key, source_hash, curl_vector_math_profile="wrong")
+                exact, exact.key, source_hash, curl_vector_math_profile="wrong",
+                runtime_loop_bound_profile="runtime-loop-bound-v1")
         with self.assertRaises(TypedEmissionError):
             render_typed_cpp(
                 foreign, foreign.key, source_hash, curl_vector_math_profile=PROFILE)
@@ -18237,7 +18307,8 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         with self.assertRaises(generate_typed_slice.GeneratorError):
             generate_typed_slice.validate_capabilities(
                 exact, generate_typed_slice.APPROVED_CAPABILITIES,
-                source_hash=source_hash, curl_vector_math_profile="wrong")
+                source_hash=source_hash, curl_vector_math_profile="wrong",
+                runtime_loop_bound_profile="runtime-loop-bound-v1")
         with self.assertRaises(generate_typed_slice.GeneratorError):
             generate_typed_slice.validate_capabilities(
                 foreign, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -18293,16 +18364,17 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         from tools.glslcpp.frontend.curl_vector_math_profile import PROFILE
         generate_typed_slice.validate_capabilities(
             exact, generate_typed_slice.APPROVED_CAPABILITIES,
-            source_hash=source_hash, curl_vector_math_profile=PROFILE)
+            source_hash=source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
         emit_typed_cpp.render_typed_cpp(
-            exact, exact.key, source_hash, curl_vector_math_profile=PROFILE)
+            exact, exact.key, source_hash, curl_vector_math_profile=PROFILE,
+            runtime_loop_bound_profile="runtime-loop-bound-v1")
 
         # Identity scoping proven behaviorally: a foreign (differently-keyed)
         # program carrying the identical tanh/mod closure is rejected at both
         # authorities -- the widened mod overload gate never opens for
         # anyone but the exact authenticated Curl nodes.
-        import dataclasses
-        foreign = dataclasses.replace(exact, key="synth/curl:foreignvariant")
+        foreign = self.foreign_static_variant()
         with self.assertRaisesRegex(
                 generate_typed_slice.GeneratorError,
                 r"unsupported builtin (tanh|mod overload)"):
@@ -18359,26 +18431,27 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                     if node.kind == "builtin" and node.callee == callee]
 
         def rename_tanh(program):
-            object.__setattr__(sites(program, 18, "tanh")[0], "callee", "sin")
+            object.__setattr__(sites(program, 21, "tanh")[0], "callee", "sin")
 
         def rename_mod_v4(program):
-            object.__setattr__(sites(program, 20, "mod")[0], "callee", "min")
+            object.__setattr__(sites(program, 23, "mod")[0], "callee", "min")
 
         def orphan_tanh_child(program):
-            object.__setattr__(sites(program, 18, "tanh")[0], "children", ())
+            object.__setattr__(sites(program, 21, "tanh")[0], "children", ())
 
         def widen_mod_simplex_arity(program):
-            node = sites(program, 21, "mod")[0]
+            node = sites(program, 24, "mod")[0]
             object.__setattr__(node, "children", (*node.children, node.children[0]))
 
         def retype_mod_dead_argument(program):
             from tools.glslcpp.frontend.semantic_types import vector
-            node = sites(program, 19, "mod")[0]
+            node = sites(program, 22, "mod")[0]
             object.__setattr__(node.children[0], "type", vector("float", 2))
 
         def collide_simplex_function_id(program):
-            function = function_by_id(program, 21)
-            object.__setattr__(function.signature, "id", 20)
+            # ids +3 under the runtime-int contract: simplex3D 24, permute(vec4) 23
+            function = function_by_id(program, 24)
+            object.__setattr__(function.signature, "id", 23)
 
         cases = (
             ("tanh renamed to sin at the one authorized site",
@@ -18469,6 +18542,8 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             "curl_vector_math_profile": PROFILE,
             "defines": {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True},
             "program_key": CURL_KEY,
+            "runtime_define_profile": "runtime-defines-generic-v1",
+            "runtime_loop_bound_profile": "runtime-loop-bound-v1",
         }], [item for item in spec["programs"] if "curl_vector_math_profile" in item])
 
         current_outputs = generate_typed_slice.generate_outputs(REPOSITORY)

@@ -257,8 +257,12 @@ class NoiseRuntimeLoopBoundRecordTests(unittest.TestCase):
         self.assertEqual(KEY, module.NOISE_KEY)
         self.assertIn(module.NOISE_KEY, module.RUNTIME_LOOP_BOUND_KEYS)
         self.assertEqual((), module.PREPARED_RUNTIME_LOOP_BOUND_KEYS)
+        # synth/curl joined when its OCTAVES define became a runtime uniform
+        # (generic runtime-int contract): OCTAVES is also its loop trip count,
+        # so it carries the same runtime-loop-bound proof noise does.
         self.assertEqual(frozenset({module.TETRA_KEY, module.STATS_KEY,
-                                    module.NOISE_KEY, *module.BLUR_KEYS}),
+                                    module.NOISE_KEY, module.CURL_KEY,
+                                    *module.BLUR_KEYS}),
                          module.RUNTIME_LOOP_BOUND_KEYS)
         for name in ("NOISE_KEY", "validate_noise_metadata"):
             self.assertIn(name, module.__all__)
