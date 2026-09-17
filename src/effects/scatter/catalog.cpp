@@ -1,5 +1,11 @@
 #include "noisemaker/effects/scatter/catalog.hpp"
 
+#include "noisemaker/effects/scatter/dla.hpp"
+#include "noisemaker/effects/scatter/flow3d.hpp"
+#include "noisemaker/effects/scatter/lenia.hpp"
+#include "noisemaker/effects/scatter/physarum.hpp"
+#include "noisemaker/effects/scatter/points_billboard_render.hpp"
+#include "noisemaker/effects/scatter/points_render.hpp"
 #include "noisemaker/effects/scatter/wormhole.hpp"
 
 namespace noisemaker::scatter {
@@ -12,10 +18,12 @@ namespace noisemaker::scatter {
 void register_builtin_scatter_adapters() {
   static bool registered = [] {
     wormhole::register_adapter();
-    // Six more calls land here as the remaining scatter adapters are ported:
-    // dla::register_adapter(); lenia::register_adapter();
-    // physarum::register_adapter(); points_render::register_adapter();
-    // points_billboard_render::register_adapter(); flow3d::register_adapter();
+    dla::register_adapter();
+    lenia::register_adapter();
+    physarum::register_adapter();
+    points_render::register_adapter();
+    points_billboard_render::register_adapter();
+    flow3d::register_adapter();
     return true;
   }();
   static_cast<void>(registered);
