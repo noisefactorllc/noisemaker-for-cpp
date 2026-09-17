@@ -201,7 +201,6 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
     uniform("level", 0.42f);
   } else if (key == "filter/scatter:scatterJitter") {
     uniform("radius", 2.7f); uniform("seed", std::int32_t(11));
-    uniform("MODE", std::int32_t(0));
   } else if (key == "filter/simpleAberration:chromaticAberration") {
     uniform("displacement", 0.037f);
   } else if (key == "filter/text:text") {
@@ -1891,7 +1890,7 @@ struct Task15Binding {
   Task15BindingType type;
 };
 
-constexpr std::array<Task15Binding, 240> kTask15Bindings{{
+constexpr std::array<Task15Binding, 239> kTask15Bindings{{
     {"filter/chrome:chBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar},
@@ -2000,7 +1999,6 @@ constexpr std::array<Task15Binding, 240> kTask15Bindings{{
     {"filter/scatter:scatterSmooth", "inputTex", Task15BindingType::sampler},
     {"filter/scatter:scatterSmooth", "resolution", Task15BindingType::vec2},
     {"filter/scatter:scatterSmooth", "smoothness", Task15BindingType::scalar},
-    {"filter/scatter:scatterSmooth", "MODE", Task15BindingType::integer},
     {"filter/stamp:stBlurH", "inputTex", Task15BindingType::sampler},
     {"filter/stamp:stBlurH", "resolution", Task15BindingType::vec2},
     {"filter/stamp:stBlurH", "smoothness", Task15BindingType::scalar},
@@ -2175,9 +2173,9 @@ TEST(typed_task15_every_required_uniform_and_sampler_fails_closed) {
     REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, wrong),
                       noisemaker::glsl::KernelBindingError);
   }
-  REQUIRE(kTask15Bindings.size() == 240U);
+  REQUIRE(kTask15Bindings.size() == 239U);
   REQUIRE(sampler_count == 46U);
-  REQUIRE(uniform_count == 194U);
+  REQUIRE(uniform_count == 193U);
 }
 
 struct Task15OracleCase {
@@ -2276,7 +2274,7 @@ struct Task15OracleUniform {
   std::array<double, 3> value;
 };
 
-constexpr std::array<Task15OracleUniform, 194> kTask15OracleUniforms{{
+constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
     {"filter/chrome:chBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
@@ -2361,7 +2359,6 @@ constexpr std::array<Task15OracleUniform, 194> kTask15OracleUniforms{{
     {"filter/reverb:reverb", "wrap", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
     {"filter/scatter:scatterSmooth", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/scatter:scatterSmooth", "smoothness", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
-    {"filter/scatter:scatterSmooth", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/stamp:stBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/stamp:stBlurH", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
     {"filter/stamp:stBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},

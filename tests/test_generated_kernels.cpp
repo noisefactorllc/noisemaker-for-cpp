@@ -1890,8 +1890,13 @@ constexpr std::array<Task23CanonicalCase, 19> kTask23CanonicalCases{{
   }
   if (poison_compile_time_define && fixture.program == Task23Program::strokes)
     bindings.set_uniform("MODE", noisemaker::glsl::Vec4(99.0f));
-  if (poison_compile_time_define && fixture.program == Task23Program::wind)
-    bindings.set_uniform("METHOD", noisemaker::glsl::Vec4(99.0f));
+  // filter/wind carries the runtime-int define contract: METHOD is a real
+  // int uniform, no longer baked into the kernel. Every frozen Task 23 wind
+  // oracle was generated at the catalog default METHOD=1.
+  if (fixture.program == Task23Program::wind && skipped != "METHOD") {
+    if (wrong == "METHOD") bindings.set_uniform("METHOD", noisemaker::glsl::Vec2(1.0f));
+    else bindings.set_uniform("METHOD", std::int32_t{1});
+  }
   return bindings;
 }
 
@@ -1970,7 +1975,7 @@ constexpr std::array<Task23CanonicalCase, 19> kTask23CanonicalCases{{
               "renderScale", "alpha"};
     case Task23Program::wind:
       return {"inputTex", "resolution", "tileOffset", "direction",
-              "strength", "threshold"};
+              "strength", "threshold", "METHOD"};
   }
   throw std::logic_error("unknown Task 23 program");
 }
@@ -2065,7 +2070,7 @@ TEST(typed_task23_public_canonical_oracles_are_exact_repeatable_finite_and_nonmu
   }
 }
 
-TEST(typed_task23_binding_abis_are_exact_and_exclude_compile_time_mode_and_method) {
+TEST(typed_task23_binding_abis_are_exact_strokes_excludes_mode_and_wind_binds_method) {
   const std::array representative_names{
       std::string_view{"bloom-one-tap-zero-radius"},
       std::string_view{"directional-zero-distance"},
@@ -2091,14 +2096,34 @@ TEST(typed_task23_binding_abis_are_exact_and_exclude_compile_time_mode_and_metho
         task23_bind(fixture, task23_bindings(fixture, input)));
   }
 
-  for (const std::string_view name :
-       {"strokes-short-low-balance", "wind-left-medium-tiled"}) {
-    const Task23CanonicalCase& fixture = task23_case(name);
+  {
+    // strokes:stkSmear stays default-only: MODE is compiled in, so a bogus
+    // extra MODE binding cannot reach the kernel.
+    const Task23CanonicalCase& fixture = task23_case("strokes-short-low-balance");
     const noisemaker::Surface input = task23_input(fixture.width, fixture.height);
     const noisemaker::Surface exact = task23_render(fixture, input);
     const noisemaker::Surface poisoned = task23_render(fixture, input, true);
     REQUIRE(task23_float_bytes(poisoned) == task23_float_bytes(exact));
     REQUIRE(poisoned.to_rgba8() == exact.to_rgba8());
+  }
+  {
+    // wind's METHOD is live: the baked-default value reproduces the frozen
+    // oracle (checked above), and the other two catalog choices each change
+    // the float output of the same fixture.
+    const Task23CanonicalCase& fixture = task23_case("wind-left-medium-tiled");
+    const noisemaker::Surface input = task23_input(fixture.width, fixture.height);
+    const auto render_method = [&](std::int32_t method) {
+      noisemaker::glsl::Bindings bindings = task23_bindings(fixture, input);
+      bindings.set_uniform("METHOD", method);
+      return noisemaker::run_pass(
+          noisemaker::generated::bind_filter_wind_wind(bindings),
+          fixture.width, fixture.height, 0.0f, 41.0f, 23U,
+          noisemaker::uint_bits_to_float(0x3c888889U));
+    };
+    const noisemaker::Surface method1 = render_method(1);
+    REQUIRE(task23_float_bytes(method1) == task23_float_bytes(task23_render(fixture, input)));
+    REQUIRE(task23_float_bytes(render_method(0)) != task23_float_bytes(method1));
+    REQUIRE(task23_float_bytes(render_method(2)) != task23_float_bytes(method1));
   }
 }
 
@@ -10334,6 +10359,17 @@ constexpr std::array<Task31ModRow, 8> kTask31DirectModRows{{
   seed_int("seed", fixture.seed);
   number("speed", f32(fixture.speed_bits));
   number("intensity", f32(fixture.intensity_bits));
+  // synth/curl carries the runtime-int define contract: OCTAVES and
+  // OUTPUT_MODE are int uniforms and RIDGES a bool uniform. Every frozen
+  // Task 31 oracle was generated at the catalog defaults (1, 3, true).
+  seed_int("OCTAVES", 1);
+  seed_int("OUTPUT_MODE", 3);
+  if (std::string_view{"RIDGES"} != omit) {
+    if (std::string_view{"RIDGES"} == wrong)
+      bindings.set_uniform("RIDGES", std::int32_t{1});
+    else
+      bindings.set_uniform("RIDGES", true);
+  }
   return bindings;
 }
 
@@ -10380,9 +10416,10 @@ TEST(typed_task31_curl_public_oracles_are_exact_repeatable_finite_and_match_both
 }
 
 TEST(typed_task31_curl_binding_abi_rejects_every_missing_and_wrong_input_and_accepts_extras) {
-  constexpr std::array<std::string_view, 8> names{
+  constexpr std::array<std::string_view, 11> names{
       "resolution", "tileOffset", "fullResolution", "time",
-      "scale",      "seed",       "speed",          "intensity"};
+      "scale",      "seed",       "speed",          "intensity",
+      "OCTAVES",    "OUTPUT_MODE", "RIDGES"};
   const auto& fixture = kTask31NativeCases[0];
   for (std::string_view name : names) {
     REQUIRE_THROWS_AS(
@@ -10409,6 +10446,24 @@ TEST(typed_task31_curl_binding_abi_rejects_every_missing_and_wrong_input_and_acc
   REQUIRE_THROWS_AS(
       noisemaker::generated::bind("synth/curl:curl", seed_as_float),
       noisemaker::glsl::KernelBindingError);
+
+  // OCTAVES is also a runtime loop bound (runtime-loop-bound-v1, attested
+  // maximum 3 = the catalog max): the binder refuses anything outside [1,3]
+  // instead of running a different trip count than the authority would.
+  for (const std::int32_t octaves : {std::int32_t{0}, std::int32_t{4}, std::int32_t{-1}}) {
+    auto out_of_range = task31_bindings(fixture);
+    out_of_range.set_uniform("OCTAVES", octaves);
+    REQUIRE_THROWS_AS(noisemaker::generated::bind_synth_curl_curl(out_of_range),
+                      noisemaker::glsl::KernelBindingError);
+  }
+  for (const std::int32_t octaves : {std::int32_t{1}, std::int32_t{2}, std::int32_t{3}}) {
+    auto in_range = task31_bindings(fixture);
+    in_range.set_uniform("OCTAVES", octaves);
+    const auto rendered = noisemaker::run_pass(
+        noisemaker::generated::bind_synth_curl_curl(in_range), fixture.width,
+        fixture.height);
+    REQUIRE(rendered.width() == fixture.width);
+  }
 
   auto with_extras = task31_bindings(fixture);
   with_extras.set_uniform("unrelated", true);
