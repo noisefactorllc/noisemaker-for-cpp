@@ -5,6 +5,7 @@
 #include <cmath>
 #include <memory>
 
+#include "noisemaker/fdlibm.hpp"
 #include "noisemaker/glsl_runtime.hpp"
 #include "noisemaker/numeric.hpp"
 #include "noisemaker/sampler.hpp"
@@ -60,9 +61,9 @@ constexpr double kInvTau = 1.0 / 6.283185307179586;  // rounded to float32 below
 [[nodiscard]] double sine(double value) noexcept {
   const double turns = f32(value * f32(kInvTau));
   const double phase = turns - std::floor(turns);
-  return f32(std::sin(phase * f32(kTau)));
+  return f32(noisemaker::fdlibm::sin(phase * f32(kTau)));
 }
-[[nodiscard]] double cosine(double value) noexcept { return f32(std::cos(value)); }
+[[nodiscard]] double cosine(double value) noexcept { return f32(noisemaker::fdlibm::cos(value)); }
 
 [[nodiscard]] double periodic_value(double time, double value) noexcept {
   return mul(add(sine(mul(sub(time, value), f32(kTau))), 1.0), 0.5);
@@ -148,7 +149,7 @@ void pixel(const KernelState& base, const glsl::PixelContext& ctx, Vec4& out) no
   const double density = std::max(mul(s.density, f32(0.01)), f32(0.0001));
   const double exponent = div(sub(1.0, density), density);
   const double limiter_mask =
-      mul(f32(std::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
+      mul(f32(noisemaker::fdlibm::pow(std::min(limiter_value, f32(0.99)), exponent)), alpha);
   const double inverse_mask = sub(1.0, limiter_mask);
 
   out[0] = noisemaker::f32(static_cast<double>(texel[0]) * inverse_mask +
