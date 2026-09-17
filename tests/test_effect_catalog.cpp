@@ -115,5 +115,5 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "d85922cc9562429155b1f45ee8738e222505ab346a2bec918121cc01468ec46f");
+  REQUIRE(provenance.generated_payload_sha256 == "1609d3854316b6c5c01e3ab97a10bfac473b7c26d52d30b06b66881c7d474639");
 }
