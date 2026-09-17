@@ -1578,10 +1578,20 @@ void validate_uniform_abi_shape(const EffectStep& step,
     return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(context.destination_width)), PlanValue::number_value(static_cast<double>(context.destination_height))}), abi.cpp_type, step, admission, abi.name);
   }
   if (abi.source_name == "renderScale") return materialize_plan_value(PlanValue::number_value(1.0), abi.cpp_type, step, admission, abi.name);
-  if (abi.source_name == "time") return materialize_plan_value(PlanValue::number_value(inputs.time), abi.cpp_type, step, admission, abi.name);
+  // `time`/`seed`/`deltaTime` are createCanonicalBindings' `f32(time)`,
+  // `f32(seed)`, `f32(deltaTime)` (glsl-kernel.js:56-58): every DSL-generated
+  // kernel observes these already float32-narrowed, at bind time, not at
+  // first use. The non-reserved `PixelContext::time/seed` fields a
+  // non-derivative `run_pass` call fills in get this same narrowing for
+  // free (both call sites pass `noisemaker::f32(inputs.time/seed)`
+  // straight through); a hand-written adapter that instead reads these as
+  // ordinary named uniforms via `Bindings` (`bind_snow`, `bind_bit_effects`)
+  // was going through this function unnarrowed, one rounding step later
+  // than the authority.
+  if (abi.source_name == "time") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.time))), abi.cpp_type, step, admission, abi.name);
   if (abi.source_name == "frame") return materialize_plan_value(PlanValue::number_value(static_cast<double>(inputs.frame)), abi.cpp_type, step, admission, abi.name);
-  if (abi.source_name == "seed") return materialize_plan_value(PlanValue::number_value(inputs.seed), abi.cpp_type, step, admission, abi.name);
-  if (abi.source_name == "deltaTime") return materialize_plan_value(PlanValue::number_value(inputs.delta_time), abi.cpp_type, step, admission, abi.name);
+  if (abi.source_name == "seed") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.seed))), abi.cpp_type, step, admission, abi.name);
+  if (abi.source_name == "deltaTime") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.delta_time))), abi.cpp_type, step, admission, abi.name);
   throw binding_error(step, admission, GraphErrorCode::missing_binding,
                       "unknown reserved runtime binding");
 }
