@@ -90,6 +90,15 @@ if (!cliSuppliesExternalTextures) {
   for (const id of externalTextureEffects) effects.delete(id)
 }
 for (const id of overlayEffects) effects.delete(id)
+// Backend admission says a kernel exists for every pass; it does not say the effect renders
+// exactly across its parameter domain. List only effects the parity sweep verified
+// (export-kit/verified-effects.json, derived by tools/parity/verified_effects.py).
+const verified = JSON.parse(await readFile(new URL('export-kit/verified-effects.json', root), 'utf8'))
+assert.equal(verified.schema, 'noisemaker-cpp.verified-effects.v1')
+const verifiedEffects = new Set(verified.effects)
+for (const id of [...effects.keys()]) {
+  if (!verifiedEffects.has(id)) effects.delete(id)
+}
 const output = JSON.stringify([...effects].filter(([, admitted]) => admitted).map(([id]) => id).sort(), null, 2) + '\n'
 const target = new URL('export-kit/compat-effects.json', root)
 assert.ok(process.argv.slice(2).every(arg => arg === '--check'), 'usage: node export-kit/generate-compat.mjs [--check]')

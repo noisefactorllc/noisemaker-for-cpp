@@ -89,7 +89,7 @@ import subprocess
 import sys
 import time
 import traceback
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any
 
@@ -1032,6 +1032,9 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=20260916)
     parser.add_argument("--workers", type=int, default=max(1, (os.cpu_count() or 4)))
     parser.add_argument("--max-seconds-per-case", type=float, default=45.0)
+    parser.add_argument("--timeout-retry-factor", type=float, default=4.0,
+                        help="rerun every timed-out case alone, one at a time, with this multiple of "
+                             "--max-seconds-per-case before reporting it as a timeout (0 disables)")
     parser.add_argument("--no-chains", action="store_true")
     parser.add_argument("--force", action="store_true", help="ignore existing results and rerun everything")
     parser.add_argument("--define-enum", action="store_true",
@@ -1119,6 +1122,22 @@ def main() -> int:
                     if completed % 200 == 0 or completed == len(pending):
                         elapsed = time.monotonic() - started
                         print(f"[sweep] {completed}/{len(pending)} done ({elapsed:.1f}s elapsed)", file=sys.stderr)
+
+        # A parallel sweep on a loaded machine can push an expensive case past its budget. Retry
+        # every timed-out case alone with a longer budget; only a case that times out again is
+        # reported as a timeout, so the gate still fails on a real hang.
+        if args.timeout_retry_factor > 0:
+            rows = load_existing(results_path)
+            retry = [j for j in jobs if rows.get(j.case_id, {}).get("classification") == "timeout"
+                     and not rows[j.case_id].get("timeout_retry")]
+            if retry:
+                print(f"[sweep] retrying {len(retry)} timed-out cases serially", file=sys.stderr)
+                _init_worker(replace(config, timeout=config.timeout * args.timeout_retry_factor))
+                for job in retry:
+                    result = run_job(vars(job))
+                    result["timeout_retry"] = True
+                    sink.write(json.dumps(result) + "\n")
+                    sink.flush()
 
     all_rows = list(load_existing(results_path).values())
     meta = {
