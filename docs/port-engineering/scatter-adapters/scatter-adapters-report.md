@@ -205,6 +205,26 @@ mid-integration — `palette_override_oracle_*`, two `graph_*`, one `typed_task1
 unchanged before and after this work; PASS count increased from 512 to 531 (19 new scatter test
 cases across the six new files, plus the 6 registry-lookup placeholders already counted).
 
+## Sanitizer build
+
+Reconfigured the same build directory with `-fsanitize=address,undefined -fno-sanitize-recover=all`
+(`CMAKE_CXX_FLAGS`/`CMAKE_EXE_LINKER_FLAGS`) and rebuilt `noisemaker-cpu-tests` from clean object
+files, then ran the full suite:
+
+```bash
+cmake -S <repo> -B <build-dir> -DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize-recover=all" -DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined"
+cmake --build <build-dir> --target noisemaker-cpu-tests -j4
+<build-dir>/noisemaker-cpu-tests
+```
+
+All 30 `scatter_*` tests (wormhole's 5 plus the 25 across the six new adapters) pass under
+ASan+UBSan with **zero** sanitizer reports (`grep -iE "ERROR: AddressSanitizer|ERROR:
+UndefinedBehaviorSanitizer|runtime error:|SUMMARY: "` over the full run's stdout+stderr: no
+matches). The suite's overall PASS/FAIL counts are unchanged from the non-sanitized run (531
+PASS / 38 pre-existing FAIL) — the FAILs are ordinary `REQUIRE` failures in unrelated, already-
+failing tests, not sanitizer aborts (confirmed by inspecting their text: `graph:binding_type: ...`,
+`requirement failed: ...`, no ASan/UBSan stack trace of any kind).
+
 ## What could not be fully nailed down
 
 - **No multi-pass driver exists yet** in `noisemaker-for-cpp` to dispatch through
