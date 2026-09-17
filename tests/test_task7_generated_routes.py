@@ -7,6 +7,7 @@ import json
 import pathlib
 import re
 import unittest
+from tests import corpus_census
 
 
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
@@ -55,14 +56,19 @@ class GeneratedFactoryRouteTests(unittest.TestCase):
         self.assertIn("find_canonical(std::string_view key,", self.header)
 
     def test_physical_catalog_retains_rows_and_canonical_catalog_deduplicates(self) -> None:
-        self.assertIn("constexpr std::array<KernelFactory, 213> kCatalog", self.generated)
+        self.assertIn(f"constexpr std::array<KernelFactory, {corpus_census.catalog_row_count()}> kCatalog",
+                      self.generated)
         self.assertIn(
-            "constexpr std::array<FactoryRoute, 211> kCanonicalRoutes",
+            f"constexpr std::array<FactoryRoute, {corpus_census.single_output_typed_count()}> kCanonicalRoutes",
             self.generated,
         )
-        self.assertEqual(211, len(self.manifest["programs"]))
+        self.assertIn(
+            f"constexpr std::array<FactoryRouteMrt, {len(corpus_census.mrt_keys())}> kCanonicalRoutesMrt",
+            self.generated,
+        )
+        self.assertEqual(corpus_census.typed_count(), len(self.manifest["programs"]))
         self.assertEqual(
-            211,
+            corpus_census.typed_count(),
             len({item["program_key"] for item in self.manifest["programs"]}),
         )
 

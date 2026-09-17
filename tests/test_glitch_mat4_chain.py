@@ -11,6 +11,7 @@ import re
 import tempfile
 import types
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import (
@@ -531,7 +532,7 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         # established exception: it was already present when these artifact
         # pins were recorded, so subtracting it would change the projection.
         edge_key = "filter/edge:edge"
-        live180_spec = copy.deepcopy(generate_typed_slice.load_slice(ROOT))
+        live180_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(ROOT))
         with historical_cross_lane(live180_spec):
             live180_spec["programs"] = [
                 item for item in live180_spec["programs"]
@@ -667,9 +668,9 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         # Live-state pin: the current sorted slice has 211 programs. The
         # authenticated key-list hash below covers every later landing and
         # ordinal shift; Glitch's own sorted position remains unchanged.
-        self.assertEqual(211, len(spec["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(
                 item["program_key"] for item in spec["programs"]) + "\n").encode()).hexdigest())
         self.assertEqual(44, len(generate_typed_slice.APPROVED_CAPABILITIES))

@@ -14,6 +14,7 @@ REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY))
 
 from tools.glslcpp.check_corpus import _corpus_root
+from tests import corpus_census
 
 
 def _task23_complete_ir_forgery_matrix(testcase, program, global_name):
@@ -1293,18 +1294,34 @@ class SemanticTests(unittest.TestCase):
         second = subprocess.check_output(command, cwd="/tmp", text=True)
         self.assertEqual(first, second)
         report = json.loads(first)
-        self.assertEqual(212, report["body_success"])
+        self.assertEqual(corpus_census.vendored_count(), report["body_success"])
         self.assertEqual("complete", report["body_analysis"])
         self.assertEqual("not attempted", report["emission"])
         self.assertEqual("not attempted", report["compile"])
-        self.assertEqual((622, 646), (report["variant_candidates"], report["variant_success"]))
-        self.assertEqual(215, report["global_initializer_success"])
+        self.assertEqual((report["expected_variant_candidates"], report["expected_variant_success"]),
+                         (report["variant_candidates"], report["variant_success"]))
+        # 215 initializers across the pre-expansion corpus, plus whatever the
+        # corpus expansion's programs declare, counted independently here.
+        from tools.glslcpp import check_corpus, check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        root = check_corpus._corpus_root(REPOSITORY)
+        metadata = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
+        expansion_initializers = 0
+        for entry in corpus_census.manifest_programs():
+            if entry["program_key"] not in corpus_census.expansion_keys():
+                continue
+            key = entry["program_key"]
+            typed = analyze_program(parse_program((root / entry["source"]).read_text(encoding="utf-8"), key,
+                                                  check_semantics._metadata_defaults(metadata, key)), key)
+            expansion_initializers += sum(item.initializer is not None for item in typed.declarations)
+        self.assertEqual(215 + expansion_initializers, report["global_initializer_success"])
         self.assertNotIn(str(REPOSITORY), first)
 
-    def test_all_212_pinned_programs_pass_the_body_checker(self) -> None:
+    def test_every_vendored_program_passes_the_body_checker(self) -> None:
         from tools.glslcpp.check_semantics import declaration_report
         report = declaration_report()
-        self.assertEqual(212, report["body_success"])
+        self.assertEqual(corpus_census.vendored_count(), report["body_success"])
         self.assertEqual("complete", report["body_analysis"])
 
     def test_body_analysis_resolves_scope_expression_and_assignment(self) -> None:

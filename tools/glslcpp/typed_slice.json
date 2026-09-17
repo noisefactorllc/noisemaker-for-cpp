@@ -303,6 +303,10 @@
     },
     {
       "defines": {},
+      "program_key": "filter/convolutionFeedback:cfBlend"
+    },
+    {
+      "defines": {},
       "program_key": "filter/corrupt:corrupt"
     },
     {
@@ -349,6 +353,10 @@
       },
       "extrude_bvec2_relational_reduction_profile": "extrude-bvec2-relational-reduction-v1",
       "program_key": "filter/extrude:extrude"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/feedback:copy"
     },
     {
       "defines": {},
@@ -519,6 +527,14 @@
       },
       "program_key": "filter/mosaicTiles:mosaicTiles",
       "runtime_define_profile": "runtime-defines-generic-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/motionBlur:copy"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/motionBlur:motionBlur"
     },
     {
       "as_u32_round_profile": "as-u32-round-admission-v1",
@@ -965,6 +981,24 @@
       "program_key": "filter/zoomBlur:zoomBlur"
     },
     {
+      "defines": {
+        "BEHAVIOR": 1
+      },
+      "program_key": "filter3d/flow3d:blend"
+    },
+    {
+      "defines": {
+        "BEHAVIOR": 1
+      },
+      "program_key": "filter3d/flow3d:copy"
+    },
+    {
+      "defines": {
+        "BEHAVIOR": 1
+      },
+      "program_key": "filter3d/flow3d:diffuse"
+    },
+    {
       "defines": {},
       "program_key": "mixer/alphaMask:alphaMask"
     },
@@ -1027,6 +1061,110 @@
       "program_key": "mixer/uvRemap:uvRemap"
     },
     {
+      "defines": {},
+      "program_key": "points/attractor:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/buddhabrot:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/dla:copyGrid"
+    },
+    {
+      "defines": {},
+      "program_key": "points/dla:initGrid"
+    },
+    {
+      "defines": {},
+      "program_key": "points/dla:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/flock:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/flow:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/heightGrid:agent"
+    },
+    {
+      "defines": {},
+      "program_key": "points/heightGrid:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/hydraulic:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/lenia:agentField"
+    },
+    {
+      "defines": {},
+      "program_key": "points/lenia:clear"
+    },
+    {
+      "defines": {},
+      "program_key": "points/lenia:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/life:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "points/physarum:diffuse"
+    },
+    {
+      "defines": {},
+      "program_key": "points/physical:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "render/loopBegin:loopBegin"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:blend"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:clearDefocus"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:copy"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:diffuse"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsBillboardRender:spriteMean"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsEmit:passthrough"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsRender:blend"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsRender:copy"
+    },
+    {
+      "defines": {},
+      "program_key": "render/pointsRender:diffuse"
+    },
+    {
       "bitwise_scalar_int_ops_profile": "bitwise-scalar-int-ops-v2",
       "defines": {},
       "program_key": "synth/bitwise:bitwise"
@@ -1034,6 +1172,10 @@
     {
       "defines": {},
       "program_key": "synth/cell:cell"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/cellularAutomata:caFb"
     },
     {
       "curl_vector_math_profile": "curl-vector-math-tanh-wide-mod-v1",
@@ -1079,7 +1221,35 @@
     },
     {
       "defines": {},
+      "program_key": "synth/mnca:mncaFb"
+    },
+    {
+      "defines": {},
       "program_key": "synth/modPattern:modPattern"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:ns"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:nsAdvect"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:nsDivergence"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:nsGradient"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:nsPressure"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/navierStokes:nsSplat"
     },
     {
       "defines": {},
@@ -1146,6 +1316,18 @@
       "defines": {},
       "program_key": "synth/testPattern:testPattern",
       "testpattern_profile": "testpattern-frontend-admission-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "synth3d/cell3d:precompute"
+    },
+    {
+      "defines": {},
+      "program_key": "synth3d/reactionDiffusion3d:simulate"
+    },
+    {
+      "defines": {},
+      "program_key": "synth3d/shape3d:precompute"
     }
   ],
   "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",

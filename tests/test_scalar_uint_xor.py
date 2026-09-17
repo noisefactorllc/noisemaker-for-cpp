@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import re
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 
@@ -451,10 +452,10 @@ class ScalarUintXorProfileTests(unittest.TestCase):
         # Live-state pin, not a milestone: later landings leave Grain at
         # ordinal 58, while the current sorted slice has 211 programs. The
         # authenticated key-list hash below covers every landing and shift.
-        self.assertEqual(211, len(keys))
-        self.assertEqual(59, keys.index("filter/grain:grain"))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
+        self.assertEqual(corpus_census.ordinal("filter/grain:grain"), keys.index("filter/grain:grain"))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         self.assertNotIn("scalar-uint-xor", spec["capabilities"])
         self.assertNotIn("scalar-uint-xor",
@@ -491,7 +492,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
         # frozen. Bumping those counts instead would have silently redefined
         # which milestone this test measures. cellRefract joins the exclusion
         # set the same way, so the frozen 175/174 counts stay exactly as-is.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [
             item for item in spec["programs"]
             if item["program_key"] not in {

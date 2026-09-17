@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "5ed61324947883fa74d89a1edd24e10f2c629a3ce6807d140dff1f5dda566b36",
+  "metadata_sha256": "42f3a640849fa951fe221b4e1c1d000970c66c3fc25dae606619252e466033a4",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -686,6 +686,24 @@
       "varyings": []
     },
     {
+      "effect_id": "filter/convolutionFeedback",
+      "normalized_bytes": 517,
+      "normalized_sha256": "c5deabb395302c308f83ce098c4851ac4585d69d61f331e3543ecce459becb37",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "blend",
+      "program": "cfBlend",
+      "program_key": "filter/convolutionFeedback:cfBlend",
+      "raw_bytes": 818,
+      "raw_sha256": "147bed82561a7c57d3b7a50c017eea826ebe24e54940a4fa032265d79c3be4a0",
+      "runtime_key": "filter/convolutionFeedback:cfBlend",
+      "source": "sources/filter/convolutionFeedback/cfBlend.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "filter/corrupt",
       "normalized_bytes": 6164,
       "normalized_sha256": "942e19da5bee3c8ac15a6fd1fd5d7c58543161b7a71140ec71fab2c2d67d7a4f",
@@ -862,6 +880,24 @@
       "raw_sha256": "3be128643867dc78184bd209306cbe524538fd8d6d53a21817fb87f746100e29",
       "runtime_key": "filter/extrude:extrude",
       "source": "sources/filter/extrude/extrude.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter/feedback",
+      "normalized_bytes": 198,
+      "normalized_sha256": "dc5a7a2386472f7c84cc0d1a30dddb89979c8cc7d5ebfedd817f965aec7b5eb5",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "feedback",
+      "program": "copy",
+      "program_key": "filter/feedback:copy",
+      "raw_bytes": 351,
+      "raw_sha256": "629a13aaba037b2eb01219741ea98b3e2161fda3f2c38b8533fe4bbebab3563e",
+      "runtime_key": "filter/feedback:copy",
+      "source": "sources/filter/feedback/copy.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -1422,6 +1458,42 @@
       "raw_sha256": "1495023febe8ffccc57fa8738c6dc027b57d98e77fc88108ae639a8590c2fd47",
       "runtime_key": "filter/mosaicTiles:mosaicTiles",
       "source": "sources/filter/mosaicTiles/mosaicTiles.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter/motionBlur",
+      "normalized_bytes": 198,
+      "normalized_sha256": "dc5a7a2386472f7c84cc0d1a30dddb89979c8cc7d5ebfedd817f965aec7b5eb5",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "feedback",
+      "program": "copy",
+      "program_key": "filter/motionBlur:copy",
+      "raw_bytes": 351,
+      "raw_sha256": "629a13aaba037b2eb01219741ea98b3e2161fda3f2c38b8533fe4bbebab3563e",
+      "runtime_key": "filter/motionBlur:copy",
+      "source": "sources/filter/motionBlur/copy.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter/motionBlur",
+      "normalized_bytes": 520,
+      "normalized_sha256": "59ce348fbb7c68fdf4ddf5b3194f3da39002cbd655aae305e46bb93dc95ccaea",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "main",
+      "program": "motionBlur",
+      "program_key": "filter/motionBlur:motionBlur",
+      "raw_bytes": 954,
+      "raw_sha256": "fea5905d92b575b94c500f674a9cc1449f379f8c31ec13e1f71439e75e09df4f",
+      "runtime_key": "filter/motionBlur:motionBlur",
+      "source": "sources/filter/motionBlur/motionBlur.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -3162,6 +3234,60 @@
       "varyings": []
     },
     {
+      "effect_id": "filter3d/flow3d",
+      "normalized_bytes": 708,
+      "normalized_sha256": "cbab4d2ad75ef2870515300bca2d35b91db54115d69965966656fb262303d538",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 4,
+      "pass_name": "blend",
+      "program": "blend",
+      "program_key": "filter3d/flow3d:blend",
+      "raw_bytes": 1154,
+      "raw_sha256": "22c4ad697b9d365ab53cb5703f9aa76326cf2d47393bc41c27347ef48c6312c6",
+      "runtime_key": "filter3d/flow3d:blend",
+      "source": "sources/filter3d/flow3d/blend.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter3d/flow3d",
+      "normalized_bytes": 229,
+      "normalized_sha256": "17313480f4e71e3bb6663bf693e5ddd77024dc31088230c47a0086d22a57f86d",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "copy",
+      "program": "copy",
+      "program_key": "filter3d/flow3d:copy",
+      "raw_bytes": 466,
+      "raw_sha256": "6fae73fc5c59a210d64610e35060076370ebf853264f47cde01247d5296813db",
+      "runtime_key": "filter3d/flow3d:copy",
+      "source": "sources/filter3d/flow3d/copy.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter3d/flow3d",
+      "normalized_bytes": 374,
+      "normalized_sha256": "907922a9f2da9cb042dbc674ab1401bf7466160f9a382a207194da08455127b3",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "diffuse",
+      "program": "diffuse",
+      "program_key": "filter3d/flow3d:diffuse",
+      "raw_bytes": 725,
+      "raw_sha256": "6730670173a744b12d7a8e837ca917779fe7a9bc28b78078d6e975f079480711",
+      "runtime_key": "filter3d/flow3d:diffuse",
+      "source": "sources/filter3d/flow3d/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "mixer/alphaMask",
       "normalized_bytes": 1135,
       "normalized_sha256": "9cedfec901d4ded978c5d5efe9650d4eb136251e9944ce56a4ee68dc472a6235",
@@ -3432,6 +3558,478 @@
       "varyings": []
     },
     {
+      "effect_id": "points/attractor",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/attractor:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/attractor:passthrough",
+      "source": "sources/points/attractor/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/buddhabrot",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/buddhabrot:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/buddhabrot:passthrough",
+      "source": "sources/points/buddhabrot/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/dla",
+      "normalized_bytes": 194,
+      "normalized_sha256": "9b32532434939428ac985b21e4cba477ecf4f9648a05362398b699d3b60f8c21",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "copyGrid",
+      "program": "copyGrid",
+      "program_key": "points/dla:copyGrid",
+      "raw_bytes": 274,
+      "raw_sha256": "21e17a96f09141870bb930c7707d1fc8b2ba5e97f699fdd5c7b8246720974d58",
+      "runtime_key": "points/dla:copyGrid",
+      "source": "sources/points/dla/copyGrid.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/dla",
+      "normalized_bytes": 1233,
+      "normalized_sha256": "769570cb3ecba07794b375179063207d2dce8a2b6410ab3c91e79136c0e97113",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "initGrid",
+      "program": "initGrid",
+      "program_key": "points/dla:initGrid",
+      "raw_bytes": 1811,
+      "raw_sha256": "bcc9ca92c223dc0aadf5f74b40d54c49de8da7928e36c381e011c1fef6830242",
+      "runtime_key": "points/dla:initGrid",
+      "source": "sources/points/dla/initGrid.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/dla",
+      "normalized_bytes": 608,
+      "normalized_sha256": "971a4256d2d03167c921a62e0c6f9e5e788eab852d04f8da50421f6182e16274",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 4,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/dla:passthrough",
+      "raw_bytes": 860,
+      "raw_sha256": "d422ca4f58ab159fb5fe78892c9611d485c6848631b09afa526f5afb70c02046",
+      "runtime_key": "points/dla:passthrough",
+      "source": "sources/points/dla/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/flock",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/flock:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/flock:passthrough",
+      "source": "sources/points/flock/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/flow",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/flow:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/flow:passthrough",
+      "source": "sources/points/flow/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/heightGrid",
+      "normalized_bytes": 878,
+      "normalized_sha256": "c671b9367bf10c21df3af5efeb9e2d98ab4148c26f789efbecfd6e5c279c8f89",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/heightGrid:agent",
+      "raw_bytes": 1037,
+      "raw_sha256": "40edcf1e02d2ee47a25404c5f4f0e809a5243c5b639bb301b823217b9fda1e77",
+      "runtime_key": "points/heightGrid:agent",
+      "source": "sources/points/heightGrid/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/heightGrid",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/heightGrid:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/heightGrid:passthrough",
+      "source": "sources/points/heightGrid/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/hydraulic",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/hydraulic:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/hydraulic:passthrough",
+      "source": "sources/points/hydraulic/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/lenia",
+      "normalized_bytes": 2362,
+      "normalized_sha256": "0d69d2abad71b0fb26d477961b78ddf42c58a835be101b205f2b8c1186fb3a2b",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 3,
+      "pass_name": "agent",
+      "program": "agentField",
+      "program_key": "points/lenia:agentField",
+      "raw_bytes": 3542,
+      "raw_sha256": "dc6f5ea902d32e0fb7da530b93c2269ae095f99ac3a76d403a887d4078ef3237",
+      "runtime_key": "points/lenia:agentField",
+      "source": "sources/points/lenia/agentField.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/lenia",
+      "normalized_bytes": 86,
+      "normalized_sha256": "5bd57d20ba777bef003f8e6c49d7b942515d6b476e530fc517e9b136f9a0b6d9",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "clear",
+      "program": "clear",
+      "program_key": "points/lenia:clear",
+      "raw_bytes": 157,
+      "raw_sha256": "d7f2308a63b5598e06004de9ceed4ff215dac41c07478c7670767c94c5f5854d",
+      "runtime_key": "points/lenia:clear",
+      "source": "sources/points/lenia/clear.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/lenia",
+      "normalized_bytes": 178,
+      "normalized_sha256": "1c50029c0b27ac3e9ebd3e53191e4e3d84c85872e5bb89d7fd0a023c09a6d850",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 4,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/lenia:passthrough",
+      "raw_bytes": 266,
+      "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
+      "runtime_key": "points/lenia:passthrough",
+      "source": "sources/points/lenia/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/life",
+      "normalized_bytes": 178,
+      "normalized_sha256": "1c50029c0b27ac3e9ebd3e53191e4e3d84c85872e5bb89d7fd0a023c09a6d850",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/life:passthrough",
+      "raw_bytes": 266,
+      "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
+      "runtime_key": "points/life:passthrough",
+      "source": "sources/points/life/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/physarum",
+      "normalized_bytes": 459,
+      "normalized_sha256": "2c2bf2a356f73402b345ad9020f73bf88c587ca1422523b32e4b54d8e5ebfce3",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "decayTrail",
+      "program": "diffuse",
+      "program_key": "points/physarum:diffuse",
+      "raw_bytes": 708,
+      "raw_sha256": "c1b316f77d7ae5a5880dc8d667b05afb0e7dd2c3d346397ebee609953ffeb6f8",
+      "runtime_key": "points/physarum:diffuse",
+      "source": "sources/points/physarum/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/physical",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "points/physical:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "points/physical:passthrough",
+      "source": "sources/points/physical/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/loopBegin",
+      "normalized_bytes": 571,
+      "normalized_sha256": "1056e91deb65aeb02d72e183a0e56b2d7893acc79eb8a2a5b3415f2070629729",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "accumBlend",
+      "program": "loopBegin",
+      "program_key": "render/loopBegin:loopBegin",
+      "raw_bytes": 1064,
+      "raw_sha256": "5ddaa003e23b516d8f17dde75e09f106fea0f0b938898b1f3880d025167c2168",
+      "runtime_key": "render/loopBegin:loopBegin",
+      "source": "sources/render/loopBegin/loopBegin.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 1047,
+      "normalized_sha256": "270eee39c8ef0f9c02df9e683caa28d26606394af3819bdcd9b5604d826b6c6e",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 37,
+      "pass_name": "blend",
+      "program": "blend",
+      "program_key": "render/pointsBillboardRender:blend",
+      "raw_bytes": 1302,
+      "raw_sha256": "c057535d715351b5f725248f7d16982cd30398fbf4f2cce2d6230e5d057aa527",
+      "runtime_key": "render/pointsBillboardRender:blend",
+      "source": "sources/render/pointsBillboardRender/blend.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 115,
+      "normalized_sha256": "945c7dffe86b430f203febd00e487971a9d7cdea9cc12c8e62414af753390d31",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 26,
+      "pass_name": "clearDefocus",
+      "program": "clearDefocus",
+      "program_key": "render/pointsBillboardRender:clearDefocus",
+      "raw_bytes": 135,
+      "raw_sha256": "f3fa4eba0fd6ab99bcc0f2f5dd4eea264639278b3a8fc5aa77965f61c8d05a34",
+      "runtime_key": "render/pointsBillboardRender:clearDefocus",
+      "source": "sources/render/pointsBillboardRender/clearDefocus.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 198,
+      "normalized_sha256": "8f74bf7298e1c87d40cce548322a4ebf87391f6d8f43ea122cfce7d4ef8cee4e",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 30,
+      "pass_name": "copy",
+      "program": "copy",
+      "program_key": "render/pointsBillboardRender:copy",
+      "raw_bytes": 286,
+      "raw_sha256": "b4fae08087b09cf8fb049e60ed07d7c80ac12401e49f44fb3f3022388b3dc889",
+      "runtime_key": "render/pointsBillboardRender:copy",
+      "source": "sources/render/pointsBillboardRender/copy.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 1019,
+      "normalized_sha256": "92268f3297fefa1a7de65f054e936d2e48d11d6b832bfe83a78cfe7efddaad76",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 29,
+      "pass_name": "diffuse",
+      "program": "diffuse",
+      "program_key": "render/pointsBillboardRender:diffuse",
+      "raw_bytes": 1358,
+      "raw_sha256": "3e4b3866bf3249e999f9e8d7b361391af9c4e31f969001b913e782bc095cf6a1",
+      "runtime_key": "render/pointsBillboardRender:diffuse",
+      "source": "sources/render/pointsBillboardRender/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 941,
+      "normalized_sha256": "e4f45031029d225d328f4f5385181cf29fff7b04b1067f64e99cafed0908dc4d",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 25,
+      "pass_name": "spriteMean",
+      "program": "spriteMean",
+      "program_key": "render/pointsBillboardRender:spriteMean",
+      "raw_bytes": 1203,
+      "raw_sha256": "6a3bd5af6a673b4499c2ba0e8e1066a15ab5fdb7513e875fafe8a5a0f581964e",
+      "runtime_key": "render/pointsBillboardRender:spriteMean",
+      "source": "sources/render/pointsBillboardRender/spriteMean.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsEmit",
+      "normalized_bytes": 194,
+      "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "passthrough",
+      "program": "passthrough",
+      "program_key": "render/pointsEmit:passthrough",
+      "raw_bytes": 214,
+      "raw_sha256": "1c1145ed8c73427276030c0d975c994718b43c9cea1efe97f4f0fc83a3ab775e",
+      "runtime_key": "render/pointsEmit:passthrough",
+      "source": "sources/render/pointsEmit/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsRender",
+      "normalized_bytes": 710,
+      "normalized_sha256": "2ecca5e427d7db4f8ada00fa8a4478f5545a376725ca8c959e32783eedd8ea60",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 5,
+      "pass_name": "blend",
+      "program": "blend",
+      "program_key": "render/pointsRender:blend",
+      "raw_bytes": 1055,
+      "raw_sha256": "22c07cd12838f88611ae2bba729c59dd8dee2cf54d2caf1a69a22ebc4e28fa0d",
+      "runtime_key": "render/pointsRender:blend",
+      "source": "sources/render/pointsRender/blend.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsRender",
+      "normalized_bytes": 198,
+      "normalized_sha256": "8f74bf7298e1c87d40cce548322a4ebf87391f6d8f43ea122cfce7d4ef8cee4e",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "copy",
+      "program": "copy",
+      "program_key": "render/pointsRender:copy",
+      "raw_bytes": 286,
+      "raw_sha256": "b4fae08087b09cf8fb049e60ed07d7c80ac12401e49f44fb3f3022388b3dc889",
+      "runtime_key": "render/pointsRender:copy",
+      "source": "sources/render/pointsRender/copy.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsRender",
+      "normalized_bytes": 359,
+      "normalized_sha256": "d20151463bfd2aba5c2673dff568970b6bedee0d095267b2d764724d2ceee703",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "diffuse",
+      "program": "diffuse",
+      "program_key": "render/pointsRender:diffuse",
+      "raw_bytes": 620,
+      "raw_sha256": "e34a1a875649930e3eff5d22e394c97afb088d325562d78368e463a8dda59afb",
+      "runtime_key": "render/pointsRender:diffuse",
+      "source": "sources/render/pointsRender/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "synth/bitwise",
       "normalized_bytes": 2334,
       "normalized_sha256": "52122dc5f24fd4172733949aecf1db8b52e697d08fd14581c283d096ec371cc3",
@@ -3464,6 +4062,24 @@
       "raw_sha256": "b2cae5ecdfd315194d4b3b04d2c5b39d1b48c56a9bd1a10396827e3b8d413a18",
       "runtime_key": "synth/cell:cell",
       "source": "sources/synth/cell/cell.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/cellularAutomata",
+      "normalized_bytes": 5459,
+      "normalized_sha256": "5a838f666184bd9e05bf506088772afc3fa01de94b8df905ecfb0ae0c4d7e14a",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "update",
+      "program": "caFb",
+      "program_key": "synth/cellularAutomata:caFb",
+      "raw_bytes": 7949,
+      "raw_sha256": "1668346247db9567e6880d69290cef113c50edc0ba576cf2d29cf497227fef89",
+      "runtime_key": "synth/cellularAutomata:caFb",
+      "source": "sources/synth/cellularAutomata/caFb.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -3594,6 +4210,24 @@
       "varyings": []
     },
     {
+      "effect_id": "synth/mnca",
+      "normalized_bytes": 3850,
+      "normalized_sha256": "f1912c1bc5a16a4f94b5a81f5d2f1ebe2f1e634ca4b19d0d677e55e57cb919eb",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "update",
+      "program": "mncaFb",
+      "program_key": "synth/mnca:mncaFb",
+      "raw_bytes": 5044,
+      "raw_sha256": "4a1b1bbb1e52f66871808d878068f1ff6b379d2b68ca0dd8053f89659c8bf9d6",
+      "runtime_key": "synth/mnca:mncaFb",
+      "source": "sources/synth/mnca/mncaFb.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "synth/modPattern",
       "normalized_bytes": 2656,
       "normalized_sha256": "26ff11b0ea5b23a9f993358c0ecd368d2033e2bbffde0824a4b0a3ed33b04865",
@@ -3608,6 +4242,114 @@
       "raw_sha256": "5bf4fc9ed8fdf68fa58e9c66f79e1f42624234500f89fb1ee63da64839d3dc2e",
       "runtime_key": "synth/modPattern:modPattern",
       "source": "sources/synth/modPattern/modPattern.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 1407,
+      "normalized_sha256": "1e7bebee3d3a055046a27a06dbb91845bff48955d88352e0c81bcb414d9c2173",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 6,
+      "pass_name": "render",
+      "program": "ns",
+      "program_key": "synth/navierStokes:ns",
+      "raw_bytes": 1719,
+      "raw_sha256": "f2c930b585558c5b90b1e502fc71ffef4ea28c6b5c0d75c0c9d20cccf727a36f",
+      "runtime_key": "synth/navierStokes:ns",
+      "source": "sources/synth/navierStokes/ns.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 1652,
+      "normalized_sha256": "404fd6ac4b2daf2f4a5ffabe5aaac97e634caa50789e14d1d1f86ee0eb2a66df",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "advect",
+      "program": "nsAdvect",
+      "program_key": "synth/navierStokes:nsAdvect",
+      "raw_bytes": 1954,
+      "raw_sha256": "fda5781baa1fffca8fcae28ef599652580135c1dba57307db4692eecc7df64f8",
+      "runtime_key": "synth/navierStokes:nsAdvect",
+      "source": "sources/synth/navierStokes/nsAdvect.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 856,
+      "normalized_sha256": "50011e95576a01f1dd8088bccaadedc99914cef87f75bd72f077c1184cd4157a",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "divergence",
+      "program": "nsDivergence",
+      "program_key": "synth/navierStokes:nsDivergence",
+      "raw_bytes": 1168,
+      "raw_sha256": "7cf59c745b982c23bcd6eb67ab23cdc723416cdeda835ec36579d71fa18c708e",
+      "runtime_key": "synth/navierStokes:nsDivergence",
+      "source": "sources/synth/navierStokes/nsDivergence.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 737,
+      "normalized_sha256": "7533b1c6737cfdda4165fafe5df027a8d9079846981e563d8392f77f3953d555",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 4,
+      "pass_name": "gradient",
+      "program": "nsGradient",
+      "program_key": "synth/navierStokes:nsGradient",
+      "raw_bytes": 991,
+      "raw_sha256": "b247c640a0ac51e14b30b894c2427b994b3c545d9be2b19bd186bd7b57a40a9b",
+      "runtime_key": "synth/navierStokes:nsGradient",
+      "source": "sources/synth/navierStokes/nsGradient.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 663,
+      "normalized_sha256": "577cfa133c34ea42efc3c4983087a057196169db580c8702a6926d739885dce5",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 3,
+      "pass_name": "pressure",
+      "program": "nsPressure",
+      "program_key": "synth/navierStokes:nsPressure",
+      "raw_bytes": 932,
+      "raw_sha256": "3f2dd662ebc4e141a40959456739f09fd075655917197da3492ab99611482251",
+      "runtime_key": "synth/navierStokes:nsPressure",
+      "source": "sources/synth/navierStokes/nsPressure.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/navierStokes",
+      "normalized_bytes": 2261,
+      "normalized_sha256": "fb963f9eeb25519f147f8e233ed86d393384dadd34acbebcedd460ac0c98098c",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "splat",
+      "program": "nsSplat",
+      "program_key": "synth/navierStokes:nsSplat",
+      "raw_bytes": 3251,
+      "raw_sha256": "c3e88bac9c8afa8ed31baec34756db36ad30dd0e73588b35ffc320cba36d3f37",
+      "runtime_key": "synth/navierStokes:nsSplat",
+      "source": "sources/synth/navierStokes/nsSplat.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -3824,6 +4566,62 @@
       "raw_sha256": "f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20",
       "runtime_key": "synth/testPattern:testPattern",
       "source": "sources/synth/testPattern/testPattern.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/cell3d",
+      "normalized_bytes": 3703,
+      "normalized_sha256": "f74d023c96692085939e6f474e93f55f73b17a342dcf900099a81fc1007e6b7b",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "precompute",
+      "program": "precompute",
+      "program_key": "synth3d/cell3d:precompute",
+      "raw_bytes": 5081,
+      "raw_sha256": "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
+      "runtime_key": "synth3d/cell3d:precompute",
+      "source": "sources/synth3d/cell3d/precompute.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/reactionDiffusion3d",
+      "normalized_bytes": 4192,
+      "normalized_sha256": "3e1e05b59dd2f805043e0cbe1c4b36dd9d06e1e4d14e097aa5c06ef315441fc5",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "simulate",
+      "program": "simulate",
+      "program_key": "synth3d/reactionDiffusion3d:simulate",
+      "raw_bytes": 6257,
+      "raw_sha256": "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17",
+      "runtime_key": "synth3d/reactionDiffusion3d:simulate",
+      "source": "sources/synth3d/reactionDiffusion3d/simulate.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/shape3d",
+      "normalized_bytes": 4632,
+      "normalized_sha256": "6f73a89883727457ca850382170b7e650a9e57f9bcfbabdd432c466aa77e0bc0",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "precompute",
+      "program": "precompute",
+      "program_key": "synth3d/shape3d:precompute",
+      "raw_bytes": 6508,
+      "raw_sha256": "53b240191c2f0d2e61b5dacecb532ecd3b8aad3973bbf8e38d8712073d50d14f",
+      "runtime_key": "synth3d/shape3d:precompute",
+      "source": "sources/synth3d/shape3d/precompute.glsl",
       "status": "generated",
       "varyings": []
     }

@@ -61,6 +61,7 @@ import re
 import struct
 import types
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import generate_typed_slice
@@ -913,7 +914,7 @@ class VaryingUvCensusTests(unittest.TestCase):
         root = check_corpus._corpus_root(ROOT)
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
         programs = check_corpus._validate_manifest(manifest)
-        self.assertEqual(212, len(programs))
+        self.assertEqual(corpus_census.vendored_count(), len(programs))
         carriers = {}
         for entry in programs:
             key = entry["program_key"]

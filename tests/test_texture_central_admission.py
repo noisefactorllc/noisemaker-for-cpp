@@ -7,6 +7,7 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+from tests import corpus_census
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.generate_kernels import GeneratorError
@@ -29,7 +30,7 @@ def typed():
 class TextureCentralAdmissionTests(unittest.TestCase):
     def test_row_is_landed_and_profile_is_source_bound(self):
         spec = generate_typed_slice.load_slice(ROOT)
-        self.assertEqual(211, len(spec["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
         row = next(item for item in spec["programs"]
                    if item["program_key"] == KEY)
         self.assertEqual(

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from tests import corpus_census
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -29,7 +30,7 @@ class BitEffectsGeneratorEmitterTests(unittest.TestCase):
         spec = generate_typed_slice.load_slice(ROOT)
         rows = [item for item in spec["programs"] if item["program_key"] == KEY]
         self.assertEqual(spec["programs"][0]["program_key"], KEY)
-        self.assertEqual(len(spec["programs"]), 211)
+        self.assertEqual(len(spec["programs"]), corpus_census.typed_count())
         self.assertEqual(rows, [{
             "defines": {
                 "COLOR_SCHEME": 20,

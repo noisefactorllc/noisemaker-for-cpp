@@ -2,6 +2,7 @@ import json
 import pathlib
 import sys
 import unittest
+from tests import corpus_census
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -37,8 +38,8 @@ class NewtonGeneratorLandingTests(unittest.TestCase):
              "struct_declaration_profile": "struct-declaration-newton-v1",
              "out_inout_admission_profile": "out-inout-admission-newton-v1"},
             row)
-        self.assertEqual(211, len(spec["programs"]))
-        self.assertEqual(199, spec["programs"].index(row))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
+        self.assertEqual(corpus_census.ordinal(KEY), spec["programs"].index(row))
 
 
 if __name__ == "__main__":

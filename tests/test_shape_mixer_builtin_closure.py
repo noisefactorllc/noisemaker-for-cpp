@@ -9,6 +9,7 @@ import json
 import pathlib
 import tempfile
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
@@ -101,8 +102,8 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         # and both rows are unchanged and only the slice grows to 189 keys.
         # Later admitted rows grow the live slice to 211. Shape Mixer remains
         # at its exact sorted position, with Shapes immediately following it.
-        self.assertEqual(211, len(rows))
-        self.assertEqual(211, len(set(keys)))
+        self.assertEqual(corpus_census.typed_count(), len(rows))
+        self.assertEqual(corpus_census.typed_count(), len(set(keys)))
         self.assertEqual(KEY, keys[15])
         self.assertEqual("classicNoisedeck/shapes:shapes", keys[16])
         self.assertEqual(
@@ -115,7 +116,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
             rows[15],
         )
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest(),
         )
         self.assertEqual(44, len(spec["capabilities"]))
@@ -645,8 +646,8 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         self.assertEqual(1, len(rows))
         # Live-state pin: 211 typed programs and 213 public catalog
         # declarations because two legacy entries are dual-registered.
-        self.assertEqual(211, len(manifest["programs"]))
-        self.assertEqual(213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
+        self.assertEqual(corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(SCALAR_XOR_PROFILE,
                          rows[0]["scalar_uint_xor_profile"])
         self.assertEqual(PROFILE, rows[0]["shape_mixer_builtin_profile"])

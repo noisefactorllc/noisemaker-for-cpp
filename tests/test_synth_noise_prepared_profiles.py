@@ -41,6 +41,7 @@ import hashlib
 import json
 import pathlib
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import check_corpus, generate_typed_slice
@@ -496,10 +497,10 @@ class NoiseLandedSliceTests(unittest.TestCase):
         # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
                 # slice at 211 typed rows. Measured, never carried from a report; see
                 # task-7-typed-generator-census-repair.md.
-        self.assertEqual(211, len(keys))
-        self.assertEqual(200, keys.index(KEY))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
+        self.assertEqual(corpus_census.ordinal(KEY), keys.index(KEY))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         self.assertEqual(
             {"defines": {"LOOP_OFFSET": 300, "NOISE_TYPE": 10},
@@ -508,7 +509,7 @@ class NoiseLandedSliceTests(unittest.TestCase):
              "runtime_define_profile": "runtime-defines-noise-v1",
              "runtime_loop_bound_profile": "runtime-loop-bound-v1",
              "scalar_uint_xor_profile": "scalar-uint-xor-v1"},
-            spec["programs"][200])
+            spec["programs"][corpus_census.ordinal(KEY)])
         self.assertEqual(frozenset(), frame.PREPARED_MUTABLE_GLOBAL_FRAME_KEYS)
         self.assertEqual(frozenset(), xor.PREPARED_SCALAR_UINT_XOR_KEYS)
 

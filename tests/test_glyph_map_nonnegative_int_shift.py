@@ -11,6 +11,7 @@ import re
 import tempfile
 import types
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
@@ -354,7 +355,7 @@ class GlyphMapNonnegativeIntShiftProfileTests(unittest.TestCase):
         # Grime is the established exception: it was already present when
         # these artifact pins were recorded, so subtracting it would describe
         # a different projection and invalidate the frozen hashes.
-        current_spec = copy.deepcopy(generate_typed_slice.load_slice(ROOT))
+        current_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(ROOT))
         with historical_cross_lane(current_spec):
             current_spec["programs"] = [
                 item for item in current_spec["programs"]

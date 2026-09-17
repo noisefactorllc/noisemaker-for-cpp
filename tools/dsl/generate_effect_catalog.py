@@ -25,7 +25,7 @@ CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
 CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
-COMPATIBILITY_SHA256 = "e00b5310f4f0c6440ba194a75a7da8e5f5bd7d35091e12defddabe6fa9c27c9d"
+COMPATIBILITY_SHA256 = "dafa02f554636c44ff7a9acf500c2684804904c90a42bdb6b0a96793acb64c54"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -161,8 +161,10 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
     passes = compatibility.get("reference_passes")
     if not isinstance(canonical, list) or len({row.get("program_key") for row in canonical}) != len(canonical):
         raise CatalogError("compatibility canonical keys are not unique")
-    if not isinstance(closure, list) or len(closure) != 304 or closure != sorted(set(closure)):
-        raise CatalogError("compatibility key closure is not the exact ordered 304-key set")
+    record_closure = sorted({f"{effect['namespace']}/{effect['directoryName']}:{item.get('program')}"
+                             for effect in records for item in effect.get("passes") or []})
+    if not isinstance(closure, list) or closure != record_closure:
+        raise CatalogError("compatibility key closure is not the exact ordered authority program key set")
     status_by_key = {row["program_key"]: row["status"] for row in canonical}
     scatter = compatibility.get("scatter")
     if not isinstance(scatter, dict) or scatter.get("program_key") != "filter/wormhole:deposit" or scatter.get("status") != "registered":
@@ -176,7 +178,7 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
         for index, current_pass in enumerate(effect.get("passes", [])):
             key = f"{effect['namespace']}/{effect['directoryName']}:{current_pass.get('program')}"
             expected_passes.append((effect["id"], index, current_pass.get("name"), key))
-    if len(expected_passes) != 344 or not isinstance(passes, list) or len(passes) != len(expected_passes):
+    if not isinstance(passes, list) or len(passes) != len(expected_passes):
         raise CatalogError("compatibility reference pass cardinality drift")
     for row, expected in zip(passes, expected_passes):
         if (row.get("effect_id"), row.get("pass_index"), row.get("pass_name"), row.get("program_key")) != expected:

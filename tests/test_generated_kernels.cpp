@@ -1,4 +1,5 @@
 #include "test_harness.hpp"
+#include "corpus_census.hpp"
 
 #include <algorithm>
 #include <array>
@@ -760,102 +761,15 @@ TEST(generated_factories_reject_missing_sampler_and_wrong_uniform_alternatives_a
 // entry between classicNoisedeck/moodscape and refract -- 209 -> 210 entries.
 // classicNoisedeck/fractal:fractal is typed row 209. It adds one sorted public
 // entry between classicNoisedeck/effects and glitch -- 210 -> 211 entries.
-TEST(typed_slice_catalog_is_exactly_two_hundred_thirteen_sorted_keys_with_dual_registered_invert_and_solid) {
+// The literal key list this test used to carry is now derived: the corpus
+// expansion recorded every authority program as vendored or pending
+// (tools/glslcpp/corpus_ratchet.py), and the expected sequence is read from
+// the generated compatibility catalog -- a different generator from the typed
+// catalog under test -- so the two tables still cross-check each other.
+TEST(typed_slice_catalog_is_exactly_the_sorted_single_output_corpus_keys_with_dual_registered_invert_and_solid) {
   const auto factories = noisemaker::generated::catalog();
-  REQUIRE(factories.size() == 213U);
-  const std::array<std::string_view, 213> expected{
-      "classicNoisedeck/bitEffects:bitEffects",
-      "classicNoisedeck/caustic:caustic", "classicNoisedeck/cellNoise:cellNoise",
-      "classicNoisedeck/cellRefract:cellRefract",
-      "classicNoisedeck/coalesce:coalesce", "classicNoisedeck/colorLab:colorLab",
-      "classicNoisedeck/composite:composite",
-      "classicNoisedeck/effects:effects",
-      "classicNoisedeck/fractal:fractal",
-      "classicNoisedeck/glitch:glitch", "classicNoisedeck/kaleido:kaleido",
-      "classicNoisedeck/lensDistortion:lensDistortion",
-      "classicNoisedeck/moodscape:moodscape",
-      "classicNoisedeck/noise:noise",
-      "classicNoisedeck/refract:refract",
-      "classicNoisedeck/shapeMixer:shapeMixer",
-      "classicNoisedeck/shapes:shapes",
-      "classicNoisedeck/splat:splat", "filter/adjust:adjust", "filter/bc:bc",
-      "filter/bloom:brightPass", "filter/bloom:composite", "filter/bloom:ntapGather",
-      "filter/blur:blurH", "filter/blur:blurV",
-      "filter/bulge:bulge", "filter/celShading:celShadingBlend",
-      "filter/celShading:celShadingColor", "filter/celShading:celShadingEdges",
-      "filter/channel:channel", "filter/chroma:chroma",
-      "filter/chromaticAberration:chromaticAberration", "filter/chrome:chBlurH",
-      "filter/chrome:chBlurV", "filter/chrome:chMap", "filter/clouds:clouds",
-      "filter/colorReplace:colorReplace", "filter/colorspace:colorspace",
-      "filter/corrupt:corrupt", "filter/craquelure:craquelure", "filter/crt:crt",
-      "filter/degauss:degauss", "filter/deriv:deriv", "filter/directionalBlur:directionalBlur",
-      "filter/dither:dither", "filter/edge:edge", "filter/emboss:emboss",
-      "filter/extrude:extrude", "filter/fibers:fibersBlend", "filter/flipMirror:flipMirror",
-      "filter/fxaa:fxaa", "filter/glowingEdge:glowingEdge", "filter/glyphMap:glyphMap", "filter/grade:creative", "filter/grade:hslSecondary",
-      "filter/grade:lut", "filter/grade:primary", "filter/grade:vignette",
-      "filter/grade:wheels", "filter/grain:grain",
-      "filter/grime:grime", "filter/halftone:halftone", "filter/hatch:hatch",
-      "filter/highPass:hpBlurH", "filter/highPass:hpBlurV", "filter/highPass:hpCombine",
-      "filter/historicPalette:historicPalette",
-      "filter/hs:hs", "filter/invert:inv", "filter/invert:inv", "filter/lens:lens",
-      "filter/lensFlare:lensFlare", "filter/lensWarp:lensWarp",
-      "filter/lightLeak:lightLeak", "filter/lighting:lighting",
-      "filter/lowPoly:lowPoly", "filter/median:median", "filter/morphology:morphA", "filter/morphology:morphB",
-      "filter/mosaicTiles:mosaicTiles", "filter/normalMap:normalMap",
-      "filter/normalize:apply", "filter/normalize:reduce",
-      "filter/normalize:reduceMinmax", "filter/normalize:statsFinal",
-      "filter/octaveWarp:octaveWarp",
-      "filter/oilPaint:oilFlatten", "filter/oilPaint:oilPost", "filter/osd:osd",
-      "filter/outline:outlineBlend", "filter/outline:outlineSobel",
-      "filter/outline:outlineValueMap", "filter/palette:palette",
-      "filter/parallax:parallax",
-      "filter/patchwork:patchwork",
-      "filter/photocopy:pcBlurH", "filter/photocopy:pcBlurV", "filter/photocopy:pcCombine",
-      "filter/pinch:pinch", "filter/pixelSort:computeRank", "filter/pixelSort:finalize",
-      "filter/pixelSort:findBrightest", "filter/pixelSort:gatherSorted",
-      "filter/pixelSort:luminance", "filter/pixelSort:prepare", "filter/pixels:pixels",
-      "filter/plasticWrap:pwBlurH", "filter/plasticWrap:pwBlurV", "filter/plasticWrap:pwSpec",
-      "filter/polar:polar", "filter/pondRipples:pondRipples",
-      "filter/posterize:posterize",
-      "filter/prismaticAberration:prismaticAberration", "filter/reindex:nmReindexApply",
-      "filter/reindex:nmReindexReduce", "filter/reindex:nmReindexStats",
-      "filter/relief:rlBlurH", "filter/relief:rlBlurV", "filter/relief:rlShade",
-      "filter/repeat:repeat", "filter/reverb:reverb", "filter/ridge:ridge", "filter/rotate:rot",
-      "filter/scale:scale", "filter/scanlineError:scanlineError",
-      "filter/scatter:scatterJitter", "filter/scatter:scatterSmooth",
-      "filter/scratches:scratchesBlend", "filter/scroll:scroll", "filter/seamless:seamless",
-      "filter/sharpen:sharpen", "filter/simpleAberration:chromaticAberration",
-      "filter/sine:sine", "filter/skew:skew", "filter/smooth:smoothBlend", "filter/smooth:smoothEdge",
-      "filter/smoothstep:smoothstep", "filter/snow:snow", "filter/sobel:sobel", "filter/spatter:spatter",
-      "filter/spinBlur:spinBlur", "filter/spiral:spiral", "filter/spookyTicker:spookyTicker", "filter/stamp:stBlurH",
-      "filter/stamp:stBlurV", "filter/stamp:stThreshold", "filter/step:step",
-      "filter/stipple:stipple", "filter/strayHair:strayHairBlend", "filter/strokes:stkPost",
-      "filter/strokes:stkSmear", "filter/tetraColorArray:tetraColorArray",
-      "filter/tetraCosine:tetraCosine", "filter/text:text",
-      "filter/texture:texture", "filter/threshold:thresh", "filter/tile:tile",
-      "filter/tint:colorize",
-      "filter/translate:translate", "filter/tunnel:tunnel", "filter/unsharpMask:usmBlurH",
-      "filter/unsharpMask:usmBlurV", "filter/unsharpMask:usmCombine",
-      "filter/vaseline:upsample", "filter/vignette:vignette", "filter/warp:warp",
-      "filter/watercolor:wcComposite", "filter/watercolor:wcSeed",
-      "filter/watercolor:wcSimplify",
-      "filter/waves:waves", "filter/wind:wind", "filter/wobble:wobble",
-      "filter/wormhole:blend", "filter/wormhole:clear", "filter/zoomBlur:zoomBlur",
-      "mixer/alphaMask:alphaMask", "mixer/applyMode:applyMode", "mixer/blendMode:blendMode",
-      "mixer/cellSplit:cellSplit", "mixer/centerMask:centerMask",
-      "mixer/channelCombine:channelCombine", "mixer/distortion:distortion",
-      "mixer/focusBlur:focusBlur", "mixer/mashup:mashup",
-      "mixer/patternMix:patternMix", "mixer/shadow:shadow", "mixer/shapeMask:shapeMask",
-      "mixer/split:split", "mixer/thresholdMix:thresholdMix", "mixer/uvRemap:uvRemap",
-      "synth/bitwise:bitwise", "synth/cell:cell", "synth/curl:curl", "synth/gabor:gabor",
-      "synth/gradient:gradient",
-      "synth/julia:julia", "synth/mandala:mandala", "synth/mandelbrot:mandelbrot", "synth/media:mediaInput", "synth/modPattern:modPattern",
-      "synth/newton:newton", "synth/noise:noise", "synth/osc2d:osc2d", "synth/pattern:pattern", "synth/perlin:perlin",
-      "synth/polygon:shape", "synth/remap:remap",
-      "synth/sacredGeometry:sacredGeometry",
-      "synth/shape:shape", "synth/solid:solid",
-      "synth/solid:solid", "synth/subdivide:subdivide",
-      "synth/testPattern:testPattern"};
+  const auto expected = corpus_census::expected_catalog_keys();
+  REQUIRE(factories.size() == expected.size());
   std::size_t invert_count = 0U;
   std::size_t gather_sorted_count = 0U;
   std::size_t solid_count = 0U;
@@ -14879,12 +14793,14 @@ void require_oracle_metadata() {
 
 void require_catalog_identity() {
   const auto catalog = noisemaker::generated::catalog();
-  REQUIRE(catalog.size() == 213U);
-  REQUIRE(catalog[44].key == noisemaker_dither_oracle::kProgramKey);
-  REQUIRE(catalog[44].bind ==
+  REQUIRE(catalog.size() == corpus_census::expected_catalog_keys().size());
+  const std::size_t dither = corpus_census::catalog_ordinal(noisemaker_dither_oracle::kProgramKey);
+  REQUIRE(dither > 0U && dither + 1U < catalog.size());
+  REQUIRE(catalog[dither].key == noisemaker_dither_oracle::kProgramKey);
+  REQUIRE(catalog[dither].bind ==
           &noisemaker::generated::bind_filter_dither_dither);
-  REQUIRE(catalog[43].key == "filter/directionalBlur:directionalBlur");
-  REQUIRE(catalog[45].key == "filter/edge:edge");
+  REQUIRE(catalog[dither - 1U].key == "filter/directionalBlur:directionalBlur");
+  REQUIRE(catalog[dither + 1U].key == "filter/edge:edge");
 }
 
 void require_authority_blocker() {
@@ -19742,7 +19658,8 @@ TEST(typed_normalmap185_binding_abi_and_catalog_are_exact) {
   REQUIRE(entry->bind ==
           &noisemaker::generated::bind_filter_normalMap_normalMap);
   REQUIRE(entry != factories.begin());
-  REQUIRE((entry - 1)->key == "filter/mosaicTiles:mosaicTiles");
+  // filter/motionBlur (corpus expansion) now sorts between mosaicTiles and normalMap.
+  REQUIRE((entry - 1)->key == "filter/motionBlur:motionBlur");
   REQUIRE((entry + 1) != factories.end());
   REQUIRE((entry + 1)->key == "filter/normalize:apply");
   REQUIRE(std::count_if(
@@ -25109,7 +25026,7 @@ void noise_native_integration_require_oracle_metadata() {
   REQUIRE(noisemaker_noise_oracle::kControlGroup.canonical_own_key);
   REQUIRE(!noisemaker_noise_oracle::kControlGroup.adapter_own_key);
   const auto factories = noisemaker::generated::catalog();
-  REQUIRE(factories.size() == 213U);
+  REQUIRE(factories.size() == corpus_census::expected_catalog_keys().size());
   bool found = false;
   for (const auto& entry : factories)
     if (entry.key == noisemaker_noise_oracle::kProgramKey) found = true;
@@ -29872,7 +29789,7 @@ void require_oracle_metadata() {
     }
   }
   const auto catalog = noisemaker::generated::catalog();
-  REQUIRE(catalog.size() == 213U);
+  REQUIRE(catalog.size() == corpus_census::expected_catalog_keys().size());
   std::size_t public_rows = 0U;
   for (const auto& entry : catalog)
     public_rows += entry.key == noisemaker_classic_noise_oracle::kProgramKey ? 1U : 0U;
@@ -30673,7 +30590,7 @@ void require_oracle_metadata() {
   REQUIRE(witness_total == 9U);
 
   const auto catalog = noisemaker::generated::catalog();
-  REQUIRE(catalog.size() == 213U);
+  REQUIRE(catalog.size() == corpus_census::expected_catalog_keys().size());
   const auto entry = std::find_if(catalog.begin(), catalog.end(), [](const auto& item) {
     return item.key == fractal_oracle::kProgramKey;
   });
@@ -30940,7 +30857,8 @@ void require_catalog_identity() {
     return entry.key == julia_oracle::kProgramKey;
   });
   REQUIRE(julia != catalog.end());
-  REQUIRE(static_cast<std::size_t>(std::distance(catalog.begin(), julia)) == 195U);
+  REQUIRE(static_cast<std::size_t>(std::distance(catalog.begin(), julia)) ==
+          corpus_census::catalog_ordinal(julia_oracle::kProgramKey));
   REQUIRE(julia != catalog.begin());
   REQUIRE(std::prev(julia)->key == "synth/gradient:gradient");
   REQUIRE(std::next(julia) != catalog.end());

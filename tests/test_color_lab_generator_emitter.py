@@ -4,6 +4,7 @@ import hashlib
 from pathlib import Path
 import sys
 import unittest
+from tests import corpus_census
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -27,7 +28,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
         # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
                 # slice at 211 typed rows. Measured, never carried from a report; see
                 # task-7-typed-generator-census-repair.md.
-        self.assertEqual(211, len(rows))
+        self.assertEqual(corpus_census.typed_count(), len(rows))
         self.assertEqual(
             {
                 "color_lab_frontend_profile": profile.PROFILE,
@@ -39,7 +40,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
         keys = [row["program_key"] for row in rows]
         self.assertEqual(keys, sorted(keys))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest(),
         )
         self.assertEqual((KEY,), profile.KEYS)

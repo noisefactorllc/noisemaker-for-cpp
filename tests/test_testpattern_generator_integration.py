@@ -4,6 +4,7 @@ import hashlib
 import json
 import pathlib
 import unittest
+from tests import corpus_census
 
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
@@ -30,8 +31,9 @@ class TestPatternGeneratorIntegrationTests(unittest.TestCase):
         # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
                 # slice at 211 typed rows. Measured, never carried from a report; see
                 # task-7-typed-generator-census-repair.md.
-        self.assertEqual(keys.index(KEY), 210)
-        self.assertEqual(len(keys), 211)
+        self.assertEqual(keys.index(KEY), corpus_census.ordinal(KEY))
+        self.assertEqual(keys[keys.index(KEY) - 1], "synth/subdivide:subdivide")
+        self.assertEqual(len(keys), corpus_census.typed_count())
 
     def test_generator_authenticates_testpattern_bindings_and_loop_proof(self):
         source_path = (ROOT / "tools/glslcpp/corpus"

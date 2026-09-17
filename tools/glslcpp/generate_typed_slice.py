@@ -1886,9 +1886,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         (item["program_key"], item.get("julia_frontend_profile"),
          item["defines"])
         for item in programs if "julia_frontend_profile" in item]
-    if (keys != sorted(set(keys)) or len(keys) != 211
-            or _sha256(("\n".join(keys) + "\n").encode("utf-8"))
-            != "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1"
+    if (keys != sorted(set(keys)) or keys != typed_corpus_keys()
             or lane_profiles != [(key, LITERAL_VEC3_LANE_INDEX_PROFILE)
                                  for key in LITERAL_VEC3_LANE_INDEX_KEYS]
             or smooth_profiles != [
@@ -2219,6 +2217,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         "filter/halftone:halftone": {"MODE": 0, "PATTERN": 0},
         "filter/pondRipples:pondRipples": {"STYLE": 2, "WRAP": 0},
         "filter/stipple:stipple": {"MODE": 0},
+        # Corpus expansion rows: plain rows carrying their effect's default define.
+        "filter3d/flow3d:blend": {"BEHAVIOR": 1},
+        "filter3d/flow3d:copy": {"BEHAVIOR": 1},
+        "filter3d/flow3d:diffuse": {"BEHAVIOR": 1},
     }
     actual_defines = {item["program_key"]: item["defines"] for item in programs if item["defines"]}
     if actual_defines != expected_defines:
@@ -2226,8 +2228,34 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     return data
 
 
+def typed_corpus_keys() -> list[str]:
+    """The typed slice's exact key list, derived from the corpus pinned beside this generator.
+
+    Every vendored corpus program is typed-generated except a scatter member
+    (a points/billboards pass, whose corpus runtime key is null). Read from
+    this generator's own checkout, not a caller-supplied repository, so a
+    spec staged into a scratch directory is still judged against the corpus
+    the generator ships with.
+    """
+    root = check_corpus._corpus_root(_ROOT)
+    programs = check_corpus._validate_manifest(check_corpus._load_json(root / "manifest.json", "manifest"))
+    return sorted(entry["program_key"] for entry in programs if entry["runtime_key"] is not None)
+
+
+def mrt_corpus_keys() -> frozenset[str]:
+    """Corpus programs with more than one fragment output, from the pinned manifest's own census.
+
+    Their factories return ``BoundKernelMrt`` and are published through the
+    separate MRT route table, never through the single-output catalog.
+    """
+    root = check_corpus._corpus_root(_ROOT)
+    programs = check_corpus._validate_manifest(check_corpus._load_json(root / "manifest.json", "manifest"))
+    return frozenset(entry["program_key"] for entry in programs if len(entry["outputs"]) > 1)
+
+
 def render_catalog_header(slice_spec: dict[str, Any]) -> bytes:
     """Render the complete public factory declaration surface we own."""
+    mrt_keys = mrt_corpus_keys() & {item["program_key"] for item in slice_spec["programs"]}
     factories = [("filter/invert:inv", "bind_filter_invert"),
                  ("synth/solid:solid", "bind_synth_solid")]
     factories.extend(
@@ -2242,8 +2270,8 @@ def render_catalog_header(slice_spec: dict[str, Any]) -> bytes:
         "namespace noisemaker::generated {", "",
     ]
     lines.extend(
-        f"[[nodiscard]] BoundKernel {factory}(const glsl::Bindings& bindings);"
-        for _, factory in factories)
+        f"[[nodiscard]] {'BoundKernelMrt' if key in mrt_keys else 'BoundKernel'} {factory}(const glsl::Bindings& bindings);"
+        for key, factory in factories)
     lines.extend([
         "", "struct KernelFactory {", "  std::string_view key;",
         "  BoundKernel (*bind)(const glsl::Bindings&);", "};", "",
@@ -2269,8 +2297,32 @@ def render_catalog_header(slice_spec: dict[str, Any]) -> bytes:
         "[[nodiscard]] std::span<const FactoryRoute> canonical_routes() noexcept;",
         "[[nodiscard]] const FactoryRoute* find_canonical(std::string_view key,",
         "                                                     std::string_view canonical_factory) noexcept;",
-        "", "}  // namespace noisemaker::generated", "",
+        "",
     ])
+    if mrt_keys:
+        # Emitted only when the slice carries a multi-output program, so every
+        # historical single-output projection renders byte-identically.
+        lines.extend([
+            "// The multi-output (drawBuffers >= 2) sibling of FactoryRoute: identical",
+            "// identity and ABI anchors, but `bind` returns a BoundKernelMrt.",
+            "struct FactoryRouteMrt {", "  std::string_view key;",
+            "  std::string_view canonical_factory;",
+            "  std::string_view emitted_factory;",
+            "  std::string_view route_kind;",
+            "  std::string_view source_sha256;",
+            "  std::string_view typed_abi_sha256;",
+            "  std::string_view define_contract;",
+            "  std::string_view defines;",
+            "  std::string_view sampler_abi_sha256;",
+            "  std::string_view uniform_abi_sha256;",
+            "  std::string_view output_abi_sha256;",
+            "  std::string_view output_extent_sha256;",
+            "  std::string_view compile_define_abi_sha256;",
+            "  BoundKernelMrt (*bind)(const glsl::Bindings&);", "};", "",
+            "[[nodiscard]] std::span<const FactoryRouteMrt> canonical_routes_mrt() noexcept;",
+            "",
+        ])
+    lines.extend(["}  // namespace noisemaker::generated", ""])
     return "\n".join(lines).encode("utf-8")
 
 
@@ -8263,7 +8315,10 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
     repository = repository.resolve()
     check_corpus.validate_corpus(repository)
     semantic = check_semantics.semantic_report(repository)
-    if semantic["body_success"] != 212: raise GeneratorError("semantic analysis did not cover corpus")
+    corpus_programs = check_corpus._validate_manifest(check_corpus._load_json(
+        check_corpus._corpus_root(repository) / "manifest.json", "manifest"))
+    if semantic["body_success"] != len(corpus_programs):
+        raise GeneratorError("semantic analysis did not cover corpus")
     slice_spec = load_slice(repository)
     if slice_spec["revision"] != check_corpus.REVISION: raise GeneratorError("typed slice revision drift")
     blur_runtime_preflight = any(
@@ -9431,21 +9486,30 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
            "#include \"noisemaker/effects/snow.hpp\"", "", *standard_headers,
            "", "#include \"noisemaker/sampler.hpp\"", "", "namespace noisemaker::generated {"]
     cpp.extend(bodies)
+    # A multi-output program's factory returns BoundKernelMrt; it is published
+    # only through the MRT route table below, never the single-output catalog.
+    single_output_programs = [item for item in manifest_programs if len(item["typed_abi"]["outputs"]) <= 1]
+    mrt_programs = [item for item in manifest_programs if len(item["typed_abi"]["outputs"]) > 1]
     factories = [(item["program_key"],
                   _CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]))
-                 for item in manifest_programs]
+                 for item in single_output_programs]
     factories.extend((("filter/invert:inv", "bind_filter_invert"), ("synth/solid:solid", "bind_synth_solid")))
     factories.sort()
     admission_source_hashes = _compatibility_source_hashes(repository, manifest_programs)
     compatibility_rows = _compatibility_canonical_rows(repository)
-    canonical_routes = sorted(
-        (_factory_route_descriptor(
-            item,
-            bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
-            source_sha256=admission_source_hashes[item["program_key"]],
-            compatibility_row=compatibility_rows.get(item["program_key"]))
-         for item in manifest_programs),
-        key=lambda item: item["key"])
+
+    def routes_for(items: list[dict[str, Any]]) -> list[dict[str, str]]:
+        return sorted(
+            (_factory_route_descriptor(
+                item,
+                bind_factory=_CUSTOM_ADAPTER_FACTORIES.get(item["program_key"], item["factory"]),
+                source_sha256=admission_source_hashes[item["program_key"]],
+                compatibility_row=compatibility_rows.get(item["program_key"]))
+             for item in items),
+            key=lambda item: item["key"])
+
+    canonical_routes = routes_for(single_output_programs)
+    canonical_routes_mrt = routes_for(mrt_programs)
 
     def route_initializer(route: dict[str, str]) -> str:
         return (f'    {{"{route["key"]}", "{route["canonical_factory"]}", '
@@ -9477,7 +9541,15 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 "                                         std::string_view canonical_factory) noexcept {",
                 "  for (const FactoryRoute& route : kCanonicalRoutes)",
                 "    if (route.key == key && route.canonical_factory == canonical_factory) return &route;",
-                "  return nullptr;", "}", "", "}  // namespace noisemaker::generated", ""])
+                "  return nullptr;", "}", ""])
+    if canonical_routes_mrt:
+        cpp.extend(["namespace {",
+                    f"constexpr std::array<FactoryRouteMrt, {len(canonical_routes_mrt)}> kCanonicalRoutesMrt{{{{"])
+        cpp.extend(route_initializer(route) for route in canonical_routes_mrt)
+        cpp.extend(["}};", "}  // namespace", "",
+                    "std::span<const FactoryRouteMrt> canonical_routes_mrt() noexcept { return kCanonicalRoutesMrt; }",
+                    ""])
+    cpp.extend(["}  // namespace noisemaker::generated", ""])
     cpp_bytes = "\n".join(cpp).encode("utf-8")
     output_hash = _sha256(cpp_bytes)
     for entry in manifest_programs:

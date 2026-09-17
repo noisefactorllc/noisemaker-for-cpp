@@ -286,3 +286,35 @@ TEST(iterated_loop_region_is_recognized_by_compute_iteration_groups_directly) {
   REQUIRE(!groups[2].iterated);
   REQUIRE(groups[2].step_indices.size() == 1U);
 }
+
+// filter/motionBlur is the first REAL iterated effect whose kernels are all
+// vendored (corpus expansion): pass `main` reads the declared scratch texture
+// `_selfTex` BEFORE pass `feedback` (a `copy`) writes it, and that trailing
+// feedback pass -- not `main` -- is the step's last pass. Both halves of the
+// JS authority's group-step contract are therefore load-bearing here:
+//   * ensureGroupScratchResources zero-fills every declared texture before the
+//     first iteration, so the plan dry run must not refuse `_selfTex` as
+//     read-before-write;
+//   * runGroupStepIterationSync returns `state.resources.get('outputTex') ??
+//     lastOutput`, so the published image is `main`'s rgba16f `outputTex`,
+//     not the rgba8unorm `_selfTex` copy the last pass wrote.
+// The digest is the JS authority's own float32 surface for this exact case
+// (tools/parity/sweep.py case `filter__motionBlur__default`: 17x11, time 0.25,
+// every parameter at its declared default, iterationCount 60), which the
+// executor matched byte-for-byte only once both halves were ported.
+TEST(iterated_motion_blur_reads_its_scratch_self_texture_and_publishes_output_tex) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search filter, synth\nsolid(color: #3a7).motionBlur().write(o0)\nrender(o0)\n",
+      "motion-blur.dsl");
+  auto inputs = options(17U, 11U, 0.25, 2360121984.0);
+  const auto result = renderer.render(plan, inputs);
+  // solid() once, then motionBlur's two passes for each of 60 iterations.
+  REQUIRE(result.pass_count() == 1U + 2U * 60U);
+  const auto lanes = result.surface().data();
+  const std::string bytes(reinterpret_cast<const char*>(lanes.data()), lanes.size() * sizeof(float));
+  REQUIRE(detail::sha256(bytes) ==
+          "9b5ad5becb52b6027f117de2980cbc7eb8dc58c7868c2c4e457f86f6a0ff266b");
+  // The rgba16f outputTex quantization of 0x33/255, not the rgba8unorm value.
+  REQUIRE(lanes[0] == 0.199951171875F);
+}

@@ -1,4 +1,5 @@
 #include "test_harness.hpp"
+#include "corpus_census.hpp"
 
 #include "noisemaker/effects/bit_effects.hpp"
 #include "noisemaker/effects/median.hpp"
@@ -211,7 +212,17 @@ static_assert(
 
 TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   const auto routes = canonical_factory_routes();
-  REQUIRE(routes.size() == 211U);
+  REQUIRE(routes.size() == corpus_census::single_output_program_keys().size());
+  // Every multi-output corpus program is published through the MRT table
+  // instead, and never through the single-output one.
+  const auto mrt_routes = canonical_factory_routes_mrt();
+  const auto mrt_keys = corpus_census::mrt_program_keys();
+  REQUIRE(mrt_routes.size() == mrt_keys.size());
+  for (std::size_t index = 0; index < mrt_keys.size(); ++index) {
+    REQUIRE(mrt_routes[index].program_key == mrt_keys[index]);
+    REQUIRE(mrt_routes[index].bind != nullptr);
+    for (const auto& route : routes) REQUIRE(route.program_key != mrt_keys[index]);
+  }
 
   // The two duplicate legacy keys must resolve to the authenticated canonical
   // factory only; the legacy physical row is absent from the canonical view.
@@ -258,8 +269,10 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
     if (route.route_kind == "typed_emitter") ++typed_emitter;
     if (route.route_kind == "custom_adapter") ++custom_adapter;
   }
-  REQUIRE(typed_emitter == 207U);
+  // Four hand-written custom adapters (bitEffects, median, remap, snow);
+  // every other single-output corpus program is a typed-emitter route.
   REQUIRE(custom_adapter == 4U);
+  REQUIRE(typed_emitter == corpus_census::single_output_program_keys().size() - custom_adapter);
 }
 
 TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {

@@ -142,6 +142,10 @@ def semantic_report(repository: pathlib.Path | None = None) -> dict:
     programs_by_effect: dict[str, list[dict]] = {}
     for entry in programs:
         programs_by_effect.setdefault(entry["program_key"].split(":", 1)[0], []).append(entry)
+    # Derived census, never a typed number: one candidate per enumerated define
+    # value, one analysis per (candidate, vendored program of that effect).
+    expected_variant_success = sum(len(programs_by_effect.get(effect_key, ()))
+                                   for effect_key, _, _, _ in variants)
     variant_diagnostics: list[tuple[str, str, str, str, str]] = []
     variant_success = 0
     for effect_key, parameter_name, define, value in variants:
@@ -174,6 +178,10 @@ def semantic_report(repository: pathlib.Path | None = None) -> dict:
         "overload_incidence": dict(sorted(overloads.items())),
         "revision": check_corpus.REVISION,
         "type_incidence": dict(sorted(types.items())),
+        "expected_variant_candidates": sum(
+            len(_define_variants({"effects": {effect_key: effect}}))
+            for effect_key, effect in sorted(metadata.get("effects", {}).items())),
+        "expected_variant_success": expected_variant_success,
         "variant_candidates": len(variants),
         "variant_success": variant_success,
     }
@@ -195,14 +203,16 @@ def main(argv: list[str] | None = None) -> int:
     except (check_corpus.CorpusError, FrontendError, SemanticError, ValueError) as error:
         print(f"check_semantics: {error}", file=sys.stderr)
         return 1
-    if report["body_success"] != 212:
+    if report["body_success"] != report["corpus"]["passes"]:
         print("check_semantics: body count drift", file=sys.stderr)
         return 1
-    if report["variant_candidates"] != 622 or report["variant_success"] != 646:
+    if (report["variant_candidates"] != report["expected_variant_candidates"]
+            or report["variant_success"] != report["expected_variant_success"]):
         print("check_semantics: define-variant count drift", file=sys.stderr)
         return 1
     if arguments.report: print(json.dumps(report, indent=2, sort_keys=True))
-    else: print("check_semantics: bodies ok (212 programs)")
+    else: print(f"check_semantics: bodies ok ({report['body_success']} programs, "
+                f"{report['variant_success']} define variants)")
     return 0
 
 

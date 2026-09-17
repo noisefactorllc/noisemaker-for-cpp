@@ -1,4 +1,12 @@
-"""Validate the pinned GLSL corpus without a network, Node, or sibling tree."""
+"""Validate the pinned GLSL corpus without a network, Node, or sibling tree.
+
+The corpus is closed over the JS authority's program set: every authority
+program is either vendored here (manifest + metadata + sources) or recorded in
+``pending.json`` with its exact first pipeline blocker (see
+``tools/glslcpp/corpus_ratchet.py``). No cardinality in this file is a
+hand-typed number; each is derived from that vendored/pending split.
+``--check`` additionally re-probes every pending program.
+"""
 
 from __future__ import annotations
 
@@ -117,8 +125,8 @@ def _validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(metadata_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", metadata_hash):
         raise CorpusError("manifest: invalid metadata hash")
     programs = manifest.get("programs")
-    if not isinstance(programs, list) or len(programs) != 212:
-        raise CorpusError("manifest: expected exactly 212 programs")
+    if not isinstance(programs, list) or not programs:
+        raise CorpusError("manifest: programs must be a nonempty list")
     required = {"effect_id", "program", "program_key", "status", "source", "raw_bytes", "raw_sha256",
                 "normalized_bytes", "normalized_sha256", "outputs", "varyings", "pass_index", "pass_name", "runtime_key"}
     keys: set[str] = set()
@@ -154,45 +162,62 @@ def _validate_manifest(manifest: dict[str, Any]) -> list[dict[str, Any]]:
             if entry["runtime_key"] in runtime_keys:
                 raise CorpusError(f"{key}: duplicate runtime key")
             runtime_keys.add(entry["runtime_key"])
-    if len(sources) != 212:
+    if len(sources) != len(programs) or len(keys) != len(programs):
         raise CorpusError("manifest: source count gate drift")
     return sorted(programs, key=lambda entry: entry["program_key"])
 
 
-def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]]) -> None:
+def _validate_metadata(metadata: dict[str, Any], programs: list[dict[str, Any]],
+                       pending_keys: frozenset[str] = frozenset()) -> None:
+    """Every vendored program is bound by exactly one metadata pass; every other pass is pending.
+
+    The effect set, pass count, keyed-runtime count and draw-op override count
+    are all derived from the vendored manifest: metadata carries exactly the
+    effects that own a vendored program, and a metadata pass whose program is
+    not vendored must be a recorded pending program.
+    """
     if set(metadata) != {"schema", "revision", "provenance", "effects"}:
         raise CorpusError("metadata: unexpected top-level fields")
     if metadata.get("schema") != SCHEMA or metadata.get("revision") != REVISION:
         raise CorpusError("metadata: unsupported schema or revision")
     effects = metadata.get("effects")
-    if not isinstance(effects, dict) or len(effects) != 167:
-        raise CorpusError("metadata: expected exactly 167 effects")
+    expected_effects = {entry["effect_id"] for entry in programs}
+    if not isinstance(effects, dict) or set(effects) != expected_effects:
+        raise CorpusError(f"metadata: expected exactly the {len(expected_effects)} effects that own a vendored program")
     records_by_key = {entry["program_key"]: entry for entry in programs}
     pass_count = 0
     keyed = 0
     overrides = 0
+    bound: set[str] = set()
     for effect_id, effect in sorted(effects.items()):
         if not isinstance(effect_id, str) or not isinstance(effect, dict) or not isinstance(effect.get("passes"), list):
             raise CorpusError(f"metadata: invalid effect {effect_id!r}")
         for index, current_pass in enumerate(effect["passes"]):
-            pass_count += 1
             if not isinstance(current_pass, dict) or not isinstance(current_pass.get("program"), str):
                 raise CorpusError(f"metadata: invalid pass {effect_id}:{index}")
             key = f"{effect_id}:{current_pass['program']}"
             record = records_by_key.get(key)
             if record is None:
+                if key in pending_keys:
+                    continue
                 raise CorpusError(f"{key}: metadata pass has no canonical source")
-            if record["pass_index"] != index or record["pass_name"] != current_pass.get("name"):
+            pass_count += 1
+            if key in bound or record["pass_index"] != index or record["pass_name"] != current_pass.get("name"):
                 raise CorpusError(f"{key}: metadata pass relationship drift")
+            bound.add(key)
             if record["runtime_key"] != current_pass.get("key"):
                 raise CorpusError(f"{key}: runtime key relationship drift")
             if current_pass.get("key") is not None:
                 keyed += 1
+            elif current_pass.get("drawMode") in ("points", "billboards"):
+                overrides += 1
+    if bound != set(records_by_key):
+        raise CorpusError(f"metadata pass relationship drift: unbound {sorted(set(records_by_key) - bound)}")
     wormhole = effects.get("filter/wormhole", {}).get("passes", [])
     if len(wormhole) < 2 or wormhole[1].get("program") != "deposit" or wormhole[1].get("key") is not None or wormhole[1].get("drawMode") != "points":
         raise CorpusError("filter/wormhole:deposit: expected points draw-op override")
-    overrides = 1
-    if (pass_count, keyed, overrides) != (212, 211, 1):
+    runtime_keys = sum(entry["runtime_key"] is not None for entry in programs)
+    if (pass_count, keyed, overrides) != (len(programs), runtime_keys, len(programs) - runtime_keys):
         raise CorpusError("metadata: pass/key/override gate drift")
 
 
@@ -202,21 +227,25 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
     root = _corpus_root(repository)
     if root.is_symlink() or not root.is_dir():
         raise CorpusError("corpus root is missing or is a symlink")
-    expected_top_level = {"manifest.json", "metadata.json", "sources"}
+    expected_top_level = {"manifest.json", "metadata.json", "sources", "pending.json", "pending-sources"}
     actual_top_level = {entry.name for entry in root.iterdir()}
     if actual_top_level != expected_top_level:
         raise CorpusError(f"corpus top-level file set drift: expected {sorted(expected_top_level)}, got {sorted(actual_top_level)}")
     for name in expected_top_level:
         if (root / name).is_symlink():
             raise CorpusError(f"corpus top-level {name} must not be a symlink")
-    if not (root / "manifest.json").is_file() or not (root / "metadata.json").is_file() or not (root / "sources").is_dir():
+    if (not (root / "manifest.json").is_file() or not (root / "metadata.json").is_file() or not (root / "sources").is_dir()
+            or not (root / "pending.json").is_file() or not (root / "pending-sources").is_dir()):
         raise CorpusError("corpus top-level entry type drift")
     manifest = _load_json(root / "manifest.json", "manifest")
     metadata = _load_json(root / "metadata.json", "metadata")
     programs = _validate_manifest(manifest)
     if _hash((root / "metadata.json").read_bytes()) != manifest["metadata_sha256"]:
         raise CorpusError("metadata: hash mismatch")
-    _validate_metadata(metadata, programs)
+    ratchet = _ratchet()
+    pending = ratchet.load_pending(root)
+    pending_keys = frozenset(item["program_key"] for item in pending["pending"])
+    _validate_metadata(metadata, programs, pending_keys)
     expected_sources: set[str] = set()
     errors: list[str] = []
     feature_counts: Counter[str] = Counter()
@@ -249,6 +278,15 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
     actual_sources = _walk_regular_files(root / "sources")
     if actual_sources != expected_sources:
         errors.append(f"source file set drift: expected {sorted(expected_sources)}, got {sorted(actual_sources)}")
+    if not errors:
+        # The authority closure runs after every per-source check, so a
+        # malformed record reports its own specific error first.
+        try:
+            ratchet.validate_closure(root, programs, metadata)
+        except ValueError as error:
+            errors.append(str(error))
+        if len(programs) != len(pending["authority"]["programs"]) - len(pending_keys):
+            errors.append("manifest: vendored count differs from authority programs minus pending programs")
     adapters = {entry["program_key"] for entry in programs if entry["status"] == "adapter"}
     if adapters != _ADAPTERS:
         errors.append(f"adapter allowlist drift: expected {sorted(_ADAPTERS)}, got {sorted(adapters)}")
@@ -261,9 +299,19 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
         "revision": REVISION,
         "counts": {"effects": len(metadata["effects"]), "passes": len(programs), "sources": len(expected_sources),
                    "generated": statuses["generated"], "adapter": statuses["adapter"], "keyed_runtime": runtime_keys,
-                   "draw_op_overrides": 1},
+                   "draw_op_overrides": len(programs) - runtime_keys,
+                   "authority_programs": len(pending["authority"]["programs"]), "pending": len(pending_keys)},
         "features": dict(sorted(feature_counts.items())),
     }
+
+
+def _ratchet():
+    """The ratchet module, imported late: it imports this module for the shared helpers."""
+    if __package__ in (None, ""):
+        from tools.glslcpp import corpus_ratchet
+    else:
+        from . import corpus_ratchet
+    return corpus_ratchet
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -274,13 +322,17 @@ def main(argv: list[str] | None = None) -> int:
     arguments = parser.parse_args(argv)
     try:
         report = validate_corpus()
-    except CorpusError as error:
+        if arguments.check:
+            _ratchet().check_pending()
+    except ValueError as error:
         print(f"check_corpus: {error}", file=sys.stderr)
         return 1
     if arguments.report:
         print(json.dumps(report, indent=2, sort_keys=True))
     else:
-        print("check_corpus: ok")
+        counts = report["counts"]
+        print(f"check_corpus: ok ({counts['passes']} vendored + {counts['pending']} pending = "
+              f"{counts['authority_programs']} authority programs; every pending blocker re-probed)")
     return 0
 
 

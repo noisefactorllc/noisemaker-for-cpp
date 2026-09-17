@@ -1,0 +1,4422 @@
+{
+  "authority": {
+    "effect_records": "src/effects/generated/upstream-snapshot.js",
+    "effect_records_sha256": "6e7d5516228d7baf6cb6ce87853caf06c61a711e650cf13120bba4db0f9b1ac7",
+    "program_coverage": "src/effects/generated/glsl-coverage.js",
+    "program_coverage_sha256": "edba89f5bdc4fcc347fee1014f0f1667ae8dfbe0f378e4c02ce4358f2706bf63",
+    "programs": [
+      {
+        "file": "bitEffects.glsl",
+        "program_key": "classicNoisedeck/bitEffects:bitEffects",
+        "status": "generated"
+      },
+      {
+        "file": "caustic.glsl",
+        "program_key": "classicNoisedeck/caustic:caustic",
+        "status": "generated"
+      },
+      {
+        "file": "cellNoise.glsl",
+        "program_key": "classicNoisedeck/cellNoise:cellNoise",
+        "status": "generated"
+      },
+      {
+        "file": "cellRefract.glsl",
+        "program_key": "classicNoisedeck/cellRefract:cellRefract",
+        "status": "generated"
+      },
+      {
+        "file": "coalesce.glsl",
+        "program_key": "classicNoisedeck/coalesce:coalesce",
+        "status": "generated"
+      },
+      {
+        "file": "colorLab.glsl",
+        "program_key": "classicNoisedeck/colorLab:colorLab",
+        "status": "generated"
+      },
+      {
+        "file": "composite.glsl",
+        "program_key": "classicNoisedeck/composite:composite",
+        "status": "generated"
+      },
+      {
+        "file": "effects.glsl",
+        "program_key": "classicNoisedeck/effects:effects",
+        "status": "generated"
+      },
+      {
+        "file": "fractal.glsl",
+        "program_key": "classicNoisedeck/fractal:fractal",
+        "status": "adapter"
+      },
+      {
+        "file": "glitch.glsl",
+        "program_key": "classicNoisedeck/glitch:glitch",
+        "status": "generated"
+      },
+      {
+        "file": "kaleido.glsl",
+        "program_key": "classicNoisedeck/kaleido:kaleido",
+        "status": "generated"
+      },
+      {
+        "file": "lensDistortion.glsl",
+        "program_key": "classicNoisedeck/lensDistortion:lensDistortion",
+        "status": "generated"
+      },
+      {
+        "file": "moodscape.glsl",
+        "program_key": "classicNoisedeck/moodscape:moodscape",
+        "status": "generated"
+      },
+      {
+        "file": "noise3d.glsl",
+        "program_key": "classicNoisedeck/noise3d:noise3d",
+        "status": "generated"
+      },
+      {
+        "file": "noise.glsl",
+        "program_key": "classicNoisedeck/noise:noise",
+        "status": "generated"
+      },
+      {
+        "file": "refract.glsl",
+        "program_key": "classicNoisedeck/refract:refract",
+        "status": "generated"
+      },
+      {
+        "file": "shapeMixer.glsl",
+        "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
+        "status": "generated"
+      },
+      {
+        "file": "shapes3d.glsl",
+        "program_key": "classicNoisedeck/shapes3d:shapes3d",
+        "status": "generated"
+      },
+      {
+        "file": "shapes.glsl",
+        "program_key": "classicNoisedeck/shapes:shapes",
+        "status": "generated"
+      },
+      {
+        "file": "splat.glsl",
+        "program_key": "classicNoisedeck/splat:splat",
+        "status": "generated"
+      },
+      {
+        "file": "adjust.glsl",
+        "program_key": "filter/adjust:adjust",
+        "status": "generated"
+      },
+      {
+        "file": "bc.glsl",
+        "program_key": "filter/bc:bc",
+        "status": "generated"
+      },
+      {
+        "file": "brightPass.glsl",
+        "program_key": "filter/bloom:brightPass",
+        "status": "generated"
+      },
+      {
+        "file": "composite.glsl",
+        "program_key": "filter/bloom:composite",
+        "status": "generated"
+      },
+      {
+        "file": "ntapGather.glsl",
+        "program_key": "filter/bloom:ntapGather",
+        "status": "generated"
+      },
+      {
+        "file": "blurH.glsl",
+        "program_key": "filter/blur:blurH",
+        "status": "generated"
+      },
+      {
+        "file": "blurV.glsl",
+        "program_key": "filter/blur:blurV",
+        "status": "generated"
+      },
+      {
+        "file": "bulge.glsl",
+        "program_key": "filter/bulge:bulge",
+        "status": "generated"
+      },
+      {
+        "file": "celShadingBlend.glsl",
+        "program_key": "filter/celShading:celShadingBlend",
+        "status": "generated"
+      },
+      {
+        "file": "celShadingColor.glsl",
+        "program_key": "filter/celShading:celShadingColor",
+        "status": "generated"
+      },
+      {
+        "file": "celShadingEdges.glsl",
+        "program_key": "filter/celShading:celShadingEdges",
+        "status": "generated"
+      },
+      {
+        "file": "channel.glsl",
+        "program_key": "filter/channel:channel",
+        "status": "generated"
+      },
+      {
+        "file": "chroma.glsl",
+        "program_key": "filter/chroma:chroma",
+        "status": "generated"
+      },
+      {
+        "file": "chromaticAberration.glsl",
+        "program_key": "filter/chromaticAberration:chromaticAberration",
+        "status": "generated"
+      },
+      {
+        "file": "chBlurH.glsl",
+        "program_key": "filter/chrome:chBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "chBlurV.glsl",
+        "program_key": "filter/chrome:chBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "chMap.glsl",
+        "program_key": "filter/chrome:chMap",
+        "status": "generated"
+      },
+      {
+        "file": "clouds.glsl",
+        "program_key": "filter/clouds:clouds",
+        "status": "generated"
+      },
+      {
+        "file": "colorReplace.glsl",
+        "program_key": "filter/colorReplace:colorReplace",
+        "status": "generated"
+      },
+      {
+        "file": "colorspace.glsl",
+        "program_key": "filter/colorspace:colorspace",
+        "status": "generated"
+      },
+      {
+        "file": "cfBlend.glsl",
+        "program_key": "filter/convolutionFeedback:cfBlend",
+        "status": "generated"
+      },
+      {
+        "file": "cfBlur.glsl",
+        "program_key": "filter/convolutionFeedback:cfBlur",
+        "status": "generated"
+      },
+      {
+        "file": "cfSharpen.glsl",
+        "program_key": "filter/convolutionFeedback:cfSharpen",
+        "status": "generated"
+      },
+      {
+        "file": "corrupt.glsl",
+        "program_key": "filter/corrupt:corrupt",
+        "status": "generated"
+      },
+      {
+        "file": "craquelure.glsl",
+        "program_key": "filter/craquelure:craquelure",
+        "status": "generated"
+      },
+      {
+        "file": "crt.glsl",
+        "program_key": "filter/crt:crt",
+        "status": "generated"
+      },
+      {
+        "file": "degauss.glsl",
+        "program_key": "filter/degauss:degauss",
+        "status": "generated"
+      },
+      {
+        "file": "deriv.glsl",
+        "program_key": "filter/deriv:deriv",
+        "status": "generated"
+      },
+      {
+        "file": "directionalBlur.glsl",
+        "program_key": "filter/directionalBlur:directionalBlur",
+        "status": "generated"
+      },
+      {
+        "file": "dither.glsl",
+        "program_key": "filter/dither:dither",
+        "status": "generated"
+      },
+      {
+        "file": "edge.glsl",
+        "program_key": "filter/edge:edge",
+        "status": "generated"
+      },
+      {
+        "file": "emboss.glsl",
+        "program_key": "filter/emboss:emboss",
+        "status": "generated"
+      },
+      {
+        "file": "extrude.glsl",
+        "program_key": "filter/extrude:extrude",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "filter/feedback:copy",
+        "status": "generated"
+      },
+      {
+        "file": "feedback.glsl",
+        "program_key": "filter/feedback:feedback",
+        "status": "generated"
+      },
+      {
+        "file": "fibersBlend.glsl",
+        "program_key": "filter/fibers:fibersBlend",
+        "status": "generated"
+      },
+      {
+        "file": "flipMirror.glsl",
+        "program_key": "filter/flipMirror:flipMirror",
+        "status": "generated"
+      },
+      {
+        "file": "fxaa.glsl",
+        "program_key": "filter/fxaa:fxaa",
+        "status": "generated"
+      },
+      {
+        "file": "glowingEdge.glsl",
+        "program_key": "filter/glowingEdge:glowingEdge",
+        "status": "generated"
+      },
+      {
+        "file": "glyphMap.glsl",
+        "program_key": "filter/glyphMap:glyphMap",
+        "status": "generated"
+      },
+      {
+        "file": "creative.glsl",
+        "program_key": "filter/grade:creative",
+        "status": "generated"
+      },
+      {
+        "file": "hslSecondary.glsl",
+        "program_key": "filter/grade:hslSecondary",
+        "status": "generated"
+      },
+      {
+        "file": "lut.glsl",
+        "program_key": "filter/grade:lut",
+        "status": "generated"
+      },
+      {
+        "file": "primary.glsl",
+        "program_key": "filter/grade:primary",
+        "status": "generated"
+      },
+      {
+        "file": "vignette.glsl",
+        "program_key": "filter/grade:vignette",
+        "status": "generated"
+      },
+      {
+        "file": "wheels.glsl",
+        "program_key": "filter/grade:wheels",
+        "status": "generated"
+      },
+      {
+        "file": "grain.glsl",
+        "program_key": "filter/grain:grain",
+        "status": "generated"
+      },
+      {
+        "file": "grime.glsl",
+        "program_key": "filter/grime:grime",
+        "status": "generated"
+      },
+      {
+        "file": "halftone.glsl",
+        "program_key": "filter/halftone:halftone",
+        "status": "generated"
+      },
+      {
+        "file": "hatch.glsl",
+        "program_key": "filter/hatch:hatch",
+        "status": "generated"
+      },
+      {
+        "file": "hpBlurH.glsl",
+        "program_key": "filter/highPass:hpBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "hpBlurV.glsl",
+        "program_key": "filter/highPass:hpBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "hpCombine.glsl",
+        "program_key": "filter/highPass:hpCombine",
+        "status": "generated"
+      },
+      {
+        "file": "historicPalette.glsl",
+        "program_key": "filter/historicPalette:historicPalette",
+        "status": "adapter"
+      },
+      {
+        "file": "hs.glsl",
+        "program_key": "filter/hs:hs",
+        "status": "generated"
+      },
+      {
+        "file": "inv.glsl",
+        "program_key": "filter/invert:inv",
+        "status": "generated"
+      },
+      {
+        "file": "lens.glsl",
+        "program_key": "filter/lens:lens",
+        "status": "generated"
+      },
+      {
+        "file": "lensFlare.glsl",
+        "program_key": "filter/lensFlare:lensFlare",
+        "status": "generated"
+      },
+      {
+        "file": "lensWarp.glsl",
+        "program_key": "filter/lensWarp:lensWarp",
+        "status": "generated"
+      },
+      {
+        "file": "lightLeak.glsl",
+        "program_key": "filter/lightLeak:lightLeak",
+        "status": "generated"
+      },
+      {
+        "file": "lighting.glsl",
+        "program_key": "filter/lighting:lighting",
+        "status": "generated"
+      },
+      {
+        "file": "lowPoly.glsl",
+        "program_key": "filter/lowPoly:lowPoly",
+        "status": "generated"
+      },
+      {
+        "file": "median.glsl",
+        "program_key": "filter/median:median",
+        "status": "generated"
+      },
+      {
+        "file": "morphA.glsl",
+        "program_key": "filter/morphology:morphA",
+        "status": "generated"
+      },
+      {
+        "file": "morphB.glsl",
+        "program_key": "filter/morphology:morphB",
+        "status": "generated"
+      },
+      {
+        "file": "mosaicTiles.glsl",
+        "program_key": "filter/mosaicTiles:mosaicTiles",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "filter/motionBlur:copy",
+        "status": "generated"
+      },
+      {
+        "file": "motionBlur.glsl",
+        "program_key": "filter/motionBlur:motionBlur",
+        "status": "generated"
+      },
+      {
+        "file": "normalMap.glsl",
+        "program_key": "filter/normalMap:normalMap",
+        "status": "generated"
+      },
+      {
+        "file": "apply.glsl",
+        "program_key": "filter/normalize:apply",
+        "status": "generated"
+      },
+      {
+        "file": "reduce.glsl",
+        "program_key": "filter/normalize:reduce",
+        "status": "generated"
+      },
+      {
+        "file": "reduceMinmax.glsl",
+        "program_key": "filter/normalize:reduceMinmax",
+        "status": "generated"
+      },
+      {
+        "file": "statsFinal.glsl",
+        "program_key": "filter/normalize:statsFinal",
+        "status": "generated"
+      },
+      {
+        "file": "octaveWarp.glsl",
+        "program_key": "filter/octaveWarp:octaveWarp",
+        "status": "generated"
+      },
+      {
+        "file": "oilFlatten.glsl",
+        "program_key": "filter/oilPaint:oilFlatten",
+        "status": "generated"
+      },
+      {
+        "file": "oilPost.glsl",
+        "program_key": "filter/oilPaint:oilPost",
+        "status": "generated"
+      },
+      {
+        "file": "osd.glsl",
+        "program_key": "filter/osd:osd",
+        "status": "generated"
+      },
+      {
+        "file": "outlineBlend.glsl",
+        "program_key": "filter/outline:outlineBlend",
+        "status": "generated"
+      },
+      {
+        "file": "outlineSobel.glsl",
+        "program_key": "filter/outline:outlineSobel",
+        "status": "generated"
+      },
+      {
+        "file": "outlineValueMap.glsl",
+        "program_key": "filter/outline:outlineValueMap",
+        "status": "generated"
+      },
+      {
+        "file": "palette.glsl",
+        "program_key": "filter/palette:palette",
+        "status": "adapter"
+      },
+      {
+        "file": "parallax.glsl",
+        "program_key": "filter/parallax:parallax",
+        "status": "generated"
+      },
+      {
+        "file": "patchwork.glsl",
+        "program_key": "filter/patchwork:patchwork",
+        "status": "generated"
+      },
+      {
+        "file": "pcBlurH.glsl",
+        "program_key": "filter/photocopy:pcBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "pcBlurV.glsl",
+        "program_key": "filter/photocopy:pcBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "pcCombine.glsl",
+        "program_key": "filter/photocopy:pcCombine",
+        "status": "generated"
+      },
+      {
+        "file": "pinch.glsl",
+        "program_key": "filter/pinch:pinch",
+        "status": "generated"
+      },
+      {
+        "file": "computeRank.glsl",
+        "program_key": "filter/pixelSort:computeRank",
+        "status": "generated"
+      },
+      {
+        "file": "finalize.glsl",
+        "program_key": "filter/pixelSort:finalize",
+        "status": "generated"
+      },
+      {
+        "file": "findBrightest.glsl",
+        "program_key": "filter/pixelSort:findBrightest",
+        "status": "generated"
+      },
+      {
+        "file": "gatherSorted.glsl",
+        "program_key": "filter/pixelSort:gatherSorted",
+        "status": "generated"
+      },
+      {
+        "file": "luminance.glsl",
+        "program_key": "filter/pixelSort:luminance",
+        "status": "generated"
+      },
+      {
+        "file": "prepare.glsl",
+        "program_key": "filter/pixelSort:prepare",
+        "status": "generated"
+      },
+      {
+        "file": "pixels.glsl",
+        "program_key": "filter/pixels:pixels",
+        "status": "generated"
+      },
+      {
+        "file": "pwBlurH.glsl",
+        "program_key": "filter/plasticWrap:pwBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "pwBlurV.glsl",
+        "program_key": "filter/plasticWrap:pwBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "pwSpec.glsl",
+        "program_key": "filter/plasticWrap:pwSpec",
+        "status": "generated"
+      },
+      {
+        "file": "polar.glsl",
+        "program_key": "filter/polar:polar",
+        "status": "generated"
+      },
+      {
+        "file": "pondRipples.glsl",
+        "program_key": "filter/pondRipples:pondRipples",
+        "status": "generated"
+      },
+      {
+        "file": "posterize.glsl",
+        "program_key": "filter/posterize:posterize",
+        "status": "generated"
+      },
+      {
+        "file": "prismaticAberration.glsl",
+        "program_key": "filter/prismaticAberration:prismaticAberration",
+        "status": "generated"
+      },
+      {
+        "file": "nmReindexApply.glsl",
+        "program_key": "filter/reindex:nmReindexApply",
+        "status": "generated"
+      },
+      {
+        "file": "nmReindexReduce.glsl",
+        "program_key": "filter/reindex:nmReindexReduce",
+        "status": "generated"
+      },
+      {
+        "file": "nmReindexStats.glsl",
+        "program_key": "filter/reindex:nmReindexStats",
+        "status": "generated"
+      },
+      {
+        "file": "rlBlurH.glsl",
+        "program_key": "filter/relief:rlBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "rlBlurV.glsl",
+        "program_key": "filter/relief:rlBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "rlShade.glsl",
+        "program_key": "filter/relief:rlShade",
+        "status": "generated"
+      },
+      {
+        "file": "repeat.glsl",
+        "program_key": "filter/repeat:repeat",
+        "status": "generated"
+      },
+      {
+        "file": "reverb.glsl",
+        "program_key": "filter/reverb:reverb",
+        "status": "generated"
+      },
+      {
+        "file": "ridge.glsl",
+        "program_key": "filter/ridge:ridge",
+        "status": "generated"
+      },
+      {
+        "file": "rot.glsl",
+        "program_key": "filter/rotate:rot",
+        "status": "generated"
+      },
+      {
+        "file": "scale.glsl",
+        "program_key": "filter/scale:scale",
+        "status": "generated"
+      },
+      {
+        "file": "scanlineError.glsl",
+        "program_key": "filter/scanlineError:scanlineError",
+        "status": "generated"
+      },
+      {
+        "file": "scatterJitter.glsl",
+        "program_key": "filter/scatter:scatterJitter",
+        "status": "generated"
+      },
+      {
+        "file": "scatterSmooth.glsl",
+        "program_key": "filter/scatter:scatterSmooth",
+        "status": "generated"
+      },
+      {
+        "file": "scratchesBlend.glsl",
+        "program_key": "filter/scratches:scratchesBlend",
+        "status": "generated"
+      },
+      {
+        "file": "scroll.glsl",
+        "program_key": "filter/scroll:scroll",
+        "status": "generated"
+      },
+      {
+        "file": "seamless.glsl",
+        "program_key": "filter/seamless:seamless",
+        "status": "generated"
+      },
+      {
+        "file": "sharpen.glsl",
+        "program_key": "filter/sharpen:sharpen",
+        "status": "generated"
+      },
+      {
+        "file": "chromaticAberration.glsl",
+        "program_key": "filter/simpleAberration:chromaticAberration",
+        "status": "generated"
+      },
+      {
+        "file": "sine.glsl",
+        "program_key": "filter/sine:sine",
+        "status": "generated"
+      },
+      {
+        "file": "skew.glsl",
+        "program_key": "filter/skew:skew",
+        "status": "generated"
+      },
+      {
+        "file": "smoothBlend.glsl",
+        "program_key": "filter/smooth:smoothBlend",
+        "status": "generated"
+      },
+      {
+        "file": "smoothEdge.glsl",
+        "program_key": "filter/smooth:smoothEdge",
+        "status": "generated"
+      },
+      {
+        "file": "smoothstep.glsl",
+        "program_key": "filter/smoothstep:smoothstep",
+        "status": "generated"
+      },
+      {
+        "file": "snow.glsl",
+        "program_key": "filter/snow:snow",
+        "status": "generated"
+      },
+      {
+        "file": "sobel.glsl",
+        "program_key": "filter/sobel:sobel",
+        "status": "generated"
+      },
+      {
+        "file": "spatter.glsl",
+        "program_key": "filter/spatter:spatter",
+        "status": "generated"
+      },
+      {
+        "file": "spinBlur.glsl",
+        "program_key": "filter/spinBlur:spinBlur",
+        "status": "generated"
+      },
+      {
+        "file": "spiral.glsl",
+        "program_key": "filter/spiral:spiral",
+        "status": "generated"
+      },
+      {
+        "file": "spookyTicker.glsl",
+        "program_key": "filter/spookyTicker:spookyTicker",
+        "status": "generated"
+      },
+      {
+        "file": "stBlurH.glsl",
+        "program_key": "filter/stamp:stBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "stBlurV.glsl",
+        "program_key": "filter/stamp:stBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "stThreshold.glsl",
+        "program_key": "filter/stamp:stThreshold",
+        "status": "generated"
+      },
+      {
+        "file": "step.glsl",
+        "program_key": "filter/step:step",
+        "status": "generated"
+      },
+      {
+        "file": "stipple.glsl",
+        "program_key": "filter/stipple:stipple",
+        "status": "generated"
+      },
+      {
+        "file": "strayHairBlend.glsl",
+        "program_key": "filter/strayHair:strayHairBlend",
+        "status": "generated"
+      },
+      {
+        "file": "stkPost.glsl",
+        "program_key": "filter/strokes:stkPost",
+        "status": "generated"
+      },
+      {
+        "file": "stkSmear.glsl",
+        "program_key": "filter/strokes:stkSmear",
+        "status": "generated"
+      },
+      {
+        "file": "delayShift.glsl",
+        "program_key": "filter/temporalAberration:delayShift",
+        "status": "generated"
+      },
+      {
+        "file": "temporalAberration.glsl",
+        "program_key": "filter/temporalAberration:temporalAberration",
+        "status": "generated"
+      },
+      {
+        "file": "tetraColorArray.glsl",
+        "program_key": "filter/tetraColorArray:tetraColorArray",
+        "status": "generated"
+      },
+      {
+        "file": "tetraCosine.glsl",
+        "program_key": "filter/tetraCosine:tetraCosine",
+        "status": "generated"
+      },
+      {
+        "file": "text.glsl",
+        "program_key": "filter/text:text",
+        "status": "generated"
+      },
+      {
+        "file": "texture.glsl",
+        "program_key": "filter/texture:texture",
+        "status": "generated"
+      },
+      {
+        "file": "thresh.glsl",
+        "program_key": "filter/threshold:thresh",
+        "status": "generated"
+      },
+      {
+        "file": "tile.glsl",
+        "program_key": "filter/tile:tile",
+        "status": "generated"
+      },
+      {
+        "file": "colorize.glsl",
+        "program_key": "filter/tint:colorize",
+        "status": "generated"
+      },
+      {
+        "file": "translate.glsl",
+        "program_key": "filter/translate:translate",
+        "status": "generated"
+      },
+      {
+        "file": "tunnel.glsl",
+        "program_key": "filter/tunnel:tunnel",
+        "status": "generated"
+      },
+      {
+        "file": "usmBlurH.glsl",
+        "program_key": "filter/unsharpMask:usmBlurH",
+        "status": "generated"
+      },
+      {
+        "file": "usmBlurV.glsl",
+        "program_key": "filter/unsharpMask:usmBlurV",
+        "status": "generated"
+      },
+      {
+        "file": "usmCombine.glsl",
+        "program_key": "filter/unsharpMask:usmCombine",
+        "status": "generated"
+      },
+      {
+        "file": "upsample.glsl",
+        "program_key": "filter/vaseline:upsample",
+        "status": "generated"
+      },
+      {
+        "file": "vignette.glsl",
+        "program_key": "filter/vignette:vignette",
+        "status": "generated"
+      },
+      {
+        "file": "warp.glsl",
+        "program_key": "filter/warp:warp",
+        "status": "generated"
+      },
+      {
+        "file": "wcComposite.glsl",
+        "program_key": "filter/watercolor:wcComposite",
+        "status": "generated"
+      },
+      {
+        "file": "wcSeed.glsl",
+        "program_key": "filter/watercolor:wcSeed",
+        "status": "generated"
+      },
+      {
+        "file": "wcSimplify.glsl",
+        "program_key": "filter/watercolor:wcSimplify",
+        "status": "generated"
+      },
+      {
+        "file": "waves.glsl",
+        "program_key": "filter/waves:waves",
+        "status": "generated"
+      },
+      {
+        "file": "wind.glsl",
+        "program_key": "filter/wind:wind",
+        "status": "generated"
+      },
+      {
+        "file": "wobble.glsl",
+        "program_key": "filter/wobble:wobble",
+        "status": "generated"
+      },
+      {
+        "file": "blend.glsl",
+        "program_key": "filter/wormhole:blend",
+        "status": "generated"
+      },
+      {
+        "file": "clear.glsl",
+        "program_key": "filter/wormhole:clear",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "filter/wormhole:deposit",
+        "status": "generated"
+      },
+      {
+        "file": "zoomBlur.glsl",
+        "program_key": "filter/zoomBlur:zoomBlur",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "filter3d/flow3d:agent",
+        "status": "generated"
+      },
+      {
+        "file": "blend.glsl",
+        "program_key": "filter3d/flow3d:blend",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "filter3d/flow3d:copy",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "filter3d/flow3d:deposit",
+        "status": "adapter"
+      },
+      {
+        "file": "diffuse.glsl",
+        "program_key": "filter3d/flow3d:diffuse",
+        "status": "generated"
+      },
+      {
+        "file": "palette3d.glsl",
+        "program_key": "filter3d/palette3d:palette3d",
+        "status": "generated"
+      },
+      {
+        "file": "alphaMask.glsl",
+        "program_key": "mixer/alphaMask:alphaMask",
+        "status": "generated"
+      },
+      {
+        "file": "applyMode.glsl",
+        "program_key": "mixer/applyMode:applyMode",
+        "status": "generated"
+      },
+      {
+        "file": "blendMode.glsl",
+        "program_key": "mixer/blendMode:blendMode",
+        "status": "generated"
+      },
+      {
+        "file": "cellSplit.glsl",
+        "program_key": "mixer/cellSplit:cellSplit",
+        "status": "generated"
+      },
+      {
+        "file": "centerMask.glsl",
+        "program_key": "mixer/centerMask:centerMask",
+        "status": "generated"
+      },
+      {
+        "file": "channelCombine.glsl",
+        "program_key": "mixer/channelCombine:channelCombine",
+        "status": "generated"
+      },
+      {
+        "file": "distortion.glsl",
+        "program_key": "mixer/distortion:distortion",
+        "status": "generated"
+      },
+      {
+        "file": "focusBlur.glsl",
+        "program_key": "mixer/focusBlur:focusBlur",
+        "status": "generated"
+      },
+      {
+        "file": "mashup.glsl",
+        "program_key": "mixer/mashup:mashup",
+        "status": "generated"
+      },
+      {
+        "file": "patternMix.glsl",
+        "program_key": "mixer/patternMix:patternMix",
+        "status": "generated"
+      },
+      {
+        "file": "shadow.glsl",
+        "program_key": "mixer/shadow:shadow",
+        "status": "generated"
+      },
+      {
+        "file": "shapeMask.glsl",
+        "program_key": "mixer/shapeMask:shapeMask",
+        "status": "generated"
+      },
+      {
+        "file": "split.glsl",
+        "program_key": "mixer/split:split",
+        "status": "generated"
+      },
+      {
+        "file": "thresholdMix.glsl",
+        "program_key": "mixer/thresholdMix:thresholdMix",
+        "status": "generated"
+      },
+      {
+        "file": "uvRemap.glsl",
+        "program_key": "mixer/uvRemap:uvRemap",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/attractor:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/attractor:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/buddhabrot:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/buddhabrot:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "zWrite.glsl",
+        "program_key": "points/buddhabrot:zWrite",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/dla:agent",
+        "status": "generated"
+      },
+      {
+        "file": "copyGrid.glsl",
+        "program_key": "points/dla:copyGrid",
+        "status": "generated"
+      },
+      {
+        "file": "depositGrid.frag",
+        "program_key": "points/dla:depositGrid",
+        "status": "adapter"
+      },
+      {
+        "file": "initGrid.glsl",
+        "program_key": "points/dla:initGrid",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/dla:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/flock:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/flock:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/flow:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/flow:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/heightGrid:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/heightGrid:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/hydraulic:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/hydraulic:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agentField.glsl",
+        "program_key": "points/lenia:agentField",
+        "status": "generated"
+      },
+      {
+        "file": "clear.glsl",
+        "program_key": "points/lenia:clear",
+        "status": "generated"
+      },
+      {
+        "file": "convolve.glsl",
+        "program_key": "points/lenia:convolve",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "points/lenia:deposit",
+        "status": "adapter"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/lenia:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/life:agent",
+        "status": "generated"
+      },
+      {
+        "file": "matrix.glsl",
+        "program_key": "points/life:matrix",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/life:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/physarum:agent",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "points/physarum:deposit",
+        "status": "adapter"
+      },
+      {
+        "file": "diffuse.glsl",
+        "program_key": "points/physarum:diffuse",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/physarum:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "agent.glsl",
+        "program_key": "points/physical:agent",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "points/physical:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "loopBegin.glsl",
+        "program_key": "render/loopBegin:loopBegin",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "render/loopEnd:copy",
+        "status": "generated"
+      },
+      {
+        "file": "blend.glsl",
+        "program_key": "render/pointsBillboardRender:blend",
+        "status": "generated"
+      },
+      {
+        "file": "clearDefocus.glsl",
+        "program_key": "render/pointsBillboardRender:clearDefocus",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "render/pointsBillboardRender:copy",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "render/pointsBillboardRender:deposit",
+        "status": "adapter"
+      },
+      {
+        "file": "depthKeys.glsl",
+        "program_key": "render/pointsBillboardRender:depthKeys",
+        "status": "generated"
+      },
+      {
+        "file": "depthMerge.glsl",
+        "program_key": "render/pointsBillboardRender:depthMerge",
+        "status": "generated"
+      },
+      {
+        "file": "diffuse.glsl",
+        "program_key": "render/pointsBillboardRender:diffuse",
+        "status": "generated"
+      },
+      {
+        "file": "spriteMean.glsl",
+        "program_key": "render/pointsBillboardRender:spriteMean",
+        "status": "generated"
+      },
+      {
+        "file": "spriteMeanTiles.glsl",
+        "program_key": "render/pointsBillboardRender:spriteMeanTiles",
+        "status": "generated"
+      },
+      {
+        "file": "init.glsl",
+        "program_key": "render/pointsEmit:init",
+        "status": "generated"
+      },
+      {
+        "file": "passthrough.glsl",
+        "program_key": "render/pointsEmit:passthrough",
+        "status": "generated"
+      },
+      {
+        "file": "blend.glsl",
+        "program_key": "render/pointsRender:blend",
+        "status": "generated"
+      },
+      {
+        "file": "copy.glsl",
+        "program_key": "render/pointsRender:copy",
+        "status": "generated"
+      },
+      {
+        "file": "deposit.frag",
+        "program_key": "render/pointsRender:deposit",
+        "status": "adapter"
+      },
+      {
+        "file": "diffuse.glsl",
+        "program_key": "render/pointsRender:diffuse",
+        "status": "generated"
+      },
+      {
+        "file": "render3d.glsl",
+        "program_key": "render/render3d:render3d",
+        "status": "generated"
+      },
+      {
+        "file": "renderCubemap3d.glsl",
+        "program_key": "render/renderCubemap3d:renderCubemap3d",
+        "status": "generated"
+      },
+      {
+        "file": "renderCubemapSurface.glsl",
+        "program_key": "render/renderCubemapSurface:renderCubemapSurface",
+        "status": "generated"
+      },
+      {
+        "file": "landscape.glsl",
+        "program_key": "render/renderLandscape3d:landscape",
+        "status": "generated"
+      },
+      {
+        "file": "renderLit3d.glsl",
+        "program_key": "render/renderLit3d:renderLit3d",
+        "status": "generated"
+      },
+      {
+        "file": "bitwise.glsl",
+        "program_key": "synth/bitwise:bitwise",
+        "status": "generated"
+      },
+      {
+        "file": "cell.glsl",
+        "program_key": "synth/cell:cell",
+        "status": "generated"
+      },
+      {
+        "file": "ca.glsl",
+        "program_key": "synth/cellularAutomata:ca",
+        "status": "generated"
+      },
+      {
+        "file": "caFb.glsl",
+        "program_key": "synth/cellularAutomata:caFb",
+        "status": "generated"
+      },
+      {
+        "file": "curl.glsl",
+        "program_key": "synth/curl:curl",
+        "status": "generated"
+      },
+      {
+        "file": "gabor.glsl",
+        "program_key": "synth/gabor:gabor",
+        "status": "generated"
+      },
+      {
+        "file": "gradient.glsl",
+        "program_key": "synth/gradient:gradient",
+        "status": "generated"
+      },
+      {
+        "file": "julia.glsl",
+        "program_key": "synth/julia:julia",
+        "status": "adapter"
+      },
+      {
+        "file": "mandala.glsl",
+        "program_key": "synth/mandala:mandala",
+        "status": "generated"
+      },
+      {
+        "file": "mandelbrot.glsl",
+        "program_key": "synth/mandelbrot:mandelbrot",
+        "status": "generated"
+      },
+      {
+        "file": "mediaInput.glsl",
+        "program_key": "synth/media:mediaInput",
+        "status": "generated"
+      },
+      {
+        "file": "mnca.glsl",
+        "program_key": "synth/mnca:mnca",
+        "status": "generated"
+      },
+      {
+        "file": "mncaFb.glsl",
+        "program_key": "synth/mnca:mncaFb",
+        "status": "generated"
+      },
+      {
+        "file": "modPattern.glsl",
+        "program_key": "synth/modPattern:modPattern",
+        "status": "generated"
+      },
+      {
+        "file": "ns.glsl",
+        "program_key": "synth/navierStokes:ns",
+        "status": "generated"
+      },
+      {
+        "file": "nsAdvect.glsl",
+        "program_key": "synth/navierStokes:nsAdvect",
+        "status": "generated"
+      },
+      {
+        "file": "nsDivergence.glsl",
+        "program_key": "synth/navierStokes:nsDivergence",
+        "status": "generated"
+      },
+      {
+        "file": "nsGradient.glsl",
+        "program_key": "synth/navierStokes:nsGradient",
+        "status": "generated"
+      },
+      {
+        "file": "nsPressure.glsl",
+        "program_key": "synth/navierStokes:nsPressure",
+        "status": "generated"
+      },
+      {
+        "file": "nsSmooth.glsl",
+        "program_key": "synth/navierStokes:nsSmooth",
+        "status": "generated"
+      },
+      {
+        "file": "nsSplat.glsl",
+        "program_key": "synth/navierStokes:nsSplat",
+        "status": "generated"
+      },
+      {
+        "file": "newton.glsl",
+        "program_key": "synth/newton:newton",
+        "status": "generated"
+      },
+      {
+        "file": "noise.glsl",
+        "program_key": "synth/noise:noise",
+        "status": "generated"
+      },
+      {
+        "file": "osc2d.glsl",
+        "program_key": "synth/osc2d:osc2d",
+        "status": "generated"
+      },
+      {
+        "file": "pattern.glsl",
+        "program_key": "synth/pattern:pattern",
+        "status": "generated"
+      },
+      {
+        "file": "perlin.glsl",
+        "program_key": "synth/perlin:perlin",
+        "status": "generated"
+      },
+      {
+        "file": "shape.glsl",
+        "program_key": "synth/polygon:shape",
+        "status": "generated"
+      },
+      {
+        "file": "rd.glsl",
+        "program_key": "synth/reactionDiffusion:rd",
+        "status": "generated"
+      },
+      {
+        "file": "rdFb.glsl",
+        "program_key": "synth/reactionDiffusion:rdFb",
+        "status": "generated"
+      },
+      {
+        "file": "remap.glsl",
+        "program_key": "synth/remap:remap",
+        "status": "generated"
+      },
+      {
+        "file": "sacredGeometry.glsl",
+        "program_key": "synth/sacredGeometry:sacredGeometry",
+        "status": "generated"
+      },
+      {
+        "file": "shape.glsl",
+        "program_key": "synth/shape:shape",
+        "status": "generated"
+      },
+      {
+        "file": "solid.glsl",
+        "program_key": "synth/solid:solid",
+        "status": "generated"
+      },
+      {
+        "file": "subdivide.glsl",
+        "program_key": "synth/subdivide:subdivide",
+        "status": "generated"
+      },
+      {
+        "file": "testPattern.glsl",
+        "program_key": "synth/testPattern:testPattern",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/cell3d:precompute",
+        "status": "generated"
+      },
+      {
+        "file": "simulate.glsl",
+        "program_key": "synth3d/cellularAutomata3d:simulate",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/flythrough3d:precompute",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/fractal3d:precompute",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/heightmap3d:precompute",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/noise3d:precompute",
+        "status": "generated"
+      },
+      {
+        "file": "simulate.glsl",
+        "program_key": "synth3d/reactionDiffusion3d:simulate",
+        "status": "generated"
+      },
+      {
+        "file": "precompute.glsl",
+        "program_key": "synth3d/shape3d:precompute",
+        "status": "generated"
+      }
+    ]
+  },
+  "effects": {
+    "classicNoisedeck/noise3d": {
+      "func": "noise3d",
+      "kind": "generator",
+      "namespace": "classicNoisedeck",
+      "params": {
+        "colorMode": {
+          "choices": {
+            "depthMap": 8,
+            "hsv": 6,
+            "mono": 0,
+            "surfaceNormal": 7
+          },
+          "default": 6,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "hueRange": {
+          "default": 10,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "hueRange"
+        },
+        "hueRotation": {
+          "default": 0,
+          "max": 360,
+          "min": 0,
+          "type": "float",
+          "uniform": "hueRotation"
+        },
+        "offsetX": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "offsetX"
+        },
+        "offsetY": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "offsetY"
+        },
+        "ridges": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "ridges"
+        },
+        "scale": {
+          "default": 25,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "scale"
+        },
+        "seed": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "speed": {
+          "default": 1,
+          "max": 10,
+          "min": -10,
+          "type": "int",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "type": {
+          "choices": {
+            "cubes": 50,
+            "simplex": 12,
+            "sine": 30,
+            "spheres": 40,
+            "wavyPlaneLower": 61,
+            "wavyPlaneUpper": 62,
+            "wavyPlanes": 60
+          },
+          "default": 12,
+          "define": "NOISE_TYPE",
+          "type": "int"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {},
+          "key": "classicNoisedeck/noise3d:noise3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "noise3d"
+        }
+      ],
+      "textures": {}
+    },
+    "classicNoisedeck/shapes3d": {
+      "func": "shapes3d",
+      "kind": "mixer",
+      "namespace": "classicNoisedeck",
+      "params": {
+        "animation": {
+          "choices": {
+            "rotateScene": 0,
+            "rotateShape": 1
+          },
+          "default": 1,
+          "type": "int",
+          "uniform": "animation"
+        },
+        "bgAlpha": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "blendMode": {
+          "choices": {
+            "aMinusB": 51,
+            "bMinusA": 50,
+            "intersect": 40,
+            "smoothAMinusB": 26,
+            "smoothBMinusA": 25,
+            "smoothIntersect": 20,
+            "smoothUnion": 10,
+            "union": 30
+          },
+          "default": 10,
+          "define": "BLEND_MODE",
+          "type": "int"
+        },
+        "cameraDist": {
+          "default": 8,
+          "max": 20,
+          "min": 5,
+          "type": "float",
+          "uniform": "cameraDist"
+        },
+        "colorMode": {
+          "choices": {
+            "depth": 0,
+            "diffuse": 1,
+            "palette": 10
+          },
+          "default": 10,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "cyclePalette": {
+          "choices": {
+            "backward": -1,
+            "forward": 1,
+            "off": 0
+          },
+          "default": 1,
+          "type": "int",
+          "uniform": "cyclePalette"
+        },
+        "flip": {
+          "default": 0,
+          "max": 180,
+          "min": -180,
+          "type": "int",
+          "uniform": "flip"
+        },
+        "flipSpeed": {
+          "default": 2,
+          "max": 10,
+          "min": -10,
+          "type": "float",
+          "uniform": "flipSpeed"
+        },
+        "flythroughSpeed": {
+          "default": 0,
+          "max": 10,
+          "min": -10,
+          "type": "float",
+          "uniform": "flythroughSpeed"
+        },
+        "palette": {
+          "choices": {
+            "afterimage": 3,
+            "barstow": 4,
+            "bloob": 5,
+            "blueSkies": 6,
+            "brushedMetal": 7,
+            "burningSky": 8,
+            "california": 9,
+            "columbia": 10,
+            "cottonCandy": 11,
+            "darkSatin": 12,
+            "dealerHat": 13,
+            "dreamy": 14,
+            "eventHorizon": 15,
+            "fiveG": 2,
+            "ghostly": 16,
+            "grayscale": 17,
+            "hazySunset": 18,
+            "heatmap": 19,
+            "hypercolor": 20,
+            "jester": 21,
+            "justBlue": 22,
+            "justCyan": 23,
+            "justGreen": 24,
+            "justPurple": 25,
+            "justRed": 26,
+            "justYellow": 27,
+            "mars": 28,
+            "modesto": 29,
+            "moss": 30,
+            "neptune": 31,
+            "netOfGems": 32,
+            "none": 0,
+            "organic": 33,
+            "papaya": 34,
+            "radioactive": 35,
+            "royal": 36,
+            "santaCruz": 37,
+            "seventiesShirt": 1,
+            "sherbet": 38,
+            "sherbetDouble": 39,
+            "silvermane": 40,
+            "skykissed": 41,
+            "solaris": 42,
+            "spooky": 43,
+            "springtime": 44,
+            "sproingtime": 45,
+            "sulphur": 46,
+            "summoning": 47,
+            "superhero": 48,
+            "toxic": 49,
+            "tropicalia": 50,
+            "tungsten": 51,
+            "vaporwave": 52,
+            "vibrant": 53,
+            "vintage": 54,
+            "vintagePhoto": 55
+          },
+          "default": 40,
+          "type": "palette",
+          "uniform": "palette"
+        },
+        "paletteAmp": {
+          "default": [
+            0.5,
+            0.5,
+            0.5
+          ],
+          "type": "vec3",
+          "uniform": "paletteAmp"
+        },
+        "paletteFreq": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "vec3",
+          "uniform": "paletteFreq"
+        },
+        "paletteMode": {
+          "default": 0,
+          "type": "int",
+          "uniform": "paletteMode"
+        },
+        "paletteOffset": {
+          "default": [
+            0.83,
+            0.6,
+            0.63
+          ],
+          "type": "vec3",
+          "uniform": "paletteOffset"
+        },
+        "palettePhase": {
+          "default": [
+            0.3,
+            0.1,
+            0
+          ],
+          "type": "vec3",
+          "uniform": "palettePhase"
+        },
+        "repeatPalette": {
+          "default": 1,
+          "max": 10,
+          "min": 1,
+          "type": "int",
+          "uniform": "repeatPalette"
+        },
+        "repetition": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "repetition"
+        },
+        "rotatePalette": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "rotatePalette"
+        },
+        "shapeA": {
+          "choices": {
+            "capsuleHoriz": 70,
+            "capsuleVert": 60,
+            "cube": 10,
+            "cylinderHoriz": 50,
+            "cylinderVert": 40,
+            "octahedron": 80,
+            "sphere": 20,
+            "torusHoriz": 31,
+            "torusVert": 30
+          },
+          "default": 30,
+          "define": "SHAPE_A",
+          "type": "int"
+        },
+        "shapeAScale": {
+          "default": 64,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "shapeAScale"
+        },
+        "shapeAThickness": {
+          "default": 5,
+          "max": 50,
+          "min": 1,
+          "type": "float",
+          "uniform": "shapeAThickness"
+        },
+        "shapeB": {
+          "choices": {
+            "capsuleHoriz": 70,
+            "capsuleVert": 60,
+            "cube": 10,
+            "cylinderHoriz": 50,
+            "cylinderVert": 40,
+            "octahedron": 80,
+            "sphere": 20,
+            "torusHoriz": 31,
+            "torusVert": 30
+          },
+          "default": 10,
+          "define": "SHAPE_B",
+          "type": "int"
+        },
+        "shapeBScale": {
+          "default": 27,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "shapeBScale"
+        },
+        "shapeBThickness": {
+          "default": 5,
+          "max": 50,
+          "min": 1,
+          "type": "float",
+          "uniform": "shapeBThickness"
+        },
+        "smoothness": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "smoothness"
+        },
+        "spacing": {
+          "default": 10,
+          "max": 20,
+          "min": 5,
+          "type": "int",
+          "uniform": "spacing"
+        },
+        "spin": {
+          "default": 0,
+          "max": 180,
+          "min": -180,
+          "type": "float",
+          "uniform": "spin"
+        },
+        "spinSpeed": {
+          "default": 2,
+          "max": 10,
+          "min": -10,
+          "type": "float",
+          "uniform": "spinSpeed"
+        },
+        "tex": {
+          "default": "none",
+          "type": "surface"
+        },
+        "weight": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "weight"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "inputTex": "tex"
+          },
+          "key": "classicNoisedeck/shapes3d:shapes3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "shapes3d"
+        }
+      ],
+      "textures": {}
+    },
+    "filter/temporalAberration": {
+      "func": "temporalAberration",
+      "kind": "filter",
+      "namespace": "filter",
+      "params": {
+        "blueDelay": {
+          "default": 8,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "blueDelay"
+        },
+        "greenDelay": {
+          "default": 4,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "greenDelay"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "redDelay": {
+          "default": 0,
+          "max": 8,
+          "min": 0,
+          "type": "float",
+          "uniform": "redDelay"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "h1": "_h1",
+            "h2": "_h2",
+            "h3": "_h3",
+            "h4": "_h4",
+            "h5": "_h5",
+            "h6": "_h6",
+            "h7": "_h7",
+            "h8": "_h8",
+            "inputTex": "inputTex"
+          },
+          "key": "filter/temporalAberration:temporalAberration",
+          "name": "main",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "temporalAberration"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h7"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift8",
+          "outputs": {
+            "fragColor": "_h8"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h6"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift7",
+          "outputs": {
+            "fragColor": "_h7"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h5"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift6",
+          "outputs": {
+            "fragColor": "_h6"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h4"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift5",
+          "outputs": {
+            "fragColor": "_h5"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h3"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift4",
+          "outputs": {
+            "fragColor": "_h4"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h2"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift3",
+          "outputs": {
+            "fragColor": "_h3"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "_h1"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift2",
+          "outputs": {
+            "fragColor": "_h2"
+          },
+          "program": "delayShift"
+        },
+        {
+          "inputs": {
+            "srcTex": "inputTex"
+          },
+          "key": "filter/temporalAberration:delayShift",
+          "name": "shift1",
+          "outputs": {
+            "fragColor": "_h1"
+          },
+          "program": "delayShift"
+        }
+      ],
+      "textures": {
+        "_h1": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h2": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h3": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h4": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h5": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h6": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h7": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        },
+        "_h8": {
+          "format": "rgba8unorm",
+          "height": "input",
+          "width": "input"
+        }
+      }
+    },
+    "filter3d/palette3d": {
+      "func": "palette3d",
+      "kind": "filter",
+      "namespace": "filter3d",
+      "params": {
+        "alpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "alpha"
+        },
+        "index": {
+          "choices": {
+            "afterimage": 3,
+            "barstow": 4,
+            "bloob": 5,
+            "blueSkies": 6,
+            "brushedMetal": 7,
+            "burningSky": 8,
+            "california": 9,
+            "columbia": 10,
+            "cottonCandy": 11,
+            "darkSatin": 12,
+            "dealerHat": 13,
+            "dreamy": 14,
+            "eventHorizon": 15,
+            "fiveG": 2,
+            "ghostly": 16,
+            "grayscale": 17,
+            "hazySunset": 18,
+            "heatmap": 19,
+            "hypercolor": 20,
+            "jester": 21,
+            "justBlue": 22,
+            "justCyan": 23,
+            "justGreen": 24,
+            "justPurple": 25,
+            "justRed": 26,
+            "justYellow": 27,
+            "mars": 28,
+            "modesto": 29,
+            "moss": 30,
+            "neptune": 31,
+            "netOfGems": 32,
+            "none": 0,
+            "organic": 33,
+            "papaya": 34,
+            "radioactive": 35,
+            "royal": 36,
+            "santaCruz": 37,
+            "seventiesShirt": 1,
+            "sherbet": 38,
+            "sherbetDouble": 39,
+            "silvermane": 40,
+            "skykissed": 41,
+            "solaris": 42,
+            "spooky": 43,
+            "springtime": 44,
+            "sproingtime": 45,
+            "sulphur": 46,
+            "summoning": 47,
+            "superhero": 48,
+            "toxic": 49,
+            "tropicalia": 50,
+            "tungsten": 51,
+            "vaporwave": 52,
+            "vibrant": 53,
+            "vintage": 54,
+            "vintagePhoto": 55
+          },
+          "default": "palette.brushedMetal",
+          "enum": "palette",
+          "type": "member",
+          "uniform": "paletteIndex"
+        },
+        "offset": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "offset"
+        },
+        "repeat": {
+          "default": 1,
+          "max": 10,
+          "min": 1,
+          "type": "int",
+          "uniform": "repeat"
+        },
+        "rotation": {
+          "choices": {
+            "back": -1,
+            "fwd": 1,
+            "none": 0
+          },
+          "default": 0,
+          "type": "float",
+          "uniform": "rotation"
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "inputTex3d": "inputTex3d"
+          },
+          "key": "filter3d/palette3d:palette3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "volumeCache"
+          },
+          "program": "palette3d",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "inputOverride": "inputTex3d",
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "inputOverride": "inputTex3d",
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
+    "render/loopEnd": {
+      "func": "loopEnd",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {},
+      "passes": [
+        {
+          "inputs": {
+            "inputTex": "inputTex"
+          },
+          "key": "render/loopEnd:copy",
+          "name": "feedback",
+          "outputs": {
+            "fragColor": "global_accum"
+          },
+          "program": "copy"
+        },
+        {
+          "inputs": {
+            "inputTex": "inputTex"
+          },
+          "key": "render/loopEnd:copy",
+          "name": "output",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "copy"
+        }
+      ],
+      "textures": {}
+    },
+    "render/render3d": {
+      "func": "render3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "filtering": {
+          "choices": {
+            "isosurface": 0,
+            "voxel": 1
+          },
+          "default": 0,
+          "define": "FILTERING",
+          "type": "int"
+        },
+        "invert": {
+          "default": false,
+          "define": "INVERT",
+          "type": "boolean"
+        },
+        "orbitSpeed": {
+          "default": 1,
+          "max": 5,
+          "min": -5,
+          "type": "int",
+          "uniform": "orbitSpeed"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/render3d:render3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "render3d"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "render/renderCubemap3d": {
+      "func": "renderCubemap3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cubeBasis": {
+          "default": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "type": "mat3",
+          "uniform": "cubeBasis"
+        },
+        "filtering": {
+          "choices": {
+            "isosurface": 0,
+            "voxel": 1
+          },
+          "default": 0,
+          "define": "FILTERING",
+          "type": "int"
+        },
+        "invert": {
+          "default": false,
+          "define": "INVERT",
+          "type": "boolean"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderCubemap3d:renderCubemap3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderCubemap3d"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "render/renderCubemapSurface": {
+      "func": "renderCubemapSurface",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "absorption": {
+          "default": 1,
+          "max": 4,
+          "min": 0,
+          "type": "float",
+          "uniform": "absorption"
+        },
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cubeBasis": {
+          "default": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "type": "mat3",
+          "uniform": "cubeBasis"
+        },
+        "density": {
+          "default": 4,
+          "max": 20,
+          "min": 0,
+          "type": "float",
+          "uniform": "density"
+        },
+        "emission": {
+          "default": 1,
+          "max": 4,
+          "min": 0,
+          "type": "float",
+          "uniform": "emission"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderCubemapSurface:renderCubemapSurface",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderCubemapSurface"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "render/renderLandscape3d": {
+      "func": "renderLandscape3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "ambient": {
+          "default": 0.35,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "ambient"
+        },
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.025,
+            0.045,
+            0.075
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "densitySource": {
+          "choices": {
+            "geometry": 0
+          },
+          "default": 0,
+          "type": "int"
+        },
+        "diffuseIntensity": {
+          "default": 0.85,
+          "max": 2,
+          "min": 0,
+          "type": "float",
+          "uniform": "diffuseIntensity"
+        },
+        "fieldOfView": {
+          "default": 60,
+          "max": 150,
+          "min": 10,
+          "type": "float",
+          "uniform": "fieldOfView"
+        },
+        "lightDirection": {
+          "default": [
+            -0.4,
+            0.85,
+            0.6
+          ],
+          "max": 1,
+          "min": -1,
+          "type": "vec3",
+          "uniform": "lightDirection"
+        },
+        "panX": {
+          "default": 0,
+          "max": 1,
+          "min": -1,
+          "type": "float",
+          "uniform": "panX"
+        },
+        "panY": {
+          "default": 0,
+          "max": 1,
+          "min": -1,
+          "type": "float",
+          "uniform": "panY"
+        },
+        "posX": {
+          "default": 0,
+          "max": 50,
+          "min": -50,
+          "type": "float",
+          "uniform": "posX"
+        },
+        "posY": {
+          "default": 0,
+          "max": 50,
+          "min": -50,
+          "type": "float",
+          "uniform": "posY"
+        },
+        "posZ": {
+          "default": 0,
+          "max": 200,
+          "min": -200,
+          "type": "float",
+          "uniform": "posZ"
+        },
+        "rotateX": {
+          "default": 0.3,
+          "max": 6.283185,
+          "min": 0,
+          "type": "float",
+          "uniform": "rotateX"
+        },
+        "rotateY": {
+          "default": 0,
+          "max": 6.283185,
+          "min": 0,
+          "type": "float",
+          "uniform": "rotateY"
+        },
+        "rotateZ": {
+          "default": 0,
+          "max": 6.283185,
+          "min": 0,
+          "type": "float",
+          "uniform": "rotateZ"
+        },
+        "specularIntensity": {
+          "default": 0.12,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "specularIntensity"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "viewMode": {
+          "choices": {
+            "ortho": 1,
+            "perspective": 2
+          },
+          "default": 1,
+          "define": "VIEW_MODE",
+          "type": "int"
+        },
+        "viewScale": {
+          "default": 0.8,
+          "max": 10,
+          "min": 0.1,
+          "type": "float",
+          "uniform": "viewScale"
+        },
+        "volumeSize": {
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        },
+        "zoom": {
+          "default": 1,
+          "max": 4,
+          "min": 0.25,
+          "type": "float",
+          "uniform": "zoom"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderLandscape3d:landscape",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "landscape",
+          "type": "compute"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "screen",
+          "width": "screen"
+        }
+      }
+    },
+    "render/renderLit3d": {
+      "func": "renderLit3d",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "ambientColor": {
+          "default": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "type": "color",
+          "uniform": "ambientColor"
+        },
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0,
+            0,
+            0
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cameraPosition": {
+          "default": [
+            0,
+            0.1425,
+            1
+          ],
+          "max": [
+            1,
+            1,
+            1
+          ],
+          "min": [
+            -1,
+            -1,
+            -1
+          ],
+          "type": "vec3",
+          "uniform": "cameraPosition"
+        },
+        "diffuseColor": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "color",
+          "uniform": "diffuseColor"
+        },
+        "diffuseIntensity": {
+          "default": 0.7,
+          "max": 2,
+          "min": 0,
+          "type": "float",
+          "uniform": "diffuseIntensity"
+        },
+        "invert": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "invert"
+        },
+        "lightDirection": {
+          "default": [
+            0.5,
+            0.5,
+            1
+          ],
+          "type": "vec3",
+          "uniform": "lightDirection"
+        },
+        "orbitSpeed": {
+          "default": 1,
+          "max": 5,
+          "min": -5,
+          "type": "int",
+          "uniform": "orbitSpeed",
+          "zero": 0
+        },
+        "rimIntensity": {
+          "default": 0.15,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "rimIntensity"
+        },
+        "rimPower": {
+          "default": 3,
+          "max": 8,
+          "min": 0.5,
+          "type": "float",
+          "uniform": "rimPower"
+        },
+        "shape": {
+          "choices": {
+            "cube": 0,
+            "sphere": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "shape"
+        },
+        "shininess": {
+          "default": 32,
+          "max": 256,
+          "min": 1,
+          "type": "float",
+          "uniform": "shininess"
+        },
+        "specularColor": {
+          "default": [
+            1,
+            1,
+            1
+          ],
+          "type": "color",
+          "uniform": "specularColor"
+        },
+        "specularIntensity": {
+          "default": 0.3,
+          "max": 2,
+          "min": 0,
+          "type": "float",
+          "uniform": "specularIntensity"
+        },
+        "threshold": {
+          "default": 0.5,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "threshold"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderLit3d:renderLit3d",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderLit3d"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
+    "synth/reactionDiffusion": {
+      "func": "reactionDiffusion",
+      "kind": "generator",
+      "namespace": "synth",
+      "params": {
+        "feed": {
+          "default": 70,
+          "max": 110,
+          "min": 10,
+          "type": "float",
+          "uniform": "feed"
+        },
+        "inputIntensity": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "inputIntensity"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "iterations": {
+          "default": 8,
+          "max": 32,
+          "min": 1,
+          "type": "int",
+          "uniform": "iterations"
+        },
+        "kill": {
+          "default": 67,
+          "max": 70,
+          "min": 45,
+          "type": "float",
+          "uniform": "kill"
+        },
+        "rate1": {
+          "default": 92,
+          "max": 120,
+          "min": 50,
+          "type": "float",
+          "uniform": "rate1"
+        },
+        "rate2": {
+          "default": 22,
+          "max": 50,
+          "min": 20,
+          "type": "float",
+          "uniform": "rate2"
+        },
+        "resetState": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "resetState"
+        },
+        "seed": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "smoothing": {
+          "choices": {
+            "bSpline3x3": 5,
+            "bSpline4x4": 6,
+            "catmullRom3x3": 3,
+            "catmullRom4x4": 4,
+            "constant": 0,
+            "hermite": 2,
+            "linear": 1
+          },
+          "default": 1,
+          "type": "int",
+          "uniform": "smoothing"
+        },
+        "sourceF": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceF"
+        },
+        "sourceK": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceK"
+        },
+        "sourceR1": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceR1"
+        },
+        "sourceR2": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceR2"
+        },
+        "speed": {
+          "default": 100,
+          "max": 145,
+          "min": 10,
+          "type": "float",
+          "uniform": "speed"
+        },
+        "tex": {
+          "default": "none",
+          "type": "surface"
+        },
+        "weight": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "weight"
+        },
+        "zoom": {
+          "choices": {
+            "x1": 1,
+            "x16": 16,
+            "x2": 2,
+            "x32": 32,
+            "x4": 4,
+            "x64": 64,
+            "x8": 8
+          },
+          "default": 8,
+          "type": "int",
+          "uniform": "zoom"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "bufTex": "global_rd_state",
+            "inputTex": "tex"
+          },
+          "key": "synth/reactionDiffusion:rdFb",
+          "name": "simulate",
+          "outputs": {
+            "fragColor": "global_rd_state"
+          },
+          "program": "rdFb",
+          "repeat": "iterations"
+        },
+        {
+          "inputs": {
+            "fbTex": "global_rd_state",
+            "inputTex": "tex"
+          },
+          "key": "synth/reactionDiffusion:rd",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "rd"
+        }
+      ],
+      "textures": {
+        "global_rd_state": {
+          "height": {
+            "default": 8,
+            "screenDivide": "zoom"
+          },
+          "width": {
+            "default": 8,
+            "screenDivide": "zoom"
+          }
+        }
+      }
+    },
+    "synth3d/cellularAutomata3d": {
+      "func": "cellularAutomata3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "colorMode": {
+          "choices": {
+            "age": 1,
+            "mono": 0
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "density": {
+          "default": 50,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "density"
+        },
+        "geoSource": {
+          "default": "geo0",
+          "type": "geometry"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "neighborMode": {
+          "choices": {
+            "moore": 0,
+            "vonNeumann": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "neighborMode"
+        },
+        "resetState": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "resetState"
+        },
+        "ruleIndex": {
+          "choices": {
+            "amoeba": 2,
+            "builder1": 3,
+            "builder2": 4,
+            "clouds": 5,
+            "crystalGrowth": 6,
+            "diamoeba": 7,
+            "pyroclastic": 8,
+            "rule445M": 0,
+            "rule678": 1,
+            "slowDecay": 9,
+            "spikeyGrowth": 10
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "ruleIndex"
+        },
+        "seed": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "source": {
+          "default": "vol0",
+          "type": "volume"
+        },
+        "speed": {
+          "default": 1,
+          "max": 10,
+          "min": 0,
+          "type": "int",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 32,
+          "type": "int",
+          "uniform": "volumeSize"
+        },
+        "weight": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "weight"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "seedTex": "source",
+            "stateTex": "global_ca_state"
+          },
+          "key": "synth3d/cellularAutomata3d:simulate",
+          "name": "simulate",
+          "outputs": {
+            "color": "global_ca_state"
+          },
+          "program": "simulate",
+          "viewport": {
+            "height": {
+              "default": 1024,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 32,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        },
+        "global_ca_state": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
+    "synth3d/flythrough3d": {
+      "func": "flythrough3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "bailout": {
+          "default": 4,
+          "max": 16,
+          "min": 1,
+          "type": "float",
+          "uniform": "bailout"
+        },
+        "iterations": {
+          "default": 12,
+          "max": 24,
+          "min": 4,
+          "type": "int",
+          "uniform": "iterations"
+        },
+        "power": {
+          "default": 8,
+          "max": 16,
+          "min": -3,
+          "type": "float",
+          "uniform": "power"
+        },
+        "seed": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "speed": {
+          "default": 0.2,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "type": {
+          "choices": {
+            "mandelbox": 1,
+            "mandelbulb": 0
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "noiseType"
+        },
+        "voiSize": {
+          "default": 0.5,
+          "max": 2,
+          "min": 0.1,
+          "type": "float",
+          "uniform": "voiSize"
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {},
+          "key": "synth3d/flythrough3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
+    "synth3d/fractal3d": {
+      "func": "fractal3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "bailout": {
+          "default": 2,
+          "max": 8,
+          "min": 1,
+          "type": "float",
+          "uniform": "bailout"
+        },
+        "colorMode": {
+          "choices": {
+            "iteration": 2,
+            "mono": 0,
+            "orbitTrap": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "iterations": {
+          "default": 10,
+          "max": 20,
+          "min": 1,
+          "type": "int",
+          "uniform": "iterations"
+        },
+        "juliaX": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaX"
+        },
+        "juliaY": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaY"
+        },
+        "juliaZ": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaZ"
+        },
+        "power": {
+          "default": 8,
+          "max": 16,
+          "min": 2,
+          "type": "float",
+          "uniform": "power"
+        },
+        "type": {
+          "choices": {
+            "juliaBulb": 2,
+            "juliaCube": 3,
+            "mandelbulb": 0,
+            "mandelcube": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "noiseType"
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {},
+          "key": "synth3d/fractal3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
+    "synth3d/heightmap3d": {
+      "func": "heightmap3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "baseHeight": {
+          "default": 0,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "baseHeight"
+        },
+        "heightScale": {
+          "default": 0.35,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "heightScale"
+        },
+        "heightTex": {
+          "default": "none",
+          "type": "surface"
+        },
+        "tex": {
+          "default": "none",
+          "type": "surface"
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "heightTex": "heightTex",
+            "tex": "tex"
+          },
+          "key": "synth3d/heightmap3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "type": "compute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
+    "synth3d/noise3d": {
+      "func": "noise3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "colorMode": {
+          "choices": {
+            "mono": 0,
+            "rgb": 1
+          },
+          "default": 0,
+          "define": "COLOR_MODE",
+          "type": "int"
+        },
+        "octaves": {
+          "default": 1,
+          "define": "OCTAVES",
+          "max": 6,
+          "min": 1,
+          "type": "int"
+        },
+        "ridges": {
+          "default": false,
+          "define": "RIDGES",
+          "type": "boolean"
+        },
+        "scale": {
+          "default": 3,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "scale"
+        },
+        "seed": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "speed": {
+          "default": 1,
+          "max": 5,
+          "min": 0,
+          "type": "int",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {},
+          "key": "synth3d/noise3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    }
+  },
+  "pending": [
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: classicNoisedeck/noise3d:noise3d:487:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "classicNoisedeck/noise3d",
+      "program": "noise3d",
+      "program_key": "classicNoisedeck/noise3d:noise3d",
+      "raw_bytes": 19654,
+      "raw_sha256": "f359a11d4a3799686a554ee4dbaca725235ef38781a7b91e37628537cebb220f",
+      "source": "pending-sources/classicNoisedeck/noise3d/noise3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: classicNoisedeck/shapes3d:shapes3d:191:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "classicNoisedeck/shapes3d",
+      "program": "shapes3d",
+      "program_key": "classicNoisedeck/shapes3d:shapes3d",
+      "raw_bytes": 16152,
+      "raw_sha256": "818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad",
+      "source": "pending-sources/classicNoisedeck/shapes3d/shapes3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter/convolutionFeedback:cfBlur:31:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter/convolutionFeedback",
+      "program": "cfBlur",
+      "program_key": "filter/convolutionFeedback:cfBlur",
+      "raw_bytes": 1573,
+      "raw_sha256": "ab116ed830bb31a9103dfd30c8bd809ab8d9b478d860c0a2a76e45458020f88a",
+      "source": "pending-sources/filter/convolutionFeedback/cfBlur.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter/convolutionFeedback:cfSharpen:31:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter/convolutionFeedback",
+      "program": "cfSharpen",
+      "program_key": "filter/convolutionFeedback:cfSharpen",
+      "raw_bytes": 1642,
+      "raw_sha256": "97d8e84b9ae47100cc2ea384a953e719675c61aee274c6739f1eb9f32caf0baa",
+      "source": "pending-sources/filter/convolutionFeedback/cfSharpen.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter/feedback:feedback:339:5: unsupported typed expression index",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter/feedback",
+      "program": "feedback",
+      "program_key": "filter/feedback:feedback",
+      "raw_bytes": 10931,
+      "raw_sha256": "d0048fb91c30eafbb4532b2f02ed416e3dff61b14ce5861ce3565db81a743ca2",
+      "source": "pending-sources/filter/feedback/feedback.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "filter/temporalAberration:delayShift: bound by 8 authority passes (shift8, shift7, shift6, shift5, shift4, shift3, shift2, shift1); the corpus manifest records exactly one pass per program",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "filter/temporalAberration",
+      "program": "delayShift",
+      "program_key": "filter/temporalAberration:delayShift",
+      "raw_bytes": 677,
+      "raw_sha256": "ad1376bf6f09e0f778f1ecf00bae7b2dc16d14b110e404fee1637b9b72f9fa8f",
+      "source": "pending-sources/filter/temporalAberration/delayShift.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter/temporalAberration:temporalAberration:30:10: unsupported typed type vec4[9]",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter/temporalAberration",
+      "program": "temporalAberration",
+      "program_key": "filter/temporalAberration:temporalAberration",
+      "raw_bytes": 2291,
+      "raw_sha256": "d5d298c95e663f89972292ac78767f35c8eba4c3ed08eb24381ac95b97bbc190",
+      "source": "pending-sources/filter/temporalAberration/temporalAberration.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter3d/flow3d:agent:33:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter3d/flow3d",
+      "program": "agent",
+      "program_key": "filter3d/flow3d:agent",
+      "raw_bytes": 9859,
+      "raw_sha256": "f4e3622f4def27221de0bd0b93ed1152f56f835957361e0fcffea8b84d3ce356",
+      "source": "pending-sources/filter3d/flow3d/agent.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "filter3d/flow3d:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "filter3d/flow3d",
+      "program": "deposit",
+      "program_key": "filter3d/flow3d:deposit",
+      "raw_bytes": 191,
+      "raw_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
+      "source": "pending-sources/filter3d/flow3d/deposit.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: filter3d/palette3d:palette3d:27:1: unsupported global declaration",
+        "stage": "typed.validator"
+      },
+      "effect_id": "filter3d/palette3d",
+      "program": "palette3d",
+      "program_key": "filter3d/palette3d:palette3d",
+      "raw_bytes": 15170,
+      "raw_sha256": "6425d323befb35d590b818a2bdb269e7bd6fb11aebf148a0c040b3eff0655015",
+      "source": "pending-sources/filter3d/palette3d/palette3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: points/attractor:agent:177:9: E_NO_OVERLOAD: no exact overload for any\npoints/attractor:agent:177:9: E_OPERATOR: || requires bool operands\npoints/attractor:agent:177:13: E_NO_OVERLOAD: no exact overload for isnan",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "points/attractor",
+      "program": "agent",
+      "program_key": "points/attractor:agent",
+      "raw_bytes": 4936,
+      "raw_sha256": "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e",
+      "source": "pending-sources/points/attractor/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/buddhabrot:agent:93:9: unsupported counted-for safety charge",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/buddhabrot",
+      "program": "agent",
+      "program_key": "points/buddhabrot:agent",
+      "raw_bytes": 4826,
+      "raw_sha256": "0e2e9336878287c4c856c6f6a4e7d2a19219d29025f33d0ead8c5f17fc19cc5c",
+      "source": "pending-sources/points/buddhabrot/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/buddhabrot:zWrite:31:5: unsupported counted-for safety charge",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/buddhabrot",
+      "program": "zWrite",
+      "program_key": "points/buddhabrot:zWrite",
+      "raw_bytes": 874,
+      "raw_sha256": "e6fefa1486d7be6895efef7153d599497234386f83b21b042248b824018d655d",
+      "source": "pending-sources/points/buddhabrot/zWrite.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: points/dla:agent:45:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat\npoints/dla:agent:48:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat\npoints/dla:agent:104:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "points/dla",
+      "program": "agent",
+      "program_key": "points/dla:agent",
+      "raw_bytes": 5928,
+      "raw_sha256": "5f11d2d5096ac4f54b243a2e9de1d7526960be76c460314f8ec7142c21c9995a",
+      "source": "pending-sources/points/dla/agent.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "points/dla:depositGrid: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "points/dla",
+      "program": "depositGrid",
+      "program_key": "points/dla:depositGrid",
+      "raw_bytes": 471,
+      "raw_sha256": "bbafff4c1dcd4883c8c7ab243161074fb74313b744476a7f6f229a0165722439",
+      "source": "pending-sources/points/dla/depositGrid.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: points/flock:agent:158:30: E_OPERATOR: % requires same integral operands",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "points/flock",
+      "program": "agent",
+      "program_key": "points/flock:agent",
+      "raw_bytes": 9726,
+      "raw_sha256": "4c664f7443b1085a37896730b5077ed6399ce345a7b5a25101a7a91e00b18363",
+      "source": "pending-sources/points/flock/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/flow:agent:32:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/flow",
+      "program": "agent",
+      "program_key": "points/flow:agent",
+      "raw_bytes": 5848,
+      "raw_sha256": "0584139db3b2e14af99788458a48094a0d650a03ae540a0468309bf2f097bb6b",
+      "source": "pending-sources/points/flow/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/hydraulic:agent:29:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/hydraulic",
+      "program": "agent",
+      "program_key": "points/hydraulic:agent",
+      "raw_bytes": 6329,
+      "raw_sha256": "988fe48308354bc7cd8eaa1cb768bccf9ac37b3ce8ebb4256f567eb8419f1001",
+      "source": "pending-sources/points/hydraulic/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/lenia:convolve:36:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/lenia",
+      "program": "convolve",
+      "program_key": "points/lenia:convolve",
+      "raw_bytes": 2019,
+      "raw_sha256": "911443464a21bac3436a3d8a9505859b1f6eda97aa0e24ce633aa312970dbc44",
+      "source": "pending-sources/points/lenia/convolve.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "points/lenia:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "points/lenia",
+      "program": "deposit",
+      "program_key": "points/lenia:deposit",
+      "raw_bytes": 271,
+      "raw_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
+      "source": "pending-sources/points/lenia/deposit.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: points/life:agent:204:26: E_OPERATOR: % requires same integral operands",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "points/life",
+      "program": "agent",
+      "program_key": "points/life:agent",
+      "raw_bytes": 9544,
+      "raw_sha256": "78513907f1480250cef2e603e91a012aa4972c2e9e4bd66fc5aefa089a9a4775",
+      "source": "pending-sources/points/life/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/life:matrix:20:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/life",
+      "program": "matrix",
+      "program_key": "points/life:matrix",
+      "raw_bytes": 1889,
+      "raw_sha256": "405376b51b550714253aff0f818a4fd56d50618bc792558826195b901c5fa073",
+      "source": "pending-sources/points/life/matrix.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/physarum:agent:38:28: unsupported builtin floatBitsToUint",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/physarum",
+      "program": "agent",
+      "program_key": "points/physarum:agent",
+      "raw_bytes": 4817,
+      "raw_sha256": "d39a5afa26f97da83f61099e712b40d7a901978ce5b2a0070c2d87eef0c03c44",
+      "source": "pending-sources/points/physarum/agent.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "points/physarum:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "points/physarum",
+      "program": "deposit",
+      "program_key": "points/physarum:deposit",
+      "raw_bytes": 175,
+      "raw_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+      "source": "pending-sources/points/physarum/deposit.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "points/physarum:passthrough: bound by 2 authority passes (copy, passthrough); the corpus manifest records exactly one pass per program",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "points/physarum",
+      "program": "passthrough",
+      "program_key": "points/physarum:passthrough",
+      "raw_bytes": 266,
+      "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
+      "source": "pending-sources/points/physarum/passthrough.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: points/physical:agent:30:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "points/physical",
+      "program": "agent",
+      "program_key": "points/physical:agent",
+      "raw_bytes": 4136,
+      "raw_sha256": "a144cacbadeca15a78a83dac987bfd25164bd7904a2e9f0ea22e8b1bf22e3614",
+      "source": "pending-sources/points/physical/agent.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "render/loopEnd:copy: bound by 2 authority passes (feedback, output); the corpus manifest records exactly one pass per program",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "render/loopEnd",
+      "program": "copy",
+      "program_key": "render/loopEnd:copy",
+      "raw_bytes": 351,
+      "raw_sha256": "629a13aaba037b2eb01219741ea98b3e2161fda3f2c38b8533fe4bbebab3563e",
+      "source": "pending-sources/render/loopEnd/copy.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "render/pointsBillboardRender:deposit: drawMode billboards is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "render/pointsBillboardRender",
+      "program": "deposit",
+      "program_key": "render/pointsBillboardRender:deposit",
+      "raw_bytes": 4271,
+      "raw_sha256": "c6981a708d7d9771eacd8e945c4d18b9f811795a4203fb91618b105719221ff1",
+      "source": "pending-sources/render/pointsBillboardRender/deposit.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "render/pointsBillboardRender:depthKeys: bound by 2 authority passes (depthKeys_1, depthKeys_2); the corpus manifest records exactly one pass per program",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "render/pointsBillboardRender",
+      "program": "depthKeys",
+      "program_key": "render/pointsBillboardRender:depthKeys",
+      "raw_bytes": 1134,
+      "raw_sha256": "e8c0dbd5acf0aa5a695b07f091d653165d50b5a35ba51b49e60ae34cee906e89",
+      "source": "pending-sources/render/pointsBillboardRender/depthKeys.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "render/pointsBillboardRender:depthMerge: bound by 22 authority passes (depthMerge0, depthMerge1, depthMerge2, depthMerge3, depthMerge4, depthMerge5, depthMerge6, depthMerge7, depthMerge8, depthMerge9, depthMerge10, depthMerge11, depthMerge12, depthMerge13, depthMerge14, depthMerge15, depthMerge16, depthMerge17, depthMerge18, depthMerge19, depthMerge20, depthMerge21); the corpus manifest records exactly one pass per program",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "render/pointsBillboardRender",
+      "program": "depthMerge",
+      "program_key": "render/pointsBillboardRender:depthMerge",
+      "raw_bytes": 1570,
+      "raw_sha256": "e023d00bddd8dc5b94ce8eafe76b668f0dca06254f6db56fb1513f08bc8bbd6e",
+      "source": "pending-sources/render/pointsBillboardRender/depthMerge.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: render/pointsBillboardRender:spriteMeanTiles:16:18: E_OPERATOR: % requires same integral operands",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "render/pointsBillboardRender",
+      "program": "spriteMeanTiles",
+      "program_key": "render/pointsBillboardRender:spriteMeanTiles",
+      "raw_bytes": 1125,
+      "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
+      "source": "pending-sources/render/pointsBillboardRender/spriteMeanTiles.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: render/pointsEmit:init:28:19: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "render/pointsEmit",
+      "program": "init",
+      "program_key": "render/pointsEmit:init",
+      "raw_bytes": 5236,
+      "raw_sha256": "cd266c795b298b372f077e6aeb6f862c75a0970999fba2f87c4462b322592402",
+      "source": "pending-sources/render/pointsEmit/init.glsl"
+    },
+    {
+      "authority_status": "adapter",
+      "blocker": {
+        "diagnostic": "render/pointsRender:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "stage": "corpus.pass_binding"
+      },
+      "effect_id": "render/pointsRender",
+      "program": "deposit",
+      "program_key": "render/pointsRender:deposit",
+      "raw_bytes": 175,
+      "raw_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+      "source": "pending-sources/render/pointsRender/deposit.frag"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: render/render3d:render3d:384:10: E_TYPE: initializer requires vec3, got float\nrender/render3d:render3d:384:18: E_NO_OVERLOAD: no exact overload for normalize\nrender/render3d:render3d:384:28: E_NO_OVERLOAD: no exact overload for cross\nrender/render3d:render3d:385:10: E_TYPE: initializer requires vec3, got float\nrender/render3d:render3d:385:15: E_NO_OVERLOAD: no exact overload for cross",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "render/render3d",
+      "program": "render3d",
+      "program_key": "render/render3d:render3d",
+      "raw_bytes": 14169,
+      "raw_sha256": "5ff6fc621924c7c53425c2f18202e549ace6a4ff8a96f9e908ad26bba6e0c7e2",
+      "source": "pending-sources/render/render3d/render3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: render/renderCubemap3d:renderCubemap3d:280:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "render/renderCubemap3d",
+      "program": "renderCubemap3d",
+      "program_key": "render/renderCubemap3d:renderCubemap3d",
+      "raw_bytes": 14026,
+      "raw_sha256": "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+      "source": "pending-sources/render/renderCubemap3d/renderCubemap3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: render/renderCubemapSurface:renderCubemapSurface:100:9: unsupported counted-for program proof",
+        "stage": "typed.validator"
+      },
+      "effect_id": "render/renderCubemapSurface",
+      "program": "renderCubemapSurface",
+      "program_key": "render/renderCubemapSurface:renderCubemapSurface",
+      "raw_bytes": 4410,
+      "raw_sha256": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+      "source": "pending-sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "viewMode:VIEW_MODE=2: SemanticError: render/renderLandscape3d:landscape:62:31: E_NO_OVERLOAD: no exact overload for tan",
+        "stage": "semantics.variants"
+      },
+      "effect_id": "render/renderLandscape3d",
+      "program": "landscape",
+      "program_key": "render/renderLandscape3d:landscape",
+      "raw_bytes": 7781,
+      "raw_sha256": "2dbc813e1371dde52de6d64ed7555f5a97bf3041dc80e54380a4465d6bdd414c",
+      "source": "pending-sources/render/renderLandscape3d/landscape.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: render/renderLit3d:renderLit3d:347:10: E_TYPE: initializer requires vec3, got float\nrender/renderLit3d:renderLit3d:347:18: E_NO_OVERLOAD: no exact overload for normalize\nrender/renderLit3d:renderLit3d:347:28: E_NO_OVERLOAD: no exact overload for cross\nrender/renderLit3d:renderLit3d:348:10: E_TYPE: initializer requires vec3, got float\nrender/renderLit3d:renderLit3d:348:15: E_NO_OVERLOAD: no exact overload for cross",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "render/renderLit3d",
+      "program": "renderLit3d",
+      "program_key": "render/renderLit3d:renderLit3d",
+      "raw_bytes": 12143,
+      "raw_sha256": "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f",
+      "source": "pending-sources/render/renderLit3d/renderLit3d.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth/cellularAutomata:ca:77:14: unsupported sampler parameter",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth/cellularAutomata",
+      "program": "ca",
+      "program_key": "synth/cellularAutomata:ca",
+      "raw_bytes": 11253,
+      "raw_sha256": "147eb021eb138adc47149edf9440b94e8c1128d2a35dfb236a9a76f091397e15",
+      "source": "pending-sources/synth/cellularAutomata/ca.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth/mnca:mnca:78:14: unsupported sampler parameter",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth/mnca",
+      "program": "mnca",
+      "program_key": "synth/mnca:mnca",
+      "raw_bytes": 11142,
+      "raw_sha256": "725c245f6f52a1629f7427b98a211b527c546fd3e0dcecbb9c5b65ecf3ee239a",
+      "source": "pending-sources/synth/mnca/mnca.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth/navierStokes:nsSmooth:74:14: unsupported typed type vec4[9]",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth/navierStokes",
+      "program": "nsSmooth",
+      "program_key": "synth/navierStokes:nsSmooth",
+      "raw_bytes": 5301,
+      "raw_sha256": "964147d68d182e7afe016e5fee82ad010e047946121fa407873386cc1c4b4453",
+      "source": "pending-sources/synth/navierStokes/nsSmooth.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth/reactionDiffusion:rd:79:14: unsupported sampler parameter",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth/reactionDiffusion",
+      "program": "rd",
+      "program_key": "synth/reactionDiffusion:rd",
+      "raw_bytes": 12782,
+      "raw_sha256": "2c7c242db938ea81fa738b4f5a4fff9f067afca63802e39689aec49d4955f53c",
+      "source": "pending-sources/synth/reactionDiffusion/rd.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth/reactionDiffusion:rdFb:28:9: unsupported sampler parameter",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth/reactionDiffusion",
+      "program": "rdFb",
+      "program_key": "synth/reactionDiffusion:rdFb",
+      "raw_bytes": 5763,
+      "raw_sha256": "1b0a2ce5b7594005e778b0487a14c1c83c081b7ce3d0db50f81809ac931be976",
+      "source": "pending-sources/synth/reactionDiffusion/rdFb.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth3d/cellularAutomata3d:simulate:56:39: unsupported typed expression post",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth3d/cellularAutomata3d",
+      "program": "simulate",
+      "program_key": "synth3d/cellularAutomata3d:simulate",
+      "raw_bytes": 8843,
+      "raw_sha256": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
+      "source": "pending-sources/synth3d/cellularAutomata3d/simulate.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: synth3d/flythrough3d:precompute:125:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:125:18: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:125:28: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:126:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:126:19: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:126:29: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:159:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:159:18: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:159:28: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:160:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:160:10: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:160:20: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:165:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:165:10: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:165:20: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:192:23: E_NO_OVERLOAD: no exact overload for acos\nsynth3d/flythrough3d:precompute:335:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:335:21: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:335:31: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:336:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:336:13: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:336:23: E_NO_OVERLOAD: no exact overload for cross",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "synth3d/flythrough3d",
+      "program": "precompute",
+      "program_key": "synth3d/flythrough3d:precompute",
+      "raw_bytes": 11404,
+      "raw_sha256": "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3",
+      "source": "pending-sources/synth3d/flythrough3d/precompute.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "SemanticError: synth3d/fractal3d:precompute:36:23: E_NO_OVERLOAD: no exact overload for acos\nsynth3d/fractal3d:precompute:74:23: E_NO_OVERLOAD: no exact overload for acos",
+        "stage": "semantics.defaults"
+      },
+      "effect_id": "synth3d/fractal3d",
+      "program": "precompute",
+      "program_key": "synth3d/fractal3d:precompute",
+      "raw_bytes": 6912,
+      "raw_sha256": "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41",
+      "source": "pending-sources/synth3d/fractal3d/precompute.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth3d/heightmap3d:precompute:25:9: unsupported builtin any",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth3d/heightmap3d",
+      "program": "precompute",
+      "program_key": "synth3d/heightmap3d:precompute",
+      "raw_bytes": 1777,
+      "raw_sha256": "d43f213b09edcba90f10c14e0bae421587c56168c5823b3107a1eb183d36d759",
+      "source": "pending-sources/synth3d/heightmap3d/precompute.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth3d/noise3d:precompute:39:18: unsupported binary operator ^",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth3d/noise3d",
+      "program": "precompute",
+      "program_key": "synth3d/noise3d:precompute",
+      "raw_bytes": 7667,
+      "raw_sha256": "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
+      "source": "pending-sources/synth3d/noise3d/precompute.glsl"
+    }
+  ],
+  "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "schema": 1
+}

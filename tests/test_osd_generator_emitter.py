@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import unittest
+from tests import corpus_census
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
@@ -32,7 +33,7 @@ class OsdGeneratorEmitterTests(unittest.TestCase):
         self.assertEqual(rows, [{
             "defines": {}, "osd_frontend_profile": PROFILE, "program_key": KEY,
         }])
-        self.assertEqual(len(spec["programs"]), 211)
+        self.assertEqual(len(spec["programs"]), corpus_census.typed_count())
         self.assertEqual([item["program_key"] for item in spec["programs"]],
                          sorted(item["program_key"] for item in spec["programs"]))
 

@@ -190,13 +190,32 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   const std::string extent_context = context + ".output_abi.extent";
   exact_object(extent, {"width", "height", "format"}, extent_context);
   const auto& format = required_field(extent, "format", ValueKind::string, extent_context);
-  const std::array<std::string_view, 3> formats = {"rgba8unorm", "rgba16f", "rgba16float"};
+  const std::array<std::string_view, 4> formats = {"rgba8unorm", "rgba16f", "rgba16float", "rgba32f"};
   if (std::find(formats.begin(), formats.end(), format.string) == formats.end()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output format");
+  // A compatible row's extent is a token the four-way binding-ABI grammar
+  // spells identically everywhere: "screen", "input", a percentage literal
+  // ("100%", "6.25%", "50%", ...), or a positive integer. An object-valued
+  // extent has no such token, so the compatibility generator never marks one
+  // compatible (reason unsupported_output_extent).
+  const auto percentage = [](const std::string& text) {
+    if (text.size() < 2 || text.back() != '%') return false;
+    std::size_t index = 0;
+    bool digits = false;
+    while (index + 1 < text.size() && text[index] >= '0' && text[index] <= '9') { ++index; digits = true; }
+    if (index + 1 < text.size() && text[index] == '.') {
+      ++index;
+      bool fraction = false;
+      while (index + 1 < text.size() && text[index] >= '0' && text[index] <= '9') { ++index; fraction = true; }
+      digits = digits && fraction;
+    }
+    return digits && index + 1 == text.size();
+  };
   for (const auto name : {"height", "width"}) {
     const auto* dimension = field(extent, name);
     const bool valid_string = dimension != nullptr && dimension->kind == ValueKind::string &&
-      (dimension->string == "screen" || dimension->string == "input" || dimension->string == "100%" || dimension->string == "6.25%" || dimension->string == "0.4%");
-    const bool valid_number = dimension != nullptr && dimension->kind == ValueKind::number && dimension->number == 1.0;
+      (dimension->string == "screen" || dimension->string == "input" || percentage(dimension->string));
+    const bool valid_number = dimension != nullptr && dimension->kind == ValueKind::number &&
+      std::isfinite(dimension->number) && dimension->number >= 1.0 && std::trunc(dimension->number) == dimension->number;
     if (!valid_string && !valid_number)
       throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output extent");
   }
@@ -673,9 +692,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "9d515bdc34906e3452346c4029eee181e2b2b14ae3d07da11e8343f57276ec92" ||
+      provenance_.generated_payload_sha256 != "cacde62b6d04c0ca098d83ec3da933e9647cab3df244a5447b82ae4fcccf4720" ||
       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "e00b5310f4f0c6440ba194a75a7da8e5f5bd7d35091e12defddabe6fa9c27c9d" ||
+      provenance_.compatibility_sha256 != "dafa02f554636c44ff7a9acf500c2684804904c90a42bdb6b0a96793acb64c54" ||
       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
       provenance_.cpu_behavioral_file_count != 91 ||
       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
@@ -693,15 +712,15 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 211 || reference_passes_.size() != 344 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 255 || reference_passes_.size() != 344 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
-      provenance_.counts.backend_programs != 212 || provenance_.counts.compatible_programs != 211 || provenance_.counts.incompatible_programs != 0 ||
-      provenance_.counts.missing_passes != 132 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 167 ||
-      provenance_.counts.incomplete_definitions != 41 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 256 || provenance_.counts.compatible_programs != 240 || provenance_.counts.incompatible_programs != 15 ||
+      provenance_.counts.missing_passes != 88 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 169 ||
+      provenance_.counts.incomplete_definitions != 39 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
-  if (provenance_.backend_fragment_rows != 213 || provenance_.backend_unique_fragment_keys != 211 ||
-      provenance_.backend_raw_exact != 212 || provenance_.backend_semantic_exact != 0)
+  if (provenance_.backend_fragment_rows != 257 || provenance_.backend_unique_fragment_keys != 255 ||
+      provenance_.backend_raw_exact != 256 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());

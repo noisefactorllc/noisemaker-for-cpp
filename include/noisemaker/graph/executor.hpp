@@ -174,15 +174,11 @@ void authenticate_compile_define_parameters(
 
 // The MRT (drawBuffers >= 2) analog of FactoryRouteDescriptor: the same
 // generated-route identity fields, but `bind` returns a multi-output
-// noisemaker::BoundKernelMrt. There is deliberately no generated table
-// populated behind `canonical_factory_routes_mrt()` yet -- no MRT program
-// has been compiled by the typed-slice generator (no admitted effect
-// declares more than one output today, verified by the identical checks
-// `validate_pass_output_abi`/`validate_pass_controls` now perform
-// generically for any N) -- so `authenticate_factory_route_mrt` correctly
-// refuses every lookup against the default empty table until that lands. A
-// caller (a test, or the eventual generated wiring) supplies its own
-// `routes` span exactly like `bind_factory_route` already allows.
+// noisemaker::BoundKernelMrt. `canonical_factory_routes_mrt()` projects the
+// typed-slice generator's own MRT route table (generated::canonical_routes_mrt),
+// which carries every multi-output corpus program and nothing else. A caller
+// (a test) may still supply its own `routes` span exactly like
+// `bind_factory_route` allows.
 struct FactoryRouteDescriptorMrt {
   std::string_view program_key;
   std::string_view canonical_factory;
@@ -205,7 +201,7 @@ struct FactoryRouteDescriptorMrt {
     std::string_view program_key,
     std::string_view canonical_factory) noexcept;
 
-// Always empty today; see the FactoryRouteDescriptorMrt comment above.
+// The checked projection of generated::canonical_routes_mrt().
 [[nodiscard]] std::span<const FactoryRouteDescriptorMrt> canonical_factory_routes_mrt();
 
 [[nodiscard]] const FactoryRouteDescriptorMrt* authenticate_factory_route_mrt(

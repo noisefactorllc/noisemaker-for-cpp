@@ -4,6 +4,7 @@ import dataclasses
 import hashlib
 from pathlib import Path
 import unittest
+from tests import corpus_census
 
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
@@ -217,9 +218,12 @@ class JuliaFrontendAdmissionTests(unittest.TestCase):
         # expected triple is deliberately unchanged -- rewriting it to whatever
         # the slice returns is how this assertion would stop asserting anything.
         # Measured 2026-08-25; see task-7-typed-generator-census-repair.md.
+        # The window's START is derived (corpus expansion rows sort ahead of
+        # julia); the triple itself stays literal.
+        ordinal = corpus_census.ordinal(profile.KEY)
         self.assertEqual(
             ["synth/gradient:gradient", profile.KEY, "synth/mandala:mandala"],
-            [item["program_key"] for item in rows[193:196]])
+            [item["program_key"] for item in rows[ordinal - 1:ordinal + 2]])
 
 
 if __name__ == "__main__":

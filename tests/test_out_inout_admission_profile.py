@@ -58,6 +58,7 @@ import pathlib
 import re
 import types
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import generate_typed_slice
@@ -1608,9 +1609,9 @@ class LightLeakLandedSurfaceTests(unittest.TestCase):
         # Live pin repinned 2026-08-25 from the tree: the DSL phase landed the
                 # slice at 211 typed rows. Measured, never carried from a report; see
                 # task-7-typed-generator-census-repair.md.
-        self.assertEqual(211, len(programs))
+        self.assertEqual(corpus_census.typed_count(), len(programs))
         keys = [row["program_key"] for row in programs]
-        self.assertEqual(72, keys.index(LIGHTLEAK_KEY))
+        self.assertEqual(corpus_census.ordinal(LIGHTLEAK_KEY), keys.index(LIGHTLEAK_KEY))
         self.assertEqual(
             {"defines": {}, "program_key": LIGHTLEAK_KEY,
              "out_inout_admission_profile": LIGHTLEAK_PROFILE},

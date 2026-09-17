@@ -7,6 +7,7 @@ import unittest
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
+from tests import corpus_census
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -28,19 +29,20 @@ def _typed(key: str):
 class PalettePairGeneratorEmitterTests(unittest.TestCase):
     def test_rows_remain_exactly_landed_in_the_sorted_slice(self):
         spec = generate_typed_slice.load_slice(ROOT)
-        self.assertEqual(211, len(spec["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
         rows = spec["programs"]
-        self.assertEqual(HISTORIC_KEY, rows[66]["program_key"])
-        self.assertEqual(PALETTE_KEY, rows[91]["program_key"])
+        historic, palette = corpus_census.ordinal(HISTORIC_KEY), corpus_census.ordinal(PALETTE_KEY)
+        self.assertEqual(HISTORIC_KEY, rows[historic]["program_key"])
+        self.assertEqual(PALETTE_KEY, rows[palette]["program_key"])
         self.assertEqual(
             {"defines": {}, "program_key": HISTORIC_KEY,
              "historic_palette_profile": "historic-palette-frontend-admission-v1"},
-            rows[66],
+            rows[historic],
         )
         self.assertEqual(
             {"defines": {}, "program_key": PALETTE_KEY,
              "palette_frontend_profile": "palette-frontend-admission-v1"},
-            rows[91],
+            rows[palette],
         )
 
     def test_historic_and_palette_emitter_lowerings_are_profile_bound(self):

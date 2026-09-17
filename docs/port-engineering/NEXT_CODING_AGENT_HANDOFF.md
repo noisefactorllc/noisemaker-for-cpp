@@ -66,41 +66,52 @@
 >   - **Python suite:** historical-reconstruction pins still stale in `test_typed_generator` and the milestone modules.
 >     The committed-but-unlanded fixes are in `resync-2026-09/unlanded/pysuite`.
 >
-> ### Not landed: work saved as patches in `docs/port-engineering/resync-2026-09/unlanded/`
+> ### Corpus expansion landed (this push, after the resync above)
 >
-> Generated-file hunks are excluded; regenerate after applying. None of these were verified on the pushed tree.
+> `unlanded/corpus2-uncommitted.patch` is applied and regenerated to a fixed point: 256 vendored + 48 pending = 304
+> authority programs (`check_corpus`/`check_semantics` both `--check`-clean). The 48 pending (blocked) programs are
+> tracked by the new ratchet (`tools/glslcpp/corpus_ratchet.py`, `corpus/<rev>/pending.json`,
+> `tests/test_corpus_ratchet.py`), not silently dropped. `backend_compatibility.json` (255 canonical programs) and the
+> typed slice were bootstrapped past a chicken-and-egg gap in `generate_backend_compatibility.py`'s
+> `_authenticated_typed_manifest`/`_compatibility_source_hashes` path: a brand-new program key has no prior
+> `backend_compatibility.json` row to authenticate against, so the first regen after admitting new keys needs that
+> file removed before `generate_typed_slice --write` (it falls back to the corpus manifest's own hash), then restored
+> by `generate_backend_compatibility --write`. `tools/resync/regen_all.sh` does not do this automatically yet — a real
+> gap in that script for the next corpus expansion, not just a one-off. Native (Debug + Release) and every generator
+> `--check` gate are green. `export-kit/compat-effects.json` is unaffected (still 137; that list comes from the sweep,
+> not this admission).
 >
-> - `pysuite/`: 29 commits against base 06d77bd.
->   - Test-pin re-freezes, each with an audit in its commit message.
->   - fdlibm emitter assertion updates, the kaleido byte count, and the color-lab DVec3 ABI table.
->   - Apply them, re-run `tools/resync/pyshards.sh`, and re-audit any pin that moved again.
-> - `defines2/`: runtime defines for filter/oilPaint, filter/strokes (stkPost), filter/stipple and filter/pondRipples,
->   verified at 0 divergence on its own base. Its uncommitted merge work is in `defines2-uncommitted.patch`.
->   - Found: filter/halftone MODE=1 diverges. The authority leaks the ink/paper hex alpha into the output alpha.
->   - Found: synth/noise NOISE_TYPE=4 has float32-only divergences.
->   - Found: filter/scatter MODE=3 has a cross-lane assignment divergence.
->   - Still refused: hatch (needs a node-scoped `degrees` profile), strokes stkSmear, extrude, emboss, lowPoly, texture,
->     perlin dimensions, shape loop offsets.
-> - `corpus2-uncommitted.patch`: expands the vendored corpus toward all 304 authority programs. The design is a ratcheted
->   `pending` record of blocked programs, with every count derived from the authority. It was in progress when stopped.
-> - `definescn-uncommitted.patch`: runtime defines for the classicNoisedeck family (noise, caustic, moodscape,
->   cellRefract, effects, kaleido, shapeMixer, shapes). Barely started.
+> **Known red, unchanged in kind, now wider:** `tests/test_typed_generator.py`'s historical-reconstruction milestone
+> tests (`test_committed_artifacts_match_the_generator_now`, the per-state
+> `test_removing_only_..._reconstructs_the_N_state` chain, the task21-32 and blur/stats/grain/gabor delta tests) were
+> already stale before this push (see the resync block above) and are now stale by a larger margin, since every pinned
+> size/hash in that chain assumed a smaller corpus. `tests/test_corpus.py`, `test_corpus_ratchet.py`, `test_semantic.py`,
+> `test_backend_compatibility.py` and `test_binding_abi_digest.py` — the modules that actually exercise this admission
+> — all pass. Re-freezing the historical chain is `unlanded/pysuite`-shaped work against the new base; it was not
+> attempted this session (out of scope: touching the historical-milestone pins is bookkeeping for already-landed
+> effects, not unported work).
+>
+> `unlanded/pysuite`, `unlanded/defines2-uncommitted.patch` and `unlanded/definescn-uncommitted.patch` are still
+> unlanded and still target a base that predates corpus2 (`pysuite` names `06d77bd`); expect the same kind of stale
+> stale-hash-pin conflicts corpus2 had, not silent application.
 >
 > ### Next steps, in order
 >
-> 1. **Re-derive the verified kit list.** Build, run `tools/parity/sweep.py --variants 20` plus `--define-enum` with
->    `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main> --sweep <defines>` and
->    `node export-kit/generate-compat.mjs`. The vector-precision merge should add gradient, mandala, pattern,
->    sacredGeometry, snow and julia.
-> 2. **Land the Python pin fixes** (`unlanded/pysuite`) and get the CI Python job green.
-> 3. **Finish the corpus expansion** (`unlanded/corpus2`): vendor every program that passes the typed pipeline, record
->    the rest in the ratchet, and admit Families B–E through the executor, which is already wired. Sweep each family to
->    0 divergence.
-> 4. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
+> 1. **Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
+>    against the corpus2 base above, the same shape as `unlanded/pysuite` but re-derived from the new base. Use
+>    `tools/resync/reconstruction_audit.py` to confirm every moved hash is explained by an admitted/changed program
+>    before re-freezing it.
+> 2. **Admit Families B–E through the executor** (already wired) for the 44 now-vendored-but-runtime-only programs
+>    (`points/*`, `render/pointsRender*`, `synth/navierStokes*`, etc. — see `resync-2026-09/frontier-92.md`'s
+>    "no frontend/typed-pipeline blocker" class), and sweep each family to 0 divergence.
+> 3. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
 >    MODE=3 divergences.
-> 5. **Close the frontier construct blockers** for the remaining pending programs (`resync-2026-09/frontier-92.md`; executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for
->    proofs, scalar uint XOR, sampler parameters, vecN % scalar, cross/acos/any/isnan/lessThan/floatBitsToUint, vec4[9],
->    postfix ++, vector index.
+> 4. **Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
+>    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs, scalar uint XOR, sampler
+>    parameters, vecN % scalar, cross/acos/any/isnan/lessThan/floatBitsToUint, vec4[9], postfix ++, vector index.
+> 5. **Re-derive the verified kit list** once the above land. Build, run `tools/parity/sweep.py --variants 20` plus
+>    `--define-enum` with `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main>
+>    --sweep <defines>` and `node export-kit/generate-compat.mjs`.
 > 6. **Render options.** Port `oneShot: 'initial'` (renderer.js:83-93, 414) and audit the other JS render options.
 >
 > ### Rules learned the hard way

@@ -102,6 +102,10 @@ class BindingAbiDigestTest(unittest.TestCase):
         rows = self.canonical_rows()
         text = TYPED_SLICE.read_text(encoding="utf-8")
         block = text[text.index("kCanonicalRoutes{{"):text.index("std::span<const KernelFactory> catalog()")]
+        # Multi-output programs are anchored by the MRT route table instead.
+        if "kCanonicalRoutesMrt{{" in text:
+            block += text[text.index("kCanonicalRoutesMrt{{"):
+                          text.index("std::span<const FactoryRouteMrt> canonical_routes_mrt()")]
         entries = re.findall(r'^\s*\{"([^"]+)",((?:\s*"[^"]*",)+)\s*&', block, re.MULTILINE)
         self.assertEqual(len(entries), len(rows))
         seen = set()
@@ -171,6 +175,10 @@ class BindingAbiDigestTest(unittest.TestCase):
         programs = {item["program_key"]: item for item in manifest["programs"]}
         text = TYPED_SLICE.read_text(encoding="utf-8")
         block = text[text.index("kCanonicalRoutes{{"):text.index("std::span<const KernelFactory> catalog()")]
+        # Multi-output programs are anchored by the MRT route table instead.
+        if "kCanonicalRoutesMrt{{" in text:
+            block += text[text.index("kCanonicalRoutesMrt{{"):
+                          text.index("std::span<const FactoryRouteMrt> canonical_routes_mrt()")]
         entries = re.findall(r'^\s*\{"([^"]+)",((?:\s*"[^"]*",)+)\s*&', block, re.MULTILINE)
         for key, fields in entries:
             values = re.findall(r'"([^"]*)"', fields)

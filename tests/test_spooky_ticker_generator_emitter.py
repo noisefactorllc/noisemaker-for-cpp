@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import unittest
 
+from tests import corpus_census
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -35,7 +36,7 @@ class SpookyTickerGeneratorEmitterTests(unittest.TestCase):
             "program_key": KEY,
             "spooky_ticker_frontend_profile": PROFILE,
         }])
-        self.assertEqual(len(spec["programs"]), 211)
+        self.assertEqual(len(spec["programs"]), corpus_census.typed_count())
         self.assertEqual([item["program_key"] for item in spec["programs"]],
                          sorted(item["program_key"]
                                 for item in spec["programs"]))

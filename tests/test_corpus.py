@@ -15,6 +15,8 @@ import unittest
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY))
 
+from tests import corpus_census  # noqa: E402
+
 
 class CorpusTests(unittest.TestCase):
     def temporary_repository(self) -> tempfile.TemporaryDirectory[str]:
@@ -39,16 +41,22 @@ class CorpusTests(unittest.TestCase):
         from tools.glslcpp import check_corpus
 
         summary = check_corpus.validate_corpus()
+        # Every cardinality is derived from the committed vendored/pending
+        # split; the split itself is closed over the authority's program set.
+        vendored = corpus_census.vendored_count()
+        self.assertEqual(vendored + corpus_census.pending_count(), corpus_census.authority_program_count())
         self.assertEqual(
             summary["counts"],
             {
-                "effects": 167,
-                "passes": 212,
-                "sources": 212,
-                "generated": 207,
+                "effects": corpus_census.metadata_effect_count(),
+                "passes": vendored,
+                "sources": vendored,
+                "generated": vendored - 5,
                 "adapter": 5,
-                "keyed_runtime": 211,
-                "draw_op_overrides": 1,
+                "keyed_runtime": corpus_census.typed_count(),
+                "draw_op_overrides": vendored - corpus_census.typed_count(),
+                "authority_programs": corpus_census.authority_program_count(),
+                "pending": corpus_census.pending_count(),
             },
         )
 
@@ -59,7 +67,7 @@ class CorpusTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertNotIn(str(REPOSITORY), first)
         self.assertNotIn("timestamp", first.lower())
-        self.assertEqual(167, json.loads(first)["counts"]["effects"])
+        self.assertEqual(corpus_census.metadata_effect_count(), json.loads(first)["counts"]["effects"])
 
     def test_frontend_reports_source_locations_and_rejects_bad_directives(self) -> None:
         from tools.glslcpp.frontend import FrontendError, parse_program

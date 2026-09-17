@@ -4,6 +4,7 @@ import hashlib
 import pathlib
 import sys
 import unittest
+from tests import corpus_census
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
@@ -27,7 +28,7 @@ def _typed(radius: int = 2):
 class MedianGeneratorEmitterTests(unittest.TestCase):
     def test_row_is_exactly_landed_as_204(self):
         spec = generate_typed_slice.load_slice(ROOT)
-        self.assertEqual(211, len(spec["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
         row = next(item for item in spec["programs"] if item["program_key"] == KEY)
         self.assertEqual({"defines": {"RADIUS": 2}, "program_key": KEY,
                           "median_frontend_profile": PROFILE}, row)

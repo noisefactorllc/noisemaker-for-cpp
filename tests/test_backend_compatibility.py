@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import unittest
 
+from tests import corpus_census
 from tools.dsl import generate_backend_compatibility as generator
 
 
@@ -41,8 +42,10 @@ class BackendCompatibilityTests(unittest.TestCase):
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
         document = self.document
-        self.assertEqual(213, document["counts"]["fragment_rows"])
-        self.assertEqual(211, document["counts"]["unique_fragment_keys"])
+        self.assertEqual(corpus_census.typed_count() + 2, document["counts"]["fragment_rows"])
+        self.assertEqual(corpus_census.typed_count(), document["counts"]["unique_fragment_keys"])
+        self.assertEqual(sorted(document["reference_key_closure"]),
+                         [item["program_key"] for item in corpus_census.pending()["authority"]["programs"]])
         self.assertEqual(
             ["filter/invert:inv", "synth/solid:solid"],
             document["counts"]["duplicate_fragment_keys"],
@@ -51,7 +54,7 @@ class BackendCompatibilityTests(unittest.TestCase):
         self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5", document["authority"]["upstream_revision"])
         self.assertEqual("cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6", document["authority"]["upstream_tree"])
         self.assertEqual("4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812", document["authority"]["source_lock_sha256"])
-        self.assertEqual(212, document["counts"]["raw_exact"])
+        self.assertEqual(corpus_census.vendored_count(), document["counts"]["raw_exact"])
         self.assertEqual(0, document["counts"]["semantic_exact"])
         self.assertEqual([], document["counts"]["incompatible_keys"])
         bit = next(row for row in document["canonical_programs"]

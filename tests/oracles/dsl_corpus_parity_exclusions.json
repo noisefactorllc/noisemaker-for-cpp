@@ -1,11 +1,12 @@
 {
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
-  "byteExactCount": 163,
+  "byteExactCount": 164,
   "executorRefused": {},
   "authorityRefused": [
     "filter/lighting",
     "filter/parallax",
     "filter/text",
+    "points/heightGrid",
     "synth/media"
   ]
 }

@@ -10,6 +10,7 @@ import pathlib
 import tempfile
 import types
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
@@ -406,7 +407,7 @@ class EdgeBvec3ContourProfileTests(unittest.TestCase):
         # landed after Edge is excluded below, and cellRefract joins the
         # exclusion set so the frozen 179/178 counts and hashes stay exactly
         # as-is.
-        current_spec = copy.deepcopy(generate_typed_slice.load_slice(ROOT))
+        current_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(ROOT))
         with historical_cross_lane(current_spec):
             current_spec["programs"] = [
                 item for item in current_spec["programs"]

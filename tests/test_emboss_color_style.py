@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
@@ -929,9 +930,9 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # authenticated key-list hash below covers all later landings and
         # ordinal shifts; Emboss's own row/index remains unchanged. The
         # frozen vocabularies below stay at 44/17.
-        self.assertEqual(211, len(spec["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(spec["programs"]))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(
                 item["program_key"] for item in spec["programs"])
                 + "\n").encode()).hexdigest())
@@ -1035,7 +1036,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         # `mixer/distortion:distortion` (176) also landed after all five
         # states and join the exclusion set, so the frozen hashes and the
         # 182/181/180/179/178 counts stay exactly as-is.
-        live182_spec = copy.deepcopy(generate_typed_slice.load_slice(ROOT))
+        live182_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(ROOT))
         with historical_cross_lane(live182_spec):
             historical182_spec = copy.deepcopy(live182_spec)
             historical182_spec["programs"] = [

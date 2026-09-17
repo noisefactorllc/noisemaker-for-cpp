@@ -9,6 +9,7 @@ import json
 import pathlib
 import re
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 from tools.glslcpp import check_corpus, generate_typed_slice
@@ -281,7 +282,7 @@ class Task35BitwiseNumberProfileTests(unittest.TestCase):
         # Gabor, Scanline Error, and Glyph Map land as later additive programs.
         # cellRefract joins the exclusion set so the frozen 175/174 boundary
         # stays exactly as-is.
-        historical = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        historical = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         historical["programs"] = [
             item for item in historical["programs"]
             if item["program_key"] not in {

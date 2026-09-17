@@ -3,6 +3,7 @@ from __future__ import annotations
 import dataclasses
 import copy
 import json
+from tests import corpus_census
 from unittest import mock
 from pathlib import Path
 import unittest
@@ -47,7 +48,7 @@ class MoodscapePreparedFrontendTests(unittest.TestCase):
                 mock.patch.object(check_corpus, "validate_corpus"), \
                 mock.patch.object(
                     generate_typed_slice.check_semantics, "semantic_report",
-                    return_value={"body_success": 212}), \
+                    return_value={"body_success": corpus_census.vendored_count()}), \
                 mock.patch.object(generate_typed_slice, "_source_entries",
                                   return_value=[entry]):
             return generate_typed_slice.generate_outputs(ROOT)

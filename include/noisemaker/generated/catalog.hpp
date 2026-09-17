@@ -46,6 +46,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_clouds_clouds(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_colorReplace_colorReplace(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_colorspace_colorspace(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfBlend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_corrupt_corrupt(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_craquelure_craquelure(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_crt_crt(const glsl::Bindings& bindings);
@@ -56,6 +57,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_edge_edge(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_emboss_emboss(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_extrude_extrude(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_feedback_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_fibers_fibersBlend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_flipMirror_flipMirror(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_fxaa_fxaa(const glsl::Bindings& bindings);
@@ -88,6 +90,8 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_morphology_morphA(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_morphology_morphB(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_mosaicTiles_mosaicTiles(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_motionBlur_copy(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_motionBlur_motionBlur(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_normalMap_normalMap(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_normalize_apply(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_normalize_reduce(const glsl::Bindings& bindings);
@@ -183,6 +187,9 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_wormhole_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_wormhole_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_zoomBlur_zoomBlur(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter3d_flow3d_blend(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter3d_flow3d_copy(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter3d_flow3d_diffuse(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_alphaMask_alphaMask(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_applyMode_applyMode(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_blendMode_blendMode(const glsl::Bindings& bindings);
@@ -198,8 +205,35 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_mixer_split_split(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_thresholdMix_thresholdMix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_uvRemap_uvRemap(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_attractor_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_flock_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_flow_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_heightGrid_agent(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_heightGrid_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_hydraulic_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_lenia_agentField(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_lenia_clear(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_lenia_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_physarum_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_loopBegin_loopBegin(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsBillboardRender_blend(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsBillboardRender_clearDefocus(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsBillboardRender_copy(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsBillboardRender_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsBillboardRender_spriteMean(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsEmit_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsRender_blend(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsRender_copy(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_pointsRender_diffuse(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_bitwise_bitwise(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_cellularAutomata_caFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_curl_curl(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_gabor_gabor(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_gradient_gradient(const glsl::Bindings& bindings);
@@ -207,7 +241,14 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_mandala_mandala(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_mandelbrot_mandelbrot(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_media_mediaInput(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_mnca_mncaFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_modPattern_modPattern(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_ns(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_nsAdvect(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_nsDivergence(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_nsGradient(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_nsPressure(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_navierStokes_nsSplat(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_newton_newton(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_noise_noise(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_osc2d_osc2d(const glsl::Bindings& bindings);
@@ -221,6 +262,9 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_solid_solid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_subdivide_subdivide(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_testPattern_testPattern(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_synth3d_shape3d_precompute(const glsl::Bindings& bindings);
 
 struct KernelFactory {
   std::string_view key;
@@ -252,5 +296,26 @@ struct FactoryRoute {
 [[nodiscard]] std::span<const FactoryRoute> canonical_routes() noexcept;
 [[nodiscard]] const FactoryRoute* find_canonical(std::string_view key,
                                                      std::string_view canonical_factory) noexcept;
+
+// The multi-output (drawBuffers >= 2) sibling of FactoryRoute: identical
+// identity and ABI anchors, but `bind` returns a BoundKernelMrt.
+struct FactoryRouteMrt {
+  std::string_view key;
+  std::string_view canonical_factory;
+  std::string_view emitted_factory;
+  std::string_view route_kind;
+  std::string_view source_sha256;
+  std::string_view typed_abi_sha256;
+  std::string_view define_contract;
+  std::string_view defines;
+  std::string_view sampler_abi_sha256;
+  std::string_view uniform_abi_sha256;
+  std::string_view output_abi_sha256;
+  std::string_view output_extent_sha256;
+  std::string_view compile_define_abi_sha256;
+  BoundKernelMrt (*bind)(const glsl::Bindings&);
+};
+
+[[nodiscard]] std::span<const FactoryRouteMrt> canonical_routes_mrt() noexcept;
 
 }  // namespace noisemaker::generated

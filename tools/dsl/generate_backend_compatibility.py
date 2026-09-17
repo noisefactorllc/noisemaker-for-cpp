@@ -25,7 +25,7 @@ from typing import Any
 if __package__ in (None, ""):
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 
-from tools.glslcpp import check_corpus, check_semantics, generate_typed_slice
+from tools.glslcpp import check_corpus, check_semantics, corpus_ratchet, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.remap_profile import (
     KEY as REMAP_KEY,
@@ -605,6 +605,12 @@ def _binding_abi(effect: dict[str, Any], current_pass: dict[str, Any], typed_rec
         elif mapped in input_map or mapped in effect.get("textures", {}):
             source = "resource"
             source_name = mapped
+        elif name in uniform_map and not isinstance(uniform_map[name], str):
+            # A pass-uniform entry whose value is a literal rather than a name
+            # (e.g. `uniforms: {clearValue: 0}`): the executor reads it back from
+            # the pass definition by the uniform's own name.
+            source = "pass_literal"
+            source_name = name
         elif name in uniform_map:
             source = "pass_derived"
             source_name = mapped
@@ -764,13 +770,20 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
     draw_mode = current_pass.get("drawMode", "fragment")
     if draw_mode not in SUPPORTED_DRAW_MODES:
         reasons.append({"code": "unsupported_draw_mode", "detail": str(draw_mode)})
-    if len(outputs) > 1:
-        reasons.append({"code": "unsupported_output_count", "detail": str(len(outputs))})
     if effect.get("domain", "image") != "image":
         reasons.append({"code": "unsupported_dimensionality", "detail": str(effect.get("domain"))})
+    extent = _extent(effect, current_pass, logical_outputs[0] if logical_outputs else "outputTex")
+    for axis in ("width", "height"):
+        # The binding-ABI extent grammar (registry.cpp, executor.cpp,
+        # generate_typed_slice.py, js_frontend_oracle.mjs) spells a string or an
+        # integer identically everywhere; an object-valued dimension has no
+        # shared token, so it cannot anchor a dispatchable route.
+        value = extent[axis]
+        if isinstance(value, bool) or not isinstance(value, (str, int)):
+            reasons.append({"code": "unsupported_output_extent",
+                            "detail": f"{axis}={json.dumps(value, sort_keys=True)}"})
     status = "compatible" if not reasons else "incompatible"
     factory = typed_record.get("factory")
-    extent = _extent(effect, current_pass, logical_outputs[0] if logical_outputs else "outputTex")
     return {
         "program_key": key, "effect_id": entry["effect_id"], "program": entry["program"],
         "source": entry["source"], "old_raw_sha256": _sha(old), "old_raw_bytes": len(old),
@@ -1106,6 +1119,13 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     cpu_root = cpu_root.resolve(); shader_git = shader_git.resolve(); repository = repository.resolve()
     authority = _authority(cpu_root, shader_git)
     corpus = check_corpus.validate_corpus(repository)
+    # The corpus/pending closure is re-derived from the live authority here, so
+    # every regeneration proves pending.json still names exactly the authority's
+    # programs, sources and effect projections.
+    try:
+        corpus_ratchet.verify_authority(repository, cpu_root, shader_git)
+    except ValueError as error:
+        raise CompatibilityError(f"corpus ratchet authority derivation failed: {error}") from error
     corpus_root = check_corpus._corpus_root(repository)
     manifest = check_corpus._load_json(corpus_root / "manifest.json", "manifest")
     entries = check_corpus._validate_manifest(manifest)
@@ -1136,10 +1156,10 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         else:
             source_rows.append(_program_entry(repository, typed_rows, defines_by_key.get(key, {}), effect, entry, old, new))
     by_key = {item["program_key"]: item for item in source_rows}
-    if len(by_key) != 212 or SCATTER_KEY not in by_key:
+    if len(by_key) != len(entries) or set(by_key) != corpus_keys or SCATTER_KEY not in by_key:
         raise CompatibilityError("corpus source closure cardinality drift")
     fragment_unique = [item for item in source_rows if item["program_key"] != SCATTER_KEY]
-    if len(fragment_unique) != 211:
+    if len(fragment_unique) != len(entries) - 1:
         raise CompatibilityError("fragment unique census drift")
     factory_evidence = _factory_evidence(repository, typed_rows, by_key)
     legacy_factories = factory_evidence["legacy"]
@@ -1155,7 +1175,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         fragment_rows.append(duplicate)
     for item in fragment_rows:
         item.setdefault("row_kind", "canonical")
-    if len(fragment_rows) != 213:
+    if len(fragment_rows) != len(fragment_unique) + len(duplicate_keys):
         raise CompatibilityError("fragment row census drift")
     # Every reference pass gets one and only one status.  The source corpus is
     # the executable fragment closure; the remaining authority passes are
@@ -1175,7 +1195,9 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             reference_passes.append({"effect_id": effect["id"], "pass_index": index, "pass_name": current_pass.get("name"),
                                      "program_key": key, "status": status, "reasons": reasons,
                                      "authority_pass": _authority_pass(current_pass)})
-    if len(reference_passes) != 344 or len(seen_pass_keys) != 304:
+    authority_program_keys = _authority_program_keys(repository)
+    if (len(reference_passes) != sum(len(effect.get("passes", [])) for effect in effect_records)
+            or set(seen_pass_keys) != authority_program_keys):
         raise CompatibilityError("reference pass status cardinality drift")
     scatter = by_key[SCATTER_KEY]
     scatter_contract = {
@@ -1221,6 +1243,13 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     return document
 
 
+def _authority_program_keys(repository: pathlib.Path) -> set[str]:
+    """The authority program key set recorded by the corpus ratchet (pending.json)."""
+    root = check_corpus._corpus_root(repository)
+    document = corpus_ratchet.load_pending(root)
+    return {item["program_key"] for item in document["authority"]["programs"]}
+
+
 def _encoded(document: dict[str, Any]) -> bytes:
     return (json.dumps(document, indent=2) + "\n").encode()
 
@@ -1247,19 +1276,23 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
     if not isinstance(counts, dict) or not isinstance(fragments, list) or not isinstance(canonical, list) \
             or not isinstance(references, list) or not isinstance(scatter, dict):
         raise CompatibilityError("backend compatibility sections are malformed")
-    if len(fragments) != 213 or len(canonical) != 211:
-        raise CompatibilityError("backend compatibility census cardinality drift")
+    corpus_programs = check_corpus._validate_manifest(check_corpus._load_json(
+        check_corpus._corpus_root(repository) / "manifest.json", "manifest"))
+    expected_canonical = {entry["program_key"] for entry in corpus_programs} - {SCATTER_KEY}
     canonical_keys = [item.get("program_key") for item in canonical]
+    if len(canonical) != len(expected_canonical) or set(canonical_keys) != expected_canonical \
+            or len(fragments) != len(canonical) + 2:
+        raise CompatibilityError("backend compatibility census cardinality drift")
     if len(set(canonical_keys)) != len(canonical_keys) or any(not isinstance(key, str) for key in canonical_keys):
         raise CompatibilityError("forged or duplicate canonical program key")
     if scatter.get("program_key") != SCATTER_KEY or scatter.get("status") != "registered":
         raise CompatibilityError("scatter registration missing or forged")
-    if len(references) != 344 or any(not isinstance(item, dict) for item in references):
+    if not references or any(not isinstance(item, dict) for item in references):
         raise CompatibilityError("reference pass status closure drift")
     allowed_statuses = {"compatible", "incompatible", "missing", "scatter"}
     reference_keys = document.get("reference_key_closure")
-    if not isinstance(reference_keys, list) or len(reference_keys) != 304 \
-            or sorted(set(reference_keys)) != sorted(reference_keys):
+    if not isinstance(reference_keys, list) or set(reference_keys) != _authority_program_keys(repository) \
+            or sorted(set(reference_keys)) != reference_keys:
         raise CompatibilityError("reference key closure missing or forged")
     if {item.get("program_key") for item in references} != set(reference_keys):
         raise CompatibilityError("reference key membership drift")
@@ -1297,7 +1330,7 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         if item["status"] != expected_status or item["reasons"] != expected_reasons:
             raise CompatibilityError("reference pass status/reason is not recomputed closure")
     fragment_keys = [item.get("program_key") for item in fragments]
-    if set(fragment_keys) != set(canonical_keys) or len(fragment_keys) != 213:
+    if set(fragment_keys) != set(canonical_keys) or len(fragment_keys) != len(canonical_keys) + 2:
         raise CompatibilityError("fragment row closure drift")
     if any(not isinstance(item, dict) or item.get("program_key") not in set(canonical_keys)
            or item.get("row_kind") not in {"canonical", "legacy_duplicate"}
@@ -1356,10 +1389,26 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
             raise CompatibilityError("fragment reason malformed")
         if not isinstance(row.get("uniforms"), list) or not isinstance(row.get("samplers"), list):
             raise CompatibilityError("binding ABI malformed")
-        if row.get("draw_mode") not in SUPPORTED_DRAW_MODES or row.get("dimensionality") != "image":
+        # A non-image dimensionality (volume/loop domains) or an unsupported draw
+        # mode is admissible evidence only as an incompatible row that names it.
+        if not isinstance(row.get("dimensionality"), str) or not isinstance(row.get("draw_mode"), str):
+            raise CompatibilityError("unsupported draw mode or dimensionality")
+        if row.get("dimensionality") != "image" and (
+                row.get("status") != "incompatible" or {"code": "unsupported_dimensionality",
+                                                       "detail": row["dimensionality"]} not in row["reasons"]):
+            raise CompatibilityError("unsupported draw mode or dimensionality")
+        if row.get("draw_mode") not in SUPPORTED_DRAW_MODES and (
+                row.get("status") != "incompatible" or {"code": "unsupported_draw_mode",
+                                                       "detail": row["draw_mode"]} not in row["reasons"]):
             raise CompatibilityError("unsupported draw mode or dimensionality")
         for binding in [*row["uniforms"], *row["samplers"]]:
-            if not isinstance(binding, dict) or binding.get("source") not in _BINDING_SOURCES:
+            if not isinstance(binding, dict):
+                raise CompatibilityError("unclassified binding in ABI")
+            # An unclassified binding is admissible evidence only on an
+            # incompatible row whose reasons name that exact binding.
+            if binding.get("source") not in _BINDING_SOURCES and (
+                    binding.get("source") is not None or row.get("status") != "incompatible"
+                    or {"code": "unclassified_binding", "detail": binding.get("name")} not in reasons):
                 raise CompatibilityError("unclassified binding in ABI")
         output_abi = row.get("output_abi")
         outputs = row.get("outputs")

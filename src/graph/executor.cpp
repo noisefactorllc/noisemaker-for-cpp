@@ -1051,7 +1051,19 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
   for (const auto& chain : plan.chains) {
     bool have_current = false;
     std::unordered_set<std::string> produced;
-    for (const auto& variant : chain.steps) {
+    // The dry run mirrors execution's own partition: a step inside an
+    // iterated group (renderer.js runIteratedGroup) resolves its routes
+    // against its step-local resources and the group-shared map, exactly as
+    // lookup_group_step_route does, not against the chain-wide producers.
+    std::vector<const iteration::IterationGroup*> group_of(chain.steps.size(), nullptr);
+    const auto groups = iteration::compute_iteration_groups(plan, chain);
+    for (const auto& group : groups) {
+      for (const std::size_t index : group.step_indices) {
+        if (index < group_of.size()) group_of[index] = &group;
+      }
+    }
+    for (std::size_t step_index = 0; step_index < chain.steps.size(); ++step_index) {
+      const auto& variant = chain.steps[step_index];
       if (const auto* read = std::get_if<ReadStep>(&variant)) {
         if (read->surface.kind != SurfaceReference::Kind::named ||
             available_routes.find(read->surface.name) == available_routes.end()) {
@@ -1069,12 +1081,22 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           throw GraphError(GraphErrorCode::invalid_snapshot, "effect snapshot index is out of range");
         }
         const auto& snapshot = plan.effects[effect.snapshot_index];
+        const auto* group = group_of[step_index];
+        const bool iterated = group != nullptr && group->iterated;
         // Declared textures with no producer (including `overlayTex` on the
         // three worm-overlay effects, now that the adapter is implemented)
         // are initialized by the executor before the first pass runs, so
         // they are available routes from the start of the step -- see the
-        // `declared_textures` exemption in the pass.inputs loop below.
-        const auto declared_textures = unproduced_declared_textures(snapshot.definition);
+        // `declared_textures` exemption in the pass.inputs loop below. In an
+        // iterated group EVERY declared texture is zero-filled scratch before
+        // the first iteration (ensure_group_scratch_resources /
+        // renderer.js ensureGroupScratchResources), produced or not.
+        auto declared_textures = unproduced_declared_textures(snapshot.definition);
+        if (iterated) {
+          for (const auto& texture : snapshot.definition.textures) declared_textures.insert(texture.name);
+        }
+        // A group step publishes into its own step-local map.
+        std::unordered_set<std::string> step_produced;
         for (std::size_t pass_index = 0; pass_index < snapshot.definition.passes.size(); ++pass_index) {
           const auto& pass = snapshot.definition.passes[pass_index];
           const auto& admission = snapshot.admissions[pass_index];
@@ -1093,9 +1115,22 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           // is authenticated by `preflight_scatter_pass_abi` above and, at
           // real execution, by resolving its adapter directly.
           if (!scatter_adapter_available(admission)) {
-            const auto* route = authenticate_factory_route(effect, admission);
-            authenticate_compile_define_parameters(effect, admission,
-                                                   snapshot.definition, *route);
+            if (admission.outputs.size() > 1U) {
+              // An MRT pass authenticates against the MRT route table; inside
+              // an iterated group it is refused outright, before allocation
+              // (see run_iterated_group).
+              if (iterated) {
+                throw GraphError(GraphErrorCode::unsupported_mrt,
+                                 "multi-output pass inside an iterated group is unsupported",
+                                 effect.effect.id, pass_index, pass.name,
+                                 admission.identity.program_key);
+              }
+              (void)authenticate_factory_route_mrt(effect, admission);
+            } else {
+              const auto* route = authenticate_factory_route(effect, admission);
+              authenticate_compile_define_parameters(effect, admission,
+                                                     snapshot.definition, *route);
+            }
           }
           authenticate_palette_override(effect, admission, snapshot.definition);
           authenticate_measured_parity(effect, admission);
@@ -1112,6 +1147,19 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           if (!enabled || repeats == 0U) continue;
           for (const auto& input : pass.inputs) {
             const auto require_named = [&](const std::string& route) {
+              if (iterated) {
+                // lookup_group_step_route: selfTex/feedback always resolve;
+                // particle-state names are created lazily in the group map;
+                // global_accum is seeded for a loop region; everything else
+                // is step-local (declared scratch or this step's own output).
+                if (route == "selfTex" || route == "feedback" ||
+                    iteration::is_particle_state_name(route) ||
+                    (route == "global_accum" && group->loop) ||
+                    step_produced.find(route) != step_produced.end()) {
+                  return;
+                }
+                throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced", effect.effect.id, pass_index, pass.name, admission.identity.program_key);
+              }
               if (produced.find(route) == produced.end() &&
                   available_routes.find(route) == available_routes.end()) {
                 throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced", effect.effect.id, pass_index, pass.name, admission.identity.program_key);
@@ -1185,6 +1233,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           }
           for (const auto& output : pass.outputs) {
             produced.insert(output.second);
+            step_produced.insert(output.second);
             if (output.second == "outputTex") have_current = true;
           }
         }
@@ -1920,16 +1969,36 @@ const FactoryRouteDescriptorMrt* find_factory_route_mrt(
 }
 
 std::span<const FactoryRouteDescriptorMrt> canonical_factory_routes_mrt() {
-  // Always empty: no MRT program has been compiled by the typed-slice
-  // generator yet (no admitted effect declares more than one output --
-  // validate_pass_output_abi/validate_pass_controls now check that
-  // generically for any N, but zero currently-admitted passes exercise
-  // N>1). This exists so the dispatch path below is real and reachable
-  // once a generated MRT registry exists, not dead scaffolding waiting on
-  // a future rewrite; a test (or the eventual generated wiring) supplies
-  // its own `routes` span exactly like `bind_factory_route` allows for the
-  // single-output table.
-  static const std::vector<FactoryRouteDescriptorMrt> routes;
+  // One checked projection of the generated MRT route table, exactly like
+  // canonical_factory_routes() projects the single-output one: the typed-slice
+  // generator publishes every multi-output corpus program here (and only
+  // here), and a malformed row fails closed for every later execution.
+  static const std::vector<FactoryRouteDescriptorMrt> routes = [] {
+    std::vector<FactoryRouteDescriptorMrt> result;
+    const auto generated_routes = generated::canonical_routes_mrt();
+    result.reserve(generated_routes.size());
+    std::unordered_set<std::string> pairs;
+    for (const auto& route : generated_routes) {
+      if (route.key.empty() || route.canonical_factory.empty() ||
+          route.emitted_factory.empty() || route.route_kind != "typed_emitter" ||
+          !is_sha256(route.source_sha256) ||
+          !is_sha256(route.typed_abi_sha256) || route.bind == nullptr ||
+          !pairs.insert(std::string(route.key) + "\x1f" +
+                        std::string(route.canonical_factory)).second) {
+        throw GraphError(GraphErrorCode::invalid_snapshot,
+                         "generated canonical MRT route table is malformed", {}, 0,
+                         {}, std::string(route.key));
+      }
+      result.push_back({route.key, route.canonical_factory,
+                        route.emitted_factory, route.route_kind,
+                        route.source_sha256, route.typed_abi_sha256,
+                        route.define_contract, route.defines,
+                        route.sampler_abi_sha256, route.uniform_abi_sha256,
+                        route.output_abi_sha256, route.output_extent_sha256,
+                        route.compile_define_abi_sha256, route.bind});
+    }
+    return result;
+  }();
   return routes;
 }
 
@@ -3034,6 +3103,22 @@ struct GroupStepIterationResult {
     }
   }
 
+  // renderer.js runGroupStepIterationSync: the step's image is its own
+  // `outputTex` step resource whenever the step map holds one
+  // (`state.resources.get('outputTex') ?? lastOutput`), and only otherwise
+  // the last pass output -- a trailing feedback pass that writes a scratch
+  // texture (filter/motionBlur's `copy` into `_selfTex`) is not the result.
+  // Every `outputTex` store in the step map is allocated by
+  // allocate_group_output_destination / ensure_group_scratch_resources with
+  // the same format rule, so the format follows from the definition.
+  if (const auto found = state.resources.find("outputTex"); found != state.resources.end()) {
+    const auto* texture = texture_for(definition, "outputTex");
+    result.surface = found->second.clone();
+    result.format = texture != nullptr ? resolve_texture_format(texture->format)
+                                       : noisemaker::TextureFormat::rgba16f;
+    result.output_route = "outputTex";
+    produced = true;
+  }
   if (!produced) {
     throw GraphError(GraphErrorCode::execution_failure, "iterated step produced no output",
                      state.effective_step.effect.id);
@@ -3105,6 +3190,26 @@ struct GroupPublishResult {
   const auto resolved = iteration::resolve_iteration_count(parameter(*owner_step, "iterationCount"));
   if (resolved.zero_iterations) {
     return zero_iteration_group_output(group_input, inputs);
+  }
+  // A multi-output (drawBuffers >= 2) pass has an authenticated generated MRT
+  // route and runs through run_mrt_pass on the non-iterated path, but
+  // run_group_step_iteration routes, stores and publishes exactly one surface
+  // per pass (renderer.js's MRT branch inside runGroupStepIteration is not
+  // ported). Refuse the whole group before any pass renders, naming the pass,
+  // instead of letting an MRT admission reach the single-output route table.
+  for (const std::size_t step_index : group.step_indices) {
+    const auto* member = std::get_if<EffectStep>(&chain.steps[step_index]);
+    if (member == nullptr) continue;
+    const auto& snapshot = plan.effects[member->snapshot_index];
+    for (std::size_t pass_index = 0; pass_index < snapshot.admissions.size(); ++pass_index) {
+      const auto& admission = snapshot.admissions[pass_index];
+      if (!scatter_adapter_available(admission) && admission.outputs.size() > 1U) {
+        throw GraphError(GraphErrorCode::unsupported_mrt,
+                         "multi-output pass inside an iterated group is unsupported",
+                         snapshot.definition.id, pass_index, admission.identity.name,
+                         admission.identity.program_key);
+      }
+    }
   }
 
   iteration::GroupResourceMap group_resources;

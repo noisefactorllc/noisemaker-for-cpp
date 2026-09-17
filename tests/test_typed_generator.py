@@ -12,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from tests import corpus_census
 from unittest import mock
 
 
@@ -78,8 +79,8 @@ class LightLeakPhase2Tests(unittest.TestCase):
         spec = json.loads(
             (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
-        self.assertEqual(72, keys.index(LIGHTLEAK_KEY))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
+        self.assertEqual(corpus_census.ordinal(LIGHTLEAK_KEY), keys.index(LIGHTLEAK_KEY))
         row = spec["programs"][keys.index(LIGHTLEAK_KEY)]
         self.assertEqual(
             {"defines": {}, "program_key": LIGHTLEAK_KEY,
@@ -166,10 +167,10 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(13, keys.index(self.KEY))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         self.assertEqual(
             {"defines": self.DEFINES,
@@ -185,7 +186,7 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
         self.assertEqual(self.PROFILE, row["noise_frontend_profile"])
         self.assertNotIn("runtime_loop_bound_profile", row)
         self.assertEqual("bind_classicNoisedeck_noise_noise", row["factory"])
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
 
         generated = (REPOSITORY / "src/typed_generated/typed_slice.cpp").read_text()
         self.assertEqual(1, generated.count("// Typed IR program: " + self.KEY))
@@ -193,7 +194,7 @@ class ClassicNoiseIntegrationTests(unittest.TestCase):
         end = generated.index("// Typed IR program:", start + 1)
         self.assertIn("namespace typed_13 {", generated[start:end])
         catalog = (REPOSITORY / "include/noisemaker/generated/catalog.hpp").read_text()
-        self.assertEqual(213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+        self.assertEqual(corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_classicNoisedeck_noise_noise"))
 
 
@@ -624,13 +625,14 @@ class TypedGeneratorTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
-        self.assertEqual("filter/dither:dither", keys[44])
+        self.assertEqual(corpus_census.typed_count(), len(keys))
+        dither = corpus_census.ordinal("filter/dither:dither")
+        self.assertEqual("filter/dither:dither", keys[dither])
         self.assertEqual(
             {"defines": {},
              "dither_frontend_profile": "dither-frontend-admission-v1",
              "program_key": "filter/dither:dither"},
-            spec["programs"][44])
+            spec["programs"][dither])
 
     @staticmethod
     def tree_bytes(root: pathlib.Path) -> dict[str, bytes]:
@@ -799,7 +801,7 @@ class TypedGeneratorTests(unittest.TestCase):
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"] not in KEYS
                             and item["program_key"] != "filter/dither:dither"
@@ -1521,7 +1523,7 @@ and item["program_key"] != "filter/wobble:wobble"
             with self.subTest(driver_forgery=name), mock.patch.object(
                     generate_typed_slice.check_corpus, "validate_corpus"), mock.patch.object(
                         generate_typed_slice.check_semantics, "semantic_report",
-                        return_value={"body_success": 212}), mock.patch.object(
+                        return_value={"body_success": corpus_census.vendored_count()}), mock.patch.object(
                             generate_typed_slice, "analyze_program",
                             side_effect=forged_analyze), self.assertRaises(
                                 generate_typed_slice.GeneratorError):
@@ -1748,7 +1750,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        current_spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        current_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         current_spec["programs"] = [
             item for item in current_spec["programs"]
             if item["program_key"] not in KEYS
@@ -1936,7 +1938,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "5682cf9e1df92aeb1ecbd38af61707ca1caee57878e46fc8bf9bbded6af3b4c9",
             hashlib.sha256(("\n".join(public_keys) + "\n").encode()).hexdigest())
         corpus = check_corpus._corpus_root(REPOSITORY)
-        corpus_manifest = json.loads((corpus / "manifest.json").read_text())
+        corpus_manifest = corpus_census.pre_expansion_manifest(json.loads((corpus / "manifest.json").read_text()))
         remaining = sorted({item["program_key"]
                             for item in corpus_manifest["programs"]}
                            - set(public_keys))
@@ -2863,7 +2865,7 @@ and item["program_key"] != "filter/wobble:wobble"
         keys = [item["program_key"] for item in spec["programs"]
                 if item["program_key"] != "filter/rotate:rot"]
         public = sorted((*keys, "filter/invert:inv", "synth/solid:solid"))
-        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) / "manifest.json").read_text())
+        corpus = corpus_census.pre_expansion_manifest(json.loads((check_corpus._corpus_root(REPOSITORY) / "manifest.json").read_text()))
         self.assertEqual((122, 124, 88, 212), (
             len(keys), len(public), len(corpus["programs"]) - len(public),
             len(corpus["programs"])))
@@ -5382,7 +5384,7 @@ and item["program_key"] != "filter/wobble:wobble"
         root = check_corpus._corpus_root(REPOSITORY)
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
         programs = check_corpus._validate_manifest(manifest)
-        self.assertEqual(212, len(programs))
+        self.assertEqual(corpus_census.vendored_count(), len(programs))
         attached = []
         for entry in programs:
             key = entry["program_key"]
@@ -6014,7 +6016,7 @@ and item["program_key"] != "filter/wobble:wobble"
     def test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_eighty_two_typed_keys(self) -> None:
         from tools.glslcpp import generate_typed_slice
 
-        slice_spec = generate_typed_slice.load_slice(REPOSITORY)
+        slice_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         self.assertEqual(1, slice_spec["schema"])
         self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5", slice_spec["revision"])
         self.assertEqual({"filter/scatter:scatterJitter": "source-double"},
@@ -7314,7 +7316,7 @@ and item["program_key"] != "filter/wobble:wobble"
         output = subprocess.check_output(
             [sys.executable, str(REPOSITORY / "tools/glslcpp/generate_typed_slice.py"), "--check"],
             cwd="/tmp", text=True)
-        self.assertIn("typed slice ok (211 programs)", output)
+        self.assertIn(f"typed slice ok ({corpus_census.typed_count()} programs)", output)
 
     def test_typed_emitter_refuses_raw_or_unsupported_nodes_with_program_span(self) -> None:
         from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
@@ -7926,13 +7928,17 @@ and item["program_key"] != "filter/wobble:wobble"
     def test_committed_manifest_has_two_hundred_five_typed_outputs_without_absolute_paths(self) -> None:
         manifest = json.loads((REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
         # Live pin; the test name preserves the original 182 milestone.
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         self.assertEqual("typed-ir-v1", manifest["emitter"])
         for program in manifest["programs"]:
             self.assertEqual("typed_slice.cpp", program["output"])
             self.assertEqual(manifest["typed_slice_sha256"], program["output_sha256"])
+        # The frozen define census below is the pre-expansion corpus's; every
+        # corpus-expansion row carries exactly its effect's metadata defaults
+        # (generate_typed_slice.generate_outputs enforces that equality).
         defined = {program["program_key"]: (program["define_contract"], program["defines"])
-                   for program in manifest["programs"] if program["defines"]}
+                   for program in manifest["programs"]
+                   if program["defines"] and program["program_key"] not in corpus_census.expansion_keys()}
         smooth = next(program for program in manifest["programs"]
                       if program["program_key"] == "filter/smooth:smoothEdge")
         self.assertEqual("smooth-edge-luma-weights-v1",
@@ -8324,7 +8330,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp import generate_typed_slice
 
         gabor_key = "synth/gabor:gabor"
-        current_spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        current_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         current_spec["programs"] = [
             item for item in current_spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
@@ -8458,7 +8464,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp import generate_typed_slice
 
         scanline_key = "filter/scanlineError:scanlineError"
-        current_spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        current_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         current_spec["programs"] = [
             item for item in current_spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
@@ -9331,7 +9337,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertIn("namespace typed_kernel {", emitted)
         self.assertNotIn("void main(", emitted)
 
-        slice_spec = generate_typed_slice.load_slice(REPOSITORY)
+        slice_spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         slice_spec["programs"] = [item for item in slice_spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
                                       "filter/rotate:rot",
@@ -9592,7 +9598,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from unittest import mock
         from tools.glslcpp import check_corpus, generate_typed_slice
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         keys = [item["program_key"] for item in spec["programs"]
             if item["program_key"] not in {"filter/dither:dither", "synth/julia:julia",
                     "filter/rotate:rot", "mixer/focusBlur:focusBlur",
@@ -9648,7 +9654,7 @@ and item["program_key"] != "filter/wobble:wobble"
                         "typed slice literal vec3 lane profile drift"):
                     generate_typed_slice.load_slice(repository)
         corpus_root = check_corpus._corpus_root(REPOSITORY)
-        corpus_manifest = json.loads((corpus_root / "manifest.json").read_text())
+        corpus_manifest = corpus_census.pre_expansion_manifest(json.loads((corpus_root / "manifest.json").read_text()))
         self.assertEqual((186, 188, 24, 212),
                          (len(keys), len(keys) + 2,
                           len(corpus_manifest["programs"]) - len(keys) - 2,
@@ -10720,7 +10726,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "a720d5b623072638e653b5f0cff511325e92dbce5e7088381d3e81da9dc6346a",
             hashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())
         corpus = check_corpus._corpus_root(REPOSITORY)
-        manifest = json.loads((corpus / "manifest.json").read_text())
+        manifest = corpus_census.pre_expansion_manifest(json.loads((corpus / "manifest.json").read_text()))
         remaining = sorted({item["program_key"] for item in manifest["programs"]}
                            - set(public))
         self.assertEqual((175, 175, 37, 212),
@@ -11217,8 +11223,8 @@ synth/subdivide:subdivide""".splitlines())
         self.assertEqual(((LENS_KEY, PROFILE, {}),
                           (PRISMATIC_KEY, PROFILE, {})), carriers)
 
-        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /
-                             "manifest.json").read_text())
+        corpus = corpus_census.pre_expansion_manifest(json.loads((check_corpus._corpus_root(REPOSITORY) /
+                             "manifest.json").read_text()))
         public = expected_public
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
@@ -11477,7 +11483,7 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        task24 = copy.deepcopy(json.loads(
+        task24 = corpus_census.without_expansion(json.loads(
             (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text()))
         task24["programs"] = [item for item in task24["programs"]
                               if item["program_key"] not in KEYS
@@ -12093,7 +12099,7 @@ synth/subdivide:subdivide""".splitlines())
                 path.write_text(json.dumps(payload))
                 if name == "exact":
                     loaded = generate_typed_slice.load_slice(repository)
-                    self.assertEqual(211, len(loaded["programs"]))
+                    self.assertEqual(corpus_census.typed_count(), len(loaded["programs"]))
                 else:
                     with self.assertRaises(generate_typed_slice.GeneratorError):
                         generate_typed_slice.load_slice(repository)
@@ -13515,7 +13521,7 @@ synth/subdivide:subdivide""".splitlines())
                     def corpus_preflight(repository):
                         return None
                     def semantic_preflight(repository):
-                        return {"body_success": 212}
+                        return {"body_success": corpus_census.vendored_count()}
                 with self.subTest(key=selected_key, driver_forgery=name), \
                         mock.patch.object(generate_typed_slice, "load_slice",
                                           return_value=prioritized), \
@@ -13604,7 +13610,7 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.smooth_edge_luma_weights_profile import (
             PROFILE, SMOOTH_EDGE_KEY)
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         typed = tuple(item["program_key"] for item in spec["programs"]
             if item["program_key"] not in {"filter/dither:dither",
                           "synth/julia:julia",
@@ -13620,8 +13626,8 @@ synth/subdivide:subdivide""".splitlines())
                           "filter/parallax:parallax",
                           "filter/grime:grime"})
         public = tuple(sorted((*typed, "filter/invert:inv", "synth/solid:solid")))
-        corpus = json.loads((check_corpus._corpus_root(REPOSITORY) /
-                             "manifest.json").read_text())
+        corpus = corpus_census.pre_expansion_manifest(json.loads((check_corpus._corpus_root(REPOSITORY) /
+                             "manifest.json").read_text()))
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
         self.assertEqual(typed, tuple(sorted(set(typed))))
@@ -13725,7 +13731,7 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         task26_spec = copy.deepcopy(spec)
         task26_spec["programs"] = [
             item for item in task26_spec["programs"]
@@ -14635,7 +14641,7 @@ class Task27PerlinTests(unittest.TestCase):
         import hashlib
         from tools.glslcpp import generate_typed_slice
 
-        spec = generate_typed_slice.load_slice(REPOSITORY)
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         keys = [item["program_key"] for item in spec["programs"]
                                    if item["program_key"] not in ({"filter/dither:dither", "synth/julia:julia",
                     "filter/rotate:rot", "mixer/focusBlur:focusBlur",
@@ -16720,14 +16726,14 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         # historical mat3/linear-srgb-lane-index Slice A state described here.
         # The live slice now includes the ten post-Task-29 typed landings;
         # they also reduce the remaining unported corpus by nine.
-        self.assertEqual((211, 211, 1, 212),
+        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
                          (len(typed), len(public), len(unported),
                           len(corpus["programs"])))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())
         self.assertEqual(181, typed.index(FOCUS_BLUR_KEY))
         self.assertEqual(("mixer/channelCombine:channelCombine",
@@ -17510,18 +17516,20 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
                              "manifest.json").read_text())
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
-        self.assertEqual((211, 211, 1, 212),
+        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
                          (len(typed), len(public), len(unported),
                           len(corpus["programs"])))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())
-        self.assertEqual(47, typed.index(EXTRUDE_KEY))
+        extrude = corpus_census.ordinal(EXTRUDE_KEY)
+        self.assertEqual(extrude, typed.index(EXTRUDE_KEY))
+        # filter/feedback:copy (corpus expansion) now sorts between extrude and fibers.
         self.assertEqual(("filter/emboss:emboss", EXTRUDE_KEY,
-                          "filter/fibers:fibersBlend"), typed[46:49])
+                          "filter/feedback:copy"), typed[extrude - 1:extrude + 2])
         self.assertEqual([{
             "defines": {"DEPTH_SOURCE": 0, "EXTRUDE_TYPE": 0},
             "extrude_bvec2_relational_reduction_profile": PROFILE,
@@ -18523,21 +18531,23 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                              "manifest.json").read_text())
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
-        self.assertEqual((211, 211, 1, 212),
+        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
                          (len(typed), len(public), len(unported),
                           len(corpus["programs"])))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(public) + "\n").encode()).hexdigest())
         # Later exact-profile landings sort ahead of Curl, so its live ordinal
         # is now derived directly from the current key list.
-        self.assertEqual(191, typed.index(CURL_KEY))
+        curl = corpus_census.ordinal(CURL_KEY)
+        self.assertEqual(curl, typed.index(CURL_KEY))
         # The window is index-relative to the line above.
-        self.assertEqual(("synth/cell:cell", CURL_KEY, "synth/gabor:gabor"),
-                         typed[190:193])
+        # synth/cellularAutomata:caFb (corpus expansion) now sorts between cell and curl.
+        self.assertEqual(("synth/cellularAutomata:caFb", CURL_KEY, "synth/gabor:gabor"),
+                         typed[curl - 1:curl + 2])
         self.assertEqual([{
             "curl_vector_math_profile": PROFILE,
             "defines": {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True},
@@ -19177,7 +19187,7 @@ class Task32GradeClusterTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         typed = tuple(item["program_key"] for item in spec["programs"])
-        self.assertEqual(211, len(typed))
+        self.assertEqual(corpus_census.typed_count(), len(typed))
 
         task31_spec = copy.deepcopy(spec)
         task31_spec["programs"] = [
@@ -19810,11 +19820,11 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         # This is a live census even though the test name preserves the
         # original 152-program milestone. Later exact-profile landings have
         # moved the current slice to 211 programs and 1 unported program.
-        self.assertEqual((211, 211, 1, 212),
+        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
                          (len(typed), len(public), len(unported),
                           len(corpus["programs"])))
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
 
         derivative_rows = [item for item in spec["programs"]
@@ -19828,7 +19838,7 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         current_outputs = generate_typed_slice.generate_outputs(REPOSITORY)
         manifest = json.loads(
             current_outputs["src/typed_generated/typed_manifest.json"])
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         derivative_manifest_rows = [
             item for item in manifest["programs"]
             if "derivative_admission_profile" in item]
@@ -19889,7 +19899,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
     KEY = "synth/shape:shape"
     PROFILE = "mutable-global-frame-shape-v1"
     XOR = "scalar-uint-xor-v1"
-    ORDINAL = 207
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 207 before the corpus expansion)
     LATER_ROWS = ("filter/dither:dither", "synth/julia:julia",
                   "filter/lightLeak:lightLeak",
                   "classicNoisedeck/moodscape:moodscape",
@@ -19917,7 +19927,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
                   "filter/spookyTicker:spookyTicker",
                   "filter/texture:texture")
     KEY_SHA256 = (
-        "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1")
+        corpus_census.typed_key_sha256())
     SOURCE_SHA256 = (
         "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f")
     DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
@@ -19989,7 +19999,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
             self.KEY_SHA256,
@@ -20008,7 +20018,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         self.assertEqual(["synth/noise:noise", self.KEY],
                          [item["program_key"] for item in spec["programs"]
                           if "mutable_global_frame_profile" in item])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
@@ -20027,14 +20037,14 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["mutable_global_frame_profile"])
@@ -20048,7 +20058,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_synth_shape_shape"))
         self.assertLess(catalog.index("bind_synth_sacredGeometry"),
                         catalog.index("bind_synth_shape_shape"))
@@ -20505,7 +20515,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         # The frozen 183 digests below are unchanged by that -- bumping them
         # to a live state instead would have destroyed what this test
         # measures.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"] not in self.LATER_ROWS]
         self.assertEqual(184, len(spec["programs"]))
@@ -20599,7 +20609,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
     KEY = "filter/normalMap:normalMap"
     PROFILE = "const-global-nine-table-v1"
     ROUND = "as-u32-round-admission-v1"
-    ORDINAL = 79
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 79 before the corpus expansion)
     LATER_ROWS = ("filter/dither:dither", "synth/julia:julia",
                   "filter/lightLeak:lightLeak",
                   "classicNoisedeck/moodscape:moodscape",
@@ -20626,7 +20636,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
                   "filter/spookyTicker:spookyTicker",
                   "filter/texture:texture")
     KEY_SHA256 = (
-        "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1")
+        corpus_census.typed_key_sha256())
     SOURCE_SHA256 = (
         "384312e50972f75dbebd4080cd76d1c2554a439eb36746f2e351d63a03a271cb")
     ROW = {
@@ -20725,14 +20735,15 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
             self.KEY_SHA256,
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted.
         self.assertEqual(self.ORDINAL, keys.index(self.KEY))
-        self.assertEqual(("filter/mosaicTiles:mosaicTiles", self.KEY,
+        # filter/motionBlur (corpus expansion) now sorts between mosaicTiles and normalMap.
+        self.assertEqual(("filter/motionBlur:motionBlur", self.KEY,
                           "filter/normalize:apply"),
                          tuple(keys[self.ORDINAL - 1:self.ORDINAL + 2]))
         self.assertEqual(self.ROW, spec["programs"][self.ORDINAL])
@@ -20746,7 +20757,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
                           if "const_global_table_profile" in item])
         # cellRefract carries real defines (KERNEL=0/SHAPE=1), and Moodscape
         # adds one live define-bearing row.
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows. `ivec2` and `float` were already
@@ -20768,7 +20779,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
@@ -20776,7 +20787,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         manifest = json.loads(
             (REPOSITORY
              / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["const_global_table_profile"])
@@ -20795,7 +20806,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_filter_normalMap_normalMap"))
         self.assertLess(catalog.index("bind_filter_mosaicTiles"),
                         catalog.index("bind_filter_normalMap_normalMap"))
@@ -20869,7 +20880,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
                 path.write_text(json.dumps(payload))
                 if name == "exact":
                     loaded = generate_typed_slice.load_slice(repository)
-                    self.assertEqual(211, len(loaded["programs"]))
+                    self.assertEqual(corpus_census.typed_count(), len(loaded["programs"]))
                     continue
                 with self.assertRaisesRegex(
                         generate_typed_slice.GeneratorError,
@@ -21759,7 +21770,7 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         import hashlib
         from tools.glslcpp import generate_typed_slice
 
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         # The milestone is the 185-row state: remove the later cellRefract
         # row FIRST, then only this row -- the shape suite's LATER_ROWS
         # pattern, adopted by this class the first time a later row landed.
@@ -21849,7 +21860,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     KEY = "classicNoisedeck/cellRefract:cellRefract"
     PROFILE = "mutable-global-nine-array-cellrefract-v1"
-    ORDINAL = 3
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 3 before the corpus expansion)
     DEFINES = {"KERNEL": 0, "SHAPE": 1}
     ROW = {
         "defines": DEFINES,
@@ -22451,10 +22462,10 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted.
         self.assertEqual(self.ORDINAL, keys.index(self.KEY))
@@ -22471,7 +22482,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                           KALEIDO_KEY],
                          [item["program_key"] for item in spec["programs"]
                           if "mutable_global_array_profile" in item])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
@@ -22492,14 +22503,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
@@ -22514,7 +22525,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_classicNoisedeck_cellRefract"))
         self.assertLess(catalog.index("bind_classicNoisedeck_cellNoise"),
                         catalog.index("bind_classicNoisedeck_cellRefract"))
@@ -22559,7 +22570,7 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # from. The frozen 185 digests below are unchanged by that -- bumping
         # them to a live state instead would have destroyed what this test
         # measures.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"] not in self.LATER_ROWS]
         self.assertEqual(186, len(spec["programs"]))
@@ -22699,7 +22710,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
     XOR_PROFILE = "scalar-uint-xor-v1"
     # 7 since effects (row 188) inserted at ordinal 5, ahead of this row;
     # kaleido landed at 6 against the 187-row slice.
-    ORDINAL = 10
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 10 before the corpus expansion)
     DEFINES = {"DIRECTION": 2, "KERNEL": 0, "LOOP_OFFSET": 10, "METRIC": 0}
     ROW = {
         "defines": DEFINES,
@@ -23225,10 +23236,10 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         keys = [item["program_key"] for item in spec["programs"]]
         # 188 rows since effects (row 188, ordinal 5 -- AHEAD of this row,
         # so kaleido's own ordinal is now 7).
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted.
         self.assertEqual(self.ORDINAL, keys.index(self.KEY))
@@ -23248,7 +23259,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
             [self.KEY, "classicNoisedeck/shapeMixer:shapeMixer"],
             [item["program_key"] for item in spec["programs"]
              if "scalar_uint_xor_profile" in item][:2])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
@@ -23269,14 +23280,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
@@ -23292,7 +23303,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_classicNoisedeck_kaleido"))
         self.assertLess(catalog.index("bind_classicNoisedeck_effects"),
                         catalog.index("bind_classicNoisedeck_kaleido"))
@@ -23346,7 +23357,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # The frozen 186 digests below are unchanged by that; bumping them
         # would be measuring a different milestone than the one this class
         # froze.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"]
                             not in ("filter/dither:dither", "synth/julia:julia",
@@ -23478,7 +23489,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
     PROFILE = "mutable-global-nine-array-effects-v1"
     MAT4_PROFILE = "mat4-bicubic-chain-effects-v1"
     CEIL_PROFILE = "ceil-admission-v1"
-    ORDINAL = 7
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 7 before the corpus expansion)
     DEFINES = {"EFFECT": 0, "FLIP": 0}
     ROW = {
         "ceil_admission_profile": "ceil-admission-v1",
@@ -23973,10 +23984,10 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted: effects
         # sorts ADJACENT TO GLITCH, the program whose carrier family it
@@ -24005,7 +24016,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
             [self.KEY, "classicNoisedeck/glitch:glitch"],
             [item["program_key"] for item in spec["programs"]
              if "glitch_mat4_chain_profile" in item])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: it is the STORAGE CLASS, not the
@@ -24027,14 +24038,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["mutable_global_array_profile"])
@@ -24050,7 +24061,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_classicNoisedeck_effects"))
         self.assertLess(catalog.index("bind_classicNoisedeck_composite"),
                         catalog.index("bind_classicNoisedeck_effects"))
@@ -24125,7 +24136,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # rebuild the 188 state this pair is measured from. The frozen 187
         # digests below are unchanged by that; bumping them would be
         # measuring a different milestone than the one this class froze.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                                     if item["program_key"] not in ("filter/dither:dither", "synth/julia:julia",
                                                             "filter/lightLeak:lightLeak",
@@ -24255,7 +24266,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     KEY = "filter/wobble:wobble"
     PROFILE = "varying-uv-admission-v1"
-    ORDINAL = 170
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 170 before the corpus expansion)
     ROW = {
         "defines": {},
         "program_key": "filter/wobble:wobble",
@@ -24525,10 +24536,10 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted: wobble
         # sorts between wind and wormhole, the design's projected neighbours
@@ -24547,7 +24558,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
             ["filter/grime:grime", self.KEY],
             [item["program_key"] for item in spec["programs"]
              if "varying_profile" in item])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: varying admission is pure
@@ -24566,14 +24577,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["varying_profile"])
@@ -24586,7 +24597,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_filter_wobble_wobble"))
         self.assertLess(catalog.index("bind_filter_wind_wind"),
                         catalog.index("bind_filter_wobble_wobble"))
@@ -24661,7 +24672,7 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # pair is measured from. The frozen 188 digests below are unchanged
         # by that; bumping them would be measuring a different milestone
         # than the one this class froze.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"]
                             not in ("filter/dither:dither", "synth/julia:julia",
@@ -24794,7 +24805,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     KEY = "filter/parallax:parallax"
     PROFILE = "texture-lod-admission-parallax-v1"
-    ORDINAL = 92
+    ORDINAL = corpus_census.ordinal(KEY)  # live sorted ordinal (was 92 before the corpus expansion)
     ROW = {
         "defines": {},
         "program_key": "filter/parallax:parallax",
@@ -25125,10 +25136,10 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         spec = generate_typed_slice.load_slice(REPOSITORY)
         keys = [item["program_key"] for item in spec["programs"]]
-        self.assertEqual(211, len(keys))
+        self.assertEqual(corpus_census.typed_count(), len(keys))
         self.assertEqual(sorted(set(keys)), keys)
         self.assertEqual(
-            "29a148b26cfe4f550ac82325810655eb0e5ffad2c3a4e5241e42600bac9f76c1",
+            corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, read off the list rather than trusted: parallax
         # sorts between outlineValueMap and patchwork (the design's
@@ -25146,7 +25157,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             [self.KEY],
             [item["program_key"] for item in spec["programs"]
              if "texture_lod_admission_profile" in item])
-        self.assertEqual(36, sum(1 for item in spec["programs"]
+        self.assertEqual(36, sum(1 for item in corpus_census.without_expansion(spec)["programs"]
                                  if item["defines"]))
 
         # Neither frozen vocabulary grows: the textureLod admission is an
@@ -25165,14 +25176,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
         # Live corpus census: the current slice leaves three unported keys.
         self.assertEqual(
-            (212, 1),
+            (corpus_census.vendored_count(), 1),
             (len(corpus["programs"]),
              len({item["program_key"] for item in corpus["programs"]}
                  - public)))
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
-        self.assertEqual(211, len(manifest["programs"]))
+        self.assertEqual(corpus_census.typed_count(), len(manifest["programs"]))
         row = manifest["programs"][self.ORDINAL]
         self.assertEqual(self.KEY, row["program_key"])
         self.assertEqual(self.PROFILE, row["texture_lod_admission_profile"])
@@ -25186,7 +25197,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         catalog = (REPOSITORY
                    / "include/noisemaker/generated/catalog.hpp").read_text()
         self.assertEqual(
-            213, catalog.count("[[nodiscard]] BoundKernel bind_"))
+            corpus_census.catalog_row_count(), catalog.count("[[nodiscard]] BoundKernel bind_"))
         self.assertEqual(1, catalog.count("bind_filter_parallax_parallax"))
         self.assertLess(catalog.index("bind_filter_outline_outlineValueMap"),
                         catalog.index("bind_filter_parallax_parallax"))
@@ -25264,7 +25275,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # the 190 state this pair is measured from. The frozen 189 digests
         # below are unchanged by that; bumping them would be measuring a
         # different milestone than the one this class froze.
-        spec = copy.deepcopy(generate_typed_slice.load_slice(REPOSITORY))
+        spec = corpus_census.without_expansion(generate_typed_slice.load_slice(REPOSITORY))
         spec["programs"] = [item for item in spec["programs"]
                             if item["program_key"] not in ("filter/dither:dither", "synth/julia:julia",
                                                             "filter/lightLeak:lightLeak",
