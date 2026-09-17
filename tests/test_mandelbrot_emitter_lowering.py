@@ -18,7 +18,7 @@ LOG_PROFILE = "log-admission-mandelbrot-v1"
 OUT_PROFILE = "out-inout-admission-mandelbrot-v1"
 CROSS_LANE_PROFILE = "mandelbrot-sequential-dz-assignment-v1"
 SOURCE = ROOT / (
-    "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/"
+    "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
     "sources/synth/mandelbrot/mandelbrot.glsl"
 )
 SOURCE_HASH = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"

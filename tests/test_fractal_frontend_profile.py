@@ -17,8 +17,8 @@ from tools.glslcpp.frontend import fractal_frontend_profile as profile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/fractal/fractal.glsl"
-METADATA = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/metadata.json"
+SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/fractal/fractal.glsl"
+METADATA = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/metadata.json"
 
 
 def analyzed(raw: str | None = None, key: str = profile.KEY):

@@ -70,7 +70,7 @@ from tools.glslcpp.frontend.typed_ir import TypedProgram
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources")
 MODULE = "tools.glslcpp.frontend.varying_uv_profile"
 

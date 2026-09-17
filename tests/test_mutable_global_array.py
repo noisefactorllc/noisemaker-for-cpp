@@ -64,7 +64,7 @@ from tools.glslcpp.frontend.typed_ir import TypedProgram
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources")
 MODULE = "tools.glslcpp.frontend.mutable_global_array_profile"
 
@@ -160,7 +160,7 @@ EFFECTS_PROFILE = "mutable-global-nine-array-effects-v1"
 KALEIDO_SOURCE_PATH = "classicNoisedeck/kaleido/kaleido.glsl"
 KALEIDO_SOURCE = CORPUS / KALEIDO_SOURCE_PATH
 KALEIDO_RAW_SHA256 = (
-    "3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9")
+    "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52")
 KALEIDO_NORMALIZED_SHA256 = (
     "d31299ee69dd0c41965209860ef60a4ad2abf762229cc340383dce2646c6cc1d")
 

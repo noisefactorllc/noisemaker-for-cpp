@@ -20,7 +20,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/scanlineError:scanlineError"
 PROFILE = "scanline-error-float-bits-ingress-v1"
 RAW_SHA256 = "66556b29659b479edd397f8e0c87c176cafa7560c426eab8211b6939a08f2198"
-SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources/filter/scanlineError/scanlineError.glsl")
 MODULE = "tools.glslcpp.frontend.scanline_error_float_bits_ingress_profile"
 

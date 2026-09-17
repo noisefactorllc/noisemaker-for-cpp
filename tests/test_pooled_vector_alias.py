@@ -207,7 +207,7 @@ class ParallaxSourceContractTests(unittest.TestCase):
     """The GLSL side of the contract, read from the pinned corpus."""
 
     SOURCE = (REPOSITORY / "tools/glslcpp/corpus"
-              / "a024dc3a960cc44af454abc7aebce50456c194e6"
+              / "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
               / "sources/filter/parallax/parallax.glsl")
 
     def test_the_refinement_the_authority_makes_dead_is_present_in_the_glsl(self) -> None:

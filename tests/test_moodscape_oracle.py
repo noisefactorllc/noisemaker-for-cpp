@@ -24,7 +24,7 @@ INCLUDE = ROOT / "tests/oracles/moodscape_expected.inc"
 # the repository at machine-specific locations, so they must arrive by env.
 AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
-SOURCE = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/classicNoisedeck/moodscape/moodscape.glsl"
+SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/moodscape/moodscape.glsl"
 
 
 def materializer_module():

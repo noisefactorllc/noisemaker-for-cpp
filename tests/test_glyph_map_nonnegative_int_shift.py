@@ -23,7 +23,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/glyphMap:glyphMap"
 PROFILE = "glyph-map-nonnegative-int-shift-v1"
 RAW_SHA256 = "853c3c15f300cf56ba3c11d5613cb91bfcb14b8b2f1be6bb5193e71397fdcea1"
-SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources/filter/glyphMap/glyphMap.glsl")
 MODULE = "tools.glslcpp.frontend.glyph_map_nonnegative_int_shift_profile"
 

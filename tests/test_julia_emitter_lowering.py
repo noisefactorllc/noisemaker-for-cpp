@@ -11,7 +11,7 @@ from unittest import mock
 
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 CORPUS = (REPOSITORY / "tools/glslcpp/corpus"
-          / "a024dc3a960cc44af454abc7aebce50456c194e6")
+          / "0ed489ec46842bffba33ee2ec65a218b6dda51f5")
 KEY = "synth/julia:julia"
 RAW_SHA256 = "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0"
 

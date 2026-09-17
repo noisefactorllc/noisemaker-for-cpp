@@ -29644,8 +29644,8 @@ void require_oracle_metadata() {
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kFactorySha256) ==
           "b5b2743ef755306503df6ab2ab5dd81ab944a121e0fd383ef8d641db4d247424");
   REQUIRE(std::string_view(noisemaker_classic_noise_oracle::kSourceSha256) ==
-          "4cd68543729f94788ef6fa2a484dd47d76154814b027128bef5eb9c8d7461663");
-  REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 31255U);
+          "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138");
+  REQUIRE(noisemaker_classic_noise_oracle::kSourceBytes == 31258U);
   REQUIRE(noisemaker_classic_noise_oracle::kImportClosureCardinality == 22U);
   REQUIRE(noisemaker_classic_noise_oracle::kRuntimeBindingCardinality == 29U);
   constexpr std::array<std::string_view, 29> names{

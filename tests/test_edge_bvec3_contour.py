@@ -22,7 +22,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/edge:edge"
 PROFILE = "edge-bvec3-contour-v1"
 RAW_SHA256 = "841f9f547d06aace8444953f401009abd02758f9dff271097b2799424c1db5d0"
-SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources/filter/edge/edge.glsl")
 MODULE = "tools.glslcpp.frontend.edge_bvec3_contour_profile"
 

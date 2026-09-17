@@ -14,7 +14,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.generate_kernels import GeneratorError
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources"
+CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources"
 KEY = "filter/median:median"
 PROFILE = "median-frontend-admission-v1"
 

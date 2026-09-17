@@ -27,7 +27,9 @@ class CorpusTests(unittest.TestCase):
 
     @staticmethod
     def manifest_path(root: pathlib.Path) -> pathlib.Path:
-        return next((root / "tools" / "glslcpp" / "corpus").glob("*/manifest.json"))
+        from tools.glslcpp import check_corpus
+
+        return check_corpus._corpus_root(root) / "manifest.json"
 
     @staticmethod
     def write_manifest(path: pathlib.Path, value: dict) -> None:
@@ -43,8 +45,8 @@ class CorpusTests(unittest.TestCase):
                 "effects": 167,
                 "passes": 212,
                 "sources": 212,
-                "generated": 208,
-                "adapter": 4,
+                "generated": 207,
+                "adapter": 5,
                 "keyed_runtime": 211,
                 "draw_op_overrides": 1,
             },
@@ -110,7 +112,7 @@ void main() {
     def test_fixture_sources_match_the_pinned_corpus(self) -> None:
         from tools.glslcpp import check_corpus
 
-        manifest = json.loads((REPOSITORY / "tools/glslcpp/fixtures/a024dc3a960cc44af454abc7aebce50456c194e6/manifest.json").read_text())
+        manifest = json.loads((REPOSITORY / "tools/glslcpp/fixtures/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json").read_text())
         corpus = check_corpus._corpus_root(REPOSITORY)
         records = {record["program_key"]: record for record in check_corpus._validate_manifest(
             json.loads((corpus / "manifest.json").read_text()))}
@@ -118,18 +120,17 @@ void main() {
             with self.subTest(fixture=fixture["program_key"]):
                 record = records[fixture["program_key"]]
                 self.assertEqual(
-                    (REPOSITORY / "tools/glslcpp/fixtures/a024dc3a960cc44af454abc7aebce50456c194e6" / fixture["source"]).read_bytes(),
+                    (REPOSITORY / "tools/glslcpp/fixtures/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / fixture["source"]).read_bytes(),
                     (corpus / record["source"]).read_bytes(),
                 )
 
-    def test_text_source_matches_the_pinned_coverage_provenance(self) -> None:
-        """The canonical source is older than the current sibling working tree."""
+    def test_text_source_matches_the_pinned_upstream_revision(self) -> None:
         from tools.glslcpp import check_corpus
 
         source = check_corpus._corpus_root(REPOSITORY) / "sources/filter/text/text.glsl"
         content = source.read_bytes()
-        self.assertEqual(1327, len(content))
-        self.assertEqual("be62b513c1fb56f34d23ace109b76a525454f5a5dbac64239949d6faf16e7462",
+        self.assertEqual(1978, len(content))
+        self.assertEqual("7a492aea1422528421c352187d108ea32a1d5bf48991ef74f099f8dafbe5ccea",
                          hashlib.sha256(content).hexdigest())
 
     def test_validator_rejects_tampering_and_unsafe_records(self) -> None:

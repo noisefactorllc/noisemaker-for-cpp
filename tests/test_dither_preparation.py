@@ -19,7 +19,7 @@ from tools.glslcpp import generate_dither_native_oracle_include as materializer
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl"
+SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl"
 PACKAGE = ROOT / "docs/port-engineering/dither-parity"
 GENERATOR = PACKAGE / "dither_oracle_generator.mjs"
 ORACLE = PACKAGE / "dither-oracles.json"
@@ -620,7 +620,7 @@ int main() {
   static_assert(kFactoryTextSha256 == "28a1c56b63d345eaa3c3e803b19397a546730020d456ed2c29eb39aec3a5c820");
   static_assert(kPublicFactoryName == "canonicalFactory48");
   static_assert(kPublicFactoryIsCanonicalIdentity);
-  static_assert(kCorpusSourceRelativePath == "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
+  static_assert(kCorpusSourceRelativePath == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
   static_assert(kCorpusSourceSha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
   static_assert(kClosureSha256 == "b16cbd8716cab226271041751af6431bfe48fef1c0826bba89544a0f4bf525f5");
   static_assert(kImmutableSnapshot);
@@ -648,7 +648,7 @@ int main() {
   static_assert(kSignedTraces.size() == 1U);
   static_assert(kSignedTraces[0].case_name == "error-diffusion-negative-tile");
   static_assert(kSignedTraces[0].method == "source-derived-error-diffusion-trace-v1");
-  static_assert(kSignedTraces[0].source_path == "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/filter/dither/dither.glsl");
+  static_assert(kSignedTraces[0].source_path == "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl");
   static_assert(kSignedTraces[0].source_sha256 == "a966f1746213c8206c5cb57a88cafd8033eb8f8cb08b207209eb31479a11abdb");
   static_assert(kSignedTraces[0].source_block_span == "508-566");
   static_assert(kSignedTraces[0].source_fetch_span == "500-506");

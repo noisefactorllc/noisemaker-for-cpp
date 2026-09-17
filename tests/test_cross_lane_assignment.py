@@ -20,7 +20,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/gradient:gradient"
 PROFILE = "cross-lane-assignment-v1"
-RAW = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6" / "sources/synth/gradient/gradient.glsl"
+RAW = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/synth/gradient/gradient.glsl"
 RAW_SHA256 = "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75"
 ORACLE = ROOT / "docs/port-engineering/cross-lane-parity/gradient_oracle.mjs"
 
@@ -137,7 +137,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
     def test_shape_mask_is_not_admitted_by_gradient_profile(self):
         module = importlib.import_module("tools.glslcpp.frontend.cross_lane_assignment_profile")
         shape_key = "mixer/shapeMask:shapeMask"
-        source = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6" / "sources/mixer/shapeMask/shapeMask.glsl"
+        source = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/mixer/shapeMask/shapeMask.glsl"
         raw = source.read_text(encoding="utf-8")
         candidate = analyze_program(parse_program(raw, shape_key, generate_typed_slice._defaults(ROOT, shape_key)), shape_key)
         with self.assertRaises(ValueError):

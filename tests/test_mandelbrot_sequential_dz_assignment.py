@@ -20,7 +20,7 @@ from tools.glslcpp.frontend import mandelbrot_sequential_dz_assignment_profile a
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/mandelbrot:mandelbrot"
 PROFILE = "mandelbrot-sequential-dz-assignment-v1"
-SOURCE = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6" / "sources/synth/mandelbrot/mandelbrot.glsl"
+SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/synth/mandelbrot/mandelbrot.glsl"
 RAW_SHA256 = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
 
 

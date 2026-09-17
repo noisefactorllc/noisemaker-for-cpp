@@ -34,13 +34,13 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources")
 MODULE = "tools.glslcpp.frontend.shapes_rvalue_assign_profile"
 
 KEY = "classicNoisedeck/shapes:shapes"
 PROFILE = "shapes-rvalue-assign-v1"
-RAW_SHA256 = "60bc6e76ac9d9f5bc83638fa934b279499559f7733806e462cea16a4cbe85eb0"
+RAW_SHA256 = "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e"
 SOURCE = CORPUS / "classicNoisedeck/shapes/shapes.glsl"
 ASSIGN_SPAN = "42:19-42:39"
 COARSE = "source, define, function, whole-program, or interface mismatch"

@@ -24,14 +24,14 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
           / "sources")
 MODULE = "tools.glslcpp.frontend.linear_srgb_lane_index_profile"
 
 SHAPES_KEY = "classicNoisedeck/shapes:shapes"
 SHAPES_PROFILE = "linear-srgb-shapes-lane-index-v1"
 SHAPES_RAW_SHA256 = (
-    "60bc6e76ac9d9f5bc83638fa934b279499559f7733806e462cea16a4cbe85eb0")
+    "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e")
 
 SOURCES = {
     "classicNoisedeck/cellNoise:cellNoise":

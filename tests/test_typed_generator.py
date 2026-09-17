@@ -5993,7 +5993,7 @@ and item["program_key"] != "filter/wobble:wobble"
 
         slice_spec = generate_typed_slice.load_slice(REPOSITORY)
         self.assertEqual(1, slice_spec["schema"])
-        self.assertEqual("a024dc3a960cc44af454abc7aebce50456c194e6", slice_spec["revision"])
+        self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5", slice_spec["revision"])
         self.assertEqual({"filter/scatter:scatterJitter": "source-double"},
                          slice_spec["numeric_literal_contracts"])
         self.assertEqual({"classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
@@ -6245,7 +6245,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(all(entry["defines"] == {} for entry in slice_spec["programs"]
                             if entry["program_key"] in task14))
         corpus_manifest = json.loads((
-            REPOSITORY / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/manifest.json"
+            REPOSITORY / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json"
         ).read_text())
         corpus_keys = {entry["program_key"] for entry in corpus_manifest["programs"]}
         public_keys = {entry["program_key"] for entry in slice_spec["programs"]} | {
@@ -14576,7 +14576,7 @@ class Task27PerlinTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         key = "synth/perlin:perlin"
-        raw = (REPOSITORY / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources/synth/perlin/perlin.glsl").read_text()
+        raw = (REPOSITORY / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/perlin/perlin.glsl").read_text()
         return (raw, hashlib.sha256(raw.encode()).hexdigest(),
                 analyze_program(parse_program(raw, key, {"DIMENSIONS": 2}), key))
 
@@ -15416,7 +15416,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
         from tools.glslcpp.frontend.rotate_mat2_return_profile import ROTATE_KEY
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   "sources/filter/rotate/rot.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(source, ROTATE_KEY, {}), ROTATE_KEY))
@@ -16086,7 +16086,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   "sources/mixer/focusBlur/focusBlur.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(source, FOCUS_BLUR_KEY, {}),
@@ -17080,7 +17080,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   "sources/filter/extrude/extrude.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(
@@ -17954,7 +17954,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   "sources/synth/curl/curl.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(
@@ -18666,7 +18666,7 @@ class Task32GradeClusterTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
                   f"sources/filter/grade/"
                   f"{Task32GradeClusterTests.SOURCE_FILES[key]}").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
@@ -22633,7 +22633,7 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "scalar_uint_xor_profile": XOR_PROFILE,
     }
     SOURCE_SHA256 = (
-        "3a155a9bf64f9e700dd66a77c4195df113d9e85228bde56b1cf410944aaeb8b9")
+        "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52")
     # The pre-change 186-row state (cellRefract186), recovered by removing
     # only the new row. Quoted from the tree before regeneration began and
     # verified against the generator's --check on that tree (all four gates

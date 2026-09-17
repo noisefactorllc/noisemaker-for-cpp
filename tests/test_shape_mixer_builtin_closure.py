@@ -20,10 +20,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 PROFILE = "shape-mixer-builtin-closure-v1"
 SCALAR_XOR_PROFILE = "scalar-uint-xor-v1"
-RAW_SHA256 = "704157151a2aa7e0192bd5b3483d5f1a5532a15a6e3f6a3ee0ba93ce70f8a9e4"
+RAW_SHA256 = "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
 SOURCE = (
     ROOT
-    / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+    / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
     / "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl"
 )
 MODULE = "tools.glslcpp.frontend.shape_mixer_builtin_profile"
