@@ -93,6 +93,8 @@ PASS_DERIVED_BINDINGS = {
     "OCTAVES": "typed_compile_define",
     "OUTPUT_MODE": "typed_compile_define",
     "RIDGES": "typed_compile_define",
+    "STYLE": "typed_compile_define",
+    "WRAP": "typed_compile_define",
     "resetState": "canonical_reset_state_default",
     "useCustom": "canonical_use_custom_default",
 }

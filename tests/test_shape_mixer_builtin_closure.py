@@ -39,7 +39,12 @@ def _profile():
 
 def _analyzed(*, key: str = KEY, defines: dict[str, object] | None = None):
     raw = SOURCE.read_text(encoding="utf-8")
-    runtime_defines = {"LOOP_OFFSET": 10} if defines is None else defines
+    if key == KEY:
+        from tools.glslcpp.generate_typed_slice import transform_generic_dynamic_source
+        raw = transform_generic_dynamic_source(raw, key)
+        runtime_defines = {"LOOP_OFFSET": "int"} if defines is None else defines
+    else:
+        runtime_defines = {"LOOP_OFFSET": 10} if defines is None else defines
     return analyze_program(parse_program(raw, key, runtime_defines), key)
 
 
@@ -50,7 +55,7 @@ def _authenticate_with_refrozen_coarse_locks(profile, original, mutated):
     role_hashes = dict(profile._FUNCTION_ROLE_HASHES)
     mutated_main = next(item for item in mutated.functions
                         if item.name == "main")
-    role_hashes[112] = profile._sha(mutated_main)
+    role_hashes[mutated_main.id] = profile._sha(mutated_main)
     inventory = tuple(
         (item.signature.id, item.name, item.return_type.display(),
          len(item.parameters), len(item.body), profile._span(item))
@@ -110,6 +115,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
             {
                 "defines": {"LOOP_OFFSET": 10},
                 "program_key": KEY,
+                "runtime_define_profile": "runtime-defines-generic-v1",
                 "scalar_uint_xor_profile": SCALAR_XOR_PROFILE,
                 "shape_mixer_builtin_profile": PROFILE,
             },
@@ -137,22 +143,22 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
             program,
         )
         self.assertEqual(
-            ("672:17-672:49", "625:17-625:49"),
+            ("673:17-673:49", "626:17-626:49"),
             tuple(profile._span(item) for item in proof.reflect_nodes),
         )
         self.assertEqual(
-            ("675:17-675:48", "628:17-628:48"),
+            ("676:17-676:48", "629:17-629:48"),
             tuple(profile._span(item) for item in proof.refract_nodes),
         )
-        self.assertEqual("619:17-619:45", profile._span(proof.wide_mod_node))
-        self.assertEqual("411:21-411:46", profile._span(proof.bit_ingress))
+        self.assertEqual("620:17-620:45", profile._span(proof.wide_mod_node))
+        self.assertEqual("412:21-412:46", profile._span(proof.bit_ingress))
         self.assertEqual(
             (
-                "116:13-116:22",
-                "117:13-117:20",
-                "117:23-117:32",
-                "119:13-119:20",
-                "119:35-119:44",
+                "117:13-117:22",
+                "118:13-118:20",
+                "118:23-118:32",
+                "120:13-120:20",
+                "120:35-120:44",
             ),
             tuple(profile._span(item) for item in proof.dynamic_indexes),
         )
@@ -173,7 +179,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         self.assertEqual(20, len({id(item) for item in guards}))
         owners = tuple(
             next(item for item in program.functions if item.id == owner_id)
-            for owner_id in (99, 100))
+            for owner_id in (100, 101))
         for owner_index, owner in enumerate(owners):
             mode = next(item for item in owner.parameters
                         if item.name == "mode")
@@ -531,7 +537,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         main = next(item for item in program.functions if item.name == "main")
         palette_branch = main.body[16]
         self.assertEqual("if", palette_branch.kind)
-        self.assertEqual("726:5-748:6", profile._span(palette_branch))
+        self.assertEqual("727:5-749:6", profile._span(palette_branch))
 
         vector_blend_statement = palette_branch.children[0].children[0]
         shortened_true = dataclasses.replace(

@@ -201,6 +201,7 @@ void populate_task9_bindings(noisemaker::glsl::Bindings& bindings, std::string_v
     uniform("level", 0.42f);
   } else if (key == "filter/scatter:scatterJitter") {
     uniform("radius", 2.7f); uniform("seed", std::int32_t(11));
+    uniform("MODE", std::int32_t(0));
   } else if (key == "filter/simpleAberration:chromaticAberration") {
     uniform("displacement", 0.037f);
   } else if (key == "filter/text:text") {
@@ -2280,7 +2281,7 @@ struct Task15OracleUniform {
   std::array<double, 3> value;
 };
 
-constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
+constexpr std::array<Task15OracleUniform, 196> kTask15OracleUniforms{{
     {"filter/chrome:chBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/chrome:chBlurH", "smoothness", Task15BindingType::scalar, {40.0, 0.0, 0.0}},
     {"filter/chrome:chBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
@@ -2337,6 +2338,7 @@ constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
     {"filter/oilPaint:oilPost", "detail", Task15BindingType::scalar, {50.0, 0.0, 0.0}},
     {"filter/oilPaint:oilPost", "textureAmount", Task15BindingType::scalar, {20.0, 0.0, 0.0}},
     {"filter/oilPaint:oilPost", "seed", Task15BindingType::integer, {1.0, 0.0, 0.0}},
+    {"filter/oilPaint:oilPost", "MODE", Task15BindingType::integer, {1.0, 0.0, 0.0}},
     {"filter/patchwork:patchwork", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/patchwork:patchwork", "tileOffset", Task15BindingType::vec2, {2.0, 1.0, 0.0}},
     {"filter/patchwork:patchwork", "fullResolution", Task15BindingType::vec2, {13.0, 11.0, 0.0}},
@@ -2365,12 +2367,14 @@ constexpr std::array<Task15OracleUniform, 193> kTask15OracleUniforms{{
     {"filter/reverb:reverb", "wrap", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
     {"filter/scatter:scatterSmooth", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/scatter:scatterSmooth", "smoothness", Task15BindingType::scalar, {0.0, 0.0, 0.0}},
+    {"filter/scatter:scatterSmooth", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/stamp:stBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/stamp:stBlurH", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
     {"filter/stamp:stBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/stamp:stBlurV", "smoothness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
     {"filter/strokes:stkPost", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/strokes:stkPost", "sharpness", Task15BindingType::scalar, {30.0, 0.0, 0.0}},
+    {"filter/strokes:stkPost", "MODE", Task15BindingType::integer, {0.0, 0.0, 0.0}},
     {"filter/unsharpMask:usmBlurH", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},
     {"filter/unsharpMask:usmBlurH", "radius", Task15BindingType::scalar, {4.0, 0.0, 0.0}},
     {"filter/unsharpMask:usmBlurV", "resolution", Task15BindingType::vec2, {9.0, 7.0, 0.0}},

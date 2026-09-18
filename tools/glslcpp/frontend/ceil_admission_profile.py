@@ -69,15 +69,15 @@ _PROFILES: dict[str, dict] = {
     "filter/oilPaint:oilFlatten": {
         "raw_bytes": 7321,
         "raw_sha256": "f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690",
-        "normalized_bytes": 3848,
-        "normalized_sha256": "df987ae05a4c205dca831caf371149282df69df4126b0b4bee0bee8b1621688f",
-        "functions_sha256": "91c009cc90ad59185b27ddb811225f220fd6534c82b320802fecc0919253e5e8",
-        "whole_program_sha256": "0588fd1573bdae1e905201ab12ae1bd5942fcde7cb3cfc15395c936142877f35",
-        "interface_sha256": "fe4f1c3967051d64d125eeda77ebb3dba3278139078bf55a6a8520edac47dca5",
+        "normalized_bytes": 3931,
+        "normalized_sha256": "2c3df202449636be575a4e5dad4ffe2ea45cd06179cb7dcce88062afc9af1cec",
+        "functions_sha256": "843b8fa8d65f4f3508bd0a559b70b264638ac9ca9da157dc4f4900a70acd102e",
+        "whole_program_sha256": "8b189cb2e633fbfdcc2a6ab427f8a6210d16ef49edc691cf982a80eb4eb978dd",
+        "interface_sha256": "a292ee0fb7b8c029197e606a74be59737c46196dfcbfd0cda2038e2bf6146be6",
         "ceil_sites": (
-            ("main", "19:27-19:35",
-             "e9df662a9e0a9eb7672ab8eed22ccdc02c9c4f86171a1e29478bdde8ab1dc4ff",
-             "ad166f3d991e11d816b08b1c4b7cf1a8641bc442b692efefbc8a4685c8a76d2e"),
+            ("main", "25:27-25:35",
+             "8f2f404e8d2bad6e59019d757fd9a575350b9e1d3fec311f37a3ae5e3de896fd",
+             "a611d9adb9074ed9a3cc6177f1651f0f6f3f0fd11169b1f6d3964630af71d24d"),
         ),
     },
     "filter/smooth:smoothBlend": {

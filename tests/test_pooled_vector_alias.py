@@ -59,8 +59,8 @@ class CommittedEmissionTests(unittest.TestCase):
 
     def test_alias_site_census_is_exact(self) -> None:
         sites = _alias_sites(_COMMITTED_SLICE)
-        # 32 after the current live slice's later admitted rows.
-        self.assertEqual(32, len(sites))
+        # 35 after the current live slice's later admitted rows.
+        self.assertEqual(35, len(sites))
         # Every alias binds a bare identifier, never a state field or a call.
         for name, source in sites:
             self.assertNotIn(".", source)
@@ -93,8 +93,8 @@ class NeutralizationTests(unittest.TestCase):
             text = _regenerate()
         self.assertEqual([], _alias_sites(text))
         self.assertNotIn(PARALLAX_ALIAS, text)
-        # Exactly the 32 ampersands, and nothing else, distinguish the two.
-        self.assertEqual(len(_COMMITTED_SLICE) - 32, len(text))
+        # Exactly the 35 ampersands, and nothing else, distinguish the two.
+        self.assertEqual(len(_COMMITTED_SLICE) - 35, len(text))
 
     def test_the_observability_condition_is_not_vacuous(self) -> None:
         # Alias every bare-identifier vector declaration, whether or not a
@@ -123,7 +123,7 @@ class NeutralizationTests(unittest.TestCase):
         with mock.patch.object(emit_typed_cpp._Emitter,
                                "_collect_pooled_vector_aliases", alias_everything):
             text = _regenerate()
-        self.assertGreater(len(_alias_sites(text)), 32)
+        self.assertGreater(len(_alias_sites(text)), 35)
         self.assertNotEqual(_COMMITTED_SLICE, text)
         self.assertIs(original, emit_typed_cpp._Emitter._collect_pooled_vector_aliases)
 

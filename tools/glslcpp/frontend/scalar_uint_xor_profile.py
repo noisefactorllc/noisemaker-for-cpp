@@ -18,6 +18,46 @@ from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 PROFILE = "scalar-uint-xor-v1"
 
+_STATIC_SHAPE_MIXER_PROFILE = {
+    "raw_bytes": 21721, "raw_sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
+    "normalized_bytes": 17664, "normalized_sha256": "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8",
+    "functions_sha256": "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd",
+    "whole_program_sha256": "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684",
+    "interface_sha256": "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d",
+    "defines": (("LOOP_OFFSET", "int", "10"),),
+    "declaration_count": 25, "function_count": 38,
+    "function_inventory_sha256": "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81",
+    "bindings_sha256": "f7700f10ec7dd723ce09e8657e30d0e6aa5ce3a0e34b79cfe1d5bdbb4e3e5730",
+    "resources": (("inputTex", "tex", "resolution", "tileOffset", "fullResolution",
+                   "time", "seed", "blendMode", "loopScale", "paletteMode",
+                   "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
+                   "animate", "cyclePalette", "rotatePalette", "repeatPalette",
+                   "levels", "wrap"), ("inputTex", "tex"), ("fragColor",), True, False),
+    "loop": (1, 0, 1, 3, 3, True),
+    "owner": (130, "randomFromLatticeWithOffset", "vec3", 3, 19, "386:1-427:2",
+              "534f686001db15b2a002c5f8715da35f3c3c91a45796881b5e3a43dea742292f",
+              "89b5b6da39c72f0b3e52fb28a3daeaa481e8a96f2130716d90b948d4c735b22a"),
+    "parent": ("413:20-417:6", "a5fdc9609cf2061effd0cd7716846eaeb09a0aa56da15e3269c7db53321cca1d"),
+    "sites": (
+        ("414:10-414:46", "d61ee5dedd34f41977635b787534b900ebd7b9416c9711f558b5ce6e5294162b", "9ff109f0727b5a05ca60ae883227a703b8b474328da588db17df5ae0bea480bc", "29883f036cac6ff68efe1338811ce57520d028ba05c40226b6386e3a68901c23", 0),
+        ("415:10-415:46", "6f95ef7eee4ec54c0a31460816c193e4bc841b3a8622ed5d55610509b0c6113f", "b0cb483d126bc289f7c654259941d58432f5e065fcf83edd4d4e75161d65f418", "607f5bc320bd91ea351bbb878c4b640fc8a71ad2f73e61c149992500e0c3b34b", 1),
+        ("416:10-416:47", "a97b2dc920fab9dbd9ca11068c0b7bafc214b61a7748059dcfd79bcb3d603bd4", "645b21f7576cf2976fead4e358f0db9747159fd68fd5bf4134df5a33e397d1a7", "420c348860e5899ecd9420225395cd6ea71629faeded6779e1c048359f0626df", 2)),
+    "scalar_census_sha256": "928feb676c60b9f1668567811a38b7f4ecf873f62e5b7a78b36369eb5537a253",
+    "call_graph_sha256": "3bdb7adbc622ac11f82f0f664ec124c0c0ee5d90a69906b04e60d260340b3224",
+    "reachable": (99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111,
+                  112, 113, 114, 115, 116, 118, 119, 120, 121, 122, 123, 124,
+                  125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136),
+    "unreachable": (105, 117, 129),
+}
+
+_STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS = (
+    ('52:31-52:54', '4824d4f88c67d9ad9f817bd45ca190523688f2496f7b924dbd93970761d7600e', 126, 'prng', 'construct', '52:37-52:53', '9eb472f5246286e1335cb69dba9e6a27edf9815c1f9922cfd0dc04447711dcd5', None, 'rvalue', 'literal', None, None, '52:9-52:54', '2d494dc2511a65d989d0ffe65f96986f6a3065f08f4d213746bc66cd555e9a08', 'binary', '/'),
+    ('421:19-421:37', '0b08ff022b1c5b7fc64db054d241cd894a18133a925038c5fb04da637542c142', 130, 'randomFromLatticeWithOffset', 'literal', '421:25-421:36', '96c78bdc280934a1fa5b09219d955cfe40bdd1fbb03a867bcc085c3925e84d18', None, 'rvalue', 'literal', None, None, '421:11-421:37', '5354ac324b4c7dee48bcf4573f7ba132ae4afab40361cb293b96f3c876f22644', 'declaration', None),
+    ('423:9-423:27', '84ca341551004cf45ec3d8e58e9d0342a839fb56dc62092aa7db06b94f9ea410', 130, 'randomFromLatticeWithOffset', 'swizzle', '423:15-423:26', '94d6aea4f4c689cb2bdb7b208fb1b28ad2cc1d9c29227e61730182b52335564d', 'x', 'lvalue', 'id', 212, 'prngState', '423:9-423:35', 'c6b370c7d829e4227af59655e16fdff94e5b8fca1fcea1e969ea119c9584c777', 'binary', '/'),
+    ('424:9-424:27', 'a74e560f58cd5df465ee35b4ff4d03bddb8cfc9730afaeae11eb778e1cdfff75', 130, 'randomFromLatticeWithOffset', 'swizzle', '424:15-424:26', 'f38b10aa8530e1fe5eb95b332c9f5cb79b0e38a2043a025d5de626899e5cfa49', 'y', 'lvalue', 'id', 212, 'prngState', '424:9-424:35', 'c5153e7a6490c5a01d9a54050d01fe183ea22792c37050935094e268540d6454', 'binary', '/'),
+    ('425:9-425:27', '56e0f6dfbba76362613fc70ea586f7e3e308de6736fe50fc9ad6c2a53c9b3d43', 130, 'randomFromLatticeWithOffset', 'swizzle', '425:15-425:26', 'e6920403def68ff6c3e82eb70b93c52b724bf24399b38b9551d612b1d1512f8b', 'z', 'lvalue', 'id', 212, 'prngState', '425:9-425:35', '461e1ddc37afc1c89d0284c2c9bf62e1c7bb53071df491c49a94f733641b77c0', 'binary', '/'),
+)
+
 # Generated from the pinned corpus by the checked read-only profile probe
 # documented in docs/port-engineering/bitops/grain-parity.  Tuples named
 # owner/site/parent deliberately retain hashes at every structural layer so a
@@ -115,34 +155,34 @@ _PROFILES: dict[str, dict[str, object]] = {
     },
     "classicNoisedeck/shapeMixer:shapeMixer": {
         "raw_bytes": 21721, "raw_sha256": "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b",
-        "normalized_bytes": 17664, "normalized_sha256": "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8",
-        "functions_sha256": "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd",
-        "whole_program_sha256": "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684",
-        "interface_sha256": "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d",
-        "defines": (("LOOP_OFFSET", "int", "10"),),
-        "declaration_count": 25, "function_count": 38,
-        "function_inventory_sha256": "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81",
-        "bindings_sha256": "f7700f10ec7dd723ce09e8657e30d0e6aa5ce3a0e34b79cfe1d5bdbb4e3e5730",
-        "resources": (("inputTex", "tex", "resolution", "tileOffset", "fullResolution",
+        "normalized_bytes": 17851, "normalized_sha256": "36f5262d84b511775ff69b1afd87d2fe152b0520bd1e43d11f1486544a25e971",
+        "functions_sha256": "4d5a6d975bad8ea45da76519625f9e0117befd61c8ef56e6c6304a652ea234e6",
+        "whole_program_sha256": "37ede1247f2ff74a9395a82eb076376600d85df56cecb2a546b426654f0e9c0c",
+        "interface_sha256": "bf71daff66579d830926580982ee7d85115fcbff518a5c72ddc4e49c3c62b338",
+        "defines": (("LOOP_OFFSET", "str", "int"),),
+        "declaration_count": 26, "function_count": 38,
+        "function_inventory_sha256": "1647bc7c884092edaee7568057cde45a0cef80ae59887c8f91536987ddb44198",
+        "bindings_sha256": "9b2d715d6e29a75771d246cc35484388b305e9737188f12f33fa5e334713063f",
+        "resources": (("LOOP_OFFSET", "inputTex", "tex", "resolution", "tileOffset", "fullResolution",
                        "time", "seed", "blendMode", "loopScale", "paletteMode",
                        "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
                        "animate", "cyclePalette", "rotatePalette", "repeatPalette",
                        "levels", "wrap"), ("inputTex", "tex"), ("fragColor",), True, False),
         "loop": (1, 0, 1, 3, 3, True),
-        "owner": (130, "randomFromLatticeWithOffset", "vec3", 3, 19, "386:1-427:2",
-                  "534f686001db15b2a002c5f8715da35f3c3c91a45796881b5e3a43dea742292f",
-                  "89b5b6da39c72f0b3e52fb28a3daeaa481e8a96f2130716d90b948d4c735b22a"),
-        "parent": ("413:20-417:6", "a5fdc9609cf2061effd0cd7716846eaeb09a0aa56da15e3269c7db53321cca1d"),
+        "owner": (131, "randomFromLatticeWithOffset", "vec3", 3, 19, "387:1-428:2",
+                  "ff93c17d78c0c3e6a6c1f3dae65bcd4232e6812a510bfbbd037d4e663a5447ce",
+                  "3a56c358d29bc79f57a49ae85851deb151e9490bb71c228c59af8980ec5a83ef"),
+        "parent": ("414:20-418:6", "c91260b7f5b69d92ab22daefcd2c606790ae319df31d6ebdcdd7d4954e368b0c"),
         "sites": (
-            ("414:10-414:46", "d61ee5dedd34f41977635b787534b900ebd7b9416c9711f558b5ce6e5294162b", "9ff109f0727b5a05ca60ae883227a703b8b474328da588db17df5ae0bea480bc", "29883f036cac6ff68efe1338811ce57520d028ba05c40226b6386e3a68901c23", 0),
-            ("415:10-415:46", "6f95ef7eee4ec54c0a31460816c193e4bc841b3a8622ed5d55610509b0c6113f", "b0cb483d126bc289f7c654259941d58432f5e065fcf83edd4d4e75161d65f418", "607f5bc320bd91ea351bbb878c4b640fc8a71ad2f73e61c149992500e0c3b34b", 1),
-            ("416:10-416:47", "a97b2dc920fab9dbd9ca11068c0b7bafc214b61a7748059dcfd79bcb3d603bd4", "645b21f7576cf2976fead4e358f0db9747159fd68fd5bf4134df5a33e397d1a7", "420c348860e5899ecd9420225395cd6ea71629faeded6779e1c048359f0626df", 2)),
-        "scalar_census_sha256": "928feb676c60b9f1668567811a38b7f4ecf873f62e5b7a78b36369eb5537a253",
-        "call_graph_sha256": "3bdb7adbc622ac11f82f0f664ec124c0c0ee5d90a69906b04e60d260340b3224",
-        "reachable": (99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111,
-                      112, 113, 114, 115, 116, 118, 119, 120, 121, 122, 123, 124,
-                      125, 126, 127, 128, 130, 131, 132, 133, 134, 135, 136),
-        "unreachable": (105, 117, 129),
+            ("415:10-415:46", "e571769665464e724e035876149701edd1672e6ca73f2d727b218103b42a807c", "63b9be72ccad6ea1c7344d27963dfa54994ced6523367e2fc88437cff06db5c1", "3abb4dc827b09901a9f3dd711e1b2e65b84ffb7f1d5825e7dfc8bec3ac61f01f", 0),
+            ("416:10-416:46", "53b0dac6fe6a49fdf6b5861fee6cb9ed74a51baa34c08fa40cf5c6560d3e4f62", "0215b60dda3825174501081bbcf410e5a4471bf29dd029d6e2093bbbbb468f59", "b6a0966c9501fdd9fa33b51890704f9688cbb053a5458ec5386214ad087d07a0", 1),
+            ("417:10-417:47", "a573cc89625fd4e4df98f8173ab89c4f9eb779659ae4fc7fd3a113d41dc98cce", "4e67e8dad41548f58df4b04b859e42e2416d6537972712726bd90c27780c349d", "9cc524855088672bb09d35776b7d8e8e4a9d309e9dd2a3145e44ff44db5678e1", 2)),
+        "scalar_census_sha256": "00cd4f411aa7d5a6cef3d3447352a89f42f017ff957e7268de479e5dc768aca9",
+        "call_graph_sha256": "062c17809361be5a9a7e73ba678605fc6fab2cf12527c72cce39682c876b5d67",
+        "reachable": (100, 101, 102, 103, 104, 105, 107, 108, 109, 110, 111, 112,
+                      113, 114, 115, 116, 117, 119, 120, 121, 122, 123, 124, 125,
+                      126, 127, 128, 129, 131, 132, 133, 134, 135, 136, 137),
+        "unreachable": (106, 118, 130),
     },
     "classicNoisedeck/shapes:shapes": {
         "raw_bytes": 21292, "raw_sha256": "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e",
@@ -296,11 +336,11 @@ _UINT_TO_FLOAT_CENSUS_LOCKS = {
         ('169:9-169:27', '68115341d4e01d861eb126b8294607b2564cf710725c62ebb194f66fb8cceada', 143, 'randomFromLatticeWithOffset', 'swizzle', '169:15-169:26', '71df5b2a03a43de9d4b83e4bcaf6c60c3f8c9e33e4aec263fea4abdca42f2329', 'z', 'lvalue', 'id', 320, 'prngState', '169:9-169:35', '6c221435137f54c3d5604109ec61913720f5393126ede49893c5300c3c419f83', 'binary', '/'),
     ),
     'classicNoisedeck/shapeMixer:shapeMixer': (
-        ('52:31-52:54', '4824d4f88c67d9ad9f817bd45ca190523688f2496f7b924dbd93970761d7600e', 126, 'prng', 'construct', '52:37-52:53', '9eb472f5246286e1335cb69dba9e6a27edf9815c1f9922cfd0dc04447711dcd5', None, 'rvalue', 'literal', None, None, '52:9-52:54', '2d494dc2511a65d989d0ffe65f96986f6a3065f08f4d213746bc66cd555e9a08', 'binary', '/'),
-        ('421:19-421:37', '0b08ff022b1c5b7fc64db054d241cd894a18133a925038c5fb04da637542c142', 130, 'randomFromLatticeWithOffset', 'literal', '421:25-421:36', '96c78bdc280934a1fa5b09219d955cfe40bdd1fbb03a867bcc085c3925e84d18', None, 'rvalue', 'literal', None, None, '421:11-421:37', '5354ac324b4c7dee48bcf4573f7ba132ae4afab40361cb293b96f3c876f22644', 'declaration', None),
-        ('423:9-423:27', '84ca341551004cf45ec3d8e58e9d0342a839fb56dc62092aa7db06b94f9ea410', 130, 'randomFromLatticeWithOffset', 'swizzle', '423:15-423:26', '94d6aea4f4c689cb2bdb7b208fb1b28ad2cc1d9c29227e61730182b52335564d', 'x', 'lvalue', 'id', 212, 'prngState', '423:9-423:35', 'c6b370c7d829e4227af59655e16fdff94e5b8fca1fcea1e969ea119c9584c777', 'binary', '/'),
-        ('424:9-424:27', 'a74e560f58cd5df465ee35b4ff4d03bddb8cfc9730afaeae11eb778e1cdfff75', 130, 'randomFromLatticeWithOffset', 'swizzle', '424:15-424:26', 'f38b10aa8530e1fe5eb95b332c9f5cb79b0e38a2043a025d5de626899e5cfa49', 'y', 'lvalue', 'id', 212, 'prngState', '424:9-424:35', 'c5153e7a6490c5a01d9a54050d01fe183ea22792c37050935094e268540d6454', 'binary', '/'),
-        ('425:9-425:27', '56e0f6dfbba76362613fc70ea586f7e3e308de6736fe50fc9ad6c2a53c9b3d43', 130, 'randomFromLatticeWithOffset', 'swizzle', '425:15-425:26', 'e6920403def68ff6c3e82eb70b93c52b724bf24399b38b9551d612b1d1512f8b', 'z', 'lvalue', 'id', 212, 'prngState', '425:9-425:35', '461e1ddc37afc1c89d0284c2c9bf62e1c7bb53071df491c49a94f733641b77c0', 'binary', '/'),
+        ('53:31-53:54', '73422e0b9913eee90fae131f3900f1e66ee41ac9c13c2a2fc0b92346acd1ea42', 127, 'prng', 'construct', '53:37-53:53', '5c6525bc16197ed7000b742b9621c1bda3007af2833d3248e70eee6d94d5ec12', None, 'rvalue', 'literal', None, None, '53:9-53:54', 'ad8bf44091856cc2f364856dd3f1f78eb9b242edbb7b5d39098059447f8ab8e1', 'binary', '/'),
+        ('422:19-422:37', '8c88b1426d638227ad33697bd23589748fbcc33ced1eadf2204a47e6755181c9', 131, 'randomFromLatticeWithOffset', 'literal', '422:25-422:36', 'f0822fe6055a6908a45a223c248f5c9f0d0b56aa8b2d5e66511c2577bcbf3513', None, 'rvalue', 'literal', None, None, '422:11-422:37', '803cba5e3fbeccf2e671583d71186322b60b5a5c6413f1ca040f7fe47d59f531', 'declaration', None),
+        ('424:9-424:27', '9faf89157f03a71c62ad58df356f1107447beab1757da4183223286b8e223d1e', 131, 'randomFromLatticeWithOffset', 'swizzle', '424:15-424:26', 'e32a76c311b97de68ec25448923c3b8b7ea76ef40bf1ef0eb45e19195911846e', 'x', 'lvalue', 'id', 213, 'prngState', '424:9-424:35', '193c0707cae74b006e53ef769cd961c5370f412bec54e5d2b057b4364ca559c8', 'binary', '/'),
+        ('425:9-425:27', '6cbfae9995076319cfa084f35a492115bd0dc5e200f6e20d84de2f2faa9515a2', 131, 'randomFromLatticeWithOffset', 'swizzle', '425:15-425:26', '399c9ccf8b29f9807ab1d6f1155dc8a5f8d23e66f524dac39ba32821ee23ff6b', 'y', 'lvalue', 'id', 213, 'prngState', '425:9-425:35', '341936973a6ba6bfc799859dde05690ea0a8e9ae06d374baac50625afe5750e9', 'binary', '/'),
+        ('426:9-426:27', '0c7966aa656175d7a627a381b9a0f2d008ddf3107d69681faba03c1643842d57', 131, 'randomFromLatticeWithOffset', 'swizzle', '426:15-426:26', '15c3f0bc34e1a80c5b9b095e3ea2dd02c38e6610e7fa6cb0c591975c27275b7f', 'z', 'lvalue', 'id', 213, 'prngState', '426:9-426:35', '035cde5c2a713da61197c34edef7be911cc0019d8526875dd4720d055495e3d8', 'binary', '/'),
     ),
     'classicNoisedeck/shapes:shapes': (
         ('68:31-68:54', '8598be3e7bd6022bd80cbe4da148c94e92ba16b284c6b8ae7db2a6fb0a0a5658', 136, 'prng', 'construct', '68:37-68:53', '6534766e8a5812b1230883521f93270d8e82905c774b05788d6080ad5eacf0eb', None, 'rvalue', 'literal', None, None, '68:9-68:54', '2c56e1652acdbe0d5bab9a563a4083fc8e547fbf8a0463da2ff46e0b0b625d82', 'binary', '/'),
@@ -581,7 +621,12 @@ def authenticate_scalar_uint_xor(
     from .noise_runtime_define_profile import is_dynamic_program, authenticate_scalar_xor
     if is_dynamic_program(program):
         return authenticate_scalar_xor(program, source_hash, profile)
-    expected = _PROFILES.get(program.key)
+    if program.key == "classicNoisedeck/shapeMixer:shapeMixer" and any(
+            item.name == "LOOP_OFFSET" and item.canonical_value == "10"
+            for item in program.preprocessor_defines):
+        expected = _STATIC_SHAPE_MIXER_PROFILE
+    else:
+        expected = _PROFILES.get(program.key)
     if expected is None:
         if profile is not None:
             raise _fail("program key is not an admitted scalar uint XOR carrier")
@@ -756,7 +801,12 @@ def authenticate_scalar_uint_to_float_narrowing_skips(
     node.  This documents the blast radius without changing 31 safe sites.
     """
     authenticate_scalar_uint_xor(program, source_hash, profile)
-    records = _UINT_TO_FLOAT_CENSUS_LOCKS.get(program.key)
+    if program.key == "classicNoisedeck/shapeMixer:shapeMixer" and any(
+            item.name == "LOOP_OFFSET" and item.canonical_value == "10"
+            for item in program.preprocessor_defines):
+        records = _STATIC_UINT_TO_FLOAT_SHAPE_MIXER_LOCKS
+    else:
+        records = _UINT_TO_FLOAT_CENSUS_LOCKS.get(program.key)
     if records is None:
         raise _fail("scalar uint-to-float census carrier mismatch")
     _, parents, owners, _ = _collect(program)

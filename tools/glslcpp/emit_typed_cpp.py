@@ -120,6 +120,10 @@ from .frontend.shapes_rvalue_assign_profile import (
 from .frontend.cross_lane_assignment_profile import (
     CROSS_LANE_KEY, PROFILE as CROSS_LANE_ASSIGNMENT_PROFILE,
     authenticate_cross_lane_assignment)
+from .frontend.scatter_jitter_cross_lane_assignment_profile import (
+    KEY as SCATTER_JITTER_CROSS_LANE_KEY,
+    PROFILE as SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE,
+    authenticate_scatter_jitter_cross_lane_assignment)
 from .frontend.mutable_global_frame_profile import (
     MUTABLE_GLOBAL_FRAME_KEYS,
     NOISE_KEY as PREPARED_MUTABLE_GLOBAL_FRAME_NOISE_KEY,
@@ -589,12 +593,12 @@ def _candidate_shape_mixer_blend_mode_guards(
     """Reconstruct the two exact candidate-owned Shape Mixer ladders."""
     blend_functions = tuple(item for item in program.functions
                             if item.name == "blend")
-    if tuple(item.id for item in blend_functions) != (99, 100):
+    if tuple(item.id for item in blend_functions) != (100, 101):
         return ()
     guards: list[TypedExpression] = []
     for function, expected_return, mode_symbol_id in (
-            (blend_functions[0], "float", 97),
-            (blend_functions[1], "vec3", 93)):
+            (blend_functions[0], "float", 98),
+            (blend_functions[1], "vec3", 94)):
         if (function.return_type.display() != expected_return
                 or len(function.parameters) != 4
                 or function.parameters[2].id != mode_symbol_id
@@ -635,10 +639,10 @@ def _shape_mixer_ladder_records(program: TypedProgram) -> tuple[
     if len(guards) != 20:
         return ()
     functions = {item.id: item for item in program.functions}
-    if 99 not in functions or 100 not in functions:
+    if 100 not in functions or 101 not in functions:
         return ()
     records = []
-    for function, offset in ((functions[99], 0), (functions[100], 10)):
+    for function, offset in ((functions[100], 0), (functions[101], 10)):
         root = function.body[2]
         current = root
         bodies: list[TypedStatement] = []
@@ -662,7 +666,7 @@ def _candidate_shape_mixer_roots_and_bodies(
     """Independently derive the consumer's exact root/body ledgers."""
     roots: list[TypedStatement] = []
     bodies: list[TypedStatement] = []
-    for function_id in (99, 100):
+    for function_id in (100, 101):
         matches = tuple(item for item in program.functions
                         if item.id == function_id and item.name == "blend")
         if len(matches) != 1 or len(matches[0].body) != 4:
@@ -1212,6 +1216,8 @@ class _Emitter:
         init=False, default=())
     authorized_cross_lane_assignment: object | None = field(init=False, default=None)
     emitted_cross_lane_assignments: list[object] = field(init=False, default_factory=list)
+    authorized_scatter_jitter_cross_lane_assignment: object | None = field(init=False, default=None)
+    emitted_scatter_jitter_cross_lane_assignment: list[object] = field(init=False, default_factory=list)
     emitted_shapes_rvalue_assigns: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_mutable_global_frames: tuple[object, ...] = field(
@@ -1529,6 +1535,7 @@ class _Emitter:
     fractal_frontend_profile: str | None = None
     julia_frontend_profile: str | None = None
     distortion_frontend_profile: str | None = None
+    scatter_jitter_cross_lane_assignment_profile: str | None = None
     authorized_testpattern_proof: object | None = field(init=False, default=None)
     authorized_osd_proof: object | None = field(init=False, default=None)
     authorized_moodscape_projection: object | None = field(
@@ -1753,6 +1760,8 @@ class _Emitter:
         self.authorized_shapes_rvalue_assigns = ()
         self.authorized_cross_lane_assignment = None
         self.emitted_cross_lane_assignments = []
+        self.authorized_scatter_jitter_cross_lane_assignment = None
+        self.emitted_scatter_jitter_cross_lane_assignment = []
         self.emitted_shapes_rvalue_assigns = []
         self.authorized_mutable_global_frames = ()
         self.authorized_frame_contract = None
@@ -2939,6 +2948,22 @@ class _Emitter:
                 raise _error(self.program, self.program, str(error)) from error
         elif self.program.key == CROSS_LANE_KEY:
             raise _error(self.program, self.program, "exact cross-lane assignment profile carrier required")
+        if self.scatter_jitter_cross_lane_assignment_profile is not None:
+            if (self.program.key != SCATTER_JITTER_CROSS_LANE_KEY
+                    or self.scatter_jitter_cross_lane_assignment_profile
+                    != SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE):
+                raise _error(self.program, self.program,
+                             "scatter jitter cross-lane assignment profile metadata mismatch")
+            try:
+                self.authorized_scatter_jitter_cross_lane_assignment = (
+                    authenticate_scatter_jitter_cross_lane_assignment(
+                        self.program, self.source_hash,
+                        self.scatter_jitter_cross_lane_assignment_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key == SCATTER_JITTER_CROSS_LANE_KEY:
+            raise _error(self.program, self.program,
+                         "exact scatter jitter cross-lane assignment profile carrier required")
         if self.glyph_map_nonnegative_int_shift_profile is not None:
             if (self.program.key != GLYPH_MAP_KEY
                     or self.compatibility_transform is not None
@@ -3311,6 +3336,7 @@ class _Emitter:
                 self.const_global_table_profile, self.varying_profile,
                 self.texture_lod_admission_profile,
                 self.cross_lane_assignment_profile,
+                self.scatter_jitter_cross_lane_assignment_profile,
                 self.glyph_map_nonnegative_int_shift_profile,
                 self.curl_vector_math_profile, self.grade_luma_weights_profile,
                 self.grade_index_expression_profile,
@@ -4043,7 +4069,9 @@ class _Emitter:
                 "shapes_rvalue_assign_profile", "mutable_global_frame_profile",
                 "mutable_global_array_profile", "const_global_table_profile",
                 "varying_profile", "texture_lod_admission_profile",
-                "cross_lane_assignment_profile", "struct_declaration_profile",
+                "cross_lane_assignment_profile",
+                "scatter_jitter_cross_lane_assignment_profile",
+                "struct_declaration_profile",
             )
             if (self.program.key != TESTPATTERN_KEY
                     or self.testpattern_profile != TESTPATTERN_PROFILE
@@ -4374,6 +4402,7 @@ class _Emitter:
                 self.const_global_table_profile, self.varying_profile,
                 self.texture_lod_admission_profile,
                 self.cross_lane_assignment_profile,
+                self.scatter_jitter_cross_lane_assignment_profile,
                 self.glyph_map_nonnegative_int_shift_profile,
                 self.curl_vector_math_profile, self.grade_luma_weights_profile,
                 self.grade_index_expression_profile,
@@ -9239,6 +9268,32 @@ class _Emitter:
                     f"{indent}glsl::set_swizzle<0>({target}, {first});",
                     f"{indent}glsl::set_swizzle<1>({target}, {second});",
                 ]
+            scatter_cross_lane = (
+                self.authorized_scatter_jitter_cross_lane_assignment)
+            if (scatter_cross_lane is not None
+                    and assignment is scatter_cross_lane.assignment):
+                if (self.current_function_name != "main"
+                        or assignment.operator != "="
+                        or assignment.children != (
+                            scatter_cross_lane.target,
+                            scatter_cross_lane.assignment.children[1])):
+                    raise _error(
+                        self.program, assignment,
+                        "malformed authenticated scatter jitter cross-lane assignment")
+                target = self.expression(scatter_cross_lane.target)
+                perp = self.expression(scatter_cross_lane.perp_expr)
+                dot_expr = self.expression(scatter_cross_lane.dot_expr)
+                first = f"(static_cast<double>({dot_expr}) * static_cast<double>(glsl::swizzle<0>({perp})))"
+                second = f"(static_cast<double>({dot_expr}) * static_cast<double>(glsl::swizzle<1>({perp})))"
+                if len(self.emitted_scatter_jitter_cross_lane_assignment) != 0:
+                    raise _error(
+                        self.program, assignment,
+                        "authenticated scatter jitter cross-lane assignment emitted twice")
+                self.emitted_scatter_jitter_cross_lane_assignment.append(assignment)
+                return [
+                    f"{indent}glsl::set_swizzle<0>({target}, {first});",
+                    f"{indent}glsl::set_swizzle<1>({target}, {second});",
+                ]
             mandelbrot_dz = (
                 self.authorized_mandelbrot_sequential_dz_assignment)
             if (mandelbrot_dz is not None
@@ -12566,6 +12621,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      texture_lod_admission_profile: str | None = None,
                      texture_frontend_profile: str | None = None,
                      cross_lane_assignment_profile: str | None = None,
+                     scatter_jitter_cross_lane_assignment_profile: str | None = None,
                      struct_declaration_profile: str | None = None,
                      testpattern_profile: str | None = None,
                      testpattern_frontend_proof: FrontendProof | None = None,
@@ -12681,7 +12737,8 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        median_frontend_profile=median_frontend_profile,
                        fractal_frontend_profile=fractal_frontend_profile,
                        julia_frontend_profile=julia_frontend_profile,
-                       distortion_frontend_profile=distortion_frontend_profile)
+                       distortion_frontend_profile=distortion_frontend_profile,
+                       scatter_jitter_cross_lane_assignment_profile=scatter_jitter_cross_lane_assignment_profile)
     lines = [f"// Typed IR program: {program_key}", f"// Source SHA-256: {source_hash}"]
     lines.extend(emitter.render_body(namespace, factory))
     if emitter.program.key == JULIA_FRONTEND_KEY:
@@ -13087,6 +13144,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 emitter.authorized_cross_lane_assignment.assignment]:
             raise _error(program, program,
                          "authenticated cross-lane assignment emission mismatch")
+    if emitter.authorized_scatter_jitter_cross_lane_assignment is not None:
+        if emitter.emitted_scatter_jitter_cross_lane_assignment != [
+                emitter.authorized_scatter_jitter_cross_lane_assignment.assignment]:
+            raise _error(program, program,
+                         "authenticated scatter jitter cross-lane assignment emission mismatch")
     if emitter.authorized_shapes_rvalue_assigns:
         expected = emitter.authorized_shapes_rvalue_assigns
         emitted = emitter.emitted_shapes_rvalue_assigns

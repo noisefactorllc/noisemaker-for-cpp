@@ -1854,9 +1854,9 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_prior_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "9a40564b8a928269b48f0a7c451e8440cf11b960dca14deec73ec5cd20d5460b",
+                "5b5146dbb185886e8333736f119891ee9b10e44763fd474e0ed8d6f82032e397",
             "src/typed_generated/typed_manifest.json":
-                "ae4e597f3e947924ac4ea409cdf7a19da5cb0d28c3fe9bb5261a82e125d74cfc",
+                "c1059bea09c6960e763cbe8d728f1b0aa8601b82394f17617dd71db2a784c5e4",
             "include/noisemaker/generated/catalog.hpp":
                 "5ca9c58b712b493ec5ef548bf7fc75deec99dbe9546b22bdb0b9d0386885f52a",
         }
@@ -2903,8 +2903,8 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            (1021479,
-             "178efdfd44e8d606cdce182198decbab3082d0c7ad4a4c9bb0299e806e295e49"),
+            (1025640,
+             "dcc8ca3730a0604c25762430e199050698205cb17e00f22354ac68339428ed18"),
             (len(prior_cpp.encode()),
              hashlib.sha256(prior_cpp.encode()).hexdigest()))
 
@@ -7999,7 +7999,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "filter/median:median": (
                 "default-only", {"RADIUS": 2}),
             "classicNoisedeck/shapeMixer:shapeMixer": (
-                "default-only", {"LOOP_OFFSET": 10}),
+                "runtime-int", {"LOOP_OFFSET": 10}),
             "classicNoisedeck/shapes:shapes": (
                 "default-only", {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}),
             "synth/shape:shape": (
@@ -8017,21 +8017,21 @@ and item["program_key"] != "filter/wobble:wobble"
             # substitutions: the JS reference has no preprocessor and its
             # factories read $bindings["MODE"] at runtime.
             "filter/halftone:halftone": ("default-only", {"MODE": 0, "PATTERN": 0}),
-            "filter/pondRipples:pondRipples": ("default-only", {"STYLE": 2, "WRAP": 0}),
-            "filter/stipple:stipple": ("default-only", {"MODE": 0}),
+            "filter/pondRipples:pondRipples": ("runtime-int", {"STYLE": 2, "WRAP": 0}),
+            "filter/stipple:stipple": ("runtime-int", {"MODE": 0}),
             "filter/lensFlare:lensFlare": ("runtime-int", {"LENS_TYPE": 0}),
             "filter/lowPoly:lowPoly": ("default-only", {"LP_BORDER": 0, "LP_LIGHT": 0}),
             "filter/morphology:morphA": ("runtime-int", {"SHAPE": 0}),
             "filter/morphology:morphB": ("runtime-int", {"SHAPE": 0}),
             "filter/mosaicTiles:mosaicTiles": ("runtime-int", {"MODE": 0}),
-            "filter/oilPaint:oilFlatten": ("default-only", {"MODE": 1}),
-            "filter/oilPaint:oilPost": ("default-only", {"MODE": 1}),
+            "filter/oilPaint:oilFlatten": ("runtime-int", {"MODE": 1}),
+            "filter/oilPaint:oilPost": ("runtime-int", {"MODE": 1}),
             "filter/relief:rlBlurH": ("runtime-int", {"MODE": 0}),
             "filter/relief:rlBlurV": ("runtime-int", {"MODE": 0}),
             "filter/relief:rlShade": ("runtime-int", {"MODE": 0}),
-            "filter/scatter:scatterJitter": ("default-only", {"MODE": 0}),
-            "filter/scatter:scatterSmooth": ("default-only", {"MODE": 0}),
-            "filter/strokes:stkPost": ("default-only", {"MODE": 0}),
+            "filter/scatter:scatterJitter": ("runtime-int", {"MODE": 0}),
+            "filter/scatter:scatterSmooth": ("runtime-int", {"MODE": 0}),
+            "filter/strokes:stkPost": ("runtime-int", {"MODE": 0}),
             "filter/strokes:stkSmear": ("default-only", {"MODE": 0}),
             "filter/texture:texture": ("default-only", {"MODE": 3}),
             "filter/wind:wind": ("runtime-int", {"METHOD": 1}),
@@ -8127,17 +8127,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "db890c9e965f5ec7ce0a2d55bb79716fa0810696323902ef558e0a1dafac5855",
+                "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
-                "3ab9085751db86e84d374e0e8731e44a0896e81f07f820368e02ba5e2af64547",
+                "7e05bc80fdcc2c37d40475df441d92e9ee5ff58c5576e7cd1d3d1646f85d14e8",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "b0b815c60c3ee34e76361ffece5dfb47e0f7f02293d05fc438a64f0bf99a685c",
+                "a7b3bafa1dd7411f3ff77e6dbea18e528bfe9f76157ac5faf1f1168005aa9fd2",
             "src/typed_generated/typed_manifest.json":
-                "e631c93ca3eeaed0755ca639ddae7997ef2f2eb6c1b1aa9bd75c18f817f2c0ea",
+                "f2bea0b47f7c9e0a79f2485a17fae37386565ad4d0dc78a51433a39fc2297aaf",
             "include/noisemaker/generated/catalog.hpp":
                 "00d9b5d45081f6b8e844f29dcf713fb9a0354079a6a24c0de14899b522227bab",
         }
@@ -8261,17 +8261,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "3565366252d2cb3698668443bbe08b7fc2594a90775ed3abe1264766c17dc8ba",
+                "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
-                "5fddeabc8cb20559b31919c2f34858f0ba4e6f6e80812536fc45f6d8aeb5fa5b",
+                "ae47417e068181e1d89d849008019cb5eed527fe492943dbcf04f9d046118263",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "db890c9e965f5ec7ce0a2d55bb79716fa0810696323902ef558e0a1dafac5855",
+                "439b0d5c5f8ad9b5b46ae6a0556905ea148e4f1bae5c2b8738aae14c0421d6d9",
             "src/typed_generated/typed_manifest.json":
-                "3ab9085751db86e84d374e0e8731e44a0896e81f07f820368e02ba5e2af64547",
+                "7e05bc80fdcc2c37d40475df441d92e9ee5ff58c5576e7cd1d3d1646f85d14e8",
             "include/noisemaker/generated/catalog.hpp":
                 "b504016dc7512d091dc318a68df6685147a0e7f7dd00353bcb2e5fb1a606ae4e",
         }
@@ -8396,17 +8396,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "f8d10d3493cbfe37b982ebc6eed0e607bad3af7d5e95c15be001bf48a668a34d",
+                "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
-                "ff881f80e449f01b7553ab39e118c609180da2dc5918c07bd0ca91be6e92f8c0",
+                "cd48a9e584fbc7844da347b66d9e3862cac7c09185ca4ab44953e920cc7927f6",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "3565366252d2cb3698668443bbe08b7fc2594a90775ed3abe1264766c17dc8ba",
+                "a132a10c8ea70580678f1143861155491375795b87525363dd0b64db4823242a",
             "src/typed_generated/typed_manifest.json":
-                "5fddeabc8cb20559b31919c2f34858f0ba4e6f6e80812536fc45f6d8aeb5fa5b",
+                "ae47417e068181e1d89d849008019cb5eed527fe492943dbcf04f9d046118263",
             "include/noisemaker/generated/catalog.hpp":
                 "48da5035af0d4766080612f7646d3b4484fc3db2acc9a496706123c0edc0ae71",
         }
@@ -8529,17 +8529,17 @@ and item["program_key"] != "filter/wobble:wobble"
         # internally consistent. cpp/catalog digests were unaffected.
         expected_current = {
             "src/typed_generated/typed_slice.cpp":
-                "3f0787f7515c41af040d59ae2b978731c57235118fee60a5287adfdb3619b1d6",
+                "9873428846e1d18d15d01fe1dafe22e6aa0a1c3f23d99b7ca58de6c259b5615f",
             "src/typed_generated/typed_manifest.json":
-                "cf6aaa08eb4fc77f71c69b8713a4db604bcb58a6be043c8ebbde4711f234a84f",
+                "f37ba2592383b8205a789b9b076103daaf5347846c00d7ccdffa510377050ca3",
             "include/noisemaker/generated/catalog.hpp":
                 "6ef5745db2723e09cf8908106a9c4b7ebdb5f9ec661a1c409d42fbffcf340a28",
         }
         expected_prior = {
             "src/typed_generated/typed_slice.cpp":
-                "f8d10d3493cbfe37b982ebc6eed0e607bad3af7d5e95c15be001bf48a668a34d",
+                "d2bea2ad2ae5ebb517db31701aa43ed4b6dc69330a844acfcc6717b42b52a3a0",
             "src/typed_generated/typed_manifest.json":
-                "ff881f80e449f01b7553ab39e118c609180da2dc5918c07bd0ca91be6e92f8c0",
+                "cd48a9e584fbc7844da347b66d9e3862cac7c09185ca4ab44953e920cc7927f6",
             "include/noisemaker/generated/catalog.hpp":
                 "11036c546e43d4eebe2c2ce7ce569cc659bbd2b3c42a3058786cca0958220266",
         }
@@ -8647,9 +8647,9 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertIn("glsl::fract(static_cast<float>(9.0))", ordinary_line)
         self.assertNotIn("static_cast<float>(static_cast<double>", ordinary_line)
 
-        scatter = analyze_program(parse_program(source, "filter/scatter:scatterJitter"),
-                                  "filter/scatter:scatterJitter")
-        scatter_emitted = render_typed_cpp(scatter, "filter/scatter:scatterJitter", "4" * 64,
+        scatter = analyze_program(parse_program(source, "filter/scatter:scatterSmooth"),
+                                  "filter/scatter:scatterSmooth")
+        scatter_emitted = render_typed_cpp(scatter, "filter/scatter:scatterSmooth", "4" * 64,
                                            numeric_literal_contract="source-double")
         self.assertNotIn("glsl::fract(static_cast<float>(", scatter_emitted)
         self.assertNotIn("glsl::fract(glsl::Vec2(static_cast<float>(", scatter_emitted)
@@ -10964,10 +10964,10 @@ and item["program_key"] != "filter/wobble:wobble"
         # of this test's own projection; see
         # task-7-typed-generator-census-repair.md.
         self.assertEqual(
-            "8146544d2b08de19abca1321cf07b18b1ab7c7ec7d950e5778b6bfabf036ebad",
+            "0e82f2eedb2201ce5d8daac75f0fdd06cb11ca934b97775d2c5e2bd621affc11",
             hashlib.sha256(current_cpp.encode()).hexdigest())
         self.assertEqual(
-            "4981b4fcd63867deab8398395ba9f1bdede34397c348b22145effe040e26ceee",
+            "947dd4bbf634d86745beda6333f616248ce481e2fc9754cc1b3a7e814f72578e",
             hashlib.sha256(prior_cpp.encode()).hexdigest())
 
         marker = re.compile(r"(?m)^// Typed IR program: (.+)$")
@@ -11347,7 +11347,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_classicNoisedeck_lensDistortion_lensDistortion',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '970f0cc27ca1fe561f3d2496859fc885eda2dcb9fc4b21edcc065bae283de8a8'},
+                     'source_sha256': '6df1f7abe70a1969906c4d91dea0acac1385cb1e9f283cb4cce76b389dd03e77'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11403,7 +11403,7 @@ synth/subdivide:subdivide""".splitlines())
                     {'factory': 'bind_filter_prismaticAberration_prismaticAberration',
                      'kind': 'typed_emitter',
                      'source': 'src/typed_generated/typed_slice.cpp',
-                     'source_sha256': '970f0cc27ca1fe561f3d2496859fc885eda2dcb9fc4b21edcc065bae283de8a8'},
+                     'source_sha256': '6df1f7abe70a1969906c4d91dea0acac1385cb1e9f283cb4cce76b389dd03e77'},
                 "typed_abi":
                     {'outputs': ['fragColor'],
                      'samplers': ['inputTex'],
@@ -11475,7 +11475,7 @@ synth/subdivide:subdivide""".splitlines())
         # the pin on the pre-rename bytes f704ac4c...; the suite was red on
         # every platform from that commit until this one.
         self.assertEqual(
-            "1a9519e696e2bc64995ddd874063c72929a6b98465e7ba50d416366cee9582b7",
+            "bfc6fe5b2c00d0cd66fb7d90196c25d0592bcafae85b503bf05d45cf4b99599f",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -14886,9 +14886,9 @@ class Task27PerlinTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task26_hashes = {
             "src/typed_generated/typed_slice.cpp":
-                "162df4c488bcfc342e4204f11953f688207e93819c57e7d3aef1f894d88a9eea",
+                "366197359d3785a5de829655ad89a71ce12bc5782fd80d9932359df22fd92b80",
             "src/typed_generated/typed_manifest.json":
-                "d2f9eb7ec80d3f281c80e49af9dd46d23e9127db38d6da1366175558a8870273",
+                "15d9e81d52ea26496c00f7d2fe5ac788c26fb845faf1be90a208273d5d74f649",
             "include/noisemaker/generated/catalog.hpp":
                 "2a0c8a3abb57b8fed2d29e5bdc9791a53a4e119ccf224ba751022fbd0f7dd59e",
         }
@@ -15974,8 +15974,8 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         # translation-unit hash carriers, so the projected manifest is
         # internally consistent. cpp/catalog digests were unaffected.
         expected = {
-            "src/typed_generated/typed_slice.cpp": "4da5319b8c39d3096fb6a2a70ad99ab0ae0b0da33735b88380f6b38d4ee9414e",
-            "src/typed_generated/typed_manifest.json": "3ee1240dfc70ac5c535a6c88d47b2c6a56c5fcfc09c96106254dfae3967e166b",
+            "src/typed_generated/typed_slice.cpp": "597eb1a2d4bdd4e43027d43ea31a4df4d8dd2fe09002875cb1db122502585266",
+            "src/typed_generated/typed_manifest.json": "2c32db46ad6532f1205a8cee3f7e6a94b2e95672c8cadeb9a8e5266f680e5474",
             "include/noisemaker/generated/catalog.hpp": "67d72e3417329523e40a214fb058e5ed9fb8cd74aeee108c6dacda1036bda704",
         }
         for path, digest in expected.items():
@@ -16847,9 +16847,9 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task28 = {
             "src/typed_generated/typed_slice.cpp":
-                "931ef4bf8288e099438927f98634a9861ec677338eca5e5d1793a16749c02574",
+                "64d66eb5e9a12d2c3ce3d886a8cb01d854e6b5782fe447500a6f87a78b851936",
             "src/typed_generated/typed_manifest.json":
-                "b244c75225c8fd92ff40c54c39e7bffa2cca16328f9aaa63b2b8dac753393855",
+                "91dc46613667eb262a48a952a5d2a05b4962d3fb9e1ee47753fea570b2fe36a8",
             "include/noisemaker/generated/catalog.hpp":
                 "85f146ae07c41f97c57850229d3fcac788295dbdf236d025f03dd0b8d05f4cdd",
         }
@@ -17692,9 +17692,9 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task29 = {
             "src/typed_generated/typed_slice.cpp":
-                "925aa4d1fd28441606e23be8748f56cfff91a74f5d395ed42303347ef33d588d",
+                "75d357347e1dd8cb185230250672e94b0c6e31aeb57fc4b4abab6345a8856f21",
             "src/typed_generated/typed_manifest.json":
-                "25b17225d51ab9acb3f712b8382c9631493f1b6ca79a85d9790d6a095f884066",
+                "b1ef8123c57ab4cdad15c180f14f6d49a46d36cb10ae358045cd86cbf982e6df",
             "include/noisemaker/generated/catalog.hpp":
                 "a0bbb90c96f6647ede3e6910b97010a35e33d1e1191325883a11073ad6a45fb0",
         }
@@ -18695,9 +18695,9 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task30 = {
             "src/typed_generated/typed_slice.cpp":
-                "631242d2ddc25ffb23ef2a0c2e93387c65465ae54d5570bff6f4fe3fa4086810",
+                "595c6d5629802ea2147cf895cb9453f46b81adc7f8d958d78868b6f53e62a864",
             "src/typed_generated/typed_manifest.json":
-                "505e0f51887401ceea4d801834389170290128d108fe2e046c65266cd09ed58f",
+                "3880ac519bc83c5770ea6ba01a64c166a5faa66f9d673ce40061a24831a967eb",
             "include/noisemaker/generated/catalog.hpp":
                 "a47c84fb2bd9a5fbe7c336f5aad7c002c1a06101149cc117d7b3a73e0a9923f4",
         }
@@ -19267,9 +19267,9 @@ class Task32GradeClusterTests(unittest.TestCase):
         # internally consistent. cpp/catalog digests were unaffected.
         expected_task31 = {
             "src/typed_generated/typed_slice.cpp":
-                "0e3ee7e9303a17dfe609977aa42283e187a7717b3361f43375eb88b8fb9d2b0f",
+                "cef42907dfeee5dea4d74919ff37ba4dd218e54156db8fb6943b08c9aa7a86fd",
             "src/typed_generated/typed_manifest.json":
-                "6663bc900e21f35e8e34db5780eab0158602b402c4117b9e158a2d63338b1c46",
+                "2a371b28ac02d5ad0d00c8ed2cae7b6bacb78b93662094ce75a2bacebdfcb5dc",
             "include/noisemaker/generated/catalog.hpp":
                 "25b838ccd789bbe5163023ba112917c70f7c6bc3f78cade1eb08a4d795b3b663",
         }
@@ -19422,15 +19422,24 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         from tools.glslcpp import check_corpus
         from tools.glslcpp.frontend import parse_program
         from tools.glslcpp.frontend.semantic import analyze_program
-        from tools.glslcpp.generate_typed_slice import _defaults
+        from tools.glslcpp.generate_typed_slice import (
+            GENERIC_DYNAMIC_DEFINE_TYPES, _defaults,
+            transform_generic_dynamic_source)
 
         root = check_corpus._corpus_root(REPOSITORY)
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
         entries = {item["program_key"]: item
                   for item in check_corpus._validate_manifest(manifest)}
         source = (root / entries[key]["source"]).read_text()
+        source_hash = hashlib.sha256(source.encode()).hexdigest()
+        if key in GENERIC_DYNAMIC_DEFINE_TYPES:
+            dynamic_defines = GENERIC_DYNAMIC_DEFINE_TYPES[key]
+            parsed = parse_program(
+                transform_generic_dynamic_source(source, key), key, dynamic_defines)
+            parsed["raw_source"] = source
+            return source, source_hash, analyze_program(parsed, key)
         defines = _defaults(REPOSITORY, key)
-        return (source, hashlib.sha256(source.encode()).hexdigest(),
+        return (source, source_hash,
                 analyze_program(parse_program(source, key, defines), key))
 
     def test_task33_all_seventeen_authenticate_and_lower_with_narrow_abi(self) -> None:
@@ -19954,14 +19963,14 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_183 = {
         "tools/glslcpp/typed_slice.json": (
-            23359,
-            "bc2da9403a29b5dc67a1325382cfd343cf61a3fff5161fcbabc9d9062225927c"),
+            23952,
+            "d01b5aa25b6c8989e6992560820929aa347ab425e17a3e8636465aa39edc3699"),
         "src/typed_generated/typed_slice.cpp": (
-            1956081,
-            "724b2ac85fac80510104b1117128e8cc01c1e7fa863464f37f602e2a33b68906"),
+            1963717,
+            "5cfdf388a0d3807b81317b8abddd060a51208f78279ee16555de996daa759ce7"),
         "src/typed_generated/typed_manifest.json": (
-            524533,
-            "40c8d5f73cdc9048fce6763ea19dc0c7f8fe963867d160f2879f1584a44adf4e"),
+            525837,
+            "200bf0b63273792c0046d45fd7cb9c507d0f988198d82c3b008bec74e1891cfe"),
         "include/noisemaker/generated/catalog.hpp": (
             17919,
             "c0a37f0c625ba0a2feaa8c9193cbfdf5a81bea2f8bf52e06f92890f38fb8a76d"),
@@ -20667,14 +20676,14 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_184 = {
         "tools/glslcpp/typed_slice.json": (
-            23624,
-            "b185a2d166231119dc736020f3804419b5f5d53811d1608bb8d2e14082738943"),
+            24217,
+            "f1a2c8f53035734ce6aecfe1d06e7530d056c43605ac70d61ecbd803dfde46da"),
         "src/typed_generated/typed_slice.cpp": (
-            2010522,
-            "774431b73495e8cf19b458d415ade25e6a3d9de913fa48e1084d186c16cf713a"),
+            2018158,
+            "abec9fea699f3c63e0228a3ad1d07061b2f032f89ea521515ec4e4138677b6f4"),
         "src/typed_generated/typed_manifest.json": (
-            527651,
-            "d9c2fa93fda6b4878b2c363d4fdc5c4465ecc8e0aee1873233cc60face386d06"),
+            528955,
+            "b9f004dd6616287600f0a22b86a584fe3c2073c2be04913cc6f9ba9666109a77"),
         "include/noisemaker/generated/catalog.hpp": (
             18001,
             "84df05fade5267b58a4569f57e1fce65907ced14e799d55d3036f620472b2a65"),
@@ -21888,14 +21897,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_185 = {
         "tools/glslcpp/typed_slice.json": (
-            23833,
-            "b2570afecc4e93d79342aaf13635395e15cbf31d3c1d3f16a74dfce215fb4cd8"),
+            24426,
+            "8a29e3948cf66e860b5e8c9311044903139c11528fc9db3aec30c623123a5052"),
         "src/typed_generated/typed_slice.cpp": (
-            2024620,
-            "ebe473b30c625a07193d5f379d9df7137b751ffbb658edb232e33581facc54bd"),
+            2032256,
+            "d2e4a60ccd70498972df5ccd298a60e0a9ff11dc69c37d0d6eb200a2cabe1eb6"),
         "src/typed_generated/typed_manifest.json": (
-            530296,
-            "d2946116b129df7e28624827d06955c549f167b76a3a0821b84c096a62eb1029"),
+            531600,
+            "270af8519617f7dd09194de78f79c0f2531aeb89ef33c5dccdb834f024fcd9f5"),
         "include/noisemaker/generated/catalog.hpp": (
             18092,
             "88eabb05a709bf85c91186cdbc3bf9a546339b0c1c2d009971c3a9313c6b4f64"),
@@ -22542,14 +22551,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                32968,
-                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
+                33561,
+                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
             "src/typed_generated/typed_slice.cpp": (
-                2925797,
-                "b2704e4891cc395ec08700fd4701c6456d2042c06d421a1d980a5ebcdc8f43ec"),
+                2933081,
+                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
             "src/typed_generated/typed_manifest.json": (
-                777326,
-                "6d6197488a42777650705f56165560c9dfa9d9d9a21b5b272bee64a4407c3e3a"),
+                778630,
+                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
             "include/noisemaker/generated/catalog.hpp": (
                 25259,
                 "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
@@ -22741,14 +22750,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_186 = {
         "tools/glslcpp/typed_slice.json": (
-            24060,
-            "49bb513f1f0299792cc9dc4d6911d7e80070794fe0c966ad6ad857ecb835b901"),
+            24653,
+            "39773516bc501476ef7fc96d0a17cf220d62663cf4878aa3726c449301b54457"),
         "src/typed_generated/typed_slice.cpp": (
-            2061896,
-            "eddaccc67e8369c117819c04946cdcc49687b1810ce43cae743b727e9ebb0435"),
+            2069532,
+            "f770a3ad046148c509c0b42312bea3b64f49ae876d7128ad4b0e876abb92e01c"),
         "src/typed_generated/typed_manifest.json": (
-            533929,
-            "00bd310f68ab9e728ac55b2659204ee445a7f5faaca3cab784b27ed08eee7482"),
+            535233,
+            "d166d0136d27550a05b903b778a710f26caf61d927b35dabab141ce301f89916"),
         "include/noisemaker/generated/catalog.hpp": (
             18197,
             "3a1ea13b5080947064ca559f2723cde386f6b4c154d9f0ced82e87d592e673a3"),
@@ -23322,14 +23331,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                32968,
-                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
+                33561,
+                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
             "src/typed_generated/typed_slice.cpp": (
-                2925797,
-                "b2704e4891cc395ec08700fd4701c6456d2042c06d421a1d980a5ebcdc8f43ec"),
+                2933081,
+                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
             "src/typed_generated/typed_manifest.json": (
-                777326,
-                "6d6197488a42777650705f56165560c9dfa9d9d9a21b5b272bee64a4407c3e3a"),
+                778630,
+                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
             "include/noisemaker/generated/catalog.hpp": (
                 25259,
                 "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
@@ -24078,14 +24087,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                32968,
-                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
+                33561,
+                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
             "src/typed_generated/typed_slice.cpp": (
-                2925797,
-                "b2704e4891cc395ec08700fd4701c6456d2042c06d421a1d980a5ebcdc8f43ec"),
+                2933081,
+                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
             "src/typed_generated/typed_manifest.json": (
-                777326,
-                "6d6197488a42777650705f56165560c9dfa9d9d9a21b5b272bee64a4407c3e3a"),
+                778630,
+                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
             "include/noisemaker/generated/catalog.hpp": (
                 25259,
                 "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
@@ -24116,14 +24125,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_187 = {
         "tools/glslcpp/typed_slice.json": (
-            24382,
-            "09adedf6398be16af60cda21bf109e368a35fd43e351d5a09bbc23d6b7f1bbd2"),
+            24975,
+            "c86d68f5ba6328edf94ed86a36a860a11cffc9b8539dd8217a9139da32b9f641"),
         "src/typed_generated/typed_slice.cpp": (
-            2140667,
-            "9041bf153e685f495aa2feb5a025a4a9e2ac5f75f0a8f95a4ba97651c833fefc"),
+            2148303,
+            "5c28be7997eebfddb428826b3398072480bb126e5970c9917c59bda502fe12b5"),
         "src/typed_generated/typed_manifest.json": (
-            537282,
-            "8179562343476eaa4aaeb976947469b0aa40a6d5572d750e7f195bd44d1e5a9f"),
+            538586,
+            "4b3dc426fa7977c313dcf89f2092d678697435dc463f8c6b68d6b66cfa7f8a43"),
         "include/noisemaker/generated/catalog.hpp": (
             18294,
             "c5db2e990e1275af6ea153a0da6b7b2db698e19316094a57443d0c5184dbc922"),
@@ -24614,14 +24623,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                32968,
-                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
+                33561,
+                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
             "src/typed_generated/typed_slice.cpp": (
-                2925797,
-                "b2704e4891cc395ec08700fd4701c6456d2042c06d421a1d980a5ebcdc8f43ec"),
+                2933081,
+                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
             "src/typed_generated/typed_manifest.json": (
-                777326,
-                "6d6197488a42777650705f56165560c9dfa9d9d9a21b5b272bee64a4407c3e3a"),
+                778630,
+                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
             "include/noisemaker/generated/catalog.hpp": (
                 25259,
                 "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
@@ -24652,14 +24661,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_188 = {
         "tools/glslcpp/typed_slice.json": (
-            24717,
-            "737b6bff39c3fbd000c6c97b6d978c4f139d2018c6b2ed8786f32e549d6c2184"),
+            25310,
+            "cec468cdd57d4bc108cd53b8e49d7a70821e0e7681a7a7dd7729bbad34a2573a"),
         "src/typed_generated/typed_slice.cpp": (
-            2198863,
-            "f5706636b362871e6858256d5c0d03f05f66a0c1540af91f7dcad2e86e79562f"),
+            2206499,
+            "b7657e7fe0e0231fab3452206eef26ac5e3e0185175a79d443eaf81052297e48"),
         "src/typed_generated/typed_manifest.json": (
-            540781,
-            "b8dfc1c799d2e0fcf245610ee97b89172bf6695b698860221c7bf4832b79e08c"),
+            542085,
+            "ac801dbfbcae9278806e4cdf8713ad6527cf56649c2df7964e4e1c64b0fc62b3"),
         "include/noisemaker/generated/catalog.hpp": (
             18391,
             "3c6e2064f41971e7d13026f409e7f7f8d029c8baa670e3d0a51ece0cd3252fc9"),
@@ -25214,14 +25223,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                32968,
-                "2fbfad73e603befa9855d4523fe61c439b93527c4f625330f7dbd13750337597"),
+                33561,
+                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
             "src/typed_generated/typed_slice.cpp": (
-                2925797,
-                "b2704e4891cc395ec08700fd4701c6456d2042c06d421a1d980a5ebcdc8f43ec"),
+                2933081,
+                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
             "src/typed_generated/typed_manifest.json": (
-                777326,
-                "6d6197488a42777650705f56165560c9dfa9d9d9a21b5b272bee64a4407c3e3a"),
+                778630,
+                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
             "include/noisemaker/generated/catalog.hpp": (
                 25259,
                 "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
@@ -25255,14 +25264,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
     # internally consistent. cpp/catalog digests were unaffected.
     BASELINE_189 = {
         "tools/glslcpp/typed_slice.json": (
-            24847,
-            "5e9a45b95f053207710232faee881a45d157700deb475851dfb471413fcbb7a1"),
+            25440,
+            "c5f6961ab8d5f7db7b35a8691b94354a8eb32df5862c6f4d2847971ab470196d"),
         "src/typed_generated/typed_slice.cpp": (
-            2209766,
-            "5b01d328aa0a5ee3f7dfbbeda6a646cc20d555f106024275d724fd1f3f4cd867"),
+            2217402,
+            "f61ca07848dbb28c86dfbab94cca5f550d29d2a883838387c86d99fbd076d109"),
         "src/typed_generated/typed_manifest.json": (
-            543370,
-            "01915c2856624557784b9bb5b295faad647d83f985089e8852927572262bd846"),
+            544674,
+            "aa4d32af6cb8abb61951efddfc32f5a11647256abc1d4a06fda6f6540babdd05"),
         "include/noisemaker/generated/catalog.hpp": (
             18476,
             "0d6ddfabe13a090468faea3c6849e298b88ad36f321bb7a89e0b0a3b5a4d67ed"),

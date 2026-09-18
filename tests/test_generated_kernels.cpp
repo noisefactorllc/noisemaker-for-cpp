@@ -11207,6 +11207,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   direct.set_uniform("paperColor",
                       noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
   direct.set_uniform("seed", std::int32_t{7});
+  direct.set_uniform("MODE", std::int32_t{0});
   task33_verify(noisemaker::generated::bind_filter_stipple_stipple(direct),
                fixture);
 
@@ -11220,6 +11221,7 @@ TEST(typed_task33_stipple_unconditional_fwidth_matches_vendored_oracle_bit_exact
   via_public.set_uniform("paperColor",
                          noisemaker::glsl::DVec3(0.98, 0.96, 0.9));
   via_public.set_uniform("seed", std::int32_t{7});
+  via_public.set_uniform("MODE", std::int32_t{0});
   const auto direct_output = noisemaker::run_pass(
       noisemaker::generated::bind_filter_stipple_stipple(direct),
       fixture.width, fixture.height);
@@ -16235,6 +16237,7 @@ void shape_mixer_require_same_surface(const noisemaker::Surface& reference,
   vec2("fullResolution", fixture.full_resolution_words);
   number("time", 0U);
   integer("seed", fixture.seed);
+  integer("LOOP_OFFSET", std::int32_t{10});
   integer("blendMode", blend_mode_override.value_or(fixture.blend_mode));
   number("loopScale", 1U);
   integer("paletteMode", fixture.palette_mode);
@@ -16562,8 +16565,8 @@ TEST(typed_shape_mixer_binding_abi_and_catalog_are_exact) {
   const auto& fixture = shape_mixer182_oracle::kCases[0];
   noisemaker::Surface input_a = shape_mixer_surface(fixture.input_a);
   noisemaker::Surface input_b = shape_mixer_surface(fixture.input_b);
-  constexpr std::array<std::string_view, 20> names{
-      "inputTex", "tex", "resolution", "tileOffset", "fullResolution",
+  constexpr std::array<std::string_view, 21> names{
+      "LOOP_OFFSET", "inputTex", "tex", "resolution", "tileOffset", "fullResolution",
       "time", "seed", "blendMode", "loopScale", "paletteMode",
       "paletteOffset", "paletteAmp", "paletteFreq", "palettePhase",
       "animate", "cyclePalette", "rotatePalette", "repeatPalette",

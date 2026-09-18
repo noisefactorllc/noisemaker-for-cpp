@@ -89,11 +89,9 @@
 > The entire test suite passes cleanly across all 4 parallel shards (2,020 tests, 0 failures, status=0).
 >
 > The mathematical and uniform fixes from `unlanded/pysuite` (such as V8 fdlibm lowerings and
-> vector uniform types) have been integrated; historical pins across `tests/test_typed_generator.py` and
-> milestone suites have been re-frozen cleanly against corpus2 using pre-expansion isolation. The remaining
-> patches `unlanded/defines2-uncommitted.patch` and `unlanded/definescn-uncommitted.patch` are still unlanded
-> and target a base that predates corpus2; expect the same kind of stale hash-pin conflicts corpus2 had,
-> not silent application.
+> vector uniform types) and runtime defines (`unlanded/defines2`, `unlanded/definescn`, divergence fixes)
+> have been integrated; historical pins across `tests/test_typed_generator.py` and milestone suites have
+> been re-frozen cleanly against corpus2 using pre-expansion isolation. All 4 parallel shards pass cleanly (2,020 tests, status=0).
 >
 > ### acos admitted (this push, after corpus2)
 >
@@ -123,9 +121,12 @@
 >    dict extents, and pass-derived bindings; all artifacts regenerated to fixed point; differential sweeps across Families B,
 >    C, D, and E confirmed 0 divergence against the pinned JS authority (`61aa869`); full test suite green across all 4 shards
 >    (2,045 tests, status=0).
-> 3. **[ACTIVE] Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
->    MODE=3 divergences.
-> 4. **Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
+> 3. **[DONE] Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
+>    MODE=3 divergences. Completed: integrated runtime defines across `oilPaint`, `pondRipples`, `scatter`, `stipple`, `strokes`,
+>    and `shapeMixer`; resolved scatter MODE=3 cross-lane assignment, halftone MODE=1 alpha behavior, and noise TYPE=4 precision;
+>    regenerated all artifacts to fixed point; verified 0 divergence via `--define-enum` parity sweep (414 cases, 0 divergent, 0 timeouts);
+>    native build & CTest (4/4 passed); full 4-shard Python test suite green (2,020 tests, status=0).
+> 4. **[ACTIVE] Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
 >    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs (10 programs, the single
 >    biggest class — start here), scalar uint XOR, sampler parameters, vecN % scalar, cross/any/isnan/lessThan/
 >    floatBitsToUint (proof-gated, see above), vec4[9], postfix ++, vector index. `acos` is done.

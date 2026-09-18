@@ -404,6 +404,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
             {
                 "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
                 "defines": {"LOOP_OFFSET": 10},
+                "runtime_define_profile": "runtime-defines-generic-v1",
                 "scalar_uint_xor_profile": PROFILE,
                 "shape_mixer_builtin_profile":
                     "shape-mixer-builtin-closure-v1",

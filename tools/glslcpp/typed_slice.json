@@ -198,6 +198,7 @@
         "LOOP_OFFSET": 10
       },
       "program_key": "classicNoisedeck/shapeMixer:shapeMixer",
+      "runtime_define_profile": "runtime-defines-generic-v1",
       "scalar_uint_xor_profile": "scalar-uint-xor-v1",
       "shape_mixer_builtin_profile": "shape-mixer-builtin-closure-v1"
     },
@@ -570,13 +571,15 @@
       "defines": {
         "MODE": 1
       },
-      "program_key": "filter/oilPaint:oilFlatten"
+      "program_key": "filter/oilPaint:oilFlatten",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {
         "MODE": 1
       },
-      "program_key": "filter/oilPaint:oilPost"
+      "program_key": "filter/oilPaint:oilPost",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -678,7 +681,8 @@
         "WRAP": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/pondRipples:pondRipples"
+      "program_key": "filter/pondRipples:pondRipples",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -754,13 +758,16 @@
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/scatter:scatterJitter"
+      "program_key": "filter/scatter:scatterJitter",
+      "runtime_define_profile": "runtime-defines-generic-v1",
+      "scatter_jitter_cross_lane_assignment_profile": "scatter-jitter-cross-lane-assignment-v1"
     },
     {
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/scatter:scatterSmooth"
+      "program_key": "filter/scatter:scatterSmooth",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -854,7 +861,8 @@
         "MODE": 0
       },
       "derivative_admission_profile": "derivative-admission-v1",
-      "program_key": "filter/stipple:stipple"
+      "program_key": "filter/stipple:stipple",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {},
@@ -864,7 +872,8 @@
       "defines": {
         "MODE": 0
       },
-      "program_key": "filter/strokes:stkPost"
+      "program_key": "filter/strokes:stkPost",
+      "runtime_define_profile": "runtime-defines-generic-v1"
     },
     {
       "defines": {

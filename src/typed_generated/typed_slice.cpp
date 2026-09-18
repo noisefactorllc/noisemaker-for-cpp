@@ -5513,7 +5513,8 @@ BoundKernel bind_classicNoisedeck_refract_refract(const glsl::Bindings& bindings
 // Source SHA-256: 51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b
 namespace typed_15 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t seed_value, std::int32_t blendMode_value, double loopScale_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t animate_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double levels_value, bool wrap_value) : inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), seed(seed_value), blendMode(blendMode_value), loopScale(loopScale_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), animate(animate_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), levels(levels_value), wrap(wrap_value) {}
+  State(std::int32_t LOOP_OFFSET_value, const Surface* inputTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t seed_value, std::int32_t blendMode_value, double loopScale_value, std::int32_t paletteMode_value, glsl::DVec3 paletteOffset_value, glsl::DVec3 paletteAmp_value, glsl::DVec3 paletteFreq_value, glsl::DVec3 palettePhase_value, std::int32_t animate_value, std::int32_t cyclePalette_value, double rotatePalette_value, double repeatPalette_value, double levels_value, bool wrap_value) : LOOP_OFFSET(LOOP_OFFSET_value), inputTex(inputTex_value), tex(tex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), seed(seed_value), blendMode(blendMode_value), loopScale(loopScale_value), paletteMode(paletteMode_value), paletteOffset(paletteOffset_value), paletteAmp(paletteAmp_value), paletteFreq(paletteFreq_value), palettePhase(palettePhase_value), animate(animate_value), cyclePalette(cyclePalette_value), rotatePalette(rotatePalette_value), repeatPalette(repeatPalette_value), levels(levels_value), wrap(wrap_value) {}
+  std::int32_t LOOP_OFFSET;
   const Surface* inputTex;
   const Surface* tex;
   glsl::Vec2 resolution;
@@ -5785,37 +5786,37 @@ struct State final : KernelState {
 [[nodiscard]] double offset([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 st, [[maybe_unused]] double freq) noexcept {
   glsl::set_swizzle<0>(st, (glsl::swizzle<0>(st) * (static_cast<double>(glsl::swizzle<0>(state.fullResolution)) / static_cast<double>(glsl::swizzle<1>(state.fullResolution)))));
   [[maybe_unused]] double d = static_cast<float>(0.0);
-  if (std::int32_t(10) == std::int32_t(10)) {
+  if (state.LOOP_OFFSET == std::int32_t(10)) {
     d = circles(state, context, st, freq);
   } else {
-    if (std::int32_t(10) == std::int32_t(20)) {
+    if (state.LOOP_OFFSET == std::int32_t(20)) {
       d = shape(state, context, st, std::int32_t(3), (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
     } else {
-      if (std::int32_t(10) == std::int32_t(30)) {
+      if (state.LOOP_OFFSET == std::int32_t(30)) {
         d = (static_cast<double>((static_cast<double>((static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<0>(st)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(glsl::swizzle<0>(state.fullResolution)))) / static_cast<double>(glsl::swizzle<1>(state.fullResolution))))))) + static_cast<double>(glsl::abs((static_cast<double>(glsl::swizzle<1>(st)) - static_cast<double>(static_cast<float>(0.5))))))) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
       } else {
-        if ((std::int32_t(10) >= std::int32_t(40)) && (std::int32_t(10) <= std::int32_t(80))) {
-          [[maybe_unused]] std::int32_t sides = (std::int32_t(10) / std::int32_t(10));
+        if ((state.LOOP_OFFSET >= std::int32_t(40)) && (state.LOOP_OFFSET <= std::int32_t(80))) {
+          [[maybe_unused]] std::int32_t sides = (state.LOOP_OFFSET / std::int32_t(10));
           d = shape(state, context, st, sides, (static_cast<double>(freq) * static_cast<double>(static_cast<float>(0.5))));
         } else {
-          if (std::int32_t(10) == std::int32_t(200)) {
+          if (state.LOOP_OFFSET == std::int32_t(200)) {
             d = (static_cast<double>((static_cast<double>(glsl::swizzle<0>(st)) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
           } else {
-            if (std::int32_t(10) == std::int32_t(210)) {
+            if (state.LOOP_OFFSET == std::int32_t(210)) {
               d = (static_cast<double>((static_cast<double>(glsl::swizzle<1>(st)) * static_cast<double>(freq))) * static_cast<double>(static_cast<float>(0.5)));
             } else {
-              if (std::int32_t(10) == std::int32_t(380)) {
+              if (state.LOOP_OFFSET == std::int32_t(380)) {
                 return (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(sineNoise(state, context, st, freq)));
               } else {
-                if ((std::int32_t(10) >= std::int32_t(300)) && (std::int32_t(10) <= std::int32_t(370))) {
-                  [[maybe_unused]] std::int32_t idx = ((std::int32_t(10) - std::int32_t(300)) / std::int32_t(10));
+                if ((state.LOOP_OFFSET >= std::int32_t(300)) && (state.LOOP_OFFSET <= std::int32_t(370))) {
+                  [[maybe_unused]] std::int32_t idx = ((state.LOOP_OFFSET - std::int32_t(300)) / std::int32_t(10));
                   [[maybe_unused]] std::int32_t interp = ((idx <= std::int32_t(6)) ? idx : (idx + std::int32_t(3)));
                   d = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(value(state, context, st, freq, interp)));
                 } else {
-                  if (std::int32_t(10) == std::int32_t(400)) {
+                  if (state.LOOP_OFFSET == std::int32_t(400)) {
                     d = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(rings(state, context, st, freq)));
                   } else {
-                    if (std::int32_t(10) == std::int32_t(410)) {
+                    if (state.LOOP_OFFSET == std::int32_t(410)) {
                       d = (static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>(diamonds(state, context, st, freq)) * static_cast<double>(static_cast<float>(0.5)))))) + static_cast<double>(static_cast<float>(0.5)));
                     }
                   }
@@ -5982,8 +5983,8 @@ struct State final : KernelState {
   [[maybe_unused]] std::uint32_t seedBits = glsl::detail::glsl_uint_cast(state.seed);
   [[maybe_unused]] std::uint32_t fracBits = noisemaker::float_bits_to_uint(seedFrac);
   [[maybe_unused]] glsl::UVec3 jitter = glsl::UVec3(((fracBits * std::uint32_t(374761393)) ^ std::uint32_t(2654435769)), ((fracBits * std::uint32_t(668265263)) ^ std::uint32_t(2135587861)), ((fracBits * std::uint32_t(2246822519)) ^ std::uint32_t(2496678324)));
-  [[maybe_unused]] glsl::UVec3 state_glsl_211 = glsl::bitwise_xor(glsl::UVec3(xBits, yBits, seedBits), jitter);
-  [[maybe_unused]] glsl::UVec3 prngState = pcg(state, context, state_glsl_211);
+  [[maybe_unused]] glsl::UVec3 state_glsl_212 = glsl::bitwise_xor(glsl::UVec3(xBits, yBits, seedBits), jitter);
+  [[maybe_unused]] glsl::UVec3 prngState = pcg(state, context, state_glsl_212);
   [[maybe_unused]] double denom = float(std::uint32_t(4294967295));
   return glsl::FloatExpr<3>((static_cast<double>(float(glsl::swizzle<0>(prngState))) / static_cast<double>(denom)), (static_cast<double>(float(glsl::swizzle<1>(prngState))) / static_cast<double>(denom)), (static_cast<double>(float(glsl::swizzle<2>(prngState))) / static_cast<double>(denom)));
 }
@@ -6115,12 +6116,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec4 color1 = sample_texture(*state.inputTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.inputTex))));
   [[maybe_unused]] glsl::Vec4 color2 = sample_texture(*state.tex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texture_size(*state.tex))));
   [[maybe_unused]] double freq = static_cast<float>(1.0);
-  if (std::int32_t(10) == std::int32_t(350)) {
+  if (state.LOOP_OFFSET == std::int32_t(350)) {
     freq = map(state, context, state.loopScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(12.0), static_cast<float>(0.5));
   } else {
     freq = map(state, context, state.loopScale, static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(10.0), static_cast<float>(2.0));
   }
-  if (((std::int32_t(10) >= std::int32_t(300)) && (std::int32_t(10) < std::int32_t(340))) && state.wrap) {
+  if (((state.LOOP_OFFSET >= std::int32_t(300)) && (state.LOOP_OFFSET < std::int32_t(340))) && state.wrap) {
     freq = glsl::floor(freq);
     freq = (freq * static_cast<float>(2.0));
   }
@@ -6135,7 +6136,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
   [[maybe_unused]] double blendy = periodicFunction(state, context, t);
-  if (std::int32_t(10) == std::int32_t(0)) {
+  if (state.LOOP_OFFSET == std::int32_t(0)) {
     blendy = static_cast<float>(0.5);
   }
   [[maybe_unused]] double avg1 = luminance(state, context, glsl::swizzle<0, 1, 2>(color1));
@@ -6172,7 +6173,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_15
 
 BoundKernel bind_classicNoisedeck_shapeMixer_shapeMixer(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_15::State>(&bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("loopScale"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("animate"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("levels"), bindings.get<bool>("wrap"));
+  const auto state = std::make_shared<typed_15::State>(bindings.get<std::int32_t>("LOOP_OFFSET"), &bindings.texture("inputTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("blendMode"), bindings.get_number("loopScale"), bindings.get<std::int32_t>("paletteMode"), bindings.get<glsl::DVec3>("paletteOffset"), bindings.get<glsl::DVec3>("paletteAmp"), bindings.get<glsl::DVec3>("paletteFreq"), bindings.get<glsl::DVec3>("palettePhase"), bindings.get<std::int32_t>("animate"), bindings.get<std::int32_t>("cyclePalette"), bindings.get_number("rotatePalette"), bindings.get_number("repeatPalette"), bindings.get_number("levels"), bindings.get<bool>("wrap"));
   (void)bindings;
   return BoundKernel(state, &typed_15::pixel);
 }
@@ -15465,7 +15466,8 @@ BoundKernel bind_filter_octaveWarp_octaveWarp(const glsl::Bindings& bindings) {
 // Source SHA-256: f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690
 namespace typed_89 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, double size_value) : inputTex(inputTex_value), size(size_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, double size_value) : MODE(MODE_value), inputTex(inputTex_value), size(size_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   double size;
 };
@@ -15488,7 +15490,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::IVec2 icenter = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
   [[maybe_unused]] glsl::IVec2 dims = texture_size(*state.inputTex);
-  [[maybe_unused]] double radius = state.size;
+  [[maybe_unused]] double radius = {};
+  if (state.MODE == std::int32_t(0)) {
+    radius = glsl::component_min(state.size, static_cast<float>(3.0));
+  } else {
+    radius = state.size;
+  }
   [[maybe_unused]] double fr = glsl::clamp(radius, static_cast<float>(1.0), static_cast<float>(12.0));
   [[maybe_unused]] double frSq = (static_cast<double>(fr) * static_cast<double>(fr));
   [[maybe_unused]] std::int32_t sampleLimit = glsl::detail::glsl_int_cast(glsl::ceil(fr));
@@ -15660,7 +15667,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_89
 
 BoundKernel bind_filter_oilPaint_oilFlatten(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_89::State>(&bindings.texture("inputTex"), bindings.get_number("size"));
+  const auto state = std::make_shared<typed_89::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get_number("size"));
   (void)bindings;
   return BoundKernel(state, &typed_89::pixel);
 }
@@ -15669,7 +15676,8 @@ BoundKernel bind_filter_oilPaint_oilFlatten(const glsl::Bindings& bindings) {
 // Source SHA-256: 0275b2a69a9d884ab1d2f6bb230229252e77dd702f1113769dc94ec572dfc84e
 namespace typed_90 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* flatTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double size_value, double detail_value, double textureAmount_value, std::int32_t seed_value) : inputTex(inputTex_value), flatTex(flatTex_value), resolution(resolution_value), tileOffset(tileOffset_value), size(size_value), detail(detail_value), textureAmount(textureAmount_value), seed(seed_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, const Surface* flatTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double size_value, double detail_value, double textureAmount_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), flatTex(flatTex_value), resolution(resolution_value), tileOffset(tileOffset_value), size(size_value), detail(detail_value), textureAmount(textureAmount_value), seed(seed_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   const Surface* flatTex;
   glsl::Vec2 resolution;
@@ -15736,8 +15744,37 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] glsl::Vec3 modeColor([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec3 c, [[maybe_unused]] glsl::Vec2 globalCoord) noexcept {
-  [[maybe_unused]] glsl::Vec3 blurred = tent3x3(state, context, uv);
-  return (c + ((c - blurred) * (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(25.0)))));
+  if (state.MODE == std::int32_t(0)) {
+    return c;
+  } else {
+    if (state.MODE == std::int32_t(1)) {
+      [[maybe_unused]] glsl::Vec3 blurred = tent3x3(state, context, uv);
+      return (c + ((c - blurred) * (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(25.0)))));
+    } else {
+      if (state.MODE == std::int32_t(2)) {
+        [[maybe_unused]] double levels = glsl::floor((static_cast<double>(glsl::mix(static_cast<float>(8.0), static_cast<float>(3.0), (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))))) + static_cast<double>(static_cast<float>(0.5))));
+        [[maybe_unused]] glsl::Vec3 poster = glsl::Vec3((glsl::floor((c * levels)) / levels));
+        [[maybe_unused]] double gradMag = glsl::length(lumGradientFlat(state, context, uv));
+        [[maybe_unused]] double edgeDarken = (static_cast<double>(glsl::clamp((static_cast<double>(gradMag) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(0.0), static_cast<float>(1.0))) * static_cast<double>(static_cast<float>(0.15)));
+        return (poster * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(edgeDarken)));
+      } else {
+        if (state.MODE == std::int32_t(3)) {
+          [[maybe_unused]] double gradMag = glsl::length(lumGradientFlat(state, context, uv));
+          [[maybe_unused]] glsl::Vec3 darkened = (c * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.6)) * static_cast<double>((static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(gradMag)))));
+          return glsl::FloatExpr<3>(sCurve(state, context, glsl::swizzle<0>(darkened)), sCurve(state, context, glsl::swizzle<1>(darkened)), sCurve(state, context, glsl::swizzle<2>(darkened)));
+        } else {
+          if (state.MODE == std::int32_t(4)) {
+            [[maybe_unused]] glsl::Vec3 blurred = tent3x3(state, context, uv);
+            return glsl::mix(c, blurred, (static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0))));
+          } else {
+            [[maybe_unused]] double band = fbm(state, context, ((globalCoord + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(37.0)))) / (static_cast<double>(static_cast<float>(4.0)) + static_cast<double>(state.size))));
+            [[maybe_unused]] double shift = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(band) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<double>((static_cast<double>(state.detail) / static_cast<double>(static_cast<float>(100.0)))))) * static_cast<double>(static_cast<float>(0.25)));
+            return glsl::clamp((c + glsl::FloatExpr<3>(shift)), static_cast<float>(0.0), static_cast<float>(1.0));
+          }
+        }
+      }
+    }
+  }
 }
 
 [[nodiscard]] double sCurve([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double x) noexcept {
@@ -15782,7 +15819,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_90
 
 BoundKernel bind_filter_oilPaint_oilPost(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_90::State>(&bindings.texture("inputTex"), &bindings.texture("flatTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("size"), bindings.get_number("detail"), bindings.get_number("textureAmount"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_90::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("flatTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("size"), bindings.get_number("detail"), bindings.get_number("textureAmount"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_90::pixel);
 }
@@ -17543,7 +17580,9 @@ BoundKernel bind_filter_polar_polar(const glsl::Bindings& bindings) {
 // Source SHA-256: 2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d
 namespace typed_113 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double amount_value, std::int32_t ridges_value, std::int32_t speed_value, double time_value, bool antialias_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), amount(amount_value), ridges(ridges_value), speed(speed_value), time(time_value), antialias(antialias_value) {}
+  State(std::int32_t STYLE_value, std::int32_t WRAP_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double amount_value, std::int32_t ridges_value, std::int32_t speed_value, double time_value, bool antialias_value) : STYLE(STYLE_value), WRAP(WRAP_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), amount(amount_value), ridges(ridges_value), speed(speed_value), time(time_value), antialias(antialias_value) {}
+  std::int32_t STYLE;
+  std::int32_t WRAP;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -17589,8 +17628,16 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   [[maybe_unused]] double rotDelta = static_cast<float>(0.0);
   [[maybe_unused]] double rDelta = static_cast<float>(0.0);
-  rotDelta = (static_cast<double>(w) * static_cast<double>(static_cast<float>(0.5)));
-  rDelta = (static_cast<double>(w) * static_cast<double>(static_cast<float>(0.5)));
+  if (state.STYLE == std::int32_t(0)) {
+    rotDelta = w;
+  } else {
+    if (state.STYLE == std::int32_t(1)) {
+      rDelta = w;
+    } else {
+      rotDelta = (static_cast<double>(w) * static_cast<double>(static_cast<float>(0.5)));
+      rDelta = (static_cast<double>(w) * static_cast<double>(static_cast<float>(0.5)));
+    }
+  }
   [[maybe_unused]] glsl::Vec2 dir = ((r > static_cast<float>(0.0)) ? glsl::Vec2((uv / r)) : glsl::Vec2(glsl::FloatExpr<2>(static_cast<float>(0.0))));
   [[maybe_unused]] double rot = (static_cast<double>((static_cast<double>((static_cast<double>(rotDelta) * static_cast<double>(static_cast<float>(2.0)))) * static_cast<double>(static_cast<float>(3.14159265359)))) * static_cast<double>(static_cast<float>(0.25)));
   [[maybe_unused]] double s = glsl::sin(rot);
@@ -17599,7 +17646,15 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   uv = glsl::Vec2((rotatedDir * (static_cast<double>(r) + static_cast<double>(rDelta))));
   glsl::set_swizzle<0>(uv, (glsl::swizzle<0>(uv) / aspectRatio));
   uv = glsl::Vec2((uv + static_cast<float>(0.5)));
-  uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+  if (state.WRAP == std::int32_t(0)) {
+    uv = glsl::Vec2(glsl::abs(glsl::Vec2((glsl::mod((uv + static_cast<float>(1.0)), static_cast<float>(2.0)) - static_cast<float>(1.0)))));
+  } else {
+    if (state.WRAP == std::int32_t(1)) {
+      uv = glsl::Vec2(glsl::mod(uv, static_cast<float>(1.0)));
+    } else {
+      uv = glsl::Vec2(glsl::clamp(uv, static_cast<float>(0.0), static_cast<float>(1.0)));
+    }
+  }
   [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp((((uv * state.fullResolution) - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
   if (state.antialias) {
     [[maybe_unused]] glsl::Vec2 dx = glsl::dFdx(context, sampleUV);
@@ -17617,7 +17672,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_113
 
 BoundKernel bind_filter_pondRipples_pondRipples(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_113::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("speed"), bindings.get_number("time"), bindings.get<bool>("antialias"));
+  const auto state = std::make_shared<typed_113::State>(bindings.get<std::int32_t>("STYLE"), bindings.get<std::int32_t>("WRAP"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("amount"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("speed"), bindings.get_number("time"), bindings.get<bool>("antialias"));
   (void)bindings;
   return BoundKernel(state, &typed_113::pixel, true);
 }
@@ -19020,7 +19075,8 @@ BoundKernel bind_filter_scanlineError_scanlineError(const glsl::Bindings& bindin
 // Source SHA-256: e68ff4dc90236e866895d4720d58e81b9151a67d9cc62b43085efbf634fa4e71
 namespace typed_128 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double radius_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), radius(radius_value), seed(seed_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double radius_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), radius(radius_value), seed(seed_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -19073,19 +19129,38 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
   [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
-  [[maybe_unused]] glsl::Vec2 hashCoord = globalCoord;
+  [[maybe_unused]] glsl::Vec2& hashCoord = globalCoord;
+  if (state.MODE == std::int32_t(4)) {
+    hashCoord = glsl::Vec2(glsl::Vec2((glsl::floor((globalCoord / static_cast<double>(3.0))) * static_cast<double>(3.0))));
+  }
   [[maybe_unused]] glsl::Vec2 rnd = glsl::Vec2((hash22(state, context, (hashCoord + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<double>(101.7))))) - static_cast<double>(0.5)));
   [[maybe_unused]] glsl::Vec2 offset = ((rnd * static_cast<double>(2.0)) * state.radius);
+  if (state.MODE == std::int32_t(3)) {
+    [[maybe_unused]] glsl::Vec2 grad = lumGradient(state, context, uv);
+    [[maybe_unused]] double gradLen = glsl::length(grad);
+    if (gradLen > static_cast<double>(1e-5)) {
+      [[maybe_unused]] glsl::Vec2 perp = (glsl::FloatExpr<2>((-glsl::swizzle<1>(grad)), glsl::swizzle<0>(grad)) / gradLen);
+      glsl::set_swizzle<0>(offset, (static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<0>(perp))));
+      glsl::set_swizzle<1>(offset, (static_cast<double>(glsl::dot(offset, perp)) * static_cast<double>(glsl::swizzle<1>(perp))));
+    }
+  }
   [[maybe_unused]] glsl::Vec2 sampleUV = glsl::clamp(((glsl::swizzle<0, 1>(context.frag_coord) + offset) / state.resolution), static_cast<double>(0.0), static_cast<double>(1.0));
   [[maybe_unused]] glsl::Vec4 src = sample_texture(*state.inputTex, uv);
   [[maybe_unused]] glsl::Vec4 samp = sample_texture(*state.inputTex, sampleUV);
-  [[maybe_unused]] glsl::Vec4 result = samp;
+  [[maybe_unused]] glsl::Vec4& result = samp;
+  if (state.MODE == std::int32_t(1)) {
+    result = glsl::Vec4(glsl::component_min(src, samp));
+  } else {
+    if (state.MODE == std::int32_t(2)) {
+      result = glsl::Vec4(glsl::component_max(src, samp));
+    }
+  }
   output = glsl::Vec4(result);
 }
 }  // namespace typed_128
 
 BoundKernel bind_filter_scatter_scatterJitter(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_128::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("radius"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_128::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("radius"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_128::pixel);
 }
@@ -19094,7 +19169,8 @@ BoundKernel bind_filter_scatter_scatterJitter(const glsl::Bindings& bindings) {
 // Source SHA-256: 124931637680f4f1fd9eed63bd0b63bf961204c5667236c9a67ce1b24ab0e602
 namespace typed_129 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, double smoothness_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), smoothness(smoothness_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   double smoothness;
@@ -19134,7 +19210,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_129
 
 BoundKernel bind_filter_scatter_scatterSmooth(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_129::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
+  const auto state = std::make_shared<typed_129::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("smoothness"));
   (void)bindings;
   return BoundKernel(state, &typed_129::pixel);
 }
@@ -20813,7 +20889,8 @@ BoundKernel bind_filter_step_step(const glsl::Bindings& bindings) {
 // Source SHA-256: 69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609
 namespace typed_150 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double cellSize_value, double grainSize_value, double density_value, glsl::DVec3 paperColor_value, std::int32_t seed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), cellSize(cellSize_value), grainSize(grainSize_value), density(density_value), paperColor(paperColor_value), seed(seed_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, double cellSize_value, double grainSize_value, double density_value, glsl::DVec3 paperColor_value, std::int32_t seed_value) : MODE(MODE_value), inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), cellSize(cellSize_value), grainSize(grainSize_value), density(density_value), paperColor(paperColor_value), seed(seed_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   glsl::Vec2 resolution;
   glsl::Vec2 tileOffset;
@@ -20917,22 +20994,47 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 uv = (glsl::swizzle<0, 1>(context.frag_coord) / state.resolution);
   [[maybe_unused]] double alpha = glsl::swizzle<3>(sample_texture(*state.inputTex, uv));
   [[maybe_unused]] glsl::Vec3 result = {};
-  [[maybe_unused]] glsl::Vec2 p = (globalCoord / state.cellSize);
-  [[maybe_unused]] glsl::Vec4 cell = voronoiCell(state, context, p, static_cast<float>(0.9), float(state.seed));
-  [[maybe_unused]] glsl::Vec2 seedGc = (glsl::swizzle<0, 1>(cell) * state.cellSize);
-  [[maybe_unused]] glsl::Vec2 seedUV = glsl::clamp(((seedGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
-  [[maybe_unused]] glsl::Vec3 seedColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, seedUV));
-  [[maybe_unused]] double radius = (static_cast<double>(static_cast<float>(0.35)) + static_cast<double>((static_cast<double>(static_cast<float>(0.4)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(lum(state, context, seedColor)))))));
-  [[maybe_unused]] double d = glsl::length((p - glsl::swizzle<0, 1>(cell)));
-  [[maybe_unused]] double aa = glsl::component_max((static_cast<double>(glsl::fwidth(context, d)) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(0.00001));
-  [[maybe_unused]] double inside = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep((static_cast<double>(radius) - static_cast<double>(aa)), (static_cast<double>(radius) + static_cast<double>(aa)), d)));
-  result = glsl::Vec3(glsl::mix(state.paperColor, seedColor, inside));
+  if (state.MODE == std::int32_t(0)) {
+    [[maybe_unused]] glsl::Vec2 p = (globalCoord / state.cellSize);
+    [[maybe_unused]] glsl::Vec4 cell = voronoiCell(state, context, p, static_cast<float>(0.9), float(state.seed));
+    [[maybe_unused]] glsl::Vec2 seedGc = (glsl::swizzle<0, 1>(cell) * state.cellSize);
+    [[maybe_unused]] glsl::Vec2 seedUV = glsl::clamp(((seedGc - state.tileOffset) / state.resolution), static_cast<float>(0.0), static_cast<float>(1.0));
+    [[maybe_unused]] glsl::Vec3 seedColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, seedUV));
+    [[maybe_unused]] double radius = (static_cast<double>(static_cast<float>(0.35)) + static_cast<double>((static_cast<double>(static_cast<float>(0.4)) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(lum(state, context, seedColor)))))));
+    [[maybe_unused]] double d = glsl::length((p - glsl::swizzle<0, 1>(cell)));
+    [[maybe_unused]] double aa = glsl::component_max((static_cast<double>(glsl::fwidth(context, d)) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(0.00001));
+    [[maybe_unused]] double inside = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::smoothstep((static_cast<double>(radius) - static_cast<double>(aa)), (static_cast<double>(radius) + static_cast<double>(aa)), d)));
+    result = glsl::Vec3(glsl::mix(state.paperColor, seedColor, inside));
+  } else {
+    if (((state.MODE == std::int32_t(1)) || (state.MODE == std::int32_t(2))) || (state.MODE == std::int32_t(3))) {
+      [[maybe_unused]] glsl::Vec2& gc = globalCoord;
+      if (state.MODE == std::int32_t(3)) {
+        gc = glsl::Vec2(rotate2D(state, context, gc, static_cast<float>(45.0)));
+      }
+      [[maybe_unused]] glsl::Vec2 noiseP = {};
+      if (state.MODE == std::int32_t(1)) {
+        noiseP = glsl::Vec2((gc / state.grainSize));
+      } else {
+        noiseP = glsl::Vec2((gc * glsl::FloatExpr<2>((static_cast<double>(static_cast<float>(1.0)) / static_cast<double>(state.grainSize)), (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>((static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(8.0))))))));
+      }
+      [[maybe_unused]] double n = vnoise(state, context, (noiseP + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))));
+      n = (n + (static_cast<double>((static_cast<double>(state.density) - static_cast<double>(static_cast<float>(50.0)))) / static_cast<double>(static_cast<float>(100.0))));
+      [[maybe_unused]] glsl::Vec3 src = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, uv));
+      result = glsl::Vec3(glsl::FloatExpr<3>(glsl::step(n, glsl::swizzle<0>(src)), glsl::step(n, glsl::swizzle<1>(src)), glsl::step(n, glsl::swizzle<2>(src))));
+    } else {
+      [[maybe_unused]] glsl::Vec3 src = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, uv));
+      [[maybe_unused]] double l = lum(state, context, src);
+      [[maybe_unused]] double clumpNoise = (static_cast<double>(fbm(state, context, ((globalCoord / (static_cast<double>(state.grainSize) * static_cast<double>(static_cast<float>(4.0)))) + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(101.7)))))) * static_cast<double>(glsl::mix(static_cast<float>(1.2), static_cast<float>(0.6), l)));
+      clumpNoise = (clumpNoise + (static_cast<double>((static_cast<double>(state.density) - static_cast<double>(static_cast<float>(50.0)))) / static_cast<double>(static_cast<float>(100.0))));
+      result = glsl::Vec3(tonemap2(state, context, glsl::step(clumpNoise, l), glsl::FloatExpr<3>(static_cast<float>(0.05)), glsl::FloatExpr<3>(static_cast<float>(0.97))));
+    }
+  }
   output = glsl::Vec4(glsl::Vec4(result, alpha));
 }
 }  // namespace typed_150
 
 BoundKernel bind_filter_stipple_stipple(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_150::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::DVec3>("paperColor"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_150::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get_number("cellSize"), bindings.get_number("grainSize"), bindings.get_number("density"), bindings.get<glsl::DVec3>("paperColor"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
   return BoundKernel(state, &typed_150::pixel, true);
 }
@@ -20987,7 +21089,8 @@ BoundKernel bind_filter_strayHair_strayHairBlend(const glsl::Bindings& bindings)
 // Source SHA-256: b911bd1b40452044205ee2e7bb8ae90f54cc56faaa0225430d5baa67e5ec949f
 namespace typed_152 {
 struct State final : KernelState {
-  State(const Surface* inputTex_value, const Surface* smearTex_value, glsl::Vec2 resolution_value, double sharpness_value) : inputTex(inputTex_value), smearTex(smearTex_value), resolution(resolution_value), sharpness(sharpness_value) {}
+  State(std::int32_t MODE_value, const Surface* inputTex_value, const Surface* smearTex_value, glsl::Vec2 resolution_value, double sharpness_value) : MODE(MODE_value), inputTex(inputTex_value), smearTex(smearTex_value), resolution(resolution_value), sharpness(sharpness_value) {}
+  std::int32_t MODE;
   const Surface* inputTex;
   const Surface* smearTex;
   glsl::Vec2 resolution;
@@ -21036,7 +21139,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_152
 
 BoundKernel bind_filter_strokes_stkPost(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_152::State>(&bindings.texture("inputTex"), &bindings.texture("smearTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("sharpness"));
+  const auto state = std::make_shared<typed_152::State>(bindings.get<std::int32_t>("MODE"), &bindings.texture("inputTex"), &bindings.texture("smearTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("sharpness"));
   (void)bindings;
   return BoundKernel(state, &typed_152::pixel);
 }
@@ -30573,12 +30676,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   if (state.LOOP_OFFSET == std::int32_t(300)) {
     if (state.NOISE_TYPE == std::int32_t(11)) {
-      base = map(state, context, frame, static_cast<float>(75.0), static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(40.0), static_cast<float>(1.0));
+      base = static_cast<float>(10.84848403930664);
     } else {
       if (state.NOISE_TYPE == std::int32_t(10)) {
-        base = map(state, context, frame, static_cast<float>(75.0), static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(6.0), static_cast<float>(0.5));
+        base = static_cast<float>(1.8888888359069824);
       } else {
-        base = map(state, context, frame, static_cast<float>(75.0), static_cast<float>(1.0), static_cast<float>(100.0), static_cast<float>(20.0), static_cast<float>(3.0));
+        base = static_cast<float>(7.292929649353027);
       }
     }
     {
@@ -33449,7 +33552,7 @@ constexpr std::array<FactoryRoute, 251> kCanonicalRoutes{{
     {"classicNoisedeck/moodscape:moodscape", "bind_classicNoisedeck_moodscape_moodscape", "bind_classicNoisedeck_moodscape_moodscape", "typed_emitter", "a2580a36096208dd7a63965d2b277be9356f29a8d3af634d1736df9142db1a44", "f7f870f37d82b3406b5cce4f2248fcb362084688bee6aa18ffcf960bad8ca0ed", "default-only", "COLOR_MODE=2;NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "cd0f6c0855052f2468ef2c2bb22af8a496a4cd73b674601023f91b8044242fe3", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_moodscape_moodscape},
     {"classicNoisedeck/noise:noise", "bind_classicNoisedeck_noise_noise", "bind_classicNoisedeck_noise_noise", "typed_emitter", "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138", "49092c171718e69eb5e4e7f48a561004ea01bc94eaa4f76b9b90cf446e1c505a", "default-only", "COLOR_MODE=6;LOOP_OFFSET=300;METRIC=0;NOISE_TYPE=10;REFRACT_MODE=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "1341d9a79b545c5e3e29828c68385bd47fa3fa8347bf8a6811a88ca69ba1a2a4", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_noise_noise},
     {"classicNoisedeck/refract:refract", "bind_classicNoisedeck_refract_refract", "bind_classicNoisedeck_refract_refract", "typed_emitter", "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a49cfa2", "59ff19cdf6bf811af7e3d29e10f74471670cac20921aa53c0f1466e5ce8a57eb", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "ff33cdaec296d14f8a71b0fee5820c34c53347a3da7b47d4f84465ea530cbc3e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_refract_refract},
-    {"classicNoisedeck/shapeMixer:shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "typed_emitter", "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b", "99a31cea1a038ee563b440478c0f4829051673531f22197310a47a83bb54ba46", "default-only", "LOOP_OFFSET=10", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "cd1cf9d1c6e5509f3900e1827ebdeff60ecb58b38b4f930be72927bddb6cda15", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapeMixer_shapeMixer},
+    {"classicNoisedeck/shapeMixer:shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "bind_classicNoisedeck_shapeMixer_shapeMixer", "typed_emitter", "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b", "79f38e618acf066ca76c3034a55e76d5833df9ef797b91686bae8a13b10b1ba8", "runtime-int", "LOOP_OFFSET=10", "95fbcc86d10f7e9420340b565d3fef685466203bd0d820227fc5a7bcad018a76", "a93f5643641ccf376501c8818aed9ed820c2923bc1e545ce84f39131f36ce048", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapeMixer_shapeMixer},
     {"classicNoisedeck/shapes:shapes", "bind_classicNoisedeck_shapes_shapes", "bind_classicNoisedeck_shapes_shapes", "typed_emitter", "28775b3e960c9051a320d48c7974792fbef33eaab80e5ca9aed5af43e8645d5e", "14b95e29231c7d34381a0cf9abe94346db61d7fba47910e54d9cf032d60070a1", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "44198af1ca7635b99dfb3fa8e4ee44314fcabce7ab6836931dc1269b0252c8d6", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_shapes_shapes},
     {"classicNoisedeck/splat:splat", "bind_classicNoisedeck_splat_splat", "bind_classicNoisedeck_splat_splat", "typed_emitter", "cfdcc4edcc5097043ad72602feb62a40622c14ba1bee66fb1ac2e414d1b3cced", "7141eea416fd5531be71785620f24a4cab67c7ef79b8ecadc5e49d0a9cb718b8", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "a9dd1b611637adf0defaf3928acadbd8997601b887511f49d9d03c034444ddae", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_splat_splat},
     {"filter/adjust:adjust", "bind_filter_adjust_adjust", "bind_filter_adjust_adjust", "typed_emitter", "dafbae039de5463cb5a94bb5e3046fd65b3212240e15a14996186e3d4d88b71d", "7daf8c804ed6bb78918a6834966466805ec75113b69686c8c8c58808e76edb9d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "e0330e2664e44524c1cc3a9b2e5b1b00453e8464d8d3a9b85b4c35cc0d0b4f24", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_adjust_adjust},
@@ -33523,8 +33626,8 @@ constexpr std::array<FactoryRoute, 251> kCanonicalRoutes{{
     {"filter/normalize:reduceMinmax", "bind_filter_normalize_reduceMinmax", "bind_filter_normalize_reduceMinmax", "typed_emitter", "4d68eff794b58f3f87b1c9aeaabd153cec3d4fd1110acb9b6e7e85c25f480905", "91f7be515302cd6a3113d2c04b7e58cd801161b37323f07828316bca3fa05ee5", "none", "", "ba3011fee8753ad27aed927e9ddc823d20f1ff0dbb2fe8d45a0d075adaa86930", "17d77755585928838cd696f3ccb46820ac9c6029edae924ff9beb2f391d5f5ff", "c2da44d5da0edda85bce7ded29983220d0e3c3ba0ecd7aa7e4339203d02c1a3f", "d9c65f90388edb687095710af8e2e64ddf9ee2d1d60180e463e427d9999c70ce", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_reduceMinmax},
     {"filter/normalize:statsFinal", "bind_filter_normalize_statsFinal", "bind_filter_normalize_statsFinal", "typed_emitter", "0b8daf6d5a38dc34bbd98800fdd46f9cdfa0b97f00196382023456a0b6eb1dfa", "8c3ad5ee5b7486f18378dbc34e255278f8d3ed30382363c0c80188f553015908", "none", "", "c83a1edc944babd1172573fd9a65823b5c0755681eb5ed286cc17d10217ad0ee", "2f96d41bc889594ac7c09398ad87b5695e649fa68913fca393da32211077097b", "2894f7bafa2d422b462609a810661bd58a16c28b53a5d05994e43aecdd1dcafb", "b3956517b5943ce560514e453a7a578d3a216647cb4072f9620fe55cbb96ead1", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_normalize_statsFinal},
     {"filter/octaveWarp:octaveWarp", "bind_filter_octaveWarp_octaveWarp", "bind_filter_octaveWarp_octaveWarp", "typed_emitter", "ced7dca971a24fb3d8a48641c7bb66c4af637a57984d45ddc9e51f0492a59bea", "0d95d64f31c041b15d2996f116b5a2f54fc1d9c7b57ff4050c403f57bff4e534", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7b24e0b4fd3b0911104675670f54b1e9cf3ce1dee99636cbdb13eb3a44593166", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_octaveWarp_octaveWarp},
-    {"filter/oilPaint:oilFlatten", "bind_filter_oilPaint_oilFlatten", "bind_filter_oilPaint_oilFlatten", "typed_emitter", "f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690", "1b8c07653b8bcdae99a3701b8fad383ba88cbecbcc0e230deaf5c6d5ab7732eb", "default-only", "MODE=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "be365cc6283b59de8b01f59ecbdc7dc3b4a8aa6e932a16afc3c822245b27ae35", "7504851eccf4371522c0e909f00f5f4c37e65d0dfdb9b7980e0a6bdd8602e8ab", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_oilPaint_oilFlatten},
-    {"filter/oilPaint:oilPost", "bind_filter_oilPaint_oilPost", "bind_filter_oilPaint_oilPost", "typed_emitter", "0275b2a69a9d884ab1d2f6bb230229252e77dd702f1113769dc94ec572dfc84e", "5a9736708534194d7bb0dfcfe208d6c91861bab3367e509a55e4a5948fb46e2a", "default-only", "MODE=1", "3a398bd1b6c532989bd7c3a7ef7007c39479e78062db80aad0e6f6217f1c808d", "9e5a84697180d403ea63d0e7ae732b503f258256fbb698caa6cd0aef2d37e6ba", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_oilPaint_oilPost},
+    {"filter/oilPaint:oilFlatten", "bind_filter_oilPaint_oilFlatten", "bind_filter_oilPaint_oilFlatten", "typed_emitter", "f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690", "f03004365b045b5ca99a2ceb1b5d0e0f117a7577d95411d6247bba13eccc58b7", "runtime-int", "MODE=1", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "466ea99256d60c46a4feb1479dd99f5d0b3b0a73ea5ea18b326d28aec2115fce", "7504851eccf4371522c0e909f00f5f4c37e65d0dfdb9b7980e0a6bdd8602e8ab", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_oilPaint_oilFlatten},
+    {"filter/oilPaint:oilPost", "bind_filter_oilPaint_oilPost", "bind_filter_oilPaint_oilPost", "typed_emitter", "0275b2a69a9d884ab1d2f6bb230229252e77dd702f1113769dc94ec572dfc84e", "89904f527143b85e7b432121c328ee3400746469f2eb3d65af1ea7ce7ed4b840", "runtime-int", "MODE=1", "3a398bd1b6c532989bd7c3a7ef7007c39479e78062db80aad0e6f6217f1c808d", "a694789aeaf78e87cc70acb04cfc916ff544f0278ed841c2670c06597c9dba20", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_oilPaint_oilPost},
     {"filter/osd:osd", "bind_filter_osd_osd", "bind_filter_osd_osd", "typed_emitter", "c45adaf30ecef6fb7f83a4f3995e671df0caaa47bfeceba8bb9bfe2c07427443", "92dcfb1387cd8323d61de29cecbf6e6eed398c0eb537502adedd3fcb39c75d46", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "1f83b4f4f0e03b76e150248ef8231c15b1055897e4151511eaec3686d6bb71fd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_osd_osd},
     {"filter/outline:outlineBlend", "bind_filter_outline_outlineBlend", "bind_filter_outline_outlineBlend", "typed_emitter", "5cf1613b00702bda4ccd5a03c1beee0aa779c1a947dc77d2adb78c854dad1a0d", "d2702adcf3cbc830e52f10e31c9fc044c05ec69d6cb4eda699a8cbc483d48649", "none", "", "64fc16048668436153d81ecbaba4fc1dee303790189e11d38907977e70616664", "f248d57ffa447ecec31f368fd58db7afe9e30dfcc9f25fe2711922814796345d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_outline_outlineBlend},
     {"filter/outline:outlineSobel", "bind_filter_outline_outlineSobel", "bind_filter_outline_outlineSobel", "typed_emitter", "cfe848d1605f1ad693fd3ce9e518a4adf4e0f34e3fff6c6ae1ebcaec49949f5d", "ff3daf7dfbf2353f8077d720320a126118c667ea0c39860ee6eb9607bcf47d5b", "none", "", "ac58204c363f55acdda5339188837100e854109505310bdcab34540749ea6d37", "7a589b80761727291e0464c7b7e36d8e7f7449552285495dd68f87bd06c9ba56", "b614c424156f545d7d6222f99eb7f01efb21a7cb717b6bb96bfe9c84f88f6ea7", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_outline_outlineSobel},
@@ -33547,7 +33650,7 @@ constexpr std::array<FactoryRoute, 251> kCanonicalRoutes{{
     {"filter/plasticWrap:pwBlurV", "bind_filter_plasticWrap_pwBlurV", "bind_filter_plasticWrap_pwBlurV", "typed_emitter", "cc214498ee40dcfeaf3b411a4becde7b336d8e238495e27ffc996ea3f3576cea", "fee4d051686e3360cf3bcb2af16df552aa26c359ed6795bf8776909ebcbbc36b", "none", "", "9998e60f06ea9924c114fd4db123cb96ab27ec499f48d335a18d48a66ae25125", "bceac5df12156df05303f9fe288f47fc7a59e7319083a709c8fbc8810feb3400", "e0ca6e9bf591f6ac810f042c14367e56ba255575386d30728d129246b7e6edf5", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwBlurV},
     {"filter/plasticWrap:pwSpec", "bind_filter_plasticWrap_pwSpec", "bind_filter_plasticWrap_pwSpec", "typed_emitter", "a26cbadc9c0aec753494f3e2a95964f35358eb8bf283107c2d7c624055c87767", "6998b3efc762ae3b871f1e1ec77f838f729397f7e91e8c0ca9899d333a5f6a69", "none", "", "4c45edab7beb0bd96dbaa3d2165db9833f0d8ee5298a262de3a48061c58d7ab2", "fc8633861c1bbb3935b1f06c7b7980cd7dad29a6452637eac88ed56bcb814607", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_plasticWrap_pwSpec},
     {"filter/polar:polar", "bind_filter_polar_polar", "bind_filter_polar_polar", "typed_emitter", "391b82e45bc2ea9799de1a200afbd735af96ad15627695d46cfc8caa1298a36d", "56647d262427b6448667b30161baa143da2c67a8a2d52ee502117f45a11c99fa", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8082789f1b1c48eee1b0ee8fec74417472bd9fda2a37726eb51c3b86aeb60b8d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_polar_polar},
-    {"filter/pondRipples:pondRipples", "bind_filter_pondRipples_pondRipples", "bind_filter_pondRipples_pondRipples", "typed_emitter", "2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d", "6e6e6fa197f698b5e601d1bce6bf974e545ee32bd1480a32cc0f7a9e50189752", "default-only", "STYLE=2;WRAP=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "aadebdfdc4435e53123ef1cbddcad6269401ccb79a8cf70d428358137b480e8e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pondRipples_pondRipples},
+    {"filter/pondRipples:pondRipples", "bind_filter_pondRipples_pondRipples", "bind_filter_pondRipples_pondRipples", "typed_emitter", "2958de77f0cdf2a21a00d1505ea75f26df5b66dd7f2cb98431e27178d3386c3d", "bddffa1f3da0ec7a5d7de57272ea2474f392a2a5f536b032ff85a9638c3257c1", "runtime-int", "STYLE=2;WRAP=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "00a0457639305c155ff1bfc8cfc384ccc43de3dff61eab6a3153879b9bd6e939", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_pondRipples_pondRipples},
     {"filter/posterize:posterize", "bind_filter_posterize_posterize", "bind_filter_posterize_posterize", "typed_emitter", "460910a8d1103eca5cc0b4df82f39fd91fbc447b9a815250ae7d34dfab8ee5b2", "730faa01844175d07ffa477a938871df946cfb9bb54f7ad9580132700e958e16", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "0ca0e43d572b6333cf7bdd02474f69606c93b948dbe7f2ab17698c54cdf1acc2", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_posterize_posterize},
     {"filter/prismaticAberration:prismaticAberration", "bind_filter_prismaticAberration_prismaticAberration", "bind_filter_prismaticAberration_prismaticAberration", "typed_emitter", "513eac95fdf7f67a6839ee5d96e5bbfd76b6cfa62d3254df6fed23d8effe380e", "69ea3ff9ce91371a26517fb67d861ac94d17c1c226a6ae082512dc3d6bab7ad3", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "f054764e2bb757feb8b57091bcb5ddf79965ed0204af28186b735acffb31d072", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_prismaticAberration_prismaticAberration},
     {"filter/reindex:nmReindexApply", "bind_filter_reindex_nmReindexApply", "bind_filter_reindex_nmReindexApply", "typed_emitter", "651bb6930d3fe51629fc3a17c88bfa7c7831e78fa18be0ea16d0f3f9d3c5154d", "79f327c5e8d11dc33bc7377accb5521cb3f1b33e2640e33a28fbb6611bcd0cb1", "none", "", "2839c05f4debae78b519c01724336878fb51ba69bb2778127e3d9aefb70dd1f6", "83304e2ca02bfdeaa6c9ec314ffe743d9e36542e9d50dd07472d670b641ee0c0", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_reindex_nmReindexApply},
@@ -33562,8 +33665,8 @@ constexpr std::array<FactoryRoute, 251> kCanonicalRoutes{{
     {"filter/rotate:rot", "bind_filter_rotate_rot", "bind_filter_rotate_rot", "typed_emitter", "c23e8462e8240f25a715fa3eb05e567269c8d410d27943ba346ebccdd0de1f8f", "ccd9298e265cf2afdcca146854161a954b7cf17199e7566b7eee3d0e8a53a729", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6c12289f03266f087eb3406cdd18326406e7274c0cca0303c724341812734636", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_rotate_rot},
     {"filter/scale:scale", "bind_filter_scale_scale", "bind_filter_scale_scale", "typed_emitter", "a45f000ee12c498d7a11a04ecc56e911c9fc804ad9cde60cc7cea47533a19ce3", "fa208855ec2b06fc945fee254c0eeef1f20a3400717b0aa3dbe10a6c584f0e4c", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "c8114ed89ce0c6a79bbc70274d63ed630bdd5c84177e080e52fe3c6981731399", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scale_scale},
     {"filter/scanlineError:scanlineError", "bind_filter_scanlineError_scanlineError", "bind_filter_scanlineError_scanlineError", "typed_emitter", "66556b29659b479edd397f8e0c87c176cafa7560c426eab8211b6939a08f2198", "6618ed02bcbabd96882232cae9031ac9955a06a616286c0d150a5f3ba577b263", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "7aef70870933b7c39e3b7209999f272b71df46824ccd3da70477901a48edf8f2", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scanlineError_scanlineError},
-    {"filter/scatter:scatterJitter", "bind_filter_scatter_scatterJitter", "bind_filter_scatter_scatterJitter", "typed_emitter", "e68ff4dc90236e866895d4720d58e81b9151a67d9cc62b43085efbf634fa4e71", "ea28c45919ac9edc4647a20e55d83bb70c701e71106d4e0c605535c1a936516f", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "44232532946c129822d8fd2d15c9b52f6522187b4bdd3613ee1b4dd6da5f6459", "333bd29b7975e93cd633f0da6fbf4dd2a8aa53427c31a48f1ebe771042879f8e", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scatter_scatterJitter},
-    {"filter/scatter:scatterSmooth", "bind_filter_scatter_scatterSmooth", "bind_filter_scatter_scatterSmooth", "typed_emitter", "124931637680f4f1fd9eed63bd0b63bf961204c5667236c9a67ce1b24ab0e602", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "default-only", "MODE=0", "12f811f285218714c353681aa85925d5f7fd771e6c5037237f0a526da1dd54be", "f0986eb3cbab20ced46f9254a83f47969aa31d3b4964120399cc4d6a5f26968d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scatter_scatterSmooth},
+    {"filter/scatter:scatterJitter", "bind_filter_scatter_scatterJitter", "bind_filter_scatter_scatterJitter", "typed_emitter", "e68ff4dc90236e866895d4720d58e81b9151a67d9cc62b43085efbf634fa4e71", "e80da5c83caa22407399b4ea63f764ae63faca5e8b6ec1d63eb22c5062c26c3f", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "28546eed34a107968b5b88a67fb4b742959334c20eb317a602afdcb13a57cad7", "333bd29b7975e93cd633f0da6fbf4dd2a8aa53427c31a48f1ebe771042879f8e", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scatter_scatterJitter},
+    {"filter/scatter:scatterSmooth", "bind_filter_scatter_scatterSmooth", "bind_filter_scatter_scatterSmooth", "typed_emitter", "124931637680f4f1fd9eed63bd0b63bf961204c5667236c9a67ce1b24ab0e602", "dcc7bee0547496f80849cb0c8c29dd863f6b7233234be24d78412812291447b1", "runtime-int", "MODE=0", "12f811f285218714c353681aa85925d5f7fd771e6c5037237f0a526da1dd54be", "dae1d70c74430af9849cbc89e28755ac7eadb72615261b974555a3b6bb08a68e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scatter_scatterSmooth},
     {"filter/scratches:scratchesBlend", "bind_filter_scratches_scratchesBlend", "bind_filter_scratches_scratchesBlend", "typed_emitter", "db76fc1b477acfa7e9a2d22ca532a9d29ed4034ec695d4f4b75ed8741ce63c63", "2ffa49c50441485cf8311f3a1e5bf01bcc078233f73e4bf4f787f3e2a1706c3b", "none", "", "1fcbe80bd745fddf01cdee27a2575111b43b6045a7bcbfeeb0f83229d0ea67d2", "d2a89c71ffe20f434dec35cceecdeac91fbe17354caf447487223e83a987a64f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scratches_scratchesBlend},
     {"filter/scroll:scroll", "bind_filter_scroll_scroll", "bind_filter_scroll_scroll", "typed_emitter", "ce2117916b0d9513890942332835c6cfd1753a39d9d773626c66c6107050d457", "6a8f41fa867ebe1458d6db0a6285947c27c39f52438926910d5c5ec2a5de28fe", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "92e53a98b4f914f19be35a5a2faf33e7ac728129aad2ec230c19dab7097927bc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_scroll_scroll},
     {"filter/seamless:seamless", "bind_filter_seamless_seamless", "bind_filter_seamless_seamless", "typed_emitter", "d54569f8e394430d771ecb51edc9258ecde17483674843fab8a9f6efb733dabf", "c4d2cae63eea15092314ca72efe927c1d44d11dfdbf7c696b929a31b717fcf7d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d847c9cd20371b53b9e5b118e97e39df49e72158e214a85ce1d542adbc459b4b", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_seamless_seamless},
@@ -33584,9 +33687,9 @@ constexpr std::array<FactoryRoute, 251> kCanonicalRoutes{{
     {"filter/stamp:stBlurV", "bind_filter_stamp_stBlurV", "bind_filter_stamp_stBlurV", "typed_emitter", "cbcd8aba19f19c99653416b1b9b6ffff27f40e7f6b9ca7330936d2645a84bd7f", "eeaa996a30c9e24685592ffc91b3c4f5eb488695bb6de4a289f0e83ebfa654fd", "none", "", "32fd84fbcc19f9515338144596bffa65695a789f839eac565cd4d5de8fe68a5b", "f0986eb3cbab20ced46f9254a83f47969aa31d3b4964120399cc4d6a5f26968d", "832b6dbf9f3c5f12253ed694b546fc4b960acd730ae9cb2b9f8db67f685fb4ed", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stBlurV},
     {"filter/stamp:stThreshold", "bind_filter_stamp_stThreshold", "bind_filter_stamp_stThreshold", "typed_emitter", "d93168982b13907e32e1264c021c39f9d434ae122efd7d11898733293ee5da94", "f99d0ecefdda66332bdac797437c3923bd15e8f3eacb53d7caee168ba2636757", "none", "", "9a4bb5defda330f45b3bcfe2e18ba300da476a0869c2a7ce0cb7ccb09810cbd5", "7f9c8548a563cde5cbe3233b9a181f53afb6e9635b69d60f1286f0d7c1e73ae7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stamp_stThreshold},
     {"filter/step:step", "bind_filter_step_step", "bind_filter_step_step", "typed_emitter", "4f5680a9b25a2c12cecdcef3cc1ba106c2ee7a8390790544a3425890153cb7bf", "bfa9d48c282b207d1282ff7014173c79c0b6279d0d15b3dcc0ffcef3f2ebbb7e", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "8ac51cd399d4f162a80a38b5dcbe49e314752d365808a6fca65dc747d6b348c5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_step_step},
-    {"filter/stipple:stipple", "bind_filter_stipple_stipple", "bind_filter_stipple_stipple", "typed_emitter", "69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609", "534c92f17be4741d25dc7723fde0a00231abe3c17476d78c3a85d48f34312c34", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "4dd18769bba9a2288ceb91879d428a93b7b06e8220f32d2d3d0292f9329837ec", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stipple_stipple},
+    {"filter/stipple:stipple", "bind_filter_stipple_stipple", "bind_filter_stipple_stipple", "typed_emitter", "69d75b6fab4281fe0a0997eaf6b7b81e5ab30f0da5dfec9255c9dbb6e914c609", "1ceda39e65bb051c23af14d06467e95ad23480d628f32cd54760599721bc7810", "runtime-int", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "d78d4c88978d1a94b40ba23570f25150d02acdecd7fb95c066d9d30d76ac9725", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_stipple_stipple},
     {"filter/strayHair:strayHairBlend", "bind_filter_strayHair_strayHairBlend", "bind_filter_strayHair_strayHairBlend", "typed_emitter", "bacff9ec121ac6e28d377702145eb14cdd8dfa2cbfc4ec9ba89765f658b1345c", "3d4ab5484087d3585aca123c2f5f9b91754f7e9177a283e8a098bef877128451", "none", "", "1fcbe80bd745fddf01cdee27a2575111b43b6045a7bcbfeeb0f83229d0ea67d2", "c56155dd3fc31243d21beef4aba1a2f2dccfa9c1890b549958dfd4be0d6e8109", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strayHair_strayHairBlend},
-    {"filter/strokes:stkPost", "bind_filter_strokes_stkPost", "bind_filter_strokes_stkPost", "typed_emitter", "b911bd1b40452044205ee2e7bb8ae90f54cc56faaa0225430d5baa67e5ec949f", "1b613a945f44b1ea690c4b7e59cc2fe6348f27a233d0b9fa53bc7b177bddce08", "default-only", "MODE=0", "0b6829b66b7d0ef2f9fb2bc8297b27fc3b327bfa0728cbd5b246013ae699b361", "31dba33793480d832a4cc22c2310c1c9b6a8ec8b2bcaf97ac80b2b3c6c0f11c7", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strokes_stkPost},
+    {"filter/strokes:stkPost", "bind_filter_strokes_stkPost", "bind_filter_strokes_stkPost", "typed_emitter", "b911bd1b40452044205ee2e7bb8ae90f54cc56faaa0225430d5baa67e5ec949f", "82d023c8d4576f058d9a68c453af6ed93d565fdee335fda1918811dfe094317f", "runtime-int", "MODE=0", "0b6829b66b7d0ef2f9fb2bc8297b27fc3b327bfa0728cbd5b246013ae699b361", "9524c85d40aa21100c0b7e362b7ad17562f349b55373544ccb9074df350f29e9", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strokes_stkPost},
     {"filter/strokes:stkSmear", "bind_filter_strokes_stkSmear", "bind_filter_strokes_stkSmear", "typed_emitter", "dac057232a650f3c9eb56829aa12507b639d8632f6fc132cbd067a28996fa4db", "c26d34b4d04ba989487fca96fb3543d8ee654086e3099e67ec00046ee22a0d29", "default-only", "MODE=0", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "eb11383a49a6a64e5f8311261797d1f3742493b3dba82c47d45dcaa0d5947ec2", "c248df15ad449ade9ded064c56e6cd284aa90f3356a1386272c0121de267645d", "e78462e2d266ee270b1091cbd6f4a39926b8efe87dbf300474cbc21d8e7aa4a2", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_strokes_stkSmear},
     {"filter/tetraColorArray:tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "bind_filter_tetraColorArray_tetraColorArray", "typed_emitter", "68c7cabce311a0a05ba116ce8d34bd5e70e0c09bfb8eab06c93f4f9e01fa5438", "8a892de8a6a44a74db1a88360640bc3831a5f1e969acaedfe1d371f201e827e4", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "6cc49eeb94de6b47acc05a3ea61bcf370b15ed2b091a421f088bcd61db838171", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tetraColorArray_tetraColorArray},
     {"filter/tetraCosine:tetraCosine", "bind_filter_tetraCosine_tetraCosine", "bind_filter_tetraCosine_tetraCosine", "typed_emitter", "538f13b472519cc521b5d30dbd72a799c7fa46a820691ab88117aff4d93f0ffd", "d7735e970a509d973b52341f45b19637479f9ab49fb15e50f217ae95b1f9758d", "none", "", "b02809afeeb8e4816f3f59aa6f47dfde6e04428558fabe26dc26b2d2ab8d4b7f", "224b35687d5c0c6a2a24b7d446bea87e87717897d993fe6c144cb3d340da4ee8", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_filter_tetraCosine_tetraCosine},

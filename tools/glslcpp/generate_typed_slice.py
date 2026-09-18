@@ -240,6 +240,11 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.cross_lane_assignment_profile import (
         CROSS_LANE_KEY, PROFILE as CROSS_LANE_ASSIGNMENT_PROFILE,
         apply_cross_lane_assignment, authenticate_cross_lane_assignment)
+    from tools.glslcpp.frontend.scatter_jitter_cross_lane_assignment_profile import (
+        KEY as SCATTER_JITTER_CROSS_LANE_KEY,
+        PROFILE as SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE,
+        apply_scatter_jitter_cross_lane_assignment,
+        authenticate_scatter_jitter_cross_lane_assignment)
     from tools.glslcpp.frontend.mandelbrot_sequential_dz_assignment_profile import (
         KEY as MANDELBROT_SEQUENTIAL_DZ_KEY,
         PROFILE as MANDELBROT_SEQUENTIAL_DZ_PROFILE,
@@ -618,6 +623,11 @@ else:
     from .frontend.cross_lane_assignment_profile import (
         CROSS_LANE_KEY, PROFILE as CROSS_LANE_ASSIGNMENT_PROFILE,
         apply_cross_lane_assignment, authenticate_cross_lane_assignment)
+    from .frontend.scatter_jitter_cross_lane_assignment_profile import (
+        KEY as SCATTER_JITTER_CROSS_LANE_KEY,
+        PROFILE as SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE,
+        apply_scatter_jitter_cross_lane_assignment,
+        authenticate_scatter_jitter_cross_lane_assignment)
     from .frontend.mandelbrot_sequential_dz_assignment_profile import (
         KEY as MANDELBROT_SEQUENTIAL_DZ_KEY,
         PROFILE as MANDELBROT_SEQUENTIAL_DZ_PROFILE,
@@ -788,25 +798,35 @@ else:
 # these define-backed parameters is float- or bool-typed.
 GENERIC_RUNTIME_DEFINE_PROFILE = "runtime-defines-generic-v1"
 GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
+    "classicNoisedeck/shapeMixer:shapeMixer": {"LOOP_OFFSET": "int"},
     "filter/lensFlare:lensFlare": {"LENS_TYPE": "int"},
     "filter/morphology:morphA": {"SHAPE": "int"},
     "filter/morphology:morphB": {"SHAPE": "int"},
     "filter/mosaicTiles:mosaicTiles": {"MODE": "int"},
+    "filter/oilPaint:oilFlatten": {"MODE": "int"},
+    "filter/oilPaint:oilPost": {"MODE": "int"},
+    "filter/pondRipples:pondRipples": {"STYLE": "int", "WRAP": "int"},
     "filter/relief:rlBlurH": {"MODE": "int"},
     "filter/relief:rlBlurV": {"MODE": "int"},
     "filter/relief:rlShade": {"MODE": "int"},
+    "filter/scatter:scatterJitter": {"MODE": "int"},
+    "filter/scatter:scatterSmooth": {"MODE": "int"},
+    "filter/stipple:stipple": {"MODE": "int"},
+    "filter/strokes:stkPost": {"MODE": "int"},
     "filter/wind:wind": {"METHOD": "int"},
     "synth/curl:curl": {"OCTAVES": "int", "OUTPUT_MODE": "int", "RIDGES": "bool"},
 }
-# filter/scatter:scatterJitter/scatterSmooth are deliberately NOT in this
-# table. A structured (non-solid-input) sweep found a real byte-exact
-# divergence at MODE=3 (anisotropic): `offset = dot(offset, perp) * perp;`
-# evaluates as a whole-vector RHS here, but the JS authority lowers it
-# per-lane with dot() re-evaluated after lane 0 is already overwritten (the
-# same per-component-assignment quirk cross_lane_assignment_profile.py
-# already admits for synth/gradient). MODE 0/1/2/4 are byte-exact; MODE 3
-# needs its own identity-scoped cross-lane admission before scatter can be
-# readmitted here.
+# filter/halftone:halftone is deliberately NOT in this table. A structured
+# ordinary sweep (random ink/paper hex colors) found a real byte-exact
+# divergence at MODE=1 (mono): the JS authority's tonemap2(t, inkColor,
+# paperColor) mix leaks the RGBA hex color's alpha channel into the output
+# alpha, even though the GLSL declares inkColor/paperColor as vec3 -- a
+# vec4-vs-vec3 uniform-binding materialization quirk the C++ port does not
+# reproduce (it correctly narrows to Vec3 at bind time and threads the
+# separately-sampled input alpha instead). MODE=0 (color/CMYK) never calls
+# tonemap2 and is unaffected, but this table promotes MODE for the whole
+# program, not per-value, so halftone stays default-only until that
+# materialization contract is modeled.
 
 
 def _same_object_sequence(actual, expected) -> bool:
@@ -851,12 +871,12 @@ def _candidate_shape_mixer_blend_mode_guards(
     """Reconstruct the two exact candidate-owned Shape Mixer ladders."""
     blend_functions = tuple(item for item in program.functions
                             if item.name == "blend")
-    if tuple(item.id for item in blend_functions) != (99, 100):
+    if tuple(item.id for item in blend_functions) != (100, 101):
         return ()
     guards: list[TypedExpression] = []
     for function, expected_return, mode_symbol_id in (
-            (blend_functions[0], "float", 97),
-            (blend_functions[1], "vec3", 93)):
+            (blend_functions[0], "float", 98),
+            (blend_functions[1], "vec3", 94)):
         if (function.return_type.display() != expected_return
                 or len(function.parameters) != 4
                 or function.parameters[2].id != mode_symbol_id
@@ -1661,6 +1681,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key in OUT_INOUT_ADMISSION_KEYS else
                     {"defines", "program_key", "runtime_loop_bound_profile"}
                     if key in RUNTIME_LOOP_BOUND_KEYS else
+                    {"defines", "scatter_jitter_cross_lane_assignment_profile", "program_key"}
+                    if key == SCATTER_JITTER_CROSS_LANE_KEY else
                     {"defines", "cross_lane_assignment_profile", "program_key"}
                     if key == CROSS_LANE_KEY else
                     {"defines", "historic_palette_profile", "program_key"}
@@ -1760,6 +1782,9 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     cross_lane_assignment_profiles = [
         (item["program_key"], item.get("cross_lane_assignment_profile"), item["defines"])
         for item in programs if "cross_lane_assignment_profile" in item]
+    scatter_jitter_cross_lane_assignment_profiles = [
+        (item["program_key"], item.get("scatter_jitter_cross_lane_assignment_profile"), item["defines"])
+        for item in programs if "scatter_jitter_cross_lane_assignment_profile" in item]
     mutable_global_frame_profiles = [
         (item["program_key"],
          item.get("mutable_global_frame_profile"), item["defines"])
@@ -2018,6 +2043,9 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     if cross_lane_assignment_profiles != [
             (CROSS_LANE_KEY, CROSS_LANE_ASSIGNMENT_PROFILE, {})]:
         raise GeneratorError("typed slice cross-lane assignment profile drift")
+    if scatter_jitter_cross_lane_assignment_profiles != [
+            (SCATTER_JITTER_CROSS_LANE_KEY, SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE, {"MODE": 0})]:
+        raise GeneratorError("typed slice scatter jitter cross-lane assignment profile drift")
     if mutable_global_frame_profiles != [
             (key, MUTABLE_GLOBAL_FRAME_PROFILES[key],
              _MUTABLE_GLOBAL_FRAME_DEFINES[key])
@@ -3255,6 +3283,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           spooky_ticker_frontend_profile: str | None = None,
                           texture_lod_admission_profile: str | None = None,
                           cross_lane_assignment_profile: str | None = None,
+                          scatter_jitter_cross_lane_assignment_profile: str | None = None,
                           testpattern_frontend_proof: object | None = None,
                           remap_frontend_proof: object | None = None,
                           mandelbrot_sequential_dz_assignment_profile: str | None = None,
@@ -3396,6 +3425,20 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(f"{typed.key}: {error}") from error
     elif typed.key == CROSS_LANE_KEY:
         raise GeneratorError(f"{typed.key}: exact cross-lane assignment profile carrier required")
+    if scatter_jitter_cross_lane_assignment_profile is not None:
+        if (typed.key != SCATTER_JITTER_CROSS_LANE_KEY
+                or scatter_jitter_cross_lane_assignment_profile
+                != SCATTER_JITTER_CROSS_LANE_ASSIGNMENT_PROFILE):
+            raise GeneratorError(
+                f"{typed.key}: scatter jitter cross-lane assignment profile metadata mismatch")
+        try:
+            authenticate_scatter_jitter_cross_lane_assignment(
+                typed, source_hash, scatter_jitter_cross_lane_assignment_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key == SCATTER_JITTER_CROSS_LANE_KEY:
+        raise GeneratorError(
+            f"{typed.key}: exact scatter jitter cross-lane assignment profile carrier required")
     if mandelbrot_sequential_dz_assignment_profile is not None:
         if (typed.key != MANDELBROT_SEQUENTIAL_DZ_KEY
                 or mandelbrot_sequential_dz_assignment_profile
@@ -3545,7 +3588,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             shapes_rvalue_assign_profile, mutable_global_frame_profile,
             mutable_global_array_profile, const_global_table_profile,
             varying_profile, texture_lod_admission_profile,
-            cross_lane_assignment_profile, glyph_map_nonnegative_int_shift_profile,
+            cross_lane_assignment_profile, scatter_jitter_cross_lane_assignment_profile,
+            glyph_map_nonnegative_int_shift_profile,
             curl_vector_math_profile, grade_luma_weights_profile,
             grade_index_expression_profile, derivative_admission_profile,
             linear_srgb_lane_index_profile, reflect_admission_profile,
@@ -5436,7 +5480,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             shapes_rvalue_assign_profile, mutable_global_frame_profile,
             mutable_global_array_profile, const_global_table_profile,
             varying_profile, texture_lod_admission_profile,
-            cross_lane_assignment_profile, glyph_map_nonnegative_int_shift_profile,
+            cross_lane_assignment_profile, scatter_jitter_cross_lane_assignment_profile,
+            glyph_map_nonnegative_int_shift_profile,
             curl_vector_math_profile, grade_luma_weights_profile,
             grade_index_expression_profile, derivative_admission_profile,
             linear_srgb_lane_index_profile, reflect_admission_profile,
@@ -8782,6 +8827,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             if profiled is not typed:
                 raise GeneratorError(f"{key}: cross-lane assignment identity profile mutated program")
             typed = profiled
+        scatter_jitter_cross_lane_assignment_profile = slice_spec["programs"][index].get(
+            "scatter_jitter_cross_lane_assignment_profile")
+        if scatter_jitter_cross_lane_assignment_profile is not None:
+            try:
+                profiled = apply_scatter_jitter_cross_lane_assignment(
+                    typed, source_hash, scatter_jitter_cross_lane_assignment_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: scatter jitter cross-lane assignment identity profile mutated program")
+            typed = profiled
         mutable_global_frame_profile = (
             slice_spec["programs"][index].get(
                 "mutable_global_frame_profile"))
@@ -9228,6 +9285,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                       "spooky_ticker_frontend_profile")),
                               texture_lod_admission_profile=texture_lod_admission_profile,
                               cross_lane_assignment_profile=cross_lane_assignment_profile,
+                              scatter_jitter_cross_lane_assignment_profile=(
+                                  scatter_jitter_cross_lane_assignment_profile),
                               testpattern_frontend_proof=authorized_testpattern_proof,
                               remap_frontend_proof=authorized_remap_proof,
                               mandelbrot_sequential_dz_assignment_profile=(
@@ -9298,6 +9357,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                                    "spooky_ticker_frontend_profile")),
                                            texture_lod_admission_profile=texture_lod_admission_profile,
                                            cross_lane_assignment_profile=cross_lane_assignment_profile,
+                               scatter_jitter_cross_lane_assignment_profile=(
+                                   scatter_jitter_cross_lane_assignment_profile),
                                            testpattern_profile=testpattern_row_profile,
                                            testpattern_frontend_proof=authorized_testpattern_proof,
                                            remap_profile=remap_row_profile,
@@ -9416,6 +9477,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 shapes_rvalue_assign_profile)
         if cross_lane_assignment_profile is not None:
             manifest_program["cross_lane_assignment_profile"] = cross_lane_assignment_profile
+        if scatter_jitter_cross_lane_assignment_profile is not None:
+            manifest_program["scatter_jitter_cross_lane_assignment_profile"] = (
+                scatter_jitter_cross_lane_assignment_profile)
         if mutable_global_frame_profile is not None:
             manifest_program["mutable_global_frame_profile"] = (
                 mutable_global_frame_profile)

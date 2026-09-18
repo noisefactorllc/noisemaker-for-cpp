@@ -24,30 +24,26 @@ SHAPE_MIXER_KEY = "classicNoisedeck/shapeMixer:shapeMixer"
 
 _RAW_BYTES = 21721
 _RAW_SHA256 = "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
-_NORMALIZED_BYTES = 17664
-_NORMALIZED_SHA256 = "afb1be09867bbbb02f63c115b84ef4fd813d72defc71e2cc7d8891db9113b1b8"
-_FUNCTIONS_SHA256 = "ccf3834882fdd6ff45744377d38bd0b729f3e39d6d58c41c14a43095d6c99bcd"
-_DECLARATIONS_SHA256 = "cdbe1347d245c1feb13b2eacce960131ec035882a086c40b9af3ff43d2f8664a"
-_WHOLE_SHA256 = "b88f21c04cce365d9832aef73330323551a4f9ba296d641e31aa5427f3850684"
-_INTERFACE_SHA256 = "45782fb4605e8e140b66a4e6b462408f79488968895dc6e735d66f5de748a21d"
-_FUNCTION_INVENTORY_SHA256 = "fd267bcb5cb3035f9a2174bfd29de118a6dca4d990f1d9eea65d432296a05f81"
-_BINDING_INVENTORY_SHA256 = "f7700f10ec7dd723ce09e8657e30d0e6aa5ce3a0e34b79cfe1d5bdbb4e3e5730"
-_CALL_GRAPH_SHA256 = "3bdb7adbc622ac11f82f0f664ec124c0c0ee5d90a69906b04e60d260340b3224"
-_DEFINES = (("LOOP_OFFSET", "int", "10"),)
+_NORMALIZED_BYTES = 17851
+_NORMALIZED_SHA256 = "36f5262d84b511775ff69b1afd87d2fe152b0520bd1e43d11f1486544a25e971"
+_FUNCTIONS_SHA256 = "4d5a6d975bad8ea45da76519625f9e0117befd61c8ef56e6c6304a652ea234e6"
+_DECLARATIONS_SHA256 = "5f58f760f40997486d0300d85e3f9c1d693723502a6b894487529d988e8a1f55"
+_WHOLE_SHA256 = "37ede1247f2ff74a9395a82eb076376600d85df56cecb2a546b426654f0e9c0c"
+_INTERFACE_SHA256 = "bf71daff66579d830926580982ee7d85115fcbff518a5c72ddc4e49c3c62b338"
+_FUNCTION_INVENTORY_SHA256 = "1647bc7c884092edaee7568057cde45a0cef80ae59887c8f91536987ddb44198"
+_BINDING_INVENTORY_SHA256 = "9b2d715d6e29a75771d246cc35484388b305e9737188f12f33fa5e334713063f"
+_CALL_GRAPH_SHA256 = "062c17809361be5a9a7e73ba678605fc6fab2cf12527c72cce39682c876b5d67"
+_DEFINES = (("LOOP_OFFSET", "str", "int"),)
 _RESOURCES = (
-    ("inputTex", "tex", "resolution", "tileOffset", "fullResolution", "time",
+    ("LOOP_OFFSET", "inputTex", "tex", "resolution", "tileOffset", "fullResolution", "time",
      "seed", "blendMode", "loopScale", "paletteMode", "paletteOffset",
      "paletteAmp", "paletteFreq", "palettePhase", "animate", "cyclePalette",
      "rotatePalette", "repeatPalette", "levels", "wrap"),
     ("inputTex", "tex"), ("fragColor",), True, False,
 )
 _LOOP_PROOF = (1, 0, 1, 3, 3, True)
-_REACHABLE = (
-    99, 100, 101, 102, 103, 104, 106, 107, 108, 109, 110, 111, 112, 113,
-    114, 115, 116, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128,
-    130, 131, 132, 133, 134, 135, 136,
-)
-_UNREACHABLE = (105, 117, 129)
+_REACHABLE = (100, 101, 102, 103, 104, 105, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 131, 132, 133, 134, 135, 136, 137)
+_UNREACHABLE = (106, 118, 130)
 _OPTIONAL_PROOF_FIELDS = (
     "fixed_nine_table_proof", "fixed_grid_counter_store_proof",
     "fixed_array_in_parameter_proof", "fixed_affine_centers13_proof",
@@ -55,178 +51,178 @@ _OPTIONAL_PROOF_FIELDS = (
 
 # id, name, span, declaration hash, initializer hash
 _CONST_GLOBALS = (
-    (27, "fwdA", "128:1-130:68",
-     "74dce1a09d049a190d6c89cf4db8575973d02a843e258216e6514fcdf3ef45a2",
-     "66eed42e1d6e1bd109d8485dd42142239d8777b660eb620c4c961d7d4dcfb0f3"),
-    (28, "fwdB", "132:1-134:68",
-     "2fdfaceae8692f909d4f38787dc27fb87fe90dd5da007e31e3057537cc1aab45",
-     "1139aa5910239889f52ecc36079c4063c771912b5c03dd5b8b99590780d855e0"),
-    (29, "invB", "136:1-138:66",
-     "9eafe1265e350a625ee33b9ab85f37c514df9de2bc3754dc025ffe8d13c50004",
-     "69ae48e48329f2f312c0c0942c1bb018d3f65b93d23e1fbe096a73a693caf4d8"),
-    (30, "invA", "140:1-142:68",
-     "a4627a80a082de5ab9efef54b36ae3d7113a75b4e9759cebd2604b490225eea9",
-     "b49ac117760df6c471b33f34813e8eacc3eb7a9b86f09e0d27254a89df6aa668"),
+    (28, "fwdA", "129:1-131:68",
+     "a8cefac77a2e94e8c1d3eb4a644ec9a2b1d9b4bebcb678892b56389aed840e91",
+     "edf94e2a5a6ba0ac85989263f8987a082a0858982e5b7cec22e86c7efdbf0d79"),
+    (29, "fwdB", "133:1-135:68",
+     "f61c8246c80aadb71c3285e3ad3943dac854486216e5719c681ab24aa09d16a5",
+     "f9aa81bd62c095155e3ed0755dcc58ffa4b3620178e199551dcd309d5992f37e"),
+    (30, "invB", "137:1-139:66",
+     "58f7f551af30c4eb0aec84d3abbbc16664d0252129108208349fcaa98d5675e0",
+     "83656841e37d2966a804eaf48236bda193130c5e72c5695732a15336a03ad882"),
+    (31, "invA", "141:1-143:68",
+     "0b4e78a7e2f66b92ae8a65fd849361be8245ebc6aa1ee43cb88ecbf58463c493",
+     "ae82f11ca9dd1679164fb5967d4c9cce72c6866b6932f4a9231c9b41fc2d4675"),
 )
 
 # role, owner, path, span, node hash, result, child types, child hashes,
 # parent kind/callee/operator/span/hash.
 _EXCEPTION_LOCKS = (
-    ("scalar-reflect", 99,
+    ("scalar-reflect", 100,
      (2, "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s0", "s0", "e0", 1),
-     "672:17-672:49", "6c44e7a12325dc21c075e5e06b08aee23db609835b9e903fb9eb490c5fe9969e",
+     "673:17-673:49", "5045cb75081ad30b37f47829274a4d84b3d5a183d723c696520dccc7c1049a70",
      "reflect", "float", ("float", "float"),
-     ("ed3a0fdaff776eaec839706d87ee1d2de848851f51a73268cfed2775251946f7",
-      "779362a61f0823d241dcd5647ec4c26b4681c6fd3a1dd4588e758e507b8e7bc6"),
-     ("assign", None, "=", "672:9-672:49",
-      "7eda259a9e49fcb064fffe21a8c238b2a32302b699953bb20361508292ce639f")),
-    ("scalar-refract", 99,
+     ("bbdeeacfed7c327534f08ed6f06b7ecf2fbef47b71ac16a3d5f7a7d9a85efe93",
+      "5ca405dad16ef9da993bfc788f0b6f8962737bdcf587185af874034898a05266"),
+     ("assign", None, "=", "673:9-673:49",
+      "62ad97d9ebf87020822c17a5d9b8ad01b8ffc7e971e3d58bd95560eaabadce70")),
+    ("scalar-refract", 100,
      (2, "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s0", "s0", "e0", 1),
-     "675:17-675:48", "243e10285acd7fc24f0d3d2496c593d390c23bcfdc33b5c4e97aec43dc80fa03",
+     "676:17-676:48", "7dd97ba627271e0df9304b4faa562056003016a6b856abc9a91fb6837f1a1250",
      "refract", "float", ("float", "float", "float"),
-     ("7f993c5dd0fda155b9363d6a072dee6d1e46f1f62a21faa0d6487be0705df7ea",
-      "06cd77dbcb15b967aad710b31e32643b2f6ff64db3bdb5397b5e19f7c0a07499",
-      "5c160eb9dc3179a8dd240c040ab76da8e652316c31d170599118193052395376"),
-     ("assign", None, "=", "675:9-675:48",
-      "0ac43ced9b9ccca9338181fa2203b8ee956e3fc4a6cf456c0f60cf335ec3e823")),
-    ("wide-mod", 100,
+     ("76c95330ab749ecd736f28f96b51d46039581b2865c6088af0ffb35128f88332",
+      "eeb20bc0fad0784065cfd2a786c96a0b983cd9e92cd6f610e5a33e4cf756ac3c",
+      "742b5ed3f8da69601e8a461b3cae53cb5f00a33d118fe595fe36f77961b9d80d"),
+     ("assign", None, "=", "676:9-676:48",
+      "8cae58907c20cfe3a86fc71357691219c63a694a4433ab1c4d9d26743c31c20d")),
+    ("wide-mod", 101,
      (2, "s1", "s1", "s1", "s1", "s1", "s0", "s0", "e0", 1),
-     "619:17-619:45", "adbd6c013236568bbd6bf6b0d9300b02219959ec3bbadef1f5931a36612565e8",
+     "620:17-620:45", "dacf19fda0ee0ed47b9e78e11bd7452c74652e9a99e38f8a517c49259fda664b",
      "mod", "vec3", ("vec3", "vec3"),
-     ("29e150c2ffb096a54e8e0f8fa565593d975c508003a4c0f6fcfa35394ba01f62",
-      "2f6734aa04b429cd5d6e3583ef576dfeefa774acba49b510a6d02dde36ff4d7a"),
-     ("assign", None, "=", "619:9-619:45",
-      "f65d5394d1b8da4181737b0f616d8fa776c91ae4ad95955c157354443c654e00")),
-    ("vector-reflect", 100,
+     ("ac3e05b8f289c0d5bbbb002f9da1930b8a3abcfeaa2325c361313d62dc89054a",
+      "d17e3cdad5c9646979e927ba579f1e4229e32f8c21d16425b9afa815128eacd6"),
+     ("assign", None, "=", "620:9-620:45",
+      "9f34b46d6e7dd71081767efc522f4e7ed2eedaa8145d7c88b9407d34f935c7c0")),
+    ("vector-reflect", 101,
      (2, "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s0", "s0", "e0", 1),
-     "625:17-625:49", "e7773612b7e390575ae32f1a215ed0bd4f23deeaa668798f9867ae09984a548d",
+     "626:17-626:49", "b18d1b096fd7145f0d97b18653d19762b5d2ad1464a52a2998a0612025c99bae",
      "reflect", "vec3", ("vec3", "vec3"),
-     ("602670f7df7c1bbf753e1c924a32d81b7af36e6259c8dd8b213653d505c3cae9",
-      "2aa1450e8ff4f97147864eec8aff0718e30f2d015ebd2c09f6fc45d6b03c185b"),
-     ("assign", None, "=", "625:9-625:49",
-      "077422fb0acd71397427a91c310f7414e87c1ed1e1ef1ba58b7e21da08a92b4b")),
-    ("vector-refract", 100,
+     ("9895d0c823929c64078d778b56011b5c443515b6a5ac95bdead542792ccc9a26",
+      "ab1b402d371f9558bcb38fa2598b3169cc6f5306c647434be66dfdadc38aae64"),
+     ("assign", None, "=", "626:9-626:49",
+      "6b63f7e782cd266a221bc116e70d48f0b9a5e03f73df261d8027fec84e22b4a5")),
+    ("vector-refract", 101,
      (2, "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s1", "s0", "s0", "e0", 1),
-     "628:17-628:48", "9719b815cd3a11bde7a013648ffc9c40681b818c2bc85ee22e224719f1eadbe7",
+     "629:17-629:48", "0250c85e308951bec47ecf56433d64663970550edf4d991c2f3f8fcbc41229f0",
      "refract", "vec3", ("vec3", "vec3", "float"),
-     ("5304a2bfdb126e83a38f6d1b516df2491538ad88890e35c6b33bfe62af0775ed",
-      "6ef4e75643fcfeb149d81752d02458a0569a9fe47721770bac182327e2830a2b",
-      "4a7750e972e28847767d32c2ea2aa2695e9a43dd6fddf274700466d106c675c2"),
-     ("assign", None, "=", "628:9-628:48",
-      "12774d36a5c9baf9c2cbe95158999b0cda9fc57d8f416400c0934f7bf03fdb92")),
-    ("index-read-condition", 109, (1, "s1", "s0", "e0", 0),
-     "116:13-116:22", "528b09c525aada465b6c495d8baba229f4505f035bf289dfcc3a633a1df1fe65",
+     ("0271787617cf2d6fc6575cc4c4cf47f8b801e59e7396236deee8e1aef33e2db0",
+      "bae59d9eebc0895b033defb52a3facc9cd458eda99aabaf71657acccd73df4c2",
+      "63221acf2dd1082ab608e850b776f2d151b548b9bd2b15d462c3b3602e6223af"),
+     ("assign", None, "=", "629:9-629:48",
+      "1e42706578afe06c92350dbc71cedc3d694e271d048e5b175c8fa210d236478a")),
+    ("index-read-condition", 110, (1, "s1", "s0", "e0", 0),
+     "117:13-117:22", "7a32adcee60da8a66001a09a0ab8b2e04b6f7a1d2945f2d40524e7848f97e606",
      None, "float", ("vec3", "int"),
-     ("058ef5f1f198fb1455e695846d89d39dacad39a0f66f8e8aacca4cf8a1b087b8",
-      "3f4d89d253dd20e27927173fed355d5c470187d8510890c14626b521e5fb1539"),
-     ("binary", None, "<=", "116:13-116:35",
-      "cca0e10150d6f72e917e8e7a2a47e505bd231d367b6dbe0f065ec9ca60d8c0ab")),
-    ("index-write-true", 109, (1, "s1", "s0", "s0", "s0", "e0", 0),
-     "117:13-117:20", "4f71a469a541118309586ab52d77595abbaf41ec0bce41bbf6e7df5c207a1b38",
+     ("11e9842e0beb82382542da9322ac52549e280e3f71d9c290a11535750a235d6e",
+      "d83137672b3cc9b68238e423e97e300f542d7476e06a57603468cc5f5bbc6304"),
+     ("binary", None, "<=", "117:13-117:35",
+      "b6f2a15c14735ae2c83b7a35b61d69ae24ac2a04b6613bee88ec03e0a143ad5f")),
+    ("index-write-true", 110, (1, "s1", "s0", "s0", "s0", "e0", 0),
+     "118:13-118:20", "e4d1ee42457c08ef1827d6335386ccdd8df9942e27b7dd5a98db7dc2e9df7970",
      None, "float", ("vec3", "int"),
-     ("959f3b61f8764ca883002e7aa8667baf0c76a3b7e8823eebb9ff6c2387d8cc0b",
-      "bc943a59e4ebc946b5398059c9c9f7775654f640e4ed31218ca8d98054f9a58d"),
-     ("assign", None, "=", "117:13-117:40",
-      "0541fe7a6fb4b8452bd3fc2325ff1060f4a762b29c628efb925fe0346c8a71f1")),
-    ("index-read-true", 109, (1, "s1", "s0", "s0", "s0", "e0", 1, 0),
-     "117:23-117:32", "f83cbc13499fb9ef2b1342876974d5a9d4e506809d79b5b333ee0982249eb86f",
+     ("f3afff7a6bd8267ab935dbfde0a56afe558c88951c166e8805011ba35efacd5d",
+      "9287b57ccfea499d0ed35a97f73651c5022104946a6db2158cff26028ee3241c"),
+     ("assign", None, "=", "118:13-118:40",
+      "d198f3ce95b2c7a62eeeb972fe66b628e6f56fca24e8e78d01544a68cf1187df")),
+    ("index-read-true", 110, (1, "s1", "s0", "s0", "s0", "e0", 1, 0),
+     "118:23-118:32", "111dc670dae564fb17b67faccaa8121a46331d01ace7e7bd12d4b9f9e8dadd5c",
      None, "float", ("vec3", "int"),
-     ("f86dde2924b6be610c405e32c2053dc9623c02fe80abb7c495f4ba589b9321b5",
-      "f2b5917c807e9fe50f746c455ad5e0d5d514914d855d039dcb7e1b367e2e7b2b"),
-     ("binary", None, "*", "117:23-117:40",
-      "94d49303e52ff986536446ae8ca4dcd0cf63790d680870e4a5e6e7955c87deba")),
-    ("index-write-false", 109, (1, "s1", "s0", "s1", "s0", "e0", 0),
-     "119:13-119:20", "cc5ebbdb32112bacf7f25ff10b7a8b4fde6d7e574b0e69e319f58d41a1e16e32",
+     ("572d172fc744ed51b881ef65f7f9084d8ed43b7e767bfbc344f46fb67f403955",
+      "a4c209364705bbbd848bbe446d5824461ff7c4475ecf2f58c79b48bc0d0fbb9b"),
+     ("binary", None, "*", "118:23-118:40",
+      "17f2b775c3f37a33d358be862e463afde0ee376a74cb0efd523e2732e46e4182")),
+    ("index-write-false", 110, (1, "s1", "s0", "s1", "s0", "e0", 0),
+     "120:13-120:20", "bdff1f0f2cbc55e47e5a4e638ffe9c718c39d0e9e82f719fa49a7e40830448f0",
      None, "float", ("vec3", "int"),
-     ("0cc51a9f6b7d593e97c362a38467134c608c742dd28a63101ac3230cff9c6585",
-      "6a212ab12934efc9268fa8a9cff2b6af7db80331449b32a97ffef5f2c59f97f0"),
-     ("assign", None, "=", "119:13-119:64",
-      "19675d914ce8212e1187c79f650bd5428d2df39ca2fd4898cb421c8122dfcc33")),
-    ("index-read-false", 109, (1, "s1", "s0", "s1", "s0", "e0", 1, 0, 1, 0),
-     "119:35-119:44", "b845e12b17619d5c93857882f43fb929a365ad00aad60ac1e36907845e3df7f8",
+     ("d9ab79002351f46330cae4395ae7e91429e1e14d0ca84a12f9591664d6df7abb",
+      "c3fc52fd53e558cd7934757c15a46562c0640fdf98b714ec04b0a3073eb1aa1d"),
+     ("assign", None, "=", "120:13-120:64",
+      "38d0665016dd4e4695ba42ac1cb67d29eb2a88394b2e1ffb001039aa51e76b80")),
+    ("index-read-false", 110, (1, "s1", "s0", "s1", "s0", "e0", 1, 0, 1, 0),
+     "120:35-120:44", "b11c80b1d7b7e50433a1ff34e5381cd224aa22b5e08ca2a8d0f070716ffad4f9",
      None, "float", ("vec3", "int"),
-     ("0daf5f3cd40bdcc3906affdd465b3f6ce01a01ead5f364d870710093d9930872",
-      "a2c9c758dd08b900ee5797276b266c1b1ff687e0f01b5b36faae542caec64b5d"),
-     ("builtin", "pow", None, "119:31-119:56",
-      "91551bc0a0532e051c340db3cfbdabc489885155960b30c9de5d02f999cc5610")),
-    ("bit-ingress", 130, (13, "e0", 0),
-     "411:21-411:46", "7af407db873fb245128e37a9607f63e96bd7e045949a7c2a0248935d6680c599",
+     ("7e640399e97a5525dd7acc31f34543fd2cd54339416e123a500291a0c09fe9cd",
+      "44eb8ba53e5222c2c7e04b23d2d16a7e91e533a007046ab07edc76a542ae390f"),
+     ("builtin", "pow", None, "120:31-120:56",
+      "ecaeee7f727d4ae1a347c49dbdd29b422a860920eaaca56c4b43c42878cf9bfb")),
+    ("bit-ingress", 131, (13, "e0", 0),
+     "412:21-412:46", "94f9ec6d6f5edfd238a9330ec55abd84e2a8e8a3ad663f4ed396a7e0e35a17a4",
      "floatBitsToUint", "uint", ("float",),
-     ("d1bb910d7ab58e994c9645c4fab7d6a800ebf70ef5cd0bc609d737621c56d11c",),
-     ("declaration", None, None, "411:10-411:46",
-      "c79dfe491df8e5b426b701baa461aa0cfb756367e46e411c052d7e663acacb5c")),
+     ("47ddc9044daacd00767b4495ef251cc56c72cb4421c5bca0c3f101efd26b5154",),
+     ("declaration", None, None, "412:10-412:46",
+      "08b57c22f729f4a7df7260dd8612ea5bde30e365672b56312b2ee1599b76a9b7")),
 )
 
 _MOD_CENSUS = (
-    (99, "666:17-666:36", "57386c1461b5b02e5edcbbfd8cf46f4401a97bc90a449f59ccf8b0e07565127d", "float", ("float", "float")),
-    (100, "619:17-619:45", "adbd6c013236568bbd6bf6b0d9300b02219959ec3bbadef1f5931a36612565e8", "vec3", ("vec3", "vec3")),
-    (106, "63:30-63:47", "1d61aff76921611ea30dd0ff6efc5dd6b420175736a09417be4ff132de00f6f5", "float", ("float", "float")),
-    (112, "733:23-733:47", "f92b2726df02fe6536aced290f04b8484c4664604ff3b8c45bc5437a5fbd7aef", "float", ("float", "float")),
-    (112, "735:23-735:47", "e50012329b384d5e9117616f615f9e27b3360b8f615fb17cf8e285a99bc49513", "float", ("float", "float")),
-    (131, "99:17-99:42", "47b130c27dc277962836faf0f603e025a80b5a362f2e1754be86b34ece28715e", "float", ("float", "float")),
+    (100, "667:17-667:36", "a5ecd2110ed420afc076aa7c98dd528615c11466de79abae6497e046690128c2", "float", ("float", "float")),
+    (101, "620:17-620:45", "dacf19fda0ee0ed47b9e78e11bd7452c74652e9a99e38f8a517c49259fda664b", "vec3", ("vec3", "vec3")),
+    (107, "64:30-64:47", "0224b6cf7ae5d2463adb927603afcaef9bdcc70f349f01aca7d080e0c0ccd997", "float", ("float", "float")),
+    (113, "734:23-734:47", "04bffbf18d7143496bb6836f871abbdd48d3cf31a2b31fd9c0fd7b347eef0958", "float", ("float", "float")),
+    (113, "736:23-736:47", "2d0822712ebbf6b812d63ec508df30a9da13138e4dcee9914412f6dff191f618", "float", ("float", "float")),
+    (132, "100:17-100:42", "3b6d793c0567b2629974b92c0369d2e0b2dd643dac0f97c4d0851ce53152c78a", "float", ("float", "float")),
 )
 
 _FUNCTION_ROLE_HASHES = {
-    99: "3877ee17ce46cec2f20c00381354e87f362e5c7379bca09c28ea5e1056423349",
-    100: "16e713a6356af4f33fdd40a8420e39e39f4e8ed3b2b9f5fd63c6d2d1c413986c",
-    109: "c410aa2bfc7f64fc6339a3a1ade05643b9fbea1b2cc014933b440737fe9a18fb",
-    112: "d0a9943cd61f90670be71a0d23a6a656d984e72ade41904b54bb292295b2bc03",
-    130: "534f686001db15b2a002c5f8715da35f3c3c91a45796881b5e3a43dea742292f",
+    100: "cfcb4370e9f1d6f5df37971771132778c9914b9d3b3787737aa26f5ce06fd733",
+    101: "117e1edf127f616a40cb16d7f84ee976553052d4c453f169366b7cf808a8bfbf",
+    110: "63f9db2f5acea2a307ea08dffc8edc2a728a42b069b6f92a129f7bfe6df4bc63",
+    113: "895f49be047ddb7a4aaf6169aa4d3f74d4706a5cfab8c2a703e82ffd04f95395",
+    131: "ff93c17d78c0c3e6a6c1f3dae65bcd4232e6812a510bfbbd037d4e663a5447ce",
 }
 
 _MAIN_CALLS = (
-    ("blend", 99, "723:20-723:56", "8cb85e3e76db3939f67aa8f0ea7dcaa8c3adfc18d5b5bae059f07eaddc343d48", ("float", "float", "int", "float")),
-    ("blend", 100, "727:21-727:75", "0b34c9110e3041f59b25df95ce48454e16f9e8c81f068be353e8e522ab0ddf4b", ("vec3", "vec3", "int", "float")),
+    ("blend", 100, "724:20-724:56", "862701a40d0220d8eb6b5a8e80f39b3819bb5f45b55a2ccd79cb871feab50440", ("float", "float", "int", "float")),
+    ("blend", 101, "728:21-728:75", "3469d0c48452c2ba134608977cbd76ea1640cece15295aa257e8f293fd859938", ("vec3", "vec3", "int", "float")),
 )
 _MAIN_BLEND_ROUTES = (
     (
-        99, (14, "e0", 0),
-        ("declaration", None, None, "723:11-723:56",
-         "c67d51013e89ab97a8d65f073c2e0feb416d2e20fc6265be4800be1eef4b2c5e"),
-        (("decl", "723:5-723:57",
-          "737cca3871f7dc83d4e1f912ca2c9364b13f2c7de4598f39fb069fa15ee3a115"),),
-        ("id", None, "723:49-723:55",
-         "9ca7796c68479b86deedae6ba841d6205cede35a59661f4ff073e0593f9cd904",
+        100, (14, "e0", 0),
+        ("declaration", None, None, "724:11-724:56",
+         "d54e24d7c0dc88372ef4db9ae8bc3e64efcdf0d965c4a752e7011a4afe498ac2"),
+        (("decl", "724:5-724:57",
+          "0a0be4cb1e9b681cb812223936936a55feaef4c104d354febe64530bd6501f7a"),),
+        ("id", None, "724:49-724:55",
+         "07c23010a45401cc267ff2f232648b8a10900f6ec5e95861e6f09ea7114342fa",
          "blendy", None),
     ),
     (
-        100, (16, "s0", "s0", "e0", 1),
-        ("assign", None, "=", "727:9-727:75",
-         "179505623121a11be3b5ed75a653e4fd8cb2d8ebe9518767c2180e6699a6132e"),
+        101, (16, "s0", "s0", "e0", 1),
+        ("assign", None, "=", "728:9-728:75",
+         "d0343f61fc19a5b41c4f34b0d3e178496e092ac52ecaffed25c1284d149f14d4"),
         (
-            ("if", "726:5-748:6",
-             "155f4b7a08e0c8a3a46f031655f66e97c90fa41a2a8e24d41c9fc680d442c2e7"),
-            ("block", "726:27-740:6",
-             "5cf2e33f208cdf7d61dee631b6099ce6894976f12e38b607fb96851ad8f9dfe0"),
-            ("expr", "727:9-727:76",
-             "220a0bbcac0e6b576c9d6c703c93b1d3fdfc0dfc6d7d327f4ee0af227af0dccc"),
+            ("if", "727:5-749:6",
+             "4daf483ddb9d65f86253258f96880d3c5757e880db69ab215da860765e2e02ff"),
+            ("block", "727:27-741:6",
+             "ef47da46a44cc6a079eda8f7d2af85b6017700c66db93c7232f91e52eca71825"),
+            ("expr", "728:9-728:76",
+             "2e5145bb87a4d4b8a869b7069430a5cb758805d979e71b77685d2cf1b3eb4a72"),
         ),
-        ("binary", "*", "727:62-727:74",
-         "3bcdd102775bc8e81bdbc6820f23478c49ee12333c2ae17f7815c61dc839977c",
+        ("binary", "*", "728:62-728:74",
+         "f19e4442cca85edb72b467933b52779dda18497a4821c863189f824ebdf87e52",
          "blendy", 0.5),
     ),
 )
 _PALETTE_MODE_FOUR_BRANCH = (
-    "726:5-748:6",
-    "155f4b7a08e0c8a3a46f031655f66e97c90fa41a2a8e24d41c9fc680d442c2e7",
-    "726:9-726:25",
-    "49e5b93881f0de308f53586c21a287510aff5bdcb4bf66e52f7bc3d55ceb376c",
-    10, "paletteMode", 4,
-    "726:27-740:6",
-    "5cf2e33f208cdf7d61dee631b6099ce6894976f12e38b607fb96851ad8f9dfe0",
+    "727:5-749:6",
+    "4daf483ddb9d65f86253258f96880d3c5757e880db69ab215da860765e2e02ff",
+    "727:9-727:25",
+    "5838c100a024cc5a6c1cffbd5fcf74743ff7782e846e86b2a6b9af6e77e980c1",
+    11, "paletteMode", 4,
+    "727:27-741:6",
+    "ef47da46a44cc6a079eda8f7d2af85b6017700c66db93c7232f91e52eca71825",
 )
 _MAIN_TEXTURES = (
-    ("texture", "692:19-692:86", "6dc15c260f31e7470eb68ceec26f2f04b9cb9062e6f4d88027c1591a918acb70", 1, "inputTex"),
-    ("textureSize", "692:60-692:84", "6d8442ffe638b8437cef6b443835c5547b99335f34cd1e25e06cee2ba80db442", 1, "inputTex"),
-    ("texture", "693:19-693:76", "9ad9f361cb820c713757abae57d3ec0097ad2b83fcf30461219734af79c44e89", 2, "tex"),
-    ("textureSize", "693:55-693:74", "da94dd43d85ea8f2f7625e4ae3ecf87413a805039d914a27536e6b6a1d48ef70", 2, "tex"),
+    ("texture", "693:19-693:86", "fa191e42669afdc7aef53558c22779adc30d9b65a379f81da6bab86c5f6e21db", 2, "inputTex"),
+    ("textureSize", "693:60-693:84", "41a2022bd93069c740e7998eaabcc4081ed943295134a421fc2c399f745c6cb5", 2, "inputTex"),
+    ("texture", "694:19-694:76", "fab8f66860f495af2ae9fece5ba816c1b4d3eacd09279df4dd30f4371c4e4c6c", 3, "tex"),
+    ("textureSize", "694:55-694:74", "34d3e4c557391ed9be4243a38049e7e0153e0d10e627381ba414d4b94b8c6bf1", 3, "tex"),
 )
 _ALPHA_ASSIGNMENT = (
-    "750:5-750:38", "021c2f3eaf428dd4e90410c72b9c2bf16e09652219f64694875fcc1d8f10d73e",
-    "750:15-750:38", "f9ea6fad03074a98d8d7c18a9b0d32a023c35c1682ffe3d8cde5ba637238e0b0",
+    "751:5-751:38", "ac425225e4f3eaa6b250919d43a106c4d594a0ee4d36e1c92115f692b2a810c8",
+    "751:15-751:38", "2174d33c86a607bbec07e7b27eaf3c68f819fdf18930ba48b57c9f385fc49a67",
 )
 
-_PROFILE_SHA256 = "f12304f7d073844e7e070841e417cbba56b78f7ae692c290fa38f23f7dd43d8f"
+_PROFILE_SHA256 = "a7f58e4809c72e7707ef5635f981bd24ea677c1ebd3e063e2d180bcc98ccdcdf"
 
 
 @dataclass(frozen=True, slots=True)
@@ -438,7 +434,7 @@ def authenticate_shape_mixer_builtin_closure(
             or _sha(binding_inventory) != _BINDING_INVENTORY_SHA256
             or defines != _DEFINES or resource_tuple != _RESOURCES
             or loop_tuple != _LOOP_PROOF or program.body_status != "analyzed"
-            or len(program.declarations) != 25 or len(program.functions) != 38
+            or len(program.declarations) != 26 or len(program.functions) != 38
             or program.structs != () or program.uniform_blocks != ()):
         raise _fail("source, define, function, program, or interface mismatch")
     if any(getattr(program, field, None) is not None
@@ -485,17 +481,17 @@ def authenticate_shape_mixer_builtin_closure(
     if (any(item_id not in by_id or _sha(by_id[item_id]) != expected
             for item_id, expected in _FUNCTION_ROLE_HASHES.items())):
         raise _fail("role-owning function mismatch")
-    scalar_mode = next((item for item in by_id[99].parameters
-                        if item.id == 97 and item.name == "mode"
+    scalar_mode = next((item for item in by_id[100].parameters
+                        if item.id == 98 and item.name == "mode"
                         and item.type.display() == "int"), None)
-    vector_mode = next((item for item in by_id[100].parameters
-                        if item.id == 93 and item.name == "mode"
+    vector_mode = next((item for item in by_id[101].parameters
+                        if item.id == 94 and item.name == "mode"
                         and item.type.display() == "int"), None)
     if scalar_mode is None or vector_mode is None:
         raise _fail("blend mode parameter mismatch")
     blend_mode_guards = (
-        *_authenticate_blend_ladder(by_id[99], scalar_mode),
-        *_authenticate_blend_ladder(by_id[100], vector_mode),
+        *_authenticate_blend_ladder(by_id[100], scalar_mode),
+        *_authenticate_blend_ladder(by_id[101], vector_mode),
     )
 
     resolved: list[TypedExpression] = []
@@ -559,9 +555,9 @@ def authenticate_shape_mixer_builtin_closure(
                 linear_loop.loop_proof.bound_value,
                 linear_loop.loop_proof.comparison,
                 linear_loop.loop_proof.update,
-                linear_loop.loop_proof.trip_count) != (152, 0, 3, "<", "++", 3)):
+                linear_loop.loop_proof.trip_count) != (153, 0, 3, "<", "++", 3)):
         raise _fail("linearToSrgb induction loop mismatch")
-    expected_bases = (26, 151, 26, 151, 26)
+    expected_bases = (27, 152, 27, 152, 27)
     expected_roles = ("read", "write", "read", "write", "read")
     for node, parent, base_id, role in zip(
             resolved[5:10], parents[5:10], expected_bases, expected_roles):
@@ -571,7 +567,7 @@ def authenticate_shape_mixer_builtin_closure(
         if (computed_role != role or base.kind != "id"
                 or base.symbol_id != base_id or base.symbol is None
                 or base.symbol.storage not in {"parameter", "local"}
-                or induction.kind != "id" or induction.symbol_id != 152
+                or induction.kind != "id" or induction.symbol_id != 153
                 or induction.symbol is None or induction.symbol.name != "i"
                 or induction.symbol.storage != "local"):
             raise _fail("linearToSrgb index role, base, or induction mismatch")
@@ -579,7 +575,7 @@ def authenticate_shape_mixer_builtin_closure(
     ingress = resolved[10]
     ingress_parent = parents[10]
     if (len(ingress.children) != 1 or ingress.children[0].kind != "id"
-            or ingress.children[0].symbol_id != 201
+            or ingress.children[0].symbol_id != 202
             or ingress.children[0].symbol is None
             or ingress.children[0].symbol.name != "seedFrac"
             or ingress_parent.kind != "declaration"
@@ -588,8 +584,8 @@ def authenticate_shape_mixer_builtin_closure(
         raise _fail("bit ingress source or declaration mismatch")
     seed_declarations = tuple(
         item for function, item, _, _, _ in located
-        if function.id == 130 and item.kind == "declaration"
-        and item.symbol_id == 201)
+        if function.id == 131 and item.kind == "declaration"
+        and item.symbol_id == 202)
     if (len(seed_declarations) != 1
             or len(seed_declarations[0].children) != 1
             or seed_declarations[0].children[0].kind != "literal"

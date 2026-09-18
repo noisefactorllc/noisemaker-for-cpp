@@ -23,19 +23,19 @@ RAW_SOURCE_SHA256 = "410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6c
 RAW_SOURCE_BYTES = 18131
 _BASE_ANCHOR = "    vec2 lf = vec2(1.0);"
 _BASE_HOIST = "    vec2 lf = vec2(1.0); float base = 0.0;"
-_BASE_DECLARATIONS = (
-    "    float base = map(75.0, 1.0, 100.0, 40.0, 1.0);",
-    "    float base = map(75.0, 1.0, 100.0, 6.0, 0.5);",
-    "    float base = map(75.0, 1.0, 100.0, 20.0, 3.0);",
+_BASE_REPLACEMENTS = (
+    ("    float base = map(75.0, 1.0, 100.0, 40.0, 1.0);", "    base = 10.84848403930664;"),
+    ("    float base = map(75.0, 1.0, 100.0, 6.0, 0.5);", "    base = 1.8888888359069824;"),
+    ("    float base = map(75.0, 1.0, 100.0, 20.0, 3.0);", "    base = 7.292929649353027;"),
 )
-TRANSFORMED_SOURCE_SHA256 = "4dc363cb0ab0fdff4e1ca1cf8d96f1f617fb44c78de52cd7b652d031408c512a"
-TRANSFORMED_SOURCE_BYTES = 18131
-NORMALIZED_SOURCE_SHA256 = "3c1aae1409269390e11e78c8cba7f3be189ea02674c90cc76560b99afdde175b"
-NORMALIZED_SOURCE_BYTES = 17302
-PRE_RUNTIME_FUNCTIONS_SHA256 = "21eba2d2d45570e78b3343e677045c5657079e3991c95bdc05ad4d1bd76dec69"
-PRE_RUNTIME_WHOLE_SHA256 = "cda8a5f8a11fa3977e695f8079afe6386bbc20f583088a336fd6fa735c9a49af"
-POST_RUNTIME_FUNCTIONS_SHA256 = "386946aa9af99af94e1df9f2d86bbf743b0fb95b44a6edb48e7ebad152bf3d5f"
-POST_RUNTIME_WHOLE_SHA256 = "be33d87310c50bd560bdbc01c13318f66503dfa3e11d42c2b00f74d9595f368d"
+TRANSFORMED_SOURCE_SHA256 = "39edc72e1aafd638866a116afa10222f9daeb9770952fd625ba285f96cf9f2c2"
+TRANSFORMED_SOURCE_BYTES = 18088
+NORMALIZED_SOURCE_SHA256 = "eac249201e5b732373401cad9b63c71d57e76dbd3b6c5f075098ba57f71e569a"
+NORMALIZED_SOURCE_BYTES = 17259
+PRE_RUNTIME_FUNCTIONS_SHA256 = "076bd00c7aefad0711bea02f9aa36390f64c98d46012ca46dea4d7a3f66663a8"
+PRE_RUNTIME_WHOLE_SHA256 = "1c2738cea1ffab42470761d05bd09b7bb81b7b5c3391b3cce5890b66b575482a"
+POST_RUNTIME_FUNCTIONS_SHA256 = "eaccc05b3c8d7433dc28e5c5abfc075467630e7f3022c6577fe39426783ae3a2"
+POST_RUNTIME_WHOLE_SHA256 = "de3134fd32b928ec4d7116e41dc54fdbafd4676aedaf32fc8cd0f2fabd84ca6b"
 
 
 def _fail(message: str) -> ValueError:
@@ -64,11 +64,11 @@ def transform_source(source: str, program_key: str = KEY) -> str:
         raise _fail("source hash mismatch")
     if source.count(_BASE_ANCHOR) != 1:
         raise _fail("base hoist anchor census mismatch")
-    if any(source.count(item) != 1 for item in _BASE_DECLARATIONS):
+    if any(source.count(target) != 1 for target, _ in _BASE_REPLACEMENTS):
         raise _fail("base declaration census mismatch")
     transformed = source.replace(_BASE_ANCHOR, _BASE_HOIST, 1)
-    for declaration in _BASE_DECLARATIONS:
-        transformed = transformed.replace(declaration, declaration.replace("float base = ", "base = "), 1)
+    for target, replacement in _BASE_REPLACEMENTS:
+        transformed = transformed.replace(target, replacement, 1)
     encoded = transformed.encode("utf-8")
     if (len(encoded) != TRANSFORMED_SOURCE_BYTES
             or hashlib.sha256(encoded).hexdigest() != TRANSFORMED_SOURCE_SHA256):
