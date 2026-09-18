@@ -46,8 +46,8 @@
         "sha256": "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
       },
       "src/effects/generated/canonical-kernels.js": {
-        "bytes": 1713290,
-        "sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe"
+        "bytes": 1747097,
+        "sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c"
       },
       "src/csl/glsl-kernel.js": {
         "bytes": 2217,
@@ -330,8 +330,8 @@
       "needle": "var rotatedCentered = centered;",
       "replacement": "var rotatedCentered = new $runtime.PooledFloat32Array(centered);",
       "match_count": 1,
-      "canonical_source_sha256": "66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe",
-      "transformed_source_sha256": "4050115d8218914cf61c8e0cb6b57ce4f45f88b962e6e3e2b0b3555c449819fe"
+      "canonical_source_sha256": "f47dcb900599cf784f7b77d57322452ad6feab7e93f0bbf278d3c81a655bc53c",
+      "transformed_source_sha256": "4fdc5f89b900f148e73a3e64d5c02a1e3e6bf189429aeb1a5e20e9d96447c681"
     },
     "comparison": {
       "float32_word_difference_count": 90,

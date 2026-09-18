@@ -119,6 +119,9 @@ class DslRenderOracleTest(unittest.TestCase):
             self.skipTest("NOISEMAKER_CPU_ROOT must identify the immutable CPU authority")
         if not self.cpu_root.is_dir():
             self.skipTest(f"CPU authority is unavailable: {self.cpu_root}")
+        oracle_ledger = os.environ.get("NOISEMAKER_ORACLE_LEDGER")
+        if not oracle_ledger or not pathlib.Path(oracle_ledger).is_file():
+            self.skipTest("NOISEMAKER_ORACLE_LEDGER must identify the oracle ledger")
         return self.cpu_root
 
     def test_fixtures_and_metadata_are_source_bound(self) -> None:

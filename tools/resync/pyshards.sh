@@ -7,6 +7,10 @@ cd "$repo"
 export PYTHONDONTWRITEBYTECODE=1
 if [ -n "$authority" ]; then
   export NOISEMAKER_CPU_ROOT=${NOISEMAKER_CPU_ROOT:?} NOISEMAKER_CPU_AUTHORITY_LEDGER=${NOISEMAKER_CPU_AUTHORITY_LEDGER:-$NOISEMAKER_CPU_ROOT.ledger.sha256}
+  [ -d "/Users/alex/platform/noisemaker-for-cpu" ] && export NOISEMAKER_FOR_CPU=${NOISEMAKER_FOR_CPU:-/Users/alex/platform/noisemaker-for-cpu}
+  [ -x "$PWD/build/noisemaker-dsl-frontend-oracle" ] && export NOISEMAKER_DSL_CPP_ORACLE=${NOISEMAKER_DSL_CPP_ORACLE:-$PWD/build/noisemaker-dsl-frontend-oracle}
+  [ -x "$PWD/build/noisemaker-dsl-parser-oracle" ] && export NOISEMAKER_DSL_PARSER_ORACLE=${NOISEMAKER_DSL_PARSER_ORACLE:-$PWD/build/noisemaker-dsl-parser-oracle}
+  [ -x "$PWD/build/noisemaker-dsl-compiler-oracle" ] && export NOISEMAKER_DSL_COMPILER_ORACLE=${NOISEMAKER_DSL_COMPILER_ORACLE:-$PWD/build/noisemaker-dsl-compiler-oracle}
 fi
 modules=$(ls -S tests/test_*.py | sed 's#tests/##; s#\.py$##')
 i=0

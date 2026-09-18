@@ -93,6 +93,8 @@ PASS_DERIVED_BINDINGS = {
     "OCTAVES": "typed_compile_define",
     "OUTPUT_MODE": "typed_compile_define",
     "RIDGES": "typed_compile_define",
+    "resetState": "canonical_reset_state_default",
+    "useCustom": "canonical_use_custom_default",
 }
 CPP_TYPES = {
     "float": "float", "int": "std::int32_t", "uint": "std::uint32_t",
@@ -185,6 +187,7 @@ FROZEN_LEGACY_FACTORY_VECTOR_UNIFORM_EXCLUSION = frozenset({
     ("synth/solid:solid", "color"),
 })
 SUPPORTED_DRAW_MODES = frozenset({"fragment", "triangles"})
+SUPPORTED_DOMAINS = frozenset({"image", "volume-generator", "volume-filter", "volume-renderer", "loop-begin", "loop-end"})
 
 
 def is_double_vector_uniform(display: str, name: str | None, source: str | None,
@@ -770,16 +773,18 @@ def _program_entry(repository: pathlib.Path, typed_rows: dict[str, dict[str, Any
     draw_mode = current_pass.get("drawMode", "fragment")
     if draw_mode not in SUPPORTED_DRAW_MODES:
         reasons.append({"code": "unsupported_draw_mode", "detail": str(draw_mode)})
-    if effect.get("domain", "image") != "image":
+    if effect.get("domain", "image") not in SUPPORTED_DOMAINS:
         reasons.append({"code": "unsupported_dimensionality", "detail": str(effect.get("domain"))})
     extent = _extent(effect, current_pass, logical_outputs[0] if logical_outputs else "outputTex")
     for axis in ("width", "height"):
-        # The binding-ABI extent grammar (registry.cpp, executor.cpp,
-        # generate_typed_slice.py, js_frontend_oracle.mjs) spells a string or an
-        # integer identically everywhere; an object-valued dimension has no
-        # shared token, so it cannot anchor a dispatchable route.
+        # The binding-ABI extent grammar spells a string, positive integer, or
+        # an authenticated parameter/screen-division dictionary (which projects
+        # to an identical token across C++, JS, and Python).
         value = extent[axis]
-        if isinstance(value, bool) or not isinstance(value, (str, int)):
+        if isinstance(value, bool) or not (
+            isinstance(value, (str, int)) or
+            (isinstance(value, dict) and ("param" in value or "screenDivide" in value))
+        ):
             reasons.append({"code": "unsupported_output_extent",
                             "detail": f"{axis}={json.dumps(value, sort_keys=True)}"})
     status = "compatible" if not reasons else "incompatible"
@@ -1393,7 +1398,7 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         # mode is admissible evidence only as an incompatible row that names it.
         if not isinstance(row.get("dimensionality"), str) or not isinstance(row.get("draw_mode"), str):
             raise CompatibilityError("unsupported draw mode or dimensionality")
-        if row.get("dimensionality") != "image" and (
+        if row.get("dimensionality") not in SUPPORTED_DOMAINS and (
                 row.get("status") != "incompatible" or {"code": "unsupported_dimensionality",
                                                        "detail": row["dimensionality"]} not in row["reasons"]):
             raise CompatibilityError("unsupported draw mode or dimensionality")

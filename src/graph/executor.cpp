@@ -1756,7 +1756,11 @@ void validate_pass_controls(const EffectStep& step, const PassAdmission& admissi
                           "pass is not compatible");
     }
   } else {
-    if (admission.dimensionality != "image") throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only image dimensionality is supported");
+    const std::array<std::string_view, 6> allowed_domains = {
+        "image", "volume-generator", "volume-filter", "volume-renderer", "loop-begin", "loop-end"};
+    if (std::find(allowed_domains.begin(), allowed_domains.end(), admission.dimensionality) == allowed_domains.end()) {
+      throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "unsupported dimensionality");
+    }
     if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
   }
   // See the sibling check in the plan dry-run loop above: `unsupported_mrt`
@@ -2240,6 +2244,13 @@ bool resolve_authenticated_pass_derived(
   // canonical default.
   if (source_name == "canonical_splat_source_default") {
     value = static_cast<std::int32_t>(0);
+    return true;
+  }
+  // `resetState` and `useCustom` are declared by pinned programs (points/dla
+  // and synth/cellularAutomata) but unexposed by effect parameters; they default to false.
+  if (source_name == "canonical_reset_state_default" ||
+      source_name == "canonical_use_custom_default") {
+    value = false;
     return true;
   }
   if (binding_context.definition == nullptr) return false;

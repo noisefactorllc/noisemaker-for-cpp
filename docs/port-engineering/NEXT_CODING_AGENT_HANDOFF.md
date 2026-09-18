@@ -116,10 +116,14 @@
 > 1. **[DONE] Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
 >    against the corpus2 base. Completed: all 4 shards pass (2,020 tests, 0 failures, status=0), all generator `--check`
 >    gates clean, native build & CTest 4/4 passed.
-> 2. **[ACTIVE] Admit Families B–E through the executor** (already wired) for the 44 now-vendored-but-runtime-only programs
+> 2. **[DONE] Admit Families B–E through the executor** (already wired) for the 44 now-vendored-but-runtime-only programs
 >    (`points/*`, `render/pointsRender*`, `synth/navierStokes*`, etc. — see `resync-2026-09/frontier-92.md`'s
->    "no frontend/typed-pipeline blocker" class), and sweep each family to 0 divergence.
-> 3. **Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
+>    "no frontend/typed-pipeline blocker" class), and sweep each family to 0 divergence. Completed: admitted all 15 previously
+>    incompatible programs into `backend_compatibility.json` (255 compatible, 0 incompatible) across loop/volume domains,
+>    dict extents, and pass-derived bindings; all artifacts regenerated to fixed point; differential sweeps across Families B,
+>    C, D, and E confirmed 0 divergence against the pinned JS authority (`61aa869`); full test suite green across all 4 shards
+>    (2,045 tests, status=0).
+> 3. **[ACTIVE] Finish runtime defines** (`unlanded/defines2`, `unlanded/definescn`), plus the halftone, noise TYPE=4 and scatter
 >    MODE=3 divergences.
 > 4. **Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
 >    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs (10 programs, the single

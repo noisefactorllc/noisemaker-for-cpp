@@ -163,7 +163,13 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   const auto& classification = required_field(raw, "source_classification", ValueKind::string, context);
   if (classification.string != "raw_exact" && classification.string != "semantic_exact") throw std::invalid_argument("Malformed compatible compatibility row " + context + ": source classification");
   nonempty_string(required_field(raw, "compatibility_transform", ValueKind::string, context), context + ".compatibility_transform");
-  if (required_field(raw, "dimensionality", ValueKind::string, context).string != "image" || required_field(raw, "draw_mode", ValueKind::string, context).string != "fragment") throw std::invalid_argument("Malformed compatible compatibility row " + context + ": execution ABI");
+  const auto& dimensionality = required_field(raw, "dimensionality", ValueKind::string, context).string;
+  const std::array<std::string_view, 6> allowed_domains = {
+      "image", "volume-generator", "volume-filter", "volume-renderer", "loop-begin", "loop-end"};
+  if (std::find(allowed_domains.begin(), allowed_domains.end(), dimensionality) == allowed_domains.end() ||
+      required_field(raw, "draw_mode", ValueKind::string, context).string != "fragment") {
+    throw std::invalid_argument("Malformed compatible compatibility row " + context + ": execution ABI");
+  }
   required_field(raw, "derivative_use", ValueKind::boolean, context);
   {
     const auto& capabilities = field(raw, "capabilities")->array;
@@ -194,9 +200,7 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   if (std::find(formats.begin(), formats.end(), format.string) == formats.end()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output format");
   // A compatible row's extent is a token the four-way binding-ABI grammar
   // spells identically everywhere: "screen", "input", a percentage literal
-  // ("100%", "6.25%", "50%", ...), or a positive integer. An object-valued
-  // extent has no such token, so the compatibility generator never marks one
-  // compatible (reason unsupported_output_extent).
+  // ("100%", "6.25%", "50%", ...), a positive integer, or an object (e.g. screenDivide/param).
   const auto percentage = [](const std::string& text) {
     if (text.size() < 2 || text.back() != '%') return false;
     std::size_t index = 0;
@@ -216,7 +220,8 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
       (dimension->string == "screen" || dimension->string == "input" || percentage(dimension->string));
     const bool valid_number = dimension != nullptr && dimension->kind == ValueKind::number &&
       std::isfinite(dimension->number) && dimension->number >= 1.0 && std::trunc(dimension->number) == dimension->number;
-    if (!valid_string && !valid_number)
+    const bool valid_object = dimension != nullptr && dimension->kind == ValueKind::object && !dimension->object.empty();
+    if (!valid_string && !valid_number && !valid_object)
       throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output extent");
   }
   const auto& outputs = field(raw, "outputs")->array;
@@ -248,8 +253,12 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   required_field(authority_pass, "uniforms", ValueKind::object, context + ".authority_pass");
   required_field(authority_pass, "blend", ValueKind::boolean, context + ".authority_pass");
   const auto* repeat_value = field(authority_pass, "repeat");
-  if (repeat_value == nullptr || (repeat_value->kind != ValueKind::null_value &&
-      (repeat_value->kind != ValueKind::number || !std::isfinite(repeat_value->number) || repeat_value->number < 0 || std::trunc(repeat_value->number) != repeat_value->number))) {
+  const bool valid_repeat_number = repeat_value != nullptr && repeat_value->kind == ValueKind::number &&
+      std::isfinite(repeat_value->number) && repeat_value->number >= 0 && std::trunc(repeat_value->number) == repeat_value->number;
+  const bool valid_repeat_string = repeat_value != nullptr && repeat_value->kind == ValueKind::string &&
+      !repeat_value->string.empty();
+  const bool valid_repeat_null = repeat_value != nullptr && repeat_value->kind == ValueKind::null_value;
+  if (!valid_repeat_number && !valid_repeat_string && !valid_repeat_null) {
     throw std::invalid_argument("Malformed compatible compatibility row " + context + ": authority pass repeat");
   }
   const auto& factory = required_field(raw, "factory", ValueKind::object, context).object;
@@ -338,13 +347,35 @@ std::string string_field(const std::vector<std::pair<std::string, Value>>& field
 }
 
 // The authenticated dimension expressions in `output_abi.extent` are either
-// a string or the literal number 1; both project to one canonical token.
+// a string, a literal number, or an object (e.g. screenDivide/param);
+// all project to one canonical token matching Python str(dict).
 std::string extent_token(const Value* value) {
   if (value == nullptr) return {};
   if (value->kind == ValueKind::string) return value->string;
   if (value->kind == ValueKind::number && std::isfinite(value->number) &&
       std::trunc(value->number) == value->number) {
     return std::to_string(static_cast<long long>(value->number));
+  }
+  if (value->kind == ValueKind::object) {
+    std::string result = "{";
+    for (std::size_t i = 0; i < value->object.size(); ++i) {
+      if (i > 0) result += ", ";
+      result += "'" + value->object[i].first + "': ";
+      const auto& child = value->object[i].second;
+      if (child.kind == ValueKind::string) {
+        result += "'" + child.string + "'";
+      } else if (child.kind == ValueKind::number) {
+        if (std::trunc(child.number) == child.number) {
+          result += std::to_string(static_cast<long long>(child.number));
+        } else {
+          result += std::to_string(child.number);
+        }
+      } else if (child.kind == ValueKind::boolean) {
+        result += child.boolean ? "True" : "False";
+      }
+    }
+    result += "}";
+    return result;
   }
   return {};
 }
@@ -692,9 +723,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "dc5bead08958e7374d69e0bf1f6698d8261ce37a054093f45664458c8e69a9f8" ||
+      provenance_.generated_payload_sha256 != "9c30fcd545ca12271c3cc537e7ef2e7c81ae11450bbd23700806d31daf77b576" ||
       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "8647c16b6b9deb0f3c44b92f36b6555b8453cede9eae51e3d92916f88ecaba49" ||
+      provenance_.compatibility_sha256 != "6aa2a373a0935224d68551db30d8972c8aa78dac8f90c9f724c080bcfa9944b5" ||
       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
       provenance_.cpu_behavioral_file_count != 91 ||
       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
@@ -715,9 +746,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (strict_manifest && (canonical_programs_.size() != 255 || reference_passes_.size() != 344 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
-      provenance_.counts.backend_programs != 256 || provenance_.counts.compatible_programs != 240 || provenance_.counts.incompatible_programs != 15 ||
-      provenance_.counts.missing_passes != 88 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 169 ||
-      provenance_.counts.incomplete_definitions != 39 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 256 || provenance_.counts.compatible_programs != 255 || provenance_.counts.incompatible_programs != 0 ||
+      provenance_.counts.missing_passes != 88 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 173 ||
+      provenance_.counts.incomplete_definitions != 35 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
   if (provenance_.backend_fragment_rows != 257 || provenance_.backend_unique_fragment_keys != 255 ||
       provenance_.backend_raw_exact != 256 || provenance_.backend_semantic_exact != 0)
