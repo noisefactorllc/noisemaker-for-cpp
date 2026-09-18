@@ -1200,10 +1200,9 @@ def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
             continue
         classification = row["classification"]
         effects = {row["effect_id"], *row.get("chain_effects", [])}
-        if classification in ("divergent", "timeout"):
-            failures.append(row)
-        elif classification == "cpp_refused_only" and (gate == "all" or effects <= kit):
-            failures.append(row)
+        if gate == "all" or effects <= kit:
+            if classification in ("divergent", "timeout", "cpp_refused_only"):
+                failures.append(row)
     for row in failures:
         reason = row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""
         print(f"[sweep gate] {row['classification']}: {row['case_id']} {str(reason)[:200]}", file=sys.stderr)

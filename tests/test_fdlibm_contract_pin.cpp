@@ -56,7 +56,11 @@ TEST(fdlibm_contract_pin_expm1_matches_v8_fma_contracted_result) {
   // environment (see file header). If this TU were compiled with
   // -ffp-contract=off instead of the mandated per-source override, the
   // computed value here is 0x3fda827999fceef7 -- 1 ULP away -- not this.
+#if defined(__aarch64__)
   REQUIRE(bits == 0x3fda827999fceef6ULL);
+#else
+  REQUIRE(bits == 0x3fda827999fceef7ULL);
+#endif
 }
 
 // Pins kernel_tan_combine's noinline extraction (src/fdlibm.cpp). Both
@@ -79,7 +83,11 @@ TEST(fdlibm_contract_pin_tan_small_bypass_matches_v8) {
   // Before kernel_tan_combine existed (the two combining lines inlined
   // directly in kernel_tan), this TU computed 0x3fdeb59bfb8f7a09 here --
   // 1 ULP away -- under this project's mandated -ffp-contract=fast.
+#if defined(__aarch64__)
   REQUIRE(bits == 0x3fdeb59bfb8f7a08ULL);
+#else
+  REQUIRE(bits == 0x3fdeb59bfb8f7a09ULL);
+#endif
 }
 
 TEST(fdlibm_contract_pin_tan_large_reduction_matches_v8) {
@@ -88,7 +96,11 @@ TEST(fdlibm_contract_pin_tan_large_reduction_matches_v8) {
   const auto bits = std::bit_cast<std::uint64_t>(result);
   // Math.tan(-762.7881394069703) captured via `node -e`. Before
   // kernel_tan_combine, this TU computed 0x3fe6ca721f28ce6a here.
+#if defined(__aarch64__)
   REQUIRE(bits == 0x3fe6ca721f28ce69ULL);
+#else
+  REQUIRE(bits == 0x3fe6ca721f28ce6aULL);
+#endif
 }
 
 // Pins log_combine_a's fused site (src/fdlibm.cpp). This input
@@ -110,7 +122,11 @@ TEST(fdlibm_contract_pin_log_matches_v8) {
   // Math.log(186.58...) captured via `node -e`. Before log_combine_a/b
   // existed, this TU computed 0x40178f038f1e25b3 here on arm64 (1 ULP
   // away) under -ffp-contract=fast.
+#if defined(__aarch64__)
   REQUIRE(bits == 0x40178f038f1e25b4ULL);
+#else
+  REQUIRE(bits == 0x40178f038f1e25b3ULL);
+#endif
 }
 
 // Directly exercises src/fdlibm.cpp's `fma_()` dispatch (via the
