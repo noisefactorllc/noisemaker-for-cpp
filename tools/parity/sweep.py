@@ -1165,8 +1165,11 @@ def main() -> int:
         # reported as a timeout, so the gate still fails on a real hang.
         if args.timeout_retry_factor > 0:
             rows = load_existing(results_path)
+            kit = (set(json.loads((LANE_ROOT / "export-kit/compat-effects.json").read_text(encoding="utf-8")))
+                   if args.gate == "kit" else None)
             retry = [j for j in jobs if rows.get(j.case_id, {}).get("classification") == "timeout"
-                     and not rows[j.case_id].get("timeout_retry")]
+                     and not rows[j.case_id].get("timeout_retry")
+                     and (kit is None or {j.effect_id, *(j.chain_effects or [])} <= kit)]
             if retry:
                 print(f"[sweep] retrying {len(retry)} timed-out cases serially", file=sys.stderr)
                 _init_worker(replace(config, timeout=config.timeout * args.timeout_retry_factor))
