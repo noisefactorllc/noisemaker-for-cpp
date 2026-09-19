@@ -8,6 +8,24 @@ name: Authority drift
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/*.md'
+      - 'docs/plans/**'
+      - 'docs/hero.jpg'
+      - 'docs/port-engineering/README.md'
+      - 'docs/port-engineering/task-*review*.md'
+      - 'docs/port-engineering/task-*review*.md.sha256'
+      - 'docs/port-engineering/task-*brief.md'
+      - 'docs/port-engineering/task-*brief.md.sha256'
+      - 'docs/port-engineering/task-*design*.md'
+      - 'docs/port-engineering/task-*design*.md.sha256'
+      - 'docs/port-engineering/shape-mixer-parity/README.md'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/PULL_REQUEST_TEMPLATE*'
+      - '.github/FUNDING.yml'
+      - '.github/CODEOWNERS'
+      - '.editorconfig'
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
