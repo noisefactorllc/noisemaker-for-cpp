@@ -373,13 +373,13 @@ if __package__ in (None, ""):
         allowed_row_fields as texture_lod_admission_allowed_row_fields,
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from tools.glslcpp.frontend.runtime_loop_bound_profile import (
-        BLUR_KEYS,
+        BLUR_KEYS, CF_KEYS,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata,
-        validate_curl_metadata,
+        validate_cf_metadata, validate_curl_metadata,
         validate_noise_metadata, validate_tetra_metadata)
     from tools.glslcpp.frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
@@ -756,13 +756,13 @@ else:
         allowed_row_fields as texture_lod_admission_allowed_row_fields,
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from .frontend.runtime_loop_bound_profile import (
-        BLUR_KEYS,
+        BLUR_KEYS, CF_KEYS,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
-        apply_runtime_loop_bound, validate_blur_metadata, validate_curl_metadata,
-        validate_noise_metadata, validate_tetra_metadata)
+        apply_runtime_loop_bound, validate_blur_metadata, validate_cf_metadata,
+        validate_curl_metadata, validate_noise_metadata, validate_tetra_metadata)
     from .frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
         authenticate_gabor_effective_depth,
@@ -8446,6 +8446,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 elif key == RUNTIME_LOOP_BOUND_CURL_KEY:
                     validate_curl_metadata(
                         metadata.get("effects", {}).get("synth/curl"))
+                elif key in CF_KEYS:
+                    validate_cf_metadata(
+                        metadata.get("effects", {}).get("filter/convolutionFeedback"))
                 typed = apply_runtime_loop_bound(
                     typed, source_hash, runtime_loop_bound_profile)
             except ValueError as error:

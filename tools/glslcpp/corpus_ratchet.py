@@ -208,25 +208,36 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.loop_proof import (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY, SOURCE_GLOBAL_LITERAL_INT_KEYS,
     )
+    from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+        RUNTIME_LOOP_BOUND_KEYS, PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
+        apply_runtime_loop_bound,
+    )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
+    runtime_loop_bound_profile = (
+        RUNTIME_LOOP_BOUND_PROFILE if key in RUNTIME_LOOP_BOUND_KEYS else None
+    )
     typed = analyze_program(parse_program(source, key, defaults), key,
                             source_global_literal_int_profile=source_global_literal_int_profile)
+    if runtime_loop_bound_profile is not None:
+        typed = apply_runtime_loop_bound(typed, source_hash, runtime_loop_bound_profile)
     typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
     typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
     try:
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=source_hash,
-            source_global_literal_int_profile=source_global_literal_int_profile)
+            source_global_literal_int_profile=source_global_literal_int_profile,
+            runtime_loop_bound_profile=runtime_loop_bound_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
         render_typed_cpp(
             typed, key, source_hash, "typed_probe",
             "bind_" + key.replace("/", "_").replace(":", "_"),
-            source_global_literal_int_profile=source_global_literal_int_profile)
+            source_global_literal_int_profile=source_global_literal_int_profile,
+            runtime_loop_bound_profile=runtime_loop_bound_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -474,6 +485,7 @@ def verify_builder_reproduces_manifest(repository: pathlib.Path) -> None:
 def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]], metadata: dict[str, Any]) -> None:
     """Give every promoted fragment program its plain typed-slice row (effect default defines)."""
     from tools.glslcpp import check_semantics
+    from tools.glslcpp.frontend.runtime_loop_bound_profile import RUNTIME_LOOP_BOUND_KEYS
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -481,9 +493,12 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     for entry in entries:
         if entry["runtime_key"] is None:
             continue
-        rows.setdefault(entry["program_key"], {
+        row = {
             "defines": check_semantics._metadata_defaults(metadata, entry["program_key"]),
-            "program_key": entry["program_key"]})
+            "program_key": entry["program_key"]}
+        if entry["program_key"] in RUNTIME_LOOP_BOUND_KEYS:
+            row["runtime_loop_bound_profile"] = "runtime-loop-bound-v1"
+        rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))
 

@@ -25481,6 +25481,78 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             )
         self.assertIn("exact source-global literal-int carrier required", str(ctx.exception))
 
+    def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
+        from tools.glslcpp import emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            CF_BLUR_KEY, CF_SHARPEN_KEY, CF_KEYS, RUNTIME_LOOP_BOUND_KEYS,
+            PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
+            apply_runtime_loop_bound, validate_cf_metadata
+        )
+        import hashlib
+        import json
+        import pathlib
+
+        self.assertIn(CF_BLUR_KEY, CF_KEYS)
+        self.assertIn(CF_SHARPEN_KEY, CF_KEYS)
+        self.assertTrue(CF_KEYS.issubset(RUNTIME_LOOP_BOUND_KEYS))
+        self.assertTrue(CF_KEYS.issubset(generate_typed_slice.RUNTIME_LOOP_BOUND_KEYS))
+        self.assertTrue(CF_KEYS.issubset(generate_typed_slice.CF_KEYS))
+
+        # Metadata validation test
+        metadata = json.loads(pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/metadata.json").read_text(encoding="utf-8"))
+        effect = metadata["effects"]["filter/convolutionFeedback"]
+        validate_cf_metadata(effect)
+        with self.assertRaises(ValueError):
+            validate_cf_metadata({"params": {}})
+
+        for key, rel_path, param_name, default_val in (
+            (CF_BLUR_KEY, "filter/convolutionFeedback/cfBlur.glsl", "blurRadius", 4),
+            (CF_SHARPEN_KEY, "filter/convolutionFeedback/cfSharpen.glsl", "sharpenRadius", 5),
+        ):
+            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / rel_path
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            ast = parse_program(raw, key)
+            typed = analyze_program(ast, key)
+
+            # Without profile, validate_capabilities rejects with exact runtime-loop-bound carrier required
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash
+                )
+            self.assertIn("exact runtime-loop-bound carrier required", str(ctx.exception))
+
+            # Apply runtime loop bound
+            typed_bounded = apply_runtime_loop_bound(typed, shash, RUNTIME_LOOP_BOUND_PROFILE)
+            summary = typed_bounded.counted_loop_proof
+            self.assertEqual(
+                (2, 0, 2, 441, 462, True),
+                (summary.loop_count, summary.unproved_loop_count,
+                 summary.max_effective_depth, summary.max_lexical_product,
+                 summary.entrypoint_charge, summary.call_graph_acyclic)
+            )
+
+            # Validate capabilities passes with profile
+            generate_typed_slice.validate_capabilities(
+                typed_bounded, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                runtime_loop_bound_profile=RUNTIME_LOOP_BOUND_PROFILE
+            )
+
+            # Emit C++ and verify emitted structure
+            cpp = emit_typed_cpp.render_typed_cpp(
+                typed_bounded, key, shash,
+                runtime_loop_bound_profile=RUNTIME_LOOP_BOUND_PROFILE
+            )
+            self.assertIn("std::int32_t runtime_loop_radius;", cpp)
+            self.assertIn(f'static_cast<std::int32_t>({param_name})', cpp)
+            self.assertIn("const double runtime_loop_product =", cpp)
+            self.assertIn(f'const auto {param_name} = bindings.get_number("{param_name}");', cpp)
+
 
 if __name__ == "__main__":
     unittest.main()

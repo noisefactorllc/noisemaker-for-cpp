@@ -41,6 +41,9 @@ TETRA_KEY = "filter/tetraColorArray:tetraColorArray"
 BLUR_H_KEY = "filter/blur:blurH"
 BLUR_V_KEY = "filter/blur:blurV"
 BLUR_KEYS = frozenset({BLUR_H_KEY, BLUR_V_KEY})
+CF_BLUR_KEY = "filter/convolutionFeedback:cfBlur"
+CF_SHARPEN_KEY = "filter/convolutionFeedback:cfSharpen"
+CF_KEYS = frozenset({CF_BLUR_KEY, CF_SHARPEN_KEY})
 STATS_KEY = "filter/normalize:statsFinal"
 NOISE_KEY = "synth/noise:noise"
 # synth/curl's fifth key and the module's first *global-uniform-direct* record:
@@ -52,7 +55,7 @@ CURL_KEY = "synth/curl:curl"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
-    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, *BLUR_KEYS})
+    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, *BLUR_KEYS, *CF_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -169,6 +172,46 @@ _BLUR_EXPECTED = {
         "product": ("20:22-20:43", "a2b4733a0443c8364dbbff5c20f6ddedf0411ca59df17e09b851cc14acb03ff5"),
         "guard": ("21:5-24:6", "c221a6515e7def02f09d88a1b480bfedb5bd1833f6643a803319575b3c4e7725"),
         "loop": ("33:5-39:6", "b9b03ef4b9ece759d4fcf855a8660d831fc6dde41a310960b03f25718cd3299e"),
+    },
+}
+
+
+_CF_EXPECTED = {
+    CF_BLUR_KEY: {
+        "raw_bytes": 1573,
+        "raw_sha256": "ab116ed830bb31a9103dfd30c8bd809ab8d9b478d860c0a2a76e45458020f88a",
+        "normalized_bytes": 1281,
+        "normalized_sha256": "132c7c60210c8faf504bb22cf7d361f0dbcd468357c02e410a1de50bf1b3bcd3",
+        "functions_sha256": "7412a423c131c2b6d5d4f7279b584731a96c57562069d92f68eaf671712aa9cd",
+        "whole_program_sha256": "d4fa87ffeee2ed7d909ed9351ad1f60f7f3e308f225936080d90087b3974099b",
+        "interface_sha256": "1fdb1d300dc949278a2fe7b27ae841b4ef2397f0ca18de8fc97fb763a67ffcf4",
+        "axis": (2, "blurRadius", "int", "uniform", False, "5:1-5:24"),
+        "scale": (4, "renderScale", "float", "uniform", False, "7:1-7:27"),
+        "radius": (11, "scaledRadius", "int", "local", True, "17:9-17:60"),
+        "radius_declaration": ("17:9-17:60", "93f04ef3bc0dc2699dc9405d16ab08deb1d440bbeea1ef641d0e2ce252cda215"),
+        "radius_statement": ("17:5-17:61", "580e92e9bda9a750d4ba8b2e67bb7de263bf78c725869620edac89bcc96f78c5"),
+        "product": ("17:28-17:59", "8b00c87195dcfec733644fabc9bc82289335fd180ae1107827abf82f74037093"),
+        "guard": ("19:5-22:6", "df1164b6208e91951758301585b468b7bfb51ad2d23cacb907f00094d60d6f58"),
+        "outer_loop": ("31:5-43:6", "9e3aea3317e2825c4bdac7cd69537dcc951ff07eacd0f9ec17255c646677dd1b"),
+        "inner_loop": ("32:9-42:10", "86d0781be5179cfb722f9dd16b1f65a063b0680d328147f226665f76182ce220"),
+    },
+    CF_SHARPEN_KEY: {
+        "raw_bytes": 1642,
+        "raw_sha256": "97d8e84b9ae47100cc2ea384a953e719675c61aee274c6739f1eb9f32caf0baa",
+        "normalized_bytes": 1362,
+        "normalized_sha256": "e61d585edad9c7288da7d1a7562b4099baaeb99c3c5a59bcdf3610a3b23f22d0",
+        "functions_sha256": "63a9f9fccfef5855e1e345f73e01860891da9b3189d8508c65af25f865a7b1e1",
+        "whole_program_sha256": "6dbe985bd94c79d11bd9dbbdcd97e29b14e9acebbebbc9fb6bb91c6f793b1b68",
+        "interface_sha256": "10a90553a6be7d42bde5f8efbb1a2bbe7e1c6fe1268aa49fe034c1b709c20e5e",
+        "axis": (2, "sharpenRadius", "int", "uniform", False, "5:1-5:27"),
+        "scale": (4, "renderScale", "float", "uniform", False, "7:1-7:27"),
+        "radius": (11, "scaledRadius", "int", "local", True, "17:9-17:63"),
+        "radius_declaration": ("17:9-17:63", "d0703e8ecca57a41c52538cfe133b62b9b74471b99baab256510bc06a4078f34"),
+        "radius_statement": ("17:5-17:64", "9d4bce4891455facccd8781539ed23458b8ba5f3f19762f50d4e596686c9034b"),
+        "product": ("17:28-17:62", "4bfeaf2ad77b043338672a16fdcd3d16c6af51997065f771f67d3d1def989254"),
+        "guard": ("19:5-22:6", "700dd0ffd6e816e6278074afcb96a2a4f60bc9cf06d4c132af4656c431d7cfad"),
+        "outer_loop": ("31:5-43:6", "42e02272c8aa2271755b7eb20c980bf686f5a65ceed7ed8f01d887a15278fd21"),
+        "inner_loop": ("32:9-42:10", "44dc142ac6a5d2cf857572480752a531823a359aba5a65dab5c1ad2ac6df50a4"),
     },
 }
 
@@ -319,6 +362,17 @@ def validate_runtime_loop_contract(
             and contract.radius_declaration.symbol == contract.seed.symbol
             and contract.seed.provenance
             == "runtime-binary64-product-checked-radius")
+    cf = (contract.seed is not None
+          and contract.key in CF_KEYS and contract.kind == "blur-radius"
+          and contract.uniform_name == _CF_EXPECTED[contract.key]["axis"][1]
+          and contract.minimum == 1 and contract.uniform_maximum == 10
+          and contract.default == (4 if contract.key == CF_BLUR_KEY else 5)
+          and contract.maximum == 10
+          and contract.render_scale_name == "renderScale"
+          and contract.radius_declaration is not None
+          and contract.radius_declaration.symbol == contract.seed.symbol
+          and contract.seed.provenance
+          == "runtime-binary64-product-checked-radius")
     stats = (contract.seed is None and contract.key == STATS_KEY
              and contract.kind == "texture-size-lanes"
              and contract.uniform_name == "inputTex"
@@ -359,7 +413,7 @@ def validate_runtime_loop_contract(
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
-    if not (tetra or blur or stats or noise or curl) or malformed_scalar:
+    if not (tetra or blur or cf or stats or noise or curl) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -387,6 +441,26 @@ def validate_blur_metadata(effect: object) -> None:
         raise _fail("metadata contract mismatch") from None
     expected = (("float", 0, 5, 50, "radiusX", 0),
                 ("float", 0, 5, 50, "radiusY", 0))
+    if actual != expected:
+        raise _fail("metadata contract mismatch")
+
+
+def validate_cf_metadata(effect: object) -> None:
+    """Validate convolutionFeedback's authoritative blurRadius and sharpenRadius metadata."""
+    try:
+        rows = effect["params"]  # type: ignore[index]
+        blur_row = rows["blurRadius"]
+        sharpen_row = rows["sharpenRadius"]
+        actual = (
+            (blur_row["type"], blur_row["min"], blur_row["default"], blur_row["max"], blur_row["uniform"]),
+            (sharpen_row["type"], sharpen_row["min"], sharpen_row["default"], sharpen_row["max"], sharpen_row["uniform"]),
+        )
+    except (KeyError, TypeError):
+        raise _fail("metadata contract mismatch") from None
+    expected = (
+        ("int", 1, 4, 10, "blurRadius"),
+        ("int", 1, 5, 10, "sharpenRadius"),
+    )
     if actual != expected:
         raise _fail("metadata contract mismatch")
 
@@ -445,6 +519,8 @@ def authenticate_runtime_loop_bound(
 
     if program.key in BLUR_KEYS:
         return _authenticate_blur(program, source_hash)
+    if program.key in CF_KEYS:
+        return _authenticate_convolution_feedback(program, source_hash)
     if program.key == STATS_KEY:
         return _authenticate_stats(program, source_hash)
     if program.key == NOISE_KEY:
@@ -828,6 +904,94 @@ def _authenticate_blur(program: TypedProgram,
         scale.name, radius))
 
 
+def _authenticate_convolution_feedback(
+        program: TypedProgram,
+        source_hash: str | None) -> RuntimeLoopBoundContract:
+    expected = _CF_EXPECTED[program.key]
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    functions = _cleared_functions(program)
+    whole = (program.key, program.source, program.raw_source,
+             program.declarations, functions, program.resources,
+             program.body_status, program.local_type_names, program.structs,
+             program.uniform_blocks, program.interface_symbols,
+             program.builtin_symbols, program.preprocessor_defines)
+    interface = (program.declarations, program.resources,
+                 program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.preprocessor_defines)
+    if (source_hash != expected["raw_sha256"] or len(raw) != expected["raw_bytes"]
+            or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
+            or len(normalized) != expected["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest() != expected["normalized_sha256"]
+            or defines != () or program.body_status != "analyzed"):
+        raise _fail("source or define profile mismatch")
+    if (_sha(functions) != expected["functions_sha256"]
+            or _sha(whole) != expected["whole_program_sha256"]
+            or _sha(interface) != expected["interface_sha256"]):
+        raise _fail("interface, function, or call-graph profile mismatch")
+
+    symbols = {item.symbol.id: item.symbol for item in program.declarations}
+    axis = symbols.get(expected["axis"][0])
+    scale = symbols.get(expected["scale"][0])
+    if axis is None or scale is None:
+        raise _fail("uniform profile mismatch")
+    for actual, frozen in ((axis, expected["axis"]), (scale, expected["scale"])):
+        if ((actual.id, actual.name, actual.type.display(), actual.storage,
+             actual.writable, _span(actual)) != frozen):
+            raise _fail("uniform profile mismatch")
+
+    main = next((item for item in functions if item.name == "main"), None)
+    if main is None or len(functions) != 1:
+        raise _fail("interface, function, or call-graph profile mismatch")
+    radius_statement = next((item for item in main.body
+                             if item.kind == "decl" and item.expressions
+                             and item.expressions[0].symbol is not None
+                             and item.expressions[0].symbol.name == "scaledRadius"), None)
+    guard = next((item for item in main.body if item.kind == "if"), None)
+    outer_loop = next((item for item in main.body if item.kind == "for"), None)
+    if radius_statement is None or guard is None or outer_loop is None:
+        raise _fail("declaration, guard, or loop-site profile mismatch")
+    inner_loop = next((item for child in outer_loop.children if child.kind == "block"
+                       for item in child.children if item.kind == "for"), None)
+    if inner_loop is None:
+        raise _fail("loop-site profile mismatch")
+    radius = radius_statement.expressions[0]
+    if ((radius.symbol.id, radius.symbol.name, radius.symbol.type.display(),
+         radius.symbol.storage, radius.symbol.writable, _span(radius.symbol))
+            != expected["radius"]
+            or (_span(radius), _sha(radius)) != expected["radius_declaration"]
+            or (_span(radius_statement), _sha(radius_statement))
+            != expected["radius_statement"]
+            or len(radius.children) != 1 or radius.children[0].kind != "construct"
+            or len(radius.children[0].children) != 1):
+        raise _fail("declaration profile mismatch")
+    product = radius.children[0].children[0]
+    if ((product.kind != "binary" or product.operator != "*"
+            or (_span(product), _sha(product)) != expected["product"]
+            or len(product.children) != 2
+            or product.children[0].kind != "construct"
+            or len(product.children[0].children) != 1
+            or product.children[0].children[0].symbol != axis
+            or product.children[1].symbol != scale)):
+        raise _fail("declaration profile mismatch")
+    if ((_span(guard), _sha(guard)) != expected["guard"]
+            or (_span(outer_loop), _sha(outer_loop)) != expected["outer_loop"]
+            or (_span(inner_loop), _sha(inner_loop)) != expected["inner_loop"]):
+        raise _fail("guard or loop-site profile mismatch")
+
+    seed = RuntimeScalarBoundSeed(
+        radius.symbol.id, 10, "runtime-binary64-product-checked-radius",
+        radius.symbol)
+    default_val = 4 if program.key == CF_BLUR_KEY else 5
+    return validate_runtime_loop_contract(RuntimeLoopBoundContract(
+        program.key, seed, "blur-radius", axis.name, 1, 10, default_val,
+        f"{program.key} runtime loop radius must be finite and in [1,10]",
+        scale.name, radius))
+
+
 def _authenticate_stats(program: TypedProgram,
                         source_hash: str | None) -> RuntimeLoopBoundContract:
     expected = _STATS_EXPECTED
@@ -949,11 +1113,13 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 
 
 __all__ = (
-    "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS", "STATS_KEY",
+    "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS",
+    "CF_BLUR_KEY", "CF_SHARPEN_KEY", "CF_KEYS", "STATS_KEY",
     "NOISE_KEY", "CURL_KEY", "RUNTIME_LOOP_BOUND_KEYS",
     "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
     "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeLoopBoundContract",
     "authenticate_runtime_loop_bound", "apply_runtime_loop_bound",
     "validate_runtime_loop_contract", "validate_tetra_metadata",
-    "validate_blur_metadata", "validate_noise_metadata", "validate_curl_metadata",
+    "validate_blur_metadata", "validate_cf_metadata",
+    "validate_noise_metadata", "validate_curl_metadata",
 )

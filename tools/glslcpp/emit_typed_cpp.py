@@ -11841,7 +11841,10 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 arguments.append(f"&{symbol.name}")
             elif symbol.type.kind == "sampler": arguments.append(f"&bindings.texture(\"{symbol.name}\")")
             elif contract is not None and symbol.name == contract.uniform_name:
-                arguments.append(contract.uniform_name)
+                if symbol.type.display() == "int":
+                    arguments.append(f"static_cast<std::int32_t>({contract.uniform_name})")
+                else:
+                    arguments.append(contract.uniform_name)
             elif (fractal_mode_contract is not None
                   and symbol.name == fractal_mode_contract.uniform_name):
                 arguments.append(fractal_mode_contract.uniform_name)
