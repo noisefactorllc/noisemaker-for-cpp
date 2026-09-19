@@ -11841,7 +11841,7 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 arguments.append(f"&{symbol.name}")
             elif symbol.type.kind == "sampler": arguments.append(f"&bindings.texture(\"{symbol.name}\")")
             elif contract is not None and symbol.name == contract.uniform_name:
-                if symbol.type.display() == "int":
+                if contract.kind == "blur-radius" and symbol.type.display() == "int":
                     arguments.append(f"static_cast<std::int32_t>({contract.uniform_name})")
                 else:
                     arguments.append(contract.uniform_name)

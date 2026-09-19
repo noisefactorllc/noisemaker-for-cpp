@@ -132,7 +132,7 @@ void required_binding_array(const Value& value, const std::string& context, bool
       // src/effects/remap.cpp and src/graph/executor.cpp's
       // materialize_plan_value). Additive throughout: nothing here narrows
       // what any other program's row may already declare.
-      const std::array<std::string_view, 12> allowed_types = {"float", "int", "bool", "vec2", "vec3", "vec4", "ivec2", "vec4[267]", "vec4[275]", "double", "dvec3", "dvec4"};
+      const std::array<std::string_view, 13> allowed_types = {"float", "int", "bool", "vec2", "vec3", "vec4", "ivec2", "vec4[267]", "vec4[275]", "double", "dvec3", "dvec4", "mat3"};
       if (std::find(allowed_types.begin(), allowed_types.end(), type.string) == allowed_types.end())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": uniform type");
       const auto& source = required_field(item.object, "source", ValueKind::string, context);
@@ -196,7 +196,7 @@ void validate_compatible_raw(const ProgramCompatibility& row) {
   const std::string extent_context = context + ".output_abi.extent";
   exact_object(extent, {"width", "height", "format"}, extent_context);
   const auto& format = required_field(extent, "format", ValueKind::string, extent_context);
-  const std::array<std::string_view, 4> formats = {"rgba8unorm", "rgba16f", "rgba16float", "rgba32f"};
+  const std::array<std::string_view, 5> formats = {"rgba8unorm", "rgba16f", "rgba16float", "rgba32f", "rgba32float"};
   if (std::find(formats.begin(), formats.end(), format.string) == formats.end()) throw std::invalid_argument("Malformed compatible compatibility row " + context + ": output format");
   // A compatible row's extent is a token the four-way binding-ABI grammar
   // spells identically everywhere: "screen", "input", a percentage literal
@@ -723,9 +723,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "1a1c3d58e0dc1290f60364731e4b3200126dfaa8cc3976095c555ee6caaaf4c5" ||
+      provenance_.generated_payload_sha256 != "3a4c5a68eca96128ff0cbf5dd9113582bf968b9322c9b3d98a1510b0ce27c09b" ||
       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "d02342d239dfe82fdcc733fc36578fe54ae891aa86df4b6c0500d7a3ea653bea" ||
+      provenance_.compatibility_sha256 != "49f7029b9a513fc2889d060616f55d3844c513d24b2adc2e3ef68bc2023899fe" ||
       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
       provenance_.cpu_behavioral_file_count != 91 ||
       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
@@ -743,15 +743,15 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 255 || reference_passes_.size() != 344 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 259 || reference_passes_.size() != 344 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
-      provenance_.counts.backend_programs != 256 || provenance_.counts.compatible_programs != 255 || provenance_.counts.incompatible_programs != 0 ||
-      provenance_.counts.missing_passes != 88 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 173 ||
-      provenance_.counts.incomplete_definitions != 35 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 260 || provenance_.counts.compatible_programs != 259 || provenance_.counts.incompatible_programs != 0 ||
+      provenance_.counts.missing_passes != 84 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 175 ||
+      provenance_.counts.incomplete_definitions != 33 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
-  if (provenance_.backend_fragment_rows != 257 || provenance_.backend_unique_fragment_keys != 255 ||
-      provenance_.backend_raw_exact != 256 || provenance_.backend_semantic_exact != 0)
+  if (provenance_.backend_fragment_rows != 261 || provenance_.backend_unique_fragment_keys != 259 ||
+      provenance_.backend_raw_exact != 260 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());

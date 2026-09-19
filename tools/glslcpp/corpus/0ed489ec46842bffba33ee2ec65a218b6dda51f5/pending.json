@@ -2506,99 +2506,6 @@
         }
       }
     },
-    "render/renderCubemapSurface": {
-      "func": "renderCubemapSurface",
-      "kind": "filter",
-      "namespace": "render",
-      "params": {
-        "absorption": {
-          "default": 1,
-          "max": 4,
-          "min": 0,
-          "type": "float",
-          "uniform": "absorption"
-        },
-        "bgAlpha": {
-          "default": 1,
-          "max": 1,
-          "min": 0,
-          "type": "float",
-          "uniform": "bgAlpha"
-        },
-        "bgColor": {
-          "default": [
-            0.02,
-            0.02,
-            0.02
-          ],
-          "type": "color",
-          "uniform": "bgColor"
-        },
-        "cubeBasis": {
-          "default": [
-            1,
-            0,
-            0,
-            0,
-            1,
-            0,
-            0,
-            0,
-            1
-          ],
-          "type": "mat3",
-          "uniform": "cubeBasis"
-        },
-        "density": {
-          "default": 4,
-          "max": 20,
-          "min": 0,
-          "type": "float",
-          "uniform": "density"
-        },
-        "emission": {
-          "default": 1,
-          "max": 4,
-          "min": 0,
-          "type": "float",
-          "uniform": "emission"
-        },
-        "volumeSize": {
-          "choices": {
-            "v128": 128,
-            "v16": 16,
-            "v32": 32,
-            "v64": 64
-          },
-          "default": 64,
-          "type": "int",
-          "uniform": "volumeSize"
-        }
-      },
-      "passes": [
-        {
-          "drawBuffers": 2,
-          "inputs": {
-            "analyticalGeo": "inputGeo",
-            "volumeCache": "inputTex3d"
-          },
-          "key": "render/renderCubemapSurface:renderCubemapSurface",
-          "name": "render",
-          "outputs": {
-            "fragColor": "outputTex",
-            "geoOut": "screenGeoBuffer"
-          },
-          "program": "renderCubemapSurface"
-        }
-      ],
-      "textures": {
-        "screenGeoBuffer": {
-          "format": "rgba16f",
-          "height": "resolution",
-          "width": "resolution"
-        }
-      }
-    },
     "render/renderLandscape3d": {
       "func": "renderLandscape3d",
       "kind": "filter",
@@ -3821,32 +3728,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: filter/convolutionFeedback:cfBlur:31:5: unsupported counted-for program proof",
-        "stage": "typed.validator"
-      },
-      "effect_id": "filter/convolutionFeedback",
-      "program": "cfBlur",
-      "program_key": "filter/convolutionFeedback:cfBlur",
-      "raw_bytes": 1573,
-      "raw_sha256": "ab116ed830bb31a9103dfd30c8bd809ab8d9b478d860c0a2a76e45458020f88a",
-      "source": "pending-sources/filter/convolutionFeedback/cfBlur.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: filter/convolutionFeedback:cfSharpen:31:5: unsupported counted-for program proof",
-        "stage": "typed.validator"
-      },
-      "effect_id": "filter/convolutionFeedback",
-      "program": "cfSharpen",
-      "program_key": "filter/convolutionFeedback:cfSharpen",
-      "raw_bytes": 1642,
-      "raw_sha256": "97d8e84b9ae47100cc2ea384a953e719675c61aee274c6739f1eb9f32caf0baa",
-      "source": "pending-sources/filter/convolutionFeedback/cfSharpen.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "GeneratorError: filter/feedback:feedback:339:5: unsupported typed expression index",
         "stage": "typed.validator"
       },
@@ -3938,7 +3819,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/buddhabrot:agent:93:9: unsupported counted-for safety charge",
+        "diagnostic": "GeneratorError: points/buddhabrot:agent:28:19: unsupported binary operator ^",
         "stage": "typed.validator"
       },
       "effect_id": "points/buddhabrot",
@@ -3947,19 +3828,6 @@
       "raw_bytes": 4826,
       "raw_sha256": "0e2e9336878287c4c856c6f6a4e7d2a19219d29025f33d0ead8c5f17fc19cc5c",
       "source": "pending-sources/points/buddhabrot/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/buddhabrot:zWrite:31:5: unsupported counted-for safety charge",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/buddhabrot",
-      "program": "zWrite",
-      "program_key": "points/buddhabrot:zWrite",
-      "raw_bytes": 874,
-      "raw_sha256": "e6fefa1486d7be6895efef7153d599497234386f83b21b042248b824018d655d",
-      "source": "pending-sources/points/buddhabrot/zWrite.glsl"
     },
     {
       "authority_status": "generated",
@@ -4246,19 +4114,6 @@
       "raw_bytes": 14026,
       "raw_sha256": "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
       "source": "pending-sources/render/renderCubemap3d/renderCubemap3d.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: render/renderCubemapSurface:renderCubemapSurface:100:9: unsupported counted-for program proof",
-        "stage": "typed.validator"
-      },
-      "effect_id": "render/renderCubemapSurface",
-      "program": "renderCubemapSurface",
-      "program_key": "render/renderCubemapSurface:renderCubemapSurface",
-      "raw_bytes": 4410,
-      "raw_sha256": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
-      "source": "pending-sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
     },
     {
       "authority_status": "generated",

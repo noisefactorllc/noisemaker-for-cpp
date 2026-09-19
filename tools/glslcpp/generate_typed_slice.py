@@ -2552,6 +2552,9 @@ def _compatibility_source_hashes(
         result = {}
         for item in manifest_programs:
             row = by_key.get(item["program_key"])
+            if row is None:
+                result[item["program_key"]] = item["source_sha256"]
+                continue
             if not isinstance(row, dict) or row.get("old_raw_sha256") != item["source_sha256"]:
                 raise ValueError(f"source identity mismatch for {item['program_key']}")
             value = row.get("new_raw_sha256")
@@ -6603,7 +6606,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             visited_testpattern_array_constructors.append(declaration.initializer)
         reject_type(declaration.type, declaration)
         if (declaration.type.kind == "matrix"
-                and declaration.symbol.storage != "uniform"
+                and not (declaration.symbol.storage == "uniform"
+                         and typed.key in SOURCE_GLOBAL_LITERAL_INT_KEYS)
                 and declaration.symbol.id not in admitted_globals):
             raise GeneratorError(f"{location(declaration)}: unsupported global matrix declaration")
         if any(declaration is item

@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "42f3a640849fa951fe221b4e1c1d000970c66c3fc25dae606619252e466033a4",
+  "metadata_sha256": "61e101d2be7a3f2d887a3c26fb2f3f6ce33b16609633373a10ace9a4ad801b9e",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -700,6 +700,42 @@
       "raw_sha256": "147bed82561a7c57d3b7a50c017eea826ebe24e54940a4fa032265d79c3be4a0",
       "runtime_key": "filter/convolutionFeedback:cfBlend",
       "source": "sources/filter/convolutionFeedback/cfBlend.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter/convolutionFeedback",
+      "normalized_bytes": 1281,
+      "normalized_sha256": "132c7c60210c8faf504bb22cf7d361f0dbcd468357c02e410a1de50bf1b3bcd3",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "blur",
+      "program": "cfBlur",
+      "program_key": "filter/convolutionFeedback:cfBlur",
+      "raw_bytes": 1573,
+      "raw_sha256": "ab116ed830bb31a9103dfd30c8bd809ab8d9b478d860c0a2a76e45458020f88a",
+      "runtime_key": "filter/convolutionFeedback:cfBlur",
+      "source": "sources/filter/convolutionFeedback/cfBlur.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter/convolutionFeedback",
+      "normalized_bytes": 1362,
+      "normalized_sha256": "e61d585edad9c7288da7d1a7562b4099baaeb99c3c5a59bcdf3610a3b23f22d0",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "sharpen",
+      "program": "cfSharpen",
+      "program_key": "filter/convolutionFeedback:cfSharpen",
+      "raw_bytes": 1642,
+      "raw_sha256": "97d8e84b9ae47100cc2ea384a953e719675c61aee274c6739f1eb9f32caf0baa",
+      "runtime_key": "filter/convolutionFeedback:cfSharpen",
+      "source": "sources/filter/convolutionFeedback/cfSharpen.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -3594,6 +3630,24 @@
       "varyings": []
     },
     {
+      "effect_id": "points/buddhabrot",
+      "normalized_bytes": 731,
+      "normalized_sha256": "d12a8961bce26bc4eed3bc3a53004c8e1c1b8c6c548258381b96f5c650d8b6dd",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "zWrite",
+      "program": "zWrite",
+      "program_key": "points/buddhabrot:zWrite",
+      "raw_bytes": 874,
+      "raw_sha256": "e6fefa1486d7be6895efef7153d599497234386f83b21b042248b824018d655d",
+      "runtime_key": "points/buddhabrot:zWrite",
+      "source": "sources/points/buddhabrot/zWrite.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "points/dla",
       "normalized_bytes": 194,
       "normalized_sha256": "9b32532434939428ac985b21e4cba477ecf4f9648a05362398b699d3b60f8c21",
@@ -4026,6 +4080,25 @@
       "raw_sha256": "e34a1a875649930e3eff5d22e394c97afb088d325562d78368e463a8dda59afb",
       "runtime_key": "render/pointsRender:diffuse",
       "source": "sources/render/pointsRender/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/renderCubemapSurface",
+      "normalized_bytes": 3229,
+      "normalized_sha256": "0c1460653b347fcf2c27eebc51424190bf186648d23a348b34736ec8469f2c05",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "render",
+      "program": "renderCubemapSurface",
+      "program_key": "render/renderCubemapSurface:renderCubemapSurface",
+      "raw_bytes": 4410,
+      "raw_sha256": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+      "runtime_key": "render/renderCubemapSurface:renderCubemapSurface",
+      "source": "sources/render/renderCubemapSurface/renderCubemapSurface.glsl",
       "status": "generated",
       "varyings": []
     },

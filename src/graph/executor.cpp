@@ -1375,7 +1375,7 @@ void validate_uniform_abi_shape(const EffectStep& step,
   // `glsl::Vec2` (float lanes) ABI narrows it to float32 at bind time, one
   // rounding earlier than the authority ever does -- measurably not
   // byte-exact (rare, boundary-triggered) against it.
-  static constexpr std::array<std::pair<std::string_view, std::string_view>, 13>
+  static constexpr std::array<std::pair<std::string_view, std::string_view>, 14>
       kTypes = {{{"float", "float"},
                  // A GLSL-declared scalar `float` uniform whose value the JS
                  // CPU authority never rounds to float32 (an ordinary DSL
@@ -1399,7 +1399,8 @@ void validate_uniform_abi_shape(const EffectStep& step,
                  {"vec3", "glsl::DVec3"},
                  {"vec4", "glsl::Vec4"},
                  {"dvec3", "glsl::DVec3"},
-                 {"dvec4", "glsl::DVec4"}}};
+                 {"dvec4", "glsl::DVec4"},
+                 {"mat3", "glsl::Mat3"}}};
   bool known = false;
   for (const auto& [type, cpp_type] : kTypes) {
     if (abi.type == type && abi.cpp_type == cpp_type) {
@@ -1600,6 +1601,20 @@ void validate_uniform_abi_shape(const EffectStep& step,
     if (cpp_type == "glsl::DVec3") return glsl::DVec3(d[0], d[1], d[2]);
     if (cpp_type == "glsl::Vec4") return glsl::Vec4(f[0], f[1], f[2], f[3]);
     if (cpp_type == "glsl::IVec2") return glsl::IVec2(i[0], i[1]);
+  }
+  if (cpp_type == "glsl::Mat3") {
+    if (value.kind != PlanValue::Kind::array || value.array.size() != 9U) {
+      return fail("mat3 has the wrong cardinality");
+    }
+    glsl::Mat3 result;
+    for (std::size_t col = 0; col < 3U; ++col) {
+      for (std::size_t row = 0; row < 3U; ++row) {
+        const auto& item = value.array[col * 3U + row];
+        if (!is_finite_plan_number(item)) return fail("mat3 has an invalid element");
+        result[col][row] = noisemaker::f32(item.number);
+      }
+    }
+    return result;
   }
   if (cpp_type == "vec4[275]") {
     if (value.kind != PlanValue::Kind::array || value.array.size() != 275U) {

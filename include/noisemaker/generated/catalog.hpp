@@ -47,6 +47,8 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_colorReplace_colorReplace(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_colorspace_colorspace(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfBlend(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfBlur(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfSharpen(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_corrupt_corrupt(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_craquelure_craquelure(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_crt_crt(const glsl::Bindings& bindings);
@@ -207,6 +209,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_mixer_uvRemap_uvRemap(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_attractor_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_buddhabrot_zWrite(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings);
@@ -231,6 +234,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_render_pointsRender_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_render_renderCubemapSurface_renderCubemapSurface(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_bitwise_bitwise(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cellularAutomata_caFb(const glsl::Bindings& bindings);

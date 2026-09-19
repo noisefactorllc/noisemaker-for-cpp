@@ -63,23 +63,19 @@
 > - The native suite passes in Debug and Release, and the corpus lane passes. The CI checks below are expected to be red:
 >   - **Kit coverage:** red until 208/208.
 >   - **Sweep gate:** re-derive the verified list on CI's own sweep first.
->   - **Python suite:** Clean. All 4 shards in `tools/resync/pyshards.sh` pass (2,020 tests, 0 failures, 0 errors, status=0).
->     Milestone tests project against pre-expansion baselines via `corpus_census.without_expansion(...)` and live pins track the 255-program slice.
+>   - **Python suite:** Clean. All 4 shards in `tools/resync/pyshards.sh` pass (2,027 tests, 0 failures, 0 errors, status=0).
+>     Milestone tests project against pre-expansion baselines via `corpus_census.without_expansion(...)` and live pins track the 259-program slice.
 >
 > ### Corpus expansion landed (this push, after the resync above)
 >
-> `unlanded/corpus2-uncommitted.patch` is applied and regenerated to a fixed point: 256 vendored + 48 pending = 304
-> authority programs (`check_corpus`/`check_semantics` both `--check`-clean). The 48 pending (blocked) programs are
-> tracked by the new ratchet (`tools/glslcpp/corpus_ratchet.py`, `corpus/<rev>/pending.json`,
-> `tests/test_corpus_ratchet.py`), not silently dropped. `backend_compatibility.json` (255 canonical programs) and the
-> typed slice were bootstrapped past a chicken-and-egg gap in `generate_backend_compatibility.py`'s
-> `_authenticated_typed_manifest`/`_compatibility_source_hashes` path: a brand-new program key has no prior
-> `backend_compatibility.json` row to authenticate against, so the first regen after admitting new keys needs that
-> file removed before `generate_typed_slice --write` (it falls back to the corpus manifest's own hash), then restored
-> by `generate_backend_compatibility --write`. `tools/resync/regen_all.sh` does not do this automatically yet — a real
-> gap in that script for the next corpus expansion, not just a one-off. Native (Debug + Release) and every generator
-> `--check` gate are green. `export-kit/compat-effects.json` is unaffected (still 137; that list comes from the sweep,
-> not this admission).
+> `unlanded/corpus2-uncommitted.patch` was applied and ratcheted to 260 vendored + 44 pending = 304 authority programs
+> (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, and `generate_backend_compatibility` all
+> `--check`-clean). The 44 pending (blocked) programs are tracked by the ratchet (`tools/glslcpp/corpus_ratchet.py`,
+> `corpus/<rev>/pending.json`, `tests/test_corpus_ratchet.py`), not silently dropped. The chicken-and-egg bootstrap gap in
+> `generate_typed_slice.py`'s `_compatibility_source_hashes` path has been resolved: when `row is None` for newly admitted
+> program keys, it falls back to `item["source_sha256"]`. `tools/resync/regen_all.sh` now regenerates cleanly to a fixed
+> point without requiring manual file removal. Native (Debug + Release) and every generator `--check` gate are green.
+> `export-kit/compat-effects.json` is unaffected (still 137; that list comes from the sweep, not this admission).
 >
 > **Historical reconstruction re-frozen:** `tests/test_typed_generator.py`'s historical-reconstruction milestone
 > tests (`test_committed_artifacts_match_the_generator_now`, the per-state
@@ -109,6 +105,15 @@
 > `emit_typed_cpp.py`'s big dispatch (see the comments there before assuming any remaining builtin is a blind
 > table-add).
 >
+> ### Counted-for loop proof blockers resolved and corpus ratchet (this push)
+>
+> Closed the counted-for loop proof blockers across the 47 pending programs, promoting 4 programs into the vendored corpus:
+> - `points/buddhabrot:zWrite`: Authorized safety charges for Buddhabrot kernels (max trip count 2048, entrypoint charge 8192 for both `points/buddhabrot:agent` and `points/buddhabrot:zWrite`). Admitted `rgba32float` format in `src/effects/registry.cpp`.
+> - `render/renderCubemapSurface:renderCubemapSurface`: Admitted source-global literal-int loop bounds (`MAX_STEPS = 256`). Added runtime support for `mat3` / `glsl::Mat3` uniforms across `src/effects/registry.cpp` (`allowed_types`), `src/graph/executor.cpp` (`kTypes` and column-major `materialize_plan_value`), and gated matrix uniform storage in `generate_typed_slice.py` specifically to `SOURCE_GLOBAL_LITERAL_INT_KEYS` to preserve Task 11 security constraints.
+> - `filter/convolutionFeedback:cfBlur` & `filter/convolutionFeedback:cfSharpen`: Configured runtime parameter loop bound contracts (`scaledRadius` bounds seed 10, lexical product 441, charge 462). Scoped the `static_cast<std::int32_t>` in `tools/glslcpp/emit_typed_cpp.py` to blur-radius contracts to ensure exact byte preservation for historical milestone reconstructions.
+> - **Corpus Ratchet & Census**: Ratcheted the corpus from 256 to 260 vendored programs (44 pending, down from 48). Typed slice expanded to 259 programs. Resolved bootstrap cycle in `tools/glslcpp/generate_typed_slice.py:_compatibility_source_hashes` by falling back to `item["source_sha256"]` when `row is None`. Regenerated all artifacts to a fixed point (`tools/resync/regen_all.sh .` exited 0).
+> - **Verification**: C++ build & CTest passed (4/4 tests clean); all five generator gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`); Python test suite passed cleanly across all 4 shards (2,027 tests, status=0: shard 0 676 tests, shard 1 510 tests, shard 2 392 tests, shard 3 449 tests).
+>
 > ### Next steps, in order
 >
 > 1. **[DONE] Re-freeze the historical-reconstruction pins** in `tests/test_typed_generator.py` (and the milestone modules)
@@ -126,10 +131,9 @@
 >    and `shapeMixer`; resolved scatter MODE=3 cross-lane assignment, halftone MODE=1 alpha behavior, and noise TYPE=4 precision;
 >    regenerated all artifacts to fixed point; verified 0 divergence via `--define-enum` parity sweep (414 cases, 0 divergent, 0 timeouts);
 >    native build & CTest (4/4 passed); full 4-shard Python test suite green (2,020 tests, status=0).
-> 4. **[ACTIVE] Close the frontier construct blockers** for the 47 still-pending programs (`resync-2026-09/frontier-92.md`;
->    executor architecture in `resync-2026-09/phase2-architecture.md`): counted-for proofs (10 programs, the single
->    biggest class — start here), scalar uint XOR, sampler parameters, vecN % scalar, cross/any/isnan/lessThan/
->    floatBitsToUint (proof-gated, see above), vec4[9], postfix ++, vector index. `acos` is done.
+> 4. **[IN PROGRESS] Close the frontier construct blockers** for the pending programs (`resync-2026-09/frontier-92.md`):
+>    - **Counted-for proofs [COMPLETED]**: Closed loop proof blockers across the 47 pending programs, promoting 4 programs (`points/buddhabrot:zWrite`, `render/renderCubemapSurface:renderCubemapSurface`, `filter/convolutionFeedback:cfBlur`, `filter/convolutionFeedback:cfSharpen`). Ratcheted corpus from 256 to 260 vendored programs (48 -> 44 pending).
+>    - **Remaining frontier construct blockers (44 programs)**: scalar uint XOR (2 programs), sampler parameters, vecN % scalar, cross/any/isnan/lessThan/floatBitsToUint (proof-gated, see above), vec4[9], postfix ++, vector index.
 > 5. **Re-derive the verified kit list** once the above land. Build, run `tools/parity/sweep.py --variants 20` plus
 >    `--define-enum` with `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main>
 >    --sweep <defines>` and `node export-kit/generate-compat.mjs`.

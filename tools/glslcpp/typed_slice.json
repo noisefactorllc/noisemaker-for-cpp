@@ -309,6 +309,16 @@
     },
     {
       "defines": {},
+      "program_key": "filter/convolutionFeedback:cfBlur",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "filter/convolutionFeedback:cfSharpen",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
+    },
+    {
+      "defines": {},
       "program_key": "filter/corrupt:corrupt"
     },
     {
@@ -1080,6 +1090,10 @@
     },
     {
       "defines": {},
+      "program_key": "points/buddhabrot:zWrite"
+    },
+    {
+      "defines": {},
       "program_key": "points/dla:copyGrid"
     },
     {
@@ -1173,6 +1187,10 @@
     {
       "defines": {},
       "program_key": "render/pointsRender:diffuse"
+    },
+    {
+      "defines": {},
+      "program_key": "render/renderCubemapSurface:renderCubemapSurface"
     },
     {
       "bitwise_scalar_int_ops_profile": "bitwise-scalar-int-ops-v2",

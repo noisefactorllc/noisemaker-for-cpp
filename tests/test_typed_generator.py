@@ -10842,7 +10842,8 @@ and item["program_key"] != "filter/wobble:wobble"
                                    "filter/reindex:nmReindexReduce",
                                    "filter/parallax:parallax",
                                    "filter/lightLeak:lightLeak",
-                                   "synth/mandelbrot:mandelbrot")),
+                                   "synth/mandelbrot:mandelbrot",
+                                   "render/renderCubemapSurface:renderCubemapSurface")),
                          generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         post_task22_keys = frozenset((
             *task23_keys,
@@ -22547,21 +22548,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 255-program tree with authenticated Gradient semantic repair, QUOTED FROM
+        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                33561,
-                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
+                34056,
+                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
             "src/typed_generated/typed_slice.cpp": (
-                2933081,
-                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
+                2958466,
+                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
             "src/typed_generated/typed_manifest.json": (
-                778630,
-                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
+                789578,
+                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
             "include/noisemaker/generated/catalog.hpp": (
-                25259,
-                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
+                25663,
+                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23327,21 +23328,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 255-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                33561,
-                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
+                34056,
+                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
             "src/typed_generated/typed_slice.cpp": (
-                2933081,
-                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
+                2958466,
+                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
             "src/typed_generated/typed_manifest.json": (
-                778630,
-                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
+                789578,
+                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
             "include/noisemaker/generated/catalog.hpp": (
-                25259,
-                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
+                25663,
+                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24083,21 +24084,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                33561,
-                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
+                34056,
+                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
             "src/typed_generated/typed_slice.cpp": (
-                2933081,
-                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
+                2958466,
+                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
             "src/typed_generated/typed_manifest.json": (
-                778630,
-                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
+                789578,
+                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
             "include/noisemaker/generated/catalog.hpp": (
-                25259,
-                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
+                25663,
+                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24619,21 +24620,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                33561,
-                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
+                34056,
+                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
             "src/typed_generated/typed_slice.cpp": (
-                2933081,
-                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
+                2958466,
+                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
             "src/typed_generated/typed_manifest.json": (
-                778630,
-                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
+                789578,
+                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
             "include/noisemaker/generated/catalog.hpp": (
-                25259,
-                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
+                25663,
+                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25219,21 +25220,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 255-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                33561,
-                "2b51ee928a83e08699fca8b6f9edabc0d8c4c863bbee94a9e4a3a763a50876b9"),
+                34056,
+                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
             "src/typed_generated/typed_slice.cpp": (
-                2933081,
-                "00960bf573fb20503977f4940688810007e8e5954c0627c635aec92a0b465e79"),
+                2958466,
+                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
             "src/typed_generated/typed_manifest.json": (
-                778630,
-                "c9b9ba3574dac4665b14a5b79281512cc8cba1d79a6f6b30a8c51c75e33479ed"),
+                789578,
+                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
             "include/noisemaker/generated/catalog.hpp": (
-                25259,
-                "10b4acaacc748e4ab00e966edb5cad7965e79484993de8c190d58f98779666c5"),
+                25663,
+                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25402,7 +25403,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         import hashlib
         import pathlib
 
-        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources/points/buddhabrot/zWrite.glsl")
+        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/points/buddhabrot/zWrite.glsl")
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
         key = "points/buddhabrot:zWrite"
@@ -25438,7 +25439,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(("MAX_STEPS", 14, "256", 256), landed["integer"])
 
         source_path = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
         )
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -25511,7 +25512,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             (CF_BLUR_KEY, "filter/convolutionFeedback/cfBlur.glsl", "blurRadius", 4),
             (CF_SHARPEN_KEY, "filter/convolutionFeedback/cfSharpen.glsl", "sharpenRadius", 5),
         ):
-            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / rel_path
+            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / rel_path
             raw = source_path.read_text(encoding="utf-8")
             shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 

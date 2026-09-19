@@ -19866,6 +19866,99 @@
         }
       }
     },
+    "render/renderCubemapSurface": {
+      "func": "renderCubemapSurface",
+      "kind": "filter",
+      "namespace": "render",
+      "params": {
+        "absorption": {
+          "default": 1,
+          "max": 4,
+          "min": 0,
+          "type": "float",
+          "uniform": "absorption"
+        },
+        "bgAlpha": {
+          "default": 1,
+          "max": 1,
+          "min": 0,
+          "type": "float",
+          "uniform": "bgAlpha"
+        },
+        "bgColor": {
+          "default": [
+            0.02,
+            0.02,
+            0.02
+          ],
+          "type": "color",
+          "uniform": "bgColor"
+        },
+        "cubeBasis": {
+          "default": [
+            1,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            1
+          ],
+          "type": "mat3",
+          "uniform": "cubeBasis"
+        },
+        "density": {
+          "default": 4,
+          "max": 20,
+          "min": 0,
+          "type": "float",
+          "uniform": "density"
+        },
+        "emission": {
+          "default": 1,
+          "max": 4,
+          "min": 0,
+          "type": "float",
+          "uniform": "emission"
+        },
+        "volumeSize": {
+          "choices": {
+            "v128": 128,
+            "v16": 16,
+            "v32": 32,
+            "v64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {
+            "analyticalGeo": "inputGeo",
+            "volumeCache": "inputTex3d"
+          },
+          "key": "render/renderCubemapSurface:renderCubemapSurface",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex",
+            "geoOut": "screenGeoBuffer"
+          },
+          "program": "renderCubemapSurface"
+        }
+      ],
+      "textures": {
+        "screenGeoBuffer": {
+          "format": "rgba16f",
+          "height": "resolution",
+          "width": "resolution"
+        }
+      }
+    },
     "synth/bitwise": {
       "func": "bitwise",
       "kind": "generator",
@@ -24379,6 +24472,7 @@
       "render/pointsBillboardRender",
       "render/pointsEmit",
       "render/pointsRender",
+      "render/renderCubemapSurface",
       "synth/cellularAutomata",
       "synth/mnca",
       "synth/navierStokes",
