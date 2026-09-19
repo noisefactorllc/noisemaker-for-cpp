@@ -25395,6 +25395,33 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                     ordinal.sub("typed_SENTINEL", block),
                     ordinal.sub("typed_SENTINEL", current_blocks[key]))
 
+    def test_buddhabrot_counted_for_safety_charge_authorization(self) -> None:
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        import hashlib
+        import pathlib
+
+        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources/points/buddhabrot/zWrite.glsl")
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        key = "points/buddhabrot:zWrite"
+
+        ast = parse_program(raw, key)
+        typed = analyze_program(ast, key)
+        generate_typed_slice.validate_capabilities(typed, generate_typed_slice.APPROVED_CAPABILITIES, source_hash=shash)
+        cpp = emit_typed_cpp.render_typed_cpp(typed, key, shash)
+        self.assertIn("i < std::int32_t(2048)", cpp)
+
+        # Confirm non-admitted key with trip count 2048 is rejected
+        non_admitted_src = "out vec4 fragColor; void main() { for (int i = 0; i < 2048; i++) {} fragColor = vec4(0.0); }"
+        non_key = "filter/test:test"
+        ast_na = parse_program(non_admitted_src, non_key)
+        typed_na = analyze_program(ast_na, non_key)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(typed_na, generate_typed_slice.APPROVED_CAPABILITIES)
+        self.assertIn("unsupported counted-for safety charge", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

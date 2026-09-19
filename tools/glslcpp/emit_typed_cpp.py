@@ -324,6 +324,9 @@ from .frontend import dither_frontend_profile as _DITHER_FRONTEND
 
 
 _DITHER_AUTHENTICATED_CARRIERS: dict[int, object] = {}
+BUDDHABROT_KEYS = frozenset({"points/buddhabrot:agent", "points/buddhabrot:zWrite"})
+BUDDHABROT_MAX_TRIP_COUNT = 2048
+BUDDHABROT_MAX_ENTRYPOINT_CHARGE = 8192
 
 
 def authenticate_dither_frontend(program: TypedProgram, source_hash: str | None,
@@ -4837,14 +4840,21 @@ class _Emitter:
                     or len(actual.children) != len(expected.children)):
                 raise _error(self.program, actual, "malformed counted-for proof")
             proof = actual.loop_proof
-            if proof is not None and (
-                    proof.trip_count > COUNTED_FOR_V1_MAX_TRIP_COUNT or proof.lexical_depth > 3
-                    or proof.effective_depth > effective_depth_limit
-                    or proof.lexical_product > COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT
-                    or proof.entrypoint_charge > COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE
-                    or min(proof.trip_count, proof.lexical_depth, proof.effective_depth,
-                           proof.lexical_product, proof.entrypoint_charge) < 0):
-                raise _error(self.program, actual, "unsupported counted-for safety charge")
+            if proof is not None:
+                max_trip_count = (
+                    BUDDHABROT_MAX_TRIP_COUNT if self.program.key in BUDDHABROT_KEYS
+                    else (1000 if self.program.key == JULIA_FRONTEND_KEY
+                          else COUNTED_FOR_V1_MAX_TRIP_COUNT))
+                max_charge = (
+                    BUDDHABROT_MAX_ENTRYPOINT_CHARGE if self.program.key in BUDDHABROT_KEYS
+                    else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
+                if (proof.trip_count > max_trip_count or proof.lexical_depth > 3
+                        or proof.effective_depth > effective_depth_limit
+                        or proof.lexical_product > COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT
+                        or proof.entrypoint_charge > max_charge
+                        or min(proof.trip_count, proof.lexical_depth, proof.effective_depth,
+                               proof.lexical_product, proof.entrypoint_charge) < 0):
+                    raise _error(self.program, actual, "unsupported counted-for safety charge")
             for actual_child, expected_child in zip(actual.children, expected.children):
                 statement(actual_child, expected_child)
 

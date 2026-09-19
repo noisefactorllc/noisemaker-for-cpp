@@ -828,6 +828,10 @@ GENERIC_DYNAMIC_DEFINE_TYPES: dict[str, dict[str, str]] = {
 # program, not per-value, so halftone stays default-only until that
 # materialization contract is modeled.
 
+BUDDHABROT_KEYS = frozenset({"points/buddhabrot:agent", "points/buddhabrot:zWrite"})
+BUDDHABROT_MAX_TRIP_COUNT = 2048
+BUDDHABROT_MAX_ENTRYPOINT_CHARGE = 8192
+
 
 def _same_object_sequence(actual, expected) -> bool:
     """Return true only when two sequences contain the identical objects."""
@@ -5991,12 +5995,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(f"{location(actual)}: malformed counted-for proof")
         proof = actual.loop_proof
         if proof is not None:
-            max_trip_count = (1000 if typed.key == JULIA_KEY
-                              else COUNTED_FOR_V1_MAX_TRIP_COUNT)
+            max_trip_count = (
+                BUDDHABROT_MAX_TRIP_COUNT if typed.key in BUDDHABROT_KEYS
+                else (1000 if typed.key == JULIA_KEY
+                      else COUNTED_FOR_V1_MAX_TRIP_COUNT))
+            max_charge = (
+                BUDDHABROT_MAX_ENTRYPOINT_CHARGE if typed.key in BUDDHABROT_KEYS
+                else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
             if (proof.trip_count > max_trip_count or proof.lexical_depth > 3
                     or proof.effective_depth > effective_depth_limit
                     or proof.lexical_product > COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT
-                    or proof.entrypoint_charge > COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE
+                    or proof.entrypoint_charge > max_charge
                     or min(proof.trip_count, proof.lexical_depth, proof.effective_depth,
                            proof.lexical_product, proof.entrypoint_charge) < 0):
                 raise GeneratorError(f"{location(actual)}: unsupported counted-for safety charge")
