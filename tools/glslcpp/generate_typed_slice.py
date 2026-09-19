@@ -6603,6 +6603,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             visited_testpattern_array_constructors.append(declaration.initializer)
         reject_type(declaration.type, declaration)
         if (declaration.type.kind == "matrix"
+                and declaration.symbol.storage != "uniform"
                 and declaration.symbol.id not in admitted_globals):
             raise GeneratorError(f"{location(declaration)}: unsupported global matrix declaration")
         if any(declaration is item

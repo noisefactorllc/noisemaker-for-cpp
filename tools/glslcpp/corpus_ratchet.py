@@ -205,17 +205,28 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     if any(not isinstance(name, str) or not isinstance(value, int) for name, value in defaults.items()):
         return {"stage": "typed.defines", "diagnostic": f"{key}: invalid default-define contract {defaults!r}"}
     source_hash = _sha(source_bytes)
-    typed = analyze_program(parse_program(source, key, defaults), key, source_global_literal_int_profile=None)
+    from tools.glslcpp.frontend.loop_proof import (
+        SOURCE_GLOBAL_LITERAL_INT_CAPABILITY, SOURCE_GLOBAL_LITERAL_INT_KEYS,
+    )
+    source_global_literal_int_profile = (
+        SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
+    )
+    typed = analyze_program(parse_program(source, key, defaults), key,
+                            source_global_literal_int_profile=source_global_literal_int_profile)
     typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
     typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
     try:
-        generate_typed_slice.validate_capabilities(typed, generate_typed_slice.APPROVED_CAPABILITIES,
-                                                   source_hash=source_hash)
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=source_hash,
+            source_global_literal_int_profile=source_global_literal_int_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
-        render_typed_cpp(typed, key, source_hash, "typed_probe",
-                         "bind_" + key.replace("/", "_").replace(":", "_"))
+        render_typed_cpp(
+            typed, key, source_hash, "typed_probe",
+            "bind_" + key.replace("/", "_").replace(":", "_"),
+            source_global_literal_int_profile=source_global_literal_int_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None

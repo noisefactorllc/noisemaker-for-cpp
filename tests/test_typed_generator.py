@@ -25422,6 +25422,65 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             generate_typed_slice.validate_capabilities(typed_na, generate_typed_slice.APPROVED_CAPABILITIES)
         self.assertIn("unsupported counted-for safety charge", str(ctx.exception))
 
+    def test_render_cubemap_surface_source_global_literal_int_admission(self) -> None:
+        from tools.glslcpp import emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import loop_proof, parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        import hashlib
+        import pathlib
+
+        key = "render/renderCubemapSurface:renderCubemapSurface"
+        self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
+        self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+
+        landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+        self.assertEqual(("MAX_STEPS", 14, "256", 256), landed["integer"])
+
+        source_path = pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
+        )
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        ast = parse_program(raw, key)
+        typed = analyze_program(
+            ast, key,
+            source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY
+        )
+
+        summary = typed.counted_loop_proof
+        self.assertEqual(
+            (1, 0, 1, 256, 256, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic)
+        )
+
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY
+        )
+
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed, key, shash,
+            source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY
+        )
+        self.assertIn("const std::int32_t MAX_STEPS = 256;", cpp)
+        self.assertIn("(i < MAX_STEPS)", cpp)
+        self.assertIn("void pixel(", cpp)
+        self.assertIn("BoundKernelMrt bind_typed(", cpp)
+
+        # Without profile, analyze_program does not attach source global bound
+        typed_no_profile = analyze_program(parse_program(raw, key), key)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash
+            )
+        self.assertIn("exact source-global literal-int carrier required", str(ctx.exception))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -253,6 +253,18 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "1ca045076337edb3bfcb5e618e0eb83f9633858eafb91176a2e713b4be28314e",
         "interface": "2f497a1fb59406d16decbd6bb2c0a5e4e7e5536774fa7ec56a34de12de657c43",
     },
+    "render/renderCubemapSurface:renderCubemapSurface": {
+        "raw": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
+        "source": "0c1460653b347fcf2c27eebc51424190bf186648d23a348b34736ec8469f2c05",
+        "defines": (), "integer": ("MAX_STEPS", 14, "256", 256),
+        "globals": (("MAX_STEPS", 14, "int", "256"),),
+        "reads": (("main", 22, 98, 40, 98, 49), ("main", 22, 100, 29, 100, 38)),
+        "pre_functions": "9ee121b07ce12454fffa970c2bc8db914fbfcb2272db204ed757f0defbc19c01",
+        "post_functions": "026bc9c817b14f2360e6bf53cda08d2cfa8ff41979388bd9f6ca02967377df98",
+        "pre_whole": "ed655994b18e0c07d6349e506f8a2491f2ae398fbfc2d27580ed76dbfc68b9dc",
+        "post_whole": "e231d8537589aceb772d0053cb37f9f109cbe26a04fcaac4db53277acd023d86",
+        "interface": "dae25c3eaef96bcdabf93ba0681b2b2978d4da0e534ee05bd42aa397cda31cb9",
+    },
 }
 SOURCE_GLOBAL_LITERAL_INT_KEYS = frozenset(_SOURCE_GLOBAL_LITERAL_INT_PROFILES)
 
