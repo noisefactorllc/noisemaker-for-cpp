@@ -63,8 +63,8 @@
 > - The native suite passes in Debug and Release, and the corpus lane passes. The CI checks below are expected to be red:
 >   - **Kit coverage:** red until 208/208.
 >   - **Sweep gate:** re-derive the verified list on CI's own sweep first.
->   - **Python suite:** Clean. All 4 shards in `tools/resync/pyshards.sh` pass (2,027 tests, 0 failures, 0 errors, status=0).
->     Milestone tests project against pre-expansion baselines via `corpus_census.without_expansion(...)` and live pins track the 259-program slice.
+>   - **Python suite:** Clean. All 4 shards in `tools/resync/pyshards.sh` pass (2,050 tests, 0 failures, 0 errors, status=0).
+>     Milestone tests project against pre-expansion baselines via `corpus_census.without_expansion(...)` and live pins track the 263-program slice (264 vendored programs).
 >
 > ### Corpus expansion landed (this push, after the resync above)
 >
@@ -105,7 +105,7 @@
 > `emit_typed_cpp.py`'s big dispatch (see the comments there before assuming any remaining builtin is a blind
 > table-add).
 >
-> ### Counted-for loop proof blockers resolved and corpus ratchet (this push)
+> ### Counted-for loop proof blockers resolved and corpus ratchet
 >
 > Closed the counted-for loop proof blockers across the 47 pending programs, promoting 4 programs into the vendored corpus:
 > - `points/buddhabrot:zWrite`: Authorized safety charges for Buddhabrot kernels (max trip count 2048, entrypoint charge 8192 for both `points/buddhabrot:agent` and `points/buddhabrot:zWrite`). Admitted `rgba32float` format in `src/effects/registry.cpp`.
@@ -113,6 +113,19 @@
 > - `filter/convolutionFeedback:cfBlur` & `filter/convolutionFeedback:cfSharpen`: Configured runtime parameter loop bound contracts (`scaledRadius` bounds seed 10, lexical product 441, charge 462). Scoped the `static_cast<std::int32_t>` in `tools/glslcpp/emit_typed_cpp.py` to blur-radius contracts to ensure exact byte preservation for historical milestone reconstructions.
 > - **Corpus Ratchet & Census**: Ratcheted the corpus from 256 to 260 vendored programs (44 pending, down from 48). Typed slice expanded to 259 programs. Resolved bootstrap cycle in `tools/glslcpp/generate_typed_slice.py:_compatibility_source_hashes` by falling back to `item["source_sha256"]` when `row is None`. Regenerated all artifacts to a fixed point (`tools/resync/regen_all.sh .` exited 0).
 > - **Verification**: C++ build & CTest passed (4/4 tests clean); all five generator gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`); Python test suite passed cleanly across all 4 shards (2,027 tests, status=0: shard 0 676 tests, shard 1 510 tests, shard 2 392 tests, shard 3 449 tests).
+>
+> ### Simulation sampler parameter blockers resolved and corpus ratchet (this push)
+>
+> Closed the simulation sampler parameter blockers across the pending programs, promoting 4 simulation shaders into the vendored corpus:
+> - `synth/cellularAutomata:ca`
+> - `synth/mnca:mnca`
+> - `synth/reactionDiffusion:rd`
+> - `synth/reactionDiffusion:rdFb`
+> Authenticated via `tools/glslcpp/frontend/simulation_sampler_profile.py` (`simulation-sampler-parameters-v1`).
+> Gated in `generate_typed_slice.py` and lowered in `emit_typed_cpp.py` (`const Surface&` sampler parameters with AST-locked call actuals and post-emission cardinality checks).
+> - **Corpus Ratchet & Census**: Ratcheted the corpus from 260 to 264 vendored programs (40 pending, down from 44). Typed slice expanded from 259 to 263 programs (`rdFb` has `typed_generator_skip: true`).
+> - **Regeneration & Re-freezing**: Regenerated all artifacts to fixed point via `tools/resync/regen_all.sh .` (compat sha `93b20072e6c7b4e8e03c991a8669ac25f690dd5e4cdd79fddfbe80739cde7e74`). Re-froze live artifact pins across all 5 integration test classes in `tests/test_typed_generator.py` and provenance counts in `tests/test_effect_catalog_generator.py` (263 compatible programs, 80 missing passes).
+> - **Verification**: C++ build & CTest passed (4/4 tests clean); all five generator gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`); Python test suite passed cleanly across all 4 shards (2,050 tests, status=0: shard 0 699 tests, shard 1 510 tests, shard 2 392 tests, shard 3 449 tests). Zero symlinks across the checkout.
 >
 > ### Next steps, in order
 >
@@ -132,8 +145,25 @@
 >    regenerated all artifacts to fixed point; verified 0 divergence via `--define-enum` parity sweep (414 cases, 0 divergent, 0 timeouts);
 >    native build & CTest (4/4 passed); full 4-shard Python test suite green (2,020 tests, status=0).
 > 4. **[IN PROGRESS] Close the frontier construct blockers** for the pending programs (`resync-2026-09/frontier-92.md`):
->    - **Counted-for proofs [COMPLETED]**: Closed loop proof blockers across the 47 pending programs, promoting 4 programs (`points/buddhabrot:zWrite`, `render/renderCubemapSurface:renderCubemapSurface`, `filter/convolutionFeedback:cfBlur`, `filter/convolutionFeedback:cfSharpen`). Ratcheted corpus from 256 to 260 vendored programs (48 -> 44 pending).
->    - **Remaining frontier construct blockers (44 programs)**: scalar uint XOR (2 programs), sampler parameters, vecN % scalar, cross/any/isnan/lessThan/floatBitsToUint (proof-gated, see above), vec4[9], postfix ++, vector index.
+>    - **Counted-for proofs [COMPLETED]**: Closed loop proof blockers across 4 programs (`points/buddhabrot:zWrite`, `render/renderCubemapSurface:renderCubemapSurface`, `filter/convolutionFeedback:cfBlur`, `filter/convolutionFeedback:cfSharpen`). Ratcheted corpus from 256 to 260 vendored programs.
+>    - **Simulation sampler parameters [COMPLETED]**: Closed sampler parameter blockers across 4 simulation programs (`synth/cellularAutomata:ca`, `synth/mnca:mnca`, `synth/reactionDiffusion:rd`, `synth/reactionDiffusion:rdFb`). Ratcheted corpus from 260 to 264 vendored programs (40 pending, down from 44).
+>    - **Remaining frontier construct blockers (40 programs)**:
+>      - 8x: unsupported binary operator ^ (scalar uint XOR / bitwise XOR)
+>      - 5x: unsupported counted-for program proof
+>      - 5x: drawMode points is a scatter pass (scatter contract registration)
+>      - 3x: % requires same integral operands (vecN % scalar)
+>      - 3x: no exact overload for cross
+>      - 2x: unsupported typed type vec4[9]
+>      - 1x: unsupported typed expression index
+>      - 1x: drawMode billboards is a scatter pass
+>      - 1x: unsupported global declaration
+>      - 1x: unsupported typed expression post (postfix ++)
+>      - 1x: unsupported builtin any
+>      - 1x: unsupported builtin floatBitsToUint
+>      - 1x: no exact overload for uintBitsToFloat
+>      - 1x: no exact overload for isnan
+>      - 1x: no exact overload for tan
+>      - 5x: multipass-bound authority programs (2x: 3 programs, 8x: 1 program, 22x: 1 program)
 > 5. **Re-derive the verified kit list** once the above land. Build, run `tools/parity/sweep.py --variants 20` plus
 >    `--define-enum` with `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main>
 >    --sweep <defines>` and `node export-kit/generate-compat.mjs`.

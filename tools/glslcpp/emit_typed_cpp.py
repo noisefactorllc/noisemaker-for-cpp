@@ -182,6 +182,9 @@ from .frontend.shape_mixer_builtin_profile import (
 from .frontend.focus_blur_borrowed_sampler_profile import (
     FOCUS_BLUR_KEY, PROFILE as FOCUS_BLUR_BORROWED_SAMPLER_PROFILE,
     authenticate_focus_blur_borrowed_sampler_parameters)
+from .frontend.simulation_sampler_profile import (
+    SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
+    authenticate_simulation_sampler_parameters, SimulationSamplerProof)
 from .frontend.derivative_admission_profile import (
     DERIVATIVE_ADMISSION_KEYS, authenticate_derivative_admission)
 from .frontend.ceil_admission_profile import (
@@ -1026,6 +1029,7 @@ class _Emitter:
     bit_effects_frontend_profile: str | None = None
     rotate_mat2_return_profile: str | None = None
     focus_blur_borrowed_sampler_profile: str | None = None
+    simulation_sampler_profile: str | None = None
     extrude_bvec2_relational_reduction_profile: str | None = None
     edge_bvec3_contour_profile: str | None = None
     glitch_mat4_chain_profile: str | None = None
@@ -1141,6 +1145,15 @@ class _Emitter:
     emitted_rotate_expressions: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_focus_blur_proof: object | None = field(init=False, default=None)
+    authorized_simulation_sampler_proof: object | None = field(init=False, default=None)
+    emitted_simulation_sampler_parameter_sites: list[object] = field(
+        init=False, default_factory=list)
+    emitted_simulation_sampler_uses: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_simulation_sampler_calls: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    emitted_simulation_sampler_actuals: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_extrude_proof: object | None = field(init=False, default=None)
     authorized_edge_proof: object | None = field(init=False, default=None)
     authorized_edge_splat_proof: object | None = field(init=False, default=None)
@@ -1726,6 +1739,11 @@ class _Emitter:
         self.emitted_rotate_helper_count = 0
         self.emitted_rotate_expressions = []
         self.authorized_focus_blur_proof = None
+        self.authorized_simulation_sampler_proof = None
+        self.emitted_simulation_sampler_parameter_sites = []
+        self.emitted_simulation_sampler_uses = []
+        self.emitted_simulation_sampler_calls = []
+        self.emitted_simulation_sampler_actuals = []
         self.authorized_extrude_proof = None
         self.authorized_edge_proof = None
         self.authorized_edge_splat_proof = None
@@ -2246,6 +2264,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     # synth/curl carries curl_vector_math_profile (the
@@ -2287,6 +2306,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -2355,6 +2375,7 @@ class _Emitter:
                     or self.smooth_edge_luma_weights_profile is not None
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.derivative_admission_profile is not None
                     or self.linear_srgb_lane_index_profile is not None
@@ -2371,6 +2392,34 @@ class _Emitter:
         elif self.program.key == FOCUS_BLUR_KEY:
             raise _error(self.program, self.program,
                          "exact Focus Blur borrowed sampler profile carrier required")
+        if self.simulation_sampler_profile is not None:
+            if (self.program.key not in SIMULATION_SAMPLER_KEYS
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.gather_sorted_round_profile is not None
+                    or self.literal_vec3_lane_index_profile is not None
+                    or self.smooth_edge_luma_weights_profile is not None
+                    or self.perlin_scalar_uint_xor_profile is not None
+                    or self.rotate_mat2_return_profile is not None
+                    or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.extrude_bvec2_relational_reduction_profile is not None
+                    or self.derivative_admission_profile is not None
+                    or self.linear_srgb_lane_index_profile is not None
+                    or self.reflect_admission_profile is not None):
+                raise _error(self.program, self.program,
+                             "Simulation Sampler profile metadata mismatch")
+            try:
+                self.authorized_simulation_sampler_proof = (
+                    authenticate_simulation_sampler_parameters(
+                        self.program, self.source_hash,
+                        self.simulation_sampler_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key in SIMULATION_SAMPLER_KEYS:
+            raise _error(self.program, self.program,
+                         "exact Simulation Sampler profile carrier required")
         if self.extrude_bvec2_relational_reduction_profile is not None:
             if (self.program.key != EXTRUDE_KEY
                     or self.compatibility_transform is not None
@@ -2383,6 +2432,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.grade_luma_weights_profile is not None
                     or self.grade_index_expression_profile is not None
@@ -2417,6 +2467,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.caustic_word_hash_profile,
                 self.scanline_error_float_bits_ingress_profile,
@@ -2519,6 +2570,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.edge_bvec3_contour_profile,
                 self.caustic_word_hash_profile,
@@ -2630,6 +2682,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.edge_bvec3_contour_profile,
                 self.glitch_mat4_chain_profile,
@@ -2742,6 +2795,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.curl_vector_math_profile is not None
                     or self.grade_luma_weights_profile is not None
@@ -2776,6 +2830,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -2829,6 +2884,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.edge_bvec3_contour_profile is not None
                     or self.glitch_mat4_chain_profile is not None
@@ -2909,6 +2965,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.edge_bvec3_contour_profile is not None
                     or self.glitch_mat4_chain_profile is not None
@@ -2983,6 +3040,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.scanline_error_float_bits_ingress_profile is not None
@@ -3036,6 +3094,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.grade_luma_weights_profile is not None
@@ -3066,6 +3125,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -3101,6 +3161,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -3133,6 +3194,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -3326,6 +3388,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.edge_bvec3_contour_profile, self.glitch_mat4_chain_profile,
                 self.emboss_color_style_profile,
@@ -3527,6 +3590,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.edge_bvec3_contour_profile is not None
                     or self.glitch_mat4_chain_profile is not None
@@ -3641,6 +3705,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.edge_bvec3_contour_profile is not None
                     or (self.glitch_mat4_chain_profile is not None
@@ -3803,6 +3868,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.edge_bvec3_contour_profile is not None
                     or self.glitch_mat4_chain_profile is not None
@@ -3894,6 +3960,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile
                     is not None
                     or self.edge_bvec3_contour_profile is not None
@@ -3997,6 +4064,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile
                     is not None
                     or self.edge_bvec3_contour_profile is not None
@@ -4056,6 +4124,7 @@ class _Emitter:
                 "perlin_scalar_uint_xor_profile", "scalar_uint_xor_profile",
                 "bitwise_scalar_int_ops_profile", "rotate_mat2_return_profile",
                 "focus_blur_borrowed_sampler_profile",
+                "simulation_sampler_profile",
                 "extrude_bvec2_relational_reduction_profile",
                 "edge_bvec3_contour_profile", "glitch_mat4_chain_profile",
                 "emboss_color_style_profile", "shape_mixer_builtin_profile",
@@ -4312,6 +4381,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.edge_bvec3_contour_profile,
                 self.glitch_mat4_chain_profile,
@@ -4390,6 +4460,7 @@ class _Emitter:
                 self.bitwise_scalar_int_ops_profile,
                 self.rotate_mat2_return_profile,
                 self.focus_blur_borrowed_sampler_profile,
+                self.simulation_sampler_profile,
                 self.extrude_bvec2_relational_reduction_profile,
                 self.edge_bvec3_contour_profile,
                 self.glitch_mat4_chain_profile,
@@ -4450,6 +4521,7 @@ class _Emitter:
                     or self.perlin_scalar_uint_xor_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -4514,6 +4586,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -4547,6 +4620,7 @@ class _Emitter:
                     or self.bitwise_scalar_int_ops_profile is not None
                     or self.rotate_mat2_return_profile is not None
                     or self.focus_blur_borrowed_sampler_profile is not None
+                    or self.simulation_sampler_profile is not None
                     or self.extrude_bvec2_relational_reduction_profile is not None
                     or self.caustic_word_hash_profile is not None
                     or self.curl_vector_math_profile is not None
@@ -6130,6 +6204,16 @@ class _Emitter:
                              "malformed authenticated borrowed sampler parameter")
             self.emitted_focus_blur_parameter_sites.append(parameter)
             return "const Surface&"
+        sim = getattr(self, "authorized_simulation_sampler_proof", None)
+        if sim is not None and any(parameter is item
+                                   for item in sim.sampler_parameters):
+            if (not any(function is fn for fn in sim.helper_functions)
+                    or ordinal != 0
+                    or parameter.type.display() != "sampler2D"):
+                raise _error(self.program, parameter,
+                             "malformed authenticated simulation sampler parameter")
+            self.emitted_simulation_sampler_parameter_sites.append(parameter)
+            return "const Surface&"
         distortion = self.authorized_distortion_frontend_proof
         if distortion is not None and any(
                 parameter is item for item in distortion.sampler_parameter_nodes):
@@ -6745,6 +6829,14 @@ class _Emitter:
                 self.emitted_focus_blur_uses.append(value)
             if any(value is item for item in focus.calls):
                 self.emitted_focus_blur_calls.append(value)
+        sim = getattr(self, "authorized_simulation_sampler_proof", None)
+        if sim is not None:
+            if any(value is item for item in sim.sampler_uses):
+                self.emitted_simulation_sampler_uses.append(value)
+            if any(value is item for item in sim.sampler_calls):
+                self.emitted_simulation_sampler_calls.append(value)
+            if any(value is item for item in sim.sampler_actuals):
+                self.emitted_simulation_sampler_actuals.append(value)
         distortion = self.authorized_distortion_frontend_proof
         if distortion is not None:
             if any(value is item for item in distortion.sampler_calls):
@@ -12602,6 +12694,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      bit_effects_frontend_profile: str | None = None,
                      rotate_mat2_return_profile: str | None = None,
                      focus_blur_borrowed_sampler_profile: str | None = None,
+                     simulation_sampler_profile: str | None = None,
                      extrude_bvec2_relational_reduction_profile: str | None = None,
                      edge_bvec3_contour_profile: str | None = None,
                      glitch_mat4_chain_profile: str | None = None,
@@ -12703,6 +12796,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        bit_effects_frontend_profile,
                        rotate_mat2_return_profile,
                        focus_blur_borrowed_sampler_profile,
+                       simulation_sampler_profile,
                        extrude_bvec2_relational_reduction_profile,
                        edge_bvec3_contour_profile,
                        glitch_mat4_chain_profile,
@@ -13094,6 +13188,15 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 or tuple(emitter.emitted_focus_blur_calls) != proof.calls):
             raise _error(program, program,
                          "authenticated Focus Blur emission mismatch")
+    if emitter.authorized_simulation_sampler_proof is not None:
+        proof = emitter.authorized_simulation_sampler_proof
+        expected_params = [*proof.sampler_parameters, *proof.sampler_parameters]
+        if (emitter.emitted_simulation_sampler_parameter_sites != expected_params
+                or tuple(emitter.emitted_simulation_sampler_uses) != proof.sampler_uses
+                or tuple(emitter.emitted_simulation_sampler_calls) != proof.sampler_calls
+                or tuple(emitter.emitted_simulation_sampler_actuals) != proof.sampler_actuals):
+            raise _error(program, program,
+                         "authenticated Simulation Sampler emission mismatch")
     if emitter.authorized_curl_proof is not None:
         expected = emitter.authorized_curl_proof.nodes
         emitted = emitter.emitted_curl_nodes

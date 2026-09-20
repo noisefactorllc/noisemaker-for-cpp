@@ -27459,9 +27459,211 @@ BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings) {
   return BoundKernel(state, &typed_227::pixel);
 }
 
+// Typed IR program: synth/cellularAutomata:ca
+// Source SHA-256: 147eb021eb138adc47149edf9440b94e8c1128d2a35dfb236a9a76f091397e15
+namespace typed_228 {
+struct State final : KernelState {
+  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* fbTex_value, std::int32_t smoothing_value, const Surface* prevFrameTex_value) : time(time_value), seed(seed_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), fbTex(fbTex_value), smoothing(smoothing_value), prevFrameTex(prevFrameTex_value) {}
+  double time;
+  std::int32_t seed;
+  glsl::Vec2 resolution;
+  glsl::Vec2 tileOffset;
+  glsl::Vec2 fullResolution;
+  const Surface* fbTex;
+  std::int32_t smoothing;
+  const Surface* prevFrameTex;
+};
+
+[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
+  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
+  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
+  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return bicubic4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  [[maybe_unused]] double b0 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b1 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t3))) - static_cast<double>((static_cast<double>(static_cast<float>(6.0)) * static_cast<double>(t2))))) + static_cast<double>(static_cast<float>(4.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b2 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-3.0)) * static_cast<double>(t3))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t2))))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b3 = (static_cast<double>(t3) / static_cast<double>(static_cast<float>(6.0)));
+  return ((((p0 * b0) + (p1 * b1)) + (p2 * b2)) + (p3 * b3));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  return (((p1 + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t)) * (p2 - p0))) + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t2)) * ((((static_cast<float>(2.0) * p0) - (static_cast<float>(5.0) * p1)) + (static_cast<float>(4.0) * p2)) - p0))) + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t3)) * ((((-p0) + (static_cast<float>(3.0) * p1)) - (static_cast<float>(3.0) * p2)) + p0)));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = catmullRom3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = catmullRom3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = catmullRom3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return catmullRom3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  return (p1 + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t)) * ((p2 - p0) + (t * (((((static_cast<float>(2.0) * p0) - (static_cast<float>(5.0) * p1)) + (static_cast<float>(4.0) * p2)) - p3) + (t * (((static_cast<float>(3.0) * (p1 - p2)) + p3) - p0)))))));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return catmullRom4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double amount = (static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::cos((static_cast<double>(t) * static_cast<double>(static_cast<float>(3.14159265359))))))) * static_cast<double>(static_cast<float>(0.5)));
+  return glsl::mix(a, b, amount);
+}
+
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = quadratic3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = quadratic3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = quadratic3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return quadratic3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  return (((((p0 * static_cast<float>(0.5)) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) + ((p1 * static_cast<float>(0.5)) * (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-2.0)) * static_cast<double>(t2))) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0))))) + ((p2 * static_cast<float>(0.5)) * t2));
+}
+
+void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
+  const auto& state = static_cast<const State&>(kernel_base);
+  (void)state;
+  (void)context;
+  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
+  [[maybe_unused]] double state_glsl_93 = static_cast<float>(0.0);
+  if (state.smoothing == std::int32_t(0)) {
+    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+  } else {
+    if (state.smoothing == std::int32_t(3)) {
+      [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+      [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+      [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+      [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+      state_glsl_93 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
+    } else {
+      if (state.smoothing == std::int32_t(4)) {
+        [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        state_glsl_93 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
+      } else {
+        if (state.smoothing == std::int32_t(5)) {
+          [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          state_glsl_93 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
+        } else {
+          if (state.smoothing == std::int32_t(6)) {
+            [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            state_glsl_93 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
+          } else {
+            [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+            [[maybe_unused]] glsl::Vec2 nd2 = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 xy = (globalCoord - (nd2 * static_cast<float>(0.5)));
+            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, (xy / state.fullResolution)));
+            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))) / state.fullResolution)));
+            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))) / state.fullResolution)));
+            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))) / state.fullResolution)));
+            [[maybe_unused]] double xAmount = glsl::fract((static_cast<double>(glsl::swizzle<0>(xy)) / static_cast<double>(glsl::swizzle<0>(nd2))));
+            [[maybe_unused]] double yAmount = glsl::fract((static_cast<double>(glsl::swizzle<1>(xy)) / static_cast<double>(glsl::swizzle<1>(nd2))));
+            if (state.smoothing == std::int32_t(1)) {
+              [[maybe_unused]] double v0 = glsl::mix(v00, v10, xAmount);
+              [[maybe_unused]] double v1 = glsl::mix(v01, v11, xAmount);
+              state_glsl_93 = glsl::mix(v0, v1, yAmount);
+            } else {
+              [[maybe_unused]] double v0 = cosineMix(state, context, v00, v10, xAmount);
+              [[maybe_unused]] double v1 = cosineMix(state, context, v01, v11, xAmount);
+              state_glsl_93 = cosineMix(state, context, v0, v1, yAmount);
+            }
+          }
+        }
+      }
+    }
+  }
+  [[maybe_unused]] double intensity = glsl::clamp(state_glsl_93, static_cast<float>(0.0), static_cast<float>(1.0));
+  output = glsl::Vec4(glsl::Vec4(glsl::FloatExpr<3>(intensity), static_cast<float>(1.0)));
+}
+}  // namespace typed_228
+
+BoundKernel bind_synth_cellularAutomata_ca(const glsl::Bindings& bindings) {
+  const auto state = std::make_shared<typed_228::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture("prevFrameTex"));
+  (void)bindings;
+  return BoundKernel(state, &typed_228::pixel);
+}
+
 // Typed IR program: synth/cellularAutomata:caFb
 // Source SHA-256: 1668346247db9567e6880d69290cef113c50edc0ba576cf2d29cf497227fef89
-namespace typed_228 {
+namespace typed_229 {
 struct State final : KernelState {
   State(double time_value, double deltaTime_value, std::int32_t frame_value, const Surface* bufTex_value, const Surface* tex_value, glsl::Vec2 resolution_value, std::int32_t ruleIndex_value, double speed_value, double weight_value, std::int32_t seed_value, bool resetState_value, bool useCustom_value, std::int32_t source_value) : time(time_value), deltaTime(deltaTime_value), frame(frame_value), bufTex(bufTex_value), tex(tex_value), resolution(resolution_value), ruleIndex(ruleIndex_value), speed(speed_value), weight(weight_value), seed(seed_value), resetState(resetState_value), useCustom(useCustom_value), source(source_value) {}
   double time;
@@ -27685,17 +27887,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec4 nextState = glsl::FloatExpr<4>(newState, newState, newState, static_cast<float>(1.0));
   output = glsl::Vec4(glsl::mix(currentState, nextState, glsl::component_min(static_cast<float>(1.0), (static_cast<double>(state.deltaTime) * static_cast<double>(animSpeed)))));
 }
-}  // namespace typed_228
+}  // namespace typed_229
 
 BoundKernel bind_synth_cellularAutomata_caFb(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_228::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<std::int32_t>("frame"), &bindings.texture("bufTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("ruleIndex"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get<bool>("useCustom"), bindings.get<std::int32_t>("source"));
+  const auto state = std::make_shared<typed_229::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), bindings.get<std::int32_t>("frame"), &bindings.texture("bufTex"), &bindings.texture("tex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("ruleIndex"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get<bool>("useCustom"), bindings.get<std::int32_t>("source"));
   (void)bindings;
-  return BoundKernel(state, &typed_228::pixel);
+  return BoundKernel(state, &typed_229::pixel);
 }
 
 // Typed IR program: synth/curl:curl
 // Source SHA-256: 33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce
-namespace typed_229 {
+namespace typed_230 {
 struct State final : KernelState {
   State(std::int32_t OCTAVES_value, std::int32_t OUTPUT_MODE_value, bool RIDGES_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, double speed_value, double intensity_value) : OCTAVES(OCTAVES_value), OUTPUT_MODE(OUTPUT_MODE_value), RIDGES(RIDGES_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), speed(speed_value), intensity(intensity_value) {}
   std::int32_t OCTAVES;
@@ -27867,21 +28069,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_229
+}  // namespace typed_230
 
 BoundKernel bind_synth_curl_curl(const glsl::Bindings& bindings) {
   const auto OCTAVES = bindings.get<std::int32_t>("OCTAVES");
   if (OCTAVES < 1 || OCTAVES > 3) {
     throw glsl::KernelBindingError("synth/curl:curl octaves must be in [1,3]");
   }
-  const auto state = std::make_shared<typed_229::State>(OCTAVES, bindings.get<std::int32_t>("OUTPUT_MODE"), bindings.get<bool>("RIDGES"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("intensity"));
+  const auto state = std::make_shared<typed_230::State>(OCTAVES, bindings.get<std::int32_t>("OUTPUT_MODE"), bindings.get<bool>("RIDGES"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("intensity"));
   (void)bindings;
-  return BoundKernel(state, &typed_229::pixel);
+  return BoundKernel(state, &typed_230::pixel);
 }
 
 // Typed IR program: synth/gabor:gabor
 // Source SHA-256: 91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5
-namespace typed_230 {
+namespace typed_231 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double seed_value, double scale_value, double orientation_value, double bandwidth_value, double isotropy_value, double density_value, double octaves_value, double speed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), seed(seed_value), scale(scale_value), orientation(orientation_value), bandwidth(bandwidth_value), isotropy(isotropy_value), density(density_value), octaves(octaves_value), speed(speed_value) {}
   glsl::Vec2 resolution;
@@ -28002,17 +28204,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double n = (static_cast<double>(static_cast<float>(1.0)) / static_cast<double>((static_cast<double>(static_cast<float>(1.0)) + static_cast<double>(glsl::exp((static_cast<double>((-value)) * static_cast<double>(static_cast<float>(3.0))))))));
   output = glsl::Vec4(glsl::Vec4(glsl::FloatExpr<3>(n), static_cast<float>(1.0)));
 }
-}  // namespace typed_230
+}  // namespace typed_231
 
 BoundKernel bind_synth_gabor_gabor(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_230::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("seed"), bindings.get_number("scale"), bindings.get_number("orientation"), bindings.get_number("bandwidth"), bindings.get_number("isotropy"), bindings.get_number("density"), bindings.get_number("octaves"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_231::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("seed"), bindings.get_number("scale"), bindings.get_number("orientation"), bindings.get_number("bandwidth"), bindings.get_number("isotropy"), bindings.get_number("density"), bindings.get_number("octaves"), bindings.get_number("speed"));
   (void)bindings;
-  return BoundKernel(state, &typed_230::pixel);
+  return BoundKernel(state, &typed_231::pixel);
 }
 
 // Typed IR program: synth/gradient:gradient
 // Source SHA-256: 308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75
-namespace typed_231 {
+namespace typed_232 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t gradientType_value, double rotation_value, std::int32_t repeat_value, std::int32_t colorCount_value, glsl::DVec3 color1_value, glsl::DVec3 color2_value, glsl::DVec3 color3_value, glsl::DVec3 color4_value, std::int32_t seed_value, double time_value, double speed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), gradientType(gradientType_value), rotation(rotation_value), repeat(repeat_value), colorCount(colorCount_value), color1(color1_value), color2(color2_value), color3(color3_value), color4(color4_value), seed(seed_value), time(time_value), speed(speed_value) {}
   glsl::Vec2 resolution;
@@ -28210,17 +28412,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_231
+}  // namespace typed_232
 
 BoundKernel bind_synth_gradient_gradient(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_231::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("gradientType"), bindings.get_number("rotation"), bindings.get<std::int32_t>("repeat"), bindings.get<std::int32_t>("colorCount"), bindings.get<glsl::DVec3>("color1"), bindings.get<glsl::DVec3>("color2"), bindings.get<glsl::DVec3>("color3"), bindings.get<glsl::DVec3>("color4"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_232::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get<std::int32_t>("gradientType"), bindings.get_number("rotation"), bindings.get<std::int32_t>("repeat"), bindings.get<std::int32_t>("colorCount"), bindings.get<glsl::DVec3>("color1"), bindings.get<glsl::DVec3>("color2"), bindings.get<glsl::DVec3>("color3"), bindings.get<glsl::DVec3>("color4"), bindings.get<std::int32_t>("seed"), bindings.get_number("time"), bindings.get_number("speed"));
   (void)bindings;
-  return BoundKernel(state, &typed_231::pixel);
+  return BoundKernel(state, &typed_232::pixel);
 }
 
 // Typed IR program: synth/julia:julia
 // Source SHA-256: 825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0
-namespace typed_232 {
+namespace typed_233 {
 
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value,
@@ -28633,10 +28835,10 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context,
   const auto& state = static_cast<const State&>(kernel_base);
   main(state, context, output);
 }
-}  // namespace typed_232
+}  // namespace typed_233
 
 BoundKernel bind_synth_julia_julia(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_232::State>(
+  const auto state = std::make_shared<typed_233::State>(
       bindings.get<glsl::Vec2>("resolution"),
       bindings.get<glsl::Vec2>("tileOffset"),
       bindings.get<glsl::Vec2>("fullResolution"),
@@ -28659,12 +28861,12 @@ BoundKernel bind_synth_julia_julia(const glsl::Bindings& bindings) {
       bindings.get_number("zoomSpeed"),
       bindings.get_number("zoomDepth"));
   (void)bindings;
-  return BoundKernel(state, &typed_232::pixel);
+  return BoundKernel(state, &typed_233::pixel);
 }
 
 // Typed IR program: synth/mandala:mandala
 // Source SHA-256: ef97349f9f3003d356bf73ecea6292bbe8ad41c6c2605eff4a8468a44215dea2
-namespace typed_233 {
+namespace typed_234 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double scale_value, double rotation_value, double thickness_value, double smoothness_value, std::int32_t symmetry_value, std::int32_t layers_value, std::int32_t shape_value, double layerSpacing_value, double twist_value, double shapeGrowth_value, bool bindu_value, std::int32_t animation_value, double speed_value, double pulseDepth_value, double time_value, glsl::DVec3 fgColor_value, glsl::DVec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), scale(scale_value), rotation(rotation_value), thickness(thickness_value), smoothness(smoothness_value), symmetry(symmetry_value), layers(layers_value), shape(shape_value), layerSpacing(layerSpacing_value), twist(twist_value), shapeGrowth(shapeGrowth_value), bindu(bindu_value), animation(animation_value), speed(speed_value), pulseDepth(pulseDepth_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
   glsl::Vec2 resolution;
@@ -28808,17 +29010,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 color = glsl::mix(state.bgColor, state.fgColor, m);
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_233
+}  // namespace typed_234
 
 BoundKernel bind_synth_mandala_mandala(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_233::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("symmetry"), bindings.get<std::int32_t>("layers"), bindings.get<std::int32_t>("shape"), bindings.get_number("layerSpacing"), bindings.get_number("twist"), bindings.get_number("shapeGrowth"), bindings.get<bool>("bindu"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
+  const auto state = std::make_shared<typed_234::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("symmetry"), bindings.get<std::int32_t>("layers"), bindings.get<std::int32_t>("shape"), bindings.get_number("layerSpacing"), bindings.get_number("twist"), bindings.get_number("shapeGrowth"), bindings.get<bool>("bindu"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
-  return BoundKernel(state, &typed_233::pixel);
+  return BoundKernel(state, &typed_234::pixel);
 }
 
 // Typed IR program: synth/mandelbrot:mandelbrot
 // Source SHA-256: 0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615
-namespace typed_234 {
+namespace typed_235 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t poi_value, std::int32_t outputMode_value, std::int32_t iterations_value, double centerHiX_value, double centerHiY_value, double centerLoX_value, double centerLoY_value, double zoomSpeed_value, double zoomDepth_value, double invert_value, double stripeFreq_value, std::int32_t trapShape_value, double lightAngle_value, double rotation_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), poi(poi_value), outputMode(outputMode_value), iterations(iterations_value), centerHiX(centerHiX_value), centerHiY(centerHiY_value), centerLoX(centerLoX_value), centerLoY(centerLoY_value), zoomSpeed(zoomSpeed_value), zoomDepth(zoomDepth_value), invert(invert_value), stripeFreq(stripeFreq_value), trapShape(trapShape_value), lightAngle(lightAngle_value), rotation(rotation_value) {}
   glsl::Vec2 resolution;
@@ -29211,17 +29413,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(glsl::FloatExpr<3>(value), static_cast<float>(1.0)));
 }
-}  // namespace typed_234
+}  // namespace typed_235
 
 BoundKernel bind_synth_mandelbrot_mandelbrot(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_234::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("poi"), bindings.get<std::int32_t>("outputMode"), bindings.get<std::int32_t>("iterations"), bindings.get_number("centerHiX"), bindings.get_number("centerHiY"), bindings.get_number("centerLoX"), bindings.get_number("centerLoY"), bindings.get_number("zoomSpeed"), bindings.get_number("zoomDepth"), bindings.get_number("invert"), bindings.get_number("stripeFreq"), bindings.get<std::int32_t>("trapShape"), bindings.get_number("lightAngle"), bindings.get_number("rotation"));
+  const auto state = std::make_shared<typed_235::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("poi"), bindings.get<std::int32_t>("outputMode"), bindings.get<std::int32_t>("iterations"), bindings.get_number("centerHiX"), bindings.get_number("centerHiY"), bindings.get_number("centerLoX"), bindings.get_number("centerLoY"), bindings.get_number("zoomSpeed"), bindings.get_number("zoomDepth"), bindings.get_number("invert"), bindings.get_number("stripeFreq"), bindings.get<std::int32_t>("trapShape"), bindings.get_number("lightAngle"), bindings.get_number("rotation"));
   (void)bindings;
-  return BoundKernel(state, &typed_234::pixel);
+  return BoundKernel(state, &typed_235::pixel);
 }
 
 // Typed IR program: synth/media:mediaInput
 // Source SHA-256: 3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c
-namespace typed_235 {
+namespace typed_236 {
 struct State final : KernelState {
   State(const Surface* imageTex_value, glsl::DVec2 imageSize_value, glsl::Vec2 resolution_value, double time_value, std::int32_t position_value, double rotation_value, double scaleAmt_value, double offsetX_value, double offsetY_value, std::int32_t tiling_value, std::int32_t flip_value, glsl::DVec3 bgColor_value, double bgAlpha_value) : imageTex(imageTex_value), imageSize(imageSize_value), resolution(resolution_value), time(time_value), position(position_value), rotation(rotation_value), scaleAmt(scaleAmt_value), offsetX(offsetX_value), offsetY(offsetY_value), tiling(tiling_value), flip(flip_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
   const Surface* imageTex;
@@ -29451,17 +29653,218 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<1>(st, (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::swizzle<1>(st))));
   output = glsl::Vec4(getImage(state, context, st));
 }
-}  // namespace typed_235
+}  // namespace typed_236
 
 BoundKernel bind_synth_media_mediaInput(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_235::State>(&bindings.texture("imageTex"), bindings.get<glsl::DVec2>("imageSize"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("position"), bindings.get_number("rotation"), bindings.get_number("scaleAmt"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get<std::int32_t>("tiling"), bindings.get<std::int32_t>("flip"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
+  const auto state = std::make_shared<typed_236::State>(&bindings.texture("imageTex"), bindings.get<glsl::DVec2>("imageSize"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("time"), bindings.get<std::int32_t>("position"), bindings.get_number("rotation"), bindings.get_number("scaleAmt"), bindings.get_number("offsetX"), bindings.get_number("offsetY"), bindings.get<std::int32_t>("tiling"), bindings.get<std::int32_t>("flip"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
   (void)bindings;
-  return BoundKernel(state, &typed_235::pixel);
+  return BoundKernel(state, &typed_236::pixel);
+}
+
+// Typed IR program: synth/mnca:mnca
+// Source SHA-256: 725c245f6f52a1629f7427b98a211b527c546fd3e0dcecbb9c5b65ecf3ee239a
+namespace typed_237 {
+struct State final : KernelState {
+  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* fbTex_value, std::int32_t smoothing_value, const Surface* prevFrameTex_value) : time(time_value), seed(seed_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), fbTex(fbTex_value), smoothing(smoothing_value), prevFrameTex(prevFrameTex_value) {}
+  double time;
+  std::int32_t seed;
+  glsl::Vec2 resolution;
+  glsl::Vec2 tileOffset;
+  glsl::Vec2 fullResolution;
+  const Surface* fbTex;
+  std::int32_t smoothing;
+  const Surface* prevFrameTex;
+};
+
+[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
+  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
+  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
+  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return bicubic4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  [[maybe_unused]] double b0 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b1 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t3))) - static_cast<double>((static_cast<double>(static_cast<float>(6.0)) * static_cast<double>(t2))))) + static_cast<double>(static_cast<float>(4.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b2 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-3.0)) * static_cast<double>(t3))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t2))))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b3 = (static_cast<double>(t3) / static_cast<double>(static_cast<float>(6.0)));
+  return ((((p0 * b0) + (p1 * b1)) + (p2 * b2)) + (p3 * b3));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  return (((p1 + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t)) * (p2 - p0))) + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t2)) * ((((static_cast<float>(2.0) * p0) - (static_cast<float>(5.0) * p1)) + (static_cast<float>(4.0) * p2)) - p0))) + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t3)) * ((((-p0) + (static_cast<float>(3.0) * p1)) - (static_cast<float>(3.0) * p2)) + p0)));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = catmullRom3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = catmullRom3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = catmullRom3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return catmullRom3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  return (p1 + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t)) * ((p2 - p0) + (t * (((((static_cast<float>(2.0) * p0) - (static_cast<float>(5.0) * p1)) + (static_cast<float>(4.0) * p2)) - p3) + (t * (((static_cast<float>(3.0) * (p1 - p2)) + p3) - p0)))))));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return catmullRom4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double amount = (static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::cos((static_cast<double>(t) * static_cast<double>(static_cast<float>(3.14159265359))))))) * static_cast<double>(static_cast<float>(0.5)));
+  return glsl::mix(a, b, amount);
+}
+
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = quadratic3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = quadratic3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = quadratic3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return quadratic3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  return (((((p0 * static_cast<float>(0.5)) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) + ((p1 * static_cast<float>(0.5)) * (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-2.0)) * static_cast<double>(t2))) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0))))) + ((p2 * static_cast<float>(0.5)) * t2));
+}
+
+void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
+  const auto& state = static_cast<const State&>(kernel_base);
+  (void)state;
+  (void)context;
+  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
+  [[maybe_unused]] double state_glsl_93 = static_cast<float>(0.0);
+  if (state.smoothing == std::int32_t(0)) {
+    state_glsl_93 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+  } else {
+    if (state.smoothing == std::int32_t(3)) {
+      [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+      [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+      [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+      [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+      state_glsl_93 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
+    } else {
+      if (state.smoothing == std::int32_t(4)) {
+        [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        state_glsl_93 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
+      } else {
+        if (state.smoothing == std::int32_t(5)) {
+          [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          state_glsl_93 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
+        } else {
+          if (state.smoothing == std::int32_t(6)) {
+            [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            state_glsl_93 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
+          } else {
+            [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+            [[maybe_unused]] glsl::Vec2 nd2 = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 xy = (globalCoord - (nd2 * static_cast<float>(0.5)));
+            [[maybe_unused]] double v00 = glsl::swizzle<1>(sample_texture(*state.fbTex, (xy / state.fullResolution)));
+            [[maybe_unused]] double v10 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), static_cast<float>(0.0))) / state.fullResolution)));
+            [[maybe_unused]] double v01 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(static_cast<float>(0.0), glsl::swizzle<1>(nd2))) / state.fullResolution)));
+            [[maybe_unused]] double v11 = glsl::swizzle<1>(sample_texture(*state.fbTex, ((xy + glsl::FloatExpr<2>(glsl::swizzle<0>(nd2), glsl::swizzle<1>(nd2))) / state.fullResolution)));
+            [[maybe_unused]] double xAmount = glsl::fract((static_cast<double>(glsl::swizzle<0>(xy)) / static_cast<double>(glsl::swizzle<0>(nd2))));
+            [[maybe_unused]] double yAmount = glsl::fract((static_cast<double>(glsl::swizzle<1>(xy)) / static_cast<double>(glsl::swizzle<1>(nd2))));
+            if (state.smoothing == std::int32_t(1)) {
+              [[maybe_unused]] double v0 = glsl::mix(v00, v10, xAmount);
+              [[maybe_unused]] double v1 = glsl::mix(v01, v11, xAmount);
+              state_glsl_93 = glsl::mix(v0, v1, yAmount);
+            } else {
+              [[maybe_unused]] double v0 = cosineMix(state, context, v00, v10, xAmount);
+              [[maybe_unused]] double v1 = cosineMix(state, context, v01, v11, xAmount);
+              state_glsl_93 = cosineMix(state, context, v0, v1, yAmount);
+            }
+          }
+        }
+      }
+    }
+  }
+  output = glsl::Vec4(glsl::FloatExpr<4>(state_glsl_93, state_glsl_93, state_glsl_93, static_cast<float>(1.0)));
+}
+}  // namespace typed_237
+
+BoundKernel bind_synth_mnca_mnca(const glsl::Bindings& bindings) {
+  const auto state = std::make_shared<typed_237::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), bindings.get<std::int32_t>("smoothing"), &bindings.texture("prevFrameTex"));
+  (void)bindings;
+  return BoundKernel(state, &typed_237::pixel);
 }
 
 // Typed IR program: synth/mnca:mncaFb
 // Source SHA-256: 4a1b1bbb1e52f66871808d878068f1ff6b379d2b68ca0dd8053f89659c8bf9d6
-namespace typed_236 {
+namespace typed_238 {
 struct State final : KernelState {
   State(double time_value, double deltaTime_value, const Surface* bufTex_value, const Surface* seedTex_value, glsl::Vec2 resolution_value, double speed_value, double weight_value, std::int32_t seed_value, bool resetState_value, double n1v1_value, double n1v2_value, double n1v3_value, double n1v4_value, double n2v1_value, double n2v2_value, double n1r1_value, double n1r2_value, double n1r3_value, double n1r4_value, double n2r1_value, double n2r2_value) : time(time_value), deltaTime(deltaTime_value), bufTex(bufTex_value), seedTex(seedTex_value), resolution(resolution_value), speed(speed_value), weight(weight_value), seed(seed_value), resetState(resetState_value), n1v1(n1v1_value), n1v2(n1v2_value), n1v3(n1v3_value), n1v4(n1v4_value), n2v1(n2v1_value), n2v2(n2v2_value), n1r1(n1r1_value), n1r2(n1r2_value), n1r3(n1r3_value), n1r4(n1r4_value), n2r1(n2r1_value), n2r2(n2r2_value) {}
   double time;
@@ -29628,17 +30031,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec4 nextState = glsl::FloatExpr<4>(newState, newState, newState, static_cast<float>(1.0));
   output = glsl::Vec4(glsl::mix(currentState, nextState, glsl::component_min(static_cast<float>(1.0), (static_cast<double>(state.deltaTime) * static_cast<double>(animSpeed)))));
 }
-}  // namespace typed_236
+}  // namespace typed_238
 
 BoundKernel bind_synth_mnca_mncaFb(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_236::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), &bindings.texture("bufTex"), &bindings.texture("seedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get_number("n1v1"), bindings.get_number("n1v2"), bindings.get_number("n1v3"), bindings.get_number("n1v4"), bindings.get_number("n2v1"), bindings.get_number("n2v2"), bindings.get_number("n1r1"), bindings.get_number("n1r2"), bindings.get_number("n1r3"), bindings.get_number("n1r4"), bindings.get_number("n2r1"), bindings.get_number("n2r2"));
+  const auto state = std::make_shared<typed_238::State>(bindings.get_number("time"), bindings.get_number("deltaTime"), &bindings.texture("bufTex"), &bindings.texture("seedTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("resetState"), bindings.get_number("n1v1"), bindings.get_number("n1v2"), bindings.get_number("n1v3"), bindings.get_number("n1v4"), bindings.get_number("n2v1"), bindings.get_number("n2v2"), bindings.get_number("n1r1"), bindings.get_number("n1r2"), bindings.get_number("n1r3"), bindings.get_number("n1r4"), bindings.get_number("n2r1"), bindings.get_number("n2r2"));
   (void)bindings;
-  return BoundKernel(state, &typed_236::pixel);
+  return BoundKernel(state, &typed_238::pixel);
 }
 
 // Typed IR program: synth/modPattern:modPattern
 // Source SHA-256: 5bf4fc9ed8fdf68fa58e9c66f79e1f42624234500f89fb1ee63da64839d3dc2e
-namespace typed_237 {
+namespace typed_239 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, std::int32_t shape1_value, double scale1_value, double repeat1_value, std::int32_t shape2_value, double scale2_value, double repeat2_value, std::int32_t shape3_value, double scale3_value, double repeat3_value, std::int32_t blend_value, double smoothing_value, double speed_value, std::int32_t animMode_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), shape1(shape1_value), scale1(scale1_value), repeat1(repeat1_value), shape2(shape2_value), scale2(scale2_value), repeat2(repeat2_value), shape3(shape3_value), scale3(scale3_value), repeat3(repeat3_value), blend(blend_value), smoothing(smoothing_value), speed(speed_value), animMode(animMode_value) {}
   glsl::Vec2 resolution;
@@ -29763,17 +30166,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_237
+}  // namespace typed_239
 
 BoundKernel bind_synth_modPattern_modPattern(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_237::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("shape1"), bindings.get_number("scale1"), bindings.get_number("repeat1"), bindings.get<std::int32_t>("shape2"), bindings.get_number("scale2"), bindings.get_number("repeat2"), bindings.get<std::int32_t>("shape3"), bindings.get_number("scale3"), bindings.get_number("repeat3"), bindings.get<std::int32_t>("blend"), bindings.get_number("smoothing"), bindings.get_number("speed"), bindings.get<std::int32_t>("animMode"));
+  const auto state = std::make_shared<typed_239::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("shape1"), bindings.get_number("scale1"), bindings.get_number("repeat1"), bindings.get<std::int32_t>("shape2"), bindings.get_number("scale2"), bindings.get_number("repeat2"), bindings.get<std::int32_t>("shape3"), bindings.get_number("scale3"), bindings.get_number("repeat3"), bindings.get<std::int32_t>("blend"), bindings.get_number("smoothing"), bindings.get_number("speed"), bindings.get<std::int32_t>("animMode"));
   (void)bindings;
-  return BoundKernel(state, &typed_237::pixel);
+  return BoundKernel(state, &typed_239::pixel);
 }
 
 // Typed IR program: synth/navierStokes:ns
 // Source SHA-256: f2c930b585558c5b90b1e502fc71ffef4ea28c6b5c0d75c0c9d20cccf727a36f
-namespace typed_238 {
+namespace typed_240 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double inputIntensity_value, const Surface* fbTex_value, const Surface* inputTex_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), inputIntensity(inputIntensity_value), fbTex(fbTex_value), inputTex(inputTex_value) {}
   glsl::Vec2 resolution;
@@ -29824,17 +30227,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(outCol, static_cast<float>(1.0)));
 }
-}  // namespace typed_238
+}  // namespace typed_240
 
 BoundKernel bind_synth_navierStokes_ns(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_238::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("inputIntensity"), &bindings.texture("fbTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_240::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("inputIntensity"), &bindings.texture("fbTex"), &bindings.texture("inputTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_238::pixel);
+  return BoundKernel(state, &typed_240::pixel);
 }
 
 // Typed IR program: synth/navierStokes:nsAdvect
 // Source SHA-256: fda5781baa1fffca8fcae28ef599652580135c1dba57307db4692eecc7df64f8
-namespace typed_239 {
+namespace typed_241 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, double speed_value, double dyeDecay_value, double velocityDecay_value, const Surface* bufTex_value) : resolution(resolution_value), speed(speed_value), dyeDecay(dyeDecay_value), velocityDecay(velocityDecay_value), bufTex(bufTex_value) {}
   glsl::Vec2 resolution;
@@ -29898,17 +30301,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   newDye = (newDye * dDecay);
   output = glsl::Vec4(glsl::Vec4(newVel, newDye, static_cast<float>(1.0)));
 }
-}  // namespace typed_239
+}  // namespace typed_241
 
 BoundKernel bind_synth_navierStokes_nsAdvect(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_239::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("dyeDecay"), bindings.get_number("velocityDecay"), &bindings.texture("bufTex"));
+  const auto state = std::make_shared<typed_241::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get_number("speed"), bindings.get_number("dyeDecay"), bindings.get_number("velocityDecay"), &bindings.texture("bufTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_239::pixel);
+  return BoundKernel(state, &typed_241::pixel);
 }
 
 // Typed IR program: synth/navierStokes:nsDivergence
 // Source SHA-256: 7cf59c745b982c23bcd6eb67ab23cdc723416cdeda835ec36579d71fa18c708e
-namespace typed_240 {
+namespace typed_242 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, const Surface* velTex_value) : resolution(resolution_value), velTex(velTex_value) {}
   glsl::Vec2 resolution;
@@ -29954,17 +30357,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double div = (static_cast<double>(static_cast<float>(0.5)) * static_cast<double>((static_cast<double>((static_cast<double>(glsl::swizzle<0>(uR)) - static_cast<double>(glsl::swizzle<0>(uL)))) + static_cast<double>((static_cast<double>(glsl::swizzle<1>(uT)) - static_cast<double>(glsl::swizzle<1>(uB)))))));
   output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0), div, static_cast<float>(0.0), static_cast<float>(1.0)));
 }
-}  // namespace typed_240
+}  // namespace typed_242
 
 BoundKernel bind_synth_navierStokes_nsDivergence(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_240::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"));
+  const auto state = std::make_shared<typed_242::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_240::pixel);
+  return BoundKernel(state, &typed_242::pixel);
 }
 
 // Typed IR program: synth/navierStokes:nsGradient
 // Source SHA-256: b247c640a0ac51e14b30b894c2427b994b3c545d9be2b19bd186bd7b57a40a9b
-namespace typed_241 {
+namespace typed_243 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, const Surface* velTex_value, const Surface* pressureTex_value) : resolution(resolution_value), velTex(velTex_value), pressureTex(pressureTex_value) {}
   glsl::Vec2 resolution;
@@ -30001,17 +30404,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec2 u = (glsl::swizzle<0, 1>(here) - grad);
   output = glsl::Vec4(glsl::Vec4(u, glsl::swizzle<2>(here), static_cast<float>(1.0)));
 }
-}  // namespace typed_241
+}  // namespace typed_243
 
 BoundKernel bind_synth_navierStokes_nsGradient(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_241::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"), &bindings.texture("pressureTex"));
+  const auto state = std::make_shared<typed_243::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("velTex"), &bindings.texture("pressureTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_241::pixel);
+  return BoundKernel(state, &typed_243::pixel);
 }
 
 // Typed IR program: synth/navierStokes:nsPressure
 // Source SHA-256: 3f2dd662ebc4e141a40959456739f09fd075655917197da3492ab99611482251
-namespace typed_242 {
+namespace typed_244 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, const Surface* bufTex_value) : resolution(resolution_value), bufTex(bufTex_value) {}
   glsl::Vec2 resolution;
@@ -30046,17 +30449,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] double p = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(pR) + static_cast<double>(pL))) + static_cast<double>(pT))) + static_cast<double>(pB))) - static_cast<double>(div))) * static_cast<double>(static_cast<float>(0.25)));
   output = glsl::Vec4(glsl::FloatExpr<4>(p, div, static_cast<float>(0.0), static_cast<float>(1.0)));
 }
-}  // namespace typed_242
+}  // namespace typed_244
 
 BoundKernel bind_synth_navierStokes_nsPressure(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_242::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("bufTex"));
+  const auto state = std::make_shared<typed_244::State>(bindings.get<glsl::Vec2>("resolution"), &bindings.texture("bufTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_242::pixel);
+  return BoundKernel(state, &typed_244::pixel);
 }
 
 // Typed IR program: synth/navierStokes:nsSplat
 // Source SHA-256: c3e88bac9c8afa8ed31baec34756db36ad30dd0e73588b35ffc320cba36d3f37
-namespace typed_243 {
+namespace typed_245 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, std::int32_t seed_value, double speed_value, double inputForce_value, double inputDye_value, bool resetState_value, const Surface* bufTex_value, const Surface* inputTex_value) : resolution(resolution_value), seed(seed_value), speed(speed_value), inputForce(inputForce_value), inputDye(inputDye_value), resetState(resetState_value), bufTex(bufTex_value), inputTex(inputTex_value) {}
   glsl::Vec2 resolution;
@@ -30143,17 +30546,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   dye = glsl::clamp(dye, static_cast<float>(0.0), static_cast<float>(2.0));
   output = glsl::Vec4(glsl::Vec4(vel, dye, static_cast<float>(1.0)));
 }
-}  // namespace typed_243
+}  // namespace typed_245
 
 BoundKernel bind_synth_navierStokes_nsSplat(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_243::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("inputForce"), bindings.get_number("inputDye"), bindings.get<bool>("resetState"), &bindings.texture("bufTex"), &bindings.texture("inputTex"));
+  const auto state = std::make_shared<typed_245::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<std::int32_t>("seed"), bindings.get_number("speed"), bindings.get_number("inputForce"), bindings.get_number("inputDye"), bindings.get<bool>("resetState"), &bindings.texture("bufTex"), &bindings.texture("inputTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_243::pixel);
+  return BoundKernel(state, &typed_245::pixel);
 }
 
 // Typed IR program: synth/newton:newton
 // Source SHA-256: 603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac
-namespace typed_244 {
+namespace typed_246 {
 struct POIData final {
   glsl::Vec4 center;
   double deg;
@@ -30451,17 +30854,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(glsl::FloatExpr<3>(value), static_cast<float>(1.0)));
 }
-}  // namespace typed_244
+}  // namespace typed_246
 
 BoundKernel bind_synth_newton_newton(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_244::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("degree"), bindings.get_number("relaxation"), bindings.get_number("iterations"), bindings.get_number("tolerance"), bindings.get_number("poi"), bindings.get_number("centerHiX"), bindings.get_number("centerHiY"), bindings.get_number("centerLoX"), bindings.get_number("centerLoY"), bindings.get_number("zoomSpeed"), bindings.get_number("zoomDepth"), bindings.get_number("degreeSpeed"), bindings.get_number("degreeRange"), bindings.get_number("relaxSpeed"), bindings.get_number("relaxRange"), bindings.get_number("rotation"), bindings.get_number("outputMode"), bindings.get_number("invert"));
+  const auto state = std::make_shared<typed_246::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("degree"), bindings.get_number("relaxation"), bindings.get_number("iterations"), bindings.get_number("tolerance"), bindings.get_number("poi"), bindings.get_number("centerHiX"), bindings.get_number("centerHiY"), bindings.get_number("centerLoX"), bindings.get_number("centerLoY"), bindings.get_number("zoomSpeed"), bindings.get_number("zoomDepth"), bindings.get_number("degreeSpeed"), bindings.get_number("degreeRange"), bindings.get_number("relaxSpeed"), bindings.get_number("relaxRange"), bindings.get_number("rotation"), bindings.get_number("outputMode"), bindings.get_number("invert"));
   (void)bindings;
-  return BoundKernel(state, &typed_244::pixel);
+  return BoundKernel(state, &typed_246::pixel);
 }
 
 // Typed IR program: synth/noise:noise
 // Source SHA-256: 410a98f0d4ec80acde225cb5366a3bbaf752e5743f99bcd651a2c3cbb6cc3274
-namespace typed_245 {
+namespace typed_247 {
 struct Frame final {
   glsl::Vec2 globalCoord{};  // JS: new Float32Array([0, 0]) (float32-array, narrowing=per-lane-f32)
 };
@@ -31024,21 +31427,21 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0, 1, 2>(color, multires(state, context, frame, centered, freq, state.octaves, float(state.seed), blend));
   output = glsl::Vec4(color);
 }
-}  // namespace typed_245
+}  // namespace typed_247
 
 BoundKernel bind_synth_noise_noise(const glsl::Bindings& bindings) {
   const auto octaves = bindings.get<std::int32_t>("octaves");
   if (octaves < 1 || octaves > 8) {
     throw glsl::KernelBindingError("synth/noise:noise octaves must be in [1,8]");
   }
-  const auto state = std::make_shared<typed_245::State>(bindings.get<std::int32_t>("NOISE_TYPE"), bindings.get<std::int32_t>("LOOP_OFFSET"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scaleX"), bindings.get_number("scaleY"), octaves, bindings.get<bool>("ridges"), bindings.get_number("loopScale"), bindings.get_number("speed"), bindings.get<std::int32_t>("colorMode"), bindings.get<bool>("wrap"));
+  const auto state = std::make_shared<typed_247::State>(bindings.get<std::int32_t>("NOISE_TYPE"), bindings.get<std::int32_t>("LOOP_OFFSET"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scaleX"), bindings.get_number("scaleY"), octaves, bindings.get<bool>("ridges"), bindings.get_number("loopScale"), bindings.get_number("speed"), bindings.get<std::int32_t>("colorMode"), bindings.get<bool>("wrap"));
   (void)bindings;
-  return BoundKernel(state, &typed_245::pixel);
+  return BoundKernel(state, &typed_247::pixel);
 }
 
 // Typed IR program: synth/osc2d:osc2d
 // Source SHA-256: e25335112291f2b3f7e9e7f5803948b602a44058bb10c20f835c461f0b6a3512
-namespace typed_246 {
+namespace typed_248 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double time_value, std::int32_t oscType_value, std::int32_t frequency_value, double speed_value, double rotation_value, std::int32_t seed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), time(time_value), oscType(oscType_value), frequency(frequency_value), speed(speed_value), rotation(rotation_value), seed(seed_value) {}
   glsl::Vec2 resolution;
@@ -31182,17 +31585,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(glsl::FloatExpr<3>(val), static_cast<float>(1.0)));
 }
-}  // namespace typed_246
+}  // namespace typed_248
 
 BoundKernel bind_synth_osc2d_osc2d(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_246::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("time"), bindings.get<std::int32_t>("oscType"), bindings.get<std::int32_t>("frequency"), bindings.get_number("speed"), bindings.get_number("rotation"), bindings.get<std::int32_t>("seed"));
+  const auto state = std::make_shared<typed_248::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("time"), bindings.get<std::int32_t>("oscType"), bindings.get<std::int32_t>("frequency"), bindings.get_number("speed"), bindings.get_number("rotation"), bindings.get<std::int32_t>("seed"));
   (void)bindings;
-  return BoundKernel(state, &typed_246::pixel);
+  return BoundKernel(state, &typed_248::pixel);
 }
 
 // Typed IR program: synth/pattern:pattern
 // Source SHA-256: d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c
-namespace typed_247 {
+namespace typed_249 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t patternType_value, double scale_value, double thickness_value, double smoothness_value, double rotation_value, double skew_value, std::int32_t animation_value, double speed_value, double time_value, glsl::DVec3 fgColor_value, glsl::DVec3 bgColor_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), patternType(patternType_value), scale(scale_value), thickness(thickness_value), smoothness(smoothness_value), rotation(rotation_value), skew(skew_value), animation(animation_value), speed(speed_value), time(time_value), fgColor(fgColor_value), bgColor(bgColor_value) {}
   glsl::Vec2 resolution;
@@ -31437,17 +31840,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 color = glsl::mix(state.bgColor, state.fgColor, m);
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_247
+}  // namespace typed_249
 
 BoundKernel bind_synth_pattern_pattern(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_247::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("patternType"), bindings.get_number("scale"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get_number("rotation"), bindings.get_number("skew"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
+  const auto state = std::make_shared<typed_249::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("patternType"), bindings.get_number("scale"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get_number("rotation"), bindings.get_number("skew"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
-  return BoundKernel(state, &typed_247::pixel);
+  return BoundKernel(state, &typed_249::pixel);
 }
 
 // Typed IR program: synth/perlin:perlin
 // Source SHA-256: 9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318
-namespace typed_248 {
+namespace typed_250 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, double time_value, double scale_value, std::int32_t seed_value, std::int32_t octaves_value, std::int32_t colorMode_value, std::int32_t ridges_value, std::int32_t warpIterations_value, double warpScale_value, double warpIntensity_value, double speed_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), time(time_value), scale(scale_value), seed(seed_value), octaves(octaves_value), colorMode(colorMode_value), ridges(ridges_value), warpIterations(warpIterations_value), warpScale(warpScale_value), warpIntensity(warpIntensity_value), speed(speed_value) {}
   glsl::Vec2 resolution;
@@ -31650,17 +32053,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(col, static_cast<float>(1.0)));
 }
-}  // namespace typed_248
+}  // namespace typed_250
 
 BoundKernel bind_synth_perlin_perlin(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_248::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("octaves"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("warpIterations"), bindings.get_number("warpScale"), bindings.get_number("warpIntensity"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_250::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("octaves"), bindings.get<std::int32_t>("colorMode"), bindings.get<std::int32_t>("ridges"), bindings.get<std::int32_t>("warpIterations"), bindings.get_number("warpScale"), bindings.get_number("warpIntensity"), bindings.get_number("speed"));
   (void)bindings;
-  return BoundKernel(state, &typed_248::pixel);
+  return BoundKernel(state, &typed_250::pixel);
 }
 
 // Typed IR program: synth/polygon:shape
 // Source SHA-256: e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6
-namespace typed_249 {
+namespace typed_251 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double aspect_value, std::int32_t sides_value, double radius_value, double smoothing_value, double rotation_value, glsl::DVec3 fgColor_value, double fgAlpha_value, glsl::DVec3 bgColor_value, double bgAlpha_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), aspect(aspect_value), sides(sides_value), radius(radius_value), smoothing(smoothing_value), rotation(rotation_value), fgColor(fgColor_value), fgAlpha(fgAlpha_value), bgColor(bgColor_value), bgAlpha(bgAlpha_value) {}
   glsl::Vec2 resolution;
@@ -31720,12 +32123,467 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 outColor = ((totalAlpha > static_cast<float>(0.0)) ? glsl::Vec3((((state.fgColor * fgMask) + (state.bgColor * bgMask)) / totalAlpha)) : glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(0.0))));
   output = glsl::Vec4(glsl::Vec4((outColor * totalAlpha), totalAlpha));
 }
-}  // namespace typed_249
+}  // namespace typed_251
 
 BoundKernel bind_synth_polygon_shape(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_249::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("sides"), bindings.get_number("radius"), bindings.get_number("smoothing"), bindings.get_number("rotation"), bindings.get<glsl::DVec3>("fgColor"), bindings.get_number("fgAlpha"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
+  const auto state = std::make_shared<typed_251::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get<std::int32_t>("sides"), bindings.get_number("radius"), bindings.get_number("smoothing"), bindings.get_number("rotation"), bindings.get<glsl::DVec3>("fgColor"), bindings.get_number("fgAlpha"), bindings.get<glsl::DVec3>("bgColor"), bindings.get_number("bgAlpha"));
   (void)bindings;
-  return BoundKernel(state, &typed_249::pixel);
+  return BoundKernel(state, &typed_251::pixel);
+}
+
+// Typed IR program: synth/reactionDiffusion:rd
+// Source SHA-256: 2c7c242db938ea81fa738b4f5a4fff9f067afca63802e39689aec49d4955f53c
+namespace typed_252 {
+struct State final : KernelState {
+  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, const Surface* fbTex_value, const Surface* inputTex_value, std::int32_t smoothing_value, double inputIntensity_value) : time(time_value), seed(seed_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), fbTex(fbTex_value), inputTex(inputTex_value), smoothing(smoothing_value), inputIntensity(inputIntensity_value) {}
+  double time;
+  std::int32_t seed;
+  glsl::Vec2 resolution;
+  glsl::Vec2 tileOffset;
+  glsl::Vec2 fullResolution;
+  const Surface* fbTex;
+  const Surface* inputTex;
+  std::int32_t smoothing;
+  double inputIntensity;
+};
+
+[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
+  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
+  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
+  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept;
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept;
+
+[[nodiscard]] glsl::Vec4 bicubic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = bicubic4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return bicubic4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 bicubic4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  [[maybe_unused]] double b0 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b1 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t3))) - static_cast<double>((static_cast<double>(static_cast<float>(6.0)) * static_cast<double>(t2))))) + static_cast<double>(static_cast<float>(4.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b2 = (static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-3.0)) * static_cast<double>(t3))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t2))))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0)))) / static_cast<double>(static_cast<float>(6.0)));
+  [[maybe_unused]] double b3 = (static_cast<double>(t3) / static_cast<double>(static_cast<float>(6.0)));
+  return ((((p0 * b0) + (p1 * b1)) + (p2 * b2)) + (p3 * b3));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  [[maybe_unused]] double t3 = (static_cast<double>(t2) * static_cast<double>(t));
+  [[maybe_unused]] glsl::Vec4 m = (static_cast<float>(0.5) * (p2 - p0));
+  return (((((static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t3))) - static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t2))))) + static_cast<double>(static_cast<float>(1.0))) * p1) + ((static_cast<double>((static_cast<double>(t3) - static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t2))))) + static_cast<double>(t)) * m)) + ((static_cast<double>((static_cast<double>(static_cast<float>(-2.0)) * static_cast<double>(t3))) + static_cast<double>((static_cast<double>(static_cast<float>(3.0)) * static_cast<double>(t2)))) * p2)) + ((static_cast<double>(t3) - static_cast<double>(t2)) * m));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom3x3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = catmullRom3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = catmullRom3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = catmullRom3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return catmullRom3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] glsl::Vec4 p3, [[maybe_unused]] double t) noexcept {
+  return (p1 + ((static_cast<double>(static_cast<float>(0.5)) * static_cast<double>(t)) * ((p2 - p0) + (t * (((((static_cast<float>(2.0) * p0) - (static_cast<float>(5.0) * p1)) + (static_cast<float>(4.0) * p2)) - p3) + (t * (((static_cast<float>(3.0) * (p1 - p2)) + p3) - p0)))))));
+}
+
+[[nodiscard]] glsl::Vec4 catmullRom4x4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(1.0)));
+  [[maybe_unused]] glsl::Vec4 row0 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(-0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row1 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(0.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row2 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(1.5))) * texelSize)), glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 row3 = catmullRom4(state, context, sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(2.5))) * texelSize)), sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(2.5), static_cast<float>(2.5))) * texelSize)), glsl::swizzle<0>(f));
+  return catmullRom4(state, context, row0, row1, row2, row3, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] double cosineMix([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double a, [[maybe_unused]] double b, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double amount = (static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::cos((static_cast<double>(t) * static_cast<double>(static_cast<float>(3.14159265359))))))) * static_cast<double>(static_cast<float>(0.5)));
+  return glsl::mix(a, b, amount);
+}
+
+[[nodiscard]] glsl::Vec4 quadratic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 texelSize) noexcept {
+  uv = glsl::Vec2((uv + texelSize));
+  [[maybe_unused]] glsl::Vec2 texCoord = (uv / texelSize);
+  [[maybe_unused]] glsl::Vec2 baseCoord = glsl::floor((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec2 f = glsl::fract((texCoord - static_cast<float>(0.5)));
+  [[maybe_unused]] glsl::Vec4 v00 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v10 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v20 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(-0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v01 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v11 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v21 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(0.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v02 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(-0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v12 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(0.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 v22 = sample_texture(tex, ((baseCoord + glsl::FloatExpr<2>(static_cast<float>(1.5), static_cast<float>(1.5))) * texelSize));
+  [[maybe_unused]] glsl::Vec4 y0 = quadratic3(state, context, v00, v10, v20, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y1 = quadratic3(state, context, v01, v11, v21, glsl::swizzle<0>(f));
+  [[maybe_unused]] glsl::Vec4 y2 = quadratic3(state, context, v02, v12, v22, glsl::swizzle<0>(f));
+  return quadratic3(state, context, y0, y1, y2, glsl::swizzle<1>(f));
+}
+
+[[nodiscard]] glsl::Vec4 quadratic3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p0, [[maybe_unused]] glsl::Vec4 p1, [[maybe_unused]] glsl::Vec4 p2, [[maybe_unused]] double t) noexcept {
+  [[maybe_unused]] double t2 = (static_cast<double>(t) * static_cast<double>(t));
+  return (((((p0 * static_cast<float>(0.5)) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) * (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(t))) + ((p1 * static_cast<float>(0.5)) * (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(-2.0)) * static_cast<double>(t2))) + static_cast<double>((static_cast<double>(static_cast<float>(2.0)) * static_cast<double>(t))))) + static_cast<double>(static_cast<float>(1.0))))) + ((p2 * static_cast<float>(0.5)) * t2));
+}
+
+void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
+  const auto& state = static_cast<const State&>(kernel_base);
+  (void)state;
+  (void)context;
+  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
+  [[maybe_unused]] double state_glsl_95 = static_cast<float>(0.0);
+  if (state.smoothing == std::int32_t(0)) {
+    state_glsl_95 = glsl::swizzle<1>(sample_texture(*state.fbTex, (globalCoord / state.fullResolution)));
+  } else {
+    if (state.smoothing == std::int32_t(2)) {
+      [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+      [[maybe_unused]] glsl::Vec2 texelPos = (((globalCoord * texSize) / state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
+      [[maybe_unused]] glsl::Vec2 base = glsl::floor(texelPos);
+      [[maybe_unused]] glsl::Vec2 weights = glsl::fract(texelPos);
+      [[maybe_unused]] glsl::Vec2 next = (base + glsl::FloatExpr<2>(static_cast<float>(1.0)));
+      [[maybe_unused]] glsl::IVec2 texSizeI = texture_size(*state.fbTex);
+      [[maybe_unused]] glsl::IVec2 minIdx = glsl::IVec2(std::int32_t(0));
+      [[maybe_unused]] glsl::IVec2 maxIdx = (texSizeI - glsl::IVec2(std::int32_t(1)));
+      [[maybe_unused]] glsl::IVec2 baseIdx = glsl::clamp(glsl::IVec2(base), minIdx, maxIdx);
+      [[maybe_unused]] glsl::IVec2 nextIdx = glsl::clamp(glsl::IVec2(next), minIdx, maxIdx);
+      [[maybe_unused]] double v00 = glsl::swizzle<1>(fetch_texel(*state.fbTex, baseIdx));
+      [[maybe_unused]] double v10 = glsl::swizzle<1>(fetch_texel(*state.fbTex, glsl::IVec2(glsl::swizzle<0>(nextIdx), glsl::swizzle<1>(baseIdx))));
+      [[maybe_unused]] double v01 = glsl::swizzle<1>(fetch_texel(*state.fbTex, glsl::IVec2(glsl::swizzle<0>(baseIdx), glsl::swizzle<1>(nextIdx))));
+      [[maybe_unused]] double v11 = glsl::swizzle<1>(fetch_texel(*state.fbTex, nextIdx));
+      [[maybe_unused]] glsl::Vec2 smoothWeights = glsl::smoothstep(static_cast<float>(0.0), static_cast<float>(1.0), weights);
+      [[maybe_unused]] double v0 = glsl::mix(v00, v10, glsl::swizzle<0>(smoothWeights));
+      [[maybe_unused]] double v1 = glsl::mix(v01, v11, glsl::swizzle<0>(smoothWeights));
+      state_glsl_95 = glsl::mix(v0, v1, glsl::swizzle<1>(smoothWeights));
+    } else {
+      if (state.smoothing == std::int32_t(3)) {
+        [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+        [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+        [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+        [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+        state_glsl_95 = glsl::swizzle<1>(catmullRom3x3(state, context, *state.fbTex, uv, texelSize));
+      } else {
+        if (state.smoothing == std::int32_t(4)) {
+          [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+          [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+          [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+          [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+          state_glsl_95 = glsl::swizzle<1>(catmullRom4x4(state, context, *state.fbTex, uv, texelSize));
+        } else {
+          if (state.smoothing == std::int32_t(5)) {
+            [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+            [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+            [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+            [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+            state_glsl_95 = glsl::swizzle<1>(quadratic(state, context, *state.fbTex, uv, texelSize));
+          } else {
+            if (state.smoothing == std::int32_t(6)) {
+              [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+              [[maybe_unused]] glsl::Vec2 texelSize = (static_cast<float>(1.0) / texSize);
+              [[maybe_unused]] glsl::Vec2 scaling = (state.fullResolution / texSize);
+              [[maybe_unused]] glsl::Vec2 uv = ((globalCoord - (scaling * static_cast<float>(0.5))) / state.fullResolution);
+              state_glsl_95 = glsl::swizzle<1>(bicubic(state, context, *state.fbTex, uv, texelSize));
+            } else {
+              [[maybe_unused]] glsl::Vec2 texSize = glsl::Vec2(texture_size(*state.fbTex));
+              [[maybe_unused]] glsl::Vec2 texelPos = (((globalCoord * texSize) / state.fullResolution) - glsl::FloatExpr<2>(static_cast<float>(0.5)));
+              [[maybe_unused]] glsl::Vec2 base = glsl::floor(texelPos);
+              [[maybe_unused]] glsl::Vec2 weights = glsl::fract(texelPos);
+              [[maybe_unused]] glsl::Vec2 next = (base + glsl::FloatExpr<2>(static_cast<float>(1.0)));
+              [[maybe_unused]] glsl::IVec2 texSizeI = texture_size(*state.fbTex);
+              [[maybe_unused]] glsl::IVec2 minIdx = glsl::IVec2(std::int32_t(0));
+              [[maybe_unused]] glsl::IVec2 maxIdx = (texSizeI - glsl::IVec2(std::int32_t(1)));
+              [[maybe_unused]] glsl::IVec2 baseIdx = glsl::clamp(glsl::IVec2(base), minIdx, maxIdx);
+              [[maybe_unused]] glsl::IVec2 nextIdx = glsl::clamp(glsl::IVec2(next), minIdx, maxIdx);
+              [[maybe_unused]] double v00 = glsl::swizzle<1>(fetch_texel(*state.fbTex, baseIdx));
+              [[maybe_unused]] double v10 = glsl::swizzle<1>(fetch_texel(*state.fbTex, glsl::IVec2(glsl::swizzle<0>(nextIdx), glsl::swizzle<1>(baseIdx))));
+              [[maybe_unused]] double v01 = glsl::swizzle<1>(fetch_texel(*state.fbTex, glsl::IVec2(glsl::swizzle<0>(baseIdx), glsl::swizzle<1>(nextIdx))));
+              [[maybe_unused]] double v11 = glsl::swizzle<1>(fetch_texel(*state.fbTex, nextIdx));
+              if (state.smoothing == std::int32_t(1)) {
+                [[maybe_unused]] double v0 = glsl::mix(v00, v10, glsl::swizzle<0>(weights));
+                [[maybe_unused]] double v1 = glsl::mix(v01, v11, glsl::swizzle<0>(weights));
+                state_glsl_95 = glsl::mix(v0, v1, glsl::swizzle<1>(weights));
+              } else {
+                [[maybe_unused]] double v0 = cosineMix(state, context, v00, v10, glsl::swizzle<0>(weights));
+                [[maybe_unused]] double v1 = cosineMix(state, context, v01, v11, glsl::swizzle<0>(weights));
+                state_glsl_95 = cosineMix(state, context, v0, v1, glsl::swizzle<1>(weights));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  [[maybe_unused]] double intensity = glsl::clamp(state_glsl_95, static_cast<float>(0.0), static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec3 rdColor = glsl::FloatExpr<3>(intensity);
+  [[maybe_unused]] double blend = (static_cast<double>(state.inputIntensity) * static_cast<double>(static_cast<float>(0.01)));
+  if (blend > static_cast<float>(0.0)) {
+    [[maybe_unused]] glsl::Vec2 inputUv = (globalCoord / state.fullResolution);
+    [[maybe_unused]] glsl::Vec3 inputColor = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, inputUv));
+    rdColor = glsl::Vec3(glsl::mix(rdColor, inputColor, blend));
+  }
+  output = glsl::Vec4(glsl::Vec4(rdColor, static_cast<float>(1.0)));
+}
+}  // namespace typed_252
+
+BoundKernel bind_synth_reactionDiffusion_rd(const glsl::Bindings& bindings) {
+  const auto state = std::make_shared<typed_252::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), &bindings.texture("fbTex"), &bindings.texture("inputTex"), bindings.get<std::int32_t>("smoothing"), bindings.get_number("inputIntensity"));
+  (void)bindings;
+  return BoundKernel(state, &typed_252::pixel);
+}
+
+// Typed IR program: synth/reactionDiffusion:rdFb
+// Source SHA-256: 1b0a2ce5b7594005e778b0487a14c1c83c081b7ce3d0db50f81809ac931be976
+namespace typed_253 {
+struct State final : KernelState {
+  State(double time_value, std::int32_t seed_value, glsl::Vec2 resolution_value, const Surface* bufTex_value, double feed_value, double kill_value, double rate1_value, double rate2_value, double speed_value, double weight_value, std::int32_t sourceF_value, std::int32_t sourceK_value, std::int32_t sourceR1_value, std::int32_t sourceR2_value, double zoom_value, const Surface* inputTex_value, bool resetState_value) : time(time_value), seed(seed_value), resolution(resolution_value), bufTex(bufTex_value), feed(feed_value), kill(kill_value), rate1(rate1_value), rate2(rate2_value), speed(speed_value), weight(weight_value), sourceF(sourceF_value), sourceK(sourceK_value), sourceR1(sourceR1_value), sourceR2(sourceR2_value), zoom(zoom_value), inputTex(inputTex_value), resetState(resetState_value) {}
+  double time;
+  std::int32_t seed;
+  glsl::Vec2 resolution;
+  const Surface* bufTex;
+  double feed;
+  double kill;
+  double rate1;
+  double rate2;
+  double speed;
+  double weight;
+  std::int32_t sourceF;
+  std::int32_t sourceK;
+  std::int32_t sourceR1;
+  std::int32_t sourceR2;
+  double zoom;
+  const Surface* inputTex;
+  bool resetState;
+};
+
+[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
+  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
+  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
+  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
+}
+
+[[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept;
+[[nodiscard]] glsl::Vec3 lp([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 size) noexcept;
+[[nodiscard]] double lum([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color) noexcept;
+[[nodiscard]] double map([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double value, [[maybe_unused]] double inMin, [[maybe_unused]] double inMax, [[maybe_unused]] double outMin, [[maybe_unused]] double outMax) noexcept;
+
+[[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept {
+  [[maybe_unused]] glsl::Vec2 p2 = glsl::fract((p * glsl::FloatExpr<2>(static_cast<float>(0.1031), static_cast<float>(0.1030))));
+  p2 = glsl::Vec2((p2 + glsl::dot(p2, (glsl::swizzle<1, 0>(p2) + static_cast<float>(33.33)))));
+  return glsl::fract((static_cast<double>((static_cast<double>(glsl::swizzle<0>(p2)) + static_cast<double>(glsl::swizzle<1>(p2)))) * static_cast<double>(glsl::swizzle<0>(p2))));
+}
+
+[[nodiscard]] glsl::Vec3 lp([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] const Surface& tex, [[maybe_unused]] glsl::Vec2 uv, [[maybe_unused]] glsl::Vec2 size) noexcept {
+  [[maybe_unused]] glsl::Vec3 val = glsl::FloatExpr<3>(static_cast<float>(0.0));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2((-std::int32_t(1)), (-std::int32_t(1)))) / size))) * static_cast<float>(0.05)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(0), (-std::int32_t(1)))) / size))) * static_cast<float>(0.2)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(1), (-std::int32_t(1)))) / size))) * static_cast<float>(0.05)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2((-std::int32_t(1)), std::int32_t(0))) / size))) * static_cast<float>(0.2)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(0), std::int32_t(0))) / size))) * static_cast<float>(-1.0)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(1), std::int32_t(0))) / size))) * static_cast<float>(0.2)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2((-std::int32_t(1)), std::int32_t(1))) / size))) * static_cast<float>(0.05)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(0), std::int32_t(1))) / size))) * static_cast<float>(0.2)))));
+  val = glsl::Vec3((val + glsl::Vec3((glsl::swizzle<0, 1, 2>(sample_texture(tex, ((uv + glsl::Vec2(std::int32_t(1), std::int32_t(1))) / size))) * static_cast<float>(0.05)))));
+  return val;
+}
+
+[[nodiscard]] double lum([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 color) noexcept {
+  return (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.2126)) * static_cast<double>(glsl::swizzle<0>(color)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.7152)) * static_cast<double>(glsl::swizzle<1>(color)))))) + static_cast<double>((static_cast<double>(static_cast<float>(0.0722)) * static_cast<double>(glsl::swizzle<2>(color)))));
+}
+
+[[nodiscard]] double map([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double value, [[maybe_unused]] double inMin, [[maybe_unused]] double inMax, [[maybe_unused]] double outMin, [[maybe_unused]] double outMax) noexcept {
+  return (static_cast<double>(outMin) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(outMax) - static_cast<double>(outMin))) * static_cast<double>((static_cast<double>(value) - static_cast<double>(inMin))))) / static_cast<double>((static_cast<double>(inMax) - static_cast<double>(inMin))))));
+}
+
+void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
+  const auto& state = static_cast<const State&>(kernel_base);
+  (void)state;
+  (void)context;
+  [[maybe_unused]] glsl::IVec2 texSize = texture_size(*state.bufTex);
+  [[maybe_unused]] glsl::Vec4 tex = sample_texture(*state.bufTex, (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize)));
+  [[maybe_unused]] double a = glsl::swizzle<0>(tex);
+  [[maybe_unused]] double b = glsl::swizzle<1>(tex);
+  [[maybe_unused]] bool bufferIsEmpty = ((((glsl::swizzle<0>(tex) == static_cast<float>(0.0)) && (glsl::swizzle<1>(tex) == static_cast<float>(0.0))) && (glsl::swizzle<2>(tex) == static_cast<float>(0.0))) && (glsl::swizzle<3>(tex) == static_cast<float>(0.0)));
+  if (bufferIsEmpty || state.resetState) {
+    a = static_cast<float>(1.0);
+    b = static_cast<float>(0.0);
+    if (hash(state, context, (glsl::swizzle<0, 1>(context.frag_coord) + glsl::FloatExpr<2>(float(state.seed)))) > static_cast<float>(0.99)) {
+      b = static_cast<float>(1.0);
+    }
+    output = glsl::Vec4(glsl::FloatExpr<4>(a, b, static_cast<float>(0.0), static_cast<float>(1.0)));
+    return;
+  }
+  [[maybe_unused]] glsl::Vec3 color = lp(state, context, *state.bufTex, glsl::swizzle<0, 1>(context.frag_coord), glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec2 prevFrameCoord = (glsl::swizzle<0, 1>(context.frag_coord) / glsl::Vec2(texSize));
+  [[maybe_unused]] glsl::Vec3 prevFrame = glsl::swizzle<0, 1, 2>(sample_texture(*state.inputTex, prevFrameCoord));
+  [[maybe_unused]] double prevLum = lum(state, context, prevFrame);
+  [[maybe_unused]] double f = (static_cast<double>(state.feed) * static_cast<double>(static_cast<float>(0.001)));
+  [[maybe_unused]] double k = (static_cast<double>(state.kill) * static_cast<double>(static_cast<float>(0.001)));
+  [[maybe_unused]] double r1 = (static_cast<double>(state.rate1) * static_cast<double>(static_cast<float>(0.01)));
+  [[maybe_unused]] double r2 = (static_cast<double>(state.rate2) * static_cast<double>(static_cast<float>(0.01)));
+  [[maybe_unused]] double s = (static_cast<double>(state.speed) * static_cast<double>(static_cast<float>(0.01)));
+  if (state.sourceF > std::int32_t(0)) {
+    [[maybe_unused]] double val = prevLum;
+    if (state.sourceF == std::int32_t(2)) {
+      val = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(prevLum));
+    } else {
+      if (state.sourceF == std::int32_t(3)) {
+        val = glsl::swizzle<0>(prevFrame);
+      } else {
+        if (state.sourceF == std::int32_t(4)) {
+          val = glsl::swizzle<1>(prevFrame);
+        } else {
+          if (state.sourceF == std::int32_t(5)) {
+            val = glsl::swizzle<2>(prevFrame);
+          } else {
+            if (state.sourceF == std::int32_t(6)) {
+              val = map(state, context, prevLum, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.01), static_cast<float>(0.11));
+              f = glsl::mix(f, val, (static_cast<double>(state.weight) * static_cast<double>(static_cast<float>(0.01))));
+            }
+          }
+        }
+      }
+    }
+    if (state.sourceF != std::int32_t(6)) {
+      val = map(state, context, val, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.01), static_cast<float>(0.11));
+      f = val;
+    }
+  }
+  if (state.sourceK > std::int32_t(0)) {
+    [[maybe_unused]] double val = prevLum;
+    if (state.sourceK == std::int32_t(2)) {
+      val = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(prevLum));
+    } else {
+      if (state.sourceK == std::int32_t(3)) {
+        val = glsl::swizzle<0>(prevFrame);
+      } else {
+        if (state.sourceK == std::int32_t(4)) {
+          val = glsl::swizzle<1>(prevFrame);
+        } else {
+          if (state.sourceK == std::int32_t(5)) {
+            val = glsl::swizzle<2>(prevFrame);
+          } else {
+            if (state.sourceK == std::int32_t(6)) {
+              val = map(state, context, prevLum, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.045), static_cast<float>(0.07));
+              k = glsl::mix(k, val, (static_cast<double>(state.weight) * static_cast<double>(static_cast<float>(0.01))));
+            }
+          }
+        }
+      }
+    }
+    if (state.sourceK != std::int32_t(6)) {
+      val = map(state, context, val, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.045), static_cast<float>(0.07));
+      k = val;
+    }
+  }
+  if (state.sourceR1 > std::int32_t(0)) {
+    [[maybe_unused]] double val = prevLum;
+    if (state.sourceR1 == std::int32_t(2)) {
+      val = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(prevLum));
+    } else {
+      if (state.sourceR1 == std::int32_t(3)) {
+        val = glsl::swizzle<0>(prevFrame);
+      } else {
+        if (state.sourceR1 == std::int32_t(4)) {
+          val = glsl::swizzle<1>(prevFrame);
+        } else {
+          if (state.sourceR1 == std::int32_t(5)) {
+            val = glsl::swizzle<2>(prevFrame);
+          } else {
+            if (state.sourceR1 == std::int32_t(6)) {
+              val = map(state, context, prevLum, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.5), static_cast<float>(1.2));
+              r1 = glsl::mix(r1, val, (static_cast<double>(state.weight) * static_cast<double>(static_cast<float>(0.01))));
+            }
+          }
+        }
+      }
+    }
+    if (state.sourceR1 != std::int32_t(6)) {
+      val = map(state, context, val, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.5), static_cast<float>(1.2));
+      r1 = val;
+    }
+  }
+  if (state.sourceR2 > std::int32_t(0)) {
+    [[maybe_unused]] double val = prevLum;
+    if (state.sourceR2 == std::int32_t(2)) {
+      val = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(prevLum));
+    } else {
+      if (state.sourceR2 == std::int32_t(3)) {
+        val = glsl::swizzle<0>(prevFrame);
+      } else {
+        if (state.sourceR2 == std::int32_t(4)) {
+          val = glsl::swizzle<1>(prevFrame);
+        } else {
+          if (state.sourceR2 == std::int32_t(5)) {
+            val = glsl::swizzle<2>(prevFrame);
+          } else {
+            if (state.sourceR2 == std::int32_t(6)) {
+              val = map(state, context, prevLum, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.2), static_cast<float>(0.5));
+              r2 = glsl::mix(r2, val, (static_cast<double>(state.weight) * static_cast<double>(static_cast<float>(0.01))));
+            }
+          }
+        }
+      }
+    }
+    if (state.sourceR2 != std::int32_t(6)) {
+      val = map(state, context, val, static_cast<float>(0.0), static_cast<float>(1.0), static_cast<float>(0.2), static_cast<float>(0.5));
+      r2 = val;
+    }
+  }
+  [[maybe_unused]] double a2 = (static_cast<double>(a) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(r1) * static_cast<double>(glsl::swizzle<0>(color)))) - static_cast<double>((static_cast<double>((static_cast<double>(a) * static_cast<double>(b))) * static_cast<double>(b))))) + static_cast<double>((static_cast<double>(f) * static_cast<double>((static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(a))))))) * static_cast<double>(s))));
+  [[maybe_unused]] double b2 = (static_cast<double>(b) + static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>((static_cast<double>(r2) * static_cast<double>(glsl::swizzle<1>(color)))) + static_cast<double>((static_cast<double>((static_cast<double>(a) * static_cast<double>(b))) * static_cast<double>(b))))) - static_cast<double>((static_cast<double>((static_cast<double>(k) + static_cast<double>(f))) * static_cast<double>(b))))) * static_cast<double>(s))));
+  a2 = glsl::clamp(a2, static_cast<float>(0.0), static_cast<float>(1.0));
+  b2 = glsl::clamp(b2, static_cast<float>(0.0), static_cast<float>(1.0));
+  output = glsl::Vec4(glsl::FloatExpr<4>(a2, b2, static_cast<float>(0.0), static_cast<float>(1.0)));
+}
+}  // namespace typed_253
+
+BoundKernel bind_synth_reactionDiffusion_rdFb(const glsl::Bindings& bindings) {
+  const auto state = std::make_shared<typed_253::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<glsl::Vec2>("resolution"), &bindings.texture("bufTex"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get_number("weight"), bindings.get<std::int32_t>("sourceF"), bindings.get<std::int32_t>("sourceK"), bindings.get<std::int32_t>("sourceR1"), bindings.get<std::int32_t>("sourceR2"), bindings.get_number("zoom"), &bindings.texture("inputTex"), bindings.get<bool>("resetState"));
+  (void)bindings;
+  return BoundKernel(state, &typed_253::pixel);
 }
 
 // Typed IR program: synth/remap:remap
@@ -31735,7 +32593,7 @@ BoundKernel bind_synth_polygon_shape(const glsl::Bindings& bindings) {
 
 // Typed IR program: synth/sacredGeometry:sacredGeometry
 // Source SHA-256: 24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de
-namespace typed_251 {
+namespace typed_255 {
 using Centers13 = std::array<glsl::Vec2, 13>;
 static_assert(sizeof(glsl::Vec2) == 8U);
 static_assert(sizeof(Centers13) == 104U);
@@ -32055,17 +32913,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   [[maybe_unused]] glsl::Vec3 color = glsl::mix(state.bgColor, state.fgColor, m);
   output = glsl::Vec4(glsl::Vec4(color, static_cast<float>(1.0)));
 }
-}  // namespace typed_251
+}  // namespace typed_255
 
 BoundKernel bind_synth_sacredGeometry_sacredGeometry(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_251::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("geometry"), bindings.get<std::int32_t>("rings"), bindings.get<std::int32_t>("starPoints"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
+  const auto state = std::make_shared<typed_255::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("aspect"), bindings.get_number("scale"), bindings.get_number("rotation"), bindings.get_number("thickness"), bindings.get_number("smoothness"), bindings.get<std::int32_t>("geometry"), bindings.get<std::int32_t>("rings"), bindings.get<std::int32_t>("starPoints"), bindings.get<std::int32_t>("animation"), bindings.get_number("speed"), bindings.get_number("pulseDepth"), bindings.get_number("time"), bindings.get<glsl::DVec3>("fgColor"), bindings.get<glsl::DVec3>("bgColor"));
   (void)bindings;
-  return BoundKernel(state, &typed_251::pixel);
+  return BoundKernel(state, &typed_255::pixel);
 }
 
 // Typed IR program: synth/shape:shape
 // Source SHA-256: d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f
-namespace typed_252 {
+namespace typed_256 {
 struct Frame final {
   double aspectRatio{};  // JS: 0 (double, narrowing=none)
   glsl::Vec2 globalCoord{};  // JS: new Float32Array([0, 0]) (float32-array, narrowing=per-lane-f32)
@@ -32554,17 +33412,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   glsl::set_swizzle<0, 1, 2>(color, glsl::FloatExpr<3>(d));
   output = glsl::Vec4(color);
 }
-}  // namespace typed_252
+}  // namespace typed_256
 
 BoundKernel bind_synth_shape_shape(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_252::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("wrap"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"));
+  const auto state = std::make_shared<typed_256::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<bool>("wrap"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"));
   (void)bindings;
-  return BoundKernel(state, &typed_252::pixel);
+  return BoundKernel(state, &typed_256::pixel);
 }
 
 // Typed IR program: synth/solid:solid
 // Source SHA-256: 82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c
-namespace typed_253 {
+namespace typed_257 {
 struct State final : KernelState {
   State(glsl::Vec3 color_value, double alpha_value) : color(color_value), alpha(alpha_value) {}
   glsl::Vec3 color;
@@ -32589,17 +33447,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   (void)context;
   output = glsl::Vec4(glsl::Vec4((state.color * state.alpha), state.alpha));
 }
-}  // namespace typed_253
+}  // namespace typed_257
 
 BoundKernel bind_synth_solid_solid(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_253::State>(bindings.get<glsl::Vec3>("color"), bindings.get_number("alpha"));
+  const auto state = std::make_shared<typed_257::State>(bindings.get<glsl::Vec3>("color"), bindings.get_number("alpha"));
   (void)bindings;
-  return BoundKernel(state, &typed_253::pixel);
+  return BoundKernel(state, &typed_257::pixel);
 }
 
 // Typed IR program: synth/subdivide:subdivide
 // Source SHA-256: 65e57d82c8982040240528c4410328453bc39de4f4d9519da2497266b1b500bd
-namespace typed_254 {
+namespace typed_258 {
 struct State final : KernelState {
   State(const Surface* inputTex_value, glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value, double mode_value, double depth_value, double density_value, double seed_value, double fill_value, double outline_value, double inputMix_value, double wrap_value, double time_value, double speed_value) : inputTex(inputTex_value), resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value), mode(mode_value), depth(depth_value), density(density_value), seed(seed_value), fill(fill_value), outline(outline_value), inputMix(inputMix_value), wrap(wrap_value), time(time_value), speed(speed_value) {}
   const Surface* inputTex;
@@ -32891,17 +33749,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(result, static_cast<float>(1.0)));
 }
-}  // namespace typed_254
+}  // namespace typed_258
 
 BoundKernel bind_synth_subdivide_subdivide(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_254::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("mode"), bindings.get_number("depth"), bindings.get_number("density"), bindings.get_number("seed"), bindings.get_number("fill"), bindings.get_number("outline"), bindings.get_number("inputMix"), bindings.get_number("wrap"), bindings.get_number("time"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_258::State>(&bindings.texture("inputTex"), bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"), bindings.get_number("mode"), bindings.get_number("depth"), bindings.get_number("density"), bindings.get_number("seed"), bindings.get_number("fill"), bindings.get_number("outline"), bindings.get_number("inputMix"), bindings.get_number("wrap"), bindings.get_number("time"), bindings.get_number("speed"));
   (void)bindings;
-  return BoundKernel(state, &typed_254::pixel);
+  return BoundKernel(state, &typed_258::pixel);
 }
 
 // Typed IR program: synth/testPattern:testPattern
 // Source SHA-256: f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20
-namespace typed_255 {
+namespace typed_259 {
 struct State final : KernelState {
   State(glsl::Vec2 resolution_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, std::int32_t gridSize_value, std::int32_t pattern_value) : resolution(resolution_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), gridSize(gridSize_value), pattern(pattern_value) {}
   glsl::Vec2 resolution;
@@ -33075,7 +33933,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     }
   }
 }
-}  // namespace typed_255
+}  // namespace typed_259
 
 BoundKernel bind_synth_testPattern_testPattern(const glsl::Bindings& bindings) {
   const auto gridSize = bindings.get<std::int32_t>("gridSize");
@@ -33086,14 +33944,14 @@ BoundKernel bind_synth_testPattern_testPattern(const glsl::Bindings& bindings) {
   if (pattern < 0 || pattern > 6) {
     throw glsl::KernelBindingError("synth/testPattern:testPattern pattern must be within 0..6");
   }
-  const auto state = std::make_shared<typed_255::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), gridSize, pattern);
+  const auto state = std::make_shared<typed_259::State>(bindings.get<glsl::Vec2>("resolution"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), gridSize, pattern);
   (void)bindings;
-  return BoundKernel(state, &typed_255::pixel);
+  return BoundKernel(state, &typed_259::pixel);
 }
 
 // Typed IR program: synth3d/cell3d:precompute
 // Source SHA-256: 83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755
-namespace typed_256 {
+namespace typed_260 {
 struct State final : KernelState {
   State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double scale_value, std::int32_t seed_value, std::int32_t metric_value, double cellVariation_value, std::int32_t volumeSize_value, std::int32_t colorMode_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), scale(scale_value), seed(seed_value), metric(metric_value), cellVariation(cellVariation_value), volumeSize(volumeSize_value), colorMode(colorMode_value) {}
   glsl::Vec2 tileOffset;
@@ -33225,17 +34083,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), normalizedDist));
 }
-}  // namespace typed_256
+}  // namespace typed_260
 
 BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_256::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("metric"), bindings.get_number("cellVariation"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("colorMode"));
+  const auto state = std::make_shared<typed_260::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("metric"), bindings.get_number("cellVariation"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("colorMode"));
   (void)bindings;
-  return BoundKernelMrt(state, &typed_256::pixel, 2U);
+  return BoundKernelMrt(state, &typed_260::pixel, 2U);
 }
 
 // Typed IR program: synth3d/reactionDiffusion3d:simulate
 // Source SHA-256: 23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17
-namespace typed_257 {
+namespace typed_261 {
 struct State final : KernelState {
   State(double time_value, std::int32_t seed_value, std::int32_t volumeSize_value, double feed_value, double kill_value, double rate1_value, double rate2_value, double speed_value, std::int32_t iterations_value, std::int32_t colorMode_value, double weight_value, bool resetState_value, const Surface* stateTex_value, const Surface* seedTex_value) : time(time_value), seed(seed_value), volumeSize(volumeSize_value), feed(feed_value), kill(kill_value), rate1(rate1_value), rate2(rate2_value), speed(speed_value), iterations(iterations_value), colorMode(colorMode_value), weight(weight_value), resetState(resetState_value), stateTex(stateTex_value), seedTex(seedTex_value) {}
   double time;
@@ -33372,17 +34230,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(outRgb, newA));
 }
-}  // namespace typed_257
+}  // namespace typed_261
 
 BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_257::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
+  const auto state = std::make_shared<typed_261::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_257::pixel);
+  return BoundKernel(state, &typed_261::pixel);
 }
 
 // Typed IR program: synth3d/shape3d:precompute
 // Source SHA-256: 53b240191c2f0d2e61b5dacecb532ecd3b8aad3973bbf8e38d8712073d50d14f
-namespace typed_258 {
+namespace typed_262 {
 struct State final : KernelState {
   State(std::int32_t loopAOffset_value, std::int32_t loopBOffset_value, double loopAScale_value, double loopBScale_value, double speedA_value, double speedB_value, double time_value, std::int32_t volumeSize_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value) : loopAOffset(loopAOffset_value), loopBOffset(loopBOffset_value), loopAScale(loopAScale_value), loopBScale(loopBScale_value), speedA(speedA_value), speedB(speedB_value), time(time_value), volumeSize(volumeSize_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value) {}
   std::int32_t loopAOffset;
@@ -33587,17 +34445,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   fragColor = glsl::Vec4(glsl::FloatExpr<4>(d, d, d, static_cast<float>(1.0)));
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), d));
 }
-}  // namespace typed_258
+}  // namespace typed_262
 
 BoundKernelMrt bind_synth3d_shape3d_precompute(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_258::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
+  const auto state = std::make_shared<typed_262::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
   (void)bindings;
-  return BoundKernelMrt(state, &typed_258::pixel, 2U);
+  return BoundKernelMrt(state, &typed_262::pixel, 2U);
 }
 
 
 namespace {
-constexpr std::array<KernelFactory, 256> kCatalog{{
+constexpr std::array<KernelFactory, 260> kCatalog{{
     {"classicNoisedeck/bitEffects:bitEffects", &noisemaker::effects::bind_bit_effects},
     {"classicNoisedeck/caustic:caustic", &bind_classicNoisedeck_caustic_caustic},
     {"classicNoisedeck/cellNoise:cellNoise", &bind_classicNoisedeck_cellNoise_cellNoise},
@@ -33824,6 +34682,7 @@ constexpr std::array<KernelFactory, 256> kCatalog{{
     {"render/pointsRender:diffuse", &bind_render_pointsRender_diffuse},
     {"synth/bitwise:bitwise", &bind_synth_bitwise_bitwise},
     {"synth/cell:cell", &bind_synth_cell_cell},
+    {"synth/cellularAutomata:ca", &bind_synth_cellularAutomata_ca},
     {"synth/cellularAutomata:caFb", &bind_synth_cellularAutomata_caFb},
     {"synth/curl:curl", &bind_synth_curl_curl},
     {"synth/gabor:gabor", &bind_synth_gabor_gabor},
@@ -33832,6 +34691,7 @@ constexpr std::array<KernelFactory, 256> kCatalog{{
     {"synth/mandala:mandala", &bind_synth_mandala_mandala},
     {"synth/mandelbrot:mandelbrot", &bind_synth_mandelbrot_mandelbrot},
     {"synth/media:mediaInput", &bind_synth_media_mediaInput},
+    {"synth/mnca:mnca", &bind_synth_mnca_mnca},
     {"synth/mnca:mncaFb", &bind_synth_mnca_mncaFb},
     {"synth/modPattern:modPattern", &bind_synth_modPattern_modPattern},
     {"synth/navierStokes:ns", &bind_synth_navierStokes_ns},
@@ -33846,6 +34706,8 @@ constexpr std::array<KernelFactory, 256> kCatalog{{
     {"synth/pattern:pattern", &bind_synth_pattern_pattern},
     {"synth/perlin:perlin", &bind_synth_perlin_perlin},
     {"synth/polygon:shape", &bind_synth_polygon_shape},
+    {"synth/reactionDiffusion:rd", &bind_synth_reactionDiffusion_rd},
+    {"synth/reactionDiffusion:rdFb", &bind_synth_reactionDiffusion_rdFb},
     {"synth/remap:remap", &noisemaker::effects::bind_remap},
     {"synth/sacredGeometry:sacredGeometry", &bind_synth_sacredGeometry_sacredGeometry},
     {"synth/shape:shape", &bind_synth_shape_shape},
@@ -33856,7 +34718,7 @@ constexpr std::array<KernelFactory, 256> kCatalog{{
     {"synth3d/reactionDiffusion3d:simulate", &bind_synth3d_reactionDiffusion3d_simulate},
 }};
 
-constexpr std::array<FactoryRoute, 254> kCanonicalRoutes{{
+constexpr std::array<FactoryRoute, 258> kCanonicalRoutes{{
     {"classicNoisedeck/bitEffects:bitEffects", "noisemaker::effects::bind_bit_effects", "bind_classicNoisedeck_bitEffects_bitEffects", "custom_adapter", "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b", "8f356b8ee94ca2b24c42612d6672340aed73765aa37bcd076ce3730b7728f11e", "default-only", "COLOR_SCHEME=20;FORMULA=0;INTERP=0;MASK_COLOR_SCHEME=1;MASK_FORMULA=10;MODE=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "d4a8993d59224995227b303d730130eb836c7e786538aab16d5adbbe48c5f811", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "90c6fd51fda687348a92373857d49ab0045fd6571831765cc24eefadd422aec2", &noisemaker::effects::bind_bit_effects},
     {"classicNoisedeck/caustic:caustic", "bind_classicNoisedeck_caustic_caustic", "bind_classicNoisedeck_caustic_caustic", "typed_emitter", "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d", "3e98bf1e43078e5b42d17f73f37d58d764789eb086868a862ae6ee137f9e5e51", "default-only", "NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "1362793bfada7465bd99246de8f691626a2815027ef8ac57cd81065d22ad82bd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_caustic_caustic},
     {"classicNoisedeck/cellNoise:cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "typed_emitter", "9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8", "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85", "none", "", "e93de6c8f46919a3709b61a9b897956d2556bbe8db7b44bcd1868867d20b75f6", "f9b7dd0e9b66a36803e5a9696f9d91395a082cc60cc410738415d5cb16c9659f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellNoise_cellNoise},
@@ -34082,6 +34944,7 @@ constexpr std::array<FactoryRoute, 254> kCanonicalRoutes{{
     {"render/pointsRender:diffuse", "bind_render_pointsRender_diffuse", "bind_render_pointsRender_diffuse", "typed_emitter", "e34a1a875649930e3eff5d22e394c97afb088d325562d78368e463a8dda59afb", "ae009fa4ffd13f7e8d560a65b7e62935849648ace4c956d22f227470457aad12", "none", "", "23417a50370caa367e28d0a9fcacf276e3f0795aee73fa3962f37c4f30333a56", "55e79c16f696f580a3825b697c83832266d14d979ad3656857115806aaa00e4c", "e962c40ccd540f0218a9c9198dc09a3a9e288d7052be072315653cd899fed25a", "f74dbed66ed8bbe99a67a1ecfa3c978964e35aeed1564b17a27da3434411536f", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_render_pointsRender_diffuse},
     {"synth/bitwise:bitwise", "bind_synth_bitwise_bitwise", "bind_synth_bitwise_bitwise", "typed_emitter", "1beb9d4b4fff3466587b9c942af3b1a46c0f35a1bf41874c7461c18dcf2f923f", "2162ae1cb06f361aa88e91d435e9dc4f4ce207f08e93ff4dc579987064b868ca", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "934ed4edea647dfb2c487ab96548ae882d63db6e518d7639ce60738da3043acb", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_bitwise_bitwise},
     {"synth/cell:cell", "bind_synth_cell_cell", "bind_synth_cell_cell", "typed_emitter", "b2cae5ecdfd315194d4b3b04d2c5b39d1b48c56a9bd1a10396827e3b8d413a18", "6a61608d7ddf0c96bd77e06a730dc1d7d0cf352d2d1a5aa535657a86a4d3a2d8", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "741ec6020c3cec7cf6c080c2ddaed4aed72b42ce511bbcacae37dbf5d840e811", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_cell_cell},
+    {"synth/cellularAutomata:ca", "bind_synth_cellularAutomata_ca", "bind_synth_cellularAutomata_ca", "typed_emitter", "147eb021eb138adc47149edf9440b94e8c1128d2a35dfb236a9a76f091397e15", "6c243a57bc6ae8e40ff450d09303436d355d3dd54cf64ceaaf1904cd720e5e5e", "none", "", "7b7071d68c1828b47025c13ce9b2393aa9946636dd3bfb28b23e6680bdf4901f", "f0330f715928e2dcb70469d297b46fa3c7b03f32bf378c198704217fca28e744", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_cellularAutomata_ca},
     {"synth/cellularAutomata:caFb", "bind_synth_cellularAutomata_caFb", "bind_synth_cellularAutomata_caFb", "typed_emitter", "1668346247db9567e6880d69290cef113c50edc0ba576cf2d29cf497227fef89", "a82cd6f14a65ea8d607eaee5d9c1ff4ea5f25700c21c11563ac01f9250156b8f", "none", "", "9911f8cd9127592efbc5d1da912ae3a8682682509d05f28bc083dc7f8d6923d0", "5a27093d21299a688f6dc1158e0cc23cc939f70b580547486ece0240fb08090c", "6ed37b38e77c759d032b690a82fcdf4146ee8da6f1a2ce85551396386d415c44", "a7a0afbb791f9375a587bc12da5f0397245ed5f9c3c9d927c2d87dd3cad7a538", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_cellularAutomata_caFb},
     {"synth/curl:curl", "bind_synth_curl_curl", "bind_synth_curl_curl", "typed_emitter", "33d1f2bd0215d6439b51a0aa8d50b5c3637abc0b5cade8f3e451b8d258d0afce", "1bac543a8b6c4e0e2d67ad1246c88c42a0ed17c43fef14d7c19c9eb109704bd4", "runtime-int", "OCTAVES=1;OUTPUT_MODE=3;RIDGES=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "607e7418593f3fb23337d7e7cadbaad3e9d7e9837335690823064bb2a40f19b5", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_curl_curl},
     {"synth/gabor:gabor", "bind_synth_gabor_gabor", "bind_synth_gabor_gabor", "typed_emitter", "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5", "e9c1d22f4c2ac8c2c72fe595130a56b7b4fb81e3d7433eab6dc8be44b658b88c", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "77e15b3e114939cab7cb0622fe1dfb1bb0999454ee8ee3681a0c20a69eb70807", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_gabor_gabor},
@@ -34090,6 +34953,7 @@ constexpr std::array<FactoryRoute, 254> kCanonicalRoutes{{
     {"synth/mandala:mandala", "bind_synth_mandala_mandala", "bind_synth_mandala_mandala", "typed_emitter", "ef97349f9f3003d356bf73ecea6292bbe8ad41c6c2605eff4a8468a44215dea2", "07143e555cad95c4535ac43053fa117f35dc3785e789787eca60424a021da821", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "54cce2aea589352480906e06928a125a86c0e28cbe2ec6290ada47d7d36b793d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mandala_mandala},
     {"synth/mandelbrot:mandelbrot", "bind_synth_mandelbrot_mandelbrot", "bind_synth_mandelbrot_mandelbrot", "typed_emitter", "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615", "80cc453eedd1d7a44c2fb6c4216a1060451a02dc492b2b8428a4e080c7436774", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "c7fa40d1f7f452d4f7465094010f9e359b62e3e2be493422303c540e90266b6a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mandelbrot_mandelbrot},
     {"synth/media:mediaInput", "bind_synth_media_mediaInput", "bind_synth_media_mediaInput", "typed_emitter", "3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c", "d89ab75302e1cf27a19f336e45521dd315cd56daff9c0de8b92a0de437f5bb88", "none", "", "35fad22f0023f820f2c6cd8074e9bccacf6eecbcca588ae7aea6ef596351bfe2", "bcce9eb6bd73707355370ddd4a55c6d9cad2513eae46c85ed610436d055716cc", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_media_mediaInput},
+    {"synth/mnca:mnca", "bind_synth_mnca_mnca", "bind_synth_mnca_mnca", "typed_emitter", "725c245f6f52a1629f7427b98a211b527c546fd3e0dcecbb9c5b65ecf3ee239a", "6c243a57bc6ae8e40ff450d09303436d355d3dd54cf64ceaaf1904cd720e5e5e", "none", "", "83c9cb6c6bf8d7ac6df1ee2f2dd83830c22b4c5d50c9db9f1b4c8a347a34bc5a", "f0330f715928e2dcb70469d297b46fa3c7b03f32bf378c198704217fca28e744", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mnca_mnca},
     {"synth/mnca:mncaFb", "bind_synth_mnca_mncaFb", "bind_synth_mnca_mncaFb", "typed_emitter", "4a1b1bbb1e52f66871808d878068f1ff6b379d2b68ca0dd8053f89659c8bf9d6", "6032482382d3003568a6653713cbf59141b963b00956795a2f911f921587b613", "none", "", "19e64004645db1d3cac49104de785627680fe3aa2b00aa5484675b729dfba3e5", "85410895d395fdc0ce423b3ce4a9275cf75bbb931f86dfa15d295378bc467e0a", "676186885742408c79781998cbf9e861b9b90c8e43907dc85daedf94aeee02fc", "a132d8228902c8c899512e5f988ed4bf323003b417b83f5ba96783c88db48216", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_mnca_mncaFb},
     {"synth/modPattern:modPattern", "bind_synth_modPattern_modPattern", "bind_synth_modPattern_modPattern", "typed_emitter", "5bf4fc9ed8fdf68fa58e9c66f79e1f42624234500f89fb1ee63da64839d3dc2e", "ce60049aedbfa2e2e297bdc3305c22f56e73904a09d4fbd649b4658d0782d5a3", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "672b1b574d7214432320077aa210eced6b324411072b9d63dbc02d6e9e07771e", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_modPattern_modPattern},
     {"synth/navierStokes:ns", "bind_synth_navierStokes_ns", "bind_synth_navierStokes_ns", "typed_emitter", "f2c930b585558c5b90b1e502fc71ffef4ea28c6b5c0d75c0c9d20cccf727a36f", "f775440662ace5c43478af8575ef2562e0c80037dee2d3e417cac4b682f0120e", "none", "", "060910c4cc3c12b037f4fb77d27d83ce84415def775998900922a7285d12f10c", "ee3863662bebbb9e03a94326ab9cdee4290c8e4d14b1c6af1f1d76f40b5e7c04", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_navierStokes_ns},
@@ -34104,6 +34968,8 @@ constexpr std::array<FactoryRoute, 254> kCanonicalRoutes{{
     {"synth/pattern:pattern", "bind_synth_pattern_pattern", "bind_synth_pattern_pattern", "typed_emitter", "d3ce98d432c1548553fac6446a040d2dab8f0fbb7f852457aa4fc4f139d44c5c", "d49e322fbc407b116043378f88007b7d61414426a354c1fafa01efbcec25dc88", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5b9250ca7503c447a4fea79fd7493610cef5b31f4607a53c9b2589b658df2982", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_pattern_pattern},
     {"synth/perlin:perlin", "bind_synth_perlin_perlin", "bind_synth_perlin_perlin", "typed_emitter", "9580baa0f637b8b4f2488e6e26288d885fe748973a121f52281b63c16d530318", "73be9fbfb9dd7baa65e8fc7f506c4dfbd72c3f5659b507374a1b92acb3aeb00c", "default-only", "DIMENSIONS=2", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "e084d6f5df677f435f61d8703cfbb1ff4a5dadd30bc019eefd1f5af25eddb70d", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_perlin_perlin},
     {"synth/polygon:shape", "bind_synth_polygon_shape", "bind_synth_polygon_shape", "typed_emitter", "e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6", "0a86c7582f37ce591282a791b4f104d757328402039ae43c99f0d9d1a801d5ee", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "dbe7ddf5bd68c3cdbfd6a5151cde4b0b105327fee8d290e057653d23fd832649", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_polygon_shape},
+    {"synth/reactionDiffusion:rd", "bind_synth_reactionDiffusion_rd", "bind_synth_reactionDiffusion_rd", "typed_emitter", "2c7c242db938ea81fa738b4f5a4fff9f067afca63802e39689aec49d4955f53c", "1e65bcd0f161d837f90624ec73dc1783c79ff16e70386e4cbbcb23d09da1ad88", "none", "", "c358184c17686c07ad35be94266e0c3ec6f793ad0bce1614456fce3b70941cda", "583183bd138ba28966adae69af4f1099b1a6ff4d75b38a1598cdb908619a5b0a", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_reactionDiffusion_rd},
+    {"synth/reactionDiffusion:rdFb", "bind_synth_reactionDiffusion_rdFb", "bind_synth_reactionDiffusion_rdFb", "typed_emitter", "1b0a2ce5b7594005e778b0487a14c1c83c081b7ce3d0db50f81809ac931be976", "53d4b91cf7c8dad8e892102a46f81299197cb4e772a5c7740f895ff0c173627b", "none", "", "54a9f6794168ec1bd40f716fa8870b1234a83fa207dbf2804fb4d3841b2f0a19", "839d31bd511a5daa0c8485de46553d47e2103d375e91d3264249e73c8c8ba6eb", "ca77d716f67cc76f3f8927cfbc5241ea4e2748ac0844235d364a71ddbe0fb2aa", "a132d8228902c8c899512e5f988ed4bf323003b417b83f5ba96783c88db48216", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_reactionDiffusion_rdFb},
     {"synth/remap:remap", "noisemaker::effects::bind_remap", "bind_synth_remap_remap", "custom_adapter", "500f761ac9b0a58aedc7574f974994abfdaf4d41cb9947a11b4cdd18b0482b9b", "b73a352c896eee8c0b00da621f29063d302efce117485deebb16b7b7a5daf179", "none", "", "120eccceff26846478df36969e985883ca75f0f9eabae9921028a04db69014e1", "21857846a27ae69201d44fe1f2ead9aa18cf5d400f8d5ef537b78f58aad4c505", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &noisemaker::effects::bind_remap},
     {"synth/sacredGeometry:sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "bind_synth_sacredGeometry_sacredGeometry", "typed_emitter", "24e5bc642f5a1f368d4514fd33590ef7d479f56c1c862144576f7bde321f53de", "646291037060f55ca320baf572bc44e699f1c283a972ad8f0253adfeed979f30", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "53404ba3cece8cabffdd38c78f99781a3516afcceaf100874c41e5b31d1a1f68", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_sacredGeometry_sacredGeometry},
     {"synth/shape:shape", "bind_synth_shape_shape", "bind_synth_shape_shape", "typed_emitter", "d917d2027c873f05bc4183277a2b1dffe158c13cfd1281461580a31e0cd7d67f", "3c09c2bd90e980371877a4df8ba5e58da7ec268c969fcfa5dbfcbc2935c7e72c", "default-only", "LOOP_A_OFFSET=40;LOOP_B_OFFSET=30", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "142e135352a98983ad23ad8cfab2e69a33fd26b2330377b5312a2405c6f53f95", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_shape_shape},

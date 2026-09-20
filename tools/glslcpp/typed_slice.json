@@ -1203,6 +1203,11 @@
     },
     {
       "defines": {},
+      "program_key": "synth/cellularAutomata:ca",
+      "simulation_sampler_profile": "simulation-sampler-parameters-v1"
+    },
+    {
+      "defines": {},
       "program_key": "synth/cellularAutomata:caFb"
     },
     {
@@ -1246,6 +1251,11 @@
     {
       "defines": {},
       "program_key": "synth/media:mediaInput"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/mnca:mnca",
+      "simulation_sampler_profile": "simulation-sampler-parameters-v1"
     },
     {
       "defines": {},
@@ -1314,6 +1324,16 @@
     {
       "defines": {},
       "program_key": "synth/polygon:shape"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/reactionDiffusion:rd",
+      "simulation_sampler_profile": "simulation-sampler-parameters-v1"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/reactionDiffusion:rdFb",
+      "simulation_sampler_profile": "simulation-sampler-parameters-v1"
     },
     {
       "defines": {},

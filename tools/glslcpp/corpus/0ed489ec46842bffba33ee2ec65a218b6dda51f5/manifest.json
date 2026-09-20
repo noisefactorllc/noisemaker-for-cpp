@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "61e101d2be7a3f2d887a3c26fb2f3f6ce33b16609633373a10ace9a4ad801b9e",
+  "metadata_sha256": "7e2b6bd4482f8e35b4fa169df44fc52e4fc0355b148c89e04290c0dd986d5fbc",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -4140,6 +4140,24 @@
     },
     {
       "effect_id": "synth/cellularAutomata",
+      "normalized_bytes": 9097,
+      "normalized_sha256": "53807e631ef4650c5aeb4e1d369b939b034fcccee146029caa4d9aa93ab7684e",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "render",
+      "program": "ca",
+      "program_key": "synth/cellularAutomata:ca",
+      "raw_bytes": 11253,
+      "raw_sha256": "147eb021eb138adc47149edf9440b94e8c1128d2a35dfb236a9a76f091397e15",
+      "runtime_key": "synth/cellularAutomata:ca",
+      "source": "sources/synth/cellularAutomata/ca.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/cellularAutomata",
       "normalized_bytes": 5459,
       "normalized_sha256": "5a838f666184bd9e05bf506088772afc3fa01de94b8df905ecfb0ae0c4d7e14a",
       "outputs": [
@@ -4279,6 +4297,24 @@
       "raw_sha256": "3f26aa8aa6d813e0825f7ccbe1c0ab6d9e91445283d27d6d87d72eeb0b7b0c9c",
       "runtime_key": "synth/media:mediaInput",
       "source": "sources/synth/media/mediaInput.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/mnca",
+      "normalized_bytes": 9051,
+      "normalized_sha256": "f7cfb28404d7ddb7d8191762c3869cbe93e54953a13e99b366cceaa132a7739c",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "render",
+      "program": "mnca",
+      "program_key": "synth/mnca:mnca",
+      "raw_bytes": 11142,
+      "raw_sha256": "725c245f6f52a1629f7427b98a211b527c546fd3e0dcecbb9c5b65ecf3ee239a",
+      "runtime_key": "synth/mnca:mnca",
+      "source": "sources/synth/mnca/mnca.glsl",
       "status": "generated",
       "varyings": []
     },
@@ -4531,6 +4567,42 @@
       "raw_sha256": "e43087ee8ade2e59ff1a2098c1e6ceb4357a3eb9ee63755a3f8a3879824115e6",
       "runtime_key": "synth/polygon:shape",
       "source": "sources/synth/polygon/shape.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/reactionDiffusion",
+      "normalized_bytes": 10637,
+      "normalized_sha256": "e4a5cab341218630a4584494a197b88d39399c109c9d8cb3d7dbcc004b44fced",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 1,
+      "pass_name": "render",
+      "program": "rd",
+      "program_key": "synth/reactionDiffusion:rd",
+      "raw_bytes": 12782,
+      "raw_sha256": "2c7c242db938ea81fa738b4f5a4fff9f067afca63802e39689aec49d4955f53c",
+      "runtime_key": "synth/reactionDiffusion:rd",
+      "source": "sources/synth/reactionDiffusion/rd.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth/reactionDiffusion",
+      "normalized_bytes": 4897,
+      "normalized_sha256": "d7102bf338474ad5c510bc647da43ef2a0e3531e6e4e1a98921beab3d219c2fd",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "simulate",
+      "program": "rdFb",
+      "program_key": "synth/reactionDiffusion:rdFb",
+      "raw_bytes": 5763,
+      "raw_sha256": "1b0a2ce5b7594005e778b0487a14c1c83c081b7ce3d0db50f81809ac931be976",
+      "runtime_key": "synth/reactionDiffusion:rdFb",
+      "source": "sources/synth/reactionDiffusion/rdFb.glsl",
       "status": "generated",
       "varyings": []
     },

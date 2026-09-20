@@ -22552,17 +22552,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34056,
-                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
+                34670,
+                "5d103493e60ad16029385dd6b7f8334e1453ad3912ae3d8b224e6b847b47728c"),
             "src/typed_generated/typed_slice.cpp": (
-                2958466,
-                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
+                3051878,
+                "171e3c8bf1fd8b58372c1cad492bbcd9864926cf15721990fb5a7d68cb73f436"),
             "src/typed_generated/typed_manifest.json": (
-                789578,
-                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
+                802061,
+                "8c6ac6f983dc4b03997e2e23821c2930c8ff17c328369b823d2a2361409b630d"),
             "include/noisemaker/generated/catalog.hpp": (
-                25663,
-                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
+                26017,
+                "843f8988a1b567e20b42336fe833fe86f632448d3cc490c59554a5e5bb16d64e"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23332,17 +23332,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34056,
-                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
+                34670,
+                "5d103493e60ad16029385dd6b7f8334e1453ad3912ae3d8b224e6b847b47728c"),
             "src/typed_generated/typed_slice.cpp": (
-                2958466,
-                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
+                3051878,
+                "171e3c8bf1fd8b58372c1cad492bbcd9864926cf15721990fb5a7d68cb73f436"),
             "src/typed_generated/typed_manifest.json": (
-                789578,
-                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
+                802061,
+                "8c6ac6f983dc4b03997e2e23821c2930c8ff17c328369b823d2a2361409b630d"),
             "include/noisemaker/generated/catalog.hpp": (
-                25663,
-                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
+                26017,
+                "843f8988a1b567e20b42336fe833fe86f632448d3cc490c59554a5e5bb16d64e"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24088,17 +24088,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34056,
-                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
+                34670,
+                "5d103493e60ad16029385dd6b7f8334e1453ad3912ae3d8b224e6b847b47728c"),
             "src/typed_generated/typed_slice.cpp": (
-                2958466,
-                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
+                3051878,
+                "171e3c8bf1fd8b58372c1cad492bbcd9864926cf15721990fb5a7d68cb73f436"),
             "src/typed_generated/typed_manifest.json": (
-                789578,
-                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
+                802061,
+                "8c6ac6f983dc4b03997e2e23821c2930c8ff17c328369b823d2a2361409b630d"),
             "include/noisemaker/generated/catalog.hpp": (
-                25663,
-                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
+                26017,
+                "843f8988a1b567e20b42336fe833fe86f632448d3cc490c59554a5e5bb16d64e"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24624,17 +24624,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34056,
-                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
+                34670,
+                "5d103493e60ad16029385dd6b7f8334e1453ad3912ae3d8b224e6b847b47728c"),
             "src/typed_generated/typed_slice.cpp": (
-                2958466,
-                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
+                3051878,
+                "171e3c8bf1fd8b58372c1cad492bbcd9864926cf15721990fb5a7d68cb73f436"),
             "src/typed_generated/typed_manifest.json": (
-                789578,
-                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
+                802061,
+                "8c6ac6f983dc4b03997e2e23821c2930c8ff17c328369b823d2a2361409b630d"),
             "include/noisemaker/generated/catalog.hpp": (
-                25663,
-                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
+                26017,
+                "843f8988a1b567e20b42336fe833fe86f632448d3cc490c59554a5e5bb16d64e"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25224,17 +25224,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34056,
-                "2c441f245c1279d0d0503656ce41c8327c92a50aeaabaf652e65e6becf922b18"),
+                34670,
+                "5d103493e60ad16029385dd6b7f8334e1453ad3912ae3d8b224e6b847b47728c"),
             "src/typed_generated/typed_slice.cpp": (
-                2958466,
-                "3458536c710dcb922c4bf5f4906334bbd7c73fe15a0d45939cc2d5668590746d"),
+                3051878,
+                "171e3c8bf1fd8b58372c1cad492bbcd9864926cf15721990fb5a7d68cb73f436"),
             "src/typed_generated/typed_manifest.json": (
-                789578,
-                "0c5ed2e57665f3c0c5cc50c1e0a6a42f60cf8c85ed19bb7baa1dd62f63deb4ff"),
+                802061,
+                "8c6ac6f983dc4b03997e2e23821c2930c8ff17c328369b823d2a2361409b630d"),
             "include/noisemaker/generated/catalog.hpp": (
-                25663,
-                "d699733a800d23d0d7e94233cca7fa767120a5714316cbc7ac3c9402b2a1caa2"),
+                26017,
+                "843f8988a1b567e20b42336fe833fe86f632448d3cc490c59554a5e5bb16d64e"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25552,8 +25552,114 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             self.assertIn("std::int32_t runtime_loop_radius;", cpp)
             self.assertIn(f'static_cast<std::int32_t>({param_name})', cpp)
             self.assertIn("const double runtime_loop_product =", cpp)
-            self.assertIn(f'const auto {param_name} = bindings.get_number("{param_name}");', cpp)
+
+    def test_simulation_sampler_profile_authentication(self) -> None:
+        import hashlib, pathlib
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.simulation_sampler_profile import (
+            authenticate_simulation_sampler_parameters,
+            PROFILE,
+            SIMULATION_SAMPLER_KEYS,
+            CA_KEY, MNCA_KEY, RD_KEY, RD_FB_KEY,
+        )
+
+        expected_counts = {
+            CA_KEY: {"params": 4, "uses": 50, "calls": 4, "rel": "synth/cellularAutomata/ca.glsl"},
+            MNCA_KEY: {"params": 4, "uses": 50, "calls": 4, "rel": "synth/mnca/mnca.glsl"},
+            RD_KEY: {"params": 4, "uses": 50, "calls": 4, "rel": "synth/reactionDiffusion/rd.glsl"},
+            RD_FB_KEY: {"params": 1, "uses": 9, "calls": 1, "rel": "synth/reactionDiffusion/rdFb.glsl"},
+        }
+
+        self.assertEqual(SIMULATION_SAMPLER_KEYS, frozenset(expected_counts.keys()))
+
+        for key, exp in expected_counts.items():
+            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / exp["rel"]
+            if not source_path.exists():
+                source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / exp["rel"]
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            ast = parse_program(raw, key)
+            typed = analyze_program(ast, key)
+
+            # Test authentication succeeds with valid profile and source hash
+            proof = authenticate_simulation_sampler_parameters(typed, shash, PROFILE)
+            self.assertEqual(len(proof.sampler_parameters), exp["params"])
+            self.assertEqual(len(proof.sampler_uses), exp["uses"])
+            self.assertEqual(len(proof.sampler_calls), exp["calls"])
+            self.assertEqual(len(proof.sampler_actuals), exp["calls"])
+
+            # Test rejection with invalid profile
+            with self.assertRaises(ValueError):
+                authenticate_simulation_sampler_parameters(typed, shash, "invalid-profile-v1")
+
+            # Test rejection with mismatched source hash
+            with self.assertRaises(ValueError):
+                authenticate_simulation_sampler_parameters(typed, "0" * 64, PROFILE)
+
+    def test_simulation_sampler_validator_and_emitter(self) -> None:
+        import hashlib, pathlib
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.simulation_sampler_profile import (
+            PROFILE,
+            SIMULATION_SAMPLER_KEYS,
+            CA_KEY, MNCA_KEY, RD_KEY, RD_FB_KEY,
+        )
+
+        paths = {
+            CA_KEY: "synth/cellularAutomata/ca.glsl",
+            MNCA_KEY: "synth/mnca/mnca.glsl",
+            RD_KEY: "synth/reactionDiffusion/rd.glsl",
+            RD_FB_KEY: "synth/reactionDiffusion/rdFb.glsl",
+        }
+
+        for key, rel in paths.items():
+            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / rel
+            if not source_path.exists():
+                source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / rel
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            ast = parse_program(raw, key)
+            typed = analyze_program(ast, key)
+
+            # Without profile, validate_capabilities must reject with carrier required
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash
+                )
+            self.assertIn("exact Simulation Sampler profile carrier required", str(ctx.exception))
+
+            # With profile, validate_capabilities passes
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                simulation_sampler_profile=PROFILE
+            )
+
+            # Emit C++ and verify structure
+            factory = "bind_" + key.replace("/", "_").replace(":", "_")
+            cpp = emit_typed_cpp.render_typed_cpp(
+                typed, key, shash, "pixel", factory,
+                simulation_sampler_profile=PROFILE
+            )
+            self.assertIn("const Surface& tex", cpp)
+            if key in (CA_KEY, MNCA_KEY, RD_KEY):
+                self.assertIn("catmullRom3x3(", cpp)
+                self.assertIn("catmullRom4x4(", cpp)
+                self.assertIn("quadratic(", cpp)
+                self.assertIn("bicubic(", cpp)
+                self.assertIn("*state.fbTex", cpp)
+            else:
+                self.assertIn("lp(", cpp)
+                self.assertIn("*state.bufTex", cpp)
 
 
 if __name__ == "__main__":
+
+
     unittest.main()

@@ -237,6 +237,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernelMrt bind_render_renderCubemapSurface_renderCubemapSurface(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_bitwise_bitwise(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cell_cell(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_cellularAutomata_ca(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_cellularAutomata_caFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_curl_curl(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_gabor_gabor(const glsl::Bindings& bindings);
@@ -245,6 +246,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_mandala_mandala(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_mandelbrot_mandelbrot(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_media_mediaInput(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_mnca_mnca(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_mnca_mncaFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_modPattern_modPattern(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_navierStokes_ns(const glsl::Bindings& bindings);
@@ -259,6 +261,8 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_pattern_pattern(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_perlin_perlin(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_polygon_shape(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_reactionDiffusion_rd(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_reactionDiffusion_rdFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_remap_remap(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_sacredGeometry_sacredGeometry(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_shape_shape(const glsl::Bindings& bindings);

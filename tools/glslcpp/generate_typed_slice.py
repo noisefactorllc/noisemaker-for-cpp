@@ -190,6 +190,9 @@ if __package__ in (None, ""):
         FOCUS_BLUR_KEY, PROFILE as FOCUS_BLUR_BORROWED_SAMPLER_PROFILE,
         apply_focus_blur_borrowed_sampler_parameters,
         authenticate_focus_blur_borrowed_sampler_parameters)
+    from tools.glslcpp.frontend.simulation_sampler_profile import (
+        SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
+        authenticate_simulation_sampler_parameters, SimulationSamplerProof)
     from tools.glslcpp.frontend.extrude_bvec2_relational_reduction_profile import (
         EXTRUDE_KEY, PROFILE as EXTRUDE_BVEC2_RELATIONAL_REDUCTION_PROFILE,
         apply_extrude_bvec2_relational_reduction,
@@ -573,6 +576,9 @@ else:
         FOCUS_BLUR_KEY, PROFILE as FOCUS_BLUR_BORROWED_SAMPLER_PROFILE,
         apply_focus_blur_borrowed_sampler_parameters,
         authenticate_focus_blur_borrowed_sampler_parameters)
+    from .frontend.simulation_sampler_profile import (
+        SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
+        authenticate_simulation_sampler_parameters, SimulationSamplerProof)
     from .frontend.extrude_bvec2_relational_reduction_profile import (
         EXTRUDE_KEY, PROFILE as EXTRUDE_BVEC2_RELATIONAL_REDUCTION_PROFILE,
         apply_extrude_bvec2_relational_reduction,
@@ -1559,6 +1565,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == EXTRUDE_KEY else
                     {"defines", "focus_blur_borrowed_sampler_profile", "program_key"}
                     if key == FOCUS_BLUR_KEY else
+                    {"defines", "simulation_sampler_profile", "program_key"}
+                    if key in SIMULATION_SAMPLER_KEYS else
                     {"defines", "distortion_frontend_profile", "program_key"}
                     if key == DISTORTION_FRONTEND_KEY else
                     {"defines", "rotate_mat2_return_profile", "program_key"}
@@ -1843,6 +1851,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         (item["program_key"], item.get("focus_blur_borrowed_sampler_profile"),
          item["defines"])
         for item in programs if "focus_blur_borrowed_sampler_profile" in item]
+    simulation_sampler_profiles = [
+        (item["program_key"], item.get("simulation_sampler_profile"),
+         item["defines"])
+        for item in programs if "simulation_sampler_profile" in item]
     distortion_profiles = [
         (item["program_key"], item.get("distortion_frontend_profile"),
          item["defines"])
@@ -1973,6 +1985,11 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                 (ROTATE_KEY, ROTATE_MAT2_RETURN_PROFILE, {})]
             or focus_profiles != [
                 (FOCUS_BLUR_KEY, FOCUS_BLUR_BORROWED_SAMPLER_PROFILE, {})]
+            or simulation_sampler_profiles not in (
+                [],
+                [(key, SIMULATION_SAMPLER_PROFILE, {})
+                 for key in sorted(SIMULATION_SAMPLER_KEYS)],
+            )
             or distortion_profiles not in ([],
                 [(DISTORTION_FRONTEND_KEY, DISTORTION_FRONTEND_PROFILE, {})])
             or extrude_profiles != [
@@ -3258,6 +3275,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           bit_effects_frontend_profile: str | None = None,
                           rotate_mat2_return_profile: str | None = None,
                           focus_blur_borrowed_sampler_profile: str | None = None,
+                          simulation_sampler_profile: str | None = None,
                           extrude_bvec2_relational_reduction_profile: str | None = None,
                           edge_bvec3_contour_profile: str | None = None,
                           glitch_mat4_chain_profile: str | None = None,
@@ -3507,6 +3525,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 # synth/curl is the one member of this cluster that ALSO
@@ -3549,6 +3568,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -3587,6 +3607,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             smooth_edge_luma_weights_profile, perlin_scalar_uint_xor_profile,
             scalar_uint_xor_profile, bitwise_scalar_int_ops_profile,
             rotate_mat2_return_profile, focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             edge_bvec3_contour_profile, glitch_mat4_chain_profile,
             emboss_color_style_profile, shape_mixer_builtin_profile,
@@ -3833,6 +3854,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_rotate_expressions: tuple[TypedExpression, ...] = ()
     visited_rotate_expressions: list[TypedExpression] = []
     authorized_focus_blur_proof = None
+    authorized_simulation_sampler_proof = None
     authorized_extrude_proof = None
     authorized_edge_proof = None
     authorized_edge_splat_proof = None
@@ -4236,6 +4258,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or smooth_edge_luma_weights_profile is not None
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -4255,6 +4278,37 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == FOCUS_BLUR_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Focus Blur borrowed sampler profile carrier required")
+    if simulation_sampler_profile is not None:
+        if (typed.key not in SIMULATION_SAMPLER_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None
+                or perlin_scalar_uint_xor_profile is not None
+                or rotate_mat2_return_profile is not None
+                or focus_blur_borrowed_sampler_profile is not None
+                or extrude_bvec2_relational_reduction_profile is not None
+                or caustic_word_hash_profile is not None
+                or curl_vector_math_profile is not None
+                or grade_luma_weights_profile is not None
+                or grade_index_expression_profile is not None
+                or derivative_admission_profile is not None
+                or linear_srgb_lane_index_profile is not None
+                or reflect_admission_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: Simulation Sampler profile metadata mismatch")
+        try:
+            authorized_simulation_sampler_proof = (
+                authenticate_simulation_sampler_parameters(
+                    typed, source_hash, simulation_sampler_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key in SIMULATION_SAMPLER_KEYS:
+        raise GeneratorError(
+            f"{typed.key}: exact Simulation Sampler profile carrier required")
     if extrude_bvec2_relational_reduction_profile is not None:
         if (typed.key != EXTRUDE_KEY
                 or compatibility_transform is not None
@@ -4267,6 +4321,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
                 or grade_luma_weights_profile is not None
@@ -4296,6 +4351,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             perlin_scalar_uint_xor_profile, scalar_uint_xor_profile,
             bitwise_scalar_int_ops_profile, rotate_mat2_return_profile,
             focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             caustic_word_hash_profile,
             scanline_error_float_bits_ingress_profile,
@@ -4380,6 +4436,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             perlin_scalar_uint_xor_profile,
             bitwise_scalar_int_ops_profile, rotate_mat2_return_profile,
             focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             edge_bvec3_contour_profile, caustic_word_hash_profile,
             scanline_error_float_bits_ingress_profile,
@@ -4481,6 +4538,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             perlin_scalar_uint_xor_profile, scalar_uint_xor_profile,
             bitwise_scalar_int_ops_profile, rotate_mat2_return_profile,
             focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             edge_bvec3_contour_profile, glitch_mat4_chain_profile,
             caustic_word_hash_profile, scanline_error_float_bits_ingress_profile,
@@ -4587,6 +4645,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or curl_vector_math_profile is not None
                 or grade_luma_weights_profile is not None
@@ -4622,6 +4681,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -4676,6 +4736,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -4752,6 +4813,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -4797,6 +4859,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or scanline_error_float_bits_ingress_profile is not None
@@ -4845,6 +4908,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or grade_luma_weights_profile is not None
@@ -4876,6 +4940,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -4910,6 +4975,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -4941,6 +5007,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -4970,6 +5037,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or smooth_edge_luma_weights_profile is not None
                 or perlin_scalar_uint_xor_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -5000,6 +5068,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or literal_vec3_lane_index_profile is not None
                 or smooth_edge_luma_weights_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -5079,6 +5148,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -5159,6 +5229,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or (glitch_mat4_chain_profile is not None
@@ -5220,7 +5291,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 != CONST_GLOBAL_TABLE_PROFILES.get(typed.key)
                 or any(companion_row.get(name) != value
                        for name, value in CONST_GLOBAL_TABLE_COMPANIONS.get(
-                           typed.key, ()))
+                            typed.key, ()))
                 or compatibility_transform is not None
                 or custom_comparer_profile is not None
                 or numeric_literal_contract != "glsl-f32"
@@ -5235,6 +5306,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -5306,6 +5378,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -5380,6 +5453,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or edge_bvec3_contour_profile is not None
                 or glitch_mat4_chain_profile is not None
@@ -5433,6 +5507,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             literal_vec3_lane_index_profile, smooth_edge_luma_weights_profile,
             perlin_scalar_uint_xor_profile, bitwise_scalar_int_ops_profile,
             rotate_mat2_return_profile, focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             edge_bvec3_contour_profile, glitch_mat4_chain_profile,
             emboss_color_style_profile, caustic_word_hash_profile,
@@ -5479,6 +5554,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             perlin_scalar_uint_xor_profile, scalar_uint_xor_profile,
             bitwise_scalar_int_ops_profile, rotate_mat2_return_profile,
             focus_blur_borrowed_sampler_profile,
+            simulation_sampler_profile,
             extrude_bvec2_relational_reduction_profile,
             edge_bvec3_contour_profile, glitch_mat4_chain_profile,
             emboss_color_style_profile, shape_mixer_builtin_profile,
@@ -5525,6 +5601,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or perlin_scalar_uint_xor_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -5554,6 +5631,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or gather_sorted_round_profile is not None
                 or literal_vec3_lane_index_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -5586,6 +5664,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -5615,6 +5694,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or bitwise_scalar_int_ops_profile is not None
                 or rotate_mat2_return_profile is not None
                 or focus_blur_borrowed_sampler_profile is not None
+                or simulation_sampler_profile is not None
                 or extrude_bvec2_relational_reduction_profile is not None
                 or caustic_word_hash_profile is not None
                 or curl_vector_math_profile is not None
@@ -6824,6 +6904,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if (value.type.kind == "sampler"
                 and getattr(value.symbol, "storage", None) != "uniform"
                 and authorized_focus_blur_proof is None
+                and (authorized_simulation_sampler_proof is None
+                     or not any(value is item for item in authorized_simulation_sampler_proof.sampler_uses))
                 and not any(value is item for item in (
                     *authorized_distortion_sampler_parameters,
                     *authorized_distortion_sampler_actuals))
@@ -7875,6 +7957,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                          or function is not authorized_focus_blur_proof.helper
                          or not any(parameter is item for item in
                                     authorized_focus_blur_proof.sampler_parameters))
+                    and (authorized_simulation_sampler_proof is None
+                         or not any(function is fn for fn in
+                                    authorized_simulation_sampler_proof.helper_functions)
+                         or not any(parameter is item for item in
+                                    authorized_simulation_sampler_proof.sampler_parameters))
                     and not any(parameter is item
                                 for item in authorized_distortion_sampler_parameters)):
                 raise GeneratorError(
@@ -8133,6 +8220,30 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 not any(value is item for item in visited) for value in authorized):
             raise GeneratorError(
                 f"{typed.key}: authenticated Focus Blur traversal mismatch")
+    if authorized_simulation_sampler_proof is not None:
+        visited: list[object] = []
+        authorized = authorized_simulation_sampler_proof.consumed_objects
+        def consume(value: object) -> None:
+            if any(value is item for item in authorized):
+                if any(value is item for item in visited):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated Simulation Sampler object visited twice")
+                visited.append(value)
+        def consume_expression(value: TypedExpression) -> None:
+            consume(value)
+            for child in value.children: consume_expression(child)
+        def consume_statement(value) -> None:
+            consume(value)
+            for item in value.expressions: consume_expression(item)
+            for child in value.children: consume_statement(child)
+        for function in typed.functions:
+            consume(function)
+            for parameter in function.parameters: consume(parameter)
+            for item in function.body: consume_statement(item)
+        if len(visited) != len(authorized) or any(
+                not any(value is item for item in visited) for value in authorized):
+            raise GeneratorError(
+                f"{typed.key}: authenticated Simulation Sampler traversal mismatch")
     if authorized_curl_proof is not None:
         expected = authorized_curl_proof.nodes
         if len(visited_curl_nodes) != len(expected) or any(
@@ -8734,6 +8845,14 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: Focus Blur borrowed sampler identity profile mutated program")
             typed = profiled
+        simulation_sampler_profile = slice_spec["programs"][index].get(
+            "simulation_sampler_profile")
+        if simulation_sampler_profile is not None:
+            try:
+                authenticate_simulation_sampler_parameters(
+                    typed, source_hash, simulation_sampler_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
         distortion_frontend_profile = slice_spec["programs"][index].get(
             "distortion_frontend_profile")
         if distortion_frontend_profile is not None:
@@ -9254,6 +9373,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
                               rotate_mat2_return_profile=rotate_mat2_return_profile,
                               focus_blur_borrowed_sampler_profile=focus_blur_borrowed_sampler_profile,
+                              simulation_sampler_profile=simulation_sampler_profile,
                               extrude_bvec2_relational_reduction_profile=extrude_bvec2_relational_reduction_profile,
                               edge_bvec3_contour_profile=edge_bvec3_contour_profile,
                               glitch_mat4_chain_profile=glitch_mat4_chain_profile,
@@ -9327,6 +9447,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
                                            rotate_mat2_return_profile=rotate_mat2_return_profile,
                                            focus_blur_borrowed_sampler_profile=focus_blur_borrowed_sampler_profile,
+                                           simulation_sampler_profile=simulation_sampler_profile,
                                            distortion_frontend_profile=distortion_frontend_profile,
                                            noise_frontend_profile=noise_frontend_profile,
                                            extrude_bvec2_relational_reduction_profile=extrude_bvec2_relational_reduction_profile,
@@ -9465,6 +9586,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if focus_blur_borrowed_sampler_profile is not None:
             manifest_program["focus_blur_borrowed_sampler_profile"] = (
                 focus_blur_borrowed_sampler_profile)
+        if simulation_sampler_profile is not None:
+            manifest_program["simulation_sampler_profile"] = (
+                simulation_sampler_profile)
         if extrude_bvec2_relational_reduction_profile is not None:
             manifest_program["extrude_bvec2_relational_reduction_profile"] = (
                 extrude_bvec2_relational_reduction_profile)

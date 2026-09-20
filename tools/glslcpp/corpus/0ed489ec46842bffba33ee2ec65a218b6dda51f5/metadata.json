@@ -23273,6 +23273,215 @@
       ],
       "textures": {}
     },
+    "synth/reactionDiffusion": {
+      "func": "reactionDiffusion",
+      "kind": "generator",
+      "namespace": "synth",
+      "params": {
+        "feed": {
+          "default": 70,
+          "max": 110,
+          "min": 10,
+          "type": "float",
+          "uniform": "feed"
+        },
+        "inputIntensity": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "inputIntensity"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "iterations": {
+          "default": 8,
+          "max": 32,
+          "min": 1,
+          "type": "int",
+          "uniform": "iterations"
+        },
+        "kill": {
+          "default": 67,
+          "max": 70,
+          "min": 45,
+          "type": "float",
+          "uniform": "kill"
+        },
+        "rate1": {
+          "default": 92,
+          "max": 120,
+          "min": 50,
+          "type": "float",
+          "uniform": "rate1"
+        },
+        "rate2": {
+          "default": 22,
+          "max": 50,
+          "min": 20,
+          "type": "float",
+          "uniform": "rate2"
+        },
+        "resetState": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "resetState"
+        },
+        "seed": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "smoothing": {
+          "choices": {
+            "bSpline3x3": 5,
+            "bSpline4x4": 6,
+            "catmullRom3x3": 3,
+            "catmullRom4x4": 4,
+            "constant": 0,
+            "hermite": 2,
+            "linear": 1
+          },
+          "default": 1,
+          "type": "int",
+          "uniform": "smoothing"
+        },
+        "sourceF": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceF"
+        },
+        "sourceK": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceK"
+        },
+        "sourceR1": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceR1"
+        },
+        "sourceR2": {
+          "choices": {
+            "blue": 5,
+            "brightness": 1,
+            "darkness": 2,
+            "green": 4,
+            "red": 3,
+            "slider": 0,
+            "sliderInput": 6
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "sourceR2"
+        },
+        "speed": {
+          "default": 100,
+          "max": 145,
+          "min": 10,
+          "type": "float",
+          "uniform": "speed"
+        },
+        "tex": {
+          "default": "none",
+          "type": "surface"
+        },
+        "weight": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "weight"
+        },
+        "zoom": {
+          "choices": {
+            "x1": 1,
+            "x16": 16,
+            "x2": 2,
+            "x32": 32,
+            "x4": 4,
+            "x64": 64,
+            "x8": 8
+          },
+          "default": 8,
+          "type": "int",
+          "uniform": "zoom"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "bufTex": "global_rd_state",
+            "inputTex": "tex"
+          },
+          "key": "synth/reactionDiffusion:rdFb",
+          "name": "simulate",
+          "outputs": {
+            "fragColor": "global_rd_state"
+          },
+          "program": "rdFb",
+          "repeat": "iterations"
+        },
+        {
+          "inputs": {
+            "fbTex": "global_rd_state",
+            "inputTex": "tex"
+          },
+          "key": "synth/reactionDiffusion:rd",
+          "name": "render",
+          "outputs": {
+            "fragColor": "outputTex"
+          },
+          "program": "rd"
+        }
+      ],
+      "textures": {
+        "global_rd_state": {
+          "height": {
+            "default": 8,
+            "screenDivide": "zoom"
+          },
+          "width": {
+            "default": 8,
+            "screenDivide": "zoom"
+          }
+        }
+      }
+    },
     "synth/remap": {
       "func": "remap",
       "kind": "filter",
@@ -24476,6 +24685,7 @@
       "synth/cellularAutomata",
       "synth/mnca",
       "synth/navierStokes",
+      "synth/reactionDiffusion",
       "synth3d/cell3d",
       "synth3d/reactionDiffusion3d",
       "synth3d/shape3d"
