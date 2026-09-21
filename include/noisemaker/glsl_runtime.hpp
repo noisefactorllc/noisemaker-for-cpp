@@ -353,16 +353,13 @@ template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline flo
 template <class A,class B>
   requires(VectorOrExpr<A> && VectorOrExpr<B> && detail::lane_count_v<A> == detail::lane_count_v<B> && AnyDoubleVec<A,B>)
 [[nodiscard]] inline float distance(const A& a,const B& b) {
-  const auto fa = float_expr(a); const auto fb = float_expr(b);
-  double sum = 0.0;
-  for (std::size_t i = 0; i < detail::lane_count_v<A>; ++i) { const double delta = fa[i]-fb[i]; sum += delta*delta; }
-  return noisemaker::f32(std::sqrt(sum));
+  // The authority's subtract writes Float32 lanes before length rounds dot
+  // and sqrt. Preserve full-precision operands until that subtraction.
+  return length(Vec<detail::lane_count_v<A>,float>(float_expr(a)-float_expr(b)));
 }
 template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec<detail::lane_count_v<T>,float> normalize(const T& value) {
   constexpr std::size_t N = detail::lane_count_v<T>;
-  double sum = 0.0;
-  for (std::size_t i = 0; i < N; ++i) sum += value[i]*value[i];
-  const double magnitude = std::sqrt(sum);
+  const double magnitude = length(value);
   Vec<N,float> result;
   if (magnitude == 0.0) return result;
   for (std::size_t i = 0; i < N; ++i) result[i] = noisemaker::f32(value[i]/magnitude);

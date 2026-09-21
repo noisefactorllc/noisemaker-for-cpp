@@ -297,6 +297,29 @@ TEST(graph_executor_dispatches_the_duplicate_canonical_invert_route) {
   }
 }
 
+TEST(graph_composite_color_distance_matches_authority_at_range_boundary) {
+  Renderer renderer;
+  constexpr std::string_view source =
+      "search synth, classicNoisedeck\n"
+      "solid(color: #00f).write(o1)\n"
+      "solid(color: #f00).composite(tex: o1, "
+      "inputColor: [0.7311236763534933, 0.12281395953931051, 0.8734191544441814], "
+      "range: 92.20839543873512, blendMode: 1, mix: 50).write(o0)\n"
+      "render(o0)\n";
+  const auto result = renderer.render(source, options(3U, 2U));
+  // Exact RGBA8 and Float32 from pinned JS authority 61aa869 through
+  // run_cpu_case.mjs. A distance evaluated wholly in double returns blue;
+  // the authority's intermediate Float32 writes select the purple blend.
+  REQUIRE(rgba8_sha256(result) ==
+          "c2b238e970fc079b0eb344ced8cb87d1d109a5c1dbb5b8f8c0f0904cfe44edd0");
+  constexpr std::array expected{0.5f, 0.0f, 0.5f, 1.0f};
+  const auto pixels = result.surface().data();
+  for (std::size_t index = 0; index < pixels.size(); ++index) {
+    REQUIRE(float_bits_to_uint(pixels[index]) ==
+            float_bits_to_uint(expected[index % expected.size()]));
+  }
+}
+
 TEST(graph_executor_rejects_the_legacy_duplicate_factory_for_a_canonical_key) {
   Renderer renderer;
   auto plan = renderer.compile(kInvertSource, "legacy-invert.dsl");
@@ -355,6 +378,104 @@ TEST(graph_executor_materializes_every_ordered_sampler_route) {
   REQUIRE(result.width() == 9U);
   REQUIRE(result.height() == 6U);
   REQUIRE(result.pass_count() == 4U);
+}
+
+TEST(graph_executor_renders_cellular_automata_with_unused_authority_inputs) {
+  // Independent RGBA8 hashes from pinned JS authority 61aa869, captured with
+  // tools/benchmark/run_cpu_case.mjs for these exact programs and options.
+  // The render pass declares four input routes but its shader samples two.
+  Renderer renderer;
+  for (const auto& [iterations, expected] :
+       std::vector<std::pair<int, std::string_view>>{
+           {3, "ab760f07c8246a291db1990b8d53c400f9741e781a147c7275eb2dbadb1c06f3"},
+           {7, "bd6911244eb8ae041c71c00af444ce0e25671e6042266695150ba951a7eeb5ae"}}) {
+    const auto source = "search synth\ncellularAutomata(zoom: 1, iterationCount: " +
+                        std::to_string(iterations) + ").write(o0)\nrender(o0)\n";
+    const auto result = renderer.render(source, options(9U, 6U));
+    REQUIRE(result.pass_count() == static_cast<std::size_t>(iterations) * 2U);
+    REQUIRE(rgba8_sha256(result) == expected);
+  }
+}
+
+TEST(graph_executor_renders_mnca_with_unused_authority_inputs) {
+  // Same authority capture as the cellularAutomata case above; the two
+  // iteration counts have different images, so this also catches a skipped
+  // update pass or a renderer that returns only its first iteration.
+  Renderer renderer;
+  for (const auto& [iterations, expected] :
+       std::vector<std::pair<int, std::string_view>>{
+           {3, "6cba7a9c3214a787ad5ecfa64a49c2ae4417c0af51634a7f7afd80cda8f24e6e"},
+           {7, "70462ce5895186da74430805d8f815a0cd28cfd0a342abb06bd51ef0f2bb8498"}}) {
+    const auto source = "search synth\nmnca(zoom: 1, iterationCount: " +
+                        std::to_string(iterations) + ").write(o0)\nrender(o0)\n";
+    const auto result = renderer.render(source, options(9U, 6U));
+    REQUIRE(result.pass_count() == static_cast<std::size_t>(iterations) * 2U);
+    REQUIRE(rgba8_sha256(result) == expected);
+  }
+}
+
+TEST(graph_sampler_preflight_rejects_forged_routes_despite_unused_authority_inputs) {
+  Renderer renderer;
+  auto plan = renderer.compile("search synth\nmnca().write(o0)\nrender(o0)\n");
+  const auto& snapshot = snapshot_for(plan, "synth/mnca");
+  const auto& step = effect_step(plan, "synth/mnca");
+  const auto& pass = snapshot.definition.passes[1];
+  const auto inputs = options(9U, 6U);
+  const BindingMaterializationContext context{
+      &inputs, &snapshot.definition, inputs.width, inputs.height};
+  const auto expect_rejected = [&](auto&& mutate) {
+    auto admission = snapshot.admissions[1];
+    mutate(admission);
+    try {
+      preflight_pass_abi(step, admission, pass, context);
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::missing_binding);
+      REQUIRE(error.detail() == "sampler ABI route is invalid");
+    }
+  };
+  expect_rejected([](PassAdmission& admission) {
+    admission.samplers[0].resource = "tex";
+  });
+  expect_rejected([](PassAdmission& admission) {
+    admission.samplers[0].name = "undeclaredTex";
+  });
+  expect_rejected([](PassAdmission& admission) {
+    admission.samplers[1].name = admission.samplers[0].name;
+  });
+  expect_rejected([](PassAdmission& admission) {
+    std::swap(admission.samplers[0], admission.samplers[1]);
+  });
+}
+
+TEST(graph_iterated_surface_parameters_resolve_prior_named_outputs) {
+  Renderer renderer;
+  for (const std::string_view effect : {"cellularAutomata", "mnca"}) {
+    const auto source = "search synth\nnoise().write(o1)\n" + std::string(effect) +
+                        "(tex: o1, zoom: 1, weight: 100, iterationCount: 3)"
+                        ".write(o0)\nrender(o0)\n";
+    const auto result = renderer.render(source, options(9U, 6U));
+    REQUIRE(result.pass_count() == 7U);
+    // Pinned JS authority 61aa869, captured with run_cpu_case.mjs. Weight
+    // 100 makes the named source change the image; an empty fallback fails.
+    REQUIRE(rgba8_sha256(result) ==
+            "7c2679a92f0f84075ef9ee08513c227b97bc236d05273a392ed9b7c718a540ac");
+  }
+}
+
+TEST(graph_iterated_surface_parameters_reject_unwritten_named_outputs) {
+  Renderer renderer;
+  for (const std::string_view effect : {"cellularAutomata", "mnca"}) {
+    auto plan = renderer.compile("search synth\n" + std::string(effect) +
+        "(tex: o1, iterationCount: 3).write(o0)\nrender(o0)\n");
+    try {
+      static_cast<void>(renderer.render(plan, options(9U, 6U)));
+      REQUIRE(false);
+    } catch (const GraphError& error) {
+      REQUIRE(error.code() == GraphErrorCode::read_before_write);
+      REQUIRE(error.effect_id() == "synth/" + std::string(effect));
+    }
+  }
 }
 
 TEST(graph_executor_fails_closed_on_an_unproduced_secondary_sampler_route) {

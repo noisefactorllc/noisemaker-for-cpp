@@ -202,6 +202,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y zlib1g-dev
 
       - name: Build the C++ corpus driver
+        id: build-driver
         run: |
           cmake -S . -B build-parity -DCMAKE_BUILD_TYPE=Release
           cmake --build build-parity --target noisemaker-dsl-cpu-case -j
@@ -213,7 +214,7 @@ jobs:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
           NOISEMAKER_DSL_CPU_CASE: ${{ github.workspace }}/build-parity/noisemaker-dsl-cpu-case
-        run: python3 -B -m unittest tests.test_dsl_corpus_parity -v
+        run: python3 -B -m unittest tests.test_dsl_corpus_parity tests.test_case_driver_dimensions -v
 
       # The corpus lane renders each effect once, at 17x11, with default
       # parameters. That single point hid real divergences, so it is not the
@@ -223,6 +224,7 @@ jobs:
       # and fails on any divergence, any timeout, or any refusal of an effect
       # the export kit claims.
       - name: Parameter sweep parity gate
+        if: ${{ !cancelled() && steps.build-driver.outcome == 'success' }}
         env:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
@@ -230,6 +232,7 @@ jobs:
         run: python3 -B tools/parity/sweep.py --out "$RUNNER_TEMP/sweep" --variants 6 --gate kit
 
       - name: Define-parameter enumeration parity gate
+        if: ${{ !cancelled() && steps.build-driver.outcome == 'success' }}
         env:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority
           NOISEMAKER_CPU_AUTHORITY_LEDGER: ${{ runner.temp }}/cpu-authority-ledger.sha256
@@ -244,8 +247,12 @@ jobs:
           path: |
             ${{ runner.temp }}/sweep/summary.md
             ${{ runner.temp }}/sweep/results.json
+            ${{ runner.temp }}/sweep/results.jsonl
+            ${{ runner.temp }}/sweep/run-manifest.json
             ${{ runner.temp }}/sweep-defines/summary.md
             ${{ runner.temp }}/sweep-defines/results.json
+            ${{ runner.temp }}/sweep-defines/results.jsonl
+            ${{ runner.temp }}/sweep-defines/run-manifest.json
           if-no-files-found: warn
 
   package-consumer:

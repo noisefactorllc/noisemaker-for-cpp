@@ -8,7 +8,8 @@ JOBS=${*:-generator native parity consumer sanitizers python}
 mkdir -p "$LOG"; cd "$SRC"
 export PYTHONDONTWRITEBYTECODE=1
 status() { echo "$(date +%H:%M:%S) $1 $2" | tee -a "$LOG/summary.txt"; }
-run() { local name=$1; shift; status START "$name"; if "$@" >"$LOG/$name.log" 2>&1; then status PASS "$name"; else status FAIL "$name"; fi; }
+result=0
+run() { local name=$1; shift; status START "$name"; if "$@" >"$LOG/$name.log" 2>&1; then status PASS "$name"; else result=1; status FAIL "$name"; fi; }
 
 for job in $JOBS; do case $job in
 generator)
@@ -55,3 +56,4 @@ consumer)
     '$B/cbuild/noisemaker-package-consumer'" ;;
 esac; done
 status DONE all
+exit "$result"

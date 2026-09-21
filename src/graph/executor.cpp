@@ -1182,7 +1182,20 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                 throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced", effect.effect.id, pass_index, pass.name, admission.identity.program_key);
               }
               if (bound->surface.kind == SurfaceReference::Kind::input) require_current();
-              else if (bound->surface.kind == SurfaceReference::Kind::named) require_named(bound->surface.name);
+              else if (bound->surface.kind == SurfaceReference::Kind::named) {
+                // A named surface parameter is copied from the chain-wide
+                // arena by seed_group_step_bindings, then published under
+                // its step-local texture route. It is not group scratch.
+                if (iterated) {
+                  if (available_routes.find(bound->surface.name) == available_routes.end()) {
+                    throw GraphError(GraphErrorCode::read_before_write,
+                                     "input resource is not produced", effect.effect.id,
+                                     pass_index, pass.name, admission.identity.program_key);
+                  }
+                } else {
+                  require_named(bound->surface.name);
+                }
+              }
               else throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced", effect.effect.id, pass_index, pass.name, admission.identity.program_key);
               continue;
             }
@@ -2406,28 +2419,30 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
     throw binding_error(step, admission, GraphErrorCode::invalid_dimension,
                         "output dimensions must be positive");
   }
-  // Every ordered sampler is checked against its declared route, with the
-  // authority pass as the route authority. Cardinality is whatever the
-  // admission census declares (zero through nine), never one.
-  if (pass.inputs.size() != admission.samplers.size()) {
-    throw binding_error(step, admission, GraphErrorCode::missing_binding,
-                        "sampler ABI route is invalid");
-  }
+  // The authority pass can bind inputs its shader does not declare (the
+  // cellularAutomata and MNCA render passes each bind four, but sample two).
+  // The admitted samplers must remain an ordered subset of those exact
+  // name/route pairs. The full pass and ordered ABI are independently
+  // authenticated against their generated anchors before execution.
   std::unordered_set<std::string> sampler_names;
-  for (std::size_t index = 0; index < pass.inputs.size(); ++index) {
-    const auto& input = pass.inputs[index];
-    const auto& sampler = admission.samplers[index];
+  auto next_input = pass.inputs.begin();
+  for (const auto& sampler : admission.samplers) {
     if (sampler.type != "sampler2D" || sampler.cpp_type != "const Surface&") {
       throw binding_error(step, admission, GraphErrorCode::binding_type,
                           "sampler ABI type is invalid");
     }
+    const auto input = std::find_if(next_input, pass.inputs.end(),
+                                    [&](const auto& candidate) {
+                                      return candidate.first == sampler.name;
+                                    });
     if (sampler.name.empty() || !sampler_names.insert(sampler.name).second ||
-        sampler.name != input.first || sampler.resource != input.second ||
+        input == pass.inputs.end() || sampler.resource != input->second ||
         sampler.resource.empty() || sampler.source != "resource" ||
         !sampler.source_name.empty()) {
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "sampler ABI route is invalid");
     }
+    next_input = input + 1;
     if (context.lookup_surface != nullptr &&
         context.lookup_surface(context.lookup_context, sampler.resource) == nullptr) {
       throw binding_error(step, admission, GraphErrorCode::missing_resource,

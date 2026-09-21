@@ -7,6 +7,8 @@ digest is masked (derived hashes are recomputed by the generator and checked by 
 typed_slice.cpp is split into per-program blocks at "// Typed IR program: <key>"; typed_manifest.json
 is compared per program record. Every normalized difference must belong to a semantically changed
 program (or an explicitly allowed key); otherwise it is UNEXPLAINED and the exit code is 1.
+Both caches must contain the same nonempty set of specs, each with both generated artifacts.
+Missing comparisons fail the audit, including when their programs are allowed to change.
 """
 import json, pathlib, re, sys
 
@@ -46,12 +48,17 @@ def entries(root):
 
 
 def slice_blocks(text):
-    parts = re.split(r"^// Typed IR program: (\S+)$", text, flags=re.M)
+    # The catalog and route tables belong to the translation unit, not the
+    # final shader. Match their generator-owned opener, rather than arbitrary
+    # const/static declarations that can occur inside a program namespace.
+    tail = re.search(r"^namespace \{\nconstexpr std::array<KernelFactory, \d+> kCatalog\{\{", text, flags=re.M)
+    program_text = text[:tail.start()] if tail else text
+    parts = re.split(r"^// Typed IR program: (\S+)$", program_text, flags=re.M)
     blocks = {"<preamble>": parts[0]}
     for i in range(1, len(parts), 2):
-        body = parts[i + 1]
-        tail_split = re.split(r"^(?=(?:const |namespace noisemaker::generated|static const|\}  // namespace noisemaker))", body, maxsplit=1, flags=re.M)
-        blocks[parts[i]] = body
+        blocks[parts[i]] = parts[i + 1]
+    if tail:
+        blocks["<tail>"] = text[tail.start():]
     return blocks
 
 
@@ -69,8 +76,24 @@ def manifest_records(text):
 
 old, new = entries(old_cache), entries(new_cache)
 paired = sorted(set(old) & set(new))
+unpaired = sorted(set(old) ^ set(new))
+for key in unpaired:
+    missing = "new" if key in old else "old"
+    print(f"missing {missing} comparison for spec: {key}")
+if not paired:
+    print("no paired reconstruction evidence")
 bad = 0
 for key in paired:
+    required = {"src/typed_generated/typed_slice.cpp", "src/typed_generated/typed_manifest.json"}
+    missing_artifacts = False
+    for side, artifacts in (("old", old[key]), ("new", new[key])):
+        missing = required - artifacts.keys()
+        if missing:
+            print(f"missing reconstruction artifact in {side} spec {key}: {sorted(missing)}")
+            bad += len(missing)
+            missing_artifacts = True
+    if missing_artifacts:
+        continue
     moved = {}
     for artifact in sorted(set(old[key]) | set(new[key])):
         a, b = old[key].get(artifact, ""), new[key].get(artifact, "")
@@ -86,5 +109,5 @@ for key in paired:
     bad += n_unexplained
     programs = len(json.loads(key).get("programs", []))
     print(f"spec(programs={programs}): moved={ {a: len(v) for a, v in moved.items()} } unexplained={ {a: v for a, v in unexplained.items() if v} }")
-print(f"paired={len(paired)} of old={len(old)} new={len(new)}; semantic set={sorted(semantic)}; unexplained={bad}")
-sys.exit(1 if bad else 0)
+print(f"paired={len(paired)} of old={len(old)} new={len(new)}; semantic set={sorted(semantic)}; unexplained={bad}; unpaired={len(unpaired)}")
+sys.exit(1 if bad or unpaired or not paired else 0)

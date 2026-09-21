@@ -8549,7 +8549,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_39
 
 BoundKernel bind_filter_convolutionFeedback_cfBlur(const glsl::Bindings& bindings) {
-  const auto blurRadius = bindings.get_number("blurRadius");
+  const auto blurRadius = bindings.get<std::int32_t>("blurRadius");
   const auto renderScale = bindings.get_number("renderScale");
   const double runtime_loop_product = blurRadius * renderScale;
   if (!std::isfinite(blurRadius) || blurRadius < 1.0 || blurRadius > 10.0 || !std::isfinite(renderScale) || renderScale < 0.0 || !std::isfinite(runtime_loop_product) || runtime_loop_product < 0.0 || runtime_loop_product >= 11.0) {
@@ -8620,7 +8620,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
 }  // namespace typed_40
 
 BoundKernel bind_filter_convolutionFeedback_cfSharpen(const glsl::Bindings& bindings) {
-  const auto sharpenRadius = bindings.get_number("sharpenRadius");
+  const auto sharpenRadius = bindings.get<std::int32_t>("sharpenRadius");
   const auto renderScale = bindings.get_number("renderScale");
   const double runtime_loop_product = sharpenRadius * renderScale;
   if (!std::isfinite(sharpenRadius) || sharpenRadius < 1.0 || sharpenRadius > 10.0 || !std::isfinite(renderScale) || renderScale < 0.0 || !std::isfinite(runtime_loop_product) || runtime_loop_product < 0.0 || runtime_loop_product >= 11.0) {

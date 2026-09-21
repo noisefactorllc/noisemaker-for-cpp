@@ -20,14 +20,15 @@ function bitsAt(buf, offset) {
 // boundary (the standard "totalOrder"-adjacent trick).
 function ordinal(bits) {
   const SIGN = 0x8000000000000000n
-  if ((bits & SIGN) === 0n) return bits
+  if ((bits & SIGN) === 0n) return bits | SIGN
   return SIGN - (bits & ~SIGN) - 1n
 }
 
 function ulpDistance(aBits, bBits) {
   const aNaN = isNaNBits(aBits)
   const bNaN = isNaNBits(bBits)
-  if (aNaN && bNaN) return 0n // both NaN: treat as exact (JS/V8 NaN payloads are not observable)
+  // This harness compares NaN classification, not its payload or sign bits.
+  if (aNaN && bNaN) return 0n
   if (aNaN !== bNaN) return -1n // sentinel: one NaN, one not -- always divergent
   const oa = ordinal(aBits)
   const ob = ordinal(bBits)

@@ -11836,9 +11836,17 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                 ])
             elif contract.kind == "blur-radius":
                 assert contract.render_scale_name is not None
+                radius_symbol = next(symbol for symbol in uniforms
+                                     if symbol.name == contract.uniform_name)
+                # Convolution Feedback declares an integer radius, while
+                # ordinary Blur declares a float. Read the declared binding
+                # ABI before multiplying by the binary64 render scale.
+                radius_binding = (
+                    f'bindings.get<std::int32_t>("{contract.uniform_name}")'
+                    if radius_symbol.type.display() == "int" else
+                    f'bindings.get_number("{contract.uniform_name}")')
                 lines.extend([
-                    f'  const auto {contract.uniform_name} = '
-                    f'bindings.get_number("{contract.uniform_name}");',
+                    f'  const auto {contract.uniform_name} = {radius_binding};',
                     f'  const auto {contract.render_scale_name} = '
                     f'bindings.get_number("{contract.render_scale_name}");',
                     f"  const double runtime_loop_product = {contract.uniform_name} * "

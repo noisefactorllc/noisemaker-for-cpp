@@ -36,32 +36,32 @@ requires no Python and no code generation:
 
 Generation is deterministic. `python -m tools.glslcpp.generate_typed_slice
 --check` regenerates everything in memory and fails if the committed output
-differs by a single byte. CI runs that check on every push.
+differs by a single byte. CI runs that check on pushes affecting source or validation.
 
 ## Coverage
 
 This port is **incomplete**. It does not yet render every effect its JavaScript authority renders.
 
-The authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares the pin with the authority's `main` every day and on every push, and fails when they differ.
+The pinned authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes. As of the 2026-09-21 review, that gate fails: the live authority is `0165763eb4847ca3eb9972bec418d8f4d4ecb208`, with shader revision `beabda385253a3461d2ee5ee2f1b032cbe9a2832`.
 
 | | Count | Derived from |
 |---|---:|---|
 | Effects the authority renders | 208 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
 | Effects this port's export kit claims | 137 | `export-kit/compat-effects.json` |
-| Effects the parameter sweep verified byte-exact | 137 | `export-kit/verified-effects.json` |
-| Effects whose every pass has an admitted kernel | 167 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
+| Effects in the historical sweep-verified list | 137 | `export-kit/verified-effects.json`; this list needs fresh evidence before expansion |
+| Effects whose every pass has an admitted kernel | 178 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
 | Authority GLSL programs | 304 | `counts.reference_program_keys` in the same file |
-| Corpus programs vendored here | 212 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
-| Typed-slice programs | 211 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+| Corpus programs vendored here | 264 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
+| Typed-slice programs | 263 | the `programs` array in `src/typed_generated/typed_manifest.json` |
 
 The kit claims an effect only when the parameter sweep verified it. An admitted kernel is not enough.
 
 The effects still missing need the following work:
 
-- Iterated simulations, particle groups, volume atlases and loop regions in the executor. Scatter dispatch and multi-render-target passes already exist.
-- The 92 authority programs the corpus does not yet vendor.
+- Complete runtime execution and differential coverage of iterated simulations, particle groups, volume atlases and loop regions. Their admission and partial runtime wiring do not establish parity.
+- The 40 authority programs tracked in the corpus's `pending.json`.
 - Every value of each compile-define parameter, where some effects still refuse non-default values.
-- A small set of float-precision divergences.
+- Complete numerical, render-option, and stateful coverage in Debug and Release.
 
 The live list is the top block of [`docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md`](docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md).
 
@@ -70,7 +70,7 @@ The live list is the top block of [`docs/port-engineering/NEXT_CODING_AGENT_HAND
 - **Corpus lane** (`tests/test_dsl_corpus_parity.py`): every admitted effect renders once at 17x11 with default parameters, and must match the authority byte for byte. This single point is not enough on its own to prove parity.
 - **Parameter sweep** (`tools/parity/sweep.py --gate kit`): every authority effect renders at many sizes, including 1x1 and non-square, with many seeds and times, randomized parameter values, and generator/filter/mixer chains. Each render is compared on RGBA8 and on the float32 surface behind it.
 - **Define enumeration** (`--define-enum`): every compile-define parameter renders at each value in its domain.
-- **Gates**: both sweeps run in CI and fail on any divergence, any timeout, or any refusal of an effect the kit claims.
+- **Gates**: both sweeps run in CI with `--gate kit`, which checks cases whose participating effects are all claimed by the kit. Cases outside that set remain reported gaps. Full closure requires `--gate all`, complete authority coverage, and Debug and Release evidence.
 - **Kit coverage** (`export-kit/check-authority-coverage.mjs`): fails until the kit claims every effect the authority renders.
 
 The corpus itself is vendored, not authored here. Its GLSL sources under `tools/glslcpp/corpus/` come from [`noisefactorllc/noisemaker`](https://github.com/noisefactorllc/noisemaker) at revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`, and are MIT-licensed there.
@@ -149,13 +149,7 @@ A DSL program names effects from the catalog. To see what is available:
 
 Rendering is fail-closed. If the executor refuses a program, the command reports the executor's reason and returns a nonzero exit status. It writes nothing:
 
-```
-$ ./build/noisemaker-render snow.dsl
-noisemaker-render: snow.dsl cannot be rendered, so nothing was written.
-  reason: the authority executes a hand-written CPU adapter for this program and the emitted typed kernel is measured divergent (499 of 748 RGBA8 bytes at 17x11)
-  code:   unavailable_pass (7)
-  effect: filter/snow, pass 0 "main" (filter/snow:snow)
-```
+For example, `points/buddhabrot:agent` is still a `missing_backend_program` in the current corpus, so a program requiring that pass returns exit code 4. Snow's former measured exclusion has been removed after its CPU adapter was ported.
 
 `--help` prints the full option list and these exit codes:
 

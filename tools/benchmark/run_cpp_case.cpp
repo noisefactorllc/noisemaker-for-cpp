@@ -17,6 +17,7 @@
 #include "noisemaker/renderer.hpp"
 #include "noisemaker/surface.hpp"
 
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -24,6 +25,7 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -86,12 +88,23 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
   }
 }
 
-[[nodiscard]] std::size_t positive_integer(const std::string& text, std::string_view name) {
+template <typename Integer>
+[[nodiscard]] Integer whole_number(const std::string& text, std::string_view name,
+                                   double minimum) {
   const double value = number(text, name);
-  if (value <= 0.0 || value != static_cast<double>(static_cast<std::size_t>(value))) {
-    usage(std::string(name) + " must be a positive integer");
+  // size_t's maximum can round up to 2^N when represented as double. Use
+  // that exact exclusive bound and reject invalid values before any cast.
+  const double exclusive_upper = std::ldexp(1.0, std::numeric_limits<Integer>::digits);
+  if (!std::isfinite(value) || value < minimum || value >= exclusive_upper ||
+      value != std::trunc(value)) {
+    usage(std::string(name) + (minimum == 0.0 ? " must be a nonnegative integer"
+                                               : " must be a positive integer"));
   }
-  return static_cast<std::size_t>(value);
+  return static_cast<Integer>(value);
+}
+
+[[nodiscard]] std::size_t positive_integer(const std::string& text, std::string_view name) {
+  return whole_number<std::size_t>(text, name, 1.0);
 }
 
 [[nodiscard]] std::uint8_t hex_nibble(char digit, std::string_view spec) {
@@ -145,6 +158,11 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
   const std::string height_text(dims_and_hex.substr(x_pos + 1, colon_pos - x_pos - 1));
   const auto width = positive_integer(width_text, "--external-texture width");
   const auto height = positive_integer(height_text, "--external-texture height");
+  if (width > std::numeric_limits<std::size_t>::max() / height ||
+      width * height > std::numeric_limits<std::size_t>::max() / 4U ||
+      height > noisemaker::kMaxSurfacePixels / width) {
+    usage("--external-texture dimensions exceed surface limits");
+  }
   const auto hex = dims_and_hex.substr(colon_pos + 1);
   const auto bytes = decode_hex_bytes(hex, spec);
   if (bytes.size() != width * height * 4U) {
@@ -213,10 +231,10 @@ int main(int argc, char** argv) {
   }
 
   noisemaker::RenderOptions options;
-  options.width = static_cast<std::size_t>(number(argument(args, "--width"), "--width"));
-  options.height = static_cast<std::size_t>(number(argument(args, "--height"), "--height"));
+  options.width = positive_integer(argument(args, "--width"), "--width");
+  options.height = positive_integer(argument(args, "--height"), "--height");
   options.time = number(argument(args, "--time"), "--time");
-  options.frame = static_cast<std::uint32_t>(number(argument(args, "--frame"), "--frame"));
+  options.frame = whole_number<std::uint32_t>(argument(args, "--frame"), "--frame", 0.0);
   options.seed = number(argument(args, "--seed"), "--seed");
   options.external_textures = parse_external_textures(args);
 

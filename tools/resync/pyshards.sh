@@ -30,3 +30,4 @@ for s in $(seq 0 $((shards - 1))); do
   echo "shard $s: $(grep -E '^(Ran|OK|FAILED)' "$prefix.shard$s.log" | tr '\n' ' ')"
 done
 echo "PYSHARDS DONE status=$status"
+exit "$status"

@@ -1,5 +1,169 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## INDEPENDENT REVIEW CHECKPOINT 2026-09-21: READ THIS FIRST
+>
+> This block supersedes every status and ordered queue below. Earlier checkpoints are preserved as historical
+> evidence, including their claims that are contradicted here. Full CPU parity is **not complete**.
+>
+> ### Reviewed source and current authority
+>
+> - Review target: `4c75776b18b2eb6b8dde738f310340b00a754b2a` on `main`, synchronized with an ordinary
+>   `git -c rebase.autoStash=false pull --rebase`; clean at entry, no pre-existing unpushed commits or active Git operation.
+> - First-run review window: 101 reachable commits since 2026-09-14, starting with `1b1abcf28db72f25afd4b2052e339bca2ec38b18`.
+>   Generator, runtime, parity/oracle, documentation and CI changes are reviewed separately. Reproduction limitations
+>   are listed below; a changed hash or a green structural test does not establish numerical equivalence.
+> - Pinned JS authority remains `61aa8694d60e6e25d8d3e8c872c971be329458bc`, behavioral lock
+>   `27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026`, shader revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.
+> - Live authority `main` was verified read-only at `0165763eb4847ca3eb9972bec418d8f4d4ecb208` (local clean HEAD equals remote HEAD):
+>   behavioral lock `c1dbea4a2e1679bddefb4d88a27b81bb64aff259840940580e806a40215ab0a1`, shader revision
+>   `beabda385253a3461d2ee5ee2f1b032cbe9a2832`. The drift gate exits 1. Changes since the pin include source-lock/snapshot
+>   metadata, the public `CpuFrameExportAdapter` export, and its alpha-mode loop optimization. Do not update the pin
+>   without independently checking these changes and regenerating provenance against the chosen authority.
+>
+> ### Census and measured evidence
+>
+> Counts are observations at the reviewed source, never the definition of completion. Re-derive from the named files.
+> Program manifests are under `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/`.
+>
+> | Measure | Current observation | Authority |
+> | --- | ---: | --- |
+> | Authority effects / kit claims | 208 / 137 (71 missing) | authority `sourceEffectIds` minus `excludedEffects`; `export-kit/compat-effects.json` |
+> | Vendored / pending programs | 264 / 40, total 304 | `corpus/<revision>/manifest.json` and `pending.json`; online `corpus_ratchet --check` |
+> | Typed programs | 263 | `src/typed_generated/typed_manifest.json`; only `filter/wormhole:deposit` is corpus-only; `rdFb` is typed |
+> | Effects with every pass admitted / incomplete | 178 / 30 | `src/effects/generated/effect_catalog.provenance.json` |
+> | Missing reference passes | 80 | same provenance; programs and pass bindings have different denominators |
+> | Default corpus cases admitted / excluded | 173 / 35 | `tests/fixtures/dsl/executable-corpus.json` |
+> | Real measured-parity exclusions | 0 | `kMeasuredParityExclusions` in `src/graph/executor.cpp` contains only the test sentinel |
+>
+> - Exact-source CI [35477730690](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35477730690)
+>   passed all four native OS/configuration jobs, sanitizers, both generator Python versions, the full Python suite,
+>   and the package consumer. **Corpus parity failed** on `filter/convolutionFeedback`, `synth/cellularAutomata`, and
+>   `synth/mnca`; subsequent sweeps were skipped. This is a regression after admission, not an expected coverage gate.
+> - Fresh local arm64 Release and Debug builds each passed CTest 4/4. Corpus parity independently reproduced the three
+>   refusals. Corpus, semantics, typed slice, legacy kernels, backend compatibility, effect catalog and online ratchet
+>   checks reproduced the committed artifacts. The exclusion fixture's `byteExactCount: 164` also predates the current
+>   admitted cohort. After the refusal fixes, the lane measured **168 exact, zero C++ refusals, five unchanged authority
+>   refusals**; the observation was corrected to 168 without excluding any newly admitted case.
+> - Baseline Release `--variants 6 --gate kit`: 1,423 cases, 1,092 exact, 318 C++-only refusals, 3 mutual refusals,
+>   10 unresolved non-kit timeouts, zero measured divergence; 151/208 effects exact across sampled variants. Kit gate
+>   exit 0 covers its claimed subset only. It does not establish closure or justify adding 14 effects from a small sweep.
+> - Baseline Debug `--define-enum --gate all` on `filter/{halftone,scatter,strokes,pondRipples,stipple,oilPaint}`,
+>   `synth/noise`, and `classicNoisedeck/{noise,shapeMixer}`: 888 cases, 552 exact, 336 C++-only refusals, no timeouts or
+>   measured divergence, exit 1. The refusals are `classicNoisedeck/noise`, `filter/halftone`, and `filter/strokes`.
+>   Therefore the older **runtime defines DONE** label is false as a closure claim.
+> - Corrected-driver Release `--variants 6 --gate kit`: 1,423 cases, 1,119 exact, 254 C++-only refusals, three known
+>   dither authority failures, 47 unresolved non-kit timeouts, zero measured divergence; kit gate exit 0. The higher timeout
+>   count occurred during concurrent Debug/Python work; it remains unresolved evidence, not a successful parity claim.
+>   These broad measurements used the archived pre-census-hardening harness and cannot derive a current verified list.
+>   A fresh final-harness cohort (40 sampled plus 18 define cases) passed and its complete census authenticated;
+>   the committed kit list remains unchanged pending full fresh closure measurements.
+> - Corrected-driver full Debug `--define-enum --gate kit`: 37 define-bearing effects, 4,872 cases,
+>   1,134 exact, 3,570 C++-only refusals,
+>   168 unresolved non-kit timeouts, zero measured divergence or harness errors; kit gate exit 0. This used the same
+>   archived pre-census-hardening harness. It records the runtime frontier and cannot certify full coverage or derive
+>   current kit claims. Preserve and resolve every timeout before a closure claim.
+> - Full local Python run: 2,064 tests across four shards, 141 skips, exit 0. Later evidence-guard additions were
+>   re-run in the final focused suite below. Skipped external-authority/package lanes remain subject to the stated
+>   historical regeneration limits; this result is not proof that every historical JS pixel package was regenerated.
+> - Final focused regression suite: all 60 newly added tests passed against the corrected Release driver; Debug driver
+>   dimension tests, UBSan dimension/frame probes, and the installed-package consumer also passed. Current generated
+>   corpus, semantics, typed slice, legacy kernels, compatibility, catalog, online ratchet, two native-oracle materializers
+>   and kit-generation checks all exit 0. These checks retain the historical regeneration limitations below.
+> - Families B–E are **not DONE**: several passes are admitted, but required kernels, scatter registrations, volume/group
+>   execution and MRT preflight still block authority-supported pipelines. The 40 pending records and runtime refusals
+>   must both reach zero. `frontier-92.md` and `phase2-architecture.md` remain historical design references, not a live census.
+>
+> ### Review corrections and their acceptance
+>
+> - Local validation runners now return nonzero when a command/shard fails; regression tests execute real passing and
+>   failing suites. `tools/resync/reconstruction_audit.py` also rejects absent/unpaired specs or missing generated artifacts before
+>   an audit can support refreshed pins. Matching comparisons and independently explained changes still pass.
+> - Sweep corrections require complete RGBA8 and float32 output, fail on harness errors, and authenticate resumed
+>   evidence. Process crashes cannot count as mutual refusal. `tools/parity/verified_effects.py` reconstructs the full
+>   requested sampled/define/joint/chain cohort from the authenticated catalog before deriving claims; sampled evidence
+>   must meet the established 20-variant minimum. Stale, altered, reduced, or default-only evidence fails. See the two tools and their Python regression modules; old results cannot certify a new binary.
+> - CI sweeps run independently after the driver builds, even when the default corpus lane or preceding sweep fails.
+>   Failure remains visible; no exclusion, tolerance, or support denominator is relaxed.
+> - Convolution Feedback now reads its declared integer radius ABI. CA/MNCA sampler preflight authenticates the ordered
+>   subset of inputs actually used by the shader; named iterated inputs resolve from the chain arena. Forged sampler
+>   names/routes/order and missing resources still fail. See `tests/test_convolution_feedback_binding.py` and
+>   `tests/test_graph_features.cpp`. Each repaired effect also passed 20 sampled variants (60 total per build)
+>   with exact RGBA8 and float32 output in Debug and Release, including 1x1/non-square sizes, seeds and times.
+> - Double-vector `distance` now materializes float32 subtraction before length, and `normalize` rounds its magnitude
+>   through the authority's length operation. The old distance helper made a six-pixel Composite probe entirely blue
+>   instead of purple. Both build types now match all RGBA8 and float32 bytes; primitive tests preserve rounding boundaries.
+> - The V8 math comparator no longer maps some opposite-sign finite values to the same ordinal. Six real-comparator
+>   regressions pass. Independent raw-bit comparisons covered 3,000,000 primitive results across arm64 Debug/Release:
+>   zero non-NaN differences, 304 differing both-NaN encodings, all requiring already-NaN inputs. This is bounded evidence
+>   on Node 24.7.0/V8 13.6, not exhaustive or fresh x86 proof. No rendered NaN counterexample has been established;
+>   the float32 render contract still compares every output byte and does not inherit the primitive comparator's NaN policy.
+> - The corpus driver's dimension/frame parsing now rejects nonfinite, fractional and out-of-range values before
+>   integer conversion; external texture byte-count overflow is rejected before allocation. All six CLI regression tests
+>   pass on Debug, Release and a separately instrumented UBSan driver. CI runs them alongside corpus parity.
+> - Snow/median native-oracle materializers reject empty/replaced cases, forged source identities and changed payloads
+>   even with recomputed sidecars. Their 21/19 oracle cases and every pixel remain unchanged. Three task9/10/11 JS
+>   regeneration scripts now retain the DVec inputs already used by native fixtures; independent Node 26.0.0 reproduction
+>   matched all 148 existing float32/RGBA8 hash pairs without changing goldens.
+> - Historical reconstruction pin replacements remain **unverified** without independent old/new cache pairs. Current
+>   generator determinism does not prove their history. Across 23 of 30 scanned oracle packages, 535 recognized
+>   source/corpus identity references matched; seven schemas had no recognized references in that audit. All 30 had
+>   recursive pixel-field diff review, and 24 materializer checks passed. Full regeneration of every historical JS
+>   pixel package remains unverified: those generators require an external authority root, unavailable within this run's
+>   write scope. Use their documented external staging contract and pinned Node 26.0.0; do not bypass the guard.
+>
+> ### Next steps, in order
+>
+> 1. **Retain the restored baseline and complete independent historical proof.** Re-run the admitted corpus lane,
+>    the new refusal/rounding regressions, and the sweep evidence tests before further admission. No executor exclusions
+>    may be added to conceal regressions. For changed historical reconstruction pins, regenerate the same nonempty
+>    old/new specs from their authenticated sources and run `tools/resync/reconstruction_audit.py` with only independently
+>    explained program changes allowed. Acceptance: every cache pair accounted for, no unexplained program/footer change,
+>    and the 168-case current exact observation reproduced (derive future counts from the current admitted corpus).
+> 2. **Bring the authority pin current with an audit.** Compare the pinned and live JS behavioral files and shader sources,
+>    account for each change, then regenerate the corpus/compatibility/catalog/compiler provenance and dependent fixtures
+>    from unmodified authority sources. Acceptance: the drift gate exits 0, online corpus partition agrees with the live
+>    authority manifest, generated files reproduce, and previous exact cases remain exact in Debug and Release.
+> 3. **Close actual runtime/define gaps before further broad admission.** Finish `halftone MODE=1`, `strokes` nonzero MODE,
+>    and classicNoisedeck noise's define domains using existing authenticated profiles in `tools/glslcpp/` and the authority
+>    parameter metadata. Retain ordinary source semantics and independently verify alpha and float rounding. Run the same
+>    888-case define cohort with `--gate all`; acceptance is zero C++-only refusals, divergence, harness errors or timeouts.
+>    Re-probe every other define-bearing effect too; this nine-effect cohort is a regression lane, not the full denominator.
+> 4. **Close family dependencies by complete executable path.** Use `pending.json` as the live inventory. Start with
+>    `render/pointsEmit:init` (uint XOR) for particle families and `synth3d/noise3d:precompute` plus `render/render3d:render3d`
+>    (XOR/cross) for volume families; they currently prevent downstream effects from being exercised. Pair particle work
+>    with the six remaining scatter pass registrations, MRT/group validation and full volume/geometry bundle propagation.
+>    `docs/port-engineering/iteration-group-resource-lifetime.md` contains a stale all-three-pass-shapes claim: the current
+>    executor still explicitly rejects grouped MRT; prove execution before restoring that status. Before admitting Cubemap rendering,
+>    probe nontrivial `cubeBasis` entries directly: `materialize_plan_value` currently narrows the mat3 array to
+>    float lanes before the JS matrix product would. This source-level concern needs a direct atlas/kernel differential;
+>    the standard chain currently refuses earlier. Acceptance is exact RGBA8/float32 under raw-double matrix inputs
+>    in both build types, with no default-identity-only proof. Pair loop work with the multiply-bound
+>    `render/loopEnd:copy`. Pair simulation work with `synth/navierStokes:nsSmooth` arrays and repeated-state tests.
+>    For each bounded change: authenticate the GLSL closure, add negative mutations, run online ratchet, regenerate to a
+>    fixed point, and compare real whole-chain output against JS in both build types. Record admitted, rendered, refused,
+>    timed-out and exact counts separately. Do not call a family complete while its pipeline refuses before that family runs.
+> 5. **Exhaust the remaining frontier and render contract.** The current first-blocker distribution is 20 typed-validator,
+>    11 pass-binding, 8 default-semantics and 1 define-variant records; each record identifies its exact source and diagnostic.
+>    After each construct proof, re-probe to expose the next blocker. Handle multi-pass program reuse, bit casts, vector
+>    integral operations, arrays, loop bounds, postfix and proof-gated builtins without weakening authentication. Audit
+>    `oneShot: 'initial'`, zero/multiple iterations, feedback lifetime, volume inheritance, MRT and external texture options
+>    against `src/runtime/renderer.js` in the authority. Trace reachable shader NaNs through pow/atan2 to output, using
+>    raw-bit captures in both builds and supported architectures; a differing rendered float32 NaN remains divergence,
+>    even when the primitive numeric comparator classifies both inputs as NaN. Acceptance includes output/state across repeated calls, not just
+>    compilation or a default image. Keep a precise per-effect runtime gap after its frontend blockers are cleared.
+> 6. **Re-derive the kit from complete fresh measurements, then prove closure.** Run current-source `--variants 20` and
+>    full `--define-enum`, with deterministic seeds, chains, sizes, times and solo timeout retries; preserve source/binary,
+>    authority, architecture and build-type identities with the results. Derive the verified list only from complete runs;
+>    count a successful timeout retry once and reject stale/missing evidence. Regenerate `export-kit/compat-effects.json`.
+>    Acceptance: current authority's full effect set is rendered, no authority-supported case is omitted or refused,
+>    zero RGBA8 or float32 divergence, no unresolved timeout/harness error, zero pending programs, `--gate all` and kit
+>    coverage pass, and exact-commit CI reproduces the result. Counts must come from current manifests rather than 208/304.
+>
+> Local evidence is under ignored `build-review/evidence/`, `build-review/sweep-kit-release/` and
+> `build-review/sweep-defines-debug/`; these paths identify observations, not portable golden fixtures. Current run state,
+> commit coverage, hashes and CI references are retained in the automation's `review-state.json` outside the repository.
+>
+
 > ## RESYNC CHECKPOINT 2026-09-17: READ THIS FIRST
 >
 > This supersedes the 2026-08-30 publication checkpoint below, which is kept as history. The session ended on the operator's

@@ -31,6 +31,33 @@ KEY = "filter/median:median"
 WORD = re.compile(r"^0x[0-9a-f]{8}$")
 SHA = re.compile(r"^[0-9a-f]{64}$")
 
+# Frozen from the committed authority oracle; the adapter source hash was
+# independently verified against noisemaker-for-cpu revision 61aa869.
+# A recomputed adjacent sidecar cannot authorize a new baseline.
+EXPECTED_ORACLE_SHA256 = '1ab88f015bbefc1e77af555ff0feb800edd5e5793184460d81543f4a76f279ed'
+EXPECTED_SOURCE = ('src/effects/adapters/median.js', 5349, 'e82f18d820533993f74c3436addd8bb271a3ef0db8a53c6771ba4eb1e90b0583')
+EXPECTED_CASE_NAMES = (
+    'r1-3x3-window-exact',
+    'r1-1x1-heavy-clamp',
+    'r2-5x5-window-exact',
+    'r2-2x2-heavy-clamp',
+    'r2-7x4-nonsquare',
+    'r3-7x7-window-exact',
+    'r3-3x3-heavy-clamp',
+    'r3-9x5-nonsquare',
+    'r3-1x9-strip',
+    'r2-9x11-transposed',
+    'r2-ties-checkerboard',
+    'r1-ties-redgreen-tiebreak',
+    'r2-translucent-ramp',
+    'r1-hdr-and-negative',
+    'r2-nan-channel',
+    'r3-nan-with-threshold',
+    'r2-threshold-zero',
+    'r2-threshold-mid',
+    'r2-threshold-hundred',
+)
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -47,8 +74,20 @@ def _load_oracle() -> dict:
         raise SystemExit(f"unexpected oracle schema {document['schema']!r}")
     if document["programKey"] != KEY:
         raise SystemExit(f"unexpected oracle program key {document['programKey']!r}")
-    if not (document["exactFloat32"] and document["exactRgba8"] and document["toleranceNone"]):
+    if any(document.get(field) is not True
+           for field in ("exactFloat32", "exactRgba8", "toleranceNone")):
         raise SystemExit("oracle does not declare zero-tolerance exact comparison")
+    source = tuple(document.get(field) for field in
+                   ("sourceRelativePath", "sourceBytes", "sourceSha256"))
+    if source != EXPECTED_SOURCE or type(document.get("sourceBytes")) is not int:
+        raise SystemExit("oracle source identity drift")
+    cases = document.get("cases")
+    if (not isinstance(cases, list)
+            or any(not isinstance(case, dict) for case in cases)
+            or tuple(case.get("name") for case in cases) != EXPECTED_CASE_NAMES):
+        raise SystemExit("oracle case census drift")
+    if _sha256(payload) != EXPECTED_ORACLE_SHA256:
+        raise SystemExit("oracle frozen authority payload drift")
     return document
 
 

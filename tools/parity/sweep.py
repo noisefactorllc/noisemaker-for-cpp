@@ -28,8 +28,9 @@ Design
    raw RGBA8 bytes with ``tools.benchmark.exact_compare.compare_rgba8``.
 3. Work is farmed out to a process pool. Every completed variant is appended
    to a JSON-Lines results log immediately, so a killed or interrupted run
-   can be resumed: rerunning the same ``--out`` directory skips any
-   ``case_id`` already present in the log.
+   can be resumed: rerunning the same ``--out`` directory skips completed
+   cases only when a saved manifest matches the authority, drivers, harness,
+   generated programs and render options. Changed inputs require ``--force``.
 4. Both drivers additionally accept an opt-in ``--float32-output`` flag (added
    here) that dumps the pre-quantization RGBA float32 surface behind
    ``to_rgba8()``/``toRgba8()`` -- ``result.surface.data()`` in C++,
@@ -745,23 +746,45 @@ def _strip_source_location_prefix(detail: str, source_path: Path) -> str:
 
 
 def _cpp_detail(stdout: str, source_path: Path) -> tuple[str, str]:
-    """The driver's actual refusal code and message, JSON-parsed off its
-    stdout (``run_cpp_case.cpp``'s ``refusal_record``:
-    ``{"code": ..., "detail": ...}``) -- ``code`` is the numeric
-    ``GraphErrorCode`` as a string for a structured refusal, or the literal
-    string ``"exception"`` for any other ``std::exception`` (a DSL compile
-    error, most commonly). Never the file path a "cannot parse this as JSON"
-    fallback used to return: a malformed/non-JSON stdout is itself a driver
-    contract violation worth seeing verbatim, so the raw text is kept, just
-    still put through the same source-location strip.
-    """
+    """Validate corpus_case.cpp's refusal_record contract before accepting it."""
     try:
-        parsed = json.loads(stdout or "{}")
-        code = parsed.get("code", "")
-        detail = parsed.get("detail", "")
-    except json.JSONDecodeError:
-        code, detail = "", stdout.strip()[:300]
+        parsed = json.loads(stdout)
+    except json.JSONDecodeError as error:
+        raise ValueError(f"C++ refusal is not JSON: {stdout[:300]}") from error
+    if not isinstance(parsed, dict):
+        raise ValueError("C++ refusal must be a JSON object")
+    code, detail = parsed.get("code"), parsed.get("detail")
+    if (parsed.get("schema") != "noisemaker-cpp.dsl-cpu-run.v1"
+            or parsed.get("status") != "refused"
+            or code not in {"exception", *(str(value) for value in range(16))}
+            or not isinstance(detail, str) or not detail.strip()
+            or (code != "exception" and not isinstance(parsed.get("programKey"), str))):
+        raise ValueError(f"C++ refusal violates the driver contract: {stdout[:300]}")
     return code, _strip_source_location_prefix(detail, source_path)
+
+
+def _known_js_refusal(reason: str, job: Job, cpp_code: str, cpp_detail: str) -> bool:
+    # The JS runner has no structured refusal record. Accept the DSL's named
+    # validation error and specific runtime validation messages inspected in
+    # the pinned renderer, never arbitrary Node/TypeError/RangeError crashes.
+    if reason.startswith("DslError: "):
+        return True
+    if re.fullmatch(r'(?:TypeError|RangeError): Parameter "[^"\n]+" must be .+', reason):
+        return True
+    if re.fullmatch(r'Error: Surface o[0-7] has not been written', reason):
+        return True
+    if re.fullmatch(r'Error: [\w/]+ (?:parameter "[^"\n]+" requires (?:an input surface|a \w+ input)'
+                    r'|requires external texture "[^"\n]+"'
+                    r'|pass "[^"\n]+" requires texture "[^"\n]+")', reason):
+        return True
+    # Authenticated filter/dither palette 2+ failures are an explicit known
+    # authority limitation mirrored by the executor's exact diagnostic.
+    return ("filter/dither" in [job.effect_id, *job.chain_effects]
+            and reason == "TypeError: ditherWithPalette(...).reduce is not a function"
+            and cpp_code == "exception"
+            and cpp_detail == ('Parameter "palette" is not renderable by the authority: only input(0) '
+                               'and monochrome(1) avoid its findClosestPaletteColor NaN-corruption bug '
+                               '(canonical-kernels.js copy()/findClosest4-15-16)'))
 
 
 def run_job(job_dict: dict) -> dict:
@@ -831,7 +854,12 @@ def run_job(job_dict: dict) -> dict:
 
         js_ok = js_rc == 0
         cpp_ok = cpp_rc == 0
-        cpp_code, cpp_detail = _cpp_detail(cpp_out, source_path)
+        if js_rc not in (0, 1) or cpp_rc not in (0, 4):
+            raise ValueError(f"unexpected process exit: JS={js_rc}, C++={cpp_rc}; "
+                             f"JS stderr={js_err[:300]}; C++ stderr={cpp_err[:300]}")
+        cpp_code, cpp_detail = ("", "") if cpp_ok else _cpp_detail(cpp_out, source_path)
+        if not js_ok and not _known_js_refusal(extract_js_reason(js_err), job, cpp_code, cpp_detail):
+            raise ValueError(f"unexpected authority failure: {js_err[:1000]}")
 
         if not js_ok and not cpp_ok:
             result["classification"] = "both_refused"
@@ -853,19 +881,19 @@ def run_job(job_dict: dict) -> dict:
             return result
 
         diff = compare_rgba8(job.width, job.height, js_raw.read_bytes(), cpp_raw.read_bytes())
-        float_diff = None
-        if js_f32.exists() and cpp_f32.exists():
-            float_diff = compare_float32(job.width, job.height, js_f32.read_bytes(), cpp_f32.read_bytes())
-            result["float32_ok"] = float_diff["ok"]
+        # Both drivers were explicitly asked for these outputs. A missing
+        # file is a harness failure, never permission to prove RGBA8 only.
+        float_diff = compare_float32(job.width, job.height, js_f32.read_bytes(), cpp_f32.read_bytes())
+        result["float32_ok"] = float_diff["ok"]
 
-        result["classification"] = "byte_exact" if diff["ok"] and (float_diff is None or float_diff["ok"]) else "divergent"
+        result["classification"] = "byte_exact" if diff["ok"] and float_diff["ok"] else "divergent"
         if result["classification"] == "byte_exact":
             result["rgba8_sha256"] = hashlib.sha256(cpp_raw.read_bytes()).hexdigest()
         if not diff["ok"]:
             result["diagnostics"] = format_diagnostics(diff)
             result["first_mismatch"] = diff.get("firstMismatch")
             result["mismatch_count"] = diff.get("mismatchCount")
-        elif float_diff is not None and not float_diff["ok"]:
+        elif not float_diff["ok"]:
             # The quantized RGBA8 output matched exactly, but the
             # pre-quantization float32 surface behind it did not -- a real,
             # more sensitive divergence signal that RGBA8 rounding hid.
@@ -902,6 +930,52 @@ def load_existing(results_path: Path) -> dict[str, dict]:
             row = json.loads(line)
             existing[row["case_id"]] = row
     return existing
+
+
+def run_manifest(config: RunConfig, jobs: list[Job], retry_factor: float,
+                 selection: dict | None = None) -> dict:
+    """Bind resumable observations to the exact inputs that produced them."""
+    def file_identity(path: Path) -> dict[str, str]:
+        resolved = path.resolve()
+        return {"path": str(resolved), "sha256": hashlib.sha256(resolved.read_bytes()).hexdigest()}
+
+    harness_paths = (
+        Path(__file__), DUMP_CATALOG, JS_RUNNER,
+        LANE_ROOT / "tools/dsl/corpus_authority.mjs",
+        LANE_ROOT / "tools/benchmark/corpus_lane.py",
+        LANE_ROOT / "tools/benchmark/exact_compare.py",
+    )
+    return {
+        "schema": "noisemaker-cpp.parity-sweep-inputs.v1",
+        "cpu_root": config.cpu_root,
+        "authority_ledger": file_identity(Path(config.ledger)),
+        "cpp_driver": file_identity(Path(config.driver)),
+        "node": file_identity(Path(config.node)),
+        "harness": [file_identity(path) for path in harness_paths],
+        "timeout": config.timeout,
+        "timeout_retry_factor": retry_factor,
+        "selection": selection,
+        "jobs": [vars(job) for job in jobs],
+    }
+
+
+def prepare_resume(out_dir: Path, manifest: dict, force: bool) -> dict[str, dict]:
+    results_path = out_dir / "results.jsonl"
+    manifest_path = out_dir / "run-manifest.json"
+    if not force and results_path.exists() and results_path.stat().st_size:
+        try:
+            previous = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise ValueError("saved sweep results have no valid provenance; use --force to rerun") from error
+        if previous != manifest:
+            raise ValueError("sweep inputs changed; use --force to rerun instead of reusing saved results")
+        return load_existing(results_path)
+    # Truncate old results BEFORE replacing their identity. An interrupted
+    # --force run must never associate old observations with the new manifest.
+    if force:
+        results_path.write_text("", encoding="utf-8")
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return {}
 
 
 def write_summary(all_rows: list[dict], out_dir: Path, meta: dict) -> None:
@@ -1134,15 +1208,25 @@ def main() -> int:
             jobs.extend(build_chain_jobs(effect, by_kind, args.variants, args.seed))
 
     results_path = out_dir / "results.jsonl"
-    existing = {} if args.force else load_existing(results_path)
+    config = RunConfig(node=node, driver=str(driver), cpu_root=str(cpu_root), ledger=str(ledger),
+                       scratch_root=str(scratch_root), timeout=args.max_seconds_per_case)
+    selection = {
+        "mode": "define-enum" if args.define_enum else "sampled",
+        "seed": args.seed, "variants": args.variants,
+        "joint_samples": args.joint_samples, "no_chains": args.no_chains,
+        "effect_ids": sorted(effect["id"] for effect in effects),
+        "define_effect_ids": sorted(effect["id"] for effect in effects if define_params(effect)),
+    }
+    manifest = run_manifest(config, jobs, args.timeout_retry_factor, selection)
+    try:
+        existing = prepare_resume(out_dir, manifest, args.force)
+    except ValueError as error:
+        parser.error(str(error))
     pending = [j for j in jobs if j.case_id not in existing]
 
     print(f"[sweep] {len(effects)} effects, {len(jobs)} total cases "
           f"({len(existing)} already done, {len(pending)} to run), workers={args.workers}",
           file=sys.stderr)
-
-    config = RunConfig(node=node, driver=str(driver), cpu_root=str(cpu_root), ledger=str(ledger),
-                       scratch_root=str(scratch_root), timeout=args.max_seconds_per_case)
 
     mode = "a" if not args.force and results_path.exists() else "w"
     started = time.monotonic()
@@ -1183,6 +1267,9 @@ def main() -> int:
     meta = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "seed": args.seed, "variants": args.variants, "effect_count_requested": len(effects),
+        "mode": selection["mode"],
+        "joint_samples": args.joint_samples, "no_chains": args.no_chains,
+        "manifest_sha256": hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest(),
         "cpu_root": str(cpu_root), "cpp_driver": str(driver),
         "elapsed_seconds": round(time.monotonic() - started, 1),
     }
@@ -1203,15 +1290,19 @@ def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
             continue
         classification = row["classification"]
         effects = {row["effect_id"], *row.get("chain_effects", [])}
-        if gate == "all" or effects <= kit:
+        if classification not in CLASSIFICATIONS:
+            # A failed worker proves nothing even when the effect is outside
+            # the kit. Unknown future classifications must also fail closed.
+            failures.append(row)
+        elif gate == "all" or effects <= kit:
             if classification in ("divergent", "timeout", "cpp_refused_only"):
                 failures.append(row)
     for row in failures:
-        reason = row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""
+        reason = row.get("error") or row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""
         print(f"[sweep gate] {row['classification']}: {row['case_id']} {str(reason)[:200]}", file=sys.stderr)
     checked = sum(1 for row in rows if row["case_id"] in case_ids)
     print(f"[sweep gate] {gate}: {len(failures)} failing of {checked} cases", file=sys.stderr)
-    return 1 if failures or checked != len(case_ids) else 0
+    return 1 if failures or not case_ids or checked != len(case_ids) else 0
 
 
 if __name__ == "__main__":

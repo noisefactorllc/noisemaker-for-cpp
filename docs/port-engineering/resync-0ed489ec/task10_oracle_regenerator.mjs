@@ -169,7 +169,12 @@ function render(key, polygonSmoothing = 0.12, variant = null) {
   const { uniforms, textures } = bindingsFor(key, polygonSmoothing)
   if (variant) applyVariant(uniforms, textures, variant)
   const roundedUniforms = {}
-  for (const [name, value] of Object.entries(uniforms)) roundedUniforms[name] = f32Deep(value)
+  // Native fixtures use DVec3/DVec4 for ordinary effect vectors. Preserve
+  // those JS numbers; scalar and reserved vec2 fixtures still enter as f32.
+  for (const [name, value] of Object.entries(uniforms)) {
+    roundedUniforms[name] = Array.isArray(value) && (value.length === 3 || value.length === 4)
+      ? value : f32Deep(value)
+  }
   const factory = canonicalKernelFactories[key]
   if (!factory) throw new Error(`no canonical kernel factory for ${key}`)
   const kernel = bindCanonicalKernel(factory, {

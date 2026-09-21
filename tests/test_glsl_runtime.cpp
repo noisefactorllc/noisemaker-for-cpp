@@ -126,6 +126,33 @@ TEST(glsl_runtime_geometric_helpers_handle_nonzero_zero_and_total_internal_refle
   REQUIRE(refract(Vec2(1.0f, 0.0f), Vec2(0.0f, 1.0f), 2.0) == Vec2());
 }
 
+TEST(glsl_runtime_double_vector_distance_preserves_authority_float32_boundaries) {
+  using namespace noisemaker::glsl;
+  // GlslCpuRuntime.stdlib.distance at pinned JS authority 61aa869 computes
+  // length(subtract(left, right)): subtract, dot, and sqrt each round to f32.
+  const DVec3 left(0.7311236763534933, 0.12281395953931051,
+                   0.8734191544441814);
+  const Vec3 right(1.0f, 0.0f, 0.0f);
+  constexpr std::uint32_t expected = 0x3f6c0db2U;
+  REQUIRE(noisemaker::float_bits_to_uint(distance(left, right)) == expected);
+  REQUIRE(noisemaker::float_bits_to_uint(distance(right, left)) == expected);
+  REQUIRE(noisemaker::float_bits_to_uint(distance(left, DVec3(1.0, 0.0, 0.0))) == expected);
+  REQUIRE(noisemaker::float_bits_to_uint(distance(left, right + 0.0)) == expected);
+  REQUIRE(distance(left, left) == 0.0f);
+}
+
+TEST(glsl_runtime_double_vector_normalize_rounds_magnitude_without_narrowing_input) {
+  using namespace noisemaker::glsl;
+  // Independent GlslCpuRuntime.stdlib.normalize result from authority 61aa869.
+  // Omitting length's f32 boundaries yields ...aa1e/...7220; narrowing the
+  // ordinary input array before length instead yields ...aa1e/...721f.
+  const DVec3 value(-0.5146872717887163, 0.6410618326626718,
+                    -0.08085122052580118);
+  require_vector_bits(normalize(value),
+                      std::array{0xbf1f804cU, 0x3f46aa1fU, 0xbdc87221U});
+  require_vector_bits(normalize(DVec3()), std::array{0U, 0U, 0U});
+}
+
 TEST(glsl_runtime_reflect_and_refract_stage_shared_vector_float32_writes) {
   using namespace noisemaker::glsl;
   const Vec3 incident(
