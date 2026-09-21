@@ -14,20 +14,31 @@
 >   are listed below; a changed hash or a green structural test does not establish numerical equivalence.
 > - Pinned JS authority remains `61aa8694d60e6e25d8d3e8c872c971be329458bc`, behavioral lock
 >   `27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026`, shader revision `0ed489ec46842bffba33ee2ec65a218b6dda51f5`.
-> - Live authority `main` was verified read-only at `0165763eb4847ca3eb9972bec418d8f4d4ecb208` (local clean HEAD equals remote HEAD):
+> - At review start, authority `main` was verified read-only at `0165763eb4847ca3eb9972bec418d8f4d4ecb208` (local clean HEAD equals remote HEAD):
 >   behavioral lock `c1dbea4a2e1679bddefb4d88a27b81bb64aff259840940580e806a40215ab0a1`, shader revision
 >   `beabda385253a3461d2ee5ee2f1b032cbe9a2832`. The drift gate exits 1. Changes since the pin include source-lock/snapshot
 >   metadata, the public `CpuFrameExportAdapter` export, and its alpha-mode loop optimization. Do not update the pin
 >   without independently checking these changes and regenerating provenance against the chosen authority.
 >
+> - **Authority advanced during this run.** Exact correction CI [35639087346](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35639087346)
+>   observed live `6dbc0058155edaaeb9cbfb722d5f4fe73e7b0534`, behavioral lock
+>   `910abea6a1b93663a42e6cab4621f45ed5f258db065a680fb73d5b4ed0b30900`, shader revision
+>   `f61ac07320888732594689258c6f7042cde0303b`. A fresh exact-SHA archive independently reproduced both drift failures.
+>   Its manifests contain **205 effects and 301 programs**: `filter/bc`, `filter/colorspace`, and `filter/hs` and their three
+>   programs were removed. The other effect records, coverage records, and normalized generated kernel bodies are unchanged
+>   versus `0165763`; the CLI also adds particle-pipeline setup for Height Grid. This establishes the source of the reduced
+>   denominator, not permission to silently drop C++ public behavior or rebaseline goldens. Against this live set, the kit
+>   has 71 missing effects and three extra names (134 shared, 137 total). The C++ authority pin remains unchanged.
+>
 > ### Census and measured evidence
 >
-> Counts are observations at the reviewed source, never the definition of completion. Re-derive from the named files.
+> The table and render measurements below use pinned authority `61aa869` (208 effects / 304 programs), not the newly
+> advanced live set above. Counts are observations, never the definition of completion. Re-derive from the named files.
 > Program manifests are under `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/`.
 >
 > | Measure | Current observation | Authority |
 > | --- | ---: | --- |
-> | Authority effects / kit claims | 208 / 137 (71 missing) | authority `sourceEffectIds` minus `excludedEffects`; `export-kit/compat-effects.json` |
+> | Pinned authority effects / kit claims | 208 / 137 (71 missing) | authority `sourceEffectIds` minus `excludedEffects`; `export-kit/compat-effects.json` |
 > | Vendored / pending programs | 264 / 40, total 304 | `corpus/<revision>/manifest.json` and `pending.json`; online `corpus_ratchet --check` |
 > | Typed programs | 263 | `src/typed_generated/typed_manifest.json`; only `filter/wormhole:deposit` is corpus-only; `rdFb` is typed |
 > | Effects with every pass admitted / incomplete | 178 / 30 | `src/effects/generated/effect_catalog.provenance.json` |
@@ -119,8 +130,10 @@
 >    old/new specs from their authenticated sources and run `tools/resync/reconstruction_audit.py` with only independently
 >    explained program changes allowed. Acceptance: every cache pair accounted for, no unexplained program/footer change,
 >    and the 168-case current exact observation reproduced (derive future counts from the current admitted corpus).
-> 2. **Bring the authority pin current with an audit.** Compare the pinned and live JS behavioral files and shader sources,
->    account for each change, then regenerate the corpus/compatibility/catalog/compiler provenance and dependent fixtures
+> 2. **Bring the authority pin current with an audit.** Compare the pin with live `6dbc0058` or a freshly reverified successor.
+>    Account for the three removed effect/program identities and Height Grid CLI routing, plus earlier behavioral changes.
+>    Preserve existing C++ public behavior explicitly while reconciling authoritative coverage; do not merely remove three
+>    kit names to hide the mismatch. Regenerate the corpus/compatibility/catalog/compiler provenance and dependent fixtures
 >    from unmodified authority sources. Acceptance: the drift gate exits 0, online corpus partition agrees with the live
 >    authority manifest, generated files reproduce, and previous exact cases remain exact in Debug and Release.
 > 3. **Close actual runtime/define gaps before further broad admission.** Finish `halftone MODE=1`, `strokes` nonzero MODE,

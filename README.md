@@ -42,11 +42,11 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 This port is **incomplete**. It does not yet render every effect its JavaScript authority renders.
 
-The pinned authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes. As of the 2026-09-21 review, that gate fails: the live authority is `0165763eb4847ca3eb9972bec418d8f4d4ecb208`, with shader revision `beabda385253a3461d2ee5ee2f1b032cbe9a2832`.
+The pinned authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes. As of the final 2026-09-21 check, that gate fails: the live authority is `6dbc0058155edaaeb9cbfb722d5f4fe73e7b0534`, with shader revision `f61ac07320888732594689258c6f7042cde0303b`. It removed three expired effects and now contains 205 effects and 301 programs. The table below describes the still-pinned 208-effect / 304-program authority. Against the live set, this kit has 71 missing effects and three extra names (`filter/bc`, `filter/colorspace`, `filter/hs`); the pin and public behavior require an audited reconciliation.
 
 | | Count | Derived from |
 |---|---:|---|
-| Effects the authority renders | 208 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
+| Effects the pinned authority renders | 208 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
 | Effects this port's export kit claims | 137 | `export-kit/compat-effects.json` |
 | Effects in the historical sweep-verified list | 137 | `export-kit/verified-effects.json`; this list needs fresh evidence before expansion |
 | Effects whose every pass has an admitted kernel | 178 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
