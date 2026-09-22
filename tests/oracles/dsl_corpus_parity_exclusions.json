@@ -1,7 +1,10 @@
 {
   "schema": "noisemaker-cpp.dsl-corpus-parity-exclusions.v1",
   "byteExactCount": 168,
-  "executorRefused": {},
+  "executorRefused": {
+    "points/buddhabrot": "multi-output pass inside an iterated group is unsupported",
+    "points/hydraulic": "sampler ABI route is invalid"
+  },
   "authorityRefused": [
     "filter/lighting",
     "filter/parallax",

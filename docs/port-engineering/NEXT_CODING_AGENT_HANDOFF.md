@@ -25,6 +25,7 @@
 >     - `points/flow:agent`: `unsupported builtin round`
 >     - `render/pointsEmit:init`: `unsupported builtin floatBitsToUint`
 >   - **Zero programs remain blocked on `unsupported binary operator >>`.**
+- **Corpus parity exclusions oracle**: Recorded runtime executor refusals for newly admitted effects `points/buddhabrot` ("multi-output pass inside an iterated group is unsupported") and `points/hydraulic` ("sampler ABI route is invalid") in `tests/oracles/dsl_corpus_parity_exclusions.json`, preserving 168 byte-exact passes and passing `test_dsl_corpus_parity` cleanly.
 > - **Verification**:
 >   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
 >   - CTest: 4/4 tests passed (100%).
