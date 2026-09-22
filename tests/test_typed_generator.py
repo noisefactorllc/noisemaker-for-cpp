@@ -22552,17 +22552,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34897,
-                "d0e93b6a37dfa7b49521679a4a327fd22060a29fefddbb0ec01eaaad87d9f881"),
+                36001,
+                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3070080,
-                "c59ae4b0e0fac82a3bcd1e8cf3dd1f2313c2179f483d7d0ffa7dbd16498491b8"),
+                3135027,
+                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
             "src/typed_generated/typed_manifest.json": (
-                804940,
-                "53a9794b368655ab24dcc10210f05c4797101bd18ca29c6d00488f35aef8b1a0"),
+                820746,
+                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
             "include/noisemaker/generated/catalog.hpp": (
-                26111,
-                "87c5c37f155fbec7b20722276dc2cbdef7232a3ca85b6af639ad584323f809bc"),
+                26553,
+                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23332,17 +23332,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34897,
-                "d0e93b6a37dfa7b49521679a4a327fd22060a29fefddbb0ec01eaaad87d9f881"),
+                36001,
+                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3070080,
-                "c59ae4b0e0fac82a3bcd1e8cf3dd1f2313c2179f483d7d0ffa7dbd16498491b8"),
+                3135027,
+                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
             "src/typed_generated/typed_manifest.json": (
-                804940,
-                "53a9794b368655ab24dcc10210f05c4797101bd18ca29c6d00488f35aef8b1a0"),
+                820746,
+                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
             "include/noisemaker/generated/catalog.hpp": (
-                26111,
-                "87c5c37f155fbec7b20722276dc2cbdef7232a3ca85b6af639ad584323f809bc"),
+                26553,
+                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24088,17 +24088,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34897,
-                "d0e93b6a37dfa7b49521679a4a327fd22060a29fefddbb0ec01eaaad87d9f881"),
+                36001,
+                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3070080,
-                "c59ae4b0e0fac82a3bcd1e8cf3dd1f2313c2179f483d7d0ffa7dbd16498491b8"),
+                3135027,
+                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
             "src/typed_generated/typed_manifest.json": (
-                804940,
-                "53a9794b368655ab24dcc10210f05c4797101bd18ca29c6d00488f35aef8b1a0"),
+                820746,
+                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
             "include/noisemaker/generated/catalog.hpp": (
-                26111,
-                "87c5c37f155fbec7b20722276dc2cbdef7232a3ca85b6af639ad584323f809bc"),
+                26553,
+                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24624,17 +24624,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34897,
-                "d0e93b6a37dfa7b49521679a4a327fd22060a29fefddbb0ec01eaaad87d9f881"),
+                36001,
+                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3070080,
-                "c59ae4b0e0fac82a3bcd1e8cf3dd1f2313c2179f483d7d0ffa7dbd16498491b8"),
+                3135027,
+                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
             "src/typed_generated/typed_manifest.json": (
-                804940,
-                "53a9794b368655ab24dcc10210f05c4797101bd18ca29c6d00488f35aef8b1a0"),
+                820746,
+                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
             "include/noisemaker/generated/catalog.hpp": (
-                26111,
-                "87c5c37f155fbec7b20722276dc2cbdef7232a3ca85b6af639ad584323f809bc"),
+                26553,
+                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25224,17 +25224,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                34897,
-                "d0e93b6a37dfa7b49521679a4a327fd22060a29fefddbb0ec01eaaad87d9f881"),
+                36001,
+                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3070080,
-                "c59ae4b0e0fac82a3bcd1e8cf3dd1f2313c2179f483d7d0ffa7dbd16498491b8"),
+                3135027,
+                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
             "src/typed_generated/typed_manifest.json": (
-                804940,
-                "53a9794b368655ab24dcc10210f05c4797101bd18ca29c6d00488f35aef8b1a0"),
+                820746,
+                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
             "include/noisemaker/generated/catalog.hpp": (
-                26111,
-                "87c5c37f155fbec7b20722276dc2cbdef7232a3ca85b6af639ad584323f809bc"),
+                26553,
+                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25780,8 +25780,136 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         )
         self.assertIn("(((glsl::swizzle<0>(q) ^ glsl::swizzle<1>(q)) ^ glsl::swizzle<2>(q)) ^ glsl::swizzle<3>(q))", cpp)
 
+    def test_hash_scalar_uint_rshift_profile_authentication(self) -> None:
+        import dataclasses, hashlib, json, pathlib
+        from tools.glslcpp import check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            authenticate_hash_scalar_uint_rshift,
+            apply_hash_scalar_uint_rshift,
+            PROFILE,
+            HASH_SCALAR_UINT_RSHIFT_KEYS,
+        )
+
+        expected_counts = {
+            "filter3d/flow3d:agent": {"rshifts": 3, "rel": "filter3d/flow3d/agent.glsl"},
+            "points/buddhabrot:agent": {"rshifts": 3, "rel": "points/buddhabrot/agent.glsl"},
+            "points/flow:agent": {"rshifts": 3, "rel": "points/flow/agent.glsl"},
+            "points/hydraulic:agent": {"rshifts": 6, "rel": "points/hydraulic/agent.glsl"},
+            "points/life:matrix": {"rshifts": 3, "rel": "points/life/matrix.glsl"},
+            "points/physical:agent": {"rshifts": 3, "rel": "points/physical/agent.glsl"},
+            "render/pointsEmit:init": {"rshifts": 3, "rel": "render/pointsEmit/init.glsl"},
+        }
+
+        self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        for key, exp in expected_counts.items():
+            source_path = corpus_root / "sources" / exp["rel"]
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / exp["rel"]
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            # Test authentication succeeds with valid profile and source hash
+            rshifts = authenticate_hash_scalar_uint_rshift(typed, shash, PROFILE)
+            self.assertEqual(len(rshifts), exp["rshifts"])
+            for rshift_node in rshifts:
+                self.assertEqual(rshift_node.kind, "binary")
+                self.assertEqual(rshift_node.operator, ">>")
+                self.assertEqual(rshift_node.type.display(), "uint")
+                self.assertEqual(rshift_node.children[0].type.display(), "uint")
+                self.assertEqual(rshift_node.children[1].type.display(), "uint")
+
+            # Test identity carrier return
+            applied = apply_hash_scalar_uint_rshift(typed, shash, PROFILE)
+            self.assertIs(applied, typed)
+
+            # Test rejection with invalid profile
+            with self.assertRaises(ValueError):
+                authenticate_hash_scalar_uint_rshift(typed, shash, "invalid-profile-v1")
+
+            # Test rejection with mismatched source hash
+            with self.assertRaises(ValueError):
+                authenticate_hash_scalar_uint_rshift(typed, "0" * 64, PROFILE)
+
+            # Test rejection with alien program key
+            alien = dataclasses.replace(typed, key="foreign/effect:key")
+            with self.assertRaises(ValueError):
+                authenticate_hash_scalar_uint_rshift(alien, shash, PROFILE)
+
+    def test_hash_scalar_uint_rshift_validator_and_emitter(self) -> None:
+        import hashlib, json, pathlib
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp, check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+            PROFILE as XOR_PROFILE,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            PROFILE as RSHIFT_PROFILE,
+        )
+
+        key = "points/life:matrix"
+        rel = "points/life/matrix.glsl"
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        source_path = corpus_root / "sources" / rel
+        if not source_path.exists():
+            source_path = corpus_root / "pending-sources" / rel
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        eff_id = key.split(":", 1)[0]
+        eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+        defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+        ast = parse_program(raw, key, defaults)
+        typed = analyze_program(ast, key)
+
+        # Without rshift profile, validate_capabilities must reject with unsupported binary operator >>
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                hash_scalar_uint_xor_profile=XOR_PROFILE
+            )
+        self.assertIn("unsupported binary operator >>", str(ctx.exception))
+
+        # With both XOR and rshift profiles, validate_capabilities passes
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            hash_scalar_uint_xor_profile=XOR_PROFILE,
+            hash_scalar_uint_rshift_profile=RSHIFT_PROFILE
+        )
+
+        # Emit C++ and verify structure
+        factory = "bind_" + key.replace("/", "_").replace(":", "_")
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed, key, shash, "pixel", factory,
+            hash_scalar_uint_xor_profile=XOR_PROFILE,
+            hash_scalar_uint_rshift_profile=RSHIFT_PROFILE
+        )
+        self.assertIn(">> std::uint32_t(28)", cpp)
+        self.assertIn("((word >> std::uint32_t(22)) ^ word)", cpp)
+
 
 if __name__ == "__main__":
 
 
     unittest.main()
+

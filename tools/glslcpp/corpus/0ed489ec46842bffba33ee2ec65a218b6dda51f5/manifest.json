@@ -3271,6 +3271,26 @@
     },
     {
       "effect_id": "filter3d/flow3d",
+      "normalized_bytes": 6473,
+      "normalized_sha256": "1a2f15aaf6c7ed17adf0443e4f16db6ce6400f26977976ea00619bbaf5f4e518",
+      "outputs": [
+        "outState1",
+        "outState2",
+        "outState3"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "filter3d/flow3d:agent",
+      "raw_bytes": 9859,
+      "raw_sha256": "f4e3622f4def27221de0bd0b93ed1152f56f835957361e0fcffea8b84d3ce356",
+      "runtime_key": "filter3d/flow3d:agent",
+      "source": "sources/filter3d/flow3d/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "filter3d/flow3d",
       "normalized_bytes": 708,
       "normalized_sha256": "cbab4d2ad75ef2870515300bca2d35b91db54115d69965966656fb262303d538",
       "outputs": [
@@ -3613,6 +3633,26 @@
     },
     {
       "effect_id": "points/buddhabrot",
+      "normalized_bytes": 4191,
+      "normalized_sha256": "b88fc526f2c2b3fc2fa1b12fe72760c71282a9ed4488a86e32591fb6cb170e0e",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/buddhabrot:agent",
+      "raw_bytes": 4826,
+      "raw_sha256": "0e2e9336878287c4c856c6f6a4e7d2a19219d29025f33d0ead8c5f17fc19cc5c",
+      "runtime_key": "points/buddhabrot:agent",
+      "source": "sources/points/buddhabrot/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/buddhabrot",
       "normalized_bytes": 194,
       "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
       "outputs": [
@@ -3777,6 +3817,26 @@
     },
     {
       "effect_id": "points/hydraulic",
+      "normalized_bytes": 4931,
+      "normalized_sha256": "f8f8519ff841b4198584d6e39425aacf0f301b7f67f526a82240d6c028d613db",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/hydraulic:agent",
+      "raw_bytes": 6329,
+      "raw_sha256": "988fe48308354bc7cd8eaa1cb768bccf9ac37b3ce8ebb4256f567eb8419f1001",
+      "runtime_key": "points/hydraulic:agent",
+      "source": "sources/points/hydraulic/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/hydraulic",
       "normalized_bytes": 194,
       "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
       "outputs": [
@@ -3851,6 +3911,24 @@
     },
     {
       "effect_id": "points/life",
+      "normalized_bytes": 1211,
+      "normalized_sha256": "eb4d1ee02108dbed36c35559d54f74bcb200c1942ed2db69664140430c1528cb",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "matrix",
+      "program": "matrix",
+      "program_key": "points/life:matrix",
+      "raw_bytes": 1889,
+      "raw_sha256": "405376b51b550714253aff0f818a4fd56d50618bc792558826195b901c5fa073",
+      "runtime_key": "points/life:matrix",
+      "source": "sources/points/life/matrix.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/life",
       "normalized_bytes": 178,
       "normalized_sha256": "1c50029c0b27ac3e9ebd3e53191e4e3d84c85872e5bb89d7fd0a023c09a6d850",
       "outputs": [
@@ -3882,6 +3960,26 @@
       "raw_sha256": "c1b316f77d7ae5a5880dc8d667b05afb0e7dd2c3d346397ebee609953ffeb6f8",
       "runtime_key": "points/physarum:diffuse",
       "source": "sources/points/physarum/diffuse.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/physical",
+      "normalized_bytes": 2927,
+      "normalized_sha256": "c3a280a29bf0271343121e06bf8c9345a893015a3978a633e9bce7b1ba5a97ed",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/physical:agent",
+      "raw_bytes": 4136,
+      "raw_sha256": "a144cacbadeca15a78a83dac987bfd25164bd7904a2e9f0ea22e8b1bf22e3614",
+      "runtime_key": "points/physical:agent",
+      "source": "sources/points/physical/agent.glsl",
       "status": "generated",
       "varyings": []
     },

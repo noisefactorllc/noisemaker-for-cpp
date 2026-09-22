@@ -189,6 +189,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_wormhole_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_wormhole_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_zoomBlur_zoomBlur(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_filter3d_flow3d_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter3d_flow3d_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter3d_flow3d_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter3d_flow3d_diffuse(const glsl::Bindings& bindings);
@@ -208,6 +209,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_mixer_thresholdMix_thresholdMix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_mixer_uvRemap_uvRemap(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_attractor_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_buddhabrot_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_zWrite(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings);
@@ -217,12 +219,15 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_points_flow_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_heightGrid_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_heightGrid_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_hydraulic_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_hydraulic_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_lenia_agentField(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_lenia_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_lenia_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_points_life_matrix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physarum_diffuse(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_physical_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_loopBegin_loopBegin(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_blend(const glsl::Bindings& bindings);

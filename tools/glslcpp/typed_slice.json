@@ -1004,6 +1004,14 @@
       "defines": {
         "BEHAVIOR": 1
       },
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "filter3d/flow3d:agent"
+    },
+    {
+      "defines": {
+        "BEHAVIOR": 1
+      },
       "program_key": "filter3d/flow3d:blend"
     },
     {
@@ -1086,6 +1094,12 @@
     },
     {
       "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/buddhabrot:agent"
+    },
+    {
+      "defines": {},
       "program_key": "points/buddhabrot:passthrough"
     },
     {
@@ -1122,6 +1136,12 @@
     },
     {
       "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/hydraulic:agent"
+    },
+    {
+      "defines": {},
       "program_key": "points/hydraulic:passthrough"
     },
     {
@@ -1138,11 +1158,23 @@
     },
     {
       "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/life:matrix"
+    },
+    {
+      "defines": {},
       "program_key": "points/life:passthrough"
     },
     {
       "defines": {},
       "program_key": "points/physarum:diffuse"
+    },
+    {
+      "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/physical:agent"
     },
     {
       "defines": {},

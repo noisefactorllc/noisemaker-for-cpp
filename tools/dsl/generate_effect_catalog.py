@@ -25,7 +25,7 @@ CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
 CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
-COMPATIBILITY_SHA256 = "6bee9425515f6c753e772093189e862ae676a98c01fce939b36d0199ffc87196"
+COMPATIBILITY_SHA256 = "c1eb7be296a161c5c3cf423256929bb4d25e6a5fa4fc4de3d0267c8217959553"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",

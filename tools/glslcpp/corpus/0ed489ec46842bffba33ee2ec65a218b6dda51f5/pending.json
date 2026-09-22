@@ -3445,19 +3445,6 @@
       "source": "pending-sources/filter/temporalAberration/temporalAberration.glsl"
     },
     {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: filter3d/flow3d:agent:33:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "filter3d/flow3d",
-      "program": "agent",
-      "program_key": "filter3d/flow3d:agent",
-      "raw_bytes": 9859,
-      "raw_sha256": "f4e3622f4def27221de0bd0b93ed1152f56f835957361e0fcffea8b84d3ce356",
-      "source": "pending-sources/filter3d/flow3d/agent.glsl"
-    },
-    {
       "authority_status": "adapter",
       "blocker": {
         "diagnostic": "filter3d/flow3d:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
@@ -3495,19 +3482,6 @@
       "raw_bytes": 4936,
       "raw_sha256": "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e",
       "source": "pending-sources/points/attractor/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/buddhabrot:agent:28:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/buddhabrot",
-      "program": "agent",
-      "program_key": "points/buddhabrot:agent",
-      "raw_bytes": 4826,
-      "raw_sha256": "0e2e9336878287c4c856c6f6a4e7d2a19219d29025f33d0ead8c5f17fc19cc5c",
-      "source": "pending-sources/points/buddhabrot/agent.glsl"
     },
     {
       "authority_status": "generated",
@@ -3551,7 +3525,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flow:agent:32:19: unsupported binary operator >>",
+        "diagnostic": "GeneratorError: points/flow:agent:146:22: unsupported builtin round",
         "stage": "typed.validator"
       },
       "effect_id": "points/flow",
@@ -3560,19 +3534,6 @@
       "raw_bytes": 5848,
       "raw_sha256": "0584139db3b2e14af99788458a48094a0d650a03ae540a0468309bf2f097bb6b",
       "source": "pending-sources/points/flow/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/hydraulic:agent:29:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/hydraulic",
-      "program": "agent",
-      "program_key": "points/hydraulic:agent",
-      "raw_bytes": 6329,
-      "raw_sha256": "988fe48308354bc7cd8eaa1cb768bccf9ac37b3ce8ebb4256f567eb8419f1001",
-      "source": "pending-sources/points/hydraulic/agent.glsl"
     },
     {
       "authority_status": "generated",
@@ -3616,19 +3577,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/life:matrix:20:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/life",
-      "program": "matrix",
-      "program_key": "points/life:matrix",
-      "raw_bytes": 1889,
-      "raw_sha256": "405376b51b550714253aff0f818a4fd56d50618bc792558826195b901c5fa073",
-      "source": "pending-sources/points/life/matrix.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "GeneratorError: points/physarum:agent:38:28: unsupported builtin floatBitsToUint",
         "stage": "typed.validator"
       },
@@ -3664,19 +3612,6 @@
       "raw_bytes": 266,
       "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
       "source": "pending-sources/points/physarum/passthrough.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/physical:agent:30:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/physical",
-      "program": "agent",
-      "program_key": "points/physical:agent",
-      "raw_bytes": 4136,
-      "raw_sha256": "a144cacbadeca15a78a83dac987bfd25164bd7904a2e9f0ea22e8b1bf22e3614",
-      "source": "pending-sources/points/physical/agent.glsl"
     },
     {
       "authority_status": "generated",
@@ -3746,7 +3681,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/pointsEmit:init:28:19: unsupported binary operator >>",
+        "diagnostic": "GeneratorError: render/pointsEmit:init:65:25: unsupported builtin floatBitsToUint",
         "stage": "typed.validator"
       },
       "effect_id": "render/pointsEmit",
