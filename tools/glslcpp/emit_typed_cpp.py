@@ -86,6 +86,10 @@ from .frontend.hash_scalar_uint_rshift_profile import (
     HASH_SCALAR_UINT_RSHIFT_KEYS,
     PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
     authenticate_hash_scalar_uint_rshift)
+from .frontend.vec_scalar_modulo_profile import (
+    VEC_SCALAR_MODULO_KEYS,
+    PROFILE as VEC_SCALAR_MODULO_PROFILE,
+    authenticate_vec_scalar_modulo)
 from .frontend.scalar_uint_xor_profile import (
     KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
     NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -1034,6 +1038,7 @@ class _Emitter:
     perlin_scalar_uint_xor_profile: str | None = None
     hash_scalar_uint_xor_profile: str | None = None
     hash_scalar_uint_rshift_profile: str | None = None
+    vec_scalar_modulo_profile: str | None = None
     scalar_uint_xor_profile: str | None = None
     bitwise_scalar_int_ops_profile: str | None = None
     bit_effects_frontend_profile: str | None = None
@@ -1119,6 +1124,10 @@ class _Emitter:
     authorized_hash_scalar_uint_rshifts: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_hash_scalar_uint_rshifts: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_vec_scalar_modulos: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = field(
         init=False, default=())
@@ -3549,6 +3558,25 @@ class _Emitter:
                     authenticate_hash_scalar_uint_rshift(
                         self.program, self.source_hash,
                         self.hash_scalar_uint_rshift_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.vec_scalar_modulo_profile is not None:
+            if (self.program.key not in VEC_SCALAR_MODULO_KEYS
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.gather_sorted_round_profile is not None
+                    or self.literal_vec3_lane_index_profile is not None
+                    or self.smooth_edge_luma_weights_profile is not None):
+                raise _error(
+                    self.program, self.program,
+                    "vector-scalar modulo profile metadata mismatch")
+            try:
+                self.authorized_vec_scalar_modulos = (
+                    authenticate_vec_scalar_modulo(
+                        self.program, self.source_hash,
+                        self.vec_scalar_modulo_profile))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         if self.scalar_uint_xor_profile is not None:
@@ -7887,8 +7915,11 @@ class _Emitter:
                     return (f"({self.expression(value.children[0])} {value.operator} "
                             f"{self.expression(value.children[1])})")
                 raise _error(self.program, value, f"unsupported binary operator {value.operator}")
-            if value.operator == "%" and (left_type not in {"int", "uint"} or right_type != left_type):
-                raise _error(self.program, value, "unsupported binary operator %")
+            if value.operator == "%":
+                is_scalar = left_type in {"int", "uint"} and right_type == left_type
+                is_vec_scalar = any(value is item for item in self.authorized_vec_scalar_modulos)
+                if not (is_scalar or is_vec_scalar):
+                    raise _error(self.program, value, "unsupported binary operator %")
             if "mat" in left_type or "mat" in right_type:
                 glitch = self.authorized_glitch_proof
                 glitch_products = (() if glitch is None else
@@ -7981,6 +8012,8 @@ class _Emitter:
                     return (
                         f"std::fmod(static_cast<double>({left}), "
                         f"static_cast<double>({right}))")
+                if any(value is item for item in self.authorized_vec_scalar_modulos):
+                    self.emitted_vec_scalar_modulos.append(value)
                 return f"glsl::integer_mod({left}, {right})"
             # JavaScript canonical kernels retain scalar arithmetic in Number
             # precision until the typed local/assignment/builtin boundary. The
@@ -12874,6 +12907,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      perlin_scalar_uint_xor_profile: str | None = None,
                      hash_scalar_uint_xor_profile: str | None = None,
                      hash_scalar_uint_rshift_profile: str | None = None,
+                     vec_scalar_modulo_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
                      bitwise_scalar_int_ops_profile: str | None = None,
                      bit_effects_frontend_profile: str | None = None,
@@ -12978,6 +13012,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        perlin_scalar_uint_xor_profile,
                        hash_scalar_uint_xor_profile,
                        hash_scalar_uint_rshift_profile,
+                       vec_scalar_modulo_profile,
                        scalar_uint_xor_profile,
                        bitwise_scalar_int_ops_profile,
                        bit_effects_frontend_profile,
@@ -13262,6 +13297,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             != emitter.authorized_hash_scalar_uint_rshifts):
         raise _error(program, program,
                      "authenticated scalar uint right shift emission mismatch")
+    if (emitter.authorized_vec_scalar_modulos
+            and tuple(emitter.emitted_vec_scalar_modulos)
+            != emitter.authorized_vec_scalar_modulos):
+        raise _error(program, program,
+                     "authenticated vector-scalar modulo emission mismatch")
     if (emitter.authorized_scalar_uint_xors
             and tuple(emitter.emitted_scalar_uint_xors)
             != emitter.authorized_scalar_uint_xors):

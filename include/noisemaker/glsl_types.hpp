@@ -289,6 +289,48 @@ NOISEMAKER_GLSL_INTEGER_BINARY(*)
 NOISEMAKER_GLSL_INTEGER_BINARY(/)
 #undef NOISEMAKER_GLSL_INTEGER_BINARY
 
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> integer_mod(const Vec<N, T>& left, const Vec<N, T>& right) noexcept {
+  Vec<N, T> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = integer_mod(left[i], right[i]);
+  return result;
+}
+
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> integer_mod(const Vec<N, T>& left, T right) noexcept {
+  Vec<N, T> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = integer_mod(left[i], right);
+  return result;
+}
+
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> integer_mod(T left, const Vec<N, T>& right) noexcept {
+  Vec<N, T> result;
+  for (std::size_t i = 0; i < N; ++i) result[i] = integer_mod(left, right[i]);
+  return result;
+}
+
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> operator%(const Vec<N, T>& a, const Vec<N, T>& b) noexcept {
+  return integer_mod(a, b);
+}
+
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> operator%(const Vec<N, T>& a, T b) noexcept {
+  return integer_mod(a, b);
+}
+
+template <std::size_t N, class T>
+  requires(std::integral<T> && !std::same_as<T, bool>)
+[[nodiscard]] constexpr Vec<N, T> operator%(T a, const Vec<N, T>& b) noexcept {
+  return integer_mod(a, b);
+}
+
 template <std::size_t N, class T> requires(!std::same_as<T, float> && !std::same_as<T, bool>) [[nodiscard]] constexpr Vec<N, T> operator-(const Vec<N, T>& value) { Vec<N, T> result; for (std::size_t i = 0; i < N; ++i) result[i] = detail::subtract(static_cast<T>(0), value[i]); return result; }
 
 template <std::size_t N>

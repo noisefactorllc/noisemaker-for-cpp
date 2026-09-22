@@ -1,5 +1,35 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-22: VECN % SCALAR MODULUS CONSTRUCT BLOCKER CLUSTER RESOLVED
+>
+> This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Vector % scalar modulus (`vecN % scalar`)**.
+>
+> ### What landed (this pass)
+> - **C++ glsl_types modulus overloads**: Added constexpr, noexcept `integer_mod` and `operator%` overloads for `Vec<N, T>` in `include/noisemaker/glsl_types.hpp` supporting vector % scalar, scalar % vector, and vector % vector with full protection against division-by-zero (safe return 0) and signed overflow (`INT32_MIN % -1`). Verified in `tests/test_glsl_types.cpp`.
+> - **Frontend body semantic validation**: Relaxed `%` validation in `tools/glslcpp/frontend/body_semantic.py` lines 304–310 to accept vector % scalar and scalar % vector for integral vectors (`ivecN`, `uvecN`) and matching scalar types (`int`, `uint`). Verified in `tests/test_semantic.py`.
+> - **Proof-gated carrier profile**: Added `tools/glslcpp/frontend/vec_scalar_modulo_profile.py` with profile `vec-scalar-modulo-v1`, locking candidate programs (`points/flock:agent`, `points/life:agent`, and `render/pointsBillboardRender:spriteMeanTiles`) with 7 cryptographic and structural pins (`raw_bytes`, `raw_sha256`, `norm_bytes`, `norm_sha256`, `functions_sha256`, `whole_sha256`, `interface_sha256`, and exact modulo counts and AST operand matchers).
+> - **Validator admission**: Admitted vector % scalar modulo expressions in `tools/glslcpp/generate_typed_slice.py` strictly when AST nodes are authenticated under `vec-scalar-modulo-v1` with sequential traversal and count verification.
+> - **Emitter lowering**: Emitted `glsl::integer_mod(left, right)` in `tools/glslcpp/emit_typed_cpp.py` for authenticated vector-scalar nodes, tracking emitted nodes with two-way cardinality check.
+> - **Corpus ratchet advancement**: Wired `apply_vec_scalar_modulo` and capability options into `tools/glslcpp/corpus_ratchet.py`. Ran ratchet to update `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending.json`:
+>   - All 3 candidate programs advanced cleanly past `semantics.defaults` into `typed.validator` and now report their next authentic downstream blockers:
+>     - `points/flock:agent`: `unsupported builtin floatBitsToUint`
+>     - `points/life:agent`: `unsupported binary operator ^`
+>     - `render/pointsBillboardRender:spriteMeanTiles`: `unsupported counted-for program proof`
+>   - Zero programs remain blocked on `E_OPERATOR: % requires same integral operands`.
+> - **Verification**:
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - CTest: 4/4 tests passed (100%).
+>   - Parallel Python test suite (4 shards via `pyshards.sh`): all 4 shards passed (status=0, 2,117 tests total).
+>   - Subagent code review: passed with test coverage expansion for validator & emitter across all 3 candidate programs.
+>   - Zero symlinks (`find . -type l`).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster in Step 4 from `pending.json`:
+>   - Candidate A: **`floatBitsToUint` builtin** (`points/flock:agent`, `render/pointsEmit:init`)
+>   - Candidate B: **`round` builtin** (`points/flow:agent`)
+>   - Candidate C: **`^` binary operator** in `points/life:agent`
+>   - Candidate D: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles`
+>
 > ## FOLLOW-UP REVIEW CHECKPOINT 2026-09-22: NOISE3D NUMBER ARRAY AND ATLAS COORDINATE CORRECTION
 >
 > This checkpoint supersedes the Noise3D blocker and ordered step 2 in the independent review below.

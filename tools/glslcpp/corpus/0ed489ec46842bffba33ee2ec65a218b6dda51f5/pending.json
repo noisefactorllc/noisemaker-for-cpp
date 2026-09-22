@@ -3512,8 +3512,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: points/flock:agent:158:30: E_OPERATOR: % requires same integral operands",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: points/flock:agent:47:28: unsupported builtin floatBitsToUint",
+        "stage": "typed.validator"
       },
       "effect_id": "points/flock",
       "program": "agent",
@@ -3564,8 +3564,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: points/life:agent:204:26: E_OPERATOR: % requires same integral operands",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: points/life:agent:44:19: unsupported binary operator ^",
+        "stage": "typed.validator"
       },
       "effect_id": "points/life",
       "program": "agent",
@@ -3668,8 +3668,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: render/pointsBillboardRender:spriteMeanTiles:16:18: E_OPERATOR: % requires same integral operands",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: render/pointsBillboardRender:spriteMeanTiles:20:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
       },
       "effect_id": "render/pointsBillboardRender",
       "program": "spriteMeanTiles",

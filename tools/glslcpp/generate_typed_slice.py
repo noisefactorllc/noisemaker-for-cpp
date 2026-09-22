@@ -149,6 +149,11 @@ if __package__ in (None, ""):
         PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
         apply_hash_scalar_uint_rshift,
         authenticate_hash_scalar_uint_rshift)
+    from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+        VEC_SCALAR_MODULO_KEYS,
+        PROFILE as VEC_SCALAR_MODULO_PROFILE,
+        apply_vec_scalar_modulo,
+        authenticate_vec_scalar_modulo)
     from tools.glslcpp.frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -546,6 +551,11 @@ else:
         PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
         apply_hash_scalar_uint_rshift,
         authenticate_hash_scalar_uint_rshift)
+    from .frontend.vec_scalar_modulo_profile import (
+        VEC_SCALAR_MODULO_KEYS,
+        PROFILE as VEC_SCALAR_MODULO_PROFILE,
+        apply_vec_scalar_modulo,
+        authenticate_vec_scalar_modulo)
     from .frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -1600,6 +1610,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key in HASH_SCALAR_UINT_RSHIFT_KEYS else
                     {"defines", "hash_scalar_uint_xor_profile", "program_key"}
                     if key in HASH_SCALAR_UINT_XOR_KEYS else
+                    {"defines", "vec_scalar_modulo_profile", "program_key"}
+                    if key in VEC_SCALAR_MODULO_KEYS else
                     {"defines", "perlin_scalar_uint_xor_profile", "program_key"}
                     if key == PERLIN_KEY else
                     {"as_u32_round_profile", "defines", "program_key",
@@ -1978,6 +1990,15 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for key in sorted(HASH_SCALAR_UINT_RSHIFT_KEYS)
         if key in keys
     ]
+    vec_scalar_modulo_profiles = [
+        (item["program_key"], item.get("vec_scalar_modulo_profile"),
+         item["defines"])
+        for item in programs if "vec_scalar_modulo_profile" in item]
+    expected_vec_scalar_modulo_profiles = [
+        (key, VEC_SCALAR_MODULO_PROFILE, {})
+        for key in sorted(VEC_SCALAR_MODULO_KEYS)
+        if key in keys
+    ]
     if (keys != sorted(set(keys)) or keys != typed_corpus_keys()
             or lane_profiles != [(key, LITERAL_VEC3_LANE_INDEX_PROFILE)
                                   for key in LITERAL_VEC3_LANE_INDEX_KEYS]
@@ -1988,6 +2009,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                  {"DIMENSIONS": 2})]
             or hash_scalar_uint_xor_profiles != expected_hash_scalar_uint_xor_profiles
             or hash_scalar_uint_rshift_profiles != expected_hash_scalar_uint_rshift_profiles
+            or vec_scalar_modulo_profiles != expected_vec_scalar_modulo_profiles
             or scalar_uint_xor_profiles != [
                 # kaleido reuses the frozen carrier verbatim as the REQUIRED
                 # companion of its mutable-global array row and sorts first
@@ -3327,6 +3349,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           perlin_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_rshift_profile: str | None = None,
+                          vec_scalar_modulo_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
                           bitwise_scalar_int_ops_profile: str | None = None,
                           bit_effects_frontend_profile: str | None = None,
@@ -3901,6 +3924,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_hash_scalar_uint_xors: list[TypedExpression] = []
     authorized_hash_scalar_uint_rshifts: tuple[TypedExpression, ...] = ()
     visited_hash_scalar_uint_rshifts: list[TypedExpression] = []
+    authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = ()
+    visited_vec_scalar_modulos: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -5181,6 +5206,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             authorized_hash_scalar_uint_rshifts = (
                 authenticate_hash_scalar_uint_rshift(
                     typed, source_hash, hash_scalar_uint_rshift_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if vec_scalar_modulo_profile is not None:
+        if (typed.key not in VEC_SCALAR_MODULO_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: vector-scalar modulo profile metadata mismatch")
+        try:
+            authorized_vec_scalar_modulos = (
+                authenticate_vec_scalar_modulo(
+                    typed, source_hash, vec_scalar_modulo_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
@@ -7062,9 +7104,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             left, right = value.children
             left_type, right_type = left.type.display(), right.type.display()
             if value.operator == "%":
-                if left_type not in {"int", "uint"} or right_type != left_type:
+                if left_type in {"int", "uint"} and right_type == left_type:
+                    used.add("integer-modulo")
+                elif any(value is item for item in authorized_vec_scalar_modulos):
+                    visited_vec_scalar_modulos.append(value)
+                    used.add("integer-modulo")
+                else:
                     raise GeneratorError(f"{location(value)}: unsupported binary operator %")
-                used.add("integer-modulo")
             elif value.operator == "<<":
                 if (value.type.display() != "uint" or len(value.children) != 2
                         or value.children[0].type.display() != "uint"
@@ -8259,6 +8305,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_hash_scalar_uint_rshifts):
         raise GeneratorError(
             f"{typed.key}: authenticated scalar uint right shift traversal mismatch")
+    if (authorized_vec_scalar_modulos
+            and tuple(visited_vec_scalar_modulos)
+            != authorized_vec_scalar_modulos):
+        raise GeneratorError(
+            f"{typed.key}: authenticated vector-scalar modulo traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -8911,6 +8962,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: hash scalar uint right shift identity profile mutated program")
             typed = profiled
+        vec_scalar_modulo_profile = slice_spec["programs"][index].get(
+            "vec_scalar_modulo_profile")
+        if vec_scalar_modulo_profile is not None:
+            try:
+                profiled = apply_vec_scalar_modulo(
+                    typed, source_hash, vec_scalar_modulo_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: vector-scalar modulo identity profile mutated program")
+            typed = profiled
         scalar_uint_xor_profile = slice_spec["programs"][index].get(
             "scalar_uint_xor_profile")
         if scalar_uint_xor_profile is not None:
@@ -9512,6 +9575,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
                               hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                               hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
+                              vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9588,6 +9652,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
                                            hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                                            hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
+                                           vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9714,6 +9779,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if hash_scalar_uint_rshift_profile is not None:
             manifest_program["hash_scalar_uint_rshift_profile"] = (
                 hash_scalar_uint_rshift_profile)
+        if vec_scalar_modulo_profile is not None:
+            manifest_program["vec_scalar_modulo_profile"] = (
+                vec_scalar_modulo_profile)
         if scalar_uint_xor_profile is not None:
             manifest_program["scalar_uint_xor_profile"] = (
                 scalar_uint_xor_profile)

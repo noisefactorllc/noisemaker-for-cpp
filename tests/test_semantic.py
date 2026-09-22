@@ -1586,6 +1586,35 @@ class SemanticTests(unittest.TestCase):
             typed.counted_loop_proof.loop_count,
             typed.counted_loop_proof.call_graph_acyclic,
         ))
+    def test_glsl_vector_scalar_modulo_semantics(self) -> None:
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.diagnostics import SemanticError
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        valid_programs = (
+            "void main() { ivec2 a = ivec2(10, 20); int b = 3; ivec2 c = a % b; }",
+            "void main() { uvec3 a = uvec3(10u, 20u, 30u); uint b = 4u; uvec3 c = a % b; }",
+            "void main() { ivec2 a = ivec2(10, 20); int b = 3; ivec2 c = b % a; }",
+            "void main() { uvec3 a = uvec3(10u, 20u, 30u); uint b = 4u; uvec3 c = b % a; }",
+            "void main() { ivec2 a = ivec2(10, 20); ivec2 b = ivec2(3, 4); ivec2 c = a % b; }",
+            "void main() { uvec4 a = uvec4(10u); uvec4 b = uvec4(3u); uvec4 c = a % b; }",
+        )
+        for source in valid_programs:
+            with self.subTest(source=source):
+                typed = analyze_program(parse_program(source, "modulo-valid"))
+                self.assertIsNotNone(typed)
+
+        invalid_programs = (
+            "void main() { vec2 a = vec2(1.0); float b = 2.0; vec2 c = a % b; }",
+            "void main() { ivec2 a = ivec2(1); uint b = 2u; ivec2 c = a % b; }",
+            "void main() { float a = 1.0; float b = 2.0; float c = a % b; }",
+            "void main() { int a = 1; float b = 2.0; int c = a % b; }",
+        )
+        for source in invalid_programs:
+            with self.subTest(source=source):
+                with self.assertRaises(SemanticError) as context:
+                    analyze_program(parse_program(source, "modulo-invalid"))
+                self.assertIn("E_OPERATOR", str(context.exception))
 
 
 if __name__ == "__main__":

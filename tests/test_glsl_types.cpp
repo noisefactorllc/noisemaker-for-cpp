@@ -646,6 +646,20 @@ TEST(glsl_integer_remainder_is_defined_for_zero_and_signed_overflow) {
   REQUIRE(integer_mod(std::uint32_t{7}, std::uint32_t{0}) == 0U);
 }
 
+TEST(glsl_vector_integer_mod_and_operator_mod) {
+  using namespace noisemaker::glsl;
+  REQUIRE(integer_mod(IVec2(7, -7), 3) == IVec2(1, -1));
+  REQUIRE(integer_mod(IVec2(7, -7), IVec2(3, 3)) == IVec2(1, -1));
+  REQUIRE(integer_mod(3, IVec2(7, 2)) == IVec2(3, 1));
+  REQUIRE(integer_mod(UVec3(7U, 10U, 15U), 4U) == UVec3(3U, 2U, 3U));
+  REQUIRE(integer_mod(IVec2(7, INT32_MIN), 0) == IVec2(0, 0));
+  REQUIRE(integer_mod(IVec2(7, INT32_MIN), -1) == IVec2(0, 0));
+  REQUIRE((IVec2(7, -7) % 3) == IVec2(1, -1));
+  REQUIRE((IVec2(7, -7) % IVec2(3, 3)) == IVec2(1, -1));
+  REQUIRE((3 % IVec2(7, 2)) == IVec2(3, 1));
+  REQUIRE((UVec2(7U, 10U) % 3U) == UVec2(1U, 1U));
+}
+
 TEST(glsl_unary_negation_is_deferred_for_float_and_wrapping_for_int) {
   using namespace noisemaker::glsl;
   const auto expression = -Vec2(1.25f, -2.5f);

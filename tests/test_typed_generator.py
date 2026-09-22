@@ -25931,6 +25931,177 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 hash_scalar_uint_xor_profile=XOR_PROFILE,
                 hash_scalar_uint_rshift_profile=RSHIFT_PROFILE)
 
+    def test_vec_scalar_modulo_profile_authentication(self) -> None:
+        import dataclasses, hashlib, json, pathlib
+        from tools.glslcpp import check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+            authenticate_vec_scalar_modulo,
+            apply_vec_scalar_modulo,
+            PROFILE,
+            VEC_SCALAR_MODULO_KEYS,
+        )
+
+        expected_counts = {
+            "points/flock:agent": {"modulos": 1, "rel": "points/flock/agent.glsl"},
+            "points/life:agent": {"modulos": 1, "rel": "points/life/agent.glsl"},
+            "render/pointsBillboardRender:spriteMeanTiles": {"modulos": 1, "rel": "render/pointsBillboardRender/spriteMeanTiles.glsl"},
+        }
+
+        self.assertEqual(VEC_SCALAR_MODULO_KEYS, frozenset(expected_counts.keys()))
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        for key, exp in expected_counts.items():
+            source_path = corpus_root / "sources" / exp["rel"]
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / exp["rel"]
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            # Test authentication succeeds with valid profile and source hash
+            modulos = authenticate_vec_scalar_modulo(typed, shash, PROFILE)
+            self.assertEqual(len(modulos), exp["modulos"])
+            for mod_node in modulos:
+                self.assertEqual(mod_node.kind, "binary")
+                self.assertEqual(mod_node.operator, "%")
+                self.assertEqual(mod_node.type.display(), "ivec2")
+                self.assertEqual(mod_node.children[0].type.display(), "ivec2")
+                self.assertEqual(mod_node.children[1].type.display(), "int")
+
+            # Test identity carrier return
+            applied = apply_vec_scalar_modulo(typed, shash, PROFILE)
+            self.assertIs(applied, typed)
+
+            # Test rejection with invalid profile
+            with self.assertRaises(ValueError):
+                authenticate_vec_scalar_modulo(typed, shash, "invalid-profile-v1")
+
+            # Test rejection with mismatched source hash
+            with self.assertRaises(ValueError):
+                authenticate_vec_scalar_modulo(typed, "0" * 64, PROFILE)
+
+            # Test rejection with alien program key
+            alien = dataclasses.replace(typed, key="foreign/effect:key")
+            with self.assertRaises(ValueError):
+                authenticate_vec_scalar_modulo(alien, shash, PROFILE)
+
+    def test_vec_scalar_modulo_validator_and_emitter(self) -> None:
+        import hashlib, json, pathlib
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp, check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+            PROFILE,
+            VEC_SCALAR_MODULO_KEYS,
+        )
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        synthetic_glsl = """#version 300 es
+precision highp float;
+precision highp int;
+out vec4 fragColor;
+void main() {
+    ivec2 coord = ivec2(gl_FragCoord.xy);
+    ivec2 tile = coord % 32;
+    fragColor = vec4(float(tile.x));
+}
+"""
+        ast = parse_program(synthetic_glsl, "test/fake:kernel", {})
+        typed = analyze_program(ast, "test/fake:kernel")
+
+        # Synthetic kernel without profile fails on %
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash="00" * 32,
+            )
+        self.assertIn("unsupported binary operator %", str(ctx.exception))
+
+        # Synthetic kernel with profile fails metadata mismatch (key not approved)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash="00" * 32,
+                vec_scalar_modulo_profile=PROFILE,
+            )
+        self.assertIn("vector-scalar modulo profile metadata mismatch", str(ctx.exception))
+
+        # Authority programs advance cleanly past % to next blocker
+        for key, rel, next_diag in [
+            ("points/flock:agent", "points/flock/agent.glsl", "unsupported builtin floatBitsToUint"),
+            ("points/life:agent", "points/life/agent.glsl", "unsupported binary operator ^"),
+            ("render/pointsBillboardRender:spriteMeanTiles", "render/pointsBillboardRender/spriteMeanTiles.glsl", "unsupported counted-for program proof"),
+        ]:
+            source_path = corpus_root / "sources" / rel
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / rel
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                    vec_scalar_modulo_profile=PROFILE,
+                )
+            self.assertIn(next_diag, str(ctx.exception))
+
+            # Tampered hash fails profile authentication
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash="ff" * 32,
+                    vec_scalar_modulo_profile=PROFILE,
+                )
+            self.assertIn("source hash mismatch", str(ctx.exception))
+
+            if key == "render/pointsBillboardRender:spriteMeanTiles":
+                # Emitter detects downstream counted loop proof blocker
+                with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+                    emit_typed_cpp._Emitter(typed, shash, vec_scalar_modulo_profile=PROFILE)
+                self.assertIn("unsupported counted-for program proof", str(ctx.exception))
+            else:
+                # Emitter lowers authenticated vector % scalar modulo node cleanly
+                emitter = emit_typed_cpp._Emitter(typed, shash, vec_scalar_modulo_profile=PROFILE)
+                self.assertEqual(1, len(emitter.authorized_vec_scalar_modulos))
+                mod_node = emitter.authorized_vec_scalar_modulos[0]
+
+                def populate_locals(node: object) -> None:
+                    if hasattr(node, "symbol") and node.symbol is not None:
+                        emitter.locals[node.symbol.id] = node.symbol.name
+                    for child in getattr(node, "children", ()):
+                        populate_locals(child)
+
+                populate_locals(mod_node)
+                rendered = emitter.expression(mod_node)
+                self.assertIn("glsl::integer_mod", rendered)
+                self.assertEqual(tuple(emitter.emitted_vec_scalar_modulos), emitter.authorized_vec_scalar_modulos)
+
+                with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+                    emit_typed_cpp._Emitter(typed, "ff" * 32, vec_scalar_modulo_profile=PROFILE)
+                self.assertIn("source hash mismatch", str(ctx.exception))
+
 
 if __name__ == "__main__":
 

@@ -302,7 +302,10 @@ class BodyAnalyzer:
             if not _integral(left) or not _integral(right) or (left.kind == "vector" and not _scalar(right) and left != right) or (right.kind == "vector" and not _scalar(left) and left != right): self.error("E_OPERATOR", path, f"{op} requires integral operands of compatible shape")
             return left
         if op == "%":
-            if left != right or not _integral(left): self.error("E_OPERATOR", path, "% requires same integral operands")
+            if left == right and _integral(left): return left
+            if left.kind == "vector" and right == Type("scalar", left.base) and _integral(left): return left
+            if right.kind == "vector" and left == Type("scalar", right.base) and _integral(right): return right
+            self.error("E_OPERATOR", path, "% requires same integral operands")
             return left
         if op in {"+", "-", "/"}:
             if left == right and (_numeric(left) or left.kind == "matrix"): return left
