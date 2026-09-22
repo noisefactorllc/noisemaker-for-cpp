@@ -11475,8 +11475,10 @@ synth/subdivide:subdivide""".splitlines())
         # comment above it (no assertion or captured value changed) and left
         # the pin on the pre-rename bytes f704ac4c...; the suite was red on
         # every platform from that commit until this one.
+        # The CPU hash review appends independent Life/Hydraulic captures;
+        # existing fixture assertions and all Task 25 resource pins are intact.
         self.assertEqual(
-            "bfc6fe5b2c00d0cd66fb7d90196c25d0592bcafae85b503bf05d45cf4b99599f",
+            "f94acef698804d4caa38a2cdc396b1061b845d8a7aa95bd7d65e17773850ef2d",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -22555,11 +22557,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135027,
-                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
+                3135839,
+                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
+                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -23335,11 +23337,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135027,
-                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
+                3135839,
+                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
+                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -24091,11 +24093,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135027,
-                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
+                3135839,
+                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
+                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -24627,11 +24629,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135027,
-                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
+                3135839,
+                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
+                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -25227,11 +25229,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135027,
-                "b734e404c6e4147b1d2def9005fc2d6bee6b54ebabaedac00b11c8dba3e1054e"),
+                3135839,
+                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "8d8ef528df558893b964556298f09b84a8e0505aa0a96c549917f0c604ef12bf"),
+                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -25906,10 +25908,19 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         )
         self.assertIn(">> std::uint32_t(28)", cpp)
         self.assertIn("((word >> std::uint32_t(22)) ^ word)", cpp)
+        # The source body remains authenticated and consumed, but JS replaces
+        # calls to hash_uint with its stdlib hash rather than that PCG body.
+        self.assertIn("noisemaker::hash_uint32(seed)", cpp)
+        import dataclasses
+        forged = dataclasses.replace(typed, functions=())
+        with self.assertRaises(emit_typed_cpp.TypedEmissionError):
+            emit_typed_cpp.render_typed_cpp(
+                forged, key, shash, "pixel", factory,
+                hash_scalar_uint_xor_profile=XOR_PROFILE,
+                hash_scalar_uint_rshift_profile=RSHIFT_PROFILE)
 
 
 if __name__ == "__main__":
 
 
     unittest.main()
-

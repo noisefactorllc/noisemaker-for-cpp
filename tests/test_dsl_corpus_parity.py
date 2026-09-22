@@ -7,10 +7,9 @@ shared comparer checks dimensions and length first, then every byte, and
 reports the mismatch count, the first (x, y, channel), the maximum delta, and
 both hashes.
 
-A program the C++ executor refuses is not a pass. It is recorded against a
-frozen expected-exclusion table with its exact structured reason, so a refusal
-can never silently widen and a repaired program cannot silently stay excluded.
-Nothing here ever rewrites the fixture or the exclusion table.
+A program the C++ executor refuses is not a pass. Every authority-supported
+admitted record must execute; recording a refusal in a fixture cannot make
+this gate green. Nothing here rewrites fixtures or the exclusion table.
 """
 
 from __future__ import annotations
@@ -117,12 +116,14 @@ class CorpusParityTest(unittest.TestCase):
         # allowance for a "close" render.
         self.assertEqual(divergent, [], "\n\n".join(divergent[:4]))
 
-        # Refusals are frozen: the reason text and the exact membership both
-        # have to match, in either direction.
-        self.assertEqual(sorted(refused), sorted(expected_exclusions["executorRefused"]),
-                         f"executor refusal set drift: {json.dumps(refused, indent=2, sort_keys=True)}")
-        for name, detail in refused.items():
-            self.assertEqual(detail, expected_exclusions["executorRefused"][name], name)
+        # Admission must not outrun execution behind an expanded allowlist.
+        # Keep the observed reasons in the diagnostic and continuation plan,
+        # where they are actionable gaps rather than successful parity cases.
+        self.assertEqual(refused, {},
+                         f"exact={len(exact)}, authority_refused={len(authority_refused)}; "
+                         f"admitted executor refusals: {json.dumps(refused, indent=2, sort_keys=True)}")
+        self.assertEqual(expected_exclusions["executorRefused"], {},
+                         "the corpus gate does not accept C++ refusal exclusions")
         self.assertEqual(sorted(authority_refused),
                          sorted(expected_exclusions["authorityRefused"]))
 

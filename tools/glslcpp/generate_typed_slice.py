@@ -9841,7 +9841,11 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
            "#include \"noisemaker/effects/median.hpp\"",
            "#include \"noisemaker/effects/remap.hpp\"",
            "#include \"noisemaker/effects/snow.hpp\"", "", *standard_headers,
-           "", "#include \"noisemaker/sampler.hpp\"", "", "namespace noisemaker::generated {"]
+           "", *(["#include \"noisemaker/numeric.hpp\""]
+                  if any(item.get("hash_scalar_uint_xor_profile")
+                         and item.get("hash_scalar_uint_rshift_profile")
+                         for item in manifest_programs) else []),
+           "#include \"noisemaker/sampler.hpp\"", "", "namespace noisemaker::generated {"]
     cpp.extend(bodies)
     # A multi-output program's factory returns BoundKernelMrt; it is published
     # only through the MRT route table below, never the single-output catalog.

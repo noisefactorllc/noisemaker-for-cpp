@@ -42,24 +42,24 @@ differs by a single byte. CI runs that check on pushes affecting source or valid
 
 This port is **incomplete**. It does not yet render every effect its JavaScript authority renders.
 
-The pinned authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes. As of the final 2026-09-21 check, that gate fails: the live authority is `6dbc0058155edaaeb9cbfb722d5f4fe73e7b0534`, with shader revision `f61ac07320888732594689258c6f7042cde0303b`. It removed three expired effects and now contains 205 effects and 301 programs. The table below describes the still-pinned 208-effect / 304-program authority. Against the live set, this kit has 71 missing effects and three extra names (`filter/bc`, `filter/colorspace`, `filter/hs`); the pin and public behavior require an audited reconciliation.
+The pinned authority is `noisemaker-for-cpu` at `61aa8694d60e6e25d8d3e8c872c971be329458bc`, which pins the upstream Noisemaker shaders at `0ed489ec46842bffba33ee2ec65a218b6dda51f5`. CI checks out that exact commit. The `Authority drift` workflow compares its behavioral lock and upstream revision with the authority's `main` daily and on relevant pushes. As of the 2026-09-22 review, that gate fails: the live authority is `22789977749521cc7ed5dd06ccf232e9c3eab9a3`, with shader revision `e5bd2013087e54d53841db8c45a54f973aaa5174`. It removed three expired effects and now contains 205 effects and 301 programs. The table below describes the still-pinned 208-effect / 304-program authority. Against the live set, this kit has 71 missing effects and three extra names (`filter/bc`, `filter/colorspace`, `filter/hs`); the pin and public behavior require an audited reconciliation.
 
 | | Count | Derived from |
 |---|---:|---|
 | Effects the pinned authority renders | 208 | the authority's `sourceEffectIds` minus its `excludedEffects` (`export-kit/check-authority-coverage.mjs`) |
 | Effects this port's export kit claims | 137 | `export-kit/compat-effects.json` |
 | Effects in the historical sweep-verified list | 137 | `export-kit/verified-effects.json`; this list needs fresh evidence before expansion |
-| Effects whose every pass has an admitted kernel | 178 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
+| Effects whose every pass has an admitted kernel | 181 | `counts.executable_definitions` in `src/effects/generated/effect_catalog.provenance.json` |
 | Authority GLSL programs | 304 | `counts.reference_program_keys` in the same file |
-| Corpus programs vendored here | 264 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
-| Typed-slice programs | 263 | the `programs` array in `src/typed_generated/typed_manifest.json` |
+| Corpus programs vendored here | 270 | the `programs` array in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json` |
+| Typed-slice programs | 269 | the `programs` array in `src/typed_generated/typed_manifest.json` |
 
 The kit claims an effect only when the parameter sweep verified it. An admitted kernel is not enough.
 
 The effects still missing need the following work:
 
 - Complete runtime execution and differential coverage of iterated simulations, particle groups, volume atlases and loop regions. Their admission and partial runtime wiring do not establish parity.
-- The 40 authority programs tracked in the corpus's `pending.json`.
+- The 34 authority programs tracked in the corpus's `pending.json`.
 - Every value of each compile-define parameter, where some effects still refuse non-default values.
 - Complete numerical, render-option, and stateful coverage in Debug and Release.
 
@@ -149,7 +149,7 @@ A DSL program names effects from the catalog. To see what is available:
 
 Rendering is fail-closed. If the executor refuses a program, the command reports the executor's reason and returns a nonzero exit status. It writes nothing:
 
-For example, `points/buddhabrot:agent` is still a `missing_backend_program` in the current corpus, so a program requiring that pass returns exit code 4. Snow's former measured exclusion has been removed after its CPU adapter was ported.
+For example, `points/buddhabrot:agent` is admitted, but its pipeline still refuses multi-output passes inside an iterated group and returns exit code 4. Snow's former measured exclusion has been removed after its CPU adapter was ported.
 
 `--help` prints the full option list and these exit codes:
 

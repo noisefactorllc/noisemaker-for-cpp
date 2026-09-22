@@ -414,6 +414,22 @@ TEST(graph_executor_renders_mnca_with_unused_authority_inputs) {
   }
 }
 
+TEST(graph_sampler_preflight_accepts_authority_input_map_order) {
+  Renderer renderer;
+  auto plan = renderer.compile(
+      "search synth, points\nsolid().hydraulic().write(o0)\nrender(o0)\n");
+  const auto& snapshot = snapshot_for(plan, "points/hydraulic");
+  const auto& step = effect_step(plan, "points/hydraulic");
+  const auto inputs = options(9U, 6U);
+  const BindingMaterializationContext context{
+      &inputs, &snapshot.definition, inputs.width, inputs.height};
+  // The shader starts with inputTex; the authority input map ends with it.
+  // Both orders are independently authenticated and do not need to coincide.
+  REQUIRE(snapshot.admissions[0].samplers.front().name == "inputTex");
+  REQUIRE(snapshot.definition.passes[0].inputs.back().first == "inputTex");
+  preflight_pass_abi(step, snapshot.admissions[0], snapshot.definition.passes[0], context);
+}
+
 TEST(graph_sampler_preflight_rejects_forged_routes_despite_unused_authority_inputs) {
   Renderer renderer;
   auto plan = renderer.compile("search synth\nmnca().write(o0)\nrender(o0)\n");
@@ -444,7 +460,7 @@ TEST(graph_sampler_preflight_rejects_forged_routes_despite_unused_authority_inpu
     admission.samplers[1].name = admission.samplers[0].name;
   });
   expect_rejected([](PassAdmission& admission) {
-    std::swap(admission.samplers[0], admission.samplers[1]);
+    admission.samplers[0].source_name = "forged";
   });
 }
 
@@ -911,7 +927,8 @@ TEST(graph_executor_rejects_every_forged_component_of_the_ordered_binding_abi) {
   // table and reports its own code and detail.
   expect_rejected([](PassAdmission& admission) {
         std::swap(admission.samplers[0], admission.samplers[1]);
-      }, GraphErrorCode::missing_binding, "sampler ABI route is invalid");
+      }, GraphErrorCode::missing_binding,
+      "ordered sampler ABI differs from the generated route anchor");
   expect_rejected([](PassAdmission& admission) {
         std::swap(admission.uniforms[0], admission.uniforms[1]);
       }, GraphErrorCode::binding_type,

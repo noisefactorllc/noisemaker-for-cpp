@@ -2421,17 +2421,17 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
   }
   // The authority pass can bind inputs its shader does not declare (the
   // cellularAutomata and MNCA render passes each bind four, but sample two).
-  // The admitted samplers must remain an ordered subset of those exact
-  // name/route pairs. The full pass and ordered ABI are independently
-  // authenticated against their generated anchors before execution.
+  // Match exact name/route pairs, independently of the input map's order:
+  // Hydraulic's shader declares inputTex first while its pass binds it last.
+  // The full pass and shader-ordered ABI are independently authenticated
+  // against their generated anchors before execution.
   std::unordered_set<std::string> sampler_names;
-  auto next_input = pass.inputs.begin();
   for (const auto& sampler : admission.samplers) {
     if (sampler.type != "sampler2D" || sampler.cpp_type != "const Surface&") {
       throw binding_error(step, admission, GraphErrorCode::binding_type,
                           "sampler ABI type is invalid");
     }
-    const auto input = std::find_if(next_input, pass.inputs.end(),
+    const auto input = std::find_if(pass.inputs.begin(), pass.inputs.end(),
                                     [&](const auto& candidate) {
                                       return candidate.first == sampler.name;
                                     });
@@ -2442,7 +2442,6 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "sampler ABI route is invalid");
     }
-    next_input = input + 1;
     if (context.lookup_surface != nullptr &&
         context.lookup_surface(context.lookup_context, sampler.resource) == nullptr) {
       throw binding_error(step, admission, GraphErrorCode::missing_resource,

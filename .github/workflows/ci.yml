@@ -207,8 +207,8 @@ jobs:
           cmake -S . -B build-parity -DCMAKE_BUILD_TYPE=Release
           cmake --build build-parity --target noisemaker-dsl-cpu-case -j
 
-      # This is the hard parity gate: every admitted corpus record renders on
-      # both lanes and must be byte-exact (or carry its frozen refusal reason).
+      # Every authority-supported admitted record must execute byte-exactly.
+      # C++ refusals fail this gate even if a fixture records their reasons.
       - name: Run the byte-exact corpus lane
         env:
           NOISEMAKER_CPU_ROOT: ${{ runner.temp }}/cpu-authority

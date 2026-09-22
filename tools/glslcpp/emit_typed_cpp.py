@@ -8063,6 +8063,48 @@ class _Emitter:
             return f"({condition} ? {yes} : {no})"
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
+            if (value.kind == "call" and value.callee == "hash2"
+                    and self.program.key == "points/hydraulic:agent"
+                    and self.authorized_hash_scalar_uint_xors
+                    and self.authorized_hash_scalar_uint_rshifts):
+                # Unlike hash_uint, this exact source-authenticated function
+                # is not replaced by compile-glsl.js. Its canonical JS keeps
+                # Number temporaries and signed bitwise operators; only umul
+                # wraps unsigned, and the returned vector rounds to float32.
+                if (len(value.children) != 1
+                        or value.children[0].type.display() != "uint"
+                        or value.type.display() != "vec2"):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Hydraulic hash2 call")
+                return (
+                    "([](std::uint32_t seed) noexcept { "
+                    "double state = static_cast<double>(noisemaker::umul(seed, 747796405U)) + 2891336453.0; "
+                    "const auto word_for = [](double s) noexcept { return "
+                    "static_cast<double>(glsl::detail::js_bitwise_xor("
+                    "glsl::detail::js_shift_right(s, glsl::detail::js_shift_right(s, 28.0) + 4.0), s)) * 277803737.0; }; "
+                    "double word = word_for(state); "
+                    "const auto x = glsl::detail::js_bitwise_xor(glsl::detail::js_shift_right(word, 22.0), word); "
+                    "state = static_cast<double>(noisemaker::umul(static_cast<std::uint32_t>(x), 747796405U)) + 2891336453.0; "
+                    "word = word_for(state); "
+                    "const auto y = glsl::detail::js_bitwise_xor(glsl::detail::js_shift_right(word, 22.0), word); "
+                    "return glsl::Vec2(static_cast<float>(static_cast<double>(x) / 4294967296.0), "
+                    "static_cast<float>(static_cast<double>(y) / 4294967296.0)); "
+                    f"}}({arguments[0]}))")
+            if (value.kind == "call" and value.callee == "hash_uint"
+                    and self.authorized_hash_scalar_uint_xors
+                    and self.authorized_hash_scalar_uint_rshifts):
+                # The pinned JS compile-glsl.js substitutes every hash_uint
+                # function with stdlib.hashUint. These two profiles authenticate
+                # the entire source and typed AST independently in this emitter;
+                # keep the original body for structural consumption, but route
+                # its calls through the authority's existing numeric helper.
+                # Hydraulic's hash2 is deliberately outside this substitution.
+                if (len(value.children) != 1
+                        or value.children[0].type.display() != "uint"
+                        or value.type.display() != "uint"):
+                    raise _error(self.program, value,
+                                 "malformed authenticated hash_uint call")
+                return f"noisemaker::hash_uint32({arguments[0]})"
             if value.kind == "call":
                 # Every DSL user-function vec2/vec3/vec4 PARAMETER is always
                 # `glsl::Vec2`/`Vec3`/`Vec4` (see `function_parameter_type` /

@@ -1,5 +1,125 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## INDEPENDENT REVIEW CHECKPOINT 2026-09-22: EXECUTE AND MEASURE BEFORE MORE ADMISSION
+>
+> This block supersedes the ordered actions in the historical checkpoints below. Reviewed all three commits
+> `f89f4e418276abca82ae456155c184331938d461..520d8bdab98061df3e40321031953caf74b9311b`.
+> Full CPU parity remains **incomplete**. Six newly admitted kernels did not increase the 168-case default exact cohort.
+>
+> ### Current census and evidence
+>
+> Counts are observations from manifests, not a fixed completion definition. The pinned authority remains
+> `61aa8694d60e6e25d8d3e8c872c971be329458bc`, behavioral lock
+> `27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026`.
+>
+> | Measure | Observation | Source |
+> | --- | ---: | --- |
+> | Pinned authority effects / kit claims | 208 / 137 | authority snapshot minus exclusions; `export-kit/compat-effects.json` |
+> | Vendored / pending programs | 270 / 34, total 304 | corpus `manifest.json` / `pending.json` |
+> | Typed programs | 269 | `src/typed_generated/typed_manifest.json` |
+> | Compatible / incompatible programs | 268 / 1 | generated catalog provenance; `points/physical:agent` has unclassified `inputTex` |
+> | Effects with admitted passes / incomplete | 181 / 27 | `src/effects/generated/effect_catalog.provenance.json` |
+> | Missing reference pass bindings | 74 | same provenance; a different denominator from programs |
+> | Default corpus admitted / excluded | 175 / 33 | `tests/fixtures/dsl/executable-corpus.json` |
+> | Default exact / C++ refused / authority refused | 168 / 2 / 5 | independently rerun corpus lane; no increased exact cohort |
+> | Pending first blockers | 14 validator, 11 pass binding, 8 default semantics, 1 variant semantics | each `pending.json` record has its diagnostic |
+>
+> Exact incoming-commit CI [35732435451](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35732435451)
+> passed all ten jobs, but commit `520d8bd` achieved its green corpus result by adding two executor refusal exclusions.
+> That relaxed gate did not demonstrate either new effect rendering. This review removes those additions and requires
+> an empty C++ refusal set regardless of the fixture. Until the runtime actions below pass, the corpus CI job must fail;
+> this exposes incomplete execution and must not be repaired with another refusal allowlist or smaller cohort.
+> Its sampled CI artifacts have 1,423 cases: 1,119 exact, 256 C++ refusals, 3 mutual refusals and 45 timeouts.
+> Define artifacts have 4,872 cases: 1,134 exact, 3,480 C++ refusals and 258 timeouts. Both report zero measured
+> divergence or harness errors. This is subset evidence; direct kernel probes below found divergence outside those rendered cases.
+>
+> ### Substantiated corrections and open runtime work
+>
+> - **Hash authority semantics:** `compile-glsl.js` in the pinned JS authority replaces `hash_uint` with
+>   `stdlib.hashUint`, whose implementation is `src/csl/glsl-runtime.js:hashUint32`. The new C++ kernels instead ran
+>   the source PCG body. A 17x11 Life matrix with `typeCount=16`, `matrixSeed=1.23456789`, `symmetricForces=true`
+>   differed in 528 float lanes and 467 RGBA8 bytes in both local build types. The corrected emitter routes calls
+>   through the existing `noisemaker::hash_uint32` only after both new profiles authenticate the entire source and AST.
+>   Original GLSL bytes and structural consumption remain intact; no JS oracle was changed.
+> - **Hydraulic has a distinct hash contract:** its canonical `hash2` is not replaced by the JS compiler. It uses
+>   double intermediates, unsigned `umul`, signed JS shifts/XOR, and float32 rounding at vector return. The source-shaped
+>   C++ uint lowering diverged in 264 position lanes, 447 velocity lanes and 129 velocity RGBA8 bytes in a live-agent
+>   direct MRT render. The emitter now reproduces that exact authenticated helper call using existing JS bitwise helpers.
+>   `tests/test_typed_slice.cpp` records both independent captures and every MRT output. Do not generalize either
+>   substitution to unproved programs or treat these direct captures as whole-family execution proof.
+> - **Noise3D numerical divergence remains open.** Independent direct MRT captures at 2x4 (`volumeSize=2`,
+>   `scale=1.3`, `time=0.25`, `speed=1`, seeds 0 and 42; `OCTAVES=1`, `COLOR_MODE=0`, `RIDGES=false`) differ
+>   in all 24 volume color float lanes and all 32 geometry float lanes, with 24/32 differing RGBA8 bytes per seed,
+>   in both build types. Reproduce with `build-review/2026-09-22/probe-noise.cpp` and `probe-noise.mjs`;
+>   exact buffers/hashes are in `evidence/noise-direct-divergence.json` under that directory. Canonical
+>   `hash4` uses Number multiplication before uint-vector stores and signed scalar XOR before `cpu_float`;
+>   emitted scalar component arithmetic currently uses uint products and an unsigned XOR result. This requires
+>   an independently authenticated hash4 arithmetic/rounding correction, not the hash_uint substitution.
+>   An isolated helper-substitution trial still diverged in all 208 baseline/expanded output buffers and was
+>   removed from the candidate. Its draft regression and trial source remain in local review evidence.
+>   Full isolation across intermediate vector stores and downstream gradient rounding remains unfinished.
+> - **Buddhabrot still refuses grouped MRT.** Both executor preflight and group execution explicitly reject this shape
+>   in `src/graph/executor.cpp`. Its admitted agent pass therefore does not establish rendered support.
+> - **Hydraulic sampler preflight corrected.** Its GLSL declares `inputTex, xyzTex, velTex, rgbaTex`, while the
+>   authority pass input map orders `xyzTex, velTex, rgbaTex, inputTex`. `preflight_pass_abi` now matches exact
+>   name/resource pairs independently of that map order. The generated ordered ABI anchor still rejects forged
+>   shader order; duplicate names, wrong resources and forged source metadata still fail. A real Hydraulic-pass
+>   regression covers the valid order mismatch. Grouped MRT remains unresolved after this binding correction.
+> - **Latest authority:** read-only remote HEAD and an exact-SHA archive were verified at
+>   `22789977749521cc7ed5dd06ccf232e9c3eab9a3`, behavioral lock
+>   `cf149e7f5eeb75bda78d2bc2077db98ec3a2c3cbad614702a25b9bbe7342bc76`, shader revision
+>   `e5bd2013087e54d53841db8c45a54f973aaa5174`. Its eligible set remains 205 effects / 301 programs, with 71 missing kit
+>   effects and three extra legacy kit names. The three commits after previously audited `6dbc0058` change source-lock
+>   and snapshot revision metadata, not generated kernel bodies. Drift still exits 1; earlier pin-reconciliation work remains.
+>
+> ### Next steps, in order
+>
+> 1. **Close the now-visible runtime refusals.** Retain the corrected Hydraulic sampler mapping and its
+>    real-pass/forged-name/resource/order tests. Add grouped MRT using the existing `run_mrt_pass`, matching
+>    JS group destination sizing, format quantization, output publication, resource lifetime and simultaneous reads/writes.
+>    Consult `src/runtime/renderer.js` in the pinned authority (`groupMrtDestinations`, `runGroupStepIterationSync`).
+>    Acceptance: both newly admitted corpus records run without C++ refusal and match exact RGBA8 and float32 in Debug
+>    and Release; include multiple iterations, different state/image sizes, live/dead particles and repeated calls.
+>    Derive the resulting exact count from all 175 current admitted records; retain every authority failure visibly.
+> 2. **Repair Noise3D, then finish numerical proof of the six new kernels before broad admission.**
+>    First isolate `hash4` intermediates against canonical JS, including overflow beyond 53-bit exact products,
+>    signed XOR conversion and uint-vector stores. Keep the source/AST authentication and historical pins intact.
+>    Acceptance: the recorded two-seed counterexample plus nontrivial size/time/scale/seed cases produce exact
+>    RGBA8 and float32 volume and geometry outputs in both builds, with a retained regression. Do not admit
+>    additional Noise3D define domains until this default-domain counterexample is resolved. Reproduce the two captures in
+>    `tests/test_typed_slice.cpp` through unmodified JS `bindCanonicalKernel` and `runPass`/`runCanonicalMrtPass`.
+>    Cover nonzero/stored/zero seeds, symmetry, boundaries, alive/dead state, all MRT outputs, and the relevant define
+>    domains for `filter3d/flow3d` and `synth3d/noise3d`. Resolve Physical's unclassified `inputTex` from the authority's actual binding behavior.
+>    Acceptance: all six direct kernels and their executable whole chains match RGBA8 and float32 in both builds;
+>    no default-only, zero-state, or first-output-only proof. Negative AST/source mutations must still fail independently.
+> 3. **Audit the authority update, then regenerate provenance.** Follow the historical authority action below against
+>    `2278997` or a freshly verified successor. Explain the three removed identities, CLI particle routing and prior
+>    behavioral changes; preserve existing public behavior explicitly. Acceptance: live drift and online partition checks
+>    pass, every generated artifact reproduces, and previous exact outputs remain exact in both builds.
+> 4. **Resume the shortest runtime dependencies.** Finish the historical 888-case define cohort (`halftone`, `strokes`,
+>    classic noise domains), then all define-bearing effects. Prioritize `render/pointsEmit:init`'s `floatBitsToUint`
+>    and downstream rendering over unrelated vector-modulus admission. The old XOR/right-shift blockers for PointsEmit
+>    and Noise3D are stale: Noise3D precompute is admitted; PointsEmit now needs bit reinterpretation. `points/flow:agent`
+>    next needs `round`. Finish particle scatter registrations, volume/geometry propagation, `render/render3d` cross,
+>    Cubemap raw-double matrix proof, `render/loopEnd:copy` reuse and Navier-Stokes arrays/state as their chains require.
+>    Acceptance for each bounded change: no earlier refusal prevents exercising it, and complete outputs match JS.
+> 5. **Complete the dynamic census and coverage proof.** Re-probe the 34 pending records after each closure, resolve
+>    every timeout in isolation, and retain historical reconstruction/JS regeneration and rendered-NaN proof gaps from
+>    the earlier review. Use complete current-source 20-variant and define cohorts in Debug and Release before deriving
+>    kit claims. Closure requires the full current authority set, zero unsupported cases, zero divergence in both output
+>    formats, no unresolved timeout/error, passing `--gate all`, kit coverage and exact-commit CI. A green subset is insufficient.
+>
+> Final bounded validation: Debug and Release each pass all four CTest checks. Nine focused Python authentication/
+> live-artifact checks pass. Life/Hydraulic have 192 exact direct output-buffer comparisons; Flow3D, Buddhabrot
+> and Physical have another 72 exact comparisons across both builds. Noise3D's counterexamples remain divergent.
+> These probes do not cover complete graph state, all parameters or all define domains. The local historical-cache
+> test requires a cache outside this checkout, which this review's workspace boundary prohibits; verify it in CI.
+>
+> Reproducible local review commands, exits, hashes, source diffs, direct output buffers and CI artifacts are retained
+> under ignored `build-review/2026-09-22/`; these are observations, not public goldens. Read this block before the
+> preserved historical checkpoints below, whose counts and next legs describe their own earlier snapshots.
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-22: BITWISE RIGHT SHIFT (>>) CONSTRUCT BLOCKER CLUSTER RESOLVED
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Bitwise right shift (`>>`)**.

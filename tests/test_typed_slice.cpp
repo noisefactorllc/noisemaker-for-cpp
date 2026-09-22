@@ -3634,3 +3634,58 @@ TEST(typed_task22_crt_public_adapter_oracles_are_exact_repeatable_and_nonmutatin
 
 
 }  // namespace
+
+// Captured directly from the unmodified JS authority 61aa8694d60e6e25d8d3e8c872c971be329458bc,
+// canonicalKernelFactories["points/life:matrix"], with the bindings below.
+// compile-glsl.js replaces hash_uint with stdlib.hashUint; preserving the
+// original GLSL PCG body therefore does not preserve this authority's pixels.
+TEST(typed_life_matrix_uses_authority_hash_substitution) {
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_uniform("resolution", noisemaker::glsl::Vec2(17.0f, 11.0f));
+  bindings.set_uniform("typeCount", std::int32_t(16));
+  bindings.set_uniform("matrixSeed", 1.23456789);
+  bindings.set_uniform("symmetricForces", true);
+  const auto surface = noisemaker::run_pass(
+      noisemaker::generated::bind_points_life_matrix(bindings), 17U, 11U);
+  REQUIRE(hex(sha256(little_endian_float_bytes(surface))) ==
+          "425896564e0939c005bb4570e2d2581bc1e7c44226a1eb4e9a79af04c3b5721c");
+  REQUIRE(hex(sha256(surface.to_rgba8())) ==
+          "f8dfa22791a3e6bf453ceca524efaae1e5627554d5fab269ee822c83e66207fa");
+}
+
+// Same unmodified authority and direct pass runner as the Life capture above.
+// Alive agents with zero stored seeds execute Hydraulic's hash2 path.
+TEST(typed_hydraulic_preserves_authority_signed_number_hash) {
+  constexpr std::size_t width = 17U, height = 11U;
+  noisemaker::Surface input(width, height), xyz(width, height), vel(width, height), rgba(width, height);
+  input.clear({0.2f, 0.3f, 0.4f, 1.0f});
+  xyz.clear({0.25f, 0.75f, 0.0f, 1.0f});
+  vel.clear({0.05f, 0.025f, 0.0f, 0.0f});
+  rgba.clear({0.2f, 0.4f, 0.6f, 1.0f});
+  noisemaker::glsl::Bindings bindings;
+  bindings.set_uniform("resolution", noisemaker::glsl::Vec2(17.0f, 11.0f));
+  bindings.set_uniform("time", 0.25);
+  bindings.set_uniform("stride", 10.0);
+  bindings.set_uniform("quantize", 0.0);
+  bindings.set_uniform("inverse", 0.0);
+  bindings.set_uniform("inputWeight", 100.0);
+  bindings.set_texture("inputTex", input);
+  bindings.set_texture("xyzTex", xyz);
+  bindings.set_texture("velTex", vel);
+  bindings.set_texture("rgbaTex", rgba);
+  const auto surfaces = noisemaker::run_mrt_pass(
+      noisemaker::generated::bind_points_hydraulic_agent(bindings), width, height, 0.25f);
+  const std::array<std::string_view, 3> float_hashes = {
+      "cb0a9ce2ea7e3a86fc4973648c2bc38b0b713bab28c192a3aa032e97a0c3620b",
+      "571f549cf889f7476ce1ad5655172b6c1a1fc34c060366970f1bbe6fa4fb8bb5",
+      "77a3411ccfd8928e76ef86d655a49ffe95310c4175a764c35a6f74130ea60f1e"};
+  const std::array<std::string_view, 3> rgba_hashes = {
+      "faed21f9654262da7d570c76ef77c8d5e846389070c8ba8072e324529318a0b7",
+      "d34851c99fe5c1ee08b304d55fca9ea1a49f6fb77db6e51086c25db95045a673",
+      "874fd948f07d2d313d58d88bbb4dcb4e3eeab3717a11f7225b1974a4d1042a13"};
+  REQUIRE(surfaces.size() == 3U);
+  for (std::size_t i = 0; i < surfaces.size(); ++i) {
+    REQUIRE(hex(sha256(little_endian_float_bytes(surfaces[i]))) == float_hashes[i]);
+    REQUIRE(hex(sha256(surfaces[i].to_rgba8())) == rgba_hashes[i]);
+  }
+}
