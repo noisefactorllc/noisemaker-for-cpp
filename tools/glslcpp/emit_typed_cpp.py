@@ -6953,6 +6953,18 @@ class _Emitter:
                     + self.expression(round_value.children[0]) + "))")
         if value.kind == "construct":
             display = value.constructor_type.display()
+            if (self.program.key == "synth3d/noise3d:precompute"
+                    and self.authorized_hash_scalar_uint_xors
+                    and self.current_function_name == "main"
+                    and display == "float" and len(value.children) == 1
+                    and value.children[0].kind == "id"
+                    and value.children[0].symbol.name == "z"):
+                # The exact authenticated main keeps z as a fractional Number;
+                # compile-glsl also erases this int-to-float constructor.
+                if value.children[0].type.display() != "int":
+                    raise _error(self.program, value,
+                                 "malformed authenticated Noise3D z conversion")
+                return f"static_cast<double>({self.expression(value.children[0])})"
             testpattern = self.authorized_testpattern_proof
             glyph_initializer = (next(
                 (item for item in testpattern.consumed_objects
@@ -8063,6 +8075,36 @@ class _Emitter:
             return f"({condition} ? {yes} : {no})"
         if value.kind in {"builtin", "call"}:
             arguments = [self.expression(x) for x in value.children]
+            if (value.kind == "call" and value.callee == "hash4"
+                    and self.program.key == "synth3d/noise3d:precompute"
+                    and self.authorized_hash_scalar_uint_xors):
+                # The pinned JS runtime allocates unsigned vectors as ordinary
+                # Number arrays. Only construction coerces to uint32; later
+                # component stores retain double values and signed XOR results.
+                if (len(value.children) != 1
+                        or value.children[0].type.display() != "vec4"
+                        or value.type.display() != "float"):
+                    raise _error(self.program, value,
+                                 "malformed authenticated Noise3D hash4 call")
+                return (
+                    "([](glsl::Vec4 p, std::int32_t seed) noexcept { "
+                    "const glsl::Vec4 ps = p + static_cast<double>(seed) * static_cast<float>(0.1); "
+                    "const glsl::Vec4 scaled = ps * static_cast<float>(1000.0); "
+                    "std::array<double, 4> q{}; "
+                    "for (std::size_t i = 0; i < 4; ++i) q[i] = static_cast<std::uint32_t>("
+                    "glsl::detail::float_to_int32(static_cast<double>(glsl::detail::float_to_int32(scaled[i])) + 65536.0)); "
+                    "for (auto& word : q) word = word * 1664525.0 + 1013904223.0; "
+                    "const auto mix_words = [&q]() noexcept { "
+                    "q[0] += q[1] * q[2]; q[1] += q[2] * q[3]; "
+                    "q[2] += q[3] * q[0]; q[3] += q[0] * q[1]; }; "
+                    "mix_words(); "
+                    "for (auto& word : q) word = glsl::detail::js_bitwise_xor("
+                    "word, glsl::detail::js_shift_right(word, 16.0)); "
+                    "mix_words(); "
+                    "const auto word = glsl::detail::js_bitwise_xor(glsl::detail::js_bitwise_xor("
+                    "glsl::detail::js_bitwise_xor(q[0], q[1]), q[2]), q[3]); "
+                    "return static_cast<double>(static_cast<float>(word)) / 4294967296.0; "
+                    f"}}({arguments[0]}, state.seed))")
             if (value.kind == "call" and value.callee == "hash2"
                     and self.program.key == "points/hydraulic:agent"
                     and self.authorized_hash_scalar_uint_xors
@@ -9252,6 +9294,21 @@ class _Emitter:
                         declaration_type = self._double_vector_type(declaration.type.display())
                 if self._testpattern_digit_extraction_declaration(declaration):
                     declaration_type = "double"
+                if (self.program.key == "synth3d/noise3d:precompute"
+                        and self.authorized_hash_scalar_uint_xors
+                        and self.current_function_name == "main"
+                        and declaration.symbol.name == "z"):
+                    if (declaration.type.display() != "int"
+                            or len(declaration.children) != 1
+                            or declaration.children[0].kind != "binary"
+                            or declaration.children[0].operator != "/"):
+                        raise _error(self.program, declaration,
+                                     "malformed authenticated Noise3D z division")
+                    left, right = declaration.children[0].children
+                    declaration_type = "double"
+                    initializer = (
+                        f"(static_cast<double>({self.expression(left)}) / "
+                        f"static_cast<double>({self.expression(right)}))")
                 if self._osd_js_number_declaration(declaration):
                     declaration_type = "double"
                     if declaration.symbol.name in {"glyph_idx", "gx", "gy"}:

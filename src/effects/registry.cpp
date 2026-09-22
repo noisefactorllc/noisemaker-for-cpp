@@ -723,9 +723,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "842ae10cadb96dbf2dda558f82210794d82dee60d5db6956ac4c2cef7c8c87ce" ||
+      provenance_.generated_payload_sha256 != "080775af7dcd29590d54200ea4a8c9c27e19be99d74f743b24a277469d25836d" ||
       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "f121e68c243c17df12b76d461d9e69cd74e4a93cbeec6700ecd3a5c5b18016ae" ||
+      provenance_.compatibility_sha256 != "3ae1d928382f027c46ed93e412e65c9b0433d638ebc16316efce5b89d4126e57" ||
       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
       provenance_.cpu_behavioral_file_count != 91 ||
       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||

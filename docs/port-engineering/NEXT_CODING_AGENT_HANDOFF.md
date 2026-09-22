@@ -1,5 +1,45 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## FOLLOW-UP REVIEW CHECKPOINT 2026-09-22: NOISE3D NUMBER ARRAY AND ATLAS COORDINATE CORRECTION
+>
+> This checkpoint supersedes the Noise3D blocker and ordered step 2 in the independent review below.
+> It follows correction `a6333c89fb2662388f512f70a816493f14818400`. All corpus, admission, default-execution
+> and kit counts below remain unchanged; full CPU parity is still **incomplete**.
+>
+> **Two independently verified JS semantics explain the Noise3D counterexample:**
+> - `src/csl/glsl-runtime.js:#allocInteger` uses ordinary `Array` storage for unsigned vectors. Construction
+>   coerces each lane with `>>> 0`, but subsequent component assignments retain Number values. The earlier
+>   review's Uint32Array-store description was incorrect; its rejected trial consequently wrapped too early.
+>   The authenticated `hash4` call now preserves float32 vector construction, signed int-vector initialization,
+>   initial uint conversion, then double component arithmetic and signed bitwise results without uint stores.
+> - Canonical `main` retains `pixelCoord.y / volSize` as a fractional Number despite the GLSL `int z`
+>   declaration. Its `float(z)` is erased by the JS compiler. The emitter now keeps exactly this authenticated
+>   local and conversion as double; no general integer-division or vector-storage rule was changed.
+>
+> Both adaptations require the existing whole-source/AST XOR profile for `synth3d/noise3d:precompute`.
+> Independent forged hash-body and z-division ASTs, even with the claimed original source hash, are rejected.
+> The original GLSL bodies remain structurally consumed. No authority pin, JS fixture or existing pixel golden
+> was changed. `tests/test_typed_slice.cpp:typed_noise3d_preserves_authority_hash4_number_rounding` retains
+> both MRT outputs and both byte formats for the two-seed counterexample and a 3x9 fractional-precision case.
+>
+> Debug and Release validation matches all 208 Noise3D output buffers: the original 2x4 cases plus volume sizes 2/3,
+> seeds 0/42/1000, scales 0.1/2.7 and times 0/0.375. The admitted domain remains `OCTAVES=1`,
+> `COLOR_MODE=0`, `RIDGES=false`. All 472 direct comparisons across the six new kernels are exact on the
+> final source; both build types pass all four CTest checks. This remains bounded direct-kernel evidence.
+> Reproducers and comparison hashes are in `build-review/2026-09-22/compare-noise.py`, `probe-noise*.{cpp,mjs}`
+> and `evidence/noise-number-comparison.json`. Rejected-trial evidence remains separately named.
+>
+> **Continue in this order:**
+> 1. Finish grouped MRT as specified in the independent review's step 1. Both Buddhabrot and Hydraulic still
+>    refuse, so the strict corpus gate must remain red until their complete graphs render exactly.
+> 2. Finish six-kernel numerical coverage and executable whole-chain proof from the prior step 2. The recorded
+>    Noise3D default-domain counterexample is corrected; expand its define domains only with independent
+>    JS comparisons. Acceptance remains exact RGBA8 and float32 in Debug and Release across seeds, times,
+>    sizes, parameters, repeated state and every output, without earlier runtime refusals hiding the new work.
+> 3. Perform the audited live-authority reconciliation and continue prior steps 4/5: define/runtime dependencies,
+>    pending programs, timeout isolation, complete current-authority coverage and the full gate-all proof.
+>
+
 > ## INDEPENDENT REVIEW CHECKPOINT 2026-09-22: EXECUTE AND MEASURE BEFORE MORE ADMISSION
 >
 > This block supersedes the ordered actions in the historical checkpoints below. Reviewed all three commits

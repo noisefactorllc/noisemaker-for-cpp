@@ -11475,10 +11475,10 @@ synth/subdivide:subdivide""".splitlines())
         # comment above it (no assertion or captured value changed) and left
         # the pin on the pre-rename bytes f704ac4c...; the suite was red on
         # every platform from that commit until this one.
-        # The CPU hash review appends independent Life/Hydraulic captures;
+        # The CPU hash review appends independent Life/Hydraulic/Noise3D captures;
         # existing fixture assertions and all Task 25 resource pins are intact.
         self.assertEqual(
-            "f94acef698804d4caa38a2cdc396b1061b845d8a7aa95bd7d65e17773850ef2d",
+            "f5a09145dcb635104f80843e707984cf2789c4ef2268c4b369b78684b6e05c84",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -22557,11 +22557,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135839,
-                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
+                3139493,
+                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
+                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -23337,11 +23337,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135839,
-                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
+                3139493,
+                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
+                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -24093,11 +24093,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135839,
-                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
+                3139493,
+                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
+                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -24629,11 +24629,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135839,
-                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
+                3139493,
+                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
+                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -25229,11 +25229,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 36001,
                 "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
             "src/typed_generated/typed_slice.cpp": (
-                3135839,
-                "acdbae053f7934985763770a3fe4fab29f14997a922e88aa7906f242c2fe5b15"),
+                3139493,
+                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
             "src/typed_generated/typed_manifest.json": (
                 820746,
-                "0cf6ce93f7e90ca58e2b8b083cdd7a68c4ebbbfe9806c94ac9883a456356e1f5"),
+                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
             "include/noisemaker/generated/catalog.hpp": (
                 26553,
                 "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
@@ -25781,6 +25781,18 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             hash_scalar_uint_xor_profile=PROFILE
         )
         self.assertIn("(((glsl::swizzle<0>(q) ^ glsl::swizzle<1>(q)) ^ glsl::swizzle<2>(q)) ^ glsl::swizzle<3>(q))", cpp)
+        # A caller-supplied source hash cannot authorize changes outside the
+        # XOR nodes, including the Number-array helper and fractional z sites.
+        for original, replacement in (
+                ("q.x += q.y * q.z;", "q.x += q.y + q.z;"),
+                ("int z = pixelCoord.y / volSize;", "int z = pixelCoord.y + volSize;")):
+            altered = raw.replace(original, replacement, 1)
+            self.assertNotEqual(raw, altered)
+            forged = analyze_program(parse_program(altered, key, defaults), key)
+            with self.assertRaises(emit_typed_cpp.TypedEmissionError):
+                emit_typed_cpp.render_typed_cpp(
+                    forged, key, shash, "pixel", factory,
+                    hash_scalar_uint_xor_profile=PROFILE)
 
     def test_hash_scalar_uint_rshift_profile_authentication(self) -> None:
         import dataclasses, hashlib, json, pathlib

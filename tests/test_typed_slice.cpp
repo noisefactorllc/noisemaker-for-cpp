@@ -3689,3 +3689,39 @@ TEST(typed_hydraulic_preserves_authority_signed_number_hash) {
     REQUIRE(hex(sha256(surfaces[i].to_rgba8())) == rgba_hashes[i]);
   }
 }
+
+// Unmodified pinned JS canonical Noise3D MRT captures. Unsigned vectors use
+// ordinary Number arrays after construction, and the atlas z coordinate stays
+// fractional. The scalar XOR result is signed.
+TEST(typed_noise3d_preserves_authority_hash4_number_rounding) {
+  struct Case { std::int32_t volume, seed; double scale, time; };
+  const std::array<Case, 3> cases = {{{2, 0, 1.3, 0.25}, {2, 42, 1.3, 0.25}, {3, 42, 2.7, 0.375}}};
+  const std::array<std::array<std::string_view, 2>, 6> hashes = {{
+      {"cf296abdf2cb42fec3468321492626fe5d98b2ca3743c6bfcbbc46fa04a6acd4", "80fec8ee25704970ebcde6169f5547715b9abd6be0ff2c583cf99b8452db0be6"},
+      {"740a3de52d4965a426f35d806e4a889cf9d038108eae9af8f1dad30eb5f0fb81", "7da01edb7326a517aea7969d18ac75d2d776147ac65f936c8864671497c8be5d"},
+      {"cb7cae7f92ac10b22f507ab798589216d9c3f9fc74fd8dd246f49bba90c32b9f", "83b97c24d232ed53878ede18d3ca35e655bdb731ecfa018bb11845ed6896cd8e"},
+      {"4b708bb0c16a26c7f5227b0d93af145723012a95c20c27fb67e9e45c53074a59", "99c6e1b97644d1fa3291c2c887e80e24dfbf63afc7e1aa56dfa08654997613ee"},
+      {"9adf88451bece9203c092df54319e5144643ac74dc472692b02a898eaa6f849d", "ed41d589bbb265d6473dbd3c704622b63795f7e1e4b49ae8151c0afbfcd4e268"},
+      {"31cc1840cc01aab34709ed1c1bc3f61b5f7289a6df132389dd4154986ac2d083", "cfc9f47328448e311792f5254bdcb3d715f612ad4a6c7199cd5d2076da025831"}}};
+  std::size_t capture = 0;
+  for (const auto& item : cases) {
+    const auto width = static_cast<std::size_t>(item.volume);
+    const auto height = width * width;
+    noisemaker::glsl::Bindings bindings;
+    bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(0.0f, 0.0f));
+    bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(static_cast<float>(width), static_cast<float>(height)));
+    bindings.set_uniform("time", item.time);
+    bindings.set_uniform("scale", item.scale);
+    bindings.set_uniform("seed", item.seed);
+    bindings.set_uniform("volumeSize", item.volume);
+    bindings.set_uniform("speed", 1.0);
+    const auto surfaces = noisemaker::run_mrt_pass(
+        noisemaker::generated::bind_synth3d_noise3d_precompute(bindings), width, height, static_cast<float>(item.time));
+    REQUIRE(surfaces.size() == 2U);
+    for (const auto& surface : surfaces) {
+      REQUIRE(hex(sha256(little_endian_float_bytes(surface))) == hashes[capture][0]);
+      REQUIRE(hex(sha256(surface.to_rgba8())) == hashes[capture][1]);
+      ++capture;
+    }
+  }
+}
