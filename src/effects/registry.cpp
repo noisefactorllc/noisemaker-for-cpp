@@ -723,9 +723,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "ac1c50b7da503f487aa5a80a031b449a8a9c41edf0b76e1bc17c3ce07537e926" ||
+      provenance_.generated_payload_sha256 != "a1d41447e9fb84ab1a621d0bad6668b6e541d0224e56f616049b31530e8648fb" ||
       provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "cf427bcded628baa2a7a6fc7e1e11920f1a72aa6e9d76c2687870c7fba93eeed" ||
+      provenance_.compatibility_sha256 != "6bee9425515f6c753e772093189e862ae676a98c01fce939b36d0199ffc87196" ||
       provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
       provenance_.cpu_behavioral_file_count != 91 ||
       provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
@@ -743,15 +743,15 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 263 || reference_passes_.size() != 344 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 264 || reference_passes_.size() != 344 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
-      provenance_.counts.backend_programs != 264 || provenance_.counts.compatible_programs != 263 || provenance_.counts.incompatible_programs != 0 ||
-      provenance_.counts.missing_passes != 80 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 178 ||
-      provenance_.counts.incomplete_definitions != 30 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 265 || provenance_.counts.compatible_programs != 264 || provenance_.counts.incompatible_programs != 0 ||
+      provenance_.counts.missing_passes != 79 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 179 ||
+      provenance_.counts.incomplete_definitions != 29 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
-  if (provenance_.backend_fragment_rows != 265 || provenance_.backend_unique_fragment_keys != 263 ||
-      provenance_.backend_raw_exact != 264 || provenance_.backend_semantic_exact != 0)
+  if (provenance_.backend_fragment_rows != 266 || provenance_.backend_unique_fragment_keys != 264 ||
+      provenance_.backend_raw_exact != 265 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());

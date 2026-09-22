@@ -3376,117 +3376,6 @@
           }
         }
       }
-    },
-    "synth3d/noise3d": {
-      "func": "noise3d",
-      "kind": "generator",
-      "namespace": "synth3d",
-      "params": {
-        "colorMode": {
-          "choices": {
-            "mono": 0,
-            "rgb": 1
-          },
-          "default": 0,
-          "define": "COLOR_MODE",
-          "type": "int"
-        },
-        "octaves": {
-          "default": 1,
-          "define": "OCTAVES",
-          "max": 6,
-          "min": 1,
-          "type": "int"
-        },
-        "ridges": {
-          "default": false,
-          "define": "RIDGES",
-          "type": "boolean"
-        },
-        "scale": {
-          "default": 3,
-          "max": 100,
-          "min": 0,
-          "type": "float",
-          "uniform": "scale"
-        },
-        "seed": {
-          "default": 0,
-          "max": 100,
-          "min": 0,
-          "type": "int",
-          "uniform": "seed"
-        },
-        "speed": {
-          "default": 1,
-          "max": 5,
-          "min": 0,
-          "type": "int",
-          "uniform": "speed",
-          "zero": 0
-        },
-        "volumeSize": {
-          "choices": {
-            "x128": 128,
-            "x16": 16,
-            "x32": 32,
-            "x64": 64
-          },
-          "default": 64,
-          "type": "int",
-          "uniform": "volumeSize"
-        }
-      },
-      "passes": [
-        {
-          "drawBuffers": 2,
-          "inputs": {},
-          "key": "synth3d/noise3d:precompute",
-          "name": "precompute",
-          "outputs": {
-            "fragColor": "volumeCache",
-            "geoOut": "geoBuffer"
-          },
-          "program": "precompute",
-          "viewport": {
-            "height": {
-              "default": 4096,
-              "param": "volumeSize",
-              "power": 2
-            },
-            "width": {
-              "default": 64,
-              "param": "volumeSize"
-            }
-          }
-        }
-      ],
-      "textures": {
-        "geoBuffer": {
-          "format": "rgba16f",
-          "height": {
-            "default": 4096,
-            "param": "volumeSize",
-            "power": 2
-          },
-          "width": {
-            "default": 64,
-            "param": "volumeSize"
-          }
-        },
-        "volumeCache": {
-          "format": "rgba16f",
-          "height": {
-            "default": 4096,
-            "param": "volumeSize",
-            "power": 2
-          },
-          "width": {
-            "default": 64,
-            "param": "volumeSize"
-          }
-        }
-      }
     }
   },
   "pending": [
@@ -3558,7 +3447,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: filter3d/flow3d:agent:33:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: filter3d/flow3d:agent:33:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "filter3d/flow3d",
@@ -3610,7 +3499,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/buddhabrot:agent:28:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: points/buddhabrot:agent:28:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "points/buddhabrot",
@@ -3662,7 +3551,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flow:agent:32:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: points/flow:agent:32:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "points/flow",
@@ -3675,7 +3564,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/hydraulic:agent:29:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: points/hydraulic:agent:29:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "points/hydraulic",
@@ -3727,7 +3616,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/life:matrix:20:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: points/life:matrix:20:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "points/life",
@@ -3779,7 +3668,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/physical:agent:30:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: points/physical:agent:30:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "points/physical",
@@ -3857,7 +3746,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/pointsEmit:init:28:19: unsupported binary operator ^",
+        "diagnostic": "GeneratorError: render/pointsEmit:init:28:19: unsupported binary operator >>",
         "stage": "typed.validator"
       },
       "effect_id": "render/pointsEmit",
@@ -3996,19 +3885,6 @@
       "raw_bytes": 1777,
       "raw_sha256": "d43f213b09edcba90f10c14e0bae421587c56168c5823b3107a1eb183d36d759",
       "source": "pending-sources/synth3d/heightmap3d/precompute.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: synth3d/noise3d:precompute:39:18: unsupported binary operator ^",
-        "stage": "typed.validator"
-      },
-      "effect_id": "synth3d/noise3d",
-      "program": "precompute",
-      "program_key": "synth3d/noise3d:precompute",
-      "raw_bytes": 7667,
-      "raw_sha256": "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
-      "source": "pending-sources/synth3d/noise3d/precompute.glsl"
     }
   ],
   "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",

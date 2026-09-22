@@ -271,6 +271,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_subdivide_subdivide(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_testPattern_testPattern(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_synth3d_noise3d_precompute(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_synth3d_shape3d_precompute(const glsl::Bindings& bindings);
 

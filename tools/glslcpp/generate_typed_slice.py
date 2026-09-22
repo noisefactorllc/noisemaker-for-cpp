@@ -138,6 +138,11 @@ if __package__ in (None, ""):
         PERLIN_KEY, PROFILE as PERLIN_SCALAR_UINT_XOR_PROFILE,
         apply_perlin_scalar_uint_xor,
         authenticate_perlin_scalar_uint_xor)
+    from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+        HASH_SCALAR_UINT_XOR_KEYS, NOISE3D_PRECOMPUTE_KEY,
+        PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+        apply_hash_scalar_uint_xor,
+        authenticate_hash_scalar_uint_xor)
     from tools.glslcpp.frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -524,6 +529,11 @@ else:
         PERLIN_KEY, PROFILE as PERLIN_SCALAR_UINT_XOR_PROFILE,
         apply_perlin_scalar_uint_xor,
         authenticate_perlin_scalar_uint_xor)
+    from .frontend.hash_scalar_uint_xor_profile import (
+        HASH_SCALAR_UINT_XOR_KEYS, NOISE3D_PRECOMPUTE_KEY,
+        PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+        apply_hash_scalar_uint_xor,
+        authenticate_hash_scalar_uint_xor)
     from .frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -1571,6 +1581,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == DISTORTION_FRONTEND_KEY else
                     {"defines", "rotate_mat2_return_profile", "program_key"}
                     if key == ROTATE_KEY else
+                    {"defines", "hash_scalar_uint_xor_profile", "program_key"}
+                    if key in HASH_SCALAR_UINT_XOR_KEYS else
                     {"defines", "perlin_scalar_uint_xor_profile", "program_key"}
                     if key == PERLIN_KEY else
                     {"as_u32_round_profile", "defines", "program_key",
@@ -1927,6 +1939,14 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         (item["program_key"], item.get("julia_frontend_profile"),
          item["defines"])
         for item in programs if "julia_frontend_profile" in item]
+    hash_scalar_uint_xor_profiles = [
+        (item["program_key"], item.get("hash_scalar_uint_xor_profile"),
+         item["defines"])
+        for item in programs if "hash_scalar_uint_xor_profile" in item]
+    expected_hash_scalar_uint_xor_profiles = [
+        (NOISE3D_PRECOMPUTE_KEY, HASH_SCALAR_UINT_XOR_PROFILE,
+         {"COLOR_MODE": 0, "OCTAVES": 1, "RIDGES": False})
+    ] if NOISE3D_PRECOMPUTE_KEY in keys else []
     if (keys != sorted(set(keys)) or keys != typed_corpus_keys()
             or lane_profiles != [(key, LITERAL_VEC3_LANE_INDEX_PROFILE)
                                  for key in LITERAL_VEC3_LANE_INDEX_KEYS]
@@ -1935,6 +1955,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             or perlin_profiles != [
                 (PERLIN_KEY, PERLIN_SCALAR_UINT_XOR_PROFILE,
                  {"DIMENSIONS": 2})]
+            or hash_scalar_uint_xor_profiles != expected_hash_scalar_uint_xor_profiles
             or scalar_uint_xor_profiles != [
                 # kaleido reuses the frozen carrier verbatim as the REQUIRED
                 # companion of its mutable-global array row and sorts first
@@ -2270,6 +2291,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         "filter3d/flow3d:blend": {"BEHAVIOR": 1},
         "filter3d/flow3d:copy": {"BEHAVIOR": 1},
         "filter3d/flow3d:diffuse": {"BEHAVIOR": 1},
+        "synth3d/noise3d:precompute": {"COLOR_MODE": 0, "OCTAVES": 1, "RIDGES": False},
     }
     actual_defines = {item["program_key"]: item["defines"] for item in programs if item["defines"]}
     if actual_defines != expected_defines:
@@ -3270,6 +3292,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           literal_vec3_lane_index_profile: str | None = None,
                           smooth_edge_luma_weights_profile: str | None = None,
                           perlin_scalar_uint_xor_profile: str | None = None,
+                          hash_scalar_uint_xor_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
                           bitwise_scalar_int_ops_profile: str | None = None,
                           bit_effects_frontend_profile: str | None = None,
@@ -3840,6 +3863,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_distortion_reflect_nodes: list[TypedExpression] = []
     authorized_perlin_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_perlin_scalar_uint_xors: list[TypedExpression] = []
+    authorized_hash_scalar_uint_xors: tuple[TypedExpression, ...] = ()
+    visited_hash_scalar_uint_xors: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -5088,6 +5113,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == PERLIN_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Perlin scalar uint XOR profile carrier required")
+    if hash_scalar_uint_xor_profile is not None:
+        if (typed.key not in HASH_SCALAR_UINT_XOR_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: hash scalar uint XOR profile metadata mismatch")
+        try:
+            authorized_hash_scalar_uint_xors = (
+                authenticate_hash_scalar_uint_xor(
+                    typed, source_hash, hash_scalar_uint_xor_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
         if (typed.key not in SCALAR_UINT_XOR_KEYS
                 or compatibility_transform is not None
@@ -7084,6 +7126,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{location(value)}: malformed authenticated scalar uint XOR")
                     visited_perlin_scalar_uint_xors.append(value)
+                elif any(value is item for item in authorized_hash_scalar_uint_xors):
+                    if (left_type, right_type, value.type.display()) != (
+                            "uint", "uint", "uint") or value.category != "rvalue":
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated scalar uint XOR")
+                    visited_hash_scalar_uint_xors.append(value)
                 elif any(value is item for item in authorized_scalar_uint_xors):
                     if (left_type, right_type, value.type.display()) != (
                             "uint", "uint", "uint") or value.category != "rvalue":
@@ -8141,6 +8189,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_perlin_scalar_uint_xors):
         raise GeneratorError(
             f"{typed.key}: authenticated scalar uint XOR traversal mismatch")
+    if (authorized_hash_scalar_uint_xors
+            and tuple(visited_hash_scalar_uint_xors)
+            != authorized_hash_scalar_uint_xors):
+        raise GeneratorError(
+            f"{typed.key}: authenticated scalar uint XOR traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -8769,6 +8822,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: Perlin scalar uint XOR identity profile mutated program")
             typed = profiled
+        hash_scalar_uint_xor_profile = slice_spec["programs"][index].get(
+            "hash_scalar_uint_xor_profile")
+        if hash_scalar_uint_xor_profile is not None:
+            try:
+                profiled = apply_hash_scalar_uint_xor(
+                    typed, source_hash, hash_scalar_uint_xor_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: hash scalar uint XOR identity profile mutated program")
+            typed = profiled
         scalar_uint_xor_profile = slice_spec["programs"][index].get(
             "scalar_uint_xor_profile")
         if scalar_uint_xor_profile is not None:
@@ -9368,6 +9433,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               literal_vec3_lane_index_profile=literal_vec3_lane_index_profile,
                               smooth_edge_luma_weights_profile=smooth_edge_luma_weights_profile,
                               perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
+                              hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9442,6 +9508,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            literal_vec3_lane_index_profile=literal_vec3_lane_index_profile,
                                            smooth_edge_luma_weights_profile=smooth_edge_luma_weights_profile,
                                            perlin_scalar_uint_xor_profile=perlin_scalar_uint_xor_profile,
+                                           hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9562,6 +9629,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if perlin_scalar_uint_xor_profile is not None:
             manifest_program["perlin_scalar_uint_xor_profile"] = (
                 perlin_scalar_uint_xor_profile)
+        if hash_scalar_uint_xor_profile is not None:
+            manifest_program["hash_scalar_uint_xor_profile"] = (
+                hash_scalar_uint_xor_profile)
         if scalar_uint_xor_profile is not None:
             manifest_program["scalar_uint_xor_profile"] = (
                 scalar_uint_xor_profile)

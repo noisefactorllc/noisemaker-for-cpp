@@ -215,6 +215,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.simulation_sampler_profile import (
         SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
     )
+    from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+        HASH_SCALAR_UINT_XOR_KEYS, PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+    )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
@@ -223,6 +226,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     )
     simulation_sampler_profile = (
         SIMULATION_SAMPLER_PROFILE if key in SIMULATION_SAMPLER_KEYS else None
+    )
+    hash_scalar_uint_xor_profile = (
+        HASH_SCALAR_UINT_XOR_PROFILE if key in HASH_SCALAR_UINT_XOR_KEYS else None
     )
     typed = analyze_program(parse_program(source, key, defaults), key,
                             source_global_literal_int_profile=source_global_literal_int_profile)
@@ -236,7 +242,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             source_hash=source_hash,
             source_global_literal_int_profile=source_global_literal_int_profile,
             runtime_loop_bound_profile=runtime_loop_bound_profile,
-            simulation_sampler_profile=simulation_sampler_profile)
+            simulation_sampler_profile=simulation_sampler_profile,
+            hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -245,7 +252,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             "bind_" + key.replace("/", "_").replace(":", "_"),
             source_global_literal_int_profile=source_global_literal_int_profile,
             runtime_loop_bound_profile=runtime_loop_bound_profile,
-            simulation_sampler_profile=simulation_sampler_profile)
+            simulation_sampler_profile=simulation_sampler_profile,
+            hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -497,6 +505,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.simulation_sampler_profile import (
         SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
     )
+    from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+        HASH_SCALAR_UINT_XOR_KEYS, PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+    )
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -511,6 +522,8 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["runtime_loop_bound_profile"] = "runtime-loop-bound-v1"
         if entry["program_key"] in SIMULATION_SAMPLER_KEYS:
             row["simulation_sampler_profile"] = SIMULATION_SAMPLER_PROFILE
+        if entry["program_key"] in HASH_SCALAR_UINT_XOR_KEYS:
+            row["hash_scalar_uint_xor_profile"] = HASH_SCALAR_UINT_XOR_PROFILE
         rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))

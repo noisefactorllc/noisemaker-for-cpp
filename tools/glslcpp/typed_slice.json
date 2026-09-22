@@ -1370,6 +1370,15 @@
       "program_key": "synth3d/cell3d:precompute"
     },
     {
+      "defines": {
+        "COLOR_MODE": 0,
+        "OCTAVES": 1,
+        "RIDGES": false
+      },
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "synth3d/noise3d:precompute"
+    },
+    {
       "defines": {},
       "program_key": "synth3d/reactionDiffusion3d:simulate"
     },

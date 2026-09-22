@@ -34091,9 +34091,184 @@ BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings) {
   return BoundKernelMrt(state, &typed_260::pixel, 2U);
 }
 
+// Typed IR program: synth3d/noise3d:precompute
+// Source SHA-256: 60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727
+namespace typed_261 {
+struct State final : KernelState {
+  State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, std::int32_t volumeSize_value, double speed_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), volumeSize(volumeSize_value), speed(speed_value) {}
+  glsl::Vec2 tileOffset;
+  glsl::Vec2 fullResolution;
+  double time;
+  double scale;
+  std::int32_t seed;
+  std::int32_t volumeSize;
+  double speed;
+};
+
+[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
+  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
+  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
+  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
+}
+[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
+  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
+}
+
+[[nodiscard]] double fbm4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
+[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
+[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
+[[nodiscard]] double noise4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept;
+[[nodiscard]] double quintic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept;
+[[nodiscard]] double wrapW([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double w) noexcept;
+
+[[nodiscard]] double fbm4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
+  [[maybe_unused]] double amplitude = static_cast<float>(0.5);
+  [[maybe_unused]] double frequency = static_cast<float>(1.0);
+  [[maybe_unused]] double sum = static_cast<float>(0.0);
+  [[maybe_unused]] double maxVal = static_cast<float>(0.0);
+  for ([[maybe_unused]] std::int32_t i = std::int32_t(0); (i < std::int32_t(1)); ++i) {
+    [[maybe_unused]] glsl::Vec4 pos = glsl::Vec4((glsl::swizzle<0, 1, 2>(p) * frequency), glsl::swizzle<3>(p));
+    [[maybe_unused]] double n = noise4D(state, context, pos);
+    n = glsl::clamp((static_cast<double>(n) * static_cast<double>(static_cast<float>(1.5))), static_cast<float>(-1.0), static_cast<float>(1.0));
+    if (false) {
+      n = (static_cast<double>(static_cast<float>(1.0)) - static_cast<double>(glsl::abs(n)));
+    } else {
+      n = (static_cast<double>((static_cast<double>(n) + static_cast<double>(static_cast<float>(1.0)))) * static_cast<double>(static_cast<float>(0.5)));
+    }
+    sum = (sum + (static_cast<double>(n) * static_cast<double>(amplitude)));
+    maxVal = (maxVal + amplitude);
+    frequency = (frequency * static_cast<float>(2.0));
+    amplitude = (amplitude * static_cast<float>(0.5));
+  }
+  return (static_cast<double>(sum) / static_cast<double>(maxVal));
+}
+
+[[nodiscard]] glsl::Vec4 grad4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
+  [[maybe_unused]] double h1 = hash4(state, context, p);
+  [[maybe_unused]] double h2 = hash4(state, context, (p + static_cast<float>(127.1)));
+  [[maybe_unused]] double h3 = hash4(state, context, (p + static_cast<float>(269.5)));
+  [[maybe_unused]] double h4 = hash4(state, context, (p + static_cast<float>(419.2)));
+  [[maybe_unused]] glsl::Vec4 g = glsl::FloatExpr<4>((static_cast<double>((static_cast<double>(h1) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h2) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h3) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))), (static_cast<double>((static_cast<double>(h4) * static_cast<double>(static_cast<float>(2.0)))) - static_cast<double>(static_cast<float>(1.0))));
+  return glsl::normalize(g);
+}
+
+[[nodiscard]] double hash4([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
+  [[maybe_unused]] glsl::Vec4 ps = (p + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1))));
+  [[maybe_unused]] glsl::UVec4 q = glsl::UVec4((glsl::IVec4((ps * static_cast<float>(1000.0))) + std::int32_t(65536)));
+  q = ((q * std::uint32_t(1664525)) + std::uint32_t(1013904223));
+  glsl::set_swizzle<0>(q, (glsl::swizzle<0>(q) + (glsl::swizzle<1>(q) * glsl::swizzle<2>(q))));
+  glsl::set_swizzle<1>(q, (glsl::swizzle<1>(q) + (glsl::swizzle<2>(q) * glsl::swizzle<3>(q))));
+  glsl::set_swizzle<2>(q, (glsl::swizzle<2>(q) + (glsl::swizzle<3>(q) * glsl::swizzle<0>(q))));
+  glsl::set_swizzle<3>(q, (glsl::swizzle<3>(q) + (glsl::swizzle<0>(q) * glsl::swizzle<1>(q))));
+  q = glsl::bitwise_xor(q, glsl::shift_right(q, std::uint32_t(16)));
+  glsl::set_swizzle<0>(q, (glsl::swizzle<0>(q) + (glsl::swizzle<1>(q) * glsl::swizzle<2>(q))));
+  glsl::set_swizzle<1>(q, (glsl::swizzle<1>(q) + (glsl::swizzle<2>(q) * glsl::swizzle<3>(q))));
+  glsl::set_swizzle<2>(q, (glsl::swizzle<2>(q) + (glsl::swizzle<3>(q) * glsl::swizzle<0>(q))));
+  glsl::set_swizzle<3>(q, (glsl::swizzle<3>(q) + (glsl::swizzle<0>(q) * glsl::swizzle<1>(q))));
+  return (static_cast<double>(float((((glsl::swizzle<0>(q) ^ glsl::swizzle<1>(q)) ^ glsl::swizzle<2>(q)) ^ glsl::swizzle<3>(q)))) / static_cast<double>(static_cast<float>(4294967295.0)));
+}
+
+[[nodiscard]] double noise4D([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec4 p) noexcept {
+  [[maybe_unused]] glsl::Vec4 i = glsl::floor(p);
+  [[maybe_unused]] glsl::Vec4 f = glsl::fract(p);
+  [[maybe_unused]] glsl::Vec4 u = glsl::FloatExpr<4>(quintic(state, context, glsl::swizzle<0>(f)), quintic(state, context, glsl::swizzle<1>(f)), quintic(state, context, glsl::swizzle<2>(f)), quintic(state, context, glsl::swizzle<3>(f)));
+  [[maybe_unused]] double iw0 = wrapW(state, context, glsl::swizzle<3>(i));
+  [[maybe_unused]] double iw1 = wrapW(state, context, (static_cast<double>(glsl::swizzle<3>(i)) + static_cast<double>(static_cast<float>(1.0))));
+  [[maybe_unused]] double n0000 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n1000 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n0100 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n1100 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0))));
+  [[maybe_unused]] double n0010 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n1010 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n0110 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n1110 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw0) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0))));
+  [[maybe_unused]] double n0001 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n1001 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n0101 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n1101 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(0), std::int32_t(1))));
+  [[maybe_unused]] double n0011 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n1011 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(0), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n0111 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(0), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double n1111 = glsl::dot(grad4(state, context, (glsl::Vec4(glsl::swizzle<0, 1, 2>(i), iw1) + glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(0)))), (f - glsl::Vec4(std::int32_t(1), std::int32_t(1), std::int32_t(1), std::int32_t(1))));
+  [[maybe_unused]] double nx000 = glsl::mix(n0000, n1000, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx100 = glsl::mix(n0100, n1100, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx010 = glsl::mix(n0010, n1010, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx110 = glsl::mix(n0110, n1110, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx001 = glsl::mix(n0001, n1001, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx101 = glsl::mix(n0101, n1101, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx011 = glsl::mix(n0011, n1011, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nx111 = glsl::mix(n0111, n1111, glsl::swizzle<0>(u));
+  [[maybe_unused]] double nxy00 = glsl::mix(nx000, nx100, glsl::swizzle<1>(u));
+  [[maybe_unused]] double nxy10 = glsl::mix(nx010, nx110, glsl::swizzle<1>(u));
+  [[maybe_unused]] double nxy01 = glsl::mix(nx001, nx101, glsl::swizzle<1>(u));
+  [[maybe_unused]] double nxy11 = glsl::mix(nx011, nx111, glsl::swizzle<1>(u));
+  [[maybe_unused]] double nxyz0 = glsl::mix(nxy00, nxy10, glsl::swizzle<2>(u));
+  [[maybe_unused]] double nxyz1 = glsl::mix(nxy01, nxy11, glsl::swizzle<2>(u));
+  return glsl::mix(nxyz0, nxyz1, glsl::swizzle<3>(u));
+}
+
+[[nodiscard]] double quintic([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double t) noexcept {
+  return (static_cast<double>((static_cast<double>((static_cast<double>(t) * static_cast<double>(t))) * static_cast<double>(t))) * static_cast<double>((static_cast<double>((static_cast<double>(t) * static_cast<double>((static_cast<double>((static_cast<double>(t) * static_cast<double>(static_cast<float>(6.0)))) - static_cast<double>(static_cast<float>(15.0)))))) + static_cast<double>(static_cast<float>(10.0)))));
+}
+
+[[nodiscard]] double wrapW([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double w) noexcept {
+  const double W_PERIOD = static_cast<float>(4.0);
+  return glsl::mod(w, W_PERIOD);
+}
+
+void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4* outputs) noexcept {
+  const auto& state = static_cast<const State&>(kernel_base);
+  (void)state;
+  (void)context;
+  glsl::Vec4& fragColor = outputs[0];
+  glsl::Vec4& geoOut = outputs[1];
+  const double W_PERIOD = static_cast<float>(4.0);
+  [[maybe_unused]] glsl::Vec2 globalCoord = (glsl::swizzle<0, 1>(context.frag_coord) + state.tileOffset);
+  [[maybe_unused]] std::int32_t volSize = state.volumeSize;
+  [[maybe_unused]] double volSizeF = float(volSize);
+  [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
+  [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
+  [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
+  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
+  if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
+    fragColor = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
+    geoOut = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.5), static_cast<float>(0.0)));
+    return;
+  }
+  [[maybe_unused]] glsl::Vec3 p = (((glsl::FloatExpr<3>(float(x), float(y), float(z)) / (static_cast<double>(volSizeF) - static_cast<double>(static_cast<float>(1.0)))) * static_cast<float>(2.0)) - static_cast<float>(1.0));
+  [[maybe_unused]] glsl::Vec3 scaledP = (p * state.scale);
+  [[maybe_unused]] double w = (static_cast<double>((static_cast<double>(state.time) * static_cast<double>(state.speed))) * static_cast<double>(W_PERIOD));
+  [[maybe_unused]] glsl::Vec4 p4d = glsl::Vec4(scaledP, w);
+  [[maybe_unused]] double noiseVal = fbm4D(state, context, p4d);
+  [[maybe_unused]] double eps = (static_cast<double>(static_cast<float>(0.01)) / static_cast<double>(state.scale));
+  [[maybe_unused]] double nx = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(eps, static_cast<float>(0.0), static_cast<float>(0.0))), w));
+  [[maybe_unused]] double ny = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), eps, static_cast<float>(0.0))), w));
+  [[maybe_unused]] double nz = fbm4D(state, context, glsl::Vec4((scaledP + glsl::FloatExpr<3>(static_cast<float>(0.0), static_cast<float>(0.0), eps)), w));
+  [[maybe_unused]] glsl::Vec3 gradient = (glsl::FloatExpr<3>((static_cast<double>(nx) - static_cast<double>(noiseVal)), (static_cast<double>(ny) - static_cast<double>(noiseVal)), (static_cast<double>(nz) - static_cast<double>(noiseVal))) / eps);
+  [[maybe_unused]] glsl::Vec3 normal = glsl::normalize(((-gradient) + glsl::FloatExpr<3>(static_cast<float>(1e-6))));
+  if (std::int32_t(0) == std::int32_t(0)) {
+    fragColor = glsl::Vec4(glsl::FloatExpr<4>(noiseVal, noiseVal, noiseVal, static_cast<float>(1.0)));
+  } else {
+    [[maybe_unused]] double g = fbm4D(state, context, (glsl::Vec4(scaledP, w) + glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(1.33))));
+    [[maybe_unused]] double b = fbm4D(state, context, (glsl::Vec4(scaledP, w) + glsl::FloatExpr<4>(static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(0.0), static_cast<float>(2.67))));
+    fragColor = glsl::Vec4(glsl::FloatExpr<4>(noiseVal, g, b, static_cast<float>(1.0)));
+  }
+  geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), noiseVal));
+}
+}  // namespace typed_261
+
+BoundKernelMrt bind_synth3d_noise3d_precompute(const glsl::Bindings& bindings) {
+  const auto state = std::make_shared<typed_261::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("speed"));
+  (void)bindings;
+  return BoundKernelMrt(state, &typed_261::pixel, 2U);
+}
+
 // Typed IR program: synth3d/reactionDiffusion3d:simulate
 // Source SHA-256: 23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17
-namespace typed_261 {
+namespace typed_262 {
 struct State final : KernelState {
   State(double time_value, std::int32_t seed_value, std::int32_t volumeSize_value, double feed_value, double kill_value, double rate1_value, double rate2_value, double speed_value, std::int32_t iterations_value, std::int32_t colorMode_value, double weight_value, bool resetState_value, const Surface* stateTex_value, const Surface* seedTex_value) : time(time_value), seed(seed_value), volumeSize(volumeSize_value), feed(feed_value), kill(kill_value), rate1(rate1_value), rate2(rate2_value), speed(speed_value), iterations(iterations_value), colorMode(colorMode_value), weight(weight_value), resetState(resetState_value), stateTex(stateTex_value), seedTex(seedTex_value) {}
   double time;
@@ -34230,17 +34405,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(outRgb, newA));
 }
-}  // namespace typed_261
+}  // namespace typed_262
 
 BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_261::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
+  const auto state = std::make_shared<typed_262::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_261::pixel);
+  return BoundKernel(state, &typed_262::pixel);
 }
 
 // Typed IR program: synth3d/shape3d:precompute
 // Source SHA-256: 53b240191c2f0d2e61b5dacecb532ecd3b8aad3973bbf8e38d8712073d50d14f
-namespace typed_262 {
+namespace typed_263 {
 struct State final : KernelState {
   State(std::int32_t loopAOffset_value, std::int32_t loopBOffset_value, double loopAScale_value, double loopBScale_value, double speedA_value, double speedB_value, double time_value, std::int32_t volumeSize_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value) : loopAOffset(loopAOffset_value), loopBOffset(loopBOffset_value), loopAScale(loopAScale_value), loopBScale(loopBScale_value), speedA(speedA_value), speedB(speedB_value), time(time_value), volumeSize(volumeSize_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value) {}
   std::int32_t loopAOffset;
@@ -34445,12 +34620,12 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   fragColor = glsl::Vec4(glsl::FloatExpr<4>(d, d, d, static_cast<float>(1.0)));
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), d));
 }
-}  // namespace typed_262
+}  // namespace typed_263
 
 BoundKernelMrt bind_synth3d_shape3d_precompute(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_262::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
+  const auto state = std::make_shared<typed_263::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
   (void)bindings;
-  return BoundKernelMrt(state, &typed_262::pixel, 2U);
+  return BoundKernelMrt(state, &typed_263::pixel, 2U);
 }
 
 
@@ -34997,11 +35172,12 @@ const FactoryRoute* find_canonical(std::string_view key,
 }
 
 namespace {
-constexpr std::array<FactoryRouteMrt, 5> kCanonicalRoutesMrt{{
+constexpr std::array<FactoryRouteMrt, 6> kCanonicalRoutesMrt{{
     {"points/heightGrid:agent", "bind_points_heightGrid_agent", "bind_points_heightGrid_agent", "typed_emitter", "40edcf1e02d2ee47a25404c5f4f0e809a5243c5b639bb301b823217b9fda1e77", "ec26941b6b713d49ead2a14e261175c2e31efc47a4fd88e3af3518082ef48e9d", "none", "", "bafe153d512617ef1f889a044c4f2c9107d75db8800c6fedaf9d83745423dd9c", "9ebb21e284eb7a9aa82e2dafb92f9e694f18cd7dce44167786f8e192a0ce3a71", "1cb5f0a791a2663727ed12963fff8a4ef9cf2924066acb770a83e52cdca4c876", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_points_heightGrid_agent},
     {"points/lenia:agentField", "bind_points_lenia_agentField", "bind_points_lenia_agentField", "typed_emitter", "dc6f5ea902d32e0fb7da530b93c2269ae095f99ac3a76d403a887d4078ef3237", "e9695a29681c30f60d44a9a26eae5c2a0c1a0733de989c501299d282c8171b22", "none", "", "900f079caad0c3e6c56caf28ec4c96bf432c088283fcf32eb26ab9618a22fbb9", "62352105d669ae22d8aa1863f52715aa1f5a46e9c0689eade05772b6012f2362", "1cb5f0a791a2663727ed12963fff8a4ef9cf2924066acb770a83e52cdca4c876", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_points_lenia_agentField},
     {"render/renderCubemapSurface:renderCubemapSurface", "bind_render_renderCubemapSurface_renderCubemapSurface", "bind_render_renderCubemapSurface_renderCubemapSurface", "typed_emitter", "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc", "c3e040e1527736bc182496efb9825f771c2272ac6cdd21bc68fce54854525a4b", "none", "", "008c0fa0f3847a736f9275412a0276288ae7963710722574e35f3df8ba43c923", "d3ce0cd08c90e2aca94b0ca49048fb1fb0dabc68c0226189c0f5439a524caf7f", "fb7875ed6a9c724e213f15e8b354c652e32d40ea150042001bab8e33389cd471", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_render_renderCubemapSurface_renderCubemapSurface},
     {"synth3d/cell3d:precompute", "bind_synth3d_cell3d_precompute", "bind_synth3d_cell3d_precompute", "typed_emitter", "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755", "de577c48ae159e776c73ba38163b7220c4c5623f48938c96b652873c1c16d78b", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "120ec80ab0ebcf9489281b78ed5a60ca97aa6037b69ab4836eb9a46b4e7f195e", "888c90098f4e398434e54e046f15758c1a923a1eb30ca8f0b98ac75e31322106", "5c3f0c12519b99ba855fb40bc3a3db4a0969eddcf28344d5fc086e34145ade91", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth3d_cell3d_precompute},
+    {"synth3d/noise3d:precompute", "bind_synth3d_noise3d_precompute", "bind_synth3d_noise3d_precompute", "typed_emitter", "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727", "305ad3fe8fc802fbf1ac35c91ab6d1e594ec973460708e9fdcbb4dd0995d0a6f", "default-only", "COLOR_MODE=0;OCTAVES=1;RIDGES=0", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5ecf803ed6472303104d6358db3820f68a9b536f4180c4df19a82953a4e86234", "888c90098f4e398434e54e046f15758c1a923a1eb30ca8f0b98ac75e31322106", "5c3f0c12519b99ba855fb40bc3a3db4a0969eddcf28344d5fc086e34145ade91", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth3d_noise3d_precompute},
     {"synth3d/shape3d:precompute", "bind_synth3d_shape3d_precompute", "bind_synth3d_shape3d_precompute", "typed_emitter", "53b240191c2f0d2e61b5dacecb532ecd3b8aad3973bbf8e38d8712073d50d14f", "887ec36bbb13ff3dcfc33c0764d41f8b88e9765830193dbf1e7050a2c4e53f38", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "5b16bf6714db028f2cc2433baaf6cfd6f4a3caf0a688ad7b66a4867e4a7fa746", "888c90098f4e398434e54e046f15758c1a923a1eb30ca8f0b98ac75e31322106", "5c3f0c12519b99ba855fb40bc3a3db4a0969eddcf28344d5fc086e34145ade91", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth3d_shape3d_precompute},
 }};
 }  // namespace

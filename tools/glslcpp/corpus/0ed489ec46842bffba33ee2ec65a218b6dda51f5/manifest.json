@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "7e2b6bd4482f8e35b4fa169df44fc52e4fc0355b148c89e04290c0dd986d5fbc",
+  "metadata_sha256": "b6055f69cbe503b562ec939a7654eb87e7dd335837514fe8cc7861a8738fe382",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -4730,6 +4730,25 @@
       "raw_sha256": "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
       "runtime_key": "synth3d/cell3d:precompute",
       "source": "sources/synth3d/cell3d/precompute.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/noise3d",
+      "normalized_bytes": 5441,
+      "normalized_sha256": "120e5b4996714313319682e5dd648fb675e934e0b6719e7aa91db7c63af3e6ba",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "precompute",
+      "program": "precompute",
+      "program_key": "synth3d/noise3d:precompute",
+      "raw_bytes": 7667,
+      "raw_sha256": "60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727",
+      "runtime_key": "synth3d/noise3d:precompute",
+      "source": "sources/synth3d/noise3d/precompute.glsl",
       "status": "generated",
       "varyings": []
     },

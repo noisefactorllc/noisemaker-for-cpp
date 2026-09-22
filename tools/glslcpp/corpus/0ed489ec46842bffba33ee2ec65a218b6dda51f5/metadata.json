@@ -24337,6 +24337,117 @@
         }
       }
     },
+    "synth3d/noise3d": {
+      "func": "noise3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "colorMode": {
+          "choices": {
+            "mono": 0,
+            "rgb": 1
+          },
+          "default": 0,
+          "define": "COLOR_MODE",
+          "type": "int"
+        },
+        "octaves": {
+          "default": 1,
+          "define": "OCTAVES",
+          "max": 6,
+          "min": 1,
+          "type": "int"
+        },
+        "ridges": {
+          "default": false,
+          "define": "RIDGES",
+          "type": "boolean"
+        },
+        "scale": {
+          "default": 3,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "scale"
+        },
+        "seed": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "speed": {
+          "default": 1,
+          "max": 5,
+          "min": 0,
+          "type": "int",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {},
+          "key": "synth3d/noise3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
     "synth3d/reactionDiffusion3d": {
       "func": "reactionDiffusion3d",
       "kind": "generator",
@@ -24687,6 +24798,7 @@
       "synth/navierStokes",
       "synth/reactionDiffusion",
       "synth3d/cell3d",
+      "synth3d/noise3d",
       "synth3d/reactionDiffusion3d",
       "synth3d/shape3d"
     ],

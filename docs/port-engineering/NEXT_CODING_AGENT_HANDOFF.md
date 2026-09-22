@@ -1,5 +1,39 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-21: SCALAR UINT XOR (^) CONSTRUCT BLOCKER CLUSTER RESOLVED
+>
+> This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint XOR (`^`)**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile**: Added `tools/glslcpp/frontend/hash_scalar_uint_xor_profile.py` with profile `hash-scalar-uint-xor-v1`, locking each of the 8 candidate hash-carrying programs with 7 cryptographic and structural pins (`raw_bytes`, `raw_sha256`, `norm_bytes`, `norm_sha256`, `functions_sha256`, `whole_sha256`, `interface_sha256`, and exact `xor_count`).
+> - **Validator admission**: Admitted scalar uint XOR expressions in `tools/glslcpp/generate_typed_slice.py` strictly when both operands and result are `uint` and the AST node is authenticated by object identity under `hash-scalar-uint-xor-v1`. Non-authenticated or non-uint XORs fail-closed immediately.
+> - **Emitter lowering**: Emitted parenthesized C++ `^` in `tools/glslcpp/emit_typed_cpp.py` for scalar uint XOR while preserving `glsl::bitwise_xor()` for vector XOR. Enforces two-way cardinality check on emitted nodes against authorized count.
+> - **Corpus promotion**:
+>   - `synth3d/noise3d:precompute` (3 scalar XORs in `hash4`) promoted to **vendored**.
+>   - Relocated source to `sources/synth3d/noise3d/precompute.glsl`.
+>   - Vendored programs increased from 264 to **265**; pending programs decreased from 40 to **39**.
+>   - Typed programs increased from 263 to **264**.
+>   - Effects with every pass admitted increased from 178 to **179**; incomplete decreased from 30 to **29**.
+>   - Missing reference passes decreased from 80 to **79**.
+> - **Pending corpus advancement**:
+>   - All 7 remaining candidate programs in `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending.json` (`filter3d/flow3d:agent`, `points/buddhabrot:agent`, `points/flow:agent`, `points/hydraulic:agent`, `points/life:matrix`, `points/physical:agent`, `render/pointsEmit:init`) have been cleanly unblocked past `^` and now report their next authentic blocker: `unsupported binary operator >>`.
+>   - **Zero programs remain blocked on `unsupported binary operator ^`.**
+> - **Verification**:
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - CTest: 4/4 tests passed (100%).
+>   - Parallel Python test suite (4 shards via `pyshards.sh`): 2,087 passed, 0 failures, exit 0.
+>   - Zero symlinks (`find . -type l`).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster in Step 4: **Bitwise right shift (`>>`)** across the 7 unblocked programs in `pending.json`:
+>   1. `filter3d/flow3d:agent`
+>   2. `points/buddhabrot:agent`
+>   3. `points/flow:agent`
+>   4. `points/hydraulic:agent`
+>   5. `points/life:matrix`
+>   6. `points/physical:agent`
+>   7. `render/pointsEmit:init`
+>
 > ## INDEPENDENT REVIEW CHECKPOINT 2026-09-21: READ THIS FIRST
 >
 > This block supersedes every status and ordered queue below. Earlier checkpoints are preserved as historical
@@ -39,10 +73,10 @@
 > | Measure | Current observation | Authority |
 > | --- | ---: | --- |
 > | Pinned authority effects / kit claims | 208 / 137 (71 missing) | authority `sourceEffectIds` minus `excludedEffects`; `export-kit/compat-effects.json` |
-> | Vendored / pending programs | 264 / 40, total 304 | `corpus/<revision>/manifest.json` and `pending.json`; online `corpus_ratchet --check` |
-> | Typed programs | 263 | `src/typed_generated/typed_manifest.json`; only `filter/wormhole:deposit` is corpus-only; `rdFb` is typed |
-> | Effects with every pass admitted / incomplete | 178 / 30 | `src/effects/generated/effect_catalog.provenance.json` |
-> | Missing reference passes | 80 | same provenance; programs and pass bindings have different denominators |
+> | Vendored / pending programs | 265 / 39, total 304 | `corpus/<revision>/manifest.json` and `pending.json`; online `corpus_ratchet --check` |
+> | Typed programs | 264 | `src/typed_generated/typed_manifest.json`; only `filter/wormhole:deposit` is corpus-only; `rdFb` is typed |
+> | Effects with every pass admitted / incomplete | 179 / 29 | `src/effects/generated/effect_catalog.provenance.json` |
+> | Missing reference passes | 79 | same provenance; programs and pass bindings have different denominators |
 > | Default corpus cases admitted / excluded | 173 / 35 | `tests/fixtures/dsl/executable-corpus.json` |
 > | Real measured-parity exclusions | 0 | `kMeasuredParityExclusions` in `src/graph/executor.cpp` contains only the test sentinel |
 >
