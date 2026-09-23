@@ -46,6 +46,34 @@
 > - No real program is currently in `kMeasuredParityExclusions`; its sole entry is the reserved test
 >   sentinel. That empty real-exclusion set does not cover missing programs, refused graphs or untested domains.
 >
+> - Fresh local review on arm64 / Apple Clang 16 matched **472/472 direct RGBA8/float32 buffers**
+>   against independently rerun pinned JS for Life matrix, Hydraulic, Flow3D, Buddhabrot, Physical and
+>   Noise3D, using Debug/Release libraries and `-ffp-contract=off`. Three focused modulo tests and nine
+>   forged-AST rejection probes passed. This preserves bounded numerical evidence, not whole-chain closure.
+>
+> ### External export-kit delivery blocker
+>
+> The incoming [Export kit dispatch](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35763411182)
+> succeeded, but [downstream release 35763431920](https://github.com/noisefactorllc/scaffold/actions/runs/35763431920)
+> failed in Scaffold's `apps/export-kit-builder/tests/kits-cpp.node-test.js`: the compatibility assertion
+> reports `synth/noise` at line 31, and the render test expects the now-supported Snow effect to refuse
+> at line 74 (`Missing expected rejection`). Other historical refusal expectations also need review
+> against the current runtime. Do not restore an obsolete C++ refusal or enlarge kit claims to satisfy them.
+>
+> Live `https://kits.noisedeck.app/cpp/0/kit.json` still identifies
+> `e331a3d88f298d5643de888375df0f60ceacb79a`. The served `engine/include/noisemaker/glsl_types.hpp`
+> matches that manifest's SHA-256 `7c8ff19c904f135dcbf5507c8f3f281d66d68a34196a081bbb32f6e0a636c75e`,
+> not the reviewed header `cc2f552f6268f4f17d14be002c40cc2be0b284059ceb7abbb80214bbd2ce332e`.
+> This is a verified stale delivery, not a successful release inferred from a dispatch.
+>
+> **Bounded external action:** reconcile the Scaffold compatibility/refusal tests with authenticated current
+> kit claims and demonstrated runtime behavior while preserving genuine negative cases. Acceptance:
+> existing downstream validation passes on the intended C++ SHA, the normal publication path succeeds,
+> served metadata/files match that SHA and their manifest hashes, and the assembled kit renders the
+> acceptance images. This review is restricted to this repository and cannot modify Scaffold or manually
+> dispatch/release. Its documentation pushes do not trigger kit publication. Retain this dependency until
+> the existing publication system provides that evidence.
+>
 > ### Required next actions, in order
 >
 > 1. **Execute grouped MRT before further standalone admission.** The two refusal sites in
