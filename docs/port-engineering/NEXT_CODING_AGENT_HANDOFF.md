@@ -31,7 +31,7 @@
 >   three mutual refusals, four timeouts, zero divergence/errors. The 1,248 single-effect cases are
 >   966 exact, 275 C++ refusals, three mutual refusals and four timeouts; the 175 chains are 153 exact
 >   and 22 refused. `tools/parity/sweep.py:write_summary` previously labeled the combined totals
->   as single-effect variants; this review corrects that heading. JSON counts and gate semantics are unchanged.
+>   as single-effect variants; this review corrects that heading. JSON counts are unchanged.
 >   Define enumeration has 4,872 cases: 1,134 exact, 3,664 C++ refusals, 74 timeouts, zero divergence/errors.
 >   Both kit-scoped sweep steps passed. Fewer timeouts than the prior run do not mean more support:
 >   the exact cohorts did not grow. Resolve every remaining refusal/timeout before `--gate all` closure.
@@ -53,6 +53,25 @@
 >   against independently rerun pinned JS for Life matrix, Hydraulic, Flow3D, Buddhabrot, Physical and
 >   Noise3D, using Debug/Release libraries and `-ffp-contract=off`. Three focused modulo tests and nine
 >   forged-AST rejection probes passed. This preserves bounded numerical evidence, not whole-chain closure.
+>
+> - **Mutual-refusal gate corrected:** `tools/parity/sweep.py:gate_failures` previously returned success
+>   when both lanes refused even a kit-claimed `synth/solid` case. The new regression demonstrates that
+>   this cannot prove support. Both refusals now fail `--gate all`, and fail `--gate kit` when every
+>   participating effect is claimed. Out-of-kit cases retain their reporting classification. All 15 sweep
+>   tests pass. Replaying the complete incoming artifacts now fails the sampled kit gate on its three
+>   Dither palette refusals; the define kit gate remains at exit 0. Gate-all exits 1 with 304 sampled
+>   failures and 3,738 define failures. These are artifact gate replays, not a fresh full render sweep.
+>   A fresh six-case Dither render sweep independently reproduced the same three refusals.
+>   This newly red sampled step exposes a pre-existing claimed-support gap, not changed rendering.
+>   No authority fixtures, coverage denominators or numerical tolerances changed.
+>
+>   **Dither acceptance dependency:** the pinned authority throws
+>   `TypeError: ditherWithPalette(...).reduce is not a function` for the recorded non-input/non-monochrome
+>   palette cases (`filter__dither__v2`, `v3`, `v4`). C++ explicitly refuses those domains. Preserve that
+>   honest refusal; do not remove Dither from the denominator or reinterpret two refusals as parity.
+>   First resolve this through the audited authority-reconciliation action, without changing JS to fit C++.
+>   Then require all declared palette domains to render exact RGBA8/float32 in both builds and rerun the
+>   full sampled kit gate. A palette-0/1-only result does not close the effect's claimed support.
 >
 > ### External export-kit delivery blocker
 >

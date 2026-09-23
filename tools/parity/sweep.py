@@ -1295,7 +1295,9 @@ def gate_failures(rows: list[dict], gate: str, case_ids: set[str]) -> int:
             # the kit. Unknown future classifications must also fail closed.
             failures.append(row)
         elif gate == "all" or effects <= kit:
-            if classification in ("divergent", "timeout", "cpp_refused_only"):
+            # Neither lane rendered a mutually refused case. Matching refusal
+            # cannot establish support for an effect included in this gate.
+            if classification in ("divergent", "timeout", "cpp_refused_only", "both_refused"):
                 failures.append(row)
     for row in failures:
         reason = row.get("error") or row.get("cpp_reason") or row.get("divergence_reason") or row.get("diagnostics") or ""

@@ -45,6 +45,14 @@ class SweepEvidenceTest(unittest.TestCase):
     def test_unknown_classification_cannot_pass(self) -> None:
         self.assertEqual(self.gate([self.row("unknown")]), 1)
 
+    def test_mutual_refusal_cannot_prove_claimed_support(self) -> None:
+        for effect in ("synth/solid", "unclaimed/effect"):
+            row = self.row("both_refused", effect_id=effect)
+            with self.subTest(effect=effect):
+                self.assertEqual(self.gate([row], "all"), 1)
+                self.assertEqual(self.gate([row], "kit"),
+                                 1 if effect == "synth/solid" else 0)
+
     def test_empty_or_missing_results_cannot_pass(self) -> None:
         self.assertEqual(self.gate([]), 1)
         self.assertEqual(self.gate([], ids=set()), 1)
