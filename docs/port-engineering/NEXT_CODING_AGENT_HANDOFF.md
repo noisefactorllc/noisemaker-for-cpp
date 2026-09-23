@@ -1,5 +1,93 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## INDEPENDENT REVIEW CHECKPOINT 2026-09-23: RESTORE RUNTIME-FIRST CLOSURE ORDER
+>
+> This checkpoint supersedes the next-action ordering below, including the vector-modulo checkpoint.
+> Reviewed the complete incoming commit `e649fb30da963be2cd0ebd48a4778930068a3d59` after
+> `cdb182f0994d68bfe0599c1205a0ce611d547a67`. Full CPU parity remains **incomplete**.
+> The vector-modulo change advances three first-blocker diagnostics; it promotes no program,
+> adds no generated kernel, and proves no additional effect rendering. Preserve its authenticated
+> source/AST boundary, but do not choose another construct merely because its local admission is easy.
+>
+> ### Current evidence and limits
+>
+> - Recomputed split: **270 vendored + 34 pending = 304 pinned-authority programs**; 269 typed programs,
+>   268 backend-compatible programs, 181 effects with admitted passes, 137 kit claims. Pending first blockers
+>   are now **17 validator, 11 pass binding, 5 default semantics, 1 variant semantics**. Source: corpus
+>   `manifest.json` / `pending.json`, `src/typed_generated/typed_manifest.json`,
+>   `src/effects/generated/effect_catalog.provenance.json`, and `export-kit/compat-effects.json`.
+>   Counts are observations to regenerate, not a frozen closure denominator.
+> - The three modulo carriers still stop at `floatBitsToUint` (Flock), scalar `^` (Life), and counted-loop
+>   proof (SpriteMeanTiles). The emitter test lowers an isolated expression for only Flock/Life;
+>   SpriteMeanTiles stops before that at its loop proof. There is no complete generated/rendered carrier
+>   test. Unit tests for remainder edge cases are not JS image parity evidence.
+> - Exact incoming-commit [CI 35763411282](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35763411282)
+>   completed: **nine jobs passed; corpus job failed** on the expected Buddhabrot/Hydraulic grouped-MRT
+>   refusals (168 exact defaults, two C++ refusals, five authority refusals). Python discovery passed
+>   2,092 tests with 147 skips; the skipped lanes are not tested by that job. Native Debug/Release on
+>   macOS/Ubuntu, ASan/UBSan, both deterministic generator jobs and package consumer passed.
+>   This supplies the previously interrupted Python/define evidence; it is not all-green CI or full parity.
+> - Its complete sampled artifact has 1,423 single-effect cases: 1,119 exact, 297 C++ refusals,
+>   three mutual refusals, four timeouts, zero divergence/errors; chains are 153 exact and 22 refused.
+>   Define enumeration has 4,872 cases: 1,134 exact, 3,664 C++ refusals, 74 timeouts, zero divergence/errors.
+>   Both kit-scoped sweep steps passed. Fewer timeouts than the prior run do not mean more support:
+>   the exact cohorts did not grow. Resolve every remaining refusal/timeout before `--gate all` closure.
+> - Live authority was independently read at **`baf5dce910eb7b2e7193ad5485f11101d51371e1`**,
+>   shader revision `44bc4ed4ac729bddaa95b083d64bee942ade35da`, behavioral lock
+>   `28be3fdc46a25304103883b27931153a719ddad50a9f09fdb4319dcec5a7cd71`.
+>   The pinned authority remains `61aa8694d60e6e25d8d3e8c872c971be329458bc`, lock
+>   `27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026`.
+>   Both drift and kit-coverage checks exit 1: live authority has 205 eligible effects / 301 programs,
+>   with 71 missing kit effects and three extra names (`filter/bc`, `filter/colorspace`, `filter/hs`).
+>   Since `2278997`, `render/renderLandscape3d` gained a `FILTERING` domain (isosurface=0, voxel=1)
+>   plus interpolation, density tracing and compiler adaptations. This is behavioral drift, not only
+>   source-lock metadata. Inspect authority commit `16c38245c42030c8ee46dc61108791d2fea4bda9`
+>   before any pin reconciliation; do not use the older landscape fixture as proof of the new domain.
+> - No real program is currently in `kMeasuredParityExclusions`; its sole entry is the reserved test
+>   sentinel. That empty real-exclusion set does not cover missing programs, refused graphs or untested domains.
+>
+> ### Required next actions, in order
+>
+> 1. **Execute grouped MRT before further standalone admission.** The two refusal sites in
+>    `src/graph/executor.cpp` are the immediate blockers. Follow pinned JS `groupMrtDestinations` and
+>    `runGroupStepIterationSync` in `src/runtime/renderer.js`; preserve atomic reads/publication,
+>    per-destination size/format, quantization and resource lifetime. Acceptance: Buddhabrot and Hydraulic
+>    complete their graphs without refusal and match every RGBA8/float32 output in Debug and Release,
+>    including multiple iterations, non-square/different state sizes, live/dead particles and repeated calls.
+>    Run the complete corpus lane; do not add refusal exemptions to make it pass.
+> 2. **Finish whole-chain evidence for the six newly admitted kernels.** The September 22 Noise3D
+>    Number-array/fractional-z correction is already complete for its recorded default-domain probes;
+>    do not reopen that resolved counterexample or restore the rejected Uint32Array hypothesis.
+>    Retain independent source/AST mutation tests and cover seeds, times, all MRT outputs and nonzero
+>    state. Resolve Physical's unclassified `inputTex` from actual authority binding behavior and the
+>    particle scatter/volume propagation dependencies needed to exercise each chain. Acceptance:
+>    exact complete outputs in both builds, not a direct kernel hidden behind an earlier graph refusal.
+> 3. **Reconcile the authority from an explicit behavioral audit.** Include the earlier three retired
+>    identities and particle routing changes plus the new landscape filtering/tracing contract above.
+>    Regenerate the partition, pins, provenance and independently captured fixtures only after reviewing
+>    those changes; never adjust the authority or fixtures to match C++. Acceptance: current live drift
+>    and authority partition checks pass, all generated artifacts reproduce, prior public behavior is
+>    preserved, and both landscape filtering modes have current JS differential evidence in both builds.
+> 4. **Close remaining dependencies by executable family.** Use every `pending.json` record's current
+>    first blocker, re-probe after each change, and continue through its downstream runtime instead of
+>    declaring a family done at the first admitted operator. PointsEmit bit reinterpretation, particle
+>    scatter/billboard registration, volume renderers (`cross`, matrices, loops), repeated-pass binding,
+>    temporal/array state and every compile-define domain remain open. Flock/Life/SpriteMeanTiles modulo
+>    carriers specifically require their remaining proofs and complete rendered comparisons. Keep the
+>    historical 888-case define cohort and historical reconstruction/provenance/rendered-NaN gaps visible.
+>    Acceptance for each bounded family: no refusal masks the changed code; complete RGBA8/float32
+>    results match the unmodified authority across documented domains in Debug and Release.
+> 5. **Prove full dynamic coverage.** Isolate all timeouts and all authority refusals, retain their causes,
+>    then run complete current-authority 20-variant, define, chain, render-option and stateful cohorts.
+>    Derive kit claims from that evidence. Closure requires every current authority-supported effect,
+>    zero unsupported cases, zero divergence, no unresolved timeout/error, `--gate all`, kit coverage,
+>    reproducible generated sources and exact-commit CI. Passing the kit subset is not this acceptance test.
+>
+> Review evidence, commands, source hashes and downloaded exact-commit artifacts are retained locally
+> under ignored `build-review/2026-09-23/evidence/`. Historical checkpoints below remain unchanged and
+> describe their own revisions. The next review must consult this checkpoint before those older next legs.
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-22: VECN % SCALAR MODULUS CONSTRUCT BLOCKER CLUSTER RESOLVED
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Vector % scalar modulus (`vecN % scalar`)**.
