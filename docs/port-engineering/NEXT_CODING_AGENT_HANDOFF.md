@@ -27,8 +27,11 @@
 >   2,092 tests with 147 skips; the skipped lanes are not tested by that job. Native Debug/Release on
 >   macOS/Ubuntu, ASan/UBSan, both deterministic generator jobs and package consumer passed.
 >   This supplies the previously interrupted Python/define evidence; it is not all-green CI or full parity.
-> - Its complete sampled artifact has 1,423 single-effect cases: 1,119 exact, 297 C++ refusals,
->   three mutual refusals, four timeouts, zero divergence/errors; chains are 153 exact and 22 refused.
+> - Its complete sampled artifact has 1,423 cases including chains: 1,119 exact, 297 C++ refusals,
+>   three mutual refusals, four timeouts, zero divergence/errors. The 1,248 single-effect cases are
+>   966 exact, 275 C++ refusals, three mutual refusals and four timeouts; the 175 chains are 153 exact
+>   and 22 refused. `tools/parity/sweep.py:write_summary` previously labeled the combined totals
+>   as single-effect variants; this review corrects that heading. JSON counts and gate semantics are unchanged.
 >   Define enumeration has 4,872 cases: 1,134 exact, 3,664 C++ refusals, 74 timeouts, zero divergence/errors.
 >   Both kit-scoped sweep steps passed. Fewer timeouts than the prior run do not mean more support:
 >   the exact cohorts did not grow. Resolve every remaining refusal/timeout before `--gate all` closure.

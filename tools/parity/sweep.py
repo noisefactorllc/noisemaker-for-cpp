@@ -1040,7 +1040,7 @@ def write_summary(all_rows: list[dict], out_dir: Path, meta: dict) -> None:
                  "A case is `byte_exact` only if both matched; a float32-only divergence (RGBA8 matched, "
                  "the floats behind it did not) is called out distinctly in its diagnostics.")
     lines.append("")
-    lines.append("## Totals (single-effect variants, all effects)")
+    lines.append("## Totals (all cases, including chains)")
     lines.append("")
     for c in CLASSIFICATIONS:
         lines.append(f"- {c}: {totals.get(c, 0)}")
