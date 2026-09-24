@@ -154,6 +154,11 @@ if __package__ in (None, ""):
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+        POINTS_FLOAT_BITS_INGRESS_KEYS,
+        PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
+        apply_points_float_bits_ingress,
+        authenticate_points_float_bits_ingress)
     from tools.glslcpp.frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -556,6 +561,11 @@ else:
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from .frontend.points_float_bits_ingress_profile import (
+        POINTS_FLOAT_BITS_INGRESS_KEYS,
+        PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
+        apply_points_float_bits_ingress,
+        authenticate_points_float_bits_ingress)
     from .frontend.scalar_uint_xor_profile import (
         KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
         NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -1604,6 +1614,12 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     {"defines", "rotate_mat2_return_profile", "program_key"}
                     if key == ROTATE_KEY else
                     {"defines", "hash_scalar_uint_rshift_profile",
+                     "hash_scalar_uint_xor_profile",
+                     "points_float_bits_ingress_profile", "program_key"}
+                    if key in HASH_SCALAR_UINT_RSHIFT_KEYS and key in HASH_SCALAR_UINT_XOR_KEYS and key in POINTS_FLOAT_BITS_INGRESS_KEYS else
+                    {"defines", "points_float_bits_ingress_profile", "program_key"}
+                    if key in POINTS_FLOAT_BITS_INGRESS_KEYS else
+                    {"defines", "hash_scalar_uint_rshift_profile",
                      "hash_scalar_uint_xor_profile", "program_key"}
                     if key in HASH_SCALAR_UINT_RSHIFT_KEYS and key in HASH_SCALAR_UINT_XOR_KEYS else
                     {"defines", "hash_scalar_uint_rshift_profile", "program_key"}
@@ -1999,6 +2015,15 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for key in sorted(VEC_SCALAR_MODULO_KEYS)
         if key in keys
     ]
+    points_float_bits_ingress_profiles = [
+        (item["program_key"], item.get("points_float_bits_ingress_profile"),
+         item["defines"])
+        for item in programs if "points_float_bits_ingress_profile" in item]
+    expected_points_float_bits_ingress_profiles = [
+        (key, POINTS_FLOAT_BITS_INGRESS_PROFILE, {})
+        for key in sorted(POINTS_FLOAT_BITS_INGRESS_KEYS)
+        if key in keys
+    ]
     if (keys != sorted(set(keys)) or keys != typed_corpus_keys()
             or lane_profiles != [(key, LITERAL_VEC3_LANE_INDEX_PROFILE)
                                   for key in LITERAL_VEC3_LANE_INDEX_KEYS]
@@ -2010,6 +2035,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             or hash_scalar_uint_xor_profiles != expected_hash_scalar_uint_xor_profiles
             or hash_scalar_uint_rshift_profiles != expected_hash_scalar_uint_rshift_profiles
             or vec_scalar_modulo_profiles != expected_vec_scalar_modulo_profiles
+            or points_float_bits_ingress_profiles != expected_points_float_bits_ingress_profiles
             or scalar_uint_xor_profiles != [
                 # kaleido reuses the frozen carrier verbatim as the REQUIRED
                 # companion of its mutable-global array row and sorts first
@@ -3350,6 +3376,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           hash_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_rshift_profile: str | None = None,
                           vec_scalar_modulo_profile: str | None = None,
+                          points_float_bits_ingress_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
                           bitwise_scalar_int_ops_profile: str | None = None,
                           bit_effects_frontend_profile: str | None = None,
@@ -3926,6 +3953,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_hash_scalar_uint_rshifts: list[TypedExpression] = []
     authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = ()
     visited_vec_scalar_modulos: list[TypedExpression] = []
+    authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = ()
+    visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -5223,6 +5252,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             authorized_vec_scalar_modulos = (
                 authenticate_vec_scalar_modulo(
                     typed, source_hash, vec_scalar_modulo_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if points_float_bits_ingress_profile is not None:
+        if (typed.key not in POINTS_FLOAT_BITS_INGRESS_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: points float-bit ingress profile metadata mismatch")
+        try:
+            authorized_points_float_bits_ingresses = (
+                authenticate_points_float_bits_ingress(
+                    typed, source_hash, points_float_bits_ingress_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
@@ -7488,6 +7534,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     # no `used.add(...)`, so the frozen capability vocabulary
                     # is unchanged.
                     visited_grime_float_bits_ingresses.append(value)
+                elif any(value is item
+                         for item in authorized_points_float_bits_ingresses):
+                    # points effects (render/pointsEmit:init, points/flock:agent,
+                    # points/physarum:agent) floatBitsToUint sites. Admitted
+                    # by object identity only; no capability vocabulary expansion.
+                    visited_points_float_bits_ingresses.append(value)
                 elif (authorized_shape_mixer_proof is not None
                       and value is authorized_shape_mixer_proof.bit_ingress):
                     visited_shape_mixer_exceptional.append(value)
@@ -8310,6 +8362,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_vec_scalar_modulos):
         raise GeneratorError(
             f"{typed.key}: authenticated vector-scalar modulo traversal mismatch")
+    if (authorized_points_float_bits_ingresses
+            and tuple(visited_points_float_bits_ingresses)
+            != authorized_points_float_bits_ingresses):
+        raise GeneratorError(
+            f"{typed.key}: authenticated points float-bit ingress traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -8974,6 +9031,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: vector-scalar modulo identity profile mutated program")
             typed = profiled
+        points_float_bits_ingress_profile = slice_spec["programs"][index].get(
+            "points_float_bits_ingress_profile")
+        if points_float_bits_ingress_profile is not None:
+            try:
+                profiled = apply_points_float_bits_ingress(
+                    typed, source_hash, points_float_bits_ingress_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: points float-bit ingress identity profile mutated program")
+            typed = profiled
         scalar_uint_xor_profile = slice_spec["programs"][index].get(
             "scalar_uint_xor_profile")
         if scalar_uint_xor_profile is not None:
@@ -9576,6 +9645,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                               hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
                               vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+                              points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9653,6 +9723,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
                                            hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
                                            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+                                           points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9782,6 +9853,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if vec_scalar_modulo_profile is not None:
             manifest_program["vec_scalar_modulo_profile"] = (
                 vec_scalar_modulo_profile)
+        if points_float_bits_ingress_profile is not None:
+            manifest_program["points_float_bits_ingress_profile"] = (
+                points_float_bits_ingress_profile)
         if scalar_uint_xor_profile is not None:
             manifest_program["scalar_uint_xor_profile"] = (
                 scalar_uint_xor_profile)

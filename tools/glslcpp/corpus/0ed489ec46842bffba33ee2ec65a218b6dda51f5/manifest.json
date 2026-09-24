@@ -4111,6 +4111,26 @@
     },
     {
       "effect_id": "render/pointsEmit",
+      "normalized_bytes": 3527,
+      "normalized_sha256": "0d6c62fe326d9ec1e8f7ebbfe90ae7338c8bbe7f75b07d13a3007a81002f80dc",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "init",
+      "program": "init",
+      "program_key": "render/pointsEmit:init",
+      "raw_bytes": 5236,
+      "raw_sha256": "cd266c795b298b372f077e6aeb6f862c75a0970999fba2f87c4462b322592402",
+      "runtime_key": "render/pointsEmit:init",
+      "source": "sources/render/pointsEmit/init.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "render/pointsEmit",
       "normalized_bytes": 194,
       "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
       "outputs": [

@@ -22554,17 +22554,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36001,
-                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
+                36292,
+                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
             "src/typed_generated/typed_slice.cpp": (
-                3139493,
-                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
+                3150066,
+                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
             "src/typed_generated/typed_manifest.json": (
-                820746,
-                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
+                824126,
+                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
             "include/noisemaker/generated/catalog.hpp": (
-                26553,
-                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
+                26643,
+                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23334,17 +23334,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36001,
-                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
+                36292,
+                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
             "src/typed_generated/typed_slice.cpp": (
-                3139493,
-                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
+                3150066,
+                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
             "src/typed_generated/typed_manifest.json": (
-                820746,
-                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
+                824126,
+                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
             "include/noisemaker/generated/catalog.hpp": (
-                26553,
-                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
+                26643,
+                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24090,17 +24090,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36001,
-                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
+                36292,
+                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
             "src/typed_generated/typed_slice.cpp": (
-                3139493,
-                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
+                3150066,
+                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
             "src/typed_generated/typed_manifest.json": (
-                820746,
-                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
+                824126,
+                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
             "include/noisemaker/generated/catalog.hpp": (
-                26553,
-                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
+                26643,
+                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24626,17 +24626,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36001,
-                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
+                36292,
+                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
             "src/typed_generated/typed_slice.cpp": (
-                3139493,
-                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
+                3150066,
+                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
             "src/typed_generated/typed_manifest.json": (
-                820746,
-                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
+                824126,
+                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
             "include/noisemaker/generated/catalog.hpp": (
-                26553,
-                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
+                26643,
+                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25226,17 +25226,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36001,
-                "ba7a3dfdd103ca8cee83b27b685759e3dd248095624b4452e8726aa7c42e2cd0"),
+                36292,
+                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
             "src/typed_generated/typed_slice.cpp": (
-                3139493,
-                "7df8a92e2b9dfd12248e700c3e2ee43f02e52a3224ce66f65c728bd6ff9704f4"),
+                3150066,
+                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
             "src/typed_generated/typed_manifest.json": (
-                820746,
-                "e5aad51bc7d8aa0215fce931c46ef262a76ac8ca47991e10ce6a4c3a3e200d0a"),
+                824126,
+                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
             "include/noisemaker/generated/catalog.hpp": (
-                26553,
-                "81a28d9d78b2344de0d72db79c4e144d4b6f23396f2f16ca84e6d2d35643ad32"),
+                26643,
+                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -26101,6 +26101,195 @@ void main() {
                 with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                     emit_typed_cpp._Emitter(typed, "ff" * 32, vec_scalar_modulo_profile=PROFILE)
                 self.assertIn("source hash mismatch", str(ctx.exception))
+
+    def test_points_float_bits_ingress_profile_authentication(self) -> None:
+        import dataclasses, hashlib, json, pathlib
+        from tools.glslcpp import check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+            authenticate_points_float_bits_ingress,
+            apply_points_float_bits_ingress,
+            PROFILE,
+            POINTS_FLOAT_BITS_INGRESS_KEYS,
+        )
+
+        expected_counts = {
+            "render/pointsEmit:init": {"calls": 1, "rel": "render/pointsEmit/init.glsl"},
+            "points/flock:agent": {"calls": 1, "rel": "points/flock/agent.glsl"},
+            "points/physarum:agent": {"calls": 1, "rel": "points/physarum/agent.glsl"},
+        }
+
+        self.assertEqual(POINTS_FLOAT_BITS_INGRESS_KEYS, frozenset(expected_counts.keys()))
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        for key, exp in expected_counts.items():
+            source_path = corpus_root / "sources" / exp["rel"]
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / exp["rel"]
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            # Test authentication succeeds with valid profile and source hash
+            calls = authenticate_points_float_bits_ingress(typed, shash, PROFILE)
+            self.assertEqual(len(calls), exp["calls"])
+            for call_node in calls:
+                self.assertEqual(call_node.kind, "builtin")
+                self.assertEqual(call_node.callee, "floatBitsToUint")
+                self.assertEqual(call_node.type.display(), "uint")
+                self.assertEqual(len(call_node.children), 1)
+                self.assertEqual(call_node.children[0].type.display(), "float")
+
+            # Test identity carrier return
+            applied = apply_points_float_bits_ingress(typed, shash, PROFILE)
+            self.assertIs(applied, typed)
+
+            # Test rejection with invalid profile
+            with self.assertRaises(ValueError):
+                authenticate_points_float_bits_ingress(typed, shash, "invalid-profile-v1")
+
+            # Test rejection with mismatched source hash
+            with self.assertRaises(ValueError):
+                authenticate_points_float_bits_ingress(typed, "0" * 64, PROFILE)
+
+            # Test rejection with alien program key
+            alien = dataclasses.replace(typed, key="foreign/effect:key")
+            with self.assertRaises(ValueError):
+                authenticate_points_float_bits_ingress(alien, shash, PROFILE)
+
+    def test_points_float_bits_ingress_validator_and_emitter(self) -> None:
+        import hashlib, json, pathlib
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp, check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+            HASH_SCALAR_UINT_XOR_KEYS, PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            HASH_SCALAR_UINT_RSHIFT_KEYS, PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
+        )
+        from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+            VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
+            apply_vec_scalar_modulo,
+        )
+        from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+            PROFILE,
+            POINTS_FLOAT_BITS_INGRESS_KEYS,
+        )
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        synthetic_glsl = """#version 300 es
+precision highp float;
+precision highp int;
+out vec4 fragColor;
+void main() {
+    uint b = floatBitsToUint(1.0);
+    fragColor = vec4(float(b));
+}
+"""
+        ast = parse_program(synthetic_glsl, "test/fake:kernel", {})
+        typed = analyze_program(ast, "test/fake:kernel")
+
+        # Synthetic kernel without profile fails on floatBitsToUint
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash="00" * 32,
+            )
+        self.assertIn("unsupported builtin floatBitsToUint", str(ctx.exception))
+
+        # Synthetic kernel with profile fails metadata mismatch (key not approved)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash="00" * 32,
+                points_float_bits_ingress_profile=PROFILE,
+            )
+        self.assertIn("points float-bit ingress profile metadata mismatch", str(ctx.exception))
+
+        # Authority programs advance cleanly past floatBitsToUint
+        for key, rel, next_diag in [
+            ("render/pointsEmit:init", "render/pointsEmit/init.glsl", None),
+            ("points/flock:agent", "points/flock/agent.glsl", "unsupported binary operator ^"),
+            ("points/physarum:agent", "points/physarum/agent.glsl", "unsupported binary operator ^"),
+        ]:
+            source_path = corpus_root / "sources" / rel
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / rel
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+            if key in VEC_SCALAR_MODULO_KEYS:
+                typed = apply_vec_scalar_modulo(typed, shash, VEC_SCALAR_MODULO_PROFILE)
+            typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
+            typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
+
+            xor_prof = HASH_SCALAR_UINT_XOR_PROFILE if key in HASH_SCALAR_UINT_XOR_KEYS else None
+            rshift_prof = HASH_SCALAR_UINT_RSHIFT_PROFILE if key in HASH_SCALAR_UINT_RSHIFT_KEYS else None
+            modulo_prof = VEC_SCALAR_MODULO_PROFILE if key in VEC_SCALAR_MODULO_KEYS else None
+
+            if next_diag is None:
+                # render/pointsEmit:init passes validation completely!
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=rshift_prof,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=PROFILE,
+                )
+                # Emitter generates C++ cleanly
+                factory = "bind_" + key.replace("/", "_").replace(":", "_")
+                cpp = emit_typed_cpp.render_typed_cpp(
+                    typed, key, shash, "pixel", factory,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=rshift_prof,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=PROFILE,
+                )
+                self.assertIn("noisemaker::float_bits_to_uint", cpp)
+            else:
+                with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                    generate_typed_slice.validate_capabilities(
+                        typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                        source_hash=shash,
+                        hash_scalar_uint_xor_profile=xor_prof,
+                        hash_scalar_uint_rshift_profile=rshift_prof,
+                        vec_scalar_modulo_profile=modulo_prof,
+                        points_float_bits_ingress_profile=PROFILE,
+                    )
+                self.assertIn(next_diag, str(ctx.exception))
+
+            # Tampered hash fails profile authentication
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash="ff" * 32,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=rshift_prof,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=PROFILE,
+                )
+            self.assertIn("source hash mismatch", str(ctx.exception))
 
 
 if __name__ == "__main__":

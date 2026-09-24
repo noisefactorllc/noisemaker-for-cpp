@@ -90,6 +90,10 @@ from .frontend.vec_scalar_modulo_profile import (
     VEC_SCALAR_MODULO_KEYS,
     PROFILE as VEC_SCALAR_MODULO_PROFILE,
     authenticate_vec_scalar_modulo)
+from .frontend.points_float_bits_ingress_profile import (
+    POINTS_FLOAT_BITS_INGRESS_KEYS,
+    PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
+    authenticate_points_float_bits_ingress)
 from .frontend.scalar_uint_xor_profile import (
     KALEIDO_INGRESS_KEY as KALEIDO_FLOAT_BITS_INGRESS_KEY,
     NOISE_INGRESS_KEY as NOISE_FLOAT_BITS_INGRESS_KEY,
@@ -1039,6 +1043,7 @@ class _Emitter:
     hash_scalar_uint_xor_profile: str | None = None
     hash_scalar_uint_rshift_profile: str | None = None
     vec_scalar_modulo_profile: str | None = None
+    points_float_bits_ingress_profile: str | None = None
     scalar_uint_xor_profile: str | None = None
     bitwise_scalar_int_ops_profile: str | None = None
     bit_effects_frontend_profile: str | None = None
@@ -1244,6 +1249,10 @@ class _Emitter:
     authorized_grime_float_bits_ingresses: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_grime_float_bits_ingresses: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_points_float_bits_ingresses: list[TypedExpression] = field(
         init=False, default_factory=list)
     # kaleido's one `floatBitsToUint` ingress, authenticated by the scalar-XOR
     # module's per-key census (rides the same carrier; no separate row field).
@@ -1801,6 +1810,8 @@ class _Emitter:
         self.emitted_shapes_float_bits_ingresses = []
         self.authorized_grime_float_bits_ingresses = ()
         self.emitted_grime_float_bits_ingresses = []
+        self.authorized_points_float_bits_ingresses = ()
+        self.emitted_points_float_bits_ingresses = []
         self.authorized_kaleido_float_bits_ingress = ()
         self.emitted_kaleido_float_bits_ingress = []
         self.authorized_noise_float_bits_ingresses = ()
@@ -3577,6 +3588,25 @@ class _Emitter:
                     authenticate_vec_scalar_modulo(
                         self.program, self.source_hash,
                         self.vec_scalar_modulo_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.points_float_bits_ingress_profile is not None:
+            if (self.program.key not in POINTS_FLOAT_BITS_INGRESS_KEYS
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.gather_sorted_round_profile is not None
+                    or self.literal_vec3_lane_index_profile is not None
+                    or self.smooth_edge_luma_weights_profile is not None):
+                raise _error(
+                    self.program, self.program,
+                    "points float-bit ingress profile metadata mismatch")
+            try:
+                self.authorized_points_float_bits_ingresses = (
+                    authenticate_points_float_bits_ingress(
+                        self.program, self.source_hash,
+                        self.points_float_bits_ingress_profile))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         if self.scalar_uint_xor_profile is not None:
@@ -8562,6 +8592,12 @@ class _Emitter:
                         # capability token, same skip-list precedent.
                         self.emitted_grime_float_bits_ingresses.append(value)
                     elif any(value is item for item in
+                             self.authorized_points_float_bits_ingresses):
+                        # points effects (render/pointsEmit:init, points/flock:agent,
+                        # points/physarum:agent) floatBitsToUint sites. Admitted
+                        # by object identity only; no capability vocabulary expansion.
+                        self.emitted_points_float_bits_ingresses.append(value)
+                    elif any(value is item for item in
                              self.authorized_kaleido_float_bits_ingress):
                         # kaleido's one ingress, same shape, by object
                         # identity; no capability token.
@@ -12908,6 +12944,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      hash_scalar_uint_xor_profile: str | None = None,
                      hash_scalar_uint_rshift_profile: str | None = None,
                      vec_scalar_modulo_profile: str | None = None,
+                     points_float_bits_ingress_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
                      bitwise_scalar_int_ops_profile: str | None = None,
                      bit_effects_frontend_profile: str | None = None,
@@ -13013,6 +13050,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        hash_scalar_uint_xor_profile,
                        hash_scalar_uint_rshift_profile,
                        vec_scalar_modulo_profile,
+                       points_float_bits_ingress_profile,
                        scalar_uint_xor_profile,
                        bitwise_scalar_int_ops_profile,
                        bit_effects_frontend_profile,
@@ -13492,6 +13530,15 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             raise _error(
                 program, program,
                 "authenticated Noise float-bit ingress emission mismatch")
+    if emitter.authorized_points_float_bits_ingresses:
+        expected = emitter.authorized_points_float_bits_ingresses
+        emitted = emitter.emitted_points_float_bits_ingresses
+        if (len(emitted) != len(expected)
+                or any(left is not right
+                       for left, right in zip(emitted, expected))):
+            raise _error(
+                program, program,
+                "authenticated points float-bit ingress emission mismatch")
     if emitter.authorized_cross_lane_assignment is not None:
         if emitter.emitted_cross_lane_assignments != [
                 emitter.authorized_cross_lane_assignment.assignment]:

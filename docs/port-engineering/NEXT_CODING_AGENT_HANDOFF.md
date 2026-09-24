@@ -1,5 +1,36 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-23: ADMIT floatBitsToUint BUILTIN & PROMOTE render/pointsEmit:init
+>
+> This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **`floatBitsToUint` Builtin** and promotion of **`render/pointsEmit:init`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile**: Created `tools/glslcpp/frontend/points_float_bits_ingress_profile.py` with profile `points-float-bits-ingress-v1`, locking candidate programs (`render/pointsEmit:init`, `points/flock:agent`, `points/physarum:agent`) with dual raw/normalized SHA-256 digests, length checks, analyzed body status enforcement, typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), and exact call-site arity/type checks (single `float` operand returning `uint`).
+> - **Validator admission**: Admitted `floatBitsToUint` call nodes in `tools/glslcpp/generate_typed_slice.py` strictly when AST nodes are authenticated under `points-float-bits-ingress-v1` by object identity (`is`), tracking sequential traversal and exact node counts.
+> - **Emitter lowering**: Emitted `noisemaker::float_bits_to_uint(operand)` in `tools/glslcpp/emit_typed_cpp.py` for authenticated nodes with two-way emission cardinality verification.
+> - **Ratchet & corpus promotion**: Wired `points_float_bits_ingress_profile` into `tools/glslcpp/corpus_ratchet.py`. Promoted `render/pointsEmit:init` from pending into vendored corpus manifest and `tools/glslcpp/typed_slice.json`. Moved `render/pointsEmit/init.glsl` from `pending-sources` to `sources`.
+> - **Blocker diagnostics advanced**: `render/pointsEmit:init` is promoted (vendored: 270 -> 271, pending: 34 -> 33). For `points/flock:agent` and `points/physarum:agent`, their `floatBitsToUint` blocker is cleared, advancing to the binary operator `^` (scalar uint XOR) blocker.
+> - **Fixed-point regeneration**: Updated downstream generated artifacts (`catalog.hpp`, `backend_compatibility.json`, `effect_catalog.cpp`, `effect_catalog.provenance.json`, `registry.cpp`, `typed_manifest.json`, `typed_slice.cpp`, `executable-corpus.json`, `dsl_compiler_expected.txt`) via `tools/resync/regen_all.sh`.
+> - **Verification & tests**:
+>   - Added unit and emitter tests in `tests/test_typed_generator.py` (`test_points_float_bits_ingress_profile_authentication` and `test_points_float_bits_ingress_validator_and_emitter`).
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - Native CTest: 100% tests passed (4/4).
+>   - Python test suite across 4 shards verified green with `node v26.0.0` and authority environment.
+>   - Symlink check verified clean (`find . -type l` returned 0 symlinks).
+>   - Code review subagent passed with Ready to merge: Yes (0 Critical, 0 Important).
+>
+> ### Current counts
+> - Pinned authority: **271 vendored + 33 pending = 304 authority programs**.
+> - Typed slice: **270 typed programs** (was 269).
+> - Backend compatible programs: **269 programs** (was 268).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next construct blocker cluster in Step 4 from `pending.json`:
+>   - Candidate A: **`^` binary operator (scalar uint XOR)** (blocks `points/life:agent`, `points/flock:agent`, `points/physarum:agent`, `classicNoisedeck/noise3d:noise3d`, `math/hash:pcg3d`, `math/hash:pcg3d16`, `math/hash:pcg4d`, `math/hash:pcg4d16`, etc.)
+>   - Candidate B: **`round` builtin** (`points/flow:agent`)
+>   - Candidate C: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles`
+>
+
 > ## INDEPENDENT REVIEW CHECKPOINT 2026-09-23: RESTORE RUNTIME-FIRST CLOSURE ORDER
 >
 > This checkpoint supersedes the next-action ordering below, including the vector-modulo checkpoint.

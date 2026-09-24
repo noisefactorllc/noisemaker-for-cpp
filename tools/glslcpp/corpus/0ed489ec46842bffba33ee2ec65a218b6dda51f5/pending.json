@@ -3512,7 +3512,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flock:agent:47:28: unsupported builtin floatBitsToUint",
+        "diagnostic": "GeneratorError: points/flock:agent:34:19: unsupported binary operator ^",
         "stage": "typed.validator"
       },
       "effect_id": "points/flock",
@@ -3577,7 +3577,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/physarum:agent:38:28: unsupported builtin floatBitsToUint",
+        "diagnostic": "GeneratorError: points/physarum:agent:29:19: unsupported binary operator ^",
         "stage": "typed.validator"
       },
       "effect_id": "points/physarum",
@@ -3677,19 +3677,6 @@
       "raw_bytes": 1125,
       "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
       "source": "pending-sources/render/pointsBillboardRender/spriteMeanTiles.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: render/pointsEmit:init:65:25: unsupported builtin floatBitsToUint",
-        "stage": "typed.validator"
-      },
-      "effect_id": "render/pointsEmit",
-      "program": "init",
-      "program_key": "render/pointsEmit:init",
-      "raw_bytes": 5236,
-      "raw_sha256": "cd266c795b298b372f077e6aeb6f862c75a0970999fba2f87c4462b322592402",
-      "source": "pending-sources/render/pointsEmit/init.glsl"
     },
     {
       "authority_status": "adapter",

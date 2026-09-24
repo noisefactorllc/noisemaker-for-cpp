@@ -225,6 +225,10 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
     )
+    from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+        POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
+        apply_points_float_bits_ingress,
+    )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
@@ -243,12 +247,17 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     vec_scalar_modulo_profile = (
         VEC_SCALAR_MODULO_PROFILE if key in VEC_SCALAR_MODULO_KEYS else None
     )
+    points_float_bits_ingress_profile = (
+        POINTS_FLOAT_BITS_INGRESS_PROFILE if key in POINTS_FLOAT_BITS_INGRESS_KEYS else None
+    )
     typed = analyze_program(parse_program(source, key, defaults), key,
                             source_global_literal_int_profile=source_global_literal_int_profile)
     if runtime_loop_bound_profile is not None:
         typed = apply_runtime_loop_bound(typed, source_hash, runtime_loop_bound_profile)
     if vec_scalar_modulo_profile is not None:
         typed = apply_vec_scalar_modulo(typed, source_hash, vec_scalar_modulo_profile)
+    if points_float_bits_ingress_profile is not None:
+        typed = apply_points_float_bits_ingress(typed, source_hash, points_float_bits_ingress_profile)
     typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
     typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
     try:
@@ -260,7 +269,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             simulation_sampler_profile=simulation_sampler_profile,
             hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
             hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
-            vec_scalar_modulo_profile=vec_scalar_modulo_profile)
+            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+            points_float_bits_ingress_profile=points_float_bits_ingress_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -272,7 +282,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             simulation_sampler_profile=simulation_sampler_profile,
             hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
             hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
-            vec_scalar_modulo_profile=vec_scalar_modulo_profile)
+            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+            points_float_bits_ingress_profile=points_float_bits_ingress_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -533,6 +544,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
         VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
     )
+    from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+        POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
+    )
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -553,6 +567,8 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["hash_scalar_uint_rshift_profile"] = HASH_SCALAR_UINT_RSHIFT_PROFILE
         if entry["program_key"] in VEC_SCALAR_MODULO_KEYS:
             row["vec_scalar_modulo_profile"] = VEC_SCALAR_MODULO_PROFILE
+        if entry["program_key"] in POINTS_FLOAT_BITS_INGRESS_KEYS:
+            row["points_float_bits_ingress_profile"] = POINTS_FLOAT_BITS_INGRESS_PROFILE
         rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))

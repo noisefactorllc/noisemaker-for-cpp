@@ -235,6 +235,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_copy(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_diffuse(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_spriteMean(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_render_pointsEmit_init(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsEmit_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsRender_copy(const glsl::Bindings& bindings);
