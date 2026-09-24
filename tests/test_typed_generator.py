@@ -22554,17 +22554,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36292,
-                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
+                36582,
+                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
             "src/typed_generated/typed_slice.cpp": (
-                3150066,
-                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
+                3161956,
+                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
             "src/typed_generated/typed_manifest.json": (
-                824126,
-                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
+                827631,
+                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
             "include/noisemaker/generated/catalog.hpp": (
-                26643,
-                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
+                26732,
+                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23334,17 +23334,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36292,
-                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
+                36582,
+                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
             "src/typed_generated/typed_slice.cpp": (
-                3150066,
-                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
+                3161956,
+                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
             "src/typed_generated/typed_manifest.json": (
-                824126,
-                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
+                827631,
+                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
             "include/noisemaker/generated/catalog.hpp": (
-                26643,
-                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
+                26732,
+                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24090,17 +24090,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36292,
-                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
+                36582,
+                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
             "src/typed_generated/typed_slice.cpp": (
-                3150066,
-                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
+                3161956,
+                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
             "src/typed_generated/typed_manifest.json": (
-                824126,
-                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
+                827631,
+                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
             "include/noisemaker/generated/catalog.hpp": (
-                26643,
-                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
+                26732,
+                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24626,17 +24626,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36292,
-                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
+                36582,
+                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
             "src/typed_generated/typed_slice.cpp": (
-                3150066,
-                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
+                3161956,
+                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
             "src/typed_generated/typed_manifest.json": (
-                824126,
-                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
+                827631,
+                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
             "include/noisemaker/generated/catalog.hpp": (
-                26643,
-                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
+                26732,
+                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25226,17 +25226,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36292,
-                "a84a031d3b2dc98b3e5e0f5263fd9043df0f61a5c0609933489454fcf47b0702"),
+                36582,
+                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
             "src/typed_generated/typed_slice.cpp": (
-                3150066,
-                "26e9d0d10907cb1437feee16de705f3810a136055b1522a7385c235a0ac7f015"),
+                3161956,
+                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
             "src/typed_generated/typed_manifest.json": (
-                824126,
-                "89fd150872530fdbf16e9895e7555563aa6ee1639b42d4735c576059affb4b79"),
+                827631,
+                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
             "include/noisemaker/generated/catalog.hpp": (
-                26643,
-                "61e5e81ba7ea07a2e1bb54109b7149d1464650db63c110030d524ab5e08b5846"),
+                26732,
+                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25821,7 +25821,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         ]
 
         for key, rel, expected_next_diag in candidates:
-            source_path = corpus_root / "pending-sources" / rel
+            source_path = corpus_root / "sources" / rel
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / rel
             raw = source_path.read_text(encoding="utf-8")
             shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
