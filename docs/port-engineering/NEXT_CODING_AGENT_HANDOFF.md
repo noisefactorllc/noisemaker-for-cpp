@@ -1,5 +1,110 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## INDEPENDENT REVIEW CHECKPOINT 2026-09-24: COMPLETE EXECUTION BEFORE FURTHER OPERATOR ADMISSION
+>
+> This checkpoint supersedes every next-action list below. Reviewed source range:
+> `984d4ad88b6460de7b32eb9d9ca4e05fef687490..e471bd4552aec483a98e6617f1e31ab6c1eb652a`
+> (float-bit ingress, XOR, right-shift/Physarum promotion, and artifact-test repins).
+> Full CPU parity remains **incomplete**. The promotions authenticate additional programs;
+> they do not establish additional complete-effect rendering.
+>
+> ### Current evidence and limits
+>
+> - Current manifests contain **272 vendored + 32 pending = 304 pinned programs**, **271 typed**,
+>   **270 backend-compatible programs**, **182 definitions with admitted passes / 26 incomplete**,
+>   **176 admitted corpus records**, and **137 kit claims**. The immediately preceding checkpoint's
+>   “122 registered / 33 rejected (155 effects total)” is not the current catalog census.
+>   Sources: `tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/{manifest,pending}.json`,
+>   `src/typed_generated/typed_manifest.json`, `src/effects/generated/effect_catalog.provenance.json`,
+>   `tests/fixtures/dsl/executable-corpus.json`, and `export-kit/compat-effects.json`.
+>   Pending first blockers are **15 validator, 11 pass binding, 5 default semantics, 1 variant semantics**.
+>   These are measured observations, never a fixed completion denominator. Zero first diagnostics for
+>   `^` or `>>` does not establish support for every later construct or parameter/define domain.
+> - Exact-source [CI 35991667847](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35991667847)
+>   finished with nine jobs passing and the corpus parity job failing. Native Debug/Release on macOS
+>   and Ubuntu, sanitizers, package consumer, both generator jobs and Python passed. Python ran 2,097
+>   tests with 147 skips; those skipped lanes remain unverified. The earlier `5a0c3be` CI was cancelled;
+>   use `e471bd4` evidence for the corrected artifact metrics, not a claim that the cancelled run passed.
+> - The corpus lane still has **168 exact defaults, three C++ refusals, five authority refusals**.
+>   Buddhabrot, Hydraulic and PointsEmit refuse grouped multi-output execution at
+>   `src/graph/executor.cpp:1124,3248`. The six dimension tests pass separately.
+>   The complete sampled artifact contains **1,423 cases including chains: 1,119 exact, 295 C++ refusals,
+>   three mutual refusals, six timeouts, zero divergence/errors**. Define enumeration contains
+>   **4,872 cases: 1,134 exact, 3,618 refusals, 120 timeouts, zero divergence/errors**.
+>   The exact cohorts have not increased. Timeout/refusal reclassification is not support progress.
+>   Evidence: the run's `parity-sweep` artifact, `sweep/results.jsonl` and `sweep-defines/results.jsonl`.
+> - All six sampled Physarum cases succeed in JS and refuse in C++ on
+>   `points/physarum:passthrough`. Its agent promotion leaves two whole-effect dependencies:
+>   `pending.json:3577-3603` records deposit's missing point-scatter contract and passthrough's two
+>   authority bindings (`copy`, `passthrough`). `tools/glslcpp/corpus_ratchet.py:110,168-173` assumes
+>   one pass per program. Do not duplicate or drop a binding just to satisfy that schema.
+> - PointsEmit additionally refuses sampled v0/v2/v3/v4 seeds at int32 binding. The recorded seeds
+>   are 3671314507, 3214877845, 3719941088 and 3213408061. Trace
+>   `src/graph/executor.cpp:1492-1496,1682,1756` against pinned JS uniform coercion and renderer seed
+>   precedence. Clamping seeds, restricting random samples, or treating refusal as equality would hide
+>   the gap. Default/v1 reach the separate grouped-MRT refusal.
+> - The sampled kit gate fails on three Dither palette mutual refusals; the define kit gate passes.
+>   Preserve `tools/parity/sweep.py:gate_failures`: both-refused claimed support is a failure.
+>   Resolve Dither's pinned JS palette dependency through the audited authority reconciliation below;
+>   do not edit the authority or remove declared palette cases to make the gate green.
+> - Current live JS HEAD is `47260aa00df8cbd36ceb2b90cd4dda9155b8e06b`, independently matched to
+>   upstream HEAD. It advances the source lock to shader `c9ee8a04` after `f2eb495`; audit those lock
+>   changes as well as the already-recorded identities, particle routing, landscape filtering,
+>   VHS/Noise zero-control guards and sink deferral. The C++ pin is still `61aa8694d60e6e25d8d3e8c872c971be329458bc`.
+>   [Exact-source drift CI](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35991667707)
+>   fails. A fresh live-manifest census and behavioral lock are required at reconciliation time.
+>   No real program is in `kMeasuredParityExclusions`; that fact does not cover missing or refused graphs.
+> - Independent local checks at this source reproduced all 271 typed programs byte-for-byte and passed
+>   the six ingress/XOR/right-shift profile tests plus all 15 sweep tests. The existing pinned authority
+>   bundle's 719 files match Git blobs at `61aa869` exactly. These checks establish provenance and
+>   fail-closed admission, not complete Debug/Release render coverage. CI sweeps are pinned-authority
+>   Ubuntu Release evidence, not proof against current JS HEAD or exhaustive stateful execution.
+>
+> ### Required next actions, in order
+>
+> 1. **Implement atomic grouped MRT and seed binding from authority semantics.** Follow
+>    `groupMrtDestinations` / `runGroupStepIterationSync` in pinned `src/runtime/renderer.js` before
+>    replacing either executor refusal. Preserve input snapshots, per-output size/format and
+>    quantization, simultaneous output publication, ping-pong state and allocation lifetime.
+>    Audit Number-to-int uniform coercion before changing the seed path. Acceptance: Buddhabrot,
+>    Hydraulic and PointsEmit execute complete graphs and match every RGBA8/float32 output in Debug
+>    and Release across multiple iterations/calls, non-square and unequal state sizes, live/dead
+>    particles, explicit/render-level seeds, signed and float32 seed boundaries, and accepted fractional
+>    or negative inputs. All six recorded PointsEmit cases must execute; rerun the complete corpus lane.
+> 2. **Close complete particle families before isolated syntax work.** For Physarum, represent both
+>    authenticated passthrough bindings and implement deposit against the authority point-scatter
+>    contract, retaining distinct resources and blend/order semantics. Also resolve Physical's
+>    unclassified `inputTex` and the state/volume propagation dependencies recorded below. Acceptance:
+>    complete sampled and chained graphs, every output and nonzero state match JS exactly in both builds;
+>    an emitted agent kernel or default-only probe is insufficient. Flock/Life `post`, Flow `round`,
+>    and SpriteMeanTiles counted-loop admission should be chosen only within a complete family plan.
+> 3. **Audit and reconcile the JS authority, including Dither.** Compare the full pin-to-current range
+>    and behavioral lock; independently capture fixtures only after explaining each behavioral change.
+>    Regenerate census, pins, catalogs and goldens through their generators. Acceptance: drift and
+>    dynamic live kit coverage pass, all declared Dither palettes execute exactly in both builds, and
+>    no retired identity, omitted effect, relaxed tolerance or unexplained golden rebaseline hides a gap.
+> 4. **Resolve the remaining executable families and prove closure.** Keep every pending program tied
+>    to its first blocker and full-graph dependencies. Run the full authority census with at least 20
+>    sampled variants per effect, complete define domains/joint combinations, seeds/times/sizes,
+>    render options, stateful repetition and chains in Debug and Release. Acceptance: every current
+>    authority-supported effect executes, zero unsupported/refused cases, zero divergence, zero
+>    unresolved timeout/error, `--gate all`, reproducible generators and exact-commit CI. Kit-subset
+>    success or 155 sampled-exact effects cannot substitute for this completion test.
+>
+> ### External export-kit delivery blocker
+>
+> [Dispatch 35986078288](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/35986078288)
+> succeeded for `5a0c3be`, but [Scaffold release 35986099295](https://github.com/noisefactorllc/scaffold/actions/runs/35986099295)
+> failed. The served `cpp/0/kit.json` still names `e331a3d88f298d5643de888375df0f60ceacb79a`.
+> Retain the earlier bounded Scaffold test-reconciliation action and served-file/hash/render acceptance.
+> This job cannot edit Scaffold or manually dispatch a release. Handoff/checksum-only publication
+> triggers CI and Authority drift through the checksum path; it does not trigger Export kit.
+>
+> The runtime and authority corrections above require multi-pass/state and independent JS evidence;
+> they are not safe local admission-only fixes. This review corrects the actionable ordering and census
+> while preserving those explicit acceptance dependencies and all historical checkpoints below.
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-24: AUTHORIZE SCALAR UINT RIGHT-SHIFT CARRIER FOR FLOCK, LIFE, AND PHYSARUM AGENT & PROMOTE points/physarum:agent
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint Right-Shift (`>>`)** and promotion of **`points/physarum:agent`**.
