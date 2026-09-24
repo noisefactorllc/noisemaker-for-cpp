@@ -226,6 +226,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_points_lenia_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_life_matrix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_physarum_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physarum_diffuse(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_physical_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings);

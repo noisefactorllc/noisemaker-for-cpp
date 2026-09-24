@@ -25891,6 +25891,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/life:matrix": {"rshifts": 3, "rel": "points/life/matrix.glsl"},
             "points/physical:agent": {"rshifts": 3, "rel": "points/physical/agent.glsl"},
             "render/pointsEmit:init": {"rshifts": 3, "rel": "render/pointsEmit/init.glsl"},
+            "points/flock:agent": {"rshifts": 3, "rel": "points/flock/agent.glsl"},
+            "points/life:agent": {"rshifts": 3, "rel": "points/life/agent.glsl"},
+            "points/physarum:agent": {"rshifts": 3, "rel": "points/physarum/agent.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))
@@ -26007,6 +26010,113 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 forged, key, shash, "pixel", factory,
                 hash_scalar_uint_xor_profile=XOR_PROFILE,
                 hash_scalar_uint_rshift_profile=RSHIFT_PROFILE)
+
+    def test_hash_scalar_uint_rshift_pending_candidates_advancement(self) -> None:
+        import hashlib, json, pathlib
+        from tools.glslcpp import generate_typed_slice, emit_typed_cpp, check_semantics
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+            HASH_SCALAR_UINT_XOR_KEYS, PROFILE as XOR_PROFILE,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            HASH_SCALAR_UINT_RSHIFT_KEYS, PROFILE as RSHIFT_PROFILE,
+        )
+        from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+            VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE, apply_vec_scalar_modulo,
+        )
+        from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
+            POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE, apply_points_float_bits_ingress,
+        )
+
+        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        metadata = json.loads((corpus_root / "metadata.json").read_text())
+        pending = json.loads((corpus_root / "pending.json").read_text())
+
+        candidates = [
+            ("points/flock:agent", "points/flock/agent.glsl", "points/flock:agent:200:21: unsupported typed expression post"),
+            ("points/life:agent", "points/life/agent.glsl", "points/life:agent:256:17: unsupported typed expression post"),
+            ("points/physarum:agent", "points/physarum/agent.glsl", None),
+        ]
+
+        for key, rel, expected_next_diag in candidates:
+            source_path = corpus_root / "sources" / rel
+            if not source_path.exists():
+                source_path = corpus_root / "pending-sources" / rel
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+            eff_id = key.split(":", 1)[0]
+            eff = metadata["effects"].get(eff_id) or pending["effects"].get(eff_id)
+            defaults = check_semantics._metadata_defaults({"effects": {eff_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            modulo_prof = VEC_SCALAR_MODULO_PROFILE if key in VEC_SCALAR_MODULO_KEYS else None
+            ingress_prof = POINTS_FLOAT_BITS_INGRESS_PROFILE if key in POINTS_FLOAT_BITS_INGRESS_KEYS else None
+            if modulo_prof is not None:
+                typed = apply_vec_scalar_modulo(typed, shash, modulo_prof)
+            if ingress_prof is not None:
+                typed = apply_points_float_bits_ingress(typed, shash, ingress_prof)
+            typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
+            typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
+
+            xor_prof = XOR_PROFILE if key in HASH_SCALAR_UINT_XOR_KEYS else None
+
+            # Without rshift profile, validate_capabilities rejects with unsupported binary operator >>
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=ingress_prof,
+                )
+            self.assertIn("unsupported binary operator >>", str(ctx.exception))
+
+            # With rshift profile, >> is cleared and either validates cleanly or advances to next blocker
+            if expected_next_diag is None:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=RSHIFT_PROFILE,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=ingress_prof,
+                )
+                factory = "bind_" + key.replace("/", "_").replace(":", "_")
+                cpp = emit_typed_cpp.render_typed_cpp(
+                    typed, key, shash, "pixel", factory,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=RSHIFT_PROFILE,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=ingress_prof,
+                )
+                self.assertIn(">> std::uint32_t(28)", cpp)
+            else:
+                with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                    generate_typed_slice.validate_capabilities(
+                        typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                        source_hash=shash,
+                        hash_scalar_uint_xor_profile=xor_prof,
+                        hash_scalar_uint_rshift_profile=RSHIFT_PROFILE,
+                        vec_scalar_modulo_profile=modulo_prof,
+                        points_float_bits_ingress_profile=ingress_prof,
+                    )
+                self.assertEqual(str(ctx.exception), expected_next_diag)
+
+            # Tampered source hash fails rshift profile authentication
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash="ff" * 32,
+                    hash_scalar_uint_xor_profile=xor_prof,
+                    hash_scalar_uint_rshift_profile=RSHIFT_PROFILE,
+                    vec_scalar_modulo_profile=modulo_prof,
+                    points_float_bits_ingress_profile=ingress_prof,
+                )
+            self.assertIn("source hash mismatch", str(ctx.exception))
 
     def test_vec_scalar_modulo_profile_authentication(self) -> None:
         import dataclasses, hashlib, json, pathlib
@@ -26300,8 +26410,8 @@ void main() {
         # Authority programs advance cleanly past floatBitsToUint
         for key, rel, next_diag in [
             ("render/pointsEmit:init", "render/pointsEmit/init.glsl", None),
-            ("points/flock:agent", "points/flock/agent.glsl", "unsupported binary operator >>"),
-            ("points/physarum:agent", "points/physarum/agent.glsl", "unsupported binary operator >>"),
+            ("points/flock:agent", "points/flock/agent.glsl", "unsupported typed expression post"),
+            ("points/physarum:agent", "points/physarum/agent.glsl", None),
         ]:
             source_path = corpus_root / "sources" / rel
             if not source_path.exists():

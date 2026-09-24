@@ -3947,6 +3947,26 @@
     },
     {
       "effect_id": "points/physarum",
+      "normalized_bytes": 3677,
+      "normalized_sha256": "e4ee3bac5c2066c3c554459b71e0593c6df980b93c60929e85c7962674b601aa",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 1,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/physarum:agent",
+      "raw_bytes": 4817,
+      "raw_sha256": "d39a5afa26f97da83f61099e712b40d7a901978ce5b2a0070c2d87eef0c03c44",
+      "runtime_key": "points/physarum:agent",
+      "source": "sources/points/physarum/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/physarum",
       "normalized_bytes": 459,
       "normalized_sha256": "2c2bf2a356f73402b345ad9020f73bf88c587ca1422523b32e4b54d8e5ebfce3",
       "outputs": [

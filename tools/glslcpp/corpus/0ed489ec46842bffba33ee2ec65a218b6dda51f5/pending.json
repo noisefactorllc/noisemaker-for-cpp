@@ -3512,7 +3512,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flock:agent:34:19: unsupported binary operator >>",
+        "diagnostic": "GeneratorError: points/flock:agent:200:21: unsupported typed expression post",
         "stage": "typed.validator"
       },
       "effect_id": "points/flock",
@@ -3564,7 +3564,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/life:agent:44:19: unsupported binary operator >>",
+        "diagnostic": "GeneratorError: points/life:agent:256:17: unsupported typed expression post",
         "stage": "typed.validator"
       },
       "effect_id": "points/life",
@@ -3573,19 +3573,6 @@
       "raw_bytes": 9544,
       "raw_sha256": "78513907f1480250cef2e603e91a012aa4972c2e9e4bd66fc5aefa089a9a4775",
       "source": "pending-sources/points/life/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/physarum:agent:29:19: unsupported binary operator >>",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/physarum",
-      "program": "agent",
-      "program_key": "points/physarum:agent",
-      "raw_bytes": 4817,
-      "raw_sha256": "d39a5afa26f97da83f61099e712b40d7a901978ce5b2a0070c2d87eef0c03c44",
-      "source": "pending-sources/points/physarum/agent.glsl"
     },
     {
       "authority_status": "adapter",

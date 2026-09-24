@@ -1,5 +1,43 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-24: AUTHORIZE SCALAR UINT RIGHT-SHIFT CARRIER FOR FLOCK, LIFE, AND PHYSARUM AGENT & PROMOTE points/physarum:agent
+>
+> This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint Right-Shift (`>>`)** and promotion of **`points/physarum:agent`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile extension**: Extended `tools/glslcpp/frontend/hash_scalar_uint_rshift_profile.py` with profile `hash-scalar-uint-rshift-v1` to authenticate `points/flock:agent`, `points/life:agent`, and `points/physarum:agent` with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), and exact `rshift_count: 3` validation per candidate program.
+> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
+>   - `points/physarum:agent`: cleared all validation and emission requirements; promoted from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/points/physarum/agent.glsl` to `sources/points/physarum/agent.glsl`.
+>   - `points/flock:agent`: cleared binary operator `>>`, advanced to next blocker: `unsupported typed expression post` (at line 200:21).
+>   - `points/life:agent`: cleared binary operator `>>`, advanced to next blocker: `unsupported typed expression post` (at line 256:17).
+>   - **0 programs** in the authority corpus remain blocked on `>>` (scalar uint right-shift)! The scalar uint right-shift blocker class is completely resolved.
+> - **Unit & regression tests**:
+>   - Extended `test_hash_scalar_uint_rshift_profile_authentication` in `tests/test_typed_generator.py` to authenticate all 10 keys.
+>   - Added `test_hash_scalar_uint_rshift_pending_candidates_advancement` in `tests/test_typed_generator.py` verifying fail-closed rejection without rshift profile, clean advancement to next diagnostic / emitter generation of `>> std::uint32_t(28)`, and tamper resistance against forged source hashes.
+>   - Updated `test_points_float_bits_ingress_validator_and_emitter` in `tests/test_typed_generator.py` for `points/flock:agent` (`unsupported typed expression post`) and `points/physarum:agent` (`None` / full emission).
+> - **Fixed-point regeneration**:
+>   - Regenerated all derived artifacts via `tools/resync/regen_all.sh .`: `catalog.hpp`, `backend_compatibility.json`, `effect_catalog.cpp`, `effect_catalog.provenance.json`, `registry.cpp`, `typed_manifest.json`, `typed_slice.cpp`, `tools/dsl/generate_effect_catalog.py`, `tools/dsl/generate_executable_corpus.mjs`, `tools/dsl/js_frontend_oracle.mjs`.
+>   - Live pins in `registry.cpp` and `test_effect_catalog.cpp` re-pinned cleanly.
+> - **Verification & gates passed**:
+>   - All 7 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`, `generate_effect_catalog`, `generate_export_kit`).
+>   - Native C++ build & CTest passed 100% (4/4 test suites passed).
+>   - All 4 Python test shards passed (`tools/resync/pyshards.sh`).
+>   - Zero symlinks verified via `find . -type l`.
+>   - Code review subagent verified clean changes and discipline compliance.
+>
+> ### Current counts
+> - Pinned authority: **272 vendored + 32 pending = 304 authority programs** (vendored: 271 -> 272, pending: 33 -> 32).
+> - Typed slice: **271 typed programs** (was 270).
+> - Compatible effects: **122 registered / 33 rejected** (155 effects total).
+> - Blocker on binary operator `>>`: **0 programs** (was 3).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster from `pending.json`:
+>   - Candidate A: **`post` typed expression (post-increment `++` / post-decrement `--`)** (blocks `points/flock:agent` at line 200:21 and `points/life:agent` at line 256:17 in `pending.json`).
+>   - Candidate B: **`round` builtin** (`points/flow:agent`).
+>   - Candidate C: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles`.
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-23: AUTHORIZE SCALAR UINT XOR CARRIER FOR FLOCK, LIFE, AND PHYSARUM AGENT PROGRAMS
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint XOR (`^`)** for `points/flock:agent`, `points/life:agent`, and `points/physarum:agent`.

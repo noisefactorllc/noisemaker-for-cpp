@@ -28,6 +28,9 @@ HYDRAULIC_AGENT_KEY = "points/hydraulic:agent"
 LIFE_MATRIX_KEY = "points/life:matrix"
 PHYSICAL_AGENT_KEY = "points/physical:agent"
 POINTS_EMIT_INIT_KEY = "render/pointsEmit:init"
+FLOCK_AGENT_KEY = "points/flock:agent"
+LIFE_AGENT_KEY = "points/life:agent"
+PHYSARUM_AGENT_KEY = "points/physarum:agent"
 
 HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     FLOW3D_AGENT_KEY,
@@ -37,6 +40,9 @@ HASH_SCALAR_UINT_RSHIFT_KEYS = frozenset({
     LIFE_MATRIX_KEY,
     PHYSICAL_AGENT_KEY,
     POINTS_EMIT_INIT_KEY,
+    FLOCK_AGENT_KEY,
+    LIFE_AGENT_KEY,
+    PHYSARUM_AGENT_KEY,
 })
 
 _PROFILES = {
@@ -108,6 +114,36 @@ _PROFILES = {
         "functions_sha256": "35e45f77abdb760c64d089a39992f89f269feea0f0987899636d44bc2b0a9ded",
         "whole_sha256": "42b04762d700eb0b0c8c30627e317f0d2795886a7a80a32113f464608aa5e041",
         "interface_sha256": "4c788a40ea67029aafa7a4f2ecddfe820308b1da11f23f8278bf506e97806da4",
+        "rshift_count": 3,
+    },
+    FLOCK_AGENT_KEY: {
+        "raw_bytes": 9726,
+        "raw_sha256": "4c664f7443b1085a37896730b5077ed6399ce345a7b5a25101a7a91e00b18363",
+        "norm_bytes": 8417,
+        "norm_sha256": "0a527a329e196188e6d52ad0e112242446826927e6cf31e1c0abb2bead19fd73",
+        "functions_sha256": "67075b3c5276a803fbfe201aafaefdc48a2a276dce18baa539759e03537366b0",
+        "whole_sha256": "603b09344b7356dc77c4f4cf426e43eb8cfea815a7f81dd8d291b37371956ac3",
+        "interface_sha256": "dc2b8f83d606730c7cc366cc2320707f073f2f4e9e3eaa48bea747f83a6465b3",
+        "rshift_count": 3,
+    },
+    LIFE_AGENT_KEY: {
+        "raw_bytes": 9544,
+        "raw_sha256": "78513907f1480250cef2e603e91a012aa4972c2e9e4bd66fc5aefa089a9a4775",
+        "norm_bytes": 7560,
+        "norm_sha256": "7b68cb1352d33295ea3d044de858c4a3c96a76b82c34450d700ba0ccd2758ba8",
+        "functions_sha256": "08322fc7d7cfd4ab169f3280bf6bb73c64630f63c6285e3700d8e12daffc1715",
+        "whole_sha256": "ade942f1bc599e45bc607ab2a92116368324c28e4d4818c7c73b9cad826d86ba",
+        "interface_sha256": "d0d7e70f8758f7b7a924fefb72d36022ea212bc47446eb29b29c02e69e4c470a",
+        "rshift_count": 3,
+    },
+    PHYSARUM_AGENT_KEY: {
+        "raw_bytes": 4817,
+        "raw_sha256": "d39a5afa26f97da83f61099e712b40d7a901978ce5b2a0070c2d87eef0c03c44",
+        "norm_bytes": 3677,
+        "norm_sha256": "e4ee3bac5c2066c3c554459b71e0593c6df980b93c60929e85c7962674b601aa",
+        "functions_sha256": "f50cfcd2a5bbd96fe3afb495aeff4ce0e31870035da51d5a4bd62f0b77f30e34",
+        "whole_sha256": "32d8e51315238189755e5e60df01f40c96f4057a44b95e9c60b93d70db2a1d2c",
+        "interface_sha256": "9c75d74e7798cf5017f69ff010e2ab213425c51c5282514e6e1275cfa1eb94ba",
         "rshift_count": 3,
     },
 }
