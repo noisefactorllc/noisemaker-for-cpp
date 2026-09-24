@@ -1,5 +1,39 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-23: AUTHORIZE SCALAR UINT XOR CARRIER FOR FLOCK, LIFE, AND PHYSARUM AGENT PROGRAMS
+>
+> This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint XOR (`^`)** for `points/flock:agent`, `points/life:agent`, and `points/physarum:agent`.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile extension**: Extended `tools/glslcpp/frontend/hash_scalar_uint_xor_profile.py` with profile `hash-scalar-uint-xor-v1` to authenticate `points/flock:agent`, `points/life:agent`, and `points/physarum:agent` with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), and exact `xor_count: 2` validation per candidate program.
+> - **Corpus ratchet advancement**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`, updating `pending.json`:
+>   - `points/flock:agent`: cleared binary operator `^`, advanced to next blocker: `unsupported binary operator >>` (scalar uint right-shift).
+>   - `points/life:agent`: cleared binary operator `^`, advanced to next blocker: `unsupported binary operator >>` (scalar uint right-shift).
+>   - `points/physarum:agent`: cleared binary operator `^`, advanced to next blocker: `unsupported binary operator >>` (scalar uint right-shift).
+>   - **0 programs** in the entire authority corpus (`pending.json`) remain blocked on `^` (scalar uint XOR)! The scalar uint XOR blocker class is completely resolved.
+> - **Unit & regression tests**:
+>   - Extended `test_hash_scalar_uint_xor_profile_authentication` in `tests/test_typed_generator.py` to expect all 11 authenticated keys.
+>   - Added `test_hash_scalar_uint_xor_pending_candidates_advancement` in `tests/test_typed_generator.py` verifying fail-closed rejection without XOR profile, clean diagnostic advancement with XOR profile to next blocker (`>>`), and tamper resistance against forged source hashes.
+>   - Updated `test_points_float_bits_ingress_validator_and_emitter` in `tests/test_typed_generator.py` to expect advancement to `unsupported binary operator >>` for `points/flock:agent` and `points/physarum:agent`.
+> - **Verification & tests**:
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - Native CTest passed 100% (4/4 passed).
+>   - Zero symlinks verified via `find . -type l`.
+>   - Fixed-point regeneration verified clean via `tools/resync/regen_all.sh .`.
+>
+> ### Current counts
+> - Pinned authority: **271 vendored + 33 pending = 304 authority programs**.
+> - Typed slice: **270 typed programs**.
+> - Backend compatible programs: **269 programs**.
+> - Blocker on binary operator `^`: **0 programs** (was 3).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster in Step 4 from `pending.json`:
+>   - Candidate A: **`>>` binary operator (scalar uint right-shift)** (blocks `points/flock:agent`, `points/life:agent`, `points/physarum:agent` in `pending.json`; extend `tools/glslcpp/frontend/hash_scalar_uint_rshift_profile.py`).
+>   - Candidate B: **`round` builtin** (`points/flow:agent`).
+>   - Candidate C: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles`.
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-23: ADMIT floatBitsToUint BUILTIN & PROMOTE render/pointsEmit:init
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **`floatBitsToUint` Builtin** and promotion of **`render/pointsEmit:init`**.
