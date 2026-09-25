@@ -3614,19 +3614,6 @@
       "source": "pending-sources/render/pointsBillboardRender/depthMerge.glsl"
     },
     {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: render/pointsBillboardRender:spriteMeanTiles:20:5: unsupported counted-for program proof",
-        "stage": "typed.validator"
-      },
-      "effect_id": "render/pointsBillboardRender",
-      "program": "spriteMeanTiles",
-      "program_key": "render/pointsBillboardRender:spriteMeanTiles",
-      "raw_bytes": 1125,
-      "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
-      "source": "pending-sources/render/pointsBillboardRender/spriteMeanTiles.glsl"
-    },
-    {
       "authority_status": "adapter",
       "blocker": {
         "diagnostic": "render/pointsRender:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",

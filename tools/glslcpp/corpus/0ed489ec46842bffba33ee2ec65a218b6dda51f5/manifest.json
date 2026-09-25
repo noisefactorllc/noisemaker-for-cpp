@@ -4191,6 +4191,24 @@
       "varyings": []
     },
     {
+      "effect_id": "render/pointsBillboardRender",
+      "normalized_bytes": 955,
+      "normalized_sha256": "779515fb743ead143217259983866c970cdfcc192f9154c310e2bb0f7afe82db",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 24,
+      "pass_name": "spriteMeanTiles",
+      "program": "spriteMeanTiles",
+      "program_key": "render/pointsBillboardRender:spriteMeanTiles",
+      "raw_bytes": 1125,
+      "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
+      "runtime_key": "render/pointsBillboardRender:spriteMeanTiles",
+      "source": "sources/render/pointsBillboardRender/spriteMeanTiles.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
       "effect_id": "render/pointsEmit",
       "normalized_bytes": 3527,
       "normalized_sha256": "0d6c62fe326d9ec1e8f7ebbfe90ae7338c8bbe7f75b07d13a3007a81002f80dc",

@@ -52,10 +52,12 @@ NOISE_KEY = "synth/noise:noise"
 # `for (i = 0; i < OCTAVES; i++)`, with no helper-parameter indirection to
 # authenticate -- one loop, one program, one uniform read in its condition.
 CURL_KEY = "synth/curl:curl"
+SPRITE_MEAN_TILES_KEY = "render/pointsBillboardRender:spriteMeanTiles"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
-    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, *BLUR_KEYS, *CF_KEYS})
+    {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, SPRITE_MEAN_TILES_KEY,
+     *BLUR_KEYS, *CF_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -93,6 +95,41 @@ class RuntimeLaneBoundSeed:
 
 
 @dataclass(frozen=True, slots=True)
+class RuntimeTileBoundSeed:
+    start_symbol_id: int
+    end_symbol_id: int
+    lane: int
+    maximum: int
+    provenance: str
+    start_symbol: Symbol
+    end_symbol: Symbol
+    start_expression: TypedExpression
+    end_expression: TypedExpression
+
+    def __post_init__(self) -> None:
+        if (self.start_symbol_id != self.start_symbol.id
+                or self.end_symbol_id != self.end_symbol.id
+                or self.lane not in {0, 1}
+                or type(self.maximum) is not int or self.maximum < 0):
+            raise ValueError(f"{PROFILE}: malformed tile runtime seed")
+        lane_name = "x" if self.lane == 0 else "y"
+        if (self.start_expression.kind != "swizzle"
+                or self.start_expression.member != lane_name
+                or len(self.start_expression.children) != 1
+                or self.start_expression.children[0].kind != "id"
+                or self.start_expression.children[0].symbol_id != self.start_symbol_id
+                or self.start_expression.children[0].symbol != self.start_symbol):
+            raise ValueError(f"{PROFILE}: malformed tile start expression")
+        if (self.end_expression.kind != "swizzle"
+                or self.end_expression.member != lane_name
+                or len(self.end_expression.children) != 1
+                or self.end_expression.children[0].kind != "id"
+                or self.end_expression.children[0].symbol_id != self.end_symbol_id
+                or self.end_expression.children[0].symbol != self.end_symbol):
+            raise ValueError(f"{PROFILE}: malformed tile end expression")
+
+
+@dataclass(frozen=True, slots=True)
 class RuntimeLoopBoundContract:
     key: str
     seed: RuntimeScalarBoundSeed | None
@@ -107,13 +144,18 @@ class RuntimeLoopBoundContract:
     lane_seeds: tuple[RuntimeLaneBoundSeed, ...] = ()
     input_surface_name: str | None = None
     exact_output_extent: tuple[int, int] | None = None
+    tile_seeds: tuple[RuntimeTileBoundSeed, ...] = ()
 
     @property
     def maximum(self) -> int:
         """One source of truth for both proof reconstruction and the guard."""
-        if self.seed is None:
-            raise ValueError(f"{PROFILE}: scalar maximum requested for lane contract")
-        return self.seed.maximum
+        if self.seed is not None:
+            return self.seed.maximum
+        if self.lane_seeds:
+            return max(seed.maximum for seed in self.lane_seeds)
+        if self.tile_seeds:
+            return max(seed.maximum for seed in self.tile_seeds)
+        raise ValueError(f"{PROFILE}: maximum requested without seeds")
 
 
 _TETRA_EXPECTED = {
@@ -299,6 +341,24 @@ _STATS_EXPECTED = {
 }
 
 
+_SPRITE_MEAN_TILES_EXPECTED = {
+    "raw_bytes": 1125,
+    "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
+    "normalized_bytes": 955,
+    "normalized_sha256": "779515fb743ead143217259983866c970cdfcc192f9154c310e2bb0f7afe82db",
+    "defines": (),
+    "functions_sha256": "28c2d81cfea081a80f12c6b19d0a770deee75da6b2305d0c9e84ecc74f5575f1",
+    "whole_program_sha256": "1e7aaa96d85519a592b8b60e94a24d3e901c3d593fde6d22d3ec73b7c9b9ae9b",
+    "interface_sha256": "1fb06df481aa165235398e2e366fa2253f1a3e2d2f03ee0a9f2ad08f4c5ca122",
+    "sampler": (1, "spriteTex", "sampler2D", "uniform", False, "3:1-3:29"),
+    "dims_symbol": (8, "dims", "ivec2", "local", True, "13:11-13:43"),
+    "start_symbol": (12, "start", "ivec2", "local", True, "17:11-17:67"),
+    "end_symbol": (13, "end", "ivec2", "local", True, "18:11-18:71"),
+    "outer_loop": ("20:5-26:6", "4cf5598f139dc46f9f2c3f080a08ab3c30559b7e3985c4fdd0ecc0ac29c48f5e"),
+    "inner_loop": ("21:9-25:10", "c039384417e92154cf0a72a30dd81e3288a7edf372ec1cbab8585762cbe0b11f"),
+}
+
+
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
 
@@ -409,11 +469,26 @@ def validate_runtime_loop_contract(
             and contract.lane_seeds == ()
             and contract.seed.provenance
             == "runtime-metadata-uniform-direct-global")
+    sprite_mean = (contract.seed is None and contract.key == SPRITE_MEAN_TILES_KEY
+                   and contract.kind == "texture-tile-reduction"
+                   and contract.uniform_name == "spriteTex"
+                   and contract.minimum == 1 and contract.uniform_maximum == 2048
+                   and contract.default == 1
+                   and contract.render_scale_name is None
+                   and contract.radius_declaration is None
+                   and contract.input_surface_name == "spriteTex"
+                   and contract.exact_output_extent is None
+                   and contract.lane_seeds == ()
+                   and len(contract.tile_seeds) == 2
+                   and tuple((item.lane, item.maximum, item.provenance)
+                             for item in contract.tile_seeds)
+                   == ((1, 64, "runtime-texture-tile-bound"),
+                       (0, 64, "runtime-texture-tile-bound")))
     malformed_scalar = (contract.seed is not None
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
-    if not (tetra or blur or cf or stats or noise or curl) or malformed_scalar:
+    if not (tetra or blur or cf or stats or noise or curl or sprite_mean) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -527,6 +602,8 @@ def authenticate_runtime_loop_bound(
         return _authenticate_noise(program, source_hash)
     if program.key == CURL_KEY:
         return _authenticate_curl(program, source_hash)
+    if program.key == SPRITE_MEAN_TILES_KEY:
+        return _authenticate_sprite_mean_tiles(program, source_hash)
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
@@ -1094,6 +1171,103 @@ def _authenticate_stats(program: TypedProgram,
         exact_output_extent=(1, 1)))
 
 
+def _authenticate_sprite_mean_tiles(
+        program: TypedProgram,
+        source_hash: str | None) -> RuntimeLoopBoundContract:
+    expected = _SPRITE_MEAN_TILES_EXPECTED
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    functions = _cleared_functions(program)
+    whole = (program.key, program.source, program.raw_source,
+             program.declarations, functions, program.resources,
+             program.body_status, program.local_type_names, program.structs,
+             program.uniform_blocks, program.interface_symbols,
+             program.builtin_symbols, program.preprocessor_defines)
+    interface = (program.declarations, program.resources,
+                 program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.preprocessor_defines)
+    if (source_hash != expected["raw_sha256"] or len(raw) != expected["raw_bytes"]
+            or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
+            or len(normalized) != expected["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest() != expected["normalized_sha256"]
+            or defines != expected["defines"] or program.body_status != "analyzed"):
+        raise _fail("source or define profile mismatch")
+    if (_sha(functions) != expected["functions_sha256"]
+            or _sha(whole) != expected["whole_program_sha256"]
+            or _sha(interface) != expected["interface_sha256"]):
+        raise _fail("interface, function, or call-graph profile mismatch")
+
+    sampler = next((item.symbol for item in program.declarations
+                    if item.symbol.id == expected["sampler"][0]), None)
+    if (sampler is None
+            or (sampler.id, sampler.name, sampler.type.display(), sampler.storage,
+                sampler.writable, _span(sampler)) != expected["sampler"]):
+        raise _fail("sampler profile mismatch")
+    main = next((item for item in functions if item.name == "main"), None)
+    if main is None or len(functions) != 1:
+        raise _fail("interface, function, or call-graph profile mismatch")
+
+    declarations = [value.expressions[0] for value in main.body
+                    if value.kind == "decl" and len(value.expressions) == 1]
+    dims = next((value for value in declarations
+                 if value.symbol is not None and value.symbol.name == "dims"), None)
+    start = next((value for value in declarations
+                  if value.symbol is not None and value.symbol.name == "start"), None)
+    end = next((value for value in declarations
+                if value.symbol is not None and value.symbol.name == "end"), None)
+    if (dims is None or start is None or end is None
+            or dims.symbol is None or start.symbol is None or end.symbol is None
+            or (dims.symbol.id, dims.symbol.name, dims.symbol.type.display(),
+                dims.symbol.storage, dims.symbol.writable, _span(dims.symbol)) != expected["dims_symbol"]
+            or (start.symbol.id, start.symbol.name, start.symbol.type.display(),
+                start.symbol.storage, start.symbol.writable, _span(start.symbol)) != expected["start_symbol"]
+            or (end.symbol.id, end.symbol.name, end.symbol.type.display(),
+                end.symbol.storage, end.symbol.writable, _span(end.symbol)) != expected["end_symbol"]):
+        raise _fail("tile coordinate declarations profile mismatch")
+
+    loops = [value for statement in main.body for value in _walk_statement(statement)
+             if isinstance(value, TypedStatement) and value.kind == "for"]
+    if len(loops) != 2:
+        raise _fail("loop profile mismatch")
+    outer, inner = loops
+    if ((_span(outer), _sha(outer)) != expected["outer_loop"]
+            or (_span(inner), _sha(inner)) != expected["inner_loop"]
+            or len(outer.expressions) != 2 or len(inner.expressions) != 2):
+        raise _fail("loop-site profile mismatch")
+
+    outer_decl = outer.children[0].expressions[0]
+    outer_init = outer_decl.children[0]
+    outer_bound = outer.expressions[0].children[1]
+
+    inner_decl = inner.children[0].expressions[0]
+    inner_init = inner_decl.children[0]
+    inner_bound = inner.expressions[0].children[1]
+
+    if (outer_init.member != "y" or outer_init.children[0].symbol != start.symbol
+            or outer_bound.member != "y" or outer_bound.children[0].symbol != end.symbol
+            or inner_init.member != "x" or inner_init.children[0].symbol != start.symbol
+            or inner_bound.member != "x" or inner_bound.children[0].symbol != end.symbol):
+        raise _fail("loop bounds expression profile mismatch")
+
+    tile_seeds = (
+        RuntimeTileBoundSeed(start.symbol.id, end.symbol.id, 1, 64,
+                             "runtime-texture-tile-bound",
+                             start.symbol, end.symbol,
+                             outer_init, outer_bound),
+        RuntimeTileBoundSeed(start.symbol.id, end.symbol.id, 0, 64,
+                             "runtime-texture-tile-bound",
+                             start.symbol, end.symbol,
+                             inner_init, inner_bound),
+    )
+    return validate_runtime_loop_contract(RuntimeLoopBoundContract(
+        SPRITE_MEAN_TILES_KEY, None, "texture-tile-reduction", "spriteTex", 1, 2048, 1,
+        f"{SPRITE_MEAN_TILES_KEY} spriteTex dimensions must be in [1,2048]",
+        tile_seeds=tile_seeds, input_surface_name="spriteTex"))
+
+
 def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
                              profile: str | None) -> TypedProgram:
     """Attach only proof derived from the exact authenticated runtime contract."""
@@ -1107,7 +1281,8 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
     functions = attach_counted_loop_proofs(
         program.functions, program.key,
         runtime_scalar_bounds=(() if contract.seed is None else (contract.seed,)),
-        runtime_lane_bounds=contract.lane_seeds)
+        runtime_lane_bounds=contract.lane_seeds,
+        runtime_tile_bounds=contract.tile_seeds)
     return replace(program, functions=functions,
                    counted_loop_proof=summarize_counted_loop_proofs(functions))
 
@@ -1115,9 +1290,10 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 __all__ = (
     "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS",
     "CF_BLUR_KEY", "CF_SHARPEN_KEY", "CF_KEYS", "STATS_KEY",
-    "NOISE_KEY", "CURL_KEY", "RUNTIME_LOOP_BOUND_KEYS",
-    "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
-    "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeLoopBoundContract",
+    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY",
+    "RUNTIME_LOOP_BOUND_KEYS", "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
+    "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeTileBoundSeed",
+    "RuntimeLoopBoundContract",
     "authenticate_runtime_loop_bound", "apply_runtime_loop_bound",
     "validate_runtime_loop_contract", "validate_tetra_metadata",
     "validate_blur_metadata", "validate_cf_metadata",

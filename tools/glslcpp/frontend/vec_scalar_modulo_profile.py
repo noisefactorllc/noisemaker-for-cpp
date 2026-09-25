@@ -54,8 +54,14 @@ _PROFILES = {
         "raw_sha256": "e81c8f169c10a4168acd07489bafa55ecd349540c35bb1607df1fbba65261cc7",
         "norm_bytes": 955,
         "norm_sha256": "779515fb743ead143217259983866c970cdfcc192f9154c310e2bb0f7afe82db",
-        "functions_sha256": "28c2d81cfea081a80f12c6b19d0a770deee75da6b2305d0c9e84ecc74f5575f1",
-        "whole_sha256": "11e679e8da769fcdc277f78dc2777b9778ce4746bda7ffd40638bde656192e4c",
+        "functions_sha256": frozenset({
+            "28c2d81cfea081a80f12c6b19d0a770deee75da6b2305d0c9e84ecc74f5575f1",
+            "618f685938b1af45f5ef2f27e9054a620e654a12828f5f8c1a8d495fbc8c9d78",
+        }),
+        "whole_sha256": frozenset({
+            "11e679e8da769fcdc277f78dc2777b9778ce4746bda7ffd40638bde656192e4c",
+            "ff3223c7275d9eee0e1f63f251791ff2dd06980d83342d9a73d0adddaa0fc72a",
+        }),
         "interface_sha256": "1fb06df481aa165235398e2e366fa2253f1a3e2d2f03ee0a9f2ad08f4c5ca122",
         "modulo_count": 1,
     },
@@ -109,13 +115,19 @@ def authenticate_vec_scalar_modulo(
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
+    expected_fns = expected["functions_sha256"]
+    if isinstance(expected_fns, str):
+        expected_fns = {expected_fns}
+    expected_whole = expected["whole_sha256"]
+    if isinstance(expected_whole, str):
+        expected_whole = {expected_whole}
     if (len(raw) != expected["raw_bytes"]
             or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
             or len(normalized) != expected["norm_bytes"]
             or hashlib.sha256(normalized).hexdigest() != expected["norm_sha256"]
             or program.body_status != "analyzed"
-            or _sha(program.functions) != expected["functions_sha256"]
-            or _whole(program) != expected["whole_sha256"]
+            or _sha(program.functions) not in expected_fns
+            or _whole(program) not in expected_whole
             or _interface(program) != expected["interface_sha256"]):
         raise ValueError(f"{PROFILE}: {program.key} source, function, whole-program, or interface mismatch")
 

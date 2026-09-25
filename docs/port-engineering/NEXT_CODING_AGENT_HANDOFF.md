@@ -105,6 +105,47 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
+> ## CONTINUATION CHECKPOINT 2026-09-25: ADMIT RUNTIME TILE REDUCTION LOOP PROOF & PROMOTE render/pointsBillboardRender:spriteMeanTiles
+>
+> This checkpoint records the autonomous completion of the Candidate A construct blocker cluster for **Counted-for program proof in `render/pointsBillboardRender:spriteMeanTiles`** (lines 40:5-48:5 in shader source) and promotion of **`render/pointsBillboardRender:spriteMeanTiles`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile & loop proof**:
+>   - Added `RuntimeTileBoundSeed`, `_SPRITE_MEAN_TILES_EXPECTED`, and `_authenticate_sprite_mean_tiles` in `tools/glslcpp/frontend/runtime_loop_bound_profile.py` (`SPRITE_MEAN_TILES_KEY`), authenticating the dual nested tile reduction loops over `spriteTex` texture extents (`start.y` to `end.y` and `start.x` to `end.x`), bounded by tile size 64 and texture extent 2048 with dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), and fail-closed validation.
+>   - Extended `tools/glslcpp/frontend/loop_proof.py` to support `runtime_tile_bounds` proof validation and lower counted loop proofs over the outer and inner tile loops.
+>   - Admitted `SPRITE_MEAN_TILES_KEY` in `tools/glslcpp/frontend/vec_scalar_modulo_profile.py` (`VEC_SCALAR_MODULO_KEYS`) to satisfy its modulo coordinate carrier (`coord % dims`).
+> - **Compiler pipeline integration**:
+>   - In `tools/glslcpp/generate_typed_slice.py` and `tools/glslcpp/emit_typed_cpp.py`: Added capability profile forwarding, dual-carrier admission, runtime tile reduction bounds checking, and C++ code emission for `render/pointsBillboardRender:spriteMeanTiles`.
+> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
+>   - Promoted `render/pointsBillboardRender:spriteMeanTiles` from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/render/pointsBillboardRender/spriteMeanTiles.glsl` to `sources/render/pointsBillboardRender/spriteMeanTiles.glsl`.
+>   - Pinned vendored programs increased from 275 to 276; pending decreased from 29 to 28.
+>   - Typed slice increased from 274 to 275.
+>   - Backend compatible programs increased from 273 to 274.
+>   - Missing passes in catalog decreased from 69 to 68.
+> - **Unit & regression tests**:
+>   - Added comprehensive `test_sprite_mean_tiles_runtime_tile_reduction_loop_proof` in `tests/test_typed_generator.py` testing authentication, carrier requirement, contract validation, counted loop proof attachment, and C++ emission.
+>   - Updated artifact size and hash metrics across test classes in `tests/test_typed_generator.py`.
+>   - Updated `compatible_programs` (273 -> 274) and `missing_passes` (69 -> 68) in `tests/test_effect_catalog_generator.py`.
+>   - Updated `RUNTIME_LOOP_BOUND_KEYS` in `tests/test_synth_noise_prepared_profiles.py`.
+> - **Fixed-point regeneration**:
+>   - Regenerated all derived artifacts via `tools/resync/regen_all.sh .`: `catalog.hpp`, `backend_compatibility.json`, `effect_catalog.cpp`, `effect_catalog.provenance.json`, `registry.cpp`, `typed_manifest.json`, `typed_slice.cpp`, `tools/dsl/generate_effect_catalog.py`, `tools/dsl/generate_executable_corpus.mjs`, `tools/dsl/js_frontend_oracle.mjs`. Fixed point reached with zero drift.
+> - **Verification & gates passed**:
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - Native C++ build & CTest passed 100% (4/4 test suites passed: `noisemaker-cpu-tests`, `noisemaker-render-cli-build`, `noisemaker-render-cli`, `noisemaker-external-textures-cli`).
+>   - All 4 Python test shards passed (2,125 tests passed: Shard 0: 754, Shard 1: 529, Shard 2: 400, Shard 3: 442, 0 failures, 0 errors).
+>   - Zero symlinks verified via `find . -type l`.
+>
+> ### Current counts
+> - Pinned authority: **276 vendored + 28 pending = 304 authority programs** (vendored: 275 -> 276, pending: 29 -> 28).
+> - Typed slice: **275 typed programs** (was 274).
+> - Backend compatible programs: **274 compatible programs** (was 273).
+> - Missing passes in catalog: **68 missing passes** (was 69).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster from `pending.json`:
+>   - Candidate A: **Grouped multi-output execution & atomic MRT binding** in `src/graph/executor.cpp` (Buddhabrot, Hydraulic, PointsEmit).
+>   - Candidate B: Counted-for loop proof in `synth3d/cellularAutomata3d:simulate` (remaining post blocker on its 3D loop update).
+>
 > ## CONTINUATION CHECKPOINT 2026-09-25: AUTHORIZE POST EXPRESSIONS FOR FLOCK AND LIFE AGENTS & PROMOTE points/flock:agent, points/life:agent
 >
 > This checkpoint records the autonomous completion of the Candidate A construct blocker cluster for **`post` typed expressions (post-increment `++` / post-decrement `--`)** and promotion of **`points/flock:agent`** and **`points/life:agent`**.

@@ -261,6 +261,7 @@ from .frontend.runtime_loop_bound_profile import (
     PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
     PREPARED_RUNTIME_LOOP_BOUND_KEYS,
     RUNTIME_LOOP_BOUND_KEYS,
+    SPRITE_MEAN_TILES_KEY,
     RuntimeLoopBoundContract,
     authenticate_runtime_loop_bound, validate_runtime_loop_contract)
 from .frontend.gabor_effective_depth_profile import (
@@ -2329,6 +2330,8 @@ class _Emitter:
                     # requires it absent.
                     or (self.curl_vector_math_profile is not None
                         and self.program.key != CURL_KEY)
+                    or (self.vec_scalar_modulo_profile is not None
+                        and self.program.key != SPRITE_MEAN_TILES_KEY)
                     or self.grade_luma_weights_profile is not None
                     or self.grade_index_expression_profile is not None
                     or self.derivative_admission_profile is not None
@@ -12169,13 +12172,17 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                     "  const std::int32_t runtime_loop_radius = "
                     "static_cast<std::int32_t>(runtime_loop_product);",
                 ])
-            elif contract.kind == "texture-size-lanes":
+            elif contract.kind in {"texture-size-lanes", "texture-tile-reduction"}:
                 assert contract.input_surface_name is not None
                 surface = contract.input_surface_name
-                lane_maxima = {seed.lane: seed.maximum
-                               for seed in contract.lane_seeds}
-                width_maximum = lane_maxima[0]
-                height_maximum = lane_maxima[1]
+                if contract.lane_seeds:
+                    lane_maxima = {seed.lane: seed.maximum
+                                   for seed in contract.lane_seeds}
+                    width_maximum = lane_maxima[0]
+                    height_maximum = lane_maxima[1]
+                else:
+                    width_maximum = int(contract.uniform_maximum)
+                    height_maximum = int(contract.uniform_maximum)
                 product_maximum = width_maximum * height_maximum
                 lines.extend([
                     f'  const auto& {surface} = bindings.texture("{surface}");',

@@ -407,6 +407,7 @@ if __package__ in (None, ""):
         BLUR_KEYS, CF_KEYS,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
+        SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata,
@@ -821,6 +822,7 @@ else:
         BLUR_KEYS, CF_KEYS,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
+        SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata, validate_cf_metadata,
@@ -1814,6 +1816,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         # this adds the one extra field without touching the shared
         # RUNTIME_LOOP_BOUND_KEYS arm the other four members rely on.
         if key == RUNTIME_LOOP_BOUND_CURL_KEY:
+            expected = expected | {"runtime_loop_bound_profile"}
+        if key == RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY:
             expected = expected | {"runtime_loop_bound_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
@@ -3691,6 +3695,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # absent.
                 or (curl_vector_math_profile is not None
                     and typed.key != RUNTIME_LOOP_BOUND_CURL_KEY)
+                or (vec_scalar_modulo_profile is not None
+                    and typed.key != RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY)
                 or grade_luma_weights_profile is not None
                 or grade_index_expression_profile is not None
                 or derivative_admission_profile is not None

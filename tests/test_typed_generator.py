@@ -22554,17 +22554,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37578,
-                "8058348802761a846a6f7d3fe2cb591f223bbbdce982f7cba4e03f4d6d9b2625"),
+                37800,
+                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
             "src/typed_generated/typed_slice.cpp": (
-                3219740,
-                "ebac792d6ef626e15e3dd01bd31646bcc02275afce8200e2ee5e039e05fef150"),
+                3224853,
+                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
             "src/typed_generated/typed_manifest.json": (
-                839011,
-                "47895461e63bcfe891cbc5bfa2c89efe89c309208a603ed7564095427f7809eb"),
+                841716,
+                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
             "include/noisemaker/generated/catalog.hpp": (
-                26988,
-                "5bafe5530d6687852c9aebfe480b7a101cfb930f0498568921507300ccaf5aa5"),
+                27097,
+                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23334,17 +23334,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37578,
-                "8058348802761a846a6f7d3fe2cb591f223bbbdce982f7cba4e03f4d6d9b2625"),
+                37800,
+                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
             "src/typed_generated/typed_slice.cpp": (
-                3219740,
-                "ebac792d6ef626e15e3dd01bd31646bcc02275afce8200e2ee5e039e05fef150"),
+                3224853,
+                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
             "src/typed_generated/typed_manifest.json": (
-                839011,
-                "47895461e63bcfe891cbc5bfa2c89efe89c309208a603ed7564095427f7809eb"),
+                841716,
+                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
             "include/noisemaker/generated/catalog.hpp": (
-                26988,
-                "5bafe5530d6687852c9aebfe480b7a101cfb930f0498568921507300ccaf5aa5"),
+                27097,
+                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24090,17 +24090,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37578,
-                "8058348802761a846a6f7d3fe2cb591f223bbbdce982f7cba4e03f4d6d9b2625"),
+                37800,
+                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
             "src/typed_generated/typed_slice.cpp": (
-                3219740,
-                "ebac792d6ef626e15e3dd01bd31646bcc02275afce8200e2ee5e039e05fef150"),
+                3224853,
+                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
             "src/typed_generated/typed_manifest.json": (
-                839011,
-                "47895461e63bcfe891cbc5bfa2c89efe89c309208a603ed7564095427f7809eb"),
+                841716,
+                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
             "include/noisemaker/generated/catalog.hpp": (
-                26988,
-                "5bafe5530d6687852c9aebfe480b7a101cfb930f0498568921507300ccaf5aa5"),
+                27097,
+                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24626,17 +24626,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37578,
-                "8058348802761a846a6f7d3fe2cb591f223bbbdce982f7cba4e03f4d6d9b2625"),
+                37800,
+                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
             "src/typed_generated/typed_slice.cpp": (
-                3219740,
-                "ebac792d6ef626e15e3dd01bd31646bcc02275afce8200e2ee5e039e05fef150"),
+                3224853,
+                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
             "src/typed_generated/typed_manifest.json": (
-                839011,
-                "47895461e63bcfe891cbc5bfa2c89efe89c309208a603ed7564095427f7809eb"),
+                841716,
+                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
             "include/noisemaker/generated/catalog.hpp": (
-                26988,
-                "5bafe5530d6687852c9aebfe480b7a101cfb930f0498568921507300ccaf5aa5"),
+                27097,
+                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25226,17 +25226,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37578,
-                "8058348802761a846a6f7d3fe2cb591f223bbbdce982f7cba4e03f4d6d9b2625"),
+                37800,
+                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
             "src/typed_generated/typed_slice.cpp": (
-                3219740,
-                "ebac792d6ef626e15e3dd01bd31646bcc02275afce8200e2ee5e039e05fef150"),
+                3224853,
+                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
             "src/typed_generated/typed_manifest.json": (
-                839011,
-                "47895461e63bcfe891cbc5bfa2c89efe89c309208a603ed7564095427f7809eb"),
+                841716,
+                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
             "include/noisemaker/generated/catalog.hpp": (
-                26988,
-                "5bafe5530d6687852c9aebfe480b7a101cfb930f0498568921507300ccaf5aa5"),
+                27097,
+                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25554,6 +25554,83 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             self.assertIn("std::int32_t runtime_loop_radius;", cpp)
             self.assertIn(f'static_cast<std::int32_t>({param_name})', cpp)
             self.assertIn("const double runtime_loop_product =", cpp)
+
+    def test_sprite_mean_tiles_runtime_tile_reduction_loop_proof(self) -> None:
+        from tools.glslcpp import emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            SPRITE_MEAN_TILES_KEY, RUNTIME_LOOP_BOUND_KEYS,
+            PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
+            apply_runtime_loop_bound, authenticate_runtime_loop_bound,
+            validate_runtime_loop_contract,
+        )
+        from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
+            VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
+            apply_vec_scalar_modulo,
+        )
+        import hashlib
+        import pathlib
+
+        self.assertIn(SPRITE_MEAN_TILES_KEY, RUNTIME_LOOP_BOUND_KEYS)
+        self.assertIn(SPRITE_MEAN_TILES_KEY, generate_typed_slice.RUNTIME_LOOP_BOUND_KEYS)
+        self.assertIn(SPRITE_MEAN_TILES_KEY, VEC_SCALAR_MODULO_KEYS)
+
+        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/render/pointsBillboardRender/spriteMeanTiles.glsl")
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        ast = parse_program(raw, SPRITE_MEAN_TILES_KEY)
+        typed = analyze_program(ast, SPRITE_MEAN_TILES_KEY)
+
+        # Without profile, validate_capabilities rejects with exact runtime-loop-bound carrier required
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                vec_scalar_modulo_profile=VEC_SCALAR_MODULO_PROFILE,
+            )
+        self.assertIn("exact runtime-loop-bound carrier required", str(ctx.exception))
+
+        # Contract authentication and validation
+        contract = authenticate_runtime_loop_bound(typed, shash, RUNTIME_LOOP_BOUND_PROFILE)
+        self.assertEqual(contract.kind, "texture-tile-reduction")
+        self.assertEqual(contract.uniform_name, "spriteTex")
+        self.assertEqual(contract.maximum, 64)
+        self.assertEqual(len(contract.tile_seeds), 2)
+        validate_runtime_loop_contract(contract)
+
+        # Apply runtime loop bound and verify counted loop proof
+        typed_bounded = apply_runtime_loop_bound(typed, shash, RUNTIME_LOOP_BOUND_PROFILE)
+        summary = typed_bounded.counted_loop_proof
+        self.assertEqual(
+            (2, 0, 2, 4096, 4160, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic)
+        )
+
+        # Apply vec_scalar_modulo carrier
+        typed_dual = apply_vec_scalar_modulo(typed_bounded, shash, VEC_SCALAR_MODULO_PROFILE)
+
+        # Validate capabilities passes with both dual carriers present
+        generate_typed_slice.validate_capabilities(
+            typed_dual, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            runtime_loop_bound_profile=RUNTIME_LOOP_BOUND_PROFILE,
+            vec_scalar_modulo_profile=VEC_SCALAR_MODULO_PROFILE,
+        )
+
+        # Render typed C++ and verify emitted structure
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed_dual, SPRITE_MEAN_TILES_KEY, shash,
+            runtime_loop_bound_profile=RUNTIME_LOOP_BOUND_PROFILE,
+            vec_scalar_modulo_profile=VEC_SCALAR_MODULO_PROFILE,
+        )
+        self.assertIn("glsl::KernelBindingError", cpp)
+        self.assertIn("render/pointsBillboardRender:spriteMeanTiles spriteTex dimensions must be in [1,2048]", cpp)
+        self.assertIn("const std::size_t runtime_loop_width = spriteTex.width();", cpp)
+        self.assertIn("glsl::integer_mod(coord, std::int32_t(32))", cpp)
 
     def test_simulation_sampler_profile_authentication(self) -> None:
         import hashlib, pathlib
@@ -26233,7 +26310,7 @@ void main() {
         for key, rel, next_diag in [
             ("points/flock:agent", "points/flock/agent.glsl", "unsupported builtin floatBitsToUint"),
             ("points/life:agent", "points/life/agent.glsl", "unsupported binary operator ^"),
-            ("render/pointsBillboardRender:spriteMeanTiles", "render/pointsBillboardRender/spriteMeanTiles.glsl", "unsupported counted-for program proof"),
+            ("render/pointsBillboardRender:spriteMeanTiles", "render/pointsBillboardRender/spriteMeanTiles.glsl", "exact runtime-loop-bound carrier required"),
         ]:
             source_path = corpus_root / "sources" / rel
             if not source_path.exists():
@@ -26257,19 +26334,23 @@ void main() {
             self.assertIn(next_diag, str(ctx.exception))
 
             # Tampered hash fails profile authentication
-            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
-                generate_typed_slice.validate_capabilities(
-                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
-                    source_hash="ff" * 32,
-                    vec_scalar_modulo_profile=PROFILE,
-                )
+            with self.assertRaises((generate_typed_slice.GeneratorError, ValueError)) as ctx:
+                if key == "render/pointsBillboardRender:spriteMeanTiles":
+                    from tools.glslcpp.frontend.vec_scalar_modulo_profile import authenticate_vec_scalar_modulo
+                    authenticate_vec_scalar_modulo(typed, "ff" * 32, PROFILE)
+                else:
+                    generate_typed_slice.validate_capabilities(
+                        typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                        source_hash="ff" * 32,
+                        vec_scalar_modulo_profile=PROFILE,
+                    )
             self.assertIn("source hash mismatch", str(ctx.exception))
 
             if key == "render/pointsBillboardRender:spriteMeanTiles":
                 # Emitter detects downstream counted loop proof blocker
                 with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                     emit_typed_cpp._Emitter(typed, shash, vec_scalar_modulo_profile=PROFILE)
-                self.assertIn("unsupported counted-for program proof", str(ctx.exception))
+                self.assertIn("exact profile carrier required", str(ctx.exception))
             else:
                 # Emitter lowers authenticated vector % scalar modulo node cleanly
                 emitter = emit_typed_cpp._Emitter(typed, shash, vec_scalar_modulo_profile=PROFILE)

@@ -263,6 +263,7 @@ class NoiseRuntimeLoopBoundRecordTests(unittest.TestCase):
         # so it carries the same runtime-loop-bound proof noise does.
         self.assertEqual(frozenset({module.TETRA_KEY, module.STATS_KEY,
                                     module.NOISE_KEY, module.CURL_KEY,
+                                    module.SPRITE_MEAN_TILES_KEY,
                                     *module.BLUR_KEYS, *module.CF_KEYS}),
                          module.RUNTIME_LOOP_BOUND_KEYS)
         for name in ("NOISE_KEY", "validate_noise_metadata"):

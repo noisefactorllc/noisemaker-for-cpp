@@ -1237,6 +1237,12 @@
     },
     {
       "defines": {},
+      "program_key": "render/pointsBillboardRender:spriteMeanTiles",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1",
+      "vec_scalar_modulo_profile": "vec-scalar-modulo-v1"
+    },
+    {
+      "defines": {},
       "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
       "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
       "points_float_bits_ingress_profile": "points-float-bits-ingress-v1",

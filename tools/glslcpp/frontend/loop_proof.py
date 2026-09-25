@@ -555,13 +555,14 @@ def _start_value(value: TypedExpression, bounded: dict[int, tuple[int, str, obje
 def _annotate_sequence(values: tuple[TypedStatement, ...], key: str, depth: int,
                        ancestor_product: int,
                        bounded: dict[int, tuple[int, str, object]],
-                       lane_bounded: tuple[object, ...] = ()) -> tuple[TypedStatement, ...]:
+                       lane_bounded: tuple[object, ...] = (),
+                       tile_bounded: tuple[object, ...] = ()) -> tuple[TypedStatement, ...]:
     result: list[TypedStatement] = []
     active = dict(bounded)
     float_active: dict[int, tuple[float, object]] = {}
     for value in values:
         annotated = _annotate_statement(
-            value, key, depth, ancestor_product, active, lane_bounded)
+            value, key, depth, ancestor_product, active, lane_bounded, tile_bounded)
         result.append(annotated)
         bound = _local_bound(annotated, key, float_active)
         if bound is not None:
@@ -577,19 +578,20 @@ def _annotate_sequence(values: tuple[TypedStatement, ...], key: str, depth: int,
 def _annotate_statement(value: TypedStatement, key: str, depth: int,
                         ancestor_product: int,
                         bounded: dict[int, tuple[int, str, object]],
-                        lane_bounded: tuple[object, ...] = ()) -> TypedStatement:
+                        lane_bounded: tuple[object, ...] = (),
+                        tile_bounded: tuple[object, ...] = ()) -> TypedStatement:
     if value.kind == "block":
         return replace(value, children=_annotate_sequence(
-            value.children, key, depth, ancestor_product, bounded, lane_bounded))
+            value.children, key, depth, ancestor_product, bounded, lane_bounded, tile_bounded))
     if value.kind == "if":
         return replace(value, children=tuple(
             _annotate_statement(child, key, depth, ancestor_product,
-                                dict(bounded), lane_bounded)
+                                dict(bounded), lane_bounded, tile_bounded)
             for child in value.children))
     if value.kind != "for":
         return replace(value, children=tuple(
             _annotate_statement(child, key, depth, ancestor_product,
-                                dict(bounded), lane_bounded)
+                                dict(bounded), lane_bounded, tile_bounded)
             for child in value.children))
 
     # Every admitted form has an initializer statement and body, then exact
@@ -621,6 +623,9 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
         return value
     if induction_type == "int":
         start = _start_value(declaration.children[0], bounded)
+        if start is None and tile_bounded:
+            if any(seed.start_expression == declaration.children[0] for seed in tile_bounded):
+                start = 0
     else:
         start = _integer_valued_float_literal(declaration.children[0])
     condition, update = value.expressions
@@ -646,20 +651,30 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
             bound, bound_kind, bound_symbol = bounded[bound_expression.symbol_id]
             if bound_expression.symbol != bound_symbol:
                 return value
-        if bound is None and bound_expression.kind == "swizzle":
+        if bound is None and bound_expression.kind == "swizzle" and lane_bounded:
             matches = tuple(seed for seed in lane_bounded
                             if seed.expression == bound_expression)
-            if len(matches) != 1:
+            if len(matches) == 1:
+                seed = matches[0]
+                child = bound_expression.children[0] if len(bound_expression.children) == 1 else None
+                if (child is None or child.kind != "id"
+                        or child.symbol_id != seed.symbol_id
+                        or child.symbol != seed.symbol
+                        or bound_expression.member != ("x" if seed.lane == 0 else "y")):
+                    return value
+                bound = seed.maximum
+                bound_kind = seed.provenance
+            elif len(matches) > 1:
                 return value
-            seed = matches[0]
-            child = bound_expression.children[0] if len(bound_expression.children) == 1 else None
-            if (child is None or child.kind != "id"
-                    or child.symbol_id != seed.symbol_id
-                    or child.symbol != seed.symbol
-                    or bound_expression.member != ("x" if seed.lane == 0 else "y")):
-                return value
-            bound = seed.maximum
-            bound_kind = seed.provenance
+        if bound is None and tile_bounded:
+            matches = tuple(seed for seed in tile_bounded
+                            if seed.start_expression == declaration.children[0]
+                            and seed.end_expression == bound_expression)
+            if len(matches) == 1:
+                seed = matches[0]
+                start = 0
+                bound = seed.maximum
+                bound_kind = seed.provenance
     else:
         bound = _integer_valued_float_literal(bound_expression)
     if bound is None:
@@ -671,7 +686,7 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
     trips = max(0, bound - start + (1 if condition.operator == "<=" else 0))
     current_product = _checked_mul(ancestor_product, trips)
     annotated_body = _annotate_statement(
-        body, key, depth + 1, current_product, dict(bounded), lane_bounded)
+        body, key, depth + 1, current_product, dict(bounded), lane_bounded, tile_bounded)
     descendant_products = _loop_products(annotated_body)
     product = max((current_product, *descendant_products))
     proof = CountedLoopProof(symbol_id, start, bound, condition.operator,
@@ -740,6 +755,7 @@ def attach_counted_loop_proofs(
         source_global_bounds: tuple[tuple[int, int, str, object], ...] = (),
         runtime_scalar_bounds: tuple[object, ...] = (),
         runtime_lane_bounds: tuple[object, ...] = (),
+        runtime_tile_bounds: tuple[object, ...] = (),
 ) -> tuple[TypedFunction, ...]:
     """Attach local and whole-entrypoint loop evidence without consulting source text."""
     clean = clear_counted_loop_proofs(functions)
@@ -759,9 +775,13 @@ def attach_counted_loop_proofs(
                             for seed in runtime_lane_bounds)
     if len(set(lane_identities)) != len(lane_identities):
         raise ValueError(f"{key}: duplicate runtime lane counted-loop seed")
+    tile_identities = tuple((seed.start_symbol_id, seed.end_symbol_id, seed.lane)
+                            for seed in runtime_tile_bounds)
+    if len(set(tile_identities)) != len(tile_identities):
+        raise ValueError(f"{key}: duplicate runtime tile counted-loop seed")
     initial_bounds.update(runtime_bounds)
     annotated = tuple(replace(function, body=_annotate_sequence(
-        function.body, key, 0, 1, dict(initial_bounds), runtime_lane_bounds))
+        function.body, key, 0, 1, dict(initial_bounds), runtime_lane_bounds, runtime_tile_bounds))
                       for function in clean)
     definitions = {function.signature.id: function for function in annotated if function.body}
     main = next((function for function in annotated if function.name == "main" and function.body), None)
@@ -918,7 +938,9 @@ def rebuild_authenticated_counted_loop_proofs(
                                or runtime_contract.seed is None
                                else (runtime_contract.seed,)),
         runtime_lane_bounds=(() if runtime_contract is None
-                             else runtime_contract.lane_seeds))
+                             else runtime_contract.lane_seeds),
+        runtime_tile_bounds=(() if runtime_contract is None
+                             else runtime_contract.tile_seeds))
     return attached, summarize_counted_loop_proofs(attached)
 
 
