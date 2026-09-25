@@ -1124,6 +1124,13 @@
     },
     {
       "defines": {},
+      "flow_round_profile": "flow-round-admission-v1",
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/flow:agent"
+    },
+    {
+      "defines": {},
       "program_key": "points/flow:passthrough"
     },
     {

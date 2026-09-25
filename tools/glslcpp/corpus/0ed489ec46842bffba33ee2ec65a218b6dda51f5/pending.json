@@ -3525,19 +3525,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flow:agent:146:22: unsupported builtin round",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/flow",
-      "program": "agent",
-      "program_key": "points/flow:agent",
-      "raw_bytes": 5848,
-      "raw_sha256": "0584139db3b2e14af99788458a48094a0d650a03ae540a0468309bf2f097bb6b",
-      "source": "pending-sources/points/flow/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "GeneratorError: points/lenia:convolve:36:5: unsupported counted-for program proof",
         "stage": "typed.validator"
       },

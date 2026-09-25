@@ -358,6 +358,9 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.posterize_round_profile import (
         POSTERIZE_KEY, PROFILE as POSTERIZE_ROUND_PROFILE,
         apply_posterize_round_admission, authenticate_posterize_round_admission)
+    from tools.glslcpp.frontend.flow_round_profile import (
+        FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
+        apply_flow_round_admission, authenticate_flow_round_admission)
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from tools.glslcpp.frontend.as_u32_round_profile import (
@@ -765,6 +768,9 @@ else:
     from .frontend.posterize_round_profile import (
         POSTERIZE_KEY, PROFILE as POSTERIZE_ROUND_PROFILE,
         apply_posterize_round_admission, authenticate_posterize_round_admission)
+    from .frontend.flow_round_profile import (
+        FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
+        apply_flow_round_admission, authenticate_flow_round_admission)
     from .frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from .frontend.as_u32_round_profile import (
@@ -1613,6 +1619,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == DISTORTION_FRONTEND_KEY else
                     {"defines", "rotate_mat2_return_profile", "program_key"}
                     if key == ROTATE_KEY else
+                    {"defines", "flow_round_profile",
+                     "hash_scalar_uint_rshift_profile",
+                     "hash_scalar_uint_xor_profile", "program_key"}
+                    if key == FLOW_AGENT_KEY else
                     {"defines", "hash_scalar_uint_rshift_profile",
                      "hash_scalar_uint_xor_profile",
                      "points_float_bits_ingress_profile", "program_key"}
@@ -2244,6 +2254,14 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for item in programs if "posterize_round_profile" in item]
     if posterize_round_profiles != [(POSTERIZE_KEY, POSTERIZE_ROUND_PROFILE)]:
         raise GeneratorError("typed slice Posterize round admission profile drift")
+    expected_flow_round_profiles = [
+        (FLOW_AGENT_KEY, FLOW_ROUND_PROFILE)
+    ] if FLOW_AGENT_KEY in keys else []
+    flow_round_profiles = [
+        (item["program_key"], item.get("flow_round_profile"))
+        for item in programs if "flow_round_profile" in item]
+    if flow_round_profiles != expected_flow_round_profiles:
+        raise GeneratorError("typed slice Flow round admission profile drift")
     as_u32_round_profiles = [
         (item["program_key"], item.get("as_u32_round_profile"))
         for item in programs if "as_u32_round_profile" in item]
@@ -3401,6 +3419,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           linear_srgb_lane_index_profile: str | None = None,
                           reflect_admission_profile: str | None = None,
                           posterize_round_profile: str | None = None,
+                          flow_round_profile: str | None = None,
                           as_u32_round_profile: str | None = None,
                           ceil_admission_profile: str | None = None,
                           waves_any_notequal_profile: str | None = None,
@@ -4144,6 +4163,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_emboss_reductions: list[TypedExpression] = []
     visited_emboss_materialization_divisions: list[TypedExpression] = []
     authorized_posterize_round = None
+    authorized_flow_round = None
     authorized_as_u32_round = None
     authorized_ceil = ()
     authorized_waves_relationals: tuple[TypedExpression, ...] = ()
@@ -5924,6 +5944,18 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key == POSTERIZE_KEY:
         raise GeneratorError(
             f"{typed.key}: exact Posterize round admission profile carrier required")
+    if flow_round_profile is not None:
+        if (typed.key != FLOW_AGENT_KEY or compatibility_transform is not None
+                or numeric_literal_contract != "glsl-f32"):
+            raise GeneratorError(f"{typed.key}: Flow round admission profile metadata mismatch")
+        try:
+            authorized_flow_round = authenticate_flow_round_admission(
+                typed, source_hash, flow_round_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key == FLOW_AGENT_KEY:
+        raise GeneratorError(
+            f"{typed.key}: exact Flow round admission profile carrier required")
     # as_u32_round_profile is deliberately light-checked, the same style as
     # posterize_round_profile immediately above, keyed by a dict of
     # program_key carriers (AS_U32_ROUND_KEYS) since the admitted `round`
@@ -7469,6 +7501,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # exact node-identity checks; neither widens the vocabulary.
                 if (value is not authorized_round
                         and value is not authorized_posterize_round
+                        and value is not authorized_flow_round
                         and not any(value is item for item
                                     in (authorized_as_u32_round or ()))
                         and not (testpattern_frontend_proof is not None
@@ -8933,6 +8966,17 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
             if profiled is not typed:
                 raise GeneratorError(f"{key}: Posterize round admission identity profile mutated program")
             typed = profiled
+        flow_round_profile = slice_spec["programs"][index].get(
+            "flow_round_profile")
+        if flow_round_profile is not None:
+            try:
+                profiled = apply_flow_round_admission(
+                    typed, source_hash, flow_round_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(f"{key}: Flow round admission identity profile mutated program")
+            typed = profiled
         as_u32_round_profile = slice_spec["programs"][index].get(
             "as_u32_round_profile")
         ceil_admission_profile = slice_spec["programs"][index].get(
@@ -9670,6 +9714,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               linear_srgb_lane_index_profile=linear_srgb_lane_index_profile,
                               reflect_admission_profile=reflect_admission_profile,
                               posterize_round_profile=posterize_round_profile,
+                              flow_round_profile=flow_round_profile,
                               as_u32_round_profile=as_u32_round_profile,
                               ceil_admission_profile=ceil_admission_profile,
                               waves_any_notequal_profile=waves_any_notequal_profile,
@@ -9750,6 +9795,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            linear_srgb_lane_index_profile=linear_srgb_lane_index_profile,
                                            reflect_admission_profile=reflect_admission_profile,
                                            posterize_round_profile=posterize_round_profile,
+                                           flow_round_profile=flow_round_profile,
                                            as_u32_round_profile=as_u32_round_profile,
                                            ceil_admission_profile=ceil_admission_profile,
                                            waves_any_notequal_profile=waves_any_notequal_profile,

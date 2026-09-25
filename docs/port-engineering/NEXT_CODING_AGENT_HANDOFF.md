@@ -105,6 +105,47 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
+> ## CONTINUATION CHECKPOINT 2026-09-24: AUTHORIZE ROUND BUILTIN FOR FLOW AGENT & PROMOTE points/flow:agent
+>
+> This checkpoint records the autonomous completion of the Candidate B construct blocker cluster for **`round` builtin admission** and promotion of **`points/flow:agent`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile**: Created `tools/glslcpp/frontend/flow_round_profile.py` (`flow-round-admission-v1`) targeting `points/flow:agent` at line 146:22-146:39 (`round(finalAngle)`), authenticating program identity with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), and fail-closed validation.
+> - **Compiler pipeline integration**:
+>   - In `tools/glslcpp/generate_typed_slice.py`: Added `flow-round-admission-v1` validation, manifest drift check, typed expression capability authorization, and batch generation profile application.
+>   - In `tools/glslcpp/emit_typed_cpp.py`: Added `authorized_flow_round` dataclass slot, `__post_init__` authentication gate, lowering to `noisemaker::f32(glsl::round(x))`, argument type checking (requires float/f32), parameter forwarding through `render_typed_cpp`, and fail-closed gate at EOF.
+>   - In `tools/glslcpp/corpus_ratchet.py`: Added `probe_program` profile application and typed slice emission.
+> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
+>   - `points/flow:agent`: cleared all validation and emission requirements; promoted from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/points/flow/agent.glsl` to `sources/points/flow/agent.glsl`.
+>   - **0 programs** in the authority corpus remain blocked on `round` builtin.
+> - **Unit & regression tests**:
+>   - Added comprehensive `test_flow_round_profile` in `tests/test_typed_generator.py` testing direct authentication, profile mismatch, hash mismatch, key mismatch, fail-closed validation, successful validation, fail-closed emission, and successful C++ emission with `BoundKernelMrt bind_flow_agent`.
+>   - Updated artifact size and hash metrics across all 5 test classes in `tests/test_typed_generator.py`.
+>   - Updated `compatible_programs` (270 -> 271) and `missing_passes` (72 -> 71) in `tests/test_effect_catalog_generator.py`.
+> - **Tooling hardening**:
+>   - Updated `tools/resync/pyshards.sh` to ensure `/opt/homebrew/bin/node` (v26.0.0) is prioritized in `PATH` when running with authority, preventing host Node version drift in oracle unittests.
+> - **Fixed-point regeneration**:
+>   - Regenerated all derived artifacts via `tools/resync/regen_all.sh .`: `catalog.hpp`, `backend_compatibility.json`, `effect_catalog.cpp`, `effect_catalog.provenance.json`, `registry.cpp`, `typed_manifest.json`, `typed_slice.cpp`, `tools/dsl/generate_effect_catalog.py`, `tools/dsl/generate_executable_corpus.mjs`, `tools/dsl/js_frontend_oracle.mjs`. Fixed point reached with zero drift.
+> - **Verification & gates passed**:
+>   - All generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`, `generate_effect_catalog`, `generate_export_kit`).
+>   - Native C++ build & CTest passed 100% (4/4 test suites passed).
+>   - All 4 Python test shards passed (2,123 tests passed, 0 failures, 0 errors).
+>   - Zero symlinks verified via `find . -type l`.
+>
+> ### Current counts
+> - Pinned authority: **273 vendored + 31 pending = 304 authority programs** (vendored: 272 -> 273, pending: 32 -> 31).
+> - Typed slice: **272 typed programs** (was 271).
+> - Backend compatible programs: **271 compatible programs** (was 270).
+> - Missing passes in catalog: **71 missing passes** (was 72).
+> - Blocker on builtin `round`: **0 programs** (was 1).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster from `pending.json`:
+>   - Candidate A: **`post` typed expression (post-increment `++` / post-decrement `--`)** (blocks `points/flock:agent` at line 200:21 and `points/life:agent` at line 256:17 in `pending.json`).
+>   - Candidate B: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles` (lines 40:5-48:5).
+>   - Candidate C: **Grouped multi-output execution & atomic MRT binding** in `src/graph/executor.cpp` (Buddhabrot, Hydraulic, PointsEmit).
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-24: AUTHORIZE SCALAR UINT RIGHT-SHIFT CARRIER FOR FLOCK, LIFE, AND PHYSARUM AGENT & PROMOTE points/physarum:agent
 >
 > This checkpoint records the autonomous completion of the Step 4 construct blocker cluster for **Scalar uint Right-Shift (`>>`)** and promotion of **`points/physarum:agent`**.

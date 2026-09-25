@@ -216,6 +216,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_flock_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_flow_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_flow_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_heightGrid_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_heightGrid_passthrough(const glsl::Bindings& bindings);

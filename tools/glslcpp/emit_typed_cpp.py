@@ -210,6 +210,9 @@ from .frontend.as_u32_round_profile import (
 from .frontend.posterize_round_profile import (
     POSTERIZE_KEY, PROFILE as POSTERIZE_ROUND_PROFILE,
     authenticate_posterize_round_admission)
+from .frontend.flow_round_profile import (
+    FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
+    authenticate_flow_round_admission)
 from .frontend.waves_any_notequal_profile import (
     WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
     authenticate_waves_any_notequal_admission)
@@ -1065,6 +1068,7 @@ class _Emitter:
     linear_srgb_lane_index_profile: str | None = None
     reflect_admission_profile: str | None = None
     posterize_round_profile: str | None = None
+    flow_round_profile: str | None = None
     as_u32_round_profile: str | None = None
     ceil_admission_profile: str | None = None
     waves_any_notequal_profile: str | None = None
@@ -1502,6 +1506,7 @@ class _Emitter:
     emitted_reflect_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_posterize_round: TypedExpression | None = field(init=False, default=None)
+    authorized_flow_round: TypedExpression | None = field(init=False, default=None)
     authorized_as_u32_round: TypedExpression | None = field(init=False, default=None)
     authorized_ceil: tuple = field(init=False, default=())
     authorized_waves_relationals: tuple[TypedExpression, ...] = field(
@@ -1931,6 +1936,7 @@ class _Emitter:
         self.authorized_reflect_node = None
         self.emitted_reflect_nodes = []
         self.authorized_posterize_round = None
+        self.authorized_flow_round = None
         self.authorized_as_u32_round = None
         self.authorized_ceil = ()
         self.authorized_waves_relationals = ()
@@ -3287,6 +3293,22 @@ class _Emitter:
         elif self.program.key == POSTERIZE_KEY:
             raise _error(self.program, self.program,
                          "exact Posterize round admission profile carrier required")
+        if self.flow_round_profile is not None:
+            if (self.program.key != FLOW_AGENT_KEY
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "Flow round admission profile metadata mismatch")
+            try:
+                self.authorized_flow_round = (
+                    authenticate_flow_round_admission(
+                        self.program, self.source_hash,
+                        self.flow_round_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key == FLOW_AGENT_KEY:
+            raise _error(self.program, self.program,
+                         "exact Flow round admission profile carrier required")
         # as_u32_round_profile is deliberately light-checked, the same style
         # as posterize_round_profile immediately above, keyed by a dict of
         # program_key carriers (AS_U32_ROUND_KEYS) since the admitted `round`
@@ -8539,6 +8561,7 @@ class _Emitter:
                     # scalar result to f32 immediately on return, so this
                     # must narrow here too, not rely on a caller-side narrow.
                     if (value is not self.authorized_posterize_round
+                            and value is not self.authorized_flow_round
                             and not any(value is item for item
                                         in (self.authorized_as_u32_round or ()))):
                         raise _error(self.program, value, "unsupported builtin round")
@@ -12966,6 +12989,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      linear_srgb_lane_index_profile: str | None = None,
                      reflect_admission_profile: str | None = None,
                      posterize_round_profile: str | None = None,
+                     flow_round_profile: str | None = None,
                      as_u32_round_profile: str | None = None,
                      ceil_admission_profile: str | None = None,
                      waves_any_notequal_profile: str | None = None,
@@ -13072,6 +13096,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        linear_srgb_lane_index_profile,
                        reflect_admission_profile,
                        posterize_round_profile,
+                       flow_round_profile,
                        as_u32_round_profile,
                        ceil_admission_profile,
                        waves_any_notequal_profile,
@@ -13930,6 +13955,9 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
     if program.key == POSTERIZE_KEY and posterize_round_profile is None:
         raise _error(program, program,
                      "exact Posterize round admission profile carrier required")
+    if program.key == FLOW_AGENT_KEY and flow_round_profile is None:
+        raise _error(program, program,
+                     "exact Flow round admission profile carrier required")
     if program.key in AS_U32_ROUND_KEYS and as_u32_round_profile is None:
         raise _error(program, program,
                      "exact as_u32 round admission profile carrier required")

@@ -3761,6 +3761,26 @@
     },
     {
       "effect_id": "points/flow",
+      "normalized_bytes": 4806,
+      "normalized_sha256": "f65a6c7d49e84efc852b351c06b0807f1226aba3c79b6d3e1e3f6ca4f08eb1d4",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/flow:agent",
+      "raw_bytes": 5848,
+      "raw_sha256": "0584139db3b2e14af99788458a48094a0d650a03ae540a0468309bf2f097bb6b",
+      "runtime_key": "points/flow:agent",
+      "source": "sources/points/flow/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/flow",
       "normalized_bytes": 194,
       "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
       "outputs": [

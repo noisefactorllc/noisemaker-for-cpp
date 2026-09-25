@@ -22554,17 +22554,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36582,
-                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
+                36848,
+                "7fa06dc19f373121f4505982ba8d528acaf52388182b035681b99cab1087eeb8"),
             "src/typed_generated/typed_slice.cpp": (
-                3161956,
-                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
+                3178113,
+                "70035a05b551554e8f6a466e0de0e992835b1e02047a8c9e784244918c183796"),
             "src/typed_generated/typed_manifest.json": (
-                827631,
-                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
+                831005,
+                "85f976f038f2d4a82bf1246cd25bf3508a2ac67c18646551f43589447acb688a"),
             "include/noisemaker/generated/catalog.hpp": (
-                26732,
-                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
+                26817,
+                "00c469db95030ca6cd44a5c783159574d664fe7e87876675066fbc368a82e899"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23334,17 +23334,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36582,
-                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
+                36848,
+                "7fa06dc19f373121f4505982ba8d528acaf52388182b035681b99cab1087eeb8"),
             "src/typed_generated/typed_slice.cpp": (
-                3161956,
-                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
+                3178113,
+                "70035a05b551554e8f6a466e0de0e992835b1e02047a8c9e784244918c183796"),
             "src/typed_generated/typed_manifest.json": (
-                827631,
-                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
+                831005,
+                "85f976f038f2d4a82bf1246cd25bf3508a2ac67c18646551f43589447acb688a"),
             "include/noisemaker/generated/catalog.hpp": (
-                26732,
-                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
+                26817,
+                "00c469db95030ca6cd44a5c783159574d664fe7e87876675066fbc368a82e899"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24090,17 +24090,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36582,
-                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
+                36848,
+                "7fa06dc19f373121f4505982ba8d528acaf52388182b035681b99cab1087eeb8"),
             "src/typed_generated/typed_slice.cpp": (
-                3161956,
-                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
+                3178113,
+                "70035a05b551554e8f6a466e0de0e992835b1e02047a8c9e784244918c183796"),
             "src/typed_generated/typed_manifest.json": (
-                827631,
-                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
+                831005,
+                "85f976f038f2d4a82bf1246cd25bf3508a2ac67c18646551f43589447acb688a"),
             "include/noisemaker/generated/catalog.hpp": (
-                26732,
-                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
+                26817,
+                "00c469db95030ca6cd44a5c783159574d664fe7e87876675066fbc368a82e899"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24626,17 +24626,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36582,
-                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
+                36848,
+                "7fa06dc19f373121f4505982ba8d528acaf52388182b035681b99cab1087eeb8"),
             "src/typed_generated/typed_slice.cpp": (
-                3161956,
-                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
+                3178113,
+                "70035a05b551554e8f6a466e0de0e992835b1e02047a8c9e784244918c183796"),
             "src/typed_generated/typed_manifest.json": (
-                827631,
-                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
+                831005,
+                "85f976f038f2d4a82bf1246cd25bf3508a2ac67c18646551f43589447acb688a"),
             "include/noisemaker/generated/catalog.hpp": (
-                26732,
-                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
+                26817,
+                "00c469db95030ca6cd44a5c783159574d664fe7e87876675066fbc368a82e899"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25226,17 +25226,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                36582,
-                "7cda530b454c4b702a0433caaeb1f89637c4a80feb5f77e4389969c44f26f875"),
+                36848,
+                "7fa06dc19f373121f4505982ba8d528acaf52388182b035681b99cab1087eeb8"),
             "src/typed_generated/typed_slice.cpp": (
-                3161956,
-                "8dd33ef71af0796b9203ba855c41d8e9109a2d2275664e1d85d6a39b678185ef"),
+                3178113,
+                "70035a05b551554e8f6a466e0de0e992835b1e02047a8c9e784244918c183796"),
             "src/typed_generated/typed_manifest.json": (
-                827631,
-                "433b04eba1a515e1e023fa944035997e8bf643aecb95c6295acdb107c4cd4207"),
+                831005,
+                "85f976f038f2d4a82bf1246cd25bf3508a2ac67c18646551f43589447acb688a"),
             "include/noisemaker/generated/catalog.hpp": (
-                26732,
-                "0fa5f899ddaf07d067b8f0161192eb5a78455bd26ec00a7200584452af2b7f46"),
+                26817,
+                "00c469db95030ca6cd44a5c783159574d664fe7e87876675066fbc368a82e899"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -26479,6 +26479,111 @@ void main() {
                     points_float_bits_ingress_profile=PROFILE,
                 )
             self.assertIn("source hash mismatch", str(ctx.exception))
+
+    def test_flow_round_profile(self) -> None:
+        import hashlib
+        from pathlib import Path
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.flow_round_profile import (
+            FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
+            authenticate_flow_round_admission, apply_flow_round_admission,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            HASH_SCALAR_UINT_RSHIFT_KEYS, PROFILE as HASH_SCALAR_UINT_RSHIFT_PROFILE,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+            HASH_SCALAR_UINT_XOR_KEYS, PROFILE as HASH_SCALAR_UINT_XOR_PROFILE,
+        )
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        repo_root = Path(__file__).resolve().parent.parent
+        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        metadata = json.loads((corpus_root / "metadata.json").read_bytes())
+        pending = json.loads((corpus_root / "pending.json").read_bytes())
+
+        # Load points/flow:agent source
+        source_path = corpus_root / "pending-sources/points/flow/agent.glsl"
+        if not source_path.exists():
+            source_path = corpus_root / "sources/points/flow/agent.glsl"
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        eff = metadata["effects"].get("points/flow") or pending["effects"].get("points/flow")
+        defaults = check_semantics._metadata_defaults({"effects": {"points/flow": eff}}, FLOW_AGENT_KEY)
+
+        ast = parse_program(raw, FLOW_AGENT_KEY, defaults)
+        typed = analyze_program(ast, FLOW_AGENT_KEY)
+
+        # 1. Direct authentication
+        node = authenticate_flow_round_admission(typed, shash, FLOW_ROUND_PROFILE)
+        self.assertIsNotNone(node)
+        self.assertEqual(node.kind, "builtin")
+        self.assertEqual(node.callee, "round")
+
+        # Identity application
+        applied = apply_flow_round_admission(typed, shash, FLOW_ROUND_PROFILE)
+        self.assertIs(applied, typed)
+
+        # Profile mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_flow_round_admission(typed, shash, "invalid-profile")
+        self.assertIn("exact profile carrier required", str(ctx.exception))
+
+        # Source hash mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_flow_round_admission(typed, "0" * 64, FLOW_ROUND_PROFILE)
+        self.assertIn("source, key, define, or body profile mismatch", str(ctx.exception))
+
+        # Key mismatch
+        synthetic_ast = parse_program(raw, "synthetic:agent", defaults)
+        synthetic_typed = analyze_program(synthetic_ast, "synthetic:agent")
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_flow_round_admission(synthetic_typed, shash, FLOW_ROUND_PROFILE)
+        self.assertIn("source, key, define, or body profile mismatch", str(ctx.exception))
+
+        # 2. Validator integration
+        xor_prof = HASH_SCALAR_UINT_XOR_PROFILE if FLOW_AGENT_KEY in HASH_SCALAR_UINT_XOR_KEYS else None
+        rshift_prof = HASH_SCALAR_UINT_RSHIFT_PROFILE if FLOW_AGENT_KEY in HASH_SCALAR_UINT_RSHIFT_KEYS else None
+
+        # Missing profile fails closed
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                hash_scalar_uint_xor_profile=xor_prof,
+                hash_scalar_uint_rshift_profile=rshift_prof,
+            )
+        self.assertIn("exact Flow round admission profile carrier required", str(ctx.exception))
+
+        # Passing valid profile validates successfully
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            hash_scalar_uint_xor_profile=xor_prof,
+            hash_scalar_uint_rshift_profile=rshift_prof,
+            flow_round_profile=FLOW_ROUND_PROFILE,
+        )
+
+        # 3. Emitter integration
+        # Missing profile fails closed
+        with self.assertRaises(Exception) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, FLOW_AGENT_KEY, shash, "pixel", "bind_flow_agent",
+                hash_scalar_uint_xor_profile=xor_prof,
+                hash_scalar_uint_rshift_profile=rshift_prof,
+            )
+        self.assertIn("exact Flow round admission profile carrier required", str(ctx.exception))
+
+        # Passing valid profile emits C++ successfully
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed, FLOW_AGENT_KEY, shash, "pixel", "bind_flow_agent",
+            hash_scalar_uint_xor_profile=xor_prof,
+            hash_scalar_uint_rshift_profile=rshift_prof,
+            flow_round_profile=FLOW_ROUND_PROFILE,
+        )
+        self.assertIn("noisemaker::f32(glsl::round(", cpp)
+        self.assertIn("BoundKernelMrt bind_flow_agent(", cpp)
 
 
 if __name__ == "__main__":
