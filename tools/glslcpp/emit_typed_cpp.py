@@ -213,6 +213,9 @@ from .frontend.posterize_round_profile import (
 from .frontend.flow_round_profile import (
     FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
     authenticate_flow_round_admission)
+from .frontend.points_post_profile import (
+    POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
+    authenticate_points_post)
 from .frontend.waves_any_notequal_profile import (
     WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
     authenticate_waves_any_notequal_admission)
@@ -1069,6 +1072,7 @@ class _Emitter:
     reflect_admission_profile: str | None = None
     posterize_round_profile: str | None = None
     flow_round_profile: str | None = None
+    points_post_profile: str | None = None
     as_u32_round_profile: str | None = None
     ceil_admission_profile: str | None = None
     waves_any_notequal_profile: str | None = None
@@ -1257,6 +1261,10 @@ class _Emitter:
     authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_points_float_bits_ingresses: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_points_post_nodes: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_points_post_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     # kaleido's one `floatBitsToUint` ingress, authenticated by the scalar-XOR
     # module's per-key census (rides the same carrier; no separate row field).
@@ -1817,6 +1825,8 @@ class _Emitter:
         self.emitted_grime_float_bits_ingresses = []
         self.authorized_points_float_bits_ingresses = ()
         self.emitted_points_float_bits_ingresses = []
+        self.authorized_points_post_nodes = ()
+        self.emitted_points_post_nodes = []
         self.authorized_kaleido_float_bits_ingress = ()
         self.emitted_kaleido_float_bits_ingress = []
         self.authorized_noise_float_bits_ingresses = ()
@@ -3309,6 +3319,21 @@ class _Emitter:
         elif self.program.key == FLOW_AGENT_KEY:
             raise _error(self.program, self.program,
                          "exact Flow round admission profile carrier required")
+        self.authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
+        self.emitted_points_post_nodes: list[TypedExpression] = []
+        if self.points_post_profile is not None:
+            if (self.program.key not in POINTS_POST_KEYS
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "Points post admission profile metadata mismatch")
+            try:
+                self.authorized_points_post_nodes = (
+                    authenticate_points_post(
+                        self.program, self.source_hash,
+                        self.points_post_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         # as_u32_round_profile is deliberately light-checked, the same style
         # as posterize_round_profile immediately above, keyed by a dict of
         # program_key carriers (AS_U32_ROUND_KEYS) since the admitted `round`
@@ -8125,17 +8150,26 @@ class _Emitter:
                 return folded
             return f"({value.operator}{self.expression(value.children[0])})"
         if value.kind == "post":
-            proof = self.authorized_median_frontend_proof
-            if (proof is None
-                    or not any(value is item for item in proof.expression_nodes
-                               if item.kind == "post")
+            median_post = (
+                self.authorized_median_frontend_proof is not None
+                and any(value is item
+                        for item in self.authorized_median_frontend_proof.expression_nodes
+                        if item.kind == "post"))
+            points_post = any(
+                value is item for item in self.authorized_points_post_nodes)
+            if (not (median_post or points_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
                     or value.children[0].kind != "id"
                     or value.children[0].type.display() != "int"):
                 raise _error(self.program, value,
-                             "unsupported authenticated Median post expression")
+                             "unsupported authenticated post expression")
+            if points_post:
+                if any(value is item for item in self.emitted_points_post_nodes):
+                    raise _error(self.program, value,
+                                 "authenticated Points post expression emitted twice")
+                self.emitted_points_post_nodes.append(value)
             return f"({self.expression(value.children[0])}{value.operator})"
         if value.kind == "conditional":
             if len(value.children) != 3:
@@ -9507,12 +9541,16 @@ class _Emitter:
                 self.emitted_array_writer_calls.append(call)
                 return [f"{indent}{self.expression(call)};"]
             if (len(value.expressions) == 1
-                    and value.expressions[0].kind == "post"
-                    and self.authorized_median_frontend_proof is not None
+                    and value.expressions[0].kind == "post"):
+                median_post = (
+                    self.authorized_median_frontend_proof is not None
                     and any(value.expressions[0] is item
                             for item in self.authorized_median_frontend_proof.expression_nodes
-                            if item.kind == "post")):
-                return [f"{indent}{self.expression(value.expressions[0])};"]
+                            if item.kind == "post"))
+                points_post = any(
+                    value.expressions[0] is item for item in self.authorized_points_post_nodes)
+                if median_post or points_post:
+                    return [f"{indent}{self.expression(value.expressions[0])};"]
             if len(value.expressions) != 1 or value.expressions[0].kind != "assign":
                 raise _error(self.program, value, "only typed assignments are admitted")
             assignment = value.expressions[0]
@@ -12968,6 +13006,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      hash_scalar_uint_rshift_profile: str | None = None,
                      vec_scalar_modulo_profile: str | None = None,
                      points_float_bits_ingress_profile: str | None = None,
+                     points_post_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
                      bitwise_scalar_int_ops_profile: str | None = None,
                      bit_effects_frontend_profile: str | None = None,
@@ -13097,6 +13136,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        reflect_admission_profile,
                        posterize_round_profile,
                        flow_round_profile,
+                       points_post_profile,
                        as_u32_round_profile,
                        ceil_admission_profile,
                        waves_any_notequal_profile,
@@ -13564,6 +13604,15 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             raise _error(
                 program, program,
                 "authenticated points float-bit ingress emission mismatch")
+    if emitter.authorized_points_post_nodes:
+        expected = emitter.authorized_points_post_nodes
+        emitted = emitter.emitted_points_post_nodes
+        if (len(emitted) != len(expected)
+                or any(left is not right
+                       for left, right in zip(emitted, expected))):
+            raise _error(
+                program, program,
+                "authenticated points post emission mismatch")
     if emitter.authorized_cross_lane_assignment is not None:
         if emitter.emitted_cross_lane_assignments != [
                 emitter.authorized_cross_lane_assignment.assignment]:
@@ -13982,4 +14031,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
     if program.key in OUT_INOUT_ADMISSION_KEYS and out_inout_admission_profile is None:
         raise _error(program, program,
                      "exact out/inout admission profile carrier required")
+    if program.key in POINTS_POST_KEYS and points_post_profile is None:
+        raise _error(program, program,
+                     "exact Points post admission profile carrier required")
     return "\n".join(lines) + "\n"

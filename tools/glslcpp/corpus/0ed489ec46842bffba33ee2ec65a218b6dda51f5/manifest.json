@@ -3743,6 +3743,26 @@
     },
     {
       "effect_id": "points/flock",
+      "normalized_bytes": 8417,
+      "normalized_sha256": "0a527a329e196188e6d52ad0e112242446826927e6cf31e1c0abb2bead19fd73",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 0,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/flock:agent",
+      "raw_bytes": 9726,
+      "raw_sha256": "4c664f7443b1085a37896730b5077ed6399ce345a7b5a25101a7a91e00b18363",
+      "runtime_key": "points/flock:agent",
+      "source": "sources/points/flock/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/flock",
       "normalized_bytes": 194,
       "normalized_sha256": "acdec6645960ac10056d1aaa15e422bdf508eb7cc8c06bc80d855a1a5307d483",
       "outputs": [
@@ -3926,6 +3946,27 @@
       "raw_sha256": "9831abb1e757196018520d2c7b33139ec265ca87e1c6ab71ab956db6bda771d6",
       "runtime_key": "points/lenia:passthrough",
       "source": "sources/points/lenia/passthrough.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/life",
+      "normalized_bytes": 7560,
+      "normalized_sha256": "7b68cb1352d33295ea3d044de858c4a3c96a76b82c34450d700ba0ccd2758ba8",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA",
+        "outData"
+      ],
+      "pass_index": 1,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/life:agent",
+      "raw_bytes": 9544,
+      "raw_sha256": "78513907f1480250cef2e603e91a012aa4972c2e9e4bd66fc5aefa089a9a4775",
+      "runtime_key": "points/life:agent",
+      "source": "sources/points/life/agent.glsl",
       "status": "generated",
       "varyings": []
     },

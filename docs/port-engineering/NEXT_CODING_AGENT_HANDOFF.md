@@ -105,6 +105,51 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
+> ## CONTINUATION CHECKPOINT 2026-09-25: AUTHORIZE POST EXPRESSIONS FOR FLOCK AND LIFE AGENTS & PROMOTE points/flock:agent, points/life:agent
+>
+> This checkpoint records the autonomous completion of the Candidate A construct blocker cluster for **`post` typed expressions (post-increment `++` / post-decrement `--`)** and promotion of **`points/flock:agent`** and **`points/life:agent`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile**: Created `tools/glslcpp/frontend/points_post_profile.py` (`points-post-admission-v1`) targeting `points/flock:agent` (separationCount++, alignmentCount++, cohesionCount++) and `points/life:agent` (neighborCount++), authenticating program identity with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), exact node count constraints (`post_count: 3` and `1`), and fail-closed validation.
+> - **Compiler pipeline integration**:
+>   - In `tools/glslcpp/generate_typed_slice.py`: Permitted `post` operators (`++`, `--`) during typed slice capability validation, added `points-post-admission-v1` manifest drift check, authorized AST node identity tracking with duplicate and EOF completeness verification, and batch generation profile application.
+>   - In `tools/glslcpp/emit_typed_cpp.py`: Lowered `post` expressions into valid C++ statement and expression syntax `({expression}{operator})`, added `authorized_points_post_nodes` dataclass slot, `__post_init__` authentication gate, statement-level expression emission, parameter forwarding through `render_typed_cpp`, duplicate emission tracking, and fail-closed gate at EOF.
+>   - In `tools/glslcpp/corpus_ratchet.py`: Added `points_post_profile` carrier handling to `probe_program` and typed slice emission.
+> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
+>   - Promoted `points/flock:agent` and `points/life:agent` from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/points/flock/agent.glsl` and `pending-sources/points/life/agent.glsl` to `sources/points/flock/agent.glsl` and `sources/points/life/agent.glsl`.
+>   - Pinned vendored programs increased from 273 to 275; pending decreased from 31 to 29.
+>   - Typed slice increased from 272 to 274.
+>   - Backend compatible programs increased from 271 to 273.
+>   - Executable definitions increased from 183 to 185; incomplete definitions decreased from 25 to 23.
+>   - Missing passes in catalog decreased from 71 to 69.
+> - **Unit & regression tests**:
+>   - Added comprehensive `test_points_post_profile` in `tests/test_typed_generator.py` testing direct authentication, profile mismatch, key mismatch, hash mismatch, fail-closed validation, successful validation, fail-closed emission, and successful C++ emission with `BoundKernelMrt bind_points_flock_agent` and `bind_points_life_agent`.
+>   - Updated artifact size and hash metrics across test classes in `tests/test_typed_generator.py`.
+>   - Updated `compatible_programs` (271 -> 273) and `missing_passes` (71 -> 69) in `tests/test_effect_catalog_generator.py`.
+> - **Fixed-point regeneration**:
+>   - Regenerated all derived artifacts via `tools/resync/regen_all.sh .`: `catalog.hpp`, `backend_compatibility.json`, `effect_catalog.cpp`, `effect_catalog.provenance.json`, `registry.cpp`, `typed_manifest.json`, `typed_slice.cpp`, `tools/dsl/generate_effect_catalog.py`, `tools/dsl/generate_executable_corpus.mjs`, `tools/dsl/js_frontend_oracle.mjs`. Fixed point reached with zero drift.
+> - **Verification & gates passed**:
+>   - All generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - Native C++ build & CTest passed 100% (4/4 test suites passed).
+>   - All 4 Python test shards passed (2,124 tests passed, 0 failures, 0 errors).
+>   - Zero symlinks verified via `find . -type l`.
+>
+> ### Current counts
+> - Pinned authority: **275 vendored + 29 pending = 304 authority programs** (vendored: 273 -> 275, pending: 31 -> 29).
+> - Typed slice: **274 typed programs** (was 272).
+> - Backend compatible programs: **273 compatible programs** (was 271).
+> - Executable definitions: **185** (was 183).
+> - Incomplete definitions: **23** (was 25).
+> - Missing passes in catalog: **69 missing passes** (was 71).
+> - Remaining post blocker programs: **1 program** (`synth3d/cellularAutomata3d:simulate`, unproved 3D loop update; was 3).
+>
+> ### Next linear leg for subsequent agent
+> - Pick up the next blocker cluster from `pending.json`:
+>   - Candidate A: **Counted-for program proof** in `render/pointsBillboardRender:spriteMeanTiles` (lines 40:5-48:5).
+>   - Candidate B: **Grouped multi-output execution & atomic MRT binding** in `src/graph/executor.cpp` (Buddhabrot, Hydraulic, PointsEmit).
+>   - Candidate C: `synth3d/cellularAutomata3d:simulate` (remaining post blocker on its 3D loop update).
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-24: AUTHORIZE ROUND BUILTIN FOR FLOW AGENT & PROMOTE points/flow:agent
 >
 > This checkpoint records the autonomous completion of the Candidate B construct blocker cluster for **`round` builtin admission** and promotion of **`points/flow:agent`**.

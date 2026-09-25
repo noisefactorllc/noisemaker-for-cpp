@@ -215,6 +215,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_flock_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_flock_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_flow_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_flow_passthrough(const glsl::Bindings& bindings);
@@ -225,6 +226,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernelMrt bind_points_lenia_agentField(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_lenia_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_lenia_passthrough(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_life_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_life_matrix(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_life_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_points_physarum_agent(const glsl::Bindings& bindings);

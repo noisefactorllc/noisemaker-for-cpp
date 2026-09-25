@@ -361,6 +361,10 @@ if __package__ in (None, ""):
     from tools.glslcpp.frontend.flow_round_profile import (
         FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
         apply_flow_round_admission, authenticate_flow_round_admission)
+    from tools.glslcpp.frontend.points_post_profile import (
+        FLOCK_AGENT_KEY, LIFE_AGENT_KEY, POINTS_POST_KEYS,
+        PROFILE as POINTS_POST_PROFILE,
+        apply_points_post_admission, authenticate_points_post)
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from tools.glslcpp.frontend.as_u32_round_profile import (
@@ -771,6 +775,10 @@ else:
     from .frontend.flow_round_profile import (
         FLOW_AGENT_KEY, PROFILE as FLOW_ROUND_PROFILE,
         apply_flow_round_admission, authenticate_flow_round_admission)
+    from .frontend.points_post_profile import (
+        FLOCK_AGENT_KEY, LIFE_AGENT_KEY, POINTS_POST_KEYS,
+        PROFILE as POINTS_POST_PROFILE,
+        apply_points_post_admission, authenticate_points_post)
     from .frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from .frontend.as_u32_round_profile import (
@@ -1625,6 +1633,17 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == FLOW_AGENT_KEY else
                     {"defines", "hash_scalar_uint_rshift_profile",
                      "hash_scalar_uint_xor_profile",
+                     "points_float_bits_ingress_profile",
+                     "points_post_profile", "program_key",
+                     "vec_scalar_modulo_profile"}
+                    if key == FLOCK_AGENT_KEY else
+                    {"defines", "hash_scalar_uint_rshift_profile",
+                     "hash_scalar_uint_xor_profile",
+                     "points_post_profile", "program_key",
+                     "vec_scalar_modulo_profile"}
+                    if key == LIFE_AGENT_KEY else
+                    {"defines", "hash_scalar_uint_rshift_profile",
+                     "hash_scalar_uint_xor_profile",
                      "points_float_bits_ingress_profile", "program_key"}
                     if key in HASH_SCALAR_UINT_RSHIFT_KEYS and key in HASH_SCALAR_UINT_XOR_KEYS and key in POINTS_FLOAT_BITS_INGRESS_KEYS else
                     {"defines", "points_float_bits_ingress_profile", "program_key"}
@@ -2262,6 +2281,15 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for item in programs if "flow_round_profile" in item]
     if flow_round_profiles != expected_flow_round_profiles:
         raise GeneratorError("typed slice Flow round admission profile drift")
+    expected_points_post_profiles = [
+        (key, POINTS_POST_PROFILE) for key in sorted(POINTS_POST_KEYS)
+        if key in keys
+    ]
+    points_post_profiles = [
+        (item["program_key"], item.get("points_post_profile"))
+        for item in programs if "points_post_profile" in item]
+    if points_post_profiles != expected_points_post_profiles:
+        raise GeneratorError("typed slice Points post admission profile drift")
     as_u32_round_profiles = [
         (item["program_key"], item.get("as_u32_round_profile"))
         for item in programs if "as_u32_round_profile" in item]
@@ -3395,6 +3423,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           hash_scalar_uint_rshift_profile: str | None = None,
                           vec_scalar_modulo_profile: str | None = None,
                           points_float_bits_ingress_profile: str | None = None,
+                          points_post_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
                           bitwise_scalar_int_ops_profile: str | None = None,
                           bit_effects_frontend_profile: str | None = None,
@@ -3974,6 +4003,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_vec_scalar_modulos: list[TypedExpression] = []
     authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = ()
     visited_points_float_bits_ingresses: list[TypedExpression] = []
+    authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
+    visited_points_post_nodes: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -5289,6 +5320,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             authorized_points_float_bits_ingresses = (
                 authenticate_points_float_bits_ingress(
                     typed, source_hash, points_float_bits_ingress_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if points_post_profile is not None:
+        if (typed.key not in POINTS_POST_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: points post admission profile metadata mismatch")
+        try:
+            authorized_points_post_nodes = (
+                authenticate_points_post(
+                    typed, source_hash, points_post_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
@@ -8018,13 +8066,19 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 and value.children[0].symbol.name == "period"
                 and value.span.start_line == 228
                 and value.span.start_column == 9)
-            if (not (median_post or julia_period_post)
+            points_post = any(value is item for item in authorized_points_post_nodes)
+            if (not (median_post or julia_period_post or points_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
                     or value.children[0].kind != "id"
                     or value.children[0].type.display() != "int"):
                 raise GeneratorError(f"{location(value)}: unsupported typed expression post")
+            if points_post:
+                if any(value is item for item in visited_points_post_nodes):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated Points post expression visited twice")
+                visited_points_post_nodes.append(value)
         elif value.kind not in {"id", "literal", "declaration", "assign", "unary"}:
             raise GeneratorError(f"{location(value)}: unsupported typed expression {value.kind}")
         if value.kind == "assign":
@@ -8400,6 +8454,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_points_float_bits_ingresses):
         raise GeneratorError(
             f"{typed.key}: authenticated points float-bit ingress traversal mismatch")
+    if (authorized_points_post_nodes
+            and tuple(visited_points_post_nodes) != authorized_points_post_nodes):
+        raise GeneratorError(
+            f"{typed.key}: authenticated points post admission traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -8976,6 +9034,17 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(f"{key}: {error}") from error
             if profiled is not typed:
                 raise GeneratorError(f"{key}: Flow round admission identity profile mutated program")
+            typed = profiled
+        points_post_profile = slice_spec["programs"][index].get(
+            "points_post_profile")
+        if points_post_profile is not None:
+            try:
+                profiled = apply_points_post_admission(
+                    typed, source_hash, points_post_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(f"{key}: Points post admission identity profile mutated program")
             typed = profiled
         as_u32_round_profile = slice_spec["programs"][index].get(
             "as_u32_round_profile")
@@ -9690,6 +9759,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
                               vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                               points_float_bits_ingress_profile=points_float_bits_ingress_profile,
+                              points_post_profile=points_post_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9769,6 +9839,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
                                            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                                            points_float_bits_ingress_profile=points_float_bits_ingress_profile,
+                                           points_post_profile=points_post_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9902,6 +9973,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if points_float_bits_ingress_profile is not None:
             manifest_program["points_float_bits_ingress_profile"] = (
                 points_float_bits_ingress_profile)
+        if points_post_profile is not None:
+            manifest_program["points_post_profile"] = (
+                points_post_profile)
         if scalar_uint_xor_profile is not None:
             manifest_program["scalar_uint_xor_profile"] = (
                 scalar_uint_xor_profile)

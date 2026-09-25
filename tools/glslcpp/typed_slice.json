@@ -1120,6 +1120,15 @@
     },
     {
       "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "points_float_bits_ingress_profile": "points-float-bits-ingress-v1",
+      "points_post_profile": "points-post-admission-v1",
+      "program_key": "points/flock:agent",
+      "vec_scalar_modulo_profile": "vec-scalar-modulo-v1"
+    },
+    {
+      "defines": {},
       "program_key": "points/flock:passthrough"
     },
     {
@@ -1162,6 +1171,14 @@
     {
       "defines": {},
       "program_key": "points/lenia:passthrough"
+    },
+    {
+      "defines": {},
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "points_post_profile": "points-post-admission-v1",
+      "program_key": "points/life:agent",
+      "vec_scalar_modulo_profile": "vec-scalar-modulo-v1"
     },
     {
       "defines": {},

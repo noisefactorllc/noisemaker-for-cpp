@@ -3512,19 +3512,6 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: points/flock:agent:200:21: unsupported typed expression post",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/flock",
-      "program": "agent",
-      "program_key": "points/flock:agent",
-      "raw_bytes": 9726,
-      "raw_sha256": "4c664f7443b1085a37896730b5077ed6399ce345a7b5a25101a7a91e00b18363",
-      "source": "pending-sources/points/flock/agent.glsl"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
         "diagnostic": "GeneratorError: points/lenia:convolve:36:5: unsupported counted-for program proof",
         "stage": "typed.validator"
       },
@@ -3547,19 +3534,6 @@
       "raw_bytes": 271,
       "raw_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
       "source": "pending-sources/points/lenia/deposit.frag"
-    },
-    {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/life:agent:256:17: unsupported typed expression post",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/life",
-      "program": "agent",
-      "program_key": "points/life:agent",
-      "raw_bytes": 9544,
-      "raw_sha256": "78513907f1480250cef2e603e91a012aa4972c2e9e4bd66fc5aefa089a9a4775",
-      "source": "pending-sources/points/life/agent.glsl"
     },
     {
       "authority_status": "adapter",
