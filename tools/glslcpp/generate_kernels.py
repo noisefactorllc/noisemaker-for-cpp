@@ -255,11 +255,12 @@ def write_outputs(repository: pathlib.Path = _ROOT) -> None:
             _remove_owned_directory(backup, target.parent, ".glslcpp-backup-")
 
 
-def check_outputs(repository: pathlib.Path = _ROOT) -> None:
+def check_outputs(repository: pathlib.Path = _ROOT) -> list[str]:
     repository = repository.resolve()
     outputs = generate_outputs(repository)
     directory = repository / _GENERATED_DIRECTORY
     _validate_generated_tree(directory, _expected_generated_names(outputs))
+    verified: list[str] = []
     for relative, content in outputs.items():
         try:
             current = (repository / relative).read_bytes()
@@ -267,6 +268,8 @@ def check_outputs(repository: pathlib.Path = _ROOT) -> None:
             raise GeneratorError(f"missing generated output {relative}: {error}") from error
         if current != content:
             raise GeneratorError(f"generated output drift: {relative}")
+        verified.append(relative)
+    return verified
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -279,7 +282,8 @@ def main(argv: list[str] | None = None) -> int:
         if arguments.write:
             write_outputs(_ROOT)
         else:
-            check_outputs(_ROOT)
+            verified = len(check_outputs(_ROOT))
+            print(f"glslcpp: ok ({verified} generated outputs verified)")
     except GeneratorError as error:
         print(f"glslcpp: {error}", file=sys.stderr)
         return 1
