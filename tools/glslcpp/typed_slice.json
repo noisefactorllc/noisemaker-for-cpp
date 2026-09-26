@@ -1446,11 +1446,6 @@
       "program_key": "synth3d/cell3d:precompute"
     },
     {
-      "ca3d_post_profile": "ca3d-post-admission-v1",
-      "defines": {},
-      "program_key": "synth3d/cellularAutomata3d:simulate"
-    },
-    {
       "defines": {
         "COLOR_MODE": 0,
         "OCTAVES": 1,

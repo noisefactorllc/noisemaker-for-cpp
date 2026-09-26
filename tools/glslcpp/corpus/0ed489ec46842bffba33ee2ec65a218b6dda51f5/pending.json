@@ -2866,6 +2866,172 @@
         }
       }
     },
+    "synth3d/cellularAutomata3d": {
+      "func": "cellularAutomata3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "colorMode": {
+          "choices": {
+            "age": 1,
+            "mono": 0
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "density": {
+          "default": 50,
+          "max": 100,
+          "min": 1,
+          "type": "float",
+          "uniform": "density"
+        },
+        "geoSource": {
+          "default": "geo0",
+          "type": "geometry"
+        },
+        "iterationCount": {
+          "cpuOnly": true,
+          "default": 60,
+          "max": 10000,
+          "min": 0,
+          "type": "int"
+        },
+        "neighborMode": {
+          "choices": {
+            "moore": 0,
+            "vonNeumann": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "neighborMode"
+        },
+        "resetState": {
+          "default": false,
+          "type": "boolean",
+          "uniform": "resetState"
+        },
+        "ruleIndex": {
+          "choices": {
+            "amoeba": 2,
+            "builder1": 3,
+            "builder2": 4,
+            "clouds": 5,
+            "crystalGrowth": 6,
+            "diamoeba": 7,
+            "pyroclastic": 8,
+            "rule445M": 0,
+            "rule678": 1,
+            "slowDecay": 9,
+            "spikeyGrowth": 10
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "ruleIndex"
+        },
+        "seed": {
+          "default": 1,
+          "max": 100,
+          "min": 1,
+          "type": "int",
+          "uniform": "seed"
+        },
+        "source": {
+          "default": "vol0",
+          "type": "volume"
+        },
+        "speed": {
+          "default": 1,
+          "max": 10,
+          "min": 0,
+          "type": "int",
+          "uniform": "speed",
+          "zero": 0
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 32,
+          "type": "int",
+          "uniform": "volumeSize"
+        },
+        "weight": {
+          "default": 0,
+          "max": 100,
+          "min": 0,
+          "type": "float",
+          "uniform": "weight"
+        }
+      },
+      "passes": [
+        {
+          "inputs": {
+            "seedTex": "source",
+            "stateTex": "global_ca_state"
+          },
+          "key": "synth3d/cellularAutomata3d:simulate",
+          "name": "simulate",
+          "outputs": {
+            "color": "global_ca_state"
+          },
+          "program": "simulate",
+          "viewport": {
+            "height": {
+              "default": 1024,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 32,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        },
+        "global_ca_state": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 1024,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 32,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
     "synth3d/flythrough3d": {
       "func": "flythrough3d",
       "kind": "generator",
@@ -3524,6 +3690,19 @@
       "raw_bytes": 5301,
       "raw_sha256": "964147d68d182e7afe016e5fee82ad010e047946121fa407873386cc1c4b4453",
       "source": "pending-sources/synth/navierStokes/nsSmooth.glsl"
+    },
+    {
+      "authority_status": "generated",
+      "blocker": {
+        "diagnostic": "GeneratorError: synth3d/cellularAutomata3d:simulate:56:39: unsupported typed expression post",
+        "stage": "typed.validator"
+      },
+      "effect_id": "synth3d/cellularAutomata3d",
+      "program": "simulate",
+      "program_key": "synth3d/cellularAutomata3d:simulate",
+      "raw_bytes": 8843,
+      "raw_sha256": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
+      "source": "pending-sources/synth3d/cellularAutomata3d/simulate.glsl"
     },
     {
       "authority_status": "generated",

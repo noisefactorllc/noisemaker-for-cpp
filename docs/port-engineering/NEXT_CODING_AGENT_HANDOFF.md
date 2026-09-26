@@ -105,46 +105,29 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
-> ## CONTINUATION CHECKPOINT 2026-09-26: AUTHORIZE COUNTED-FOR LOOP PROOF FOR 3D CELLULAR AUTOMATA & PROMOTE synth3d/cellularAutomata3d:simulate
+> ## CONTINUATION CHECKPOINT 2026-09-26: synth3d/cellularAutomata3d:simulate PROMOTION BLOCKED AT PUBLICATION; PRODUCT CHANGES REVERTED TO BASELINE
 >
-> This checkpoint records the autonomous completion of Candidate B (counted-for loop proof in `synth3d/cellularAutomata3d:simulate`), including the remaining `post` blocker on its 3D loop update, and promotion of **`synth3d/cellularAutomata3d:simulate`**.
+> This checkpoint records a blocked publication, not landed work. The promotion of **`synth3d/cellularAutomata3d:simulate`** (counted-for loop proof + remaining `post` blocker on its 3D loop update) was fully implemented, locally verified, and published in two partial steps (`77364c6` step 1, `3b34c16` step 2), but the final generated artifact **`src/effects/generated/effect_catalog.cpp` cannot be published under the harness constraint that an independent review reads at most 2 MiB of diff**, so per the failure & revert guard the product changes were reverted from `main` to keep it green. Everything below must be redone once the publication constraint is resolved.
 >
-> ### What landed (this pass)
-> - **Proof-gated carrier profile**: Created `tools/glslcpp/frontend/ca3d_post_profile.py` (`ca3d-post-admission-v1`) targeting `synth3d/cellularAutomata3d:simulate`, authenticating program identity with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), exact post-node count constraint (`post_count: 1` on the 3D loop update), and fail-closed validation.
-> - **Compiler pipeline integration**:
->   - In `tools/glslcpp/generate_typed_slice.py`: `ca3d-post-admission-v1` profile forwarding, post admission during typed slice capability validation, manifest drift check, authorized post-node identity tracking with duplicate and EOF completeness verification, and batch generation profile application.
->   - In `tools/glslcpp/emit_typed_cpp.py`: post-expression lowering reusing the authorized-points-post path for the new carrier, `authorized_ca3d_post_nodes` dataclass slot, `__post_init__` authentication gate, parameter forwarding through `render_typed_cpp`, duplicate emission tracking, and fail-closed gate at EOF.
->   - In `tools/glslcpp/corpus_ratchet.py`: `ca3d_post_profile` carrier handling in `probe_program` and typed slice emission paths.
-> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
->   - Promoted `synth3d/cellularAutomata3d:simulate` from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/synth3d/cellularAutomata3d/simulate.glsl` to `sources/synth3d/cellularAutomata3d/simulate.glsl`.
->   - Pinned vendored programs increased from 276 to 277; pending decreased from 28 to 27.
->   - Typed slice increased from 275 to 276.
->   - Backend compatible programs increased from 274 to 275.
->   - Missing passes in catalog decreased from 68 to 67.
-> - **Unit & regression tests**:
->   - Added `test_ca3d_post_profile` in `tests/test_typed_generator.py` verifying fail-closed rejection without profile, authenticated promotion, C++ post emission, and tamper resistance against forged source hashes.
->   - Updated artifact size/hash pins and the 275-program/276-program markers across `tests/test_typed_generator.py`.
->   - Updated `compatible_programs` (274 -> 275) and `missing_passes` (68 -> 67) in `tests/test_effect_catalog_generator.py`.
-> - **Fixed-point regeneration**: `tools/resync/regen_all.sh .` reached a clean fixed point (`REGEN OK`) with zero drift across all derived artifacts.
-> - **Verification & gates passed**:
->   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet --check`, `generate_typed_slice`, `generate_backend_compatibility`).
->   - Native C++ build & CTest passed 4/4.
->   - Python suite verified across all 4 shard partitions with the corrected environment (pinned 3.13.13, pytest-enabled shim, Node v26.0.0, durable CPU authority root): every shard-0 module green (test_typed_generator full class set: 54+111+26+3 passed; semantic/mutable-global-frame/struct-declaration-profile/runtime-loop-bound/scalar-uint-xor: 213 passed), shard 3 fully green (442 tests), shard 1/2 green except two pre-existing environment-gap failures (shape-mixer oracle drift, julia oracle package drift) confirmed to fail identically at HEAD via stashed-tree runs; the g++ misleading-indentation smoke-compile failure also reproduces at HEAD (GNU false positive; clang in CI passes it).
->   - Zero symlinks verified via `find . -type l`.
+> ### Blocker evidence (measured)
+> - Remaining candidate: a single commit changing only `src/effects/generated/effect_catalog.cpp`; `git diff` = **4,450,655 bytes** (289 added / 306 removed lines; ~14 KB per line because each compatible-program record embeds its full provenance JSON inline).
+> - Cause: `tools/dsl/generate_backend_compatibility.py` embeds `typed_manifest_output_sha256` (the hash of `src/typed_generated/typed_manifest.json`) **inside every one of the ~289 compatible-program records**. Any typed-manifest change rewrites all of those lines at once, so the effect catalog's diff is ~4.4 MiB for every promotion. The independent review cap (2 MiB) therefore cannot admit this artifact, and no subset of the remaining change fits.
+> - `typed_manifest_output_sha256` does not appear in `tools/dsl/generate_effect_catalog.py`; the emitter is `tools/dsl/generate_backend_compatibility.py`.
+> - Not viable within the job's rules: hand-editing generated files (banned); a generator change that stops embedding the per-record hash or emits it once per file still rewrites all 289 records in the one-time conversion step (~4.4 MiB, equally blocked).
 >
-> ### Current counts
-> - Pinned authority: **277 vendored + 27 pending = 304 authority programs** (vendored: 276 -> 277, pending: 28 -> 27).
-> - Typed slice: **276 typed programs** (was 275).
-> - Backend compatible programs: **275 compatible programs** (was 274).
-> - Missing passes in catalog: **67 missing passes** (was 68).
+> ### What was implemented and verified (for redo)
+> - **Proof-gated carrier profile**: `tools/glslcpp/frontend/ca3d_post_profile.py` (`ca3d-post-admission-v1`, `CA3D_POST_KEYS` → `synth3d/cellularAutomata3d:simulate`), exact dual raw/normalized SHA-256 authentication (`norm_sha256`, `raw_bytes`, `norm_bytes`, `functions_sha256`, `whole_sha256`, `interface_sha256`), exact post-node count constraint (`post_count: 1` on the 3D loop update), fail-closed validation.
+> - **Pipeline wiring**: `tools/glslcpp/generate_typed_slice.py` (profile forwarding, `post` admission, `ca3d-post-admission-v1` manifest drift check, authorized post-node identity tracking with duplicate/EOF completeness checks, batch profile application); `tools/glslcpp/emit_typed_cpp.py` (`authorized_ca3d_post_nodes` slot, `__post_init__` authentication gate, post lowering reusing the authorized-points-post path, parameter forwarding through `render_typed_cpp`, duplicate tracking, EOF fail-closed gate); `tools/glslcpp/corpus_ratchet.py` (`ca3d_post_profile` carrier in `probe_program` and typed slice rows).
+> - **Promotion counts when applied**: 277 vendored + 27 pending = 304; typed 276; backend compatible 275; missing passes 67. Corpus source moved `pending-sources/…/simulate.glsl` → `sources/…/simulate.glsl`.
+> - **Tests**: added `test_ca3d_post_profile` in `tests/test_typed_generator.py` (fail-closed rejection without profile, authenticated promotion, C++ post emission, forged-hash tamper resistance); repinned artifact sizes/hashes and 275→276 program markers from generated files; `tests/test_effect_catalog_generator.py` compatible 274→275, missing passes 68→67.
+> - **Verification that passed locally**: all five generator `--check` gates; `corpus_ratchet --check`; native CMake build + CTest 4/4; Python suite per-module across all 4 shard partitions (typed_generator full class set 194 passed + semantic-cluster 213 passed + shard3 442 green); only pre-existing environment-gap failures remained, each verified to fail identically at HEAD (shape-mixer/julia oracle drift, g++ misleading-indentation smoke compile — clang in CI passes it). Zero symlinks.
 >
-> ### Next linear leg for subsequent agent
-> - Remaining `post` blocker programs: **0** (`points/flock:agent`, `points/life:agent`, `synth3d/cellularAutomata3d:simulate` all promoted; 3 -> 0).
-> - Pick up the next blocker cluster from `pending.json` (27 programs; validator diagnostics measured this pass):
->   - Candidate A: **Counted-for program proofs** — `classicNoisedeck/noise3d:noise3d` (487:5), `classicNoisedeck/shapes3d:shapes3d` (191:5), `points/lenia:convolve` (36:5), `render/renderCubemap3d:renderCubemap3d` (280:5), `synth3d/fractal3d:precompute` (68:5).
->   - Candidate B: **`vec4[9]` typed type** — `filter/temporalAberration:temporalAberration` (30:10), `synth/navierStokes:nsSmooth` (74:14).
->   - Candidate C: **Semantics defaults (`any`, `uintBitsToFloat`, `E_TYPE` initializers, `E_NO_OVERLOAD`)** — `points/heightmap3d:precompute` (`any`), `points/dla:agent` (`uintBitsToFloat`), `render/render3d:render3d` (384:10), `render/renderLit3d:renderLit3d` (347:10), `synth3d/flythrough3d:precompute` (125:10), `points/attractor:agent` (177:9).
->   - Multi-pass/scatter/pass-binding programs remain schema-gated (`corpus_ratchet.py` one-pass assumption) — do not duplicate or drop bindings to fit.
+> ### Required harness-side resolution before redo
+> - An accommodation for the review cap on generated artifacts (per-file cap, or exempting byte-identical-churn regenerations), OR an accepted one-time `effect_catalog.cpp` conversion commit above 2 MiB. Without one of these, every future promotion that changes `typed_manifest.json` is unpublishable.
+> - After resolution, redo from the "What was implemented" section above, re-run the full local verification gate checklist, and re-pin all counts from generated files.
+>
+> ### Current counts (reverted baseline)
+> - Pinned authority: **276 vendored + 28 pending = 304 authority programs**; typed slice **275**; backend compatible **274**; missing passes **68**.
 >
 > ## CONTINUATION CHECKPOINT 2026-09-25: ADMIT RUNTIME TILE REDUCTION LOOP PROOF & PROMOTE render/pointsBillboardRender:spriteMeanTiles
 >

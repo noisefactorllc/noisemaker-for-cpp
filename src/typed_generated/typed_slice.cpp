@@ -35955,276 +35955,9 @@ BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings) {
   return BoundKernelMrt(state, &typed_271::pixel, 2U);
 }
 
-// Typed IR program: synth3d/cellularAutomata3d:simulate
-// Source SHA-256: e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a
-namespace typed_272 {
-struct State final : KernelState {
-  State(double time_value, std::int32_t seed_value, std::int32_t volumeSize_value, std::int32_t ruleIndex_value, std::int32_t neighborMode_value, double speed_value, double density_value, double weight_value, bool resetState_value, const Surface* stateTex_value, const Surface* seedTex_value) : time(time_value), seed(seed_value), volumeSize(volumeSize_value), ruleIndex(ruleIndex_value), neighborMode(neighborMode_value), speed(speed_value), density(density_value), weight(weight_value), resetState(resetState_value), stateTex(stateTex_value), seedTex(seedTex_value) {}
-  double time;
-  std::int32_t seed;
-  std::int32_t volumeSize;
-  std::int32_t ruleIndex;
-  std::int32_t neighborMode;
-  double speed;
-  double density;
-  double weight;
-  bool resetState;
-  const Surface* stateTex;
-  const Surface* seedTex;
-};
-
-[[nodiscard]] glsl::Vec4 sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {
-  const Rgba sample = sample_nearest_bottom_left(surface, uv[0], uv[1]);
-  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
-}
-[[nodiscard]] glsl::Vec4 fetch_texel(const Surface& surface, const glsl::IVec2& coord) noexcept {
-  const Rgba sample = texel_fetch_bottom_left(surface, coord[0], coord[1]);
-  return glsl::Vec4(sample[0], sample[1], sample[2], sample[3]);
-}
-[[nodiscard]] glsl::IVec2 texture_size(const Surface& surface) noexcept {
-  return glsl::IVec2(static_cast<std::int32_t>(surface.width()), static_cast<std::int32_t>(surface.height()));
-}
-
-[[nodiscard]] glsl::IVec2 atlasTexel([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 p, [[maybe_unused]] std::int32_t volSize) noexcept;
-[[nodiscard]] std::int32_t countMooreNeighbors([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept;
-[[nodiscard]] std::int32_t countVonNeumannNeighbors([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept;
-[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept;
-[[nodiscard]] glsl::Vec4 sampleSeed([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept;
-[[nodiscard]] glsl::Vec4 sampleState([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept;
-[[nodiscard]] bool shouldBeBorn([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t n, [[maybe_unused]] std::int32_t rule) noexcept;
-[[nodiscard]] bool shouldSurvive([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t n, [[maybe_unused]] std::int32_t rule) noexcept;
-
-[[nodiscard]] glsl::IVec2 atlasTexel([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 p, [[maybe_unused]] std::int32_t volSize) noexcept {
-  [[maybe_unused]] glsl::IVec3 wrapped = glsl::IVec3(glsl::integer_mod((glsl::swizzle<0>(p) + volSize), volSize), glsl::integer_mod((glsl::swizzle<1>(p) + volSize), volSize), glsl::integer_mod((glsl::swizzle<2>(p) + volSize), volSize));
-  return glsl::IVec2(glsl::swizzle<0>(wrapped), (glsl::swizzle<1>(wrapped) + (glsl::swizzle<2>(wrapped) * volSize)));
-}
-
-[[nodiscard]] std::int32_t countMooreNeighbors([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
-  [[maybe_unused]] std::int32_t count = std::int32_t(0);
-  for ([[maybe_unused]] std::int32_t dz = (-std::int32_t(1)); (dz <= std::int32_t(1)); ++dz) {
-    for ([[maybe_unused]] std::int32_t dy = (-std::int32_t(1)); (dy <= std::int32_t(1)); ++dy) {
-      for ([[maybe_unused]] std::int32_t dx = (-std::int32_t(1)); (dx <= std::int32_t(1)); ++dx) {
-        if (((dx == std::int32_t(0)) && (dy == std::int32_t(0))) && (dz == std::int32_t(0))) {
-          continue;
-        }
-        [[maybe_unused]] glsl::Vec4 neighbor = sampleState(state, context, (voxel + glsl::IVec3(dx, dy, dz)), volSize);
-        if (glsl::swizzle<0>(neighbor) > static_cast<float>(0.5)) {
-          (count++);
-        }
-      }
-    }
-  }
-  return count;
-}
-
-[[nodiscard]] std::int32_t countVonNeumannNeighbors([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
-  [[maybe_unused]] std::int32_t count = std::int32_t(0);
-  [[maybe_unused]] glsl::Vec4 xp = sampleState(state, context, (voxel + glsl::IVec3(std::int32_t(1), std::int32_t(0), std::int32_t(0))), volSize);
-  [[maybe_unused]] glsl::Vec4 xn = sampleState(state, context, (voxel + glsl::IVec3((-std::int32_t(1)), std::int32_t(0), std::int32_t(0))), volSize);
-  [[maybe_unused]] glsl::Vec4 yp = sampleState(state, context, (voxel + glsl::IVec3(std::int32_t(0), std::int32_t(1), std::int32_t(0))), volSize);
-  [[maybe_unused]] glsl::Vec4 yn = sampleState(state, context, (voxel + glsl::IVec3(std::int32_t(0), (-std::int32_t(1)), std::int32_t(0))), volSize);
-  [[maybe_unused]] glsl::Vec4 zp = sampleState(state, context, (voxel + glsl::IVec3(std::int32_t(0), std::int32_t(0), std::int32_t(1))), volSize);
-  [[maybe_unused]] glsl::Vec4 zn = sampleState(state, context, (voxel + glsl::IVec3(std::int32_t(0), std::int32_t(0), (-std::int32_t(1)))), volSize);
-  if (glsl::swizzle<0>(xp) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  if (glsl::swizzle<0>(xn) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  if (glsl::swizzle<0>(yp) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  if (glsl::swizzle<0>(yn) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  if (glsl::swizzle<0>(zp) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  if (glsl::swizzle<0>(zn) > static_cast<float>(0.5)) {
-    (count++);
-  }
-  return count;
-}
-
-[[nodiscard]] double hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec3 p) noexcept {
-  p = glsl::Vec3((p + (static_cast<double>(float(state.seed)) * static_cast<double>(static_cast<float>(0.1)))));
-  p = glsl::Vec3(glsl::fract((p * glsl::FloatExpr<3>(static_cast<float>(0.1031), static_cast<float>(0.1030), static_cast<float>(0.0973)))));
-  p = glsl::Vec3((p + glsl::dot(p, (glsl::swizzle<1, 0, 2>(p) + static_cast<float>(33.33)))));
-  return glsl::fract((static_cast<double>((static_cast<double>(glsl::swizzle<0>(p)) + static_cast<double>(glsl::swizzle<1>(p)))) * static_cast<double>(glsl::swizzle<2>(p))));
-}
-
-[[nodiscard]] glsl::Vec4 sampleSeed([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
-  return fetch_texel(*state.seedTex, atlasTexel(state, context, voxel, volSize));
-}
-
-[[nodiscard]] glsl::Vec4 sampleState([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::IVec3 voxel, [[maybe_unused]] std::int32_t volSize) noexcept {
-  return fetch_texel(*state.stateTex, atlasTexel(state, context, voxel, volSize));
-}
-
-[[nodiscard]] bool shouldBeBorn([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t n, [[maybe_unused]] std::int32_t rule) noexcept {
-  if (rule == std::int32_t(0)) {
-    return (n == std::int32_t(4));
-  }
-  if (rule == std::int32_t(1)) {
-    return ((n >= std::int32_t(6)) && (n <= std::int32_t(8)));
-  }
-  if (rule == std::int32_t(2)) {
-    return (n >= std::int32_t(9));
-  }
-  if (rule == std::int32_t(3)) {
-    return ((((n == std::int32_t(4)) || (n == std::int32_t(6))) || (n == std::int32_t(8))) || (n == std::int32_t(9)));
-  }
-  if (rule == std::int32_t(4)) {
-    return (n == std::int32_t(3));
-  }
-  if (rule == std::int32_t(5)) {
-    return (n >= std::int32_t(13));
-  }
-  if (rule == std::int32_t(6)) {
-    return ((n == std::int32_t(1)) || (n == std::int32_t(3)));
-  }
-  if (rule == std::int32_t(7)) {
-    return (((n >= std::int32_t(5)) && (n <= std::int32_t(7))) || (n == std::int32_t(12)));
-  }
-  if (rule == std::int32_t(8)) {
-    return ((n >= std::int32_t(4)) && (n <= std::int32_t(7)));
-  }
-  if (rule == std::int32_t(9)) {
-    return (n == std::int32_t(4));
-  }
-  if (rule == std::int32_t(10)) {
-    return ((n >= std::int32_t(5)) && (n <= std::int32_t(8)));
-  }
-  return false;
-}
-
-[[nodiscard]] bool shouldSurvive([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::int32_t n, [[maybe_unused]] std::int32_t rule) noexcept {
-  if (rule == std::int32_t(0)) {
-    return (n == std::int32_t(4));
-  }
-  if (rule == std::int32_t(1)) {
-    return ((n >= std::int32_t(6)) && (n <= std::int32_t(8)));
-  }
-  if (rule == std::int32_t(2)) {
-    return (((((n >= std::int32_t(5)) && (n <= std::int32_t(7))) || (n == std::int32_t(12))) || (n == std::int32_t(13))) || (n == std::int32_t(15)));
-  }
-  if (rule == std::int32_t(3)) {
-    return (((n >= std::int32_t(3)) && (n <= std::int32_t(6))) || (n == std::int32_t(9)));
-  }
-  if (rule == std::int32_t(4)) {
-    return ((n == std::int32_t(2)) || (n == std::int32_t(3)));
-  }
-  if (rule == std::int32_t(5)) {
-    return (n >= std::int32_t(13));
-  }
-  if (rule == std::int32_t(6)) {
-    return (((n == std::int32_t(1)) || (n == std::int32_t(2))) || (n == std::int32_t(4)));
-  }
-  if (rule == std::int32_t(7)) {
-    return ((n >= std::int32_t(5)) && (n <= std::int32_t(8)));
-  }
-  if (rule == std::int32_t(8)) {
-    return ((n >= std::int32_t(6)) && (n <= std::int32_t(8)));
-  }
-  if (rule == std::int32_t(9)) {
-    return ((n == std::int32_t(3)) || (n == std::int32_t(4)));
-  }
-  if (rule == std::int32_t(10)) {
-    return (((n == std::int32_t(5)) || (n == std::int32_t(6))) || (n == std::int32_t(9)));
-  }
-  return false;
-}
-
-void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
-  const auto& state = static_cast<const State&>(kernel_base);
-  (void)state;
-  (void)context;
-  [[maybe_unused]] std::int32_t volSize = state.volumeSize;
-  [[maybe_unused]] double volSizeF = float(volSize);
-  [[maybe_unused]] glsl::IVec2 pixelCoord = glsl::IVec2(glsl::swizzle<0, 1>(context.frag_coord));
-  [[maybe_unused]] std::int32_t x = glsl::swizzle<0>(pixelCoord);
-  [[maybe_unused]] std::int32_t y = glsl::integer_mod(glsl::swizzle<1>(pixelCoord), volSize);
-  [[maybe_unused]] std::int32_t z = (glsl::swizzle<1>(pixelCoord) / volSize);
-  [[maybe_unused]] glsl::IVec3 voxel = glsl::IVec3(x, y, z);
-  if (((x >= volSize) || (y >= volSize)) || (z >= volSize)) {
-    output = glsl::Vec4(glsl::FloatExpr<4>(static_cast<float>(0.0)));
-    return;
-  }
-  [[maybe_unused]] glsl::Vec4 state_glsl_58 = sampleState(state, context, voxel, volSize);
-  [[maybe_unused]] double alive = glsl::swizzle<0>(state_glsl_58);
-  [[maybe_unused]] double age = glsl::swizzle<1>(state_glsl_58);
-  [[maybe_unused]] bool bufferIsEmpty = ((((glsl::swizzle<0>(state_glsl_58) == static_cast<float>(0.0)) && (glsl::swizzle<1>(state_glsl_58) == static_cast<float>(0.0))) && (glsl::swizzle<2>(state_glsl_58) == static_cast<float>(0.0))) && (glsl::swizzle<3>(state_glsl_58) == static_cast<float>(0.0)));
-  if (bufferIsEmpty || state.resetState) {
-    [[maybe_unused]] glsl::Vec4 seedVal = sampleSeed(state, context, voxel, volSize);
-    [[maybe_unused]] bool hasSeedInput = (((glsl::swizzle<0>(seedVal) > static_cast<float>(0.0)) || (glsl::swizzle<1>(seedVal) > static_cast<float>(0.0))) || (glsl::swizzle<2>(seedVal) > static_cast<float>(0.0)));
-    if (hasSeedInput) {
-      [[maybe_unused]] double lum = (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.299)) * static_cast<double>(glsl::swizzle<0>(seedVal)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.587)) * static_cast<double>(glsl::swizzle<1>(seedVal)))))) + static_cast<double>((static_cast<double>(static_cast<float>(0.114)) * static_cast<double>(glsl::swizzle<2>(seedVal)))));
-      alive = ((lum > static_cast<float>(0.5)) ? static_cast<float>(1.0) : static_cast<float>(0.0));
-      age = static_cast<float>(0.0);
-    } else {
-      [[maybe_unused]] glsl::Vec3 p = glsl::FloatExpr<3>(float(x), float(y), float(z));
-      [[maybe_unused]] double h = hash3(state, context, p);
-      [[maybe_unused]] double threshold = (static_cast<double>(state.density) * static_cast<double>(static_cast<float>(0.01)));
-      [[maybe_unused]] glsl::Vec3 center = glsl::FloatExpr<3>((static_cast<double>(volSizeF) * static_cast<double>(static_cast<float>(0.5))));
-      [[maybe_unused]] double dist = glsl::length((p - center));
-      [[maybe_unused]] double radius = (static_cast<double>(volSizeF) * static_cast<double>(static_cast<float>(0.15)));
-      if ((h < threshold) || (dist < radius)) {
-        alive = static_cast<float>(1.0);
-        age = static_cast<float>(0.0);
-      } else {
-        alive = static_cast<float>(0.0);
-        age = static_cast<float>(0.0);
-      }
-    }
-    output = glsl::Vec4(glsl::FloatExpr<4>(alive, alive, alive, static_cast<float>(1.0)));
-    return;
-  }
-  [[maybe_unused]] std::int32_t neighbors = {};
-  if (state.neighborMode == std::int32_t(0)) {
-    neighbors = countMooreNeighbors(state, context, voxel, volSize);
-  } else {
-    neighbors = countVonNeumannNeighbors(state, context, voxel, volSize);
-  }
-  [[maybe_unused]] double newAlive = static_cast<float>(0.0);
-  [[maybe_unused]] double newAge = age;
-  if (alive > static_cast<float>(0.5)) {
-    if (shouldSurvive(state, context, neighbors, state.ruleIndex)) {
-      newAlive = static_cast<float>(1.0);
-      newAge = glsl::component_min((static_cast<double>(age) + static_cast<double>(static_cast<float>(0.01))), static_cast<float>(1.0));
-    } else {
-      newAlive = static_cast<float>(0.0);
-      newAge = static_cast<float>(0.0);
-    }
-  } else {
-    if (shouldBeBorn(state, context, neighbors, state.ruleIndex)) {
-      newAlive = static_cast<float>(1.0);
-      newAge = static_cast<float>(0.0);
-    } else {
-      newAlive = static_cast<float>(0.0);
-      newAge = static_cast<float>(0.0);
-    }
-  }
-  [[maybe_unused]] double animSpeed = (static_cast<double>(state.speed) * static_cast<double>(static_cast<float>(0.01)));
-  [[maybe_unused]] double finalAlive = glsl::mix(alive, newAlive, animSpeed);
-  [[maybe_unused]] double finalAge = glsl::mix(age, newAge, animSpeed);
-  if (state.weight > static_cast<float>(0.0)) {
-    [[maybe_unused]] glsl::Vec4 seedVal = sampleSeed(state, context, voxel, volSize);
-    [[maybe_unused]] double seedLum = (static_cast<double>((static_cast<double>((static_cast<double>(static_cast<float>(0.299)) * static_cast<double>(glsl::swizzle<0>(seedVal)))) + static_cast<double>((static_cast<double>(static_cast<float>(0.587)) * static_cast<double>(glsl::swizzle<1>(seedVal)))))) + static_cast<double>((static_cast<double>(static_cast<float>(0.114)) * static_cast<double>(glsl::swizzle<2>(seedVal)))));
-    finalAlive = glsl::mix(finalAlive, seedLum, (static_cast<double>(state.weight) * static_cast<double>(static_cast<float>(0.01))));
-  }
-  output = glsl::Vec4(glsl::FloatExpr<4>(finalAlive, finalAlive, finalAlive, static_cast<float>(1.0)));
-}
-}  // namespace typed_272
-
-BoundKernel bind_synth3d_cellularAutomata3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_272::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get<std::int32_t>("ruleIndex"), bindings.get<std::int32_t>("neighborMode"), bindings.get_number("speed"), bindings.get_number("density"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
-  (void)bindings;
-  return BoundKernel(state, &typed_272::pixel);
-}
-
 // Typed IR program: synth3d/noise3d:precompute
 // Source SHA-256: 60ce97d188bf78bc84176c063943f29c25371e4325f13cedbb4eec889c905727
-namespace typed_273 {
+namespace typed_272 {
 struct State final : KernelState {
   State(glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double time_value, double scale_value, std::int32_t seed_value, std::int32_t volumeSize_value, double speed_value) : tileOffset(tileOffset_value), fullResolution(fullResolution_value), time(time_value), scale(scale_value), seed(seed_value), volumeSize(volumeSize_value), speed(speed_value) {}
   glsl::Vec2 tileOffset;
@@ -36389,17 +36122,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), noiseVal));
 }
-}  // namespace typed_273
+}  // namespace typed_272
 
 BoundKernelMrt bind_synth3d_noise3d_precompute(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_273::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("speed"));
+  const auto state = std::make_shared<typed_272::State>(bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("time"), bindings.get_number("scale"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("speed"));
   (void)bindings;
-  return BoundKernelMrt(state, &typed_273::pixel, 2U);
+  return BoundKernelMrt(state, &typed_272::pixel, 2U);
 }
 
 // Typed IR program: synth3d/reactionDiffusion3d:simulate
 // Source SHA-256: 23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17
-namespace typed_274 {
+namespace typed_273 {
 struct State final : KernelState {
   State(double time_value, std::int32_t seed_value, std::int32_t volumeSize_value, double feed_value, double kill_value, double rate1_value, double rate2_value, double speed_value, std::int32_t iterations_value, std::int32_t colorMode_value, double weight_value, bool resetState_value, const Surface* stateTex_value, const Surface* seedTex_value) : time(time_value), seed(seed_value), volumeSize(volumeSize_value), feed(feed_value), kill(kill_value), rate1(rate1_value), rate2(rate2_value), speed(speed_value), iterations(iterations_value), colorMode(colorMode_value), weight(weight_value), resetState(resetState_value), stateTex(stateTex_value), seedTex(seedTex_value) {}
   double time;
@@ -36536,17 +36269,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   }
   output = glsl::Vec4(glsl::Vec4(outRgb, newA));
 }
-}  // namespace typed_274
+}  // namespace typed_273
 
 BoundKernel bind_synth3d_reactionDiffusion3d_simulate(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_274::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
+  const auto state = std::make_shared<typed_273::State>(bindings.get_number("time"), bindings.get<std::int32_t>("seed"), bindings.get<std::int32_t>("volumeSize"), bindings.get_number("feed"), bindings.get_number("kill"), bindings.get_number("rate1"), bindings.get_number("rate2"), bindings.get_number("speed"), bindings.get<std::int32_t>("iterations"), bindings.get<std::int32_t>("colorMode"), bindings.get_number("weight"), bindings.get<bool>("resetState"), &bindings.texture("stateTex"), &bindings.texture("seedTex"));
   (void)bindings;
-  return BoundKernel(state, &typed_274::pixel);
+  return BoundKernel(state, &typed_273::pixel);
 }
 
 // Typed IR program: synth3d/shape3d:precompute
 // Source SHA-256: 53b240191c2f0d2e61b5dacecb532ecd3b8aad3973bbf8e38d8712073d50d14f
-namespace typed_275 {
+namespace typed_274 {
 struct State final : KernelState {
   State(std::int32_t loopAOffset_value, std::int32_t loopBOffset_value, double loopAScale_value, double loopBScale_value, double speedA_value, double speedB_value, double time_value, std::int32_t volumeSize_value, glsl::Vec2 tileOffset_value, glsl::Vec2 fullResolution_value, double renderScale_value) : loopAOffset(loopAOffset_value), loopBOffset(loopBOffset_value), loopAScale(loopAScale_value), loopBScale(loopBScale_value), speedA(speedA_value), speedB(speedB_value), time(time_value), volumeSize(volumeSize_value), tileOffset(tileOffset_value), fullResolution(fullResolution_value), renderScale(renderScale_value) {}
   std::int32_t loopAOffset;
@@ -36751,17 +36484,17 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   fragColor = glsl::Vec4(glsl::FloatExpr<4>(d, d, d, static_cast<float>(1.0)));
   geoOut = glsl::Vec4(glsl::Vec4(((normal * static_cast<float>(0.5)) + static_cast<float>(0.5)), d));
 }
-}  // namespace typed_275
+}  // namespace typed_274
 
 BoundKernelMrt bind_synth3d_shape3d_precompute(const glsl::Bindings& bindings) {
-  const auto state = std::make_shared<typed_275::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
+  const auto state = std::make_shared<typed_274::State>(bindings.get<std::int32_t>("loopAOffset"), bindings.get<std::int32_t>("loopBOffset"), bindings.get_number("loopAScale"), bindings.get_number("loopBScale"), bindings.get_number("speedA"), bindings.get_number("speedB"), bindings.get_number("time"), bindings.get<std::int32_t>("volumeSize"), bindings.get<glsl::Vec2>("tileOffset"), bindings.get<glsl::Vec2>("fullResolution"), bindings.get_number("renderScale"));
   (void)bindings;
-  return BoundKernelMrt(state, &typed_275::pixel, 2U);
+  return BoundKernelMrt(state, &typed_274::pixel, 2U);
 }
 
 
 namespace {
-constexpr std::array<KernelFactory, 263> kCatalog{{
+constexpr std::array<KernelFactory, 262> kCatalog{{
     {"classicNoisedeck/bitEffects:bitEffects", &noisemaker::effects::bind_bit_effects},
     {"classicNoisedeck/caustic:caustic", &bind_classicNoisedeck_caustic_caustic},
     {"classicNoisedeck/cellNoise:cellNoise", &bind_classicNoisedeck_cellNoise_cellNoise},
@@ -37023,11 +36756,10 @@ constexpr std::array<KernelFactory, 263> kCatalog{{
     {"synth/solid:solid", &bind_synth_solid_solid},
     {"synth/subdivide:subdivide", &bind_synth_subdivide_subdivide},
     {"synth/testPattern:testPattern", &bind_synth_testPattern_testPattern},
-    {"synth3d/cellularAutomata3d:simulate", &bind_synth3d_cellularAutomata3d_simulate},
     {"synth3d/reactionDiffusion3d:simulate", &bind_synth3d_reactionDiffusion3d_simulate},
 }};
 
-constexpr std::array<FactoryRoute, 261> kCanonicalRoutes{{
+constexpr std::array<FactoryRoute, 260> kCanonicalRoutes{{
     {"classicNoisedeck/bitEffects:bitEffects", "noisemaker::effects::bind_bit_effects", "bind_classicNoisedeck_bitEffects_bitEffects", "custom_adapter", "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b", "8f356b8ee94ca2b24c42612d6672340aed73765aa37bcd076ce3730b7728f11e", "default-only", "COLOR_SCHEME=20;FORMULA=0;INTERP=0;MASK_COLOR_SCHEME=1;MASK_FORMULA=10;MODE=1", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "d4a8993d59224995227b303d730130eb836c7e786538aab16d5adbbe48c5f811", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "90c6fd51fda687348a92373857d49ab0045fd6571831765cc24eefadd422aec2", &noisemaker::effects::bind_bit_effects},
     {"classicNoisedeck/caustic:caustic", "bind_classicNoisedeck_caustic_caustic", "bind_classicNoisedeck_caustic_caustic", "typed_emitter", "161cb6114f312a223d88a5c60a3ecb694a4c8766fca91b3fc47ae92078f2a00d", "3e98bf1e43078e5b42d17f73f37d58d764789eb086868a862ae6ee137f9e5e51", "default-only", "NOISE_TYPE=10", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "1362793bfada7465bd99246de8f691626a2815027ef8ac57cd81065d22ad82bd", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_caustic_caustic},
     {"classicNoisedeck/cellNoise:cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "bind_classicNoisedeck_cellNoise_cellNoise", "typed_emitter", "9fd76306b377ef501a5dd340263179f04e3e890cc05d5e82f524f7bdf793d3b8", "64ad33fdea93428cff959f39a083839a9dcc26745e13a7d58019c0eea8f0dc85", "none", "", "e93de6c8f46919a3709b61a9b897956d2556bbe8db7b44bcd1868867d20b75f6", "f9b7dd0e9b66a36803e5a9696f9d91395a082cc60cc410738415d5cb16c9659f", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_classicNoisedeck_cellNoise_cellNoise},
@@ -37287,7 +37019,6 @@ constexpr std::array<FactoryRoute, 261> kCanonicalRoutes{{
     {"synth/solid:solid", "bind_synth_solid_solid", "bind_synth_solid_solid", "typed_emitter", "82afae3ccf523d1938cd02eadc6bfae5e4440a9b22a4f5629688d1d05856287c", "d1f354e3650d716584d918b8b8b4afc6040638dc9b776e38494f6e814600395e", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "cc89f98fbec0177fcfccaaaa99e51d407c860fe4396fb1830994c676debb2951", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_solid_solid},
     {"synth/subdivide:subdivide", "bind_synth_subdivide_subdivide", "bind_synth_subdivide_subdivide", "typed_emitter", "65e57d82c8982040240528c4410328453bc39de4f4d9519da2497266b1b500bd", "fe7665c4789c16ef2c6ee017cd87bb29d69019dc727d823e8474b4d2850db5da", "none", "", "4b563031c35aed94707bd5e68bed0086979eb575195b958d952a80855ddfebf9", "462707cd4ac26624345ce030d43d9491151071d1d939508b3a4cfd0b68ccca30", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_subdivide_subdivide},
     {"synth/testPattern:testPattern", "bind_synth_testPattern_testPattern", "bind_synth_testPattern_testPattern", "typed_emitter", "f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20", "731bb6af687dd07500ff366f32f6a6f51aa2afcdccdcee4198f9f794847712d2", "none", "", "1b88be4976caf0b3bfa1ad459e3318d46047bf1d9af7269e950eb71722bc1ae6", "ed5e4dea830b59647bcdce4c7a7c8de19d9a55e98c8eb60e5edbd250120c7d55", "0f851d9dfa2da94be541c6d505cc4c59f1351b4b350cc00b0f3219ed143797c5", "0d3dcd28bc1c87e07c05bb6963296ad5ee3939fcb912a4601c0930ce679bdd9c", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth_testPattern_testPattern},
-    {"synth3d/cellularAutomata3d:simulate", "bind_synth3d_cellularAutomata3d_simulate", "bind_synth3d_cellularAutomata3d_simulate", "typed_emitter", "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a", "8fbfe8c00dd2f63920efc4a5d78e66730785be9e3f038de250fb7ebbad53d5f0", "none", "", "a5cbff3be87c00df5e9fad3b34afe4240a068c1a9461067a529e2909aa395c43", "10efff60c67896bebf28734b4bd30874a79c11505186bb4c023e362fd9c0b017", "6ed37b38e77c759d032b690a82fcdf4146ee8da6f1a2ce85551396386d415c44", "3f260f4582b2ce78f85fdee3254c24d98de564e3f5b2e7645ab227a58d322b50", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth3d_cellularAutomata3d_simulate},
     {"synth3d/reactionDiffusion3d:simulate", "bind_synth3d_reactionDiffusion3d_simulate", "bind_synth3d_reactionDiffusion3d_simulate", "typed_emitter", "23a23fcf7cfda986215efc76e21f79faf237bef0c362881d801b040407766b17", "baacb873930752041d0f35b76f30ba93152249e1052e5c36969ab98ff032e623", "none", "", "c90c74e7946372b708bcbb8a4c292329d08f35fed5063f28411b5ed639b98b1b", "0fa6c36f2c490cfec70b5259aed2ff44a602fbf139419f00be019d7603fd47be", "ca77d716f67cc76f3f8927cfbc5241ea4e2748ac0844235d364a71ddbe0fb2aa", "3f260f4582b2ce78f85fdee3254c24d98de564e3f5b2e7645ab227a58d322b50", "02fd423231499554cc6d031543c9bbd11752fc1fe72135d4c112f0bd3da43b7e", &bind_synth3d_reactionDiffusion3d_simulate},
 }};
 }  // namespace

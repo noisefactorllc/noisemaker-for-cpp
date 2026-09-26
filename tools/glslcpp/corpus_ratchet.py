@@ -237,10 +237,6 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
         apply_points_post_admission,
     )
-    from tools.glslcpp.frontend.ca3d_post_profile import (
-        CA3D_POST_KEYS, PROFILE as CA3D_POST_PROFILE,
-        apply_ca3d_post_admission,
-    )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
@@ -268,9 +264,6 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     points_post_profile = (
         POINTS_POST_PROFILE if key in POINTS_POST_KEYS else None
     )
-    ca3d_post_profile = (
-        CA3D_POST_PROFILE if key in CA3D_POST_KEYS else None
-    )
     typed = analyze_program(parse_program(source, key, defaults), key,
                             source_global_literal_int_profile=source_global_literal_int_profile)
     if runtime_loop_bound_profile is not None:
@@ -283,8 +276,6 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         typed = apply_flow_round_admission(typed, source_hash, flow_round_profile)
     if points_post_profile is not None:
         typed = apply_points_post_admission(typed, source_hash, points_post_profile)
-    if ca3d_post_profile is not None:
-        typed = apply_ca3d_post_admission(typed, source_hash, ca3d_post_profile)
     typed = generate_typed_slice.attach_fixed_array_in_parameter_proof(typed)
     typed = generate_typed_slice.attach_fixed_affine_centers13_proof(typed)
     try:
@@ -299,8 +290,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             vec_scalar_modulo_profile=vec_scalar_modulo_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
-            points_post_profile=points_post_profile,
-            ca3d_post_profile=ca3d_post_profile)
+            points_post_profile=points_post_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -315,8 +305,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             vec_scalar_modulo_profile=vec_scalar_modulo_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
-            points_post_profile=points_post_profile,
-            ca3d_post_profile=ca3d_post_profile)
+            points_post_profile=points_post_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -586,9 +575,6 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.points_post_profile import (
         POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
     )
-    from tools.glslcpp.frontend.ca3d_post_profile import (
-        CA3D_POST_KEYS, PROFILE as CA3D_POST_PROFILE,
-    )
 
     path = repository / "tools/glslcpp/typed_slice.json"
     spec = json.loads(path.read_text(encoding="utf-8"))
@@ -615,8 +601,6 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["flow_round_profile"] = FLOW_ROUND_PROFILE
         if entry["program_key"] in POINTS_POST_KEYS:
             row["points_post_profile"] = POINTS_POST_PROFILE
-        if entry["program_key"] in CA3D_POST_KEYS:
-            row["ca3d_post_profile"] = CA3D_POST_PROFILE
         rows.setdefault(entry["program_key"], row)
     spec["programs"] = [rows[key] for key in sorted(rows)]
     path.write_bytes(_json_bytes(spec))
