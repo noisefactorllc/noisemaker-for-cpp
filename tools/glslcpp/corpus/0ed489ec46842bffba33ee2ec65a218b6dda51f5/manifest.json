@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "b6055f69cbe503b562ec939a7654eb87e7dd335837514fe8cc7861a8738fe382",
+  "metadata_sha256": "092a5c5cef4f3143298c81f2b90d378333bd263e3c8e73adfed2854e83ffd7dc",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -4947,6 +4947,24 @@
       "raw_sha256": "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
       "runtime_key": "synth3d/cell3d:precompute",
       "source": "sources/synth3d/cell3d/precompute.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/cellularAutomata3d",
+      "normalized_bytes": 6584,
+      "normalized_sha256": "c4f0d809ea5e0e86ce47653cccac606490dd363733fb7c187e6b3698b2346f7b",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 0,
+      "pass_name": "simulate",
+      "program": "simulate",
+      "program_key": "synth3d/cellularAutomata3d:simulate",
+      "raw_bytes": 8843,
+      "raw_sha256": "e29a5b033304463b8610c86823f46c16751270a3cbaa37f1204df968c6c5394a",
+      "runtime_key": "synth3d/cellularAutomata3d:simulate",
+      "source": "sources/synth3d/cellularAutomata3d/simulate.glsl",
       "status": "generated",
       "varyings": []
     },

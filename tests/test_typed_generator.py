@@ -22550,21 +22550,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM
+        # The four artifacts of the LIVE 276-program tree with authenticated Gradient semantic repair, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                37946,
+                "f3083ecf942624a532b4f028384a8bac9cb472c3ea6f236991809eb9e514040b"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3242060,
+                "f02d6627bec49377b331d33509b9b2338ed1b73417f67d74d383ed619db243f2"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                844915,
+                "77d14cc6f317772ef510fec747eace181a91f0bda28c1e647bebeeeaad852c08"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27197,
+                "6a83f8852592b25575da0a0d8d65150e1c892e3b6d653d08ac7ccaaff0dcb741"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23330,21 +23330,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 276-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                37946,
+                "f3083ecf942624a532b4f028384a8bac9cb472c3ea6f236991809eb9e514040b"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3242060,
+                "f02d6627bec49377b331d33509b9b2338ed1b73417f67d74d383ed619db243f2"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                844915,
+                "77d14cc6f317772ef510fec747eace181a91f0bda28c1e647bebeeeaad852c08"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27197,
+                "6a83f8852592b25575da0a0d8d65150e1c892e3b6d653d08ac7ccaaff0dcb741"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24086,21 +24086,21 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 276-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                37946,
+                "f3083ecf942624a532b4f028384a8bac9cb472c3ea6f236991809eb9e514040b"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3242060,
+                "f02d6627bec49377b331d33509b9b2338ed1b73417f67d74d383ed619db243f2"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                844915,
+                "77d14cc6f317772ef510fec747eace181a91f0bda28c1e647bebeeeaad852c08"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27197,
+                "6a83f8852592b25575da0a0d8d65150e1c892e3b6d653d08ac7ccaaff0dcb741"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24622,21 +24622,21 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 276-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                37946,
+                "f3083ecf942624a532b4f028384a8bac9cb472c3ea6f236991809eb9e514040b"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3242060,
+                "f02d6627bec49377b331d33509b9b2338ed1b73417f67d74d383ed619db243f2"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                844915,
+                "77d14cc6f317772ef510fec747eace181a91f0bda28c1e647bebeeeaad852c08"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27197,
+                "6a83f8852592b25575da0a0d8d65150e1c892e3b6d653d08ac7ccaaff0dcb741"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25222,21 +25222,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four live 259-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four live 276-program post-slice artifacts with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                37946,
+                "f3083ecf942624a532b4f028384a8bac9cb472c3ea6f236991809eb9e514040b"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3242060,
+                "f02d6627bec49377b331d33509b9b2338ed1b73417f67d74d383ed619db243f2"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                844915,
+                "77d14cc6f317772ef510fec747eace181a91f0bda28c1e647bebeeeaad852c08"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27197,
+                "6a83f8852592b25575da0a0d8d65150e1c892e3b6d653d08ac7ccaaff0dcb741"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -26796,6 +26796,121 @@ void main() {
             )
             self.assertIn("++);", cpp)
             self.assertIn(f"bind_{program_name}", cpp)
+
+    def test_ca3d_post_profile(self) -> None:
+        import dataclasses
+        import hashlib
+        from pathlib import Path
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.ca3d_post_profile import (
+            CA3D_SIMULATE_KEY, PROFILE as CA3D_POST_PROFILE,
+            authenticate_ca3d_post, apply_ca3d_post_admission,
+        )
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        repo_root = Path(__file__).resolve().parent.parent
+        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        metadata = json.loads((corpus_root / "metadata.json").read_bytes())
+        pending = json.loads((corpus_root / "pending.json").read_bytes())
+
+        effect_id = CA3D_SIMULATE_KEY.split(":")[0]
+        program_name = CA3D_SIMULATE_KEY.split(":")[1]
+        source_path = (corpus_root / f"pending-sources/{effect_id}/{program_name}.glsl")
+        if not source_path.exists():
+            source_path = corpus_root / f"sources/{effect_id}/{program_name}.glsl"
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        eff = metadata["effects"].get(effect_id) or pending["effects"].get(effect_id)
+        defaults = check_semantics._metadata_defaults({"effects": {effect_id: eff}}, CA3D_SIMULATE_KEY)
+
+        ast = parse_program(raw, CA3D_SIMULATE_KEY, defaults)
+        typed = analyze_program(ast, CA3D_SIMULATE_KEY)
+
+        # 1. Direct authentication: exactly the 7 expr-statement count++ sites.
+        nodes = authenticate_ca3d_post(typed, shash, CA3D_POST_PROFILE)
+        self.assertEqual(7, len(nodes))
+        for node in nodes:
+            self.assertEqual(node.kind, "post")
+            self.assertEqual(node.operator, "++")
+            self.assertEqual(node.type.display(), "int")
+
+        # Identity application
+        applied = apply_ca3d_post_admission(typed, shash, CA3D_POST_PROFILE)
+        self.assertIs(applied, typed)
+
+        # Profile mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_ca3d_post(typed, shash, "invalid-profile")
+        self.assertIn("exact profile carrier required", str(ctx.exception))
+
+        # Key mismatch
+        fake_typed = dataclasses.replace(typed, key="synthetic:simulate")
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_ca3d_post(fake_typed, shash, CA3D_POST_PROFILE)
+        self.assertIn("program key is not an admitted cellularAutomata3d post carrier",
+                      str(ctx.exception))
+
+        # Source hash mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_ca3d_post(typed, "0" * 64, CA3D_POST_PROFILE)
+        self.assertIn("source hash mismatch", str(ctx.exception))
+
+        # 2. Validator: missing profile fails closed...
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+            )
+        self.assertIn("unsupported typed expression post", str(ctx.exception))
+
+        # ...and the exact profile validates.
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            ca3d_post_profile=CA3D_POST_PROFILE,
+        )
+
+        # Wrong-profile carrier is rejected.
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                ca3d_post_profile="wrong-ca3d-post-profile",
+            )
+        self.assertIn("exact profile carrier required", str(ctx.exception))
+
+        # 3. Emitter: missing profile fails closed.
+        with self.assertRaises(Exception) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, CA3D_SIMULATE_KEY, shash, "pixel", f"bind_{program_name}",
+            )
+        self.assertTrue(
+            "unsupported authenticated post expression" in str(ctx.exception)
+            or "exact cellularAutomata3d post admission profile carrier required"
+            in str(ctx.exception)
+            or "only typed assignments are admitted" in str(ctx.exception)
+        )
+
+        # Passing valid profile emits C++ successfully.
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed, CA3D_SIMULATE_KEY, shash, "pixel", f"bind_{program_name}",
+            ca3d_post_profile=CA3D_POST_PROFILE,
+        )
+        self.assertIn("++);", cpp)
+        self.assertIn(f"bind_{program_name}", cpp)
+
+        # Tamper resistance: a mutated body with the original source hash
+        # must fail closed.
+        import re as _re
+        tampered = raw.replace("count++;", "count = count + 1;", 1)
+        self.assertNotEqual(raw, tampered)
+        tampered_typed = analyze_program(
+            parse_program(tampered, CA3D_SIMULATE_KEY, defaults), CA3D_SIMULATE_KEY)
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_ca3d_post(tampered_typed, shash, CA3D_POST_PROFILE)
+        self.assertIn("source hash mismatch", str(ctx.exception))
 
 
 if __name__ == "__main__":

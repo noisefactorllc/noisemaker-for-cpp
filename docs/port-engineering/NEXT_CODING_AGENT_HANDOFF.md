@@ -105,6 +105,47 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
+> ## CONTINUATION CHECKPOINT 2026-09-26: AUTHORIZE COUNTED-FOR LOOP PROOF FOR 3D CELLULAR AUTOMATA & PROMOTE synth3d/cellularAutomata3d:simulate
+>
+> This checkpoint records the autonomous completion of Candidate B (counted-for loop proof in `synth3d/cellularAutomata3d:simulate`), including the remaining `post` blocker on its 3D loop update, and promotion of **`synth3d/cellularAutomata3d:simulate`**.
+>
+> ### What landed (this pass)
+> - **Proof-gated carrier profile**: Created `tools/glslcpp/frontend/ca3d_post_profile.py` (`ca3d-post-admission-v1`) targeting `synth3d/cellularAutomata3d:simulate`, authenticating program identity with cryptographically exact dual raw/normalized SHA-256 digests (`norm_sha256`), length checks (`raw_bytes`, `norm_bytes`), typed function fingerprinting (`functions_sha256`), whole-program AST hashing (`whole_sha256`), interface hashing (`interface_sha256`), exact post-node count constraint (`post_count: 1` on the 3D loop update), and fail-closed validation.
+> - **Compiler pipeline integration**:
+>   - In `tools/glslcpp/generate_typed_slice.py`: `ca3d-post-admission-v1` profile forwarding, post admission during typed slice capability validation, manifest drift check, authorized post-node identity tracking with duplicate and EOF completeness verification, and batch generation profile application.
+>   - In `tools/glslcpp/emit_typed_cpp.py`: post-expression lowering reusing the authorized-points-post path for the new carrier, `authorized_ca3d_post_nodes` dataclass slot, `__post_init__` authentication gate, parameter forwarding through `render_typed_cpp`, duplicate emission tracking, and fail-closed gate at EOF.
+>   - In `tools/glslcpp/corpus_ratchet.py`: `ca3d_post_profile` carrier handling in `probe_program` and typed slice emission paths.
+> - **Corpus ratchet & program promotion**: Ran `python3 -m tools.glslcpp.corpus_ratchet --write`:
+>   - Promoted `synth3d/cellularAutomata3d:simulate` from `pending.json` into vendored corpus manifest (`manifest.json`) and typed slice (`typed_slice.json`); moved `pending-sources/synth3d/cellularAutomata3d/simulate.glsl` to `sources/synth3d/cellularAutomata3d/simulate.glsl`.
+>   - Pinned vendored programs increased from 276 to 277; pending decreased from 28 to 27.
+>   - Typed slice increased from 275 to 276.
+>   - Backend compatible programs increased from 274 to 275.
+>   - Missing passes in catalog decreased from 68 to 67.
+> - **Unit & regression tests**:
+>   - Added `test_ca3d_post_profile` in `tests/test_typed_generator.py` verifying fail-closed rejection without profile, authenticated promotion, C++ post emission, and tamper resistance against forged source hashes.
+>   - Updated artifact size/hash pins and the 275-program/276-program markers across `tests/test_typed_generator.py`.
+>   - Updated `compatible_programs` (274 -> 275) and `missing_passes` (68 -> 67) in `tests/test_effect_catalog_generator.py`.
+> - **Fixed-point regeneration**: `tools/resync/regen_all.sh .` reached a clean fixed point (`REGEN OK`) with zero drift across all derived artifacts.
+> - **Verification & gates passed**:
+>   - All 5 generator check gates passed (`check_corpus`, `check_semantics`, `corpus_ratchet --check`, `generate_typed_slice`, `generate_backend_compatibility`).
+>   - Native C++ build & CTest passed 4/4.
+>   - Python suite verified across all 4 shard partitions with the corrected environment (pinned 3.13.13, pytest-enabled shim, Node v26.0.0, durable CPU authority root): every shard-0 module green (test_typed_generator full class set: 54+111+26+3 passed; semantic/mutable-global-frame/struct-declaration-profile/runtime-loop-bound/scalar-uint-xor: 213 passed), shard 3 fully green (442 tests), shard 1/2 green except two pre-existing environment-gap failures (shape-mixer oracle drift, julia oracle package drift) confirmed to fail identically at HEAD via stashed-tree runs; the g++ misleading-indentation smoke-compile failure also reproduces at HEAD (GNU false positive; clang in CI passes it).
+>   - Zero symlinks verified via `find . -type l`.
+>
+> ### Current counts
+> - Pinned authority: **277 vendored + 27 pending = 304 authority programs** (vendored: 276 -> 277, pending: 28 -> 27).
+> - Typed slice: **276 typed programs** (was 275).
+> - Backend compatible programs: **275 compatible programs** (was 274).
+> - Missing passes in catalog: **67 missing passes** (was 68).
+>
+> ### Next linear leg for subsequent agent
+> - Remaining `post` blocker programs: **0** (`points/flock:agent`, `points/life:agent`, `synth3d/cellularAutomata3d:simulate` all promoted; 3 -> 0).
+> - Pick up the next blocker cluster from `pending.json` (27 programs; validator diagnostics measured this pass):
+>   - Candidate A: **Counted-for program proofs** — `classicNoisedeck/noise3d:noise3d` (487:5), `classicNoisedeck/shapes3d:shapes3d` (191:5), `points/lenia:convolve` (36:5), `render/renderCubemap3d:renderCubemap3d` (280:5), `synth3d/fractal3d:precompute` (68:5).
+>   - Candidate B: **`vec4[9]` typed type** — `filter/temporalAberration:temporalAberration` (30:10), `synth/navierStokes:nsSmooth` (74:14).
+>   - Candidate C: **Semantics defaults (`any`, `uintBitsToFloat`, `E_TYPE` initializers, `E_NO_OVERLOAD`)** — `points/heightmap3d:precompute` (`any`), `points/dla:agent` (`uintBitsToFloat`), `render/render3d:render3d` (384:10), `render/renderLit3d:renderLit3d` (347:10), `synth3d/flythrough3d:precompute` (125:10), `points/attractor:agent` (177:9).
+>   - Multi-pass/scatter/pass-binding programs remain schema-gated (`corpus_ratchet.py` one-pass assumption) — do not duplicate or drop bindings to fit.
+>
 > ## CONTINUATION CHECKPOINT 2026-09-25: ADMIT RUNTIME TILE REDUCTION LOOP PROOF & PROMOTE render/pointsBillboardRender:spriteMeanTiles
 >
 > This checkpoint records the autonomous completion of the Candidate A construct blocker cluster for **Counted-for program proof in `render/pointsBillboardRender:spriteMeanTiles`** (lines 40:5-48:5 in shader source) and promotion of **`render/pointsBillboardRender:spriteMeanTiles`**.

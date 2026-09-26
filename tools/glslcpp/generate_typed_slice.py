@@ -365,6 +365,10 @@ if __package__ in (None, ""):
         FLOCK_AGENT_KEY, LIFE_AGENT_KEY, POINTS_POST_KEYS,
         PROFILE as POINTS_POST_PROFILE,
         apply_points_post_admission, authenticate_points_post)
+    from tools.glslcpp.frontend.ca3d_post_profile import (
+        CA3D_POST_KEYS, CA3D_SIMULATE_KEY,
+        PROFILE as CA3D_POST_PROFILE,
+        apply_ca3d_post_admission, authenticate_ca3d_post)
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from tools.glslcpp.frontend.as_u32_round_profile import (
@@ -780,6 +784,10 @@ else:
         FLOCK_AGENT_KEY, LIFE_AGENT_KEY, POINTS_POST_KEYS,
         PROFILE as POINTS_POST_PROFILE,
         apply_points_post_admission, authenticate_points_post)
+    from .frontend.ca3d_post_profile import (
+        CA3D_POST_KEYS, CA3D_SIMULATE_KEY,
+        PROFILE as CA3D_POST_PROFILE,
+        apply_ca3d_post_admission, authenticate_ca3d_post)
     from .frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, authenticate_ceil_admission)
     from .frontend.as_u32_round_profile import (
@@ -1799,6 +1807,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key == COLOR_LAB_KEY else
                     {"defines", "fractal_frontend_profile", "program_key"}
                     if key in FRACTAL_PREPARED_KEYS else
+                    {"ca3d_post_profile", "defines", "program_key"}
+                    if key == CA3D_SIMULATE_KEY else
                     {"defines", "program_key"})
         # The generic runtime-define contract is additive on top of whatever
         # companion carrier the arms above already admitted for this key --
@@ -2294,6 +2304,16 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for item in programs if "points_post_profile" in item]
     if points_post_profiles != expected_points_post_profiles:
         raise GeneratorError("typed slice Points post admission profile drift")
+    expected_ca3d_post_profiles = [
+        (key, CA3D_POST_PROFILE) for key in sorted(CA3D_POST_KEYS)
+        if key in keys
+    ]
+    ca3d_post_profiles = [
+        (item["program_key"], item.get("ca3d_post_profile"))
+        for item in programs if "ca3d_post_profile" in item]
+    if ca3d_post_profiles != expected_ca3d_post_profiles:
+        raise GeneratorError(
+            "typed slice cellularAutomata3d post admission profile drift")
     as_u32_round_profiles = [
         (item["program_key"], item.get("as_u32_round_profile"))
         for item in programs if "as_u32_round_profile" in item]
@@ -3428,6 +3448,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           vec_scalar_modulo_profile: str | None = None,
                           points_float_bits_ingress_profile: str | None = None,
                           points_post_profile: str | None = None,
+                          ca3d_post_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
                           bitwise_scalar_int_ops_profile: str | None = None,
                           bit_effects_frontend_profile: str | None = None,
@@ -4011,6 +4032,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
     visited_points_post_nodes: list[TypedExpression] = []
+    authorized_ca3d_post_nodes: tuple[TypedExpression, ...] = ()
+    visited_ca3d_post_nodes: list[TypedExpression] = []
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = ()
     visited_scalar_uint_xors: list[TypedExpression] = []
     authorized_bitwise_scalar_int_ops_sites: tuple[TypedExpression, ...] = ()
@@ -5343,6 +5366,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             authorized_points_post_nodes = (
                 authenticate_points_post(
                     typed, source_hash, points_post_profile))
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if ca3d_post_profile is not None:
+        if (typed.key not in CA3D_POST_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: cellularAutomata3d post admission profile metadata mismatch")
+        try:
+            authorized_ca3d_post_nodes = (
+                authenticate_ca3d_post(
+                    typed, source_hash, ca3d_post_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     if scalar_uint_xor_profile is not None:
@@ -8073,7 +8113,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 and value.span.start_line == 228
                 and value.span.start_column == 9)
             points_post = any(value is item for item in authorized_points_post_nodes)
-            if (not (median_post or julia_period_post or points_post)
+            ca3d_post = any(value is item for item in authorized_ca3d_post_nodes)
+            if (not (median_post or julia_period_post or points_post or ca3d_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
@@ -8085,6 +8126,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{typed.key}: authenticated Points post expression visited twice")
                 visited_points_post_nodes.append(value)
+            if ca3d_post:
+                if any(value is item for item in visited_ca3d_post_nodes):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated cellularAutomata3d post expression "
+                        "visited twice")
+                visited_ca3d_post_nodes.append(value)
         elif value.kind not in {"id", "literal", "declaration", "assign", "unary"}:
             raise GeneratorError(f"{location(value)}: unsupported typed expression {value.kind}")
         if value.kind == "assign":
@@ -8464,6 +8511,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and tuple(visited_points_post_nodes) != authorized_points_post_nodes):
         raise GeneratorError(
             f"{typed.key}: authenticated points post admission traversal mismatch")
+    if (authorized_ca3d_post_nodes
+            and tuple(visited_ca3d_post_nodes) != authorized_ca3d_post_nodes):
+        raise GeneratorError(
+            f"{typed.key}: authenticated cellularAutomata3d post admission traversal mismatch")
     if (authorized_scalar_uint_xors
             and tuple(visited_scalar_uint_xors) != authorized_scalar_uint_xors):
         raise GeneratorError(
@@ -9051,6 +9102,18 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(f"{key}: {error}") from error
             if profiled is not typed:
                 raise GeneratorError(f"{key}: Points post admission identity profile mutated program")
+            typed = profiled
+        ca3d_post_profile = slice_spec["programs"][index].get(
+            "ca3d_post_profile")
+        if ca3d_post_profile is not None:
+            try:
+                profiled = apply_ca3d_post_admission(
+                    typed, source_hash, ca3d_post_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: cellularAutomata3d post admission identity profile mutated program")
             typed = profiled
         as_u32_round_profile = slice_spec["programs"][index].get(
             "as_u32_round_profile")
@@ -9766,6 +9829,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                               points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                               points_post_profile=points_post_profile,
+                              ca3d_post_profile=ca3d_post_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9846,6 +9910,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                                            points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                                            points_post_profile=points_post_profile,
+                                           ca3d_post_profile=ca3d_post_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9982,6 +10047,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if points_post_profile is not None:
             manifest_program["points_post_profile"] = (
                 points_post_profile)
+        if ca3d_post_profile is not None:
+            manifest_program["ca3d_post_profile"] = (
+                ca3d_post_profile)
         if scalar_uint_xor_profile is not None:
             manifest_program["scalar_uint_xor_profile"] = (
                 scalar_uint_xor_profile)

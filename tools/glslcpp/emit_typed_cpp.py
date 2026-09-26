@@ -216,6 +216,9 @@ from .frontend.flow_round_profile import (
 from .frontend.points_post_profile import (
     POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
     authenticate_points_post)
+from .frontend.ca3d_post_profile import (
+    CA3D_POST_KEYS, PROFILE as CA3D_POST_PROFILE,
+    authenticate_ca3d_post)
 from .frontend.waves_any_notequal_profile import (
     WAVES_KEY, PROFILE as WAVES_ANY_NOTEQUAL_PROFILE,
     authenticate_waves_any_notequal_admission)
@@ -1074,6 +1077,7 @@ class _Emitter:
     posterize_round_profile: str | None = None
     flow_round_profile: str | None = None
     points_post_profile: str | None = None
+    ca3d_post_profile: str | None = None
     as_u32_round_profile: str | None = None
     ceil_admission_profile: str | None = None
     waves_any_notequal_profile: str | None = None
@@ -1266,6 +1270,10 @@ class _Emitter:
     authorized_points_post_nodes: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_points_post_nodes: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_ca3d_post_nodes: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_ca3d_post_nodes: list[TypedExpression] = field(
         init=False, default_factory=list)
     # kaleido's one `floatBitsToUint` ingress, authenticated by the scalar-XOR
     # module's per-key census (rides the same carrier; no separate row field).
@@ -1828,6 +1836,8 @@ class _Emitter:
         self.emitted_points_float_bits_ingresses = []
         self.authorized_points_post_nodes = ()
         self.emitted_points_post_nodes = []
+        self.authorized_ca3d_post_nodes = ()
+        self.emitted_ca3d_post_nodes = []
         self.authorized_kaleido_float_bits_ingress = ()
         self.emitted_kaleido_float_bits_ingress = []
         self.authorized_noise_float_bits_ingresses = ()
@@ -3324,6 +3334,8 @@ class _Emitter:
                          "exact Flow round admission profile carrier required")
         self.authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
         self.emitted_points_post_nodes: list[TypedExpression] = []
+        self.authorized_ca3d_post_nodes: tuple[TypedExpression, ...] = ()
+        self.emitted_ca3d_post_nodes: list[TypedExpression] = []
         if self.points_post_profile is not None:
             if (self.program.key not in POINTS_POST_KEYS
                     or self.compatibility_transform is not None
@@ -3335,6 +3347,19 @@ class _Emitter:
                     authenticate_points_post(
                         self.program, self.source_hash,
                         self.points_post_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.ca3d_post_profile is not None:
+            if (self.program.key not in CA3D_POST_KEYS
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "cellularAutomata3d post admission profile metadata mismatch")
+            try:
+                self.authorized_ca3d_post_nodes = (
+                    authenticate_ca3d_post(
+                        self.program, self.source_hash,
+                        self.ca3d_post_profile))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         # as_u32_round_profile is deliberately light-checked, the same style
@@ -8160,7 +8185,9 @@ class _Emitter:
                         if item.kind == "post"))
             points_post = any(
                 value is item for item in self.authorized_points_post_nodes)
-            if (not (median_post or points_post)
+            ca3d_post = any(
+                value is item for item in self.authorized_ca3d_post_nodes)
+            if (not (median_post or points_post or ca3d_post)
                     or value.operator not in {"++", "--"}
                     or len(value.children) != 1
                     or value.type.display() != "int"
@@ -8173,6 +8200,12 @@ class _Emitter:
                     raise _error(self.program, value,
                                  "authenticated Points post expression emitted twice")
                 self.emitted_points_post_nodes.append(value)
+            if ca3d_post:
+                if any(value is item for item in self.emitted_ca3d_post_nodes):
+                    raise _error(self.program, value,
+                                 "authenticated cellularAutomata3d post expression "
+                                 "emitted twice")
+                self.emitted_ca3d_post_nodes.append(value)
             return f"({self.expression(value.children[0])}{value.operator})"
         if value.kind == "conditional":
             if len(value.children) != 3:
@@ -9552,7 +9585,9 @@ class _Emitter:
                             if item.kind == "post"))
                 points_post = any(
                     value.expressions[0] is item for item in self.authorized_points_post_nodes)
-                if median_post or points_post:
+                ca3d_post = any(
+                    value.expressions[0] is item for item in self.authorized_ca3d_post_nodes)
+                if median_post or points_post or ca3d_post:
                     return [f"{indent}{self.expression(value.expressions[0])};"]
             if len(value.expressions) != 1 or value.expressions[0].kind != "assign":
                 raise _error(self.program, value, "only typed assignments are admitted")
@@ -13014,6 +13049,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      vec_scalar_modulo_profile: str | None = None,
                      points_float_bits_ingress_profile: str | None = None,
                      points_post_profile: str | None = None,
+                     ca3d_post_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
                      bitwise_scalar_int_ops_profile: str | None = None,
                      bit_effects_frontend_profile: str | None = None,
@@ -13144,6 +13180,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        posterize_round_profile,
                        flow_round_profile,
                        points_post_profile,
+                       ca3d_post_profile,
                        as_u32_round_profile,
                        ceil_admission_profile,
                        waves_any_notequal_profile,
@@ -14041,4 +14078,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
     if program.key in POINTS_POST_KEYS and points_post_profile is None:
         raise _error(program, program,
                      "exact Points post admission profile carrier required")
+    if program.key in CA3D_POST_KEYS and ca3d_post_profile is None:
+        raise _error(program, program,
+                     "exact cellularAutomata3d post admission profile carrier required")
     return "\n".join(lines) + "\n"
