@@ -129,6 +129,10 @@
 > ### Current counts (reverted baseline)
 > - Pinned authority: **276 vendored + 28 pending = 304 authority programs**; typed slice **275**; backend compatible **274**; missing passes **68**.
 >
+> ### Post-revert verification evidence (published cbd1e39, 2026-09-26)
+> - Exact-source CI run [36263841739](https://github.com/noisefactorllc/noisemaker-for-cpp/actions/runs/36263841739): 9/10 jobs success (python suite, both generator determinism jobs, native Debug/Release on Ubuntu+macOS, sanitizers, consumer). The only failure, **byte-exact corpus parity**, is pre-existing: it failed identically on every prior commit (runs 36166589065 `90ace9a`, 36113509245 `2d39a52`, 36076505573 `f97bd11`, 36017876931 `4f7dc51`, 35991667847 `e471bd4`) because full CPU parity is incomplete — see the 2026-09-24 INDEPENDENT REVIEW CHECKPOINT above. Not caused by and not fixable within this cycle.
+> - The separate **authority-drift** workflow fails identically on every commit since at least `f97bd11` (2026-09-25T00:13, run 36076505439): the live `noisemaker-for-cpu` default branch (`aaa6df5`, synced through noisemaker@2f47612c, behavioral lock `2f17e1f9…`) has drifted from this port's pin (`0ed489ec…` authority snapshot, CPU commit `61aa869`, lock `27a2a197…`). Re-pinning the authority is a separate leg; this job's brief freezes the authority at `61aa869`.
+>
 > ## CONTINUATION CHECKPOINT 2026-09-25: ADMIT RUNTIME TILE REDUCTION LOOP PROOF & PROMOTE render/pointsBillboardRender:spriteMeanTiles
 >
 > This checkpoint records the autonomous completion of the Candidate A construct blocker cluster for **Counted-for program proof in `render/pointsBillboardRender:spriteMeanTiles`** (lines 40:5-48:5 in shader source) and promotion of **`render/pointsBillboardRender:spriteMeanTiles`**.
