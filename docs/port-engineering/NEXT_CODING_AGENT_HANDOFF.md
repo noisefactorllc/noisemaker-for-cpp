@@ -105,6 +105,47 @@
 > while preserving those explicit acceptance dependencies and all historical checkpoints below.
 >
 
+> ## CONTINUATION CHECKPOINT 2026-09-26B: KERNELS-CHECK REVIEWABILITY FIX PUBLISHED; LOOP-PROOF REVERT STILL BLOCKED BY REVIEW CAP
+>
+> This checkpoint records this continuation pass's publication and the still-blocked leg, amending the
+> 2026-09-26 checkpoint above; that checkpoint's "What was implemented and verified" and "Required
+> harness-side resolution" sections apply unchanged to the blocked leg below.
+>
+> ### What landed (this pass)
+> - **Published `b621c57` — `fix(glslcpp): count verified outputs in kernels check message`** (+6/−2,
+>   `tools/glslcpp/generate_kernels.py` only): `check_outputs` returned `None`, so the check success line
+>   would have read "None generated outputs verified". It now returns the verified output list and prints
+>   `glslcpp: ok (3 generated outputs verified)`. Independent review approved exactly
+>   `b621c57f828e8dccbd8ae6491a755f2b9fe69b9f` (review_id `10ffc386-2726-42bc-8eef-ae0f514622bf`), the
+>   supervisor pushed it, and exact-source machine verification succeeded for all four declared checks
+>   (`check-corpus`, `check-semantics`, `typed-slice`, `kernels`) at that commit
+>   (`verified_at` 2026-09-27T02:44:00.647Z).
+> - Local gate evidence at `b621c57`: all five generator `--check` gates pass (`corpus_ratchet: ok
+>   (276 vendored + 28 pending = 304 authority programs)`), Debug CMake build + CTest 4/4, the full
+>   Python suite is green under the pinned interpreter (all 18 `tests/test_typed_generator` classes
+>   including the 124-test `TypedGeneratorTests`, plus `test_generator` and `test_effect_catalog_generator`),
+>   zero symlinks.
+>
+> ### Blocked leg (unchanged): revert of the spriteMeanTiles loop-proof promotion
+> - The revert of `90ace9a` (content preserved locally as commit `c65750f`; its tree is byte-identical to
+>   pre-promotion `2d39a52`, `git diff 2d39a52 c65750f` is empty) has a total diff of **6,159,281 bytes**,
+>   of which **`src/effects/generated/effect_catalog.cpp` alone is 4,450,655 bytes** — the same
+>   per-record-embedded-hash structure measured above. No decomposition avoids it: the file has exactly
+>   two generator fixed points (promoted and reverted), so any partial push is a non-fixed-point state
+>   that fails the `--check` gates, and hand-editing generated files is banned. The revert therefore
+>   remains a single mechanical commit that cannot fit the 2 MiB review cap until the accommodation below
+>   exists.
+> - Environmental notes for future local runs (pre-existing, verified to fail identically on published
+>   `main` content): `tools/resync/pyshards.sh` invokes `python3` and requires Python ≥ 3.12 on PATH
+>   (repo f-strings rely on the 3.12 tokenizer); local g++ 12.2 raises spurious `-Wrestrict`
+>   (`include/noisemaker/js_number.hpp:100` at `-O3`) and `-Wmisleading-indentation`
+>   (`src/typed_generated/typed_slice.cpp:10110`) `-Werror` diagnostics that the CI toolchain does not
+>   produce, and the test harness already prefers `clang++` when present.
+>
+> ### Resolution still required (same as above)
+> - Per-file or mechanical-revert accommodation for the 2 MiB review cap. Without it, the spriteMeanTiles
+>   promotion stays vendored and its revert is unpublishable, exactly like the cellularAutomata3d redo.
+
 > ## CONTINUATION CHECKPOINT 2026-09-26: synth3d/cellularAutomata3d:simulate PROMOTION BLOCKED AT PUBLICATION; PRODUCT CHANGES REVERTED TO BASELINE
 >
 > This checkpoint records a blocked publication, not landed work. The promotion of **`synth3d/cellularAutomata3d:simulate`** (counted-for loop proof + remaining `post` blocker on its 3D loop update) was fully implemented, locally verified, and published in two partial steps (`77364c6` step 1, `3b34c16` step 2), but the final generated artifact **`src/effects/generated/effect_catalog.cpp` cannot be published under the harness constraint that an independent review reads at most 2 MiB of diff**, so per the failure & revert guard the product changes were reverted from `main` to keep it green. Everything below must be redone once the publication constraint is resolved.
