@@ -432,6 +432,30 @@ TEST(glsl_vec_cross_base_conversion_is_deterministic) {
   REQUIRE(narrowed[1] == -2.0f);
 }
 
+TEST(glsl_builtin_cross_matches_the_authority_single_lane_rounding) {
+  using namespace noisemaker::glsl;
+  // The authority's cross (glsl-runtime.js) multiplies and subtracts in JS
+  // Number (double) precision and rounds each output lane to f32 exactly
+  // once: F32(l1*r2 - l2*r1), F32(l2*r0 - l0*r2), F32(l0*r1 - l1*r0).
+  const Vec3 a(16777217.0f, -2.0f, 0.5f);
+  const Vec3 b(3.5f, 1.25f, -0.75f);
+  const Vec3 result = cross(a, b);
+  // 16777217.0f is exactly 16777216.0f; products and the subtraction happen
+  // in double, matching F32(left[1]*right[2] - left[2]*right[1]) etc.
+  REQUIRE(result[0] == noisemaker::f32(-2.0 * -0.75 - 0.5 * 1.25));
+  REQUIRE(result[1] == noisemaker::f32(0.5 * 3.5 - 16777216.0 * -0.75));
+  REQUIRE(result[2] == noisemaker::f32(16777216.0 * 1.25 - -2.0 * 3.5));
+  // Deferred FloatExpr operands stay unrounded through the products.
+  const Vec3 deferred = cross(make_float_expr(std::array<double, 3>{
+                                  static_cast<double>(a[0]), static_cast<double>(a[1]),
+                                  static_cast<double>(a[2])}),
+                              b);
+  REQUIRE(deferred == result);
+  // Zero-length or degenerate inputs still round through the same path.
+  const Vec3 zero = cross(Vec3(0.0f), Vec3(0.0f));
+  REQUIRE(zero == Vec3(0.0f));
+}
+
 TEST(glsl_float_vector_expressions_defer_rounding_until_storage) {
   using namespace noisemaker::glsl;
   const Vec2 a(30570110.0f);

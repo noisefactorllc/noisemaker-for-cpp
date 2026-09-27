@@ -31,7 +31,7 @@ _BUILTIN_IDS = {name: -(index + 1) for index, name in enumerate((
     # (_ANY_SIGNATURE_ID, _NOTEQUAL_SIGNATURE_ID, REFLECT_SIGNATURE_ID,
     # _NODE_SIGNATURE_ID for round). Appending keeps every existing id
     # unchanged; only a brand-new name gets the newly free id.
-    "greaterThan", "acos",
+    "greaterThan", "acos", "cross",
 ))}
 
 # Declarative GLSL ES builtin surface.  Names select a reusable signature
@@ -41,6 +41,7 @@ _BUILTIN_FAMILIES = {
     "acos": ("unary_float",),
     "all": ("bool_reduction",), "any": ("bool_reduction",), "atan": ("atan",),
     "ceil": ("unary_float",), "clamp": ("clamp",), "cos": ("unary_float",),
+    "cross": ("cross",),
     "dFdx": ("derivative",), "dFdy": ("derivative",), "degrees": ("unary_float",),
     "distance": ("distance",), "dot": ("dot",), "equal": ("relational",),
     "exp": ("unary_float",), "floatBitsToUint": ("float_bits",),
@@ -391,6 +392,11 @@ class BodyAnalyzer:
             if len(types) != 3 or types[0] != types[1] or not float_gen(types[0]): return None
             if types[2] in {FLOAT, types[0]}: return types[0]
             return types[0] if types[0].kind == "vector" and types[2] == vector("bool", types[0].width or 1) else None
+        if family == "cross":
+            return (types[0]
+                    if len(types) == 2 and types[0] == types[1]
+                    and types[0].kind == "vector" and types[0].base == "float"
+                    and (types[0].width or 0) == 3 else None)
         if family == "length": return FLOAT if len(types) == 1 and float_gen(types[0]) else None
         if family == "distance": return FLOAT if len(types) == 2 and types[0] == types[1] and float_gen(types[0]) else None
         if family == "dot": return FLOAT if len(types) == 2 and types[0] == types[1] and types[0].kind == "vector" and types[0].base == "float" else None

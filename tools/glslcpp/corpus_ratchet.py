@@ -225,6 +225,10 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
     )
+    from tools.glslcpp.frontend.cross_builtin_profile import (
+        CROSS_KEYS, PROFILE as CROSS_BUILTIN_PROFILE,
+        apply_cross_admission,
+    )
     from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
         apply_points_float_bits_ingress,
@@ -255,6 +259,9 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     vec_scalar_modulo_profile = (
         VEC_SCALAR_MODULO_PROFILE if key in VEC_SCALAR_MODULO_KEYS else None
     )
+    cross_builtin_profile = (
+        CROSS_BUILTIN_PROFILE if key in CROSS_KEYS else None
+    )
     points_float_bits_ingress_profile = (
         POINTS_FLOAT_BITS_INGRESS_PROFILE if key in POINTS_FLOAT_BITS_INGRESS_KEYS else None
     )
@@ -270,6 +277,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         typed = apply_runtime_loop_bound(typed, source_hash, runtime_loop_bound_profile)
     if vec_scalar_modulo_profile is not None:
         typed = apply_vec_scalar_modulo(typed, source_hash, vec_scalar_modulo_profile)
+    if cross_builtin_profile is not None:
+        typed = apply_cross_admission(typed, source_hash, cross_builtin_profile)
     if points_float_bits_ingress_profile is not None:
         typed = apply_points_float_bits_ingress(typed, source_hash, points_float_bits_ingress_profile)
     if flow_round_profile is not None:
@@ -288,6 +297,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
             hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
             vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+            cross_builtin_profile=cross_builtin_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile)
@@ -303,6 +313,7 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             hash_scalar_uint_xor_profile=hash_scalar_uint_xor_profile,
             hash_scalar_uint_rshift_profile=hash_scalar_uint_rshift_profile,
             vec_scalar_modulo_profile=vec_scalar_modulo_profile,
+            cross_builtin_profile=cross_builtin_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile)

@@ -90,6 +90,10 @@ from .frontend.vec_scalar_modulo_profile import (
     VEC_SCALAR_MODULO_KEYS,
     PROFILE as VEC_SCALAR_MODULO_PROFILE,
     authenticate_vec_scalar_modulo)
+from .frontend.cross_builtin_profile import (
+    CROSS_KEYS,
+    PROFILE as CROSS_BUILTIN_PROFILE,
+    authenticate_cross_sites)
 from .frontend.points_float_bits_ingress_profile import (
     POINTS_FLOAT_BITS_INGRESS_KEYS,
     PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -1050,6 +1054,7 @@ class _Emitter:
     hash_scalar_uint_xor_profile: str | None = None
     hash_scalar_uint_rshift_profile: str | None = None
     vec_scalar_modulo_profile: str | None = None
+    cross_builtin_profile: str | None = None
     points_float_bits_ingress_profile: str | None = None
     scalar_uint_xor_profile: str | None = None
     bitwise_scalar_int_ops_profile: str | None = None
@@ -1142,6 +1147,10 @@ class _Emitter:
     authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_vec_scalar_modulos: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_cross_sites: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_cross_sites: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = field(
         init=False, default=())
@@ -3638,6 +3647,24 @@ class _Emitter:
                     authenticate_vec_scalar_modulo(
                         self.program, self.source_hash,
                         self.vec_scalar_modulo_profile))
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.cross_builtin_profile is not None:
+            if (self.program.key not in CROSS_KEYS
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.gather_sorted_round_profile is not None
+                    or self.literal_vec3_lane_index_profile is not None
+                    or self.smooth_edge_luma_weights_profile is not None):
+                raise _error(
+                    self.program, self.program,
+                    "cross builtin profile metadata mismatch")
+            try:
+                self.authorized_cross_sites = authenticate_cross_sites(
+                    self.program, self.source_hash,
+                    self.cross_builtin_profile)
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         if self.points_float_bits_ingress_profile is not None:
@@ -8847,6 +8874,20 @@ class _Emitter:
                         raise _error(self.program, value, f"{value.callee} arity")
                     self.emitted_derivative_nodes.append(value)
                     return f"glsl::{value.callee}(context, {arguments[0]})"
+                if value.callee == "cross":
+                    # Admitted only for the exact nodes this emitter itself
+                    # authenticated (cross-builtin-admission-v1). The authority
+                    # computes the three component products/subtractions in JS
+                    # Number (double) precision and rounds each output lane to
+                    # f32 exactly once -- glsl::cross preserves that.
+                    if not any(value is item
+                               for item in (self.authorized_cross_sites or ())):
+                        raise _error(self.program, value,
+                                     "unsupported builtin cross")
+                    if len(arguments) != 2:
+                        raise _error(self.program, value, "cross arity")
+                    self.emitted_cross_sites.append(value)
+                    return f"glsl::cross({', '.join(arguments)})"
                 if value.callee not in _BUILTIN_NAMES:
                     raise _error(self.program, value, f"unsupported builtin {value.callee}")
                 if value.callee == "fract" and len(value.children) == 1:
@@ -13012,6 +13053,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      hash_scalar_uint_xor_profile: str | None = None,
                      hash_scalar_uint_rshift_profile: str | None = None,
                      vec_scalar_modulo_profile: str | None = None,
+                     cross_builtin_profile: str | None = None,
                      points_float_bits_ingress_profile: str | None = None,
                      points_post_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
@@ -13120,6 +13162,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        hash_scalar_uint_xor_profile,
                        hash_scalar_uint_rshift_profile,
                        vec_scalar_modulo_profile,
+                       cross_builtin_profile,
                        points_float_bits_ingress_profile,
                        scalar_uint_xor_profile,
                        bitwise_scalar_int_ops_profile,
@@ -13412,6 +13455,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             != emitter.authorized_vec_scalar_modulos):
         raise _error(program, program,
                      "authenticated vector-scalar modulo emission mismatch")
+    if (emitter.authorized_cross_sites
+            and tuple(emitter.emitted_cross_sites)
+            != emitter.authorized_cross_sites):
+        raise _error(program, program,
+                     "authenticated cross site emission mismatch")
     if (emitter.authorized_scalar_uint_xors
             and tuple(emitter.emitted_scalar_uint_xors)
             != emitter.authorized_scalar_uint_xors):

@@ -26666,6 +26666,119 @@ void main() {
         self.assertIn("noisemaker::f32(glsl::round(", cpp)
         self.assertIn("BoundKernelMrt bind_flow_agent(", cpp)
 
+    def test_cross_builtin_profile(self) -> None:
+        import dataclasses
+        import hashlib
+        from pathlib import Path
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.cross_builtin_profile import (
+            CROSS_KEYS, PROFILE as CROSS_PROFILE,
+            authenticate_cross_sites, apply_cross_admission,
+        )
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        repo_root = Path(__file__).resolve().parent.parent
+        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        metadata = json.loads((corpus_root / "metadata.json").read_bytes())
+        pending = json.loads((corpus_root / "pending.json").read_bytes())
+
+        expected_counts = {
+            "render/render3d:render3d": 2,
+            "render/renderLit3d:renderLit3d": 2,
+            "synth3d/flythrough3d:precompute": 7,
+        }
+        self.assertEqual(set(expected_counts), set(CROSS_KEYS))
+
+        for key, expected_count in sorted(expected_counts.items()):
+            effect_id, program_name = key.split(":")
+            record = next((item for item in pending["pending"]
+                           if item["program_key"] == key), None)
+            self.assertIsNotNone(record)
+            source_path = corpus_root / record["source"]
+            raw = source_path.read_text(encoding="utf-8")
+            shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            self.assertEqual(shash, record["raw_sha256"])
+
+            eff = (metadata["effects"].get(effect_id)
+                   or pending["effects"].get(effect_id))
+            defaults = check_semantics._metadata_defaults(
+                {"effects": {effect_id: eff}}, key)
+
+            ast = parse_program(raw, key, defaults)
+            typed = analyze_program(ast, key)
+
+            # 1. Direct authentication
+            nodes = authenticate_cross_sites(typed, shash, CROSS_PROFILE)
+            self.assertEqual(len(nodes), expected_count)
+            for node in nodes:
+                self.assertEqual(node.kind, "builtin")
+                self.assertEqual(node.callee, "cross")
+                self.assertEqual(node.type.display(), "vec3")
+                self.assertEqual(
+                    tuple(child.type.display() for child in node.children),
+                    ("vec3", "vec3"))
+
+            # Identity application
+            self.assertIs(apply_cross_admission(typed, shash, CROSS_PROFILE), typed)
+
+            # Profile mismatch
+            with self.assertRaises(ValueError) as ctx:
+                authenticate_cross_sites(typed, shash, "invalid-profile")
+            self.assertIn("exact profile carrier required", str(ctx.exception))
+
+            # Source hash mismatch
+            with self.assertRaises(ValueError) as ctx:
+                authenticate_cross_sites(typed, "0" * 64, CROSS_PROFILE)
+            self.assertIn("caller source hash mismatch", str(ctx.exception))
+
+            # Forged source fails closed even with the right caller hash: a
+            # mutated raw source with the original hash is rejected by the
+            # raw-bytes census over the typed IR.
+            forged = dataclasses.replace(typed, raw_source=raw + "\n")
+            with self.assertRaises(ValueError) as ctx:
+                authenticate_cross_sites(forged, shash, CROSS_PROFILE)
+            self.assertIn("mismatch", str(ctx.exception))
+
+            # 2. Validator integration: missing profile fails closed
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                )
+            self.assertIn(
+                "exact cross builtin admission profile carrier required",
+                str(ctx.exception))
+
+            # Passing valid profile advances to the next authentic blocker
+            # (the counted-for program proof), never silently passing.
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=shash,
+                    cross_builtin_profile=CROSS_PROFILE,
+                )
+            self.assertIn("unsupported counted-for program proof",
+                          str(ctx.exception))
+
+            # 3. Emitter integration. These three carriers' next authentic
+            # blocker is their counted-for program proof, which the emitter
+            # validates at construction: with the profile the cross sites are
+            # authenticated and the counted-for loop is the remaining
+            # blocker; without the profile the same frontier is reached, so
+            # admission is fail-closed either way and glsl::cross lowering
+            # becomes observable only after the counted-for proofs land
+            # (same boundary as the spriteMeanTiles modulo carrier).
+            for profile_kwargs in ({"cross_builtin_profile": CROSS_PROFILE}, {}):
+                with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+                    emit_typed_cpp.render_typed_cpp(
+                        typed, key, shash, "pixel",
+                        "bind_" + key.replace("/", "_").replace(":", "_"),
+                        **profile_kwargs,
+                    )
+                self.assertIn("unsupported counted-for program proof",
+                              str(ctx.exception))
+
     def test_points_post_profile(self) -> None:
         import dataclasses
         import hashlib

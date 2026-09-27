@@ -366,6 +366,24 @@ template <class T> requires(detail::is_double_vec_v<T>) [[nodiscard]] inline Vec
   return result;
 }
 
+// The authority's `cross` (glsl-runtime.js) multiplies and subtracts in JS
+// Number (double) precision and rounds each output lane exactly once:
+//   out[0] = F32(l1*r2 - l2*r1); out[1] = F32(l2*r0 - l0*r2); out[2] = F32(l0*r1 - l1*r0)
+// Every lane is read at its own precision through float_expr() (a float lane
+// widens, a double lane is already exact) so a deferred FloatExpr operand
+// stays unrounded, then each output lane rounds to float32 exactly once.
+template <class A,class B>
+  requires(VectorOrExpr<A> && VectorOrExpr<B>
+           && detail::lane_count_v<A> == 3 && detail::lane_count_v<B> == 3)
+[[nodiscard]] inline Vec<3,float> cross(const A& a,const B& b) {
+  const auto fa = float_expr(a); const auto fb = float_expr(b);
+  Vec<3,float> result;
+  result[0] = noisemaker::f32(static_cast<double>(fa[1])*static_cast<double>(fb[2]) - static_cast<double>(fa[2])*static_cast<double>(fb[1]));
+  result[1] = noisemaker::f32(static_cast<double>(fa[2])*static_cast<double>(fb[0]) - static_cast<double>(fa[0])*static_cast<double>(fb[2]));
+  result[2] = noisemaker::f32(static_cast<double>(fa[0])*static_cast<double>(fb[1]) - static_cast<double>(fa[1])*static_cast<double>(fb[0]));
+  return result;
+}
+
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> materialize(const Vec<N,float>& value) { return value; }
 template <std::size_t N> [[nodiscard]] inline Vec<N,float> materialize(const FloatExpr<N>& value) { return Vec<N,float>(value); }
 #define NOISEMAKER_GLSL_EXPR_BINARY_HELPER(name) \

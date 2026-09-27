@@ -154,6 +154,11 @@ if __package__ in (None, ""):
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from tools.glslcpp.frontend.cross_builtin_profile import (
+        CROSS_KEYS,
+        PROFILE as CROSS_BUILTIN_PROFILE,
+        apply_cross_admission,
+        authenticate_cross_sites)
     from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -569,6 +574,11 @@ else:
         PROFILE as VEC_SCALAR_MODULO_PROFILE,
         apply_vec_scalar_modulo,
         authenticate_vec_scalar_modulo)
+    from .frontend.cross_builtin_profile import (
+        CROSS_KEYS,
+        PROFILE as CROSS_BUILTIN_PROFILE,
+        apply_cross_admission,
+        authenticate_cross_sites)
     from .frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -3426,6 +3436,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           hash_scalar_uint_xor_profile: str | None = None,
                           hash_scalar_uint_rshift_profile: str | None = None,
                           vec_scalar_modulo_profile: str | None = None,
+                          cross_builtin_profile: str | None = None,
                           points_float_bits_ingress_profile: str | None = None,
                           points_post_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
@@ -4007,6 +4018,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_hash_scalar_uint_rshifts: list[TypedExpression] = []
     authorized_vec_scalar_modulos: tuple[TypedExpression, ...] = ()
     visited_vec_scalar_modulos: list[TypedExpression] = []
+    authorized_cross_sites: tuple[TypedExpression, ...] = ()
+    visited_cross_sites: list[TypedExpression] = []
     authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = ()
     visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
@@ -5311,6 +5324,25 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     typed, source_hash, vec_scalar_modulo_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
+    if cross_builtin_profile is not None:
+        if (typed.key not in CROSS_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: cross builtin profile metadata mismatch")
+        try:
+            authorized_cross_sites = authenticate_cross_sites(
+                typed, source_hash, cross_builtin_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key in CROSS_KEYS:
+        raise GeneratorError(
+            f"{typed.key}: exact cross builtin admission profile carrier required")
     if points_float_bits_ingress_profile is not None:
         if (typed.key not in POINTS_FLOAT_BITS_INGRESS_KEYS
                 or compatibility_transform is not None
@@ -7759,6 +7791,24 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{location(value)}: unsupported builtin {value.callee}")
                 visited_texture_lod_sites.append(value)
+            elif value.callee == "cross":
+                # Admitted only for the exact nodes authenticated by
+                # cross-builtin-admission-v1, by object identity. Like
+                # round/tanh/floatBitsToUint, these never enter the frozen
+                # 44-entry capability vocabulary.
+                if not any(value is item for item in authorized_cross_sites):
+                    raise GeneratorError(
+                        f"{location(value)}: unsupported builtin {value.callee}")
+                if (len(value.children) != 2
+                        or value.type.display() != "vec3"
+                        or tuple(child.type.display() for child in value.children)
+                        != ("vec3", "vec3")):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated cross site")
+                if any(value is item for item in visited_cross_sites):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated cross site visited twice")
+                visited_cross_sites.append(value)
             elif value.callee not in _BUILTINS:
                 raise GeneratorError(f"{location(value)}: unsupported builtin {value.callee}")
             if value.callee == "mod":
@@ -7798,7 +7848,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                     "floatBitsToUint", "tanh",
                                     "dFdx", "dFdy", "fwidth", "reflect",
                                     "any", "notEqual", "ceil",
-                    "textureLod", "log", "log2"}):
+                    "textureLod", "log", "log2", "cross"}):
                 used.add(value.callee)
         elif value.kind == "unary" and value.operator not in {"+", "-", "!"}:
             if (value.operator == "~"
@@ -8455,6 +8505,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             != authorized_vec_scalar_modulos):
         raise GeneratorError(
             f"{typed.key}: authenticated vector-scalar modulo traversal mismatch")
+    if (authorized_cross_sites
+            and tuple(visited_cross_sites) != authorized_cross_sites):
+        raise GeneratorError(
+            f"{typed.key}: authenticated cross site traversal mismatch")
     if (authorized_points_float_bits_ingresses
             and tuple(visited_points_float_bits_ingresses)
             != authorized_points_float_bits_ingresses):

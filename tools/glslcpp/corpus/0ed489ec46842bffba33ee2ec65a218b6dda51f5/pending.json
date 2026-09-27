@@ -3629,8 +3629,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: render/render3d:render3d:384:10: E_TYPE: initializer requires vec3, got float\nrender/render3d:render3d:384:18: E_NO_OVERLOAD: no exact overload for normalize\nrender/render3d:render3d:384:28: E_NO_OVERLOAD: no exact overload for cross\nrender/render3d:render3d:385:10: E_TYPE: initializer requires vec3, got float\nrender/render3d:render3d:385:15: E_NO_OVERLOAD: no exact overload for cross",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: render/render3d:render3d:281:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
       },
       "effect_id": "render/render3d",
       "program": "render3d",
@@ -3668,8 +3668,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: render/renderLit3d:renderLit3d:347:10: E_TYPE: initializer requires vec3, got float\nrender/renderLit3d:renderLit3d:347:18: E_NO_OVERLOAD: no exact overload for normalize\nrender/renderLit3d:renderLit3d:347:28: E_NO_OVERLOAD: no exact overload for cross\nrender/renderLit3d:renderLit3d:348:10: E_TYPE: initializer requires vec3, got float\nrender/renderLit3d:renderLit3d:348:15: E_NO_OVERLOAD: no exact overload for cross",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:227:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
       },
       "effect_id": "render/renderLit3d",
       "program": "renderLit3d",
@@ -3707,8 +3707,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: synth3d/flythrough3d:precompute:125:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:125:18: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:125:28: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:126:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:126:19: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:126:29: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:159:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:159:18: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:159:28: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:160:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:160:10: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:160:20: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:165:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:165:10: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:165:20: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:335:10: E_TYPE: initializer requires vec3, got float\nsynth3d/flythrough3d:precompute:335:21: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:335:31: E_NO_OVERLOAD: no exact overload for cross\nsynth3d/flythrough3d:precompute:336:5: E_TYPE: assignment requires vec3, got float\nsynth3d/flythrough3d:precompute:336:13: E_NO_OVERLOAD: no exact overload for normalize\nsynth3d/flythrough3d:precompute:336:23: E_NO_OVERLOAD: no exact overload for cross",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: synth3d/flythrough3d:precompute:236:5: unsupported counted-for program proof",
+        "stage": "typed.validator"
       },
       "effect_id": "synth3d/flythrough3d",
       "program": "precompute",
