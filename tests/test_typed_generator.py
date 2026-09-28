@@ -7372,6 +7372,14 @@ and item["program_key"] != "filter/wobble:wobble"
             "local-const-literal": ("out vec4 fragColor; void main(){ const int N=2; "
                                     "float x=0.0; for(int i=0;i<N;i++){x+=1.0;} "
                                     "fragColor=vec4(x); }"),
+            # Non-const local literal bound, admitted together with
+            # classicNoisedeck/noise3d:noise3d: the local is provably never
+            # rewritten in the enclosing function
+            # (`_never_rewritten_literal_locals`), so the literal bound stays
+            # exact for the whole loop.
+            "local-literal-never-rewritten": ("out vec4 fragColor; void main(){ int N=2; "
+                                              "float x=0.0; for(int i=0;i<N;i++){x+=1.0;} "
+                                              "fragColor=vec4(x); }"),
             "reverb-clamp": ("uniform int iterations; out vec4 fragColor; void main(){ "
                              "int iters=clamp(iterations,1,8); float x=0.0; "
                              "for(int i=0;i<iters;i++){x+=1.0;} fragColor=vec4(x); }"),
@@ -7780,7 +7788,17 @@ and item["program_key"] != "filter/wobble:wobble"
             "swapped": "for(int i=0;4>i;i++){ }",
             "uniform-bound": "for(int i=0;i<n;i++){ }",
             "arithmetic-bound": "for(int i=0;i<2+2;i++){ }",
-            "mutable-local-bound": "int N=2; for(int i=0;i<N;i++){ }",
+            # "mutable-local-bound" is ADMITTED as of
+            # classicNoisedeck/noise3d:noise3d landing -- a non-const local
+            # declared with a plain int literal that is provably never
+            # rewritten keeps that exact value for the whole function
+            # (`_never_rewritten_literal_locals`), so it bounds a counted-for
+            # loop exactly like a const local. The boundary just outside that
+            # shape: the same literal local that IS rewritten somewhere in the
+            # enclosing function (assignment, compound assignment, or ++/--).
+            "mutable-local-rewritten": "int N=2; N=1; for(int i=0;i<N;i++){ }",
+            "mutable-local-compound": "int N=2; N+=1; for(int i=0;i<N;i++){ }",
+            "mutable-local-incremented": "int N=2; N++; for(int i=0;i<N;i++){ }",
             "local-const-arithmetic": "const int N=1+1; for(int i=0;i<N;i++){ }",
             "local-const-alias": "const int N=2; const int M=N; for(int i=0;i<M;i++){ }",
             "global-const-bound": "for(int i=0;i<N;i++){ }",
@@ -25552,6 +25570,77 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 parse_program(raw + "\n", key, defaults), key,
                 source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
         self.assertIn("mismatch", str(ctx.exception))
+
+    def test_noise3d_local_literal_never_rewritten_loop_proof(self) -> None:
+        import hashlib
+        import json as _json
+        import pathlib
+
+        from tools.glslcpp import generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        # classicNoisedeck/noise3d:noise3d's march bound `int maxSteps = 100;`
+        # is a NON-const local literal. The local-literal-never-rewritten
+        # write-proof (`_never_rewritten_literal_locals`) admits it: no
+        # statement in rayMarch ever stores to maxSteps, so the literal stays
+        # exact for the whole function and the 100-trip march loop is proved.
+        # The program's frontier then advances to its next authentic blocker
+        # (the `const mat2 myt` global declaration at 70:1).
+        key = "classicNoisedeck/noise3d:noise3d"
+        source_path = pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            "pending-sources/classicNoisedeck/noise3d/noise3d.glsl")
+        raw = source_path.read_text(encoding="utf-8")
+        pending = _json.loads(pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            "pending.json").read_text(encoding="utf-8"))
+        from tools.glslcpp import check_semantics
+        defaults = check_semantics._metadata_defaults(
+            {"effects": {"classicNoisedeck/noise3d": pending["effects"]["classicNoisedeck/noise3d"]}},
+            key)
+        typed = analyze_program(parse_program(raw, key, defaults), key)
+        summary = typed.counted_loop_proof
+        self.assertEqual(
+            (4, 0, 3, 100, 100, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic))
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest())
+        self.assertIn("70:1: unsupported global declaration", str(ctx.exception))
+
+        # The write-proof's boundary: the same literal local REWRITTEN
+        # anywhere in the enclosing function (assignment target, ++/-- operand,
+        # nested loop body, conditional arm, or ANY call argument --
+        # conservatively covering out/inout actuals) stays rejected.
+        rejected = {
+            "call-argument":
+                "int sink(int v){ return v; } out vec4 fragColor; void main(){ "
+                "int N=2; sink(N); float x=0.0; for(int i=0;i<N;i++){x+=1.0;} "
+                "fragColor=vec4(x); }",
+            "out-actual":
+                "void sink(out int v){ v=1; } out vec4 fragColor; void main(){ "
+                "int N=2; sink(N); float x=0.0; for(int i=0;i<N;i++){x+=1.0;} "
+                "fragColor=vec4(x); }",
+            "nested-loop-write":
+                "out vec4 fragColor; void main(){ int N=2; "
+                "for(int k=0;k<1;k++){N=1;} float x=0.0; "
+                "for(int i=0;i<N;i++){x+=1.0;} fragColor=vec4(x); }",
+            "conditional-arm-write":
+                "out vec4 fragColor; void main(){ int N=2; if(true){N=3;} "
+                "float x=0.0; for(int i=0;i<N;i++){x+=1.0;} fragColor=vec4(x); }",
+        }
+        for name, source in rejected.items():
+            probe = f"noise3d-write-proof-{name}"
+            typed_rejected = analyze_program(parse_program(source, probe), probe)
+            with self.subTest(rejected=name), self.assertRaisesRegex(
+                    generate_typed_slice.GeneratorError,
+                    rf"{probe}:\d+:\d+: unsupported counted-for program proof"):
+                generate_typed_slice.validate_capabilities(
+                    typed_rejected, generate_typed_slice.APPROVED_CAPABILITIES)
 
     def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice

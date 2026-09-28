@@ -3382,7 +3382,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: classicNoisedeck/noise3d:noise3d:487:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: classicNoisedeck/noise3d:noise3d:70:1: unsupported global declaration",
         "stage": "typed.validator"
       },
       "effect_id": "classicNoisedeck/noise3d",

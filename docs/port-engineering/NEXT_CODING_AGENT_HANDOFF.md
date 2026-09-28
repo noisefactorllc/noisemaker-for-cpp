@@ -1,5 +1,80 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-28: COUNTED-FOR LOCAL-LITERAL-NEVER-REWRITTEN PROOF ADMITTED FOR classicNoisedeck/noise3d:noise3d; NO PROMOTION
+>
+> This checkpoint supersedes earlier checkpoint ordering only for the closed noise3d
+> counted-for cluster; all other ordering and census rules apply unchanged.
+>
+> ### What landed (this pass)
+> - **Sound write-proof widening of the counted-for local bound (`_local_bound`)**: a
+>   NON-const local `int` declared with a plain literal that the new
+>   `_never_rewritten_literal_locals` proves is never rewritten anywhere in its enclosing
+>   function may now bound a counted-for loop with the new `local-literal-never-rewritten`
+>   provenance. The proof fails closed: an assignment/compound-assignment target chain, a
+>   `++`/`--` operand (prefix or postfix), a nested loop body, a conditional arm, or ANY
+>   occurrence inside a call's argument list (conservatively covering out/inout actuals,
+>   since callee parameter directions are not available at proof time) keeps the loop
+>   unproved. The const path (`local-const-literal`) and every provenance string are
+>   unchanged, so all existing profiles and milestone reconstructions are untouched --
+>   `check_corpus --check` shows exactly one probe delta, noise3d's own blocker.
+> - **classicNoisedeck/noise3d:noise3d** (`int maxSteps = 100;` march bound in `rayMarch`):
+>   all four loops now prove -- summary `(4, 0, 3, 100, 100, True)` (loops, unproved,
+>   depth, lexical product, entrypoint charge, acyclic) -- and the recorded first blocker
+>   advances from `487:5: unsupported counted-for program proof` to the next authentic
+>   frontier `70:1: unsupported global declaration` (the `const mat2 myt` global; only
+>   const float/vec3 globals are admitted). Ratchet `--write`: `vendored: 276`,
+>   `promoted: []`, 28 pending; no typed_manifest or catalog change.
+> - **Near-miss barriers re-armed one step out**: the formerly rejected
+>   `mutable-local-bound` shape (`int N=2; for(int i=0;i<N;i++){ }` with no rewrite) is
+>   now an accepted case (`local-literal-never-rewritten` in
+>   test_counted_for_v1_accepts_only_exact_proved_headers_and_control), and the rejection
+>   suite gains `mutable-local-rewritten` / `mutable-local-compound` /
+>   `mutable-local-incremented`. New `test_noise3d_local_literal_never_rewritten_loop_proof`
+>   pins the noise3d advancement, the write-proof summary, and four rejected write shapes
+>   (call argument incl. out actual, nested loop body, conditional arm).
+>
+> ### Verification
+> - All seven generator gates pass (`check_corpus`, `check_semantics`, `corpus_ratchet
+>   --check`, `generate_typed_slice`, `generate_kernels`, `generate_backend_compatibility
+>   --check`, `generate_effect_catalog --check`; vendored 276 + pending 28 = 304).
+> - `tools/resync/regen_all.sh .` to a fixed point (`REGEN OK`, twice); native Release CMake
+>   build + CTest 4/4 (local g++ 12.2 `-Werror=restrict` false positive on the published
+>   `js_number_to_string` substr concat needed `-Wno-error=restrict` locally; CI's strict
+>   flags are unchanged); zero symlinks (`find . -type l` empty).
+> - Full 4-shard Python suite (pyshards.sh, Python 3.13.13): 2,096 tests, 72 skipped, 28
+>   failing -- the failure set is byte-identical to the pre-existing local-environment
+>   gap, re-verified red-before with the WIP stashed at published `f8b4d8b` (all 22
+>   selected failing cases fail identically: the Node v26.5.1-local vs v26.0.0-pinned
+>   oracle generator/materializer gap across osd/julia/median/fractal/colorLab/texture/
+>   emboss/dither/palette/spooky/noise/lightleak192 plus the four
+>   `unittest.loader._FailedTest` oracle bridges, and the g++ 12.2
+>   `-Werror=restrict`-shaped smoke-compile error in
+>   test_typed_generator.LightLeakPhase2Tests). Every touched module is green
+>   (test_typed_generator incl. the new noise3d test and both counted-for suites,
+>   test_runtime_loop_bound, test_backend_compatibility, test_effect_catalog_generator).
+>
+> ### Remaining counted-for queue (exact diagnostics from pending.json, 6 programs)
+> - `points/lenia:convolve:36` -- nested `dy`/`dx` loops bounded by `int iRadius =
+>   int(ceil(searchRadius));` where `searchRadius` is a **uniform float**; needs a runtime
+>   uniform-ceil bound seed (the `_ceil_cast_int_bound` path requires a proved-bounded
+>   float local, not a uniform).
+> - `synth3d/fractal3d:precompute:68`, `synth3d/flythrough3d:precompute:236` -- loops bounded
+>   by the **function parameter** `int maxIter`; needs a parameter-bound proof mechanism.
+> - `render/render3d:281`, `render/renderCubemap3d:280`, `render/renderLit3d:227` --
+>   `MAX_STEPS=256` const-global bounds already fit this mechanism, but all three are
+>   `cross-builtin-admission-v1` carriers: admitting the literal-int seed changes the
+>   attached functions/whole trees, so `cross_builtin_profile`'s frozen pre-proof hashes
+>   mismatch (`source, function, whole-program, or interface mismatch`). Composing the two
+>   requires re-locking the cross profile to the seed-attached tree for those three keys
+>   (single mechanical re-lock, updating `test_cross_builtin_profile`'s pinned hashes).
+> - Non-counted frontier census (pending.json, 28): 6 counted-for, 6 drawMode/scatter
+>   adapter semantics, 5 SemanticError (attractor, dla, temporalAberration, physarum
+>   passthrough, loopEnd copy), 3 bound-by-2-authority-bindings, 2 vec4[9]
+>   (temporalAberration:30:10, navierStokes:nsSmooth:74:14), 1 index expression
+>   (feedback:339:5), 2 global declarations (palette3d:27:1, noise3d:70:1), 1 post ++
+>   (cellularAutomata3d:simulate:56:39), 1 builtin `any` (heightmap3d:25:9), 1 viewMode
+>   variant.
+
 > ## CONTINUATION CHECKPOINT 2026-09-27B: `uintBitsToFloat` ADMITTED PROOF-GATED FOR points/dla:agent; heightmap3d `any` LEG MEASURED AND BLOCKED BY THE PUBLICATION CAP
 >
 > This checkpoint supersedes the "Next linear leg" ordering in earlier checkpoints only for the

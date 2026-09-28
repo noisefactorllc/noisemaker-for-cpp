@@ -529,8 +529,75 @@ def _ceil_cast_int_bound(value: TypedStatement,
     return declaration.symbol_id or 0, math.ceil(bound_value), "ceil-clamp-float-cast", declaration.symbol
 
 
+def _root_id(value: TypedExpression) -> TypedExpression | None:
+    while value.kind in {"swizzle", "member", "index"} and value.children:
+        value = value.children[0]
+    return value if value.kind == "id" else None
+
+
+def _never_rewritten_literal_locals(
+        body: tuple[TypedStatement, ...]) -> frozenset[int]:
+    """Symbol ids of non-const local ``int`` literal declarations that are
+    provably never rewritten anywhere in the enclosing function.
+
+    This is the sound write-proof behind the ``local-literal-never-rewritten``
+    counted-for bound provenance: a non-const local declared with a plain int
+    literal keeps that exact value for the whole function when no statement
+    can ever store to it, so it may bound a counted-for loop exactly like a
+    ``const`` local (classicNoisedeck/noise3d:noise3d's
+    ``int maxSteps = 100;`` march bound). A write is any of: an
+    assignment/compound-assignment target chain, a ``++``/``--`` operand
+    (prefix or postfix), or -- conservatively, because callee parameter
+    directions are not available at proof time -- ANY occurrence inside a
+    call's argument list (an out/inout actual is a write; failing closed on
+    ordinary read arguments only narrows admission, never loosens it).
+    """
+    candidates: set[int] = set()
+    written: set[int] = set()
+
+    def scan_expression(value: TypedExpression) -> None:
+        if value.kind == "assign":
+            root = _root_id(value.children[0]) if value.children else None
+            if root is not None and root.symbol_id is not None:
+                written.add(root.symbol_id)
+        elif (value.kind in {"unary", "post"} and value.operator in {"++", "--"}
+                and value.children):
+            root = _root_id(value.children[0])
+            if root is not None and root.symbol_id is not None:
+                written.add(root.symbol_id)
+        elif value.kind == "call":
+            for argument in value.children:
+                for item in _expressions(argument):
+                    if item.kind == "id" and item.symbol_id is not None:
+                        written.add(item.symbol_id)
+        for child in value.children:
+            scan_expression(child)
+
+    def scan_statement(value: TypedStatement) -> None:
+        if value.kind == "decl":
+            for declaration in value.expressions:
+                if (declaration.kind == "declaration"
+                        and declaration.type.display() == "int"
+                        and declaration.symbol is not None
+                        and declaration.symbol.storage == "local"
+                        and len(declaration.children) == 1
+                        and _integer_literal(declaration.children[0]) is not None
+                        and declaration.symbol_id is not None):
+                    candidates.add(declaration.symbol_id)
+        for expression in value.expressions:
+            scan_expression(expression)
+        for child in value.children:
+            scan_statement(child)
+
+    for statement in body:
+        scan_statement(statement)
+    return frozenset(candidates - written)
+
+
 def _local_bound(value: TypedStatement, key: str,
-                 float_bounded: dict[int, tuple[float, object]]) -> tuple[int, int, str, object] | None:
+                 float_bounded: dict[int, tuple[float, object]],
+                 literal_locals: frozenset[int] = frozenset()
+                 ) -> tuple[int, int, str, object] | None:
     if value.kind != "decl" or len(value.expressions) != 1:
         return None
     declaration = value.expressions[0]
@@ -542,6 +609,10 @@ def _local_bound(value: TypedStatement, key: str,
     literal = _integer_literal(initializer)
     if declaration.symbol.storage == "const" and literal is not None:
         return declaration.symbol_id or 0, literal, "local-const-literal", declaration.symbol
+    if (literal is not None and declaration.symbol.storage == "local"
+            and (declaration.symbol_id or 0) in literal_locals):
+        return (declaration.symbol_id or 0, literal,
+                "local-literal-never-rewritten", declaration.symbol)
     ceil_bound = _ceil_cast_int_bound(value, float_bounded)
     if ceil_bound is not None:
         return ceil_bound
@@ -586,15 +657,18 @@ def _annotate_sequence(values: tuple[TypedStatement, ...], key: str, depth: int,
                        ancestor_product: int,
                        bounded: dict[int, tuple[int, str, object]],
                        lane_bounded: tuple[object, ...] = (),
-                       tile_bounded: tuple[object, ...] = ()) -> tuple[TypedStatement, ...]:
+                       tile_bounded: tuple[object, ...] = (),
+                       literal_locals: frozenset[int] = frozenset()
+                       ) -> tuple[TypedStatement, ...]:
     result: list[TypedStatement] = []
     active = dict(bounded)
     float_active: dict[int, tuple[float, object]] = {}
     for value in values:
         annotated = _annotate_statement(
-            value, key, depth, ancestor_product, active, lane_bounded, tile_bounded)
+            value, key, depth, ancestor_product, active, lane_bounded, tile_bounded,
+            literal_locals)
         result.append(annotated)
-        bound = _local_bound(annotated, key, float_active)
+        bound = _local_bound(annotated, key, float_active, literal_locals)
         if bound is not None:
             symbol_id, maximum, kind, symbol = bound
             active[symbol_id] = (maximum, kind, symbol)
@@ -609,19 +683,24 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
                         ancestor_product: int,
                         bounded: dict[int, tuple[int, str, object]],
                         lane_bounded: tuple[object, ...] = (),
-                        tile_bounded: tuple[object, ...] = ()) -> TypedStatement:
+                        tile_bounded: tuple[object, ...] = (),
+                        literal_locals: frozenset[int] = frozenset()
+                        ) -> TypedStatement:
     if value.kind == "block":
         return replace(value, children=_annotate_sequence(
-            value.children, key, depth, ancestor_product, bounded, lane_bounded, tile_bounded))
+            value.children, key, depth, ancestor_product, bounded, lane_bounded,
+            tile_bounded, literal_locals))
     if value.kind == "if":
         return replace(value, children=tuple(
             _annotate_statement(child, key, depth, ancestor_product,
-                                dict(bounded), lane_bounded, tile_bounded)
+                                dict(bounded), lane_bounded, tile_bounded,
+                                literal_locals)
             for child in value.children))
     if value.kind != "for":
         return replace(value, children=tuple(
             _annotate_statement(child, key, depth, ancestor_product,
-                                dict(bounded), lane_bounded, tile_bounded)
+                                dict(bounded), lane_bounded, tile_bounded,
+                                literal_locals)
             for child in value.children))
 
     # Every admitted form has an initializer statement and body, then exact
@@ -716,7 +795,8 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
     trips = max(0, bound - start + (1 if condition.operator == "<=" else 0))
     current_product = _checked_mul(ancestor_product, trips)
     annotated_body = _annotate_statement(
-        body, key, depth + 1, current_product, dict(bounded), lane_bounded, tile_bounded)
+        body, key, depth + 1, current_product, dict(bounded), lane_bounded,
+        tile_bounded, literal_locals)
     descendant_products = _loop_products(annotated_body)
     product = max((current_product, *descendant_products))
     proof = CountedLoopProof(symbol_id, start, bound, condition.operator,
@@ -811,7 +891,8 @@ def attach_counted_loop_proofs(
         raise ValueError(f"{key}: duplicate runtime tile counted-loop seed")
     initial_bounds.update(runtime_bounds)
     annotated = tuple(replace(function, body=_annotate_sequence(
-        function.body, key, 0, 1, dict(initial_bounds), runtime_lane_bounds, runtime_tile_bounds))
+        function.body, key, 0, 1, dict(initial_bounds), runtime_lane_bounds,
+        runtime_tile_bounds, _never_rewritten_literal_locals(function.body)))
                       for function in clean)
     definitions = {function.signature.id: function for function in annotated if function.body}
     main = next((function for function in annotated if function.name == "main" and function.body), None)
