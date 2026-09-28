@@ -3395,7 +3395,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: classicNoisedeck/shapes3d:shapes3d:191:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: classicNoisedeck/shapes3d:shapes3d:54:1: unsupported struct declaration",
         "stage": "typed.validator"
       },
       "effect_id": "classicNoisedeck/shapes3d",

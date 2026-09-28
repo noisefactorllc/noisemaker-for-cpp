@@ -253,6 +253,36 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "1ca045076337edb3bfcb5e618e0eb83f9633858eafb91176a2e713b4be28314e",
         "interface": "2f497a1fb59406d16decbd6bb2c0a5e4e7e5536774fa7ec56a34de12de657c43",
     },
+    # classicNoisedeck/shapes3d:shapes3d -- the pending corpus's one counted-for
+    # blocker whose loop bounds are already inside the proven Task-23 mechanism:
+    # `for (int i = 0; i < MAX_STEPS; i++)` in `rayMarch` (a break-aware march
+    # that can only shorten against the proved 100-trip upper bound, exactly
+    # like the renderCubemapSurface entry below) plus a literal `for i < 3`
+    # orientation loop. Entry computed mechanically with this module's own
+    # helpers (rebuild/attach + validate round-trip), then verified to advance
+    # the program's recorded first blocker to its next authentic frontier
+    # (`54:1: unsupported struct declaration`) without promoting it.
+    "classicNoisedeck/shapes3d:shapes3d": {
+        "raw": "818badfbadcf295d1863d208c0d0582a1349ff64f44dbf43f905a92fcfd4c5ad",
+        "source": "2f2b40281c84c67297a466a42f7780c8b21b2b037a41bcf7d9c9fb6a98b03617",
+        "defines": (("BLEND_MODE", "int", "10"),
+                    ("SHAPE_A", "int", "30"),
+                    ("SHAPE_B", "int", "10")),
+        "integer": ("MAX_STEPS", 37, "100", 100),
+        "globals": (("MIN_DIST", 35, "float", "0.01"),
+                    ("MAX_DIST", 36, "float", "200.0"),
+                    ("MAX_STEPS", 37, "int", "100"),
+                    ("fwdA", 61, "mat3", None),
+                    ("fwdB", 62, "mat3", None),
+                    ("invB", 63, "mat3", None),
+                    ("invA", 64, "mat3", None)),
+        "reads": (("rayMarch", 118, 367, 25, 367, 34),),
+        "pre_functions": "9d16cfdf81910e96d30e7b91e6ece36985ecca22bb04dc72448ef4bf7badcf5e",
+        "post_functions": "4d4046d9448e38c67aab440872deb681ccb03fb632f02c1e25fdd303df5285da",
+        "pre_whole": "87b2d56ef1f6db7e70e407069e17d95ff3e384ff685358075a52b2fde2e1497b",
+        "post_whole": "fdd41134212bfb343a643861cd2fed235e5d83c13da7f81aeb27f0ec2a980316",
+        "interface": "e347814a67a9611866fcb8c923c5f32e3e96a850ab08116dd23471e3b66fc24a",
+    },
     "render/renderCubemapSurface:renderCubemapSurface": {
         "raw": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
         "source": "0c1460653b347fcf2c27eebc51424190bf186648d23a348b34736ec8469f2c05",

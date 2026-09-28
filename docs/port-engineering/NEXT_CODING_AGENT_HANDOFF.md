@@ -64,6 +64,86 @@
 >   `0ed489ec…`). `tools/resync/regen_all.sh .` twice reached `REGEN OK` with a two-line
 >   pending.json diff only. Zero symlinks (`find . -type l` empty).
 >
+> ## CONTINUATION CHECKPOINT 2026-09-27B: COUNTED-FOR PROOF ADMITTED FOR classicNoisedeck/shapes3d:shapes3d; NO PROMOTION
+>
+> This checkpoint supersedes the 2026-09-27 checkpoint's frontier census only for the
+> closed `shapes3d` leg; everything else there (including the two then-blocked declared
+> checks, now resolved, see below) applies unchanged.
+>
+> ### What landed (this pass)
+> - **Counted-for loop proof for `classicNoisedeck/shapes3d:shapes3d`**, proof-gated through the
+>   existing `source-global-literal-int-v1` mechanism: a new frozen entry in
+>   `tools/glslcpp/frontend/loop_proof.py::_SOURCE_GLOBAL_LITERAL_INT_PROFILES` authenticates
+>   the exact program (dual raw/normalized SHA-256, define profile
+>   `(BLEND_MODE=10, SHAPE_A=30, SHAPE_B=10)`, declaration profile incl. the four mat3
+>   globals, exact read site `rayMarch` 367:25-34) and seeds the const-global bound
+>   `MAX_STEPS` (symbol 37, literal `100`). This proves `rayMarch`'s
+>   `for (int i = 0; i < MAX_STEPS; i++)` march (break-aware, so trips 100 is a sound upper
+>   bound, same shape as the vendored `render/renderCubemapSurface` entry) plus the literal
+>   `for i < 3` orientation loop: program summary `(2, 0, 1, 100, 103, True)`. All entry
+>   hashes were computed mechanically with the module's own helpers and round-trip
+>   validated; no capability gate was opened globally.
+> - **Corpus ratchet advancement** (`--write`, `promoted: []`): vendored **276**, pending
+>   **28** (304 authority programs). `classicNoisedeck/shapes3d:shapes3d`'s recorded first
+>   blocker advanced from `191:5: unsupported counted-for program proof` to its next
+>   authentic frontier `54:1: unsupported struct declaration`. No program was promoted, so
+>   `typed_manifest.json` and all downstream catalog artifacts are byte-unchanged.
+> - **Tests**: `tests/test_typed_generator.py::ParallaxTextureLodIntegrationTests::
+>   test_shapes3d_source_global_literal_int_pending_advancement` — membership + entry pin,
+>   fail-closed carrier requirement without the profile, proof attachment summary, frontier
+>   advancement to `unsupported struct declaration`, and forged-source rejection.
+>
+> ### Verification that passed locally
+> - All six declared generator `--check` gates plus `corpus_ratchet --check` against the
+>   materialized authority (`noisemaker-for-cpu@61aa869` snapshot + CI-format ledger,
+>   shader rev `0ed489ec…`): check_corpus (276 vendored + 28 pending), check_semantics,
+>   typed-slice (275), kernels (3 outputs), `generate_backend_compatibility --check` and
+>   `generate_effect_catalog --check` — the latter two **now pass directly against
+>   `/workspace/repos/noisemaker-for-cpu` / `/workspace/repos/noisemaker`**: the workspace
+>   authority checkouts again carry the pinned revisions (`cat-file -t 61aa8694…` → commit),
+>   resolving the 2026-09-27 environment-provisioning block on those declared checks.
+> - `tools/resync/regen_all.sh .` to a fixed point (`REGEN OK`, twice); native Debug CMake
+>   build + CTest 4/4; zero symlinks (`find . -type l` empty). Python evidence: shards 1-3
+>   completed via `pyshards.sh` and shard 0 completed split as `test_typed_generator`
+>   (293 passed, 16461 subtests passed, 1 failed: the pre-existing g++ 12.2
+>   `-Werror=misleading-indentation` smoke compile on `typed_slice.cpp:10110`, which CI's
+>   clang passes) plus the other 29 shard-0 modules (433 passed, 19 skipped, 12 failed:
+>   the pre-existing Node v26.5.1 local vs v26.0.0-pinned oracle gap — noise
+>   `test_generator_self_test`/`test_dynamic_import_forms_are_rejected`, four
+>   `test_lightleak192_oracle` snapshot/symlink tests, and the six
+>   `test_top_level_oracle_unittest_bridge` kaleido/bitEffects/mandelbrot/testpattern
+>   cases). All 12 non-compile failures were re-verified red-before to fail identically
+>   with this pass's working tree stashed at published `a77679f`. Every touched module
+>   (`test_typed_generator` incl. the new shapes3d test and the refreshed
+>   `test_task22_crt_exclusions_remain_closed` carrier-set pin, `test_runtime_loop_bound`,
+>   `test_mandelbrot_sequential_dz_assignment`, `test_backend_compatibility`,
+>   `test_effect_catalog_generator`, `test_generator`, `test_semantic`) is green. The
+>   handoff digest was refreshed at commit time.
+>
+> ### Remaining counted-for queue (exact diagnostics from pending.json, 7 programs)
+> - `classicNoisedeck/noise3d:noise3d:559` — `int maxSteps = 100;` is a **non-const local**
+>   literal bound; `_local_bound` requires `const`, so this needs a sound write-proof
+>   widening (no reassignment of `maxSteps` in scope).
+> - `points/lenia:convolve:36` — nested `dy`/`dx` loops bounded by `int iRadius =
+>   int(ceil(searchRadius));` where `searchRadius` is a **uniform float**; needs a runtime
+>   uniform-ceil bound seed (the `_ceil_cast_int_bound` path requires a proved-bounded
+>   float local, not a uniform).
+> - `synth3d/fractal3d:precompute:68`, `synth3d/flythrough3d:precompute:236` — loops bounded
+>   by the **function parameter** `int maxIter`; needs a parameter-bound proof mechanism.
+> - `render/render3d:281`, `render/renderCubemap3d:280`, `render/renderLit3d:227` —
+>   `MAX_STEPS=256` const-global bounds already fit this mechanism, but all three are
+>   `cross-builtin-admission-v1` carriers: admitting the literal-int seed changes the
+>   attached functions/whole trees, so `cross_builtin_profile`'s frozen pre-proof hashes
+>   mismatch (`source, function, whole-program, or interface mismatch`). Composing the two
+>   requires re-locking the cross profile to the seed-attached tree for those three keys
+>   (single mechanical re-lock, updating `test_cross_builtin_profile`'s pinned hashes).
+> - Non-counted frontier census (pending.json, 28): 7 counted-for, 6 drawMode/scatter
+>   adapter semantics, 5 SemanticError (attractor, dla, temporalAberration, physarum
+>   passthrough, loopEnd copy), 3 bound-by-2-authority-bindings, 2 vec4[9]
+>   (temporalAberration:30:10, navierStokes:nsSmooth:74:14), 1 index expression
+>   (feedback:339:5), 1 global declaration (palette3d:27:1), 1 post ++
+>   (cellularAutomata3d:simulate:56:39), 1 builtin `any` (heightmap3d:25:9), 1 viewMode
+>   variant.
 
 > ## CONTINUATION CHECKPOINT 2026-09-27: `cross` BUILTIN ADMITTED PROOF-GATED; CORPUS BLOCKERS CLOSED, NO PROMOTION
 >

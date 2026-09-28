@@ -10838,12 +10838,16 @@ and item["program_key"] != "filter/wobble:wobble"
         # six Task 23 keys plus those three. Still exactly enumerated -- this
         # stays an equality against a literal set, never a subset or length
         # check.
+        # classicNoisedeck/shapes3d:shapes3d joined with the 2026-09-27B
+        # counted-for leg (MAX_STEPS=100 march bound, same const-global
+        # literal shape, no promotion).
         self.assertEqual(frozenset((*task23_keys, "filter/reindex:nmReindexStats",
                                    "filter/reindex:nmReindexReduce",
                                    "filter/parallax:parallax",
                                    "filter/lightLeak:lightLeak",
                                    "synth/mandelbrot:mandelbrot",
-                                   "render/renderCubemapSurface:renderCubemapSurface")),
+                                   "render/renderCubemapSurface:renderCubemapSurface",
+                                   "classicNoisedeck/shapes3d:shapes3d")),
                          generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         post_task22_keys = frozenset((
             *task23_keys,
@@ -25483,6 +25487,71 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 source_hash=shash
             )
         self.assertIn("exact source-global literal-int carrier required", str(ctx.exception))
+
+    def test_shapes3d_source_global_literal_int_pending_advancement(self) -> None:
+        import hashlib
+        import json as _json
+        import pathlib
+
+        from tools.glslcpp import check_semantics, generate_typed_slice
+        from tools.glslcpp.frontend import loop_proof, parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        key = "classicNoisedeck/shapes3d:shapes3d"
+        self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
+        self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+
+        landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+        self.assertEqual(("MAX_STEPS", 37, "100", 100), landed["integer"])
+
+        source_path = pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            "pending-sources/classicNoisedeck/shapes3d/shapes3d.glsl")
+        raw = source_path.read_text(encoding="utf-8")
+        self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(), landed["raw"])
+
+        pending = _json.loads(pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            "pending.json").read_text(encoding="utf-8"))
+        effect = pending["effects"]["classicNoisedeck/shapes3d"]
+        defaults = check_semantics._metadata_defaults(
+            {"effects": {"classicNoisedeck/shapes3d": effect}}, key)
+
+        # Without the profile the carrier requirement fails closed (a known
+        # key must carry the exact profile).
+        typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"])
+        self.assertIn("exact source-global literal-int carrier required", str(ctx.exception))
+
+        # With the exact carrier the MAX_STEPS march loop is proved; both
+        # loops are inside the mechanism and the program's frontier advances
+        # to its next authentic blocker (the struct declaration).
+        typed = analyze_program(
+            parse_program(raw, key, defaults), key,
+            source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        summary = typed.counted_loop_proof
+        self.assertEqual(
+            (2, 0, 1, 100, 103, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic))
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"],
+                source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("unsupported struct declaration", str(ctx.exception))
+
+        # Forged source bytes fail closed even with the exact profile.
+        with self.assertRaises(Exception) as ctx:
+            analyze_program(
+                parse_program(raw + "\n", key, defaults), key,
+                source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("mismatch", str(ctx.exception))
 
     def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice
