@@ -3486,8 +3486,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "SemanticError: points/dla:agent:45:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat\npoints/dla:agent:48:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat\npoints/dla:agent:104:12: E_NO_OVERLOAD: no exact overload for uintBitsToFloat",
-        "stage": "semantics.defaults"
+        "diagnostic": "GeneratorError: points/dla:agent:33:19: unsupported binary operator ^",
+        "stage": "typed.validator"
       },
       "effect_id": "points/dla",
       "program": "agent",

@@ -31,7 +31,7 @@ _BUILTIN_IDS = {name: -(index + 1) for index, name in enumerate((
     # (_ANY_SIGNATURE_ID, _NOTEQUAL_SIGNATURE_ID, REFLECT_SIGNATURE_ID,
     # _NODE_SIGNATURE_ID for round). Appending keeps every existing id
     # unchanged; only a brand-new name gets the newly free id.
-    "greaterThan", "acos", "cross",
+    "greaterThan", "acos", "cross", "uintBitsToFloat",
 ))}
 
 # Declarative GLSL ES builtin surface.  Names select a reusable signature
@@ -45,6 +45,7 @@ _BUILTIN_FAMILIES = {
     "dFdx": ("derivative",), "dFdy": ("derivative",), "degrees": ("unary_float",),
     "distance": ("distance",), "dot": ("dot",), "equal": ("relational",),
     "exp": ("unary_float",), "floatBitsToUint": ("float_bits",),
+    "uintBitsToFloat": ("uint_bits",),
     "floor": ("unary_float",), "fract": ("unary_float",), "fwidth": ("derivative",),
     "greaterThan": ("relational",), "greaterThanEqual": ("relational",),
     "inversesqrt": ("unary_float",),
@@ -408,6 +409,9 @@ class BodyAnalyzer:
         if family == "float_bits":
             if len(types) != 1: return None
             return UINT if types[0] == FLOAT else vector("uint", types[0].width or 1) if types[0].kind == "vector" and types[0].base == "float" else None
+        if family == "uint_bits":
+            if len(types) != 1: return None
+            return FLOAT if types[0] == UINT else vector("float", types[0].width or 1) if types[0].kind == "vector" and types[0].base == "uint" else None
         if family == "pack_half": return UINT if types == (vector("float", 2),) else None
         if family == "unpack_half": return vector("float", 2) if types == (UINT,) else None
         if family == "texture": return vector("float", 4) if len(types) == 2 and types[0].kind == "sampler" and types[1] == vector("float", 2) else None

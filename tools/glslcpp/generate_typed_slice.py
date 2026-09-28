@@ -159,6 +159,11 @@ if __package__ in (None, ""):
         PROFILE as CROSS_BUILTIN_PROFILE,
         apply_cross_admission,
         authenticate_cross_sites)
+    from tools.glslcpp.frontend.dla_bit_ingress_profile import (
+        DLA_KEYS,
+        PROFILE as DLA_BIT_INGRESS_PROFILE,
+        apply_dla_bit_ingress_admission,
+        authenticate_dla_bit_ingress_sites)
     from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -579,6 +584,11 @@ else:
         PROFILE as CROSS_BUILTIN_PROFILE,
         apply_cross_admission,
         authenticate_cross_sites)
+    from .frontend.dla_bit_ingress_profile import (
+        DLA_KEYS,
+        PROFILE as DLA_BIT_INGRESS_PROFILE,
+        apply_dla_bit_ingress_admission,
+        authenticate_dla_bit_ingress_sites)
     from .frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -3437,6 +3447,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           hash_scalar_uint_rshift_profile: str | None = None,
                           vec_scalar_modulo_profile: str | None = None,
                           cross_builtin_profile: str | None = None,
+                          dla_bit_ingress_profile: str | None = None,
                           points_float_bits_ingress_profile: str | None = None,
                           points_post_profile: str | None = None,
                           scalar_uint_xor_profile: str | None = None,
@@ -4020,6 +4031,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_vec_scalar_modulos: list[TypedExpression] = []
     authorized_cross_sites: tuple[TypedExpression, ...] = ()
     visited_cross_sites: list[TypedExpression] = []
+    authorized_dla_bit_ingress_sites: tuple[TypedExpression, ...] = ()
+    visited_dla_bit_ingress_sites: list[TypedExpression] = []
     authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = ()
     visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
@@ -5343,6 +5356,25 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key in CROSS_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact cross builtin admission profile carrier required")
+    if dla_bit_ingress_profile is not None:
+        if (typed.key not in DLA_KEYS
+                or compatibility_transform is not None
+                or custom_comparer_profile is not None
+                or numeric_literal_contract != "glsl-f32"
+                or source_global_literal_int_profile is not None
+                or gather_sorted_round_profile is not None
+                or literal_vec3_lane_index_profile is not None
+                or smooth_edge_luma_weights_profile is not None):
+            raise GeneratorError(
+                f"{typed.key}: dla bit ingress profile metadata mismatch")
+        try:
+            authorized_dla_bit_ingress_sites = authenticate_dla_bit_ingress_sites(
+                typed, source_hash, dla_bit_ingress_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    elif typed.key in DLA_KEYS:
+        raise GeneratorError(
+            f"{typed.key}: exact dla bit ingress admission profile carrier required")
     if points_float_bits_ingress_profile is not None:
         if (typed.key not in POINTS_FLOAT_BITS_INGRESS_KEYS
                 or compatibility_transform is not None
@@ -7615,7 +7647,20 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # Admitted only for candidate-owned nodes authenticated by
                 # the exact Caustic or Scanline Error identity profile. It
                 # never enters the capability vocabulary.
-                if any(value is item for item in authorized_bit_effects_nodes):
+                if any(value is item for item in authorized_dla_bit_ingress_sites):
+                    # points/dla:agent's two floatBitsToUint sites of the
+                    # same float-seed bit-cast closure as its uintBitsToFloat
+                    # sites (dla-bit-ingress-admission-v1). Object identity
+                    # only; no capability vocabulary expansion.
+                    if (value.type.display() != "uint" or len(value.children) != 1
+                            or value.children[0].type.display() != "float"):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated DLA bit-ingress site")
+                    if any(value is item for item in visited_dla_bit_ingress_sites):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated DLA bit-ingress site visited twice")
+                    visited_dla_bit_ingress_sites.append(value)
+                elif any(value is item for item in authorized_bit_effects_nodes):
                     if (value.type.display() != "uint" or len(value.children) != 1
                             or value.children[0].type.display() != "float"):
                         raise GeneratorError(
@@ -7809,6 +7854,23 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                     raise GeneratorError(
                         f"{typed.key}: authenticated cross site visited twice")
                 visited_cross_sites.append(value)
+            elif value.callee == "uintBitsToFloat":
+                # Admitted only for the exact nodes authenticated by
+                # dla-bit-ingress-admission-v1, by object identity. Like
+                # round/tanh/floatBitsToUint, these never enter the frozen
+                # 44-entry capability vocabulary.
+                if not any(value is item for item in authorized_dla_bit_ingress_sites):
+                    raise GeneratorError(
+                        f"{location(value)}: unsupported builtin {value.callee}")
+                if (len(value.children) != 1
+                        or value.type.display() != "float"
+                        or value.children[0].type.display() != "uint"):
+                    raise GeneratorError(
+                        f"{location(value)}: malformed authenticated DLA bit-ingress site")
+                if any(value is item for item in visited_dla_bit_ingress_sites):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated DLA bit-ingress site visited twice")
+                visited_dla_bit_ingress_sites.append(value)
             elif value.callee not in _BUILTINS:
                 raise GeneratorError(f"{location(value)}: unsupported builtin {value.callee}")
             if value.callee == "mod":
@@ -7848,7 +7910,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                     "floatBitsToUint", "tanh",
                                     "dFdx", "dFdy", "fwidth", "reflect",
                                     "any", "notEqual", "ceil",
-                    "textureLod", "log", "log2", "cross"}):
+                    "textureLod", "log", "log2", "cross", "uintBitsToFloat"}):
                 used.add(value.callee)
         elif value.kind == "unary" and value.operator not in {"+", "-", "!"}:
             if (value.operator == "~"
@@ -8509,6 +8571,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and tuple(visited_cross_sites) != authorized_cross_sites):
         raise GeneratorError(
             f"{typed.key}: authenticated cross site traversal mismatch")
+    if (authorized_dla_bit_ingress_sites
+            and tuple(visited_dla_bit_ingress_sites)
+            != authorized_dla_bit_ingress_sites):
+        raise GeneratorError(
+            f"{typed.key}: authenticated DLA bit-ingress traversal mismatch")
     if (authorized_points_float_bits_ingresses
             and tuple(visited_points_float_bits_ingresses)
             != authorized_points_float_bits_ingresses):

@@ -94,6 +94,10 @@ from .frontend.cross_builtin_profile import (
     CROSS_KEYS,
     PROFILE as CROSS_BUILTIN_PROFILE,
     authenticate_cross_sites)
+from .frontend.dla_bit_ingress_profile import (
+    DLA_KEYS,
+    PROFILE as DLA_BIT_INGRESS_PROFILE,
+    authenticate_dla_bit_ingress_sites)
 from .frontend.points_float_bits_ingress_profile import (
     POINTS_FLOAT_BITS_INGRESS_KEYS,
     PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -1055,6 +1059,7 @@ class _Emitter:
     hash_scalar_uint_rshift_profile: str | None = None
     vec_scalar_modulo_profile: str | None = None
     cross_builtin_profile: str | None = None
+    dla_bit_ingress_profile: str | None = None
     points_float_bits_ingress_profile: str | None = None
     scalar_uint_xor_profile: str | None = None
     bitwise_scalar_int_ops_profile: str | None = None
@@ -1151,6 +1156,10 @@ class _Emitter:
     authorized_cross_sites: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_cross_sites: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_dla_bit_ingress_sites: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_dla_bit_ingress_sites: list[TypedExpression] = field(
         init=False, default_factory=list)
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = field(
         init=False, default=())
@@ -3665,6 +3674,25 @@ class _Emitter:
                 self.authorized_cross_sites = authenticate_cross_sites(
                     self.program, self.source_hash,
                     self.cross_builtin_profile)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if self.dla_bit_ingress_profile is not None:
+            if (self.program.key not in DLA_KEYS
+                    or self.compatibility_transform is not None
+                    or self.custom_comparer_profile is not None
+                    or self.numeric_literal_contract != "glsl-f32"
+                    or self.source_global_literal_int_profile is not None
+                    or self.gather_sorted_round_profile is not None
+                    or self.literal_vec3_lane_index_profile is not None
+                    or self.smooth_edge_luma_weights_profile is not None):
+                raise _error(
+                    self.program, self.program,
+                    "dla bit ingress profile metadata mismatch")
+            try:
+                self.authorized_dla_bit_ingress_sites = (
+                    authenticate_dla_bit_ingress_sites(
+                        self.program, self.source_hash,
+                        self.dla_bit_ingress_profile))
             except ValueError as error:
                 raise _error(self.program, self.program, str(error)) from error
         if self.points_float_bits_ingress_profile is not None:
@@ -8646,6 +8674,26 @@ class _Emitter:
                     # Narrowing the argument here costs bit-exact parity.
                     return f"glsl::tanh_lanewise({arguments[0]})"
                 if value.callee == "floatBitsToUint":
+                    dla_ingress = any(
+                        value is item
+                        for item in self.authorized_dla_bit_ingress_sites)
+                    if dla_ingress:
+                        # points/dla:agent's two floatBitsToUint sites of the
+                        # same float-seed bit-cast closure as its
+                        # uintBitsToFloat sites (dla-bit-ingress-admission-v1).
+                        # Object identity only; no capability token.
+                        if (value.type.display() != "uint"
+                                or len(value.children) != 1
+                                or value.children[0].type.display() != "float"):
+                            raise _error(
+                                self.program, value,
+                                "malformed authenticated DLA bit-ingress site")
+                        if any(value is item
+                               for item in self.emitted_dla_bit_ingress_sites):
+                            raise _error(
+                                self.program, value,
+                                "authenticated DLA bit-ingress site emitted twice")
+                        self.emitted_dla_bit_ingress_sites.append(value)
                     bit_effects_float_bits = any(
                         value is item for item in self.authorized_bit_effects_nodes)
                     caustic = None
@@ -8712,7 +8760,7 @@ class _Emitter:
                                 "malformed authenticated Median float-bit ingress")
                     elif bit_effects_float_bits:
                         pass
-                    else:
+                    elif not dla_ingress:
                         raise _error(self.program, value,
                                      f"unsupported builtin {value.callee}")
                     if len(arguments) != 1:
@@ -8888,6 +8936,29 @@ class _Emitter:
                         raise _error(self.program, value, "cross arity")
                     self.emitted_cross_sites.append(value)
                     return f"glsl::cross({', '.join(arguments)})"
+                if value.callee == "uintBitsToFloat":
+                    # Emitted only for the exact nodes this emitter itself
+                    # authenticated (dla-bit-ingress-admission-v1). The
+                    # authority reinterprets the uint bits through a shared
+                    # Float32Array/Uint32Array view pair; noisemaker::
+                    # uint_bits_to_float is the exact std::bit_cast analog.
+                    if not any(value is item
+                               for item in (self.authorized_dla_bit_ingress_sites
+                                            or ())):
+                        raise _error(self.program, value,
+                                     "unsupported builtin uintBitsToFloat")
+                    if len(arguments) != 1:
+                        raise _error(self.program, value, "uintBitsToFloat arity")
+                    if (value.type.display() != "float"
+                            or value.children[0].type.display() != "uint"):
+                        raise _error(self.program, value,
+                                     "malformed authenticated DLA bit-ingress site")
+                    if any(value is item
+                           for item in self.emitted_dla_bit_ingress_sites):
+                        raise _error(self.program, value,
+                                     "authenticated DLA bit-ingress site emitted twice")
+                    self.emitted_dla_bit_ingress_sites.append(value)
+                    return f"noisemaker::uint_bits_to_float({arguments[0]})"
                 if value.callee not in _BUILTIN_NAMES:
                     raise _error(self.program, value, f"unsupported builtin {value.callee}")
                 if value.callee == "fract" and len(value.children) == 1:
@@ -13054,6 +13125,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      hash_scalar_uint_rshift_profile: str | None = None,
                      vec_scalar_modulo_profile: str | None = None,
                      cross_builtin_profile: str | None = None,
+                     dla_bit_ingress_profile: str | None = None,
                      points_float_bits_ingress_profile: str | None = None,
                      points_post_profile: str | None = None,
                      scalar_uint_xor_profile: str | None = None,
@@ -13163,6 +13235,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        hash_scalar_uint_rshift_profile,
                        vec_scalar_modulo_profile,
                        cross_builtin_profile,
+                       dla_bit_ingress_profile,
                        points_float_bits_ingress_profile,
                        scalar_uint_xor_profile,
                        bitwise_scalar_int_ops_profile,
@@ -13460,6 +13533,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             != emitter.authorized_cross_sites):
         raise _error(program, program,
                      "authenticated cross site emission mismatch")
+    if (emitter.authorized_dla_bit_ingress_sites
+            and tuple(emitter.emitted_dla_bit_ingress_sites)
+            != emitter.authorized_dla_bit_ingress_sites):
+        raise _error(program, program,
+                     "authenticated DLA bit-ingress emission mismatch")
     if (emitter.authorized_scalar_uint_xors
             and tuple(emitter.emitted_scalar_uint_xors)
             != emitter.authorized_scalar_uint_xors):

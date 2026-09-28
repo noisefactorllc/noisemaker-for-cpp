@@ -26666,6 +26666,111 @@ void main() {
         self.assertIn("noisemaker::f32(glsl::round(", cpp)
         self.assertIn("BoundKernelMrt bind_flow_agent(", cpp)
 
+    def test_dla_bit_ingress_profile(self) -> None:
+        import dataclasses
+        import hashlib
+        from pathlib import Path
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import parse_program
+        from tools.glslcpp.frontend.dla_bit_ingress_profile import (
+            DLA_AGENT_KEY, PROFILE as DLA_PROFILE,
+            authenticate_dla_bit_ingress_sites, apply_dla_bit_ingress_admission,
+        )
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        repo_root = Path(__file__).resolve().parent.parent
+        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        metadata = json.loads((corpus_root / "metadata.json").read_bytes())
+        pending = json.loads((corpus_root / "pending.json").read_bytes())
+
+        record = next((item for item in pending["pending"]
+                       if item["program_key"] == DLA_AGENT_KEY), None)
+        self.assertIsNotNone(record)
+        source_path = corpus_root / record["source"]
+        raw = source_path.read_text(encoding="utf-8")
+        shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        self.assertEqual(shash, record["raw_sha256"])
+
+        eff = (metadata["effects"].get("points/dla")
+               or pending["effects"].get("points/dla"))
+        defaults = check_semantics._metadata_defaults(
+            {"effects": {"points/dla": eff}}, DLA_AGENT_KEY)
+
+        ast = parse_program(raw, DLA_AGENT_KEY, defaults)
+        typed = analyze_program(ast, DLA_AGENT_KEY)
+
+        # 1. Direct authentication: exactly five sites (two floatBitsToUint,
+        # three uintBitsToFloat), all single-operand bit casts.
+        nodes = authenticate_dla_bit_ingress_sites(typed, shash, DLA_PROFILE)
+        self.assertEqual(len(nodes), 5)
+        self.assertEqual(
+            [node.callee for node in nodes],
+            ["floatBitsToUint", "uintBitsToFloat", "floatBitsToUint",
+             "uintBitsToFloat", "uintBitsToFloat"])
+        for node in nodes:
+            self.assertEqual(node.kind, "builtin")
+            expected_result = "uint" if node.callee == "floatBitsToUint" else "float"
+            expected_operand = "float" if node.callee == "floatBitsToUint" else "uint"
+            self.assertEqual(node.type.display(), expected_result)
+            self.assertEqual(len(node.children), 1)
+            self.assertEqual(node.children[0].type.display(), expected_operand)
+
+        # Identity application
+        self.assertIs(apply_dla_bit_ingress_admission(typed, shash, DLA_PROFILE), typed)
+
+        # Profile mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_dla_bit_ingress_sites(typed, shash, "invalid-profile")
+        self.assertIn("exact profile carrier required", str(ctx.exception))
+
+        # Source hash mismatch
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_dla_bit_ingress_sites(typed, "0" * 64, DLA_PROFILE)
+        self.assertIn("caller source hash mismatch", str(ctx.exception))
+
+        # Forged source fails closed even with the right caller hash.
+        forged = dataclasses.replace(typed, raw_source=raw + "\n")
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_dla_bit_ingress_sites(forged, shash, DLA_PROFILE)
+        self.assertIn("mismatch", str(ctx.exception))
+
+        # 2. Validator integration: missing profile fails closed
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+            )
+        self.assertIn(
+            "exact dla bit ingress admission profile carrier required",
+            str(ctx.exception))
+
+        # Passing valid profile advances to the next authentic blocker
+        # (hash_uint's scalar uint XOR), never silently passing.
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=shash,
+                dla_bit_ingress_profile=DLA_PROFILE,
+            )
+        self.assertIn("unsupported binary operator ^", str(ctx.exception))
+
+        # 3. Emitter integration. The same frontier applies with the profile;
+        # without it the emitter still refuses the uintBitsToFloat sites
+        # (fail-closed by its own object-identity check).
+        with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, DLA_AGENT_KEY, shash, "pixel",
+                "bind_points_dla_agent",
+                dla_bit_ingress_profile=DLA_PROFILE,
+            )
+        self.assertIn("unsupported binary operator ^", str(ctx.exception))
+        with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, DLA_AGENT_KEY, shash, "pixel",
+                "bind_points_dla_agent",
+            )
+        self.assertIn("unsupported binary operator ^", str(ctx.exception))
+
     def test_cross_builtin_profile(self) -> None:
         import dataclasses
         import hashlib

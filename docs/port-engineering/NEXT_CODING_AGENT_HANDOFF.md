@@ -1,5 +1,70 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-27B: `uintBitsToFloat` ADMITTED PROOF-GATED FOR points/dla:agent; heightmap3d `any` LEG MEASURED AND BLOCKED BY THE PUBLICATION CAP
+>
+> This checkpoint supersedes the "Next linear leg" ordering in earlier checkpoints only for the
+> closed DLA bit-ingress cluster; all other ordering and census rules apply unchanged.
+>
+> ### What landed (this pass)
+> - **`uintBitsToFloat(uint) -> float` (and the paired `floatBitsToUint(float) -> uint`) bit-ingress
+>   closure for `points/dla:agent`, proof-gated by authenticated admission profile
+>   `dla-bit-ingress-admission-v1`** (`tools/glslcpp/frontend/dla_bit_ingress_profile.py`): admission
+>   is by object identity of the exact five call sites (two `floatBitsToUint` at 43:17/103:48, three
+>   `uintBitsToFloat` at 45:12/48:12/104:12), keyed by exact raw (5928 bytes,
+>   `5f11d2d5…`)/normalized (4464 bytes, `10230df7…`) SHA-256, functions/whole/interface digests,
+>   empty define set, `(0,0,0,0,0,True)` loop proof, resource signature, and the eight-function
+>   census; `apply_dla_bit_ingress_admission` + `authenticate_dla_bit_ingress_sites` are fail-closed
+>   (forged/extra/missing sites abort). `floatBitsToUint` is admitted in the same closure because its
+>   inverse alone would only swap the first diagnostic. No global capability gate is opened and the
+>   frozen 44-entry vocabulary is unchanged.
+> - **Semantic resolution**: `"uintBitsToFloat"` appended at the end of the hash-pinned
+>   builtin-name tuple in `tools/glslcpp/frontend/body_semantic.py` (new id -53; every existing
+>   negative id unchanged) plus a `"uint_bits"` family resolving exactly one `uint` operand to
+>   `float` (no uvecN scalar-vector sites exist in the pinned corpus; the family is fail-closed for
+>   anything else). All vendored programs are unaffected — none contains either callee.
+> - **Emitter lowering**: `noisemaker::uint_bits_to_float(operand)` /
+>   `noisemaker::float_bits_to_uint(operand)` — the existing `std::bit_cast` helpers in
+>   `include/noisemaker/numeric.hpp`, which are exact transcriptions of the pinned CPU authority's
+>   `uintBitsToFloat`/`floatBitsToUint` (`src/csl/glsl-runtime.js` shared
+>   Float32Array/Uint32Array view ping-pong). Wiring mirrors the `cross` builtin: profile option,
+>   construct-time authentication, emission with duplicate rejection, two-way traversal/emission
+>   cardinality gates at EOF, and `render_typed_cpp` forwarding in both
+>   `tools/glslcpp/generate_typed_slice.py` and `tools/glslcpp/emit_typed_cpp.py`;
+>   `tools/glslcpp/corpus_ratchet.py` carries the profile into both probe stages.
+> - **Corpus ratchet**: `--write` accepted the work (`vendored: 276`, `promoted: []`, 28 pending);
+>   `points/dla:agent`'s first blocker advanced from
+>   `semantics.defaults` (`E_NO_OVERLOAD: no exact overload for uintBitsToFloat`, 3 sites) to
+>   `typed.validator` (`GeneratorError: points/dla:agent:33:19: unsupported binary operator ^` —
+>   `hash_uint`'s scalar uint XOR; `points/dla:agent` is not among the
+>   `hash-scalar-uint-xor-v1` keys). Current frontier census (pending.json, 28 programs): 8x
+>   counted-for proof, 6x scatter-pass binding (5 points + 1 billboards), 5x multi-pass-bound
+>   programs (2/2/2/8/22 authority passes), 2x vec4[9], 1x index expression, 1x global declaration,
+>   1x post (`synth3d/cellularAutomata3d:simulate`, blocked at publication by the review cap), 1x
+>   scalar-uint XOR (`points/dla:agent`, new), 1x `any` (`synth3d/heightmap3d:precompute`), 1x
+>   `any`/`isnan` semantics cascade (`points/attractor:agent` — root blocker is `isnan`, upstream of
+>   its `any`), 1x `tan` (`render/renderLandscape3d:landscape`, VIEW_MODE=2 variant).
+> - **heightmap3d `any(bvec3)` closure leg — measured and NOT landed**: admitting the
+>   `any(lessThan/greaterThanEqual(ivec3, ivec3))` closure at 25:9-25:82 (waves-any precedent
+>   generalized to bvec3) lets `synth3d/heightmap3d:precompute` pass the validator AND the emitter
+>   completely (probed with a source-transformed stand-in), so the next `corpus_ratchet --write`
+>   would PROMOTE it, rewriting `typed_manifest.json` and all ~289 per-record-embedded hashes in
+>   `src/effects/generated/effect_catalog.cpp` (~4.4 MiB diff) — unpublishable under the 2 MiB
+>   independent-review cap, exactly like cellularAutomata3d (2026-09-26 checkpoint). The cluster
+>   stays blocked until the per-file/review-cap accommodation exists.
+> - **Tests**: `tests/test_typed_generator.py::ParallaxTextureLodIntegrationTests::test_dla_bit_ingress_profile`
+>   (five-site authentication with callee/type shape checks, identity application, profile/hash/forged-source
+>   fail-closed, validator carrier-required and advancement to `^`, emitter frontier both with and
+>   without the profile). No generated file hand-edited; artifacts regenerated to a fixed point
+>   (`tools/resync/regen_all.sh .` twice, `REGEN OK`).
+>
+> ### Verification that passed locally
+> - `check_corpus --check` (276 vendored + 28 pending, every pending blocker re-probed),
+>   `check_semantics --check` (276 programs, 684 define variants), `corpus_ratchet --check` against
+>   the authority snapshot (`noisemaker-for-cpu@61aa869` → `/tmp` export + ledger, shader rev
+>   `0ed489ec…`). `tools/resync/regen_all.sh .` twice reached `REGEN OK` with a two-line
+>   pending.json diff only. Zero symlinks (`find . -type l` empty).
+>
+
 > ## CONTINUATION CHECKPOINT 2026-09-27: `cross` BUILTIN ADMITTED PROOF-GATED; CORPUS BLOCKERS CLOSED, NO PROMOTION
 >
 > This checkpoint supersedes the "Required next actions" ordering above only for the closed
