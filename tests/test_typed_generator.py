@@ -144,7 +144,13 @@ class LightLeakPhase2Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="noisemaker-lightleak-compile-") as temporary:
             subprocess.run(
                 [compiler, "-std=c++20", "-Wall", "-Wextra", "-Wpedantic",
-                 "-Werror", "-ffp-contract=off", "-I", str(REPOSITORY / "include"),
+                 "-Werror", "-ffp-contract=off",
+                 # The published CMake policy (CMakeLists.txt:72-80) suppresses
+                 # -Wmisleading-indentation for these dense generated files
+                 # ("one dense statement per IR node"); the smoke compile must
+                 # apply the same policy, not stricter rules.
+                 "-Wno-misleading-indentation",
+                 "-I", str(REPOSITORY / "include"),
                  "-c", str(REPOSITORY / "src/typed_generated/typed_slice.cpp"),
                  "-o", str(pathlib.Path(temporary) / "typed_slice.o")],
                 check=True, cwd=REPOSITORY)

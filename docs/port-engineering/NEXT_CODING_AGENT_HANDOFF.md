@@ -1474,18 +1474,27 @@
 >      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4 with g++ 12.2 on this Linux
 >      container, matching ci.yml's native steps; the ci.yml native matrix also runs macos-latest, which
 >      this Linux container cannot execute. Run evidence (shards, sweep, run ids) lives in the supervisor
->      receipts. Residual-failure diagnoses (all red-before; their generator inputs are untouched by this
->      pass), kept as the next legs: (a) `test_lightleak192_oracle` leaf-symlink tests hardcode `/private/tmp`
->      (macOS path) and ERROR on Linux; automatable fix is a platform-aware skip or platform-appropriate
->      temp root. (b) the LightLeakPhase2 smoke compile omits the `-Wno-misleading-indentation` suppression
->      that the published CMake policy applies to these generated files (g++ 12.2, typed_slice.cpp:10110);
->      fix is applying the same suppression to the test's compile command. (c) julia/shape-mixer/mandelbrot
->      oracle packages were produced on ARM64 (positive quiet NaN); x86 Node v26.0.0 yields the negative
->      quiet NaN, so the packages must be regenerated on the macOS Apple-silicon host. (d) the C++ executor
->      refuses 6 admitted authority programs with "multi-output pass inside an iterated group is
->      unsupported" (points/buddhabrot, points/flock, points/flow, points/hydraulic, points/life,
->      render/pointsEmit) — the known multi-output-pass product gap, the next implementation leg, and the
->      cause of ci.yml's corpus-parity lane failure at ced9055 and its parents.
+>      receipts. Residual-failure diagnoses (all red-before; their generator inputs are untouched by
+>      this pass): (a) `test_lightleak192_oracle` leaf-symlink tests hardcoded `/private/tmp` (macOS
+>      path) and ERROR on Linux — **[COMPLETED at f2d9822]**: the second leg now uses a fixed explicit
+>      temp root distinct from the platform default, on every platform. (b) the LightLeakPhase2 smoke
+>      compile omitted the `-Wno-misleading-indentation` suppression that the published CMake policy
+>      applies to these generated files — **[COMPLETED at f2d9822]**: the smoke compile applies the same
+>      published suppression. (c) julia/shape-mixer/mandelbrot oracle packages were produced on ARM64
+>      (positive quiet NaN); x86 Node v26.0.0 yields the negative quiet NaN, so the packages must be
+>      regenerated on the macOS Apple-silicon host — still open. (d) the C++ executor refused 6 admitted
+>      authority programs with "multi-output pass inside an iterated group is unsupported"
+>      (points/buddhabrot, points/flock, points/flow, points/hydraulic, points/life, render/pointsEmit),
+>      the cause of ci.yml's corpus-parity lane failure at ced9055 and its parents — **[COMPLETED at
+>      f2d9822]**: the refusals were stale (run_group_step_iteration's MRT branch was already ported);
+>      they were dropped, the dry-run guard now routes multi-output admissions through
+>      `authenticate_factory_route_mrt`, and all 6 programs render byte-exact against the authority
+>      (corpus parity byteExactCount 168 -> 174; suite `tests.test_dsl_corpus_parity` +
+>      `tests.test_typed_generator` 297 tests OK; evidence: Worker Elves job e5c685f8, evidence archive).
+>      Still open in ci.yml's byte-exact job: the sweep gate's 3 `filter__dither` both_refused cases
+>      (palette 2+): the authority's `ditherWithPalette` NaN-corruption bug is upstream
+>      (noisemaker-for-cpu canonical-kernels.js), both lanes refuse, and sweep.py's 984d4ad fail-closed
+>      policy rightly fails claimed support — fixing it requires the upstream authority leg.
 >    - **Remaining frontier construct blockers (27 programs)**:
 >      - 6x: unsupported counted-for program proof (`points/lenia:convolve`, `render/render3d:render3d`,
 >        `render/renderCubemap3d:renderCubemap3d`, `render/renderLit3d:renderLit3d`,

@@ -19,6 +19,22 @@ CPU_ROOT = (pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
 WORKER = pathlib.Path(os.environ.get("LIGHTLEAK192_TEST_TMP", tempfile.gettempdir()))
 
 
+def _explicit_temp_root() -> pathlib.Path:
+    """A fixed explicit temp root, distinct from the platform default.
+
+    The second leg exercises TemporaryDirectory under an explicit root that
+    differs from the default (None) leg. That root used to be pinned to
+    /private/tmp, which exists on Darwin and nowhere else; on Linux the pin
+    turned these tests into FileNotFoundError (the same pattern
+    test_dsl_executable_corpus.py's _temporary_root already fixed). A fixed
+    subdirectory of the platform temp root keeps the two legs distinct on
+    every platform.
+    """
+    root = pathlib.Path(tempfile.gettempdir()) / "noisemaker-lightleak-explicit"
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
 class LightLeak192OracleTests(unittest.TestCase):
     def _authority(self) -> pathlib.Path:
         if CPU_ROOT is None or not CPU_ROOT.is_dir():
@@ -275,9 +291,9 @@ class LightLeak192OracleTests(unittest.TestCase):
             "must not live inside the C++ repository" in completed.stderr,
             completed.stderr)
 
-    def test_snapshot_leaf_symlink_is_rejected_in_default_and_private_tmp(self):
+    def test_snapshot_leaf_symlink_is_rejected_in_default_and_explicit_root(self):
         authority = self._authority()
-        for temp_dir in (None, pathlib.Path("/private/tmp")):
+        for temp_dir in (None, _explicit_temp_root()):
             with tempfile.TemporaryDirectory(
                     prefix="lightleak192-snapshot-leaf-",
                     dir=str(temp_dir) if temp_dir else None) as temp:
@@ -288,11 +304,11 @@ class LightLeak192OracleTests(unittest.TestCase):
             self.assertIn("--cpu-root must not be a symlink",
                           completed.stderr)
 
-    def test_live_leaf_symlink_is_rejected_in_default_and_private_tmp(self):
+    def test_live_leaf_symlink_is_rejected_in_default_and_explicit_root(self):
         authority = self._authority()
         live = pathlib.Path(os.environ["NOISEMAKER_FOR_CPU"])
         self.assertTrue(live.is_dir())
-        for temp_dir in (None, pathlib.Path("/private/tmp")):
+        for temp_dir in (None, _explicit_temp_root()):
             with tempfile.TemporaryDirectory(
                     prefix="lightleak192-live-leaf-",
                     dir=str(temp_dir) if temp_dir else None) as temp:

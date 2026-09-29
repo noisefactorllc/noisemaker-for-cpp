@@ -1117,14 +1117,9 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
           if (!scatter_adapter_available(admission)) {
             if (admission.outputs.size() > 1U) {
               // An MRT pass authenticates against the MRT route table; inside
-              // an iterated group it is refused outright, before allocation
-              // (see run_iterated_group).
-              if (iterated) {
-                throw GraphError(GraphErrorCode::unsupported_mrt,
-                                 "multi-output pass inside an iterated group is unsupported",
-                                 effect.effect.id, pass_index, pass.name,
-                                 admission.identity.program_key);
-              }
+              // an iterated group it runs through run_group_step_iteration's
+              // ported MRT branch (renderer.js's MRT branch inside
+              // runGroupStepIteration), so no refusal here.
               (void)authenticate_factory_route_mrt(effect, admission);
             } else {
               const auto* route = authenticate_factory_route(effect, admission);
@@ -1337,10 +1332,19 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         }
         // A scatter pass has no canonical/emitted factory to authenticate
         // (see the identical guard in the pre-allocation loop above).
+        // A multi-output (drawBuffers >= 2) admission authenticates against
+        // the generated MRT route table (same contract the non-iterated
+        // dispatch and run_group_step_iteration's ported MRT branch use);
+        // authenticate_factory_route_mrt refuses any non-empty compile-define
+        // ABI on those routes, so no compile-define parameter walk is needed.
         if (!dispatchable_scatter) {
-          authenticate_compile_define_parameters(
-              *effect, admission, snapshot.definition,
-              *authenticate_factory_route(*effect, admission));
+          if (admission.outputs.size() > 1U) {
+            (void)authenticate_factory_route_mrt(*effect, admission);
+          } else {
+            authenticate_compile_define_parameters(
+                *effect, admission, snapshot.definition,
+                *authenticate_factory_route(*effect, admission));
+          }
         }
       }
     }
@@ -3232,25 +3236,11 @@ struct GroupPublishResult {
     return zero_iteration_group_output(group_input, inputs);
   }
   // A multi-output (drawBuffers >= 2) pass has an authenticated generated MRT
-  // route and runs through run_mrt_pass on the non-iterated path, but
-  // run_group_step_iteration routes, stores and publishes exactly one surface
-  // per pass (renderer.js's MRT branch inside runGroupStepIteration is not
-  // ported). Refuse the whole group before any pass renders, naming the pass,
-  // instead of letting an MRT admission reach the single-output route table.
-  for (const std::size_t step_index : group.step_indices) {
-    const auto* member = std::get_if<EffectStep>(&chain.steps[step_index]);
-    if (member == nullptr) continue;
-    const auto& snapshot = plan.effects[member->snapshot_index];
-    for (std::size_t pass_index = 0; pass_index < snapshot.admissions.size(); ++pass_index) {
-      const auto& admission = snapshot.admissions[pass_index];
-      if (!scatter_adapter_available(admission) && admission.outputs.size() > 1U) {
-        throw GraphError(GraphErrorCode::unsupported_mrt,
-                         "multi-output pass inside an iterated group is unsupported",
-                         snapshot.definition.id, pass_index, admission.identity.name,
-                         admission.identity.program_key);
-      }
-    }
-  }
+  // route and runs through run_group_step_iteration's ported MRT branch
+  // (renderer.js's MRT branch inside runGroupStepIteration: per-output
+  // destinations via groupMrtDestinations, one shared pixel loop via
+  // runCanonicalMrtPass, per-slot quantize/store, last slot wins for
+  // lastOutput), so no refusal here.
 
   iteration::GroupResourceMap group_resources;
   if (group.loop) {
