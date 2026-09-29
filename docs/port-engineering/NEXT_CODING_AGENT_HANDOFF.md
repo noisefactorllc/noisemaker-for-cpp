@@ -77,6 +77,8 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-27B: `uintBitsToFloat` ADMITTED PROOF-GATED FOR points/dla:agent; heightmap3d `any` LEG MEASURED AND BLOCKED BY THE PUBLICATION CAP
 >
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The supervisor then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its [C++ kit release](https://github.com/noisefactorllc/scaffold/actions/runs/36512398903) passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
+>
 > This checkpoint supersedes the "Next linear leg" ordering in earlier checkpoints only for the
 > closed DLA bit-ingress cluster; all other ordering and census rules apply unchanged.
 >
@@ -411,6 +413,8 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-26B: KERNELS-CHECK REVIEWABILITY FIX PUBLISHED; LOOP-PROOF REVERT STILL BLOCKED BY REVIEW CAP
 >
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The supervisor then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its [C++ kit release](https://github.com/noisefactorllc/scaffold/actions/runs/36512398903) passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
+>
 > This checkpoint records this continuation pass's publication and the still-blocked leg, amending the
 > 2026-09-26 checkpoint above; that checkpoint's "What was implemented and verified" and "Required
 > harness-side resolution" sections apply unchanged to the blocked leg below.
@@ -451,6 +455,8 @@
 >   promotion stays vendored and its revert is unpublishable, exactly like the cellularAutomata3d redo.
 
 > ## CONTINUATION CHECKPOINT 2026-09-26: synth3d/cellularAutomata3d:simulate PROMOTION BLOCKED AT PUBLICATION; PRODUCT CHANGES REVERTED TO BASELINE
+>
+> Blocker status: resolved. The generated-file review accommodation is published in [a7d5b7d](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/a7d5b7ded828294f84955e4044a975028bc8b18a). The supervisor then reviewed and published the large regenerated DLA promotion [ced9055](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/ced90558815c3478c784b2bd12cc77ebf4186a31), and its [C++ kit release](https://github.com/noisefactorllc/scaffold/actions/runs/36512398903) passed. The review cap no longer prevents this work. The implementation and parity actions remain open under the required work order above. The following checkpoint retains the evidence from the blocked attempt.
 >
 > This checkpoint records a blocked publication, not landed work. The promotion of **`synth3d/cellularAutomata3d:simulate`** (counted-for loop proof + remaining `post` blocker on its 3D loop update) was fully implemented, locally verified, and published in two partial steps (`77364c6` step 1, `3b34c16` step 2), but the final generated artifact **`src/effects/generated/effect_catalog.cpp` cannot be published under the harness constraint that an independent review reads at most 2 MiB of diff**, so per the failure & revert guard the product changes were reverted from `main` to keep it green. Everything below must be redone once the publication constraint is resolved.
 >
