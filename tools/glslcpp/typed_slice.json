@@ -1108,6 +1108,13 @@
     },
     {
       "defines": {},
+      "dla_bit_ingress_profile": "dla-bit-ingress-admission-v1",
+      "hash_scalar_uint_rshift_profile": "hash-scalar-uint-rshift-v1",
+      "hash_scalar_uint_xor_profile": "hash-scalar-uint-xor-v1",
+      "program_key": "points/dla:agent"
+    },
+    {
+      "defines": {},
       "program_key": "points/dla:copyGrid"
     },
     {

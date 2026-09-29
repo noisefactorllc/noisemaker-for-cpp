@@ -97,6 +97,7 @@ from .frontend.cross_builtin_profile import (
 from .frontend.dla_bit_ingress_profile import (
     DLA_KEYS,
     PROFILE as DLA_BIT_INGRESS_PROFILE,
+    authenticate_dla_bit_ingress_parameter,
     authenticate_dla_bit_ingress_sites)
 from .frontend.points_float_bits_ingress_profile import (
     POINTS_FLOAT_BITS_INGRESS_KEYS,
@@ -1160,6 +1161,10 @@ class _Emitter:
     authorized_dla_bit_ingress_sites: tuple[TypedExpression, ...] = field(
         init=False, default=())
     emitted_dla_bit_ingress_sites: list[TypedExpression] = field(
+        init=False, default_factory=list)
+    authorized_dla_bit_ingress_parameters: tuple[object, ...] = field(
+        init=False, default=())
+    emitted_dla_bit_ingress_parameters: list[object] = field(
         init=False, default_factory=list)
     authorized_scalar_uint_xors: tuple[TypedExpression, ...] = field(
         init=False, default=())
@@ -3691,6 +3696,10 @@ class _Emitter:
             try:
                 self.authorized_dla_bit_ingress_sites = (
                     authenticate_dla_bit_ingress_sites(
+                        self.program, self.source_hash,
+                        self.dla_bit_ingress_profile))
+                self.authorized_dla_bit_ingress_parameters = (
+                    authenticate_dla_bit_ingress_parameter(
                         self.program, self.source_hash,
                         self.dla_bit_ingress_profile))
             except ValueError as error:
@@ -6449,6 +6458,15 @@ class _Emitter:
                 raise _error(self.program, parameter,
                              "malformed authenticated inout vec3 swap parameter")
             return f"{self.function_type(parameter.type)}&"
+        if any(parameter is item
+               for item in self.authorized_dla_bit_ingress_parameters):
+            if (parameter.direction != "inout"
+                    or parameter.type.display() != "float"):
+                raise _error(self.program, parameter,
+                             "malformed authenticated DLA inout parameter")
+            if parameter not in self.emitted_dla_bit_ingress_parameters:
+                self.emitted_dla_bit_ingress_parameters.append(parameter)
+            return f"{self.function_type(parameter.type)}&"
         out_parameters = self.authorized_out_inout_parameters
         if any(parameter is item for item in out_parameters):
             if (self.out_inout_direction_contract is None
@@ -8047,6 +8065,21 @@ class _Emitter:
                         and len(value.children) == 2
                         and all(child.type.display() == "uint"
                                 for child in value.children)):
+                    return (f"({self.expression(value.children[0])} {value.operator} "
+                            f"{self.expression(value.children[1])})")
+                if any(value is item for item in self.authorized_dla_bit_ingress_sites):
+                    if (value.type.display() != "uint"
+                            or len(value.children) != 2
+                            or any(child.type.display() != "uint"
+                                   for child in value.children)):
+                        raise _error(self.program, value,
+                                     "malformed authenticated DLA mask")
+                    if any(value is item
+                           for item in self.emitted_dla_bit_ingress_sites):
+                        raise _error(
+                            self.program, value,
+                            "authenticated DLA bit-ingress site emitted twice")
+                    self.emitted_dla_bit_ingress_sites.append(value)
                     return (f"({self.expression(value.children[0])} {value.operator} "
                             f"{self.expression(value.children[1])})")
                 raise _error(self.program, value, f"unsupported binary operator {value.operator}")
@@ -13534,10 +13567,19 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
         raise _error(program, program,
                      "authenticated cross site emission mismatch")
     if (emitter.authorized_dla_bit_ingress_sites
-            and tuple(emitter.emitted_dla_bit_ingress_sites)
-            != emitter.authorized_dla_bit_ingress_sites):
+            and (len(emitter.emitted_dla_bit_ingress_sites)
+                 != len(emitter.authorized_dla_bit_ingress_sites)
+                 or sorted(_newton_span(node)
+                           for node in emitter.emitted_dla_bit_ingress_sites)
+                 != sorted(_newton_span(node)
+                           for node in emitter.authorized_dla_bit_ingress_sites))):
         raise _error(program, program,
                      "authenticated DLA bit-ingress emission mismatch")
+    if (emitter.authorized_dla_bit_ingress_parameters
+            and len(emitter.emitted_dla_bit_ingress_parameters)
+            != len(emitter.authorized_dla_bit_ingress_parameters)):
+        raise _error(program, program,
+                     "authenticated DLA inout parameter emission mismatch")
     if (emitter.authorized_scalar_uint_xors
             and tuple(emitter.emitted_scalar_uint_xors)
             != emitter.authorized_scalar_uint_xors):

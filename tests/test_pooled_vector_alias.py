@@ -59,8 +59,9 @@ class CommittedEmissionTests(unittest.TestCase):
 
     def test_alias_site_census_is_exact(self) -> None:
         sites = _alias_sites(_COMMITTED_SLICE)
-        # 35 after the current live slice's later admitted rows.
-        self.assertEqual(35, len(sites))
+        # 36 after the current live slice's later admitted rows
+        # (points/dla:agent adds `vec2 stepDir = randomDir;`).
+        self.assertEqual(36, len(sites))
         # Every alias binds a bare identifier, never a state field or a call.
         for name, source in sites:
             self.assertNotIn(".", source)
@@ -93,8 +94,8 @@ class NeutralizationTests(unittest.TestCase):
             text = _regenerate()
         self.assertEqual([], _alias_sites(text))
         self.assertNotIn(PARALLAX_ALIAS, text)
-        # Exactly the 35 ampersands, and nothing else, distinguish the two.
-        self.assertEqual(len(_COMMITTED_SLICE) - 35, len(text))
+        # Exactly the 36 ampersands, and nothing else, distinguish the two.
+        self.assertEqual(len(_COMMITTED_SLICE) - 36, len(text))
 
     def test_the_observability_condition_is_not_vacuous(self) -> None:
         # Alias every bare-identifier vector declaration, whether or not a

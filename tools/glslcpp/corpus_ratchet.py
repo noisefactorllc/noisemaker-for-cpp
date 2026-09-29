@@ -588,6 +588,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.vec_scalar_modulo_profile import (
         VEC_SCALAR_MODULO_KEYS, PROFILE as VEC_SCALAR_MODULO_PROFILE,
     )
+    from tools.glslcpp.frontend.dla_bit_ingress_profile import (
+        DLA_KEYS, PROFILE as DLA_BIT_INGRESS_PROFILE,
+    )
     from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
     )
@@ -619,6 +622,8 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["vec_scalar_modulo_profile"] = VEC_SCALAR_MODULO_PROFILE
         if entry["program_key"] in POINTS_FLOAT_BITS_INGRESS_KEYS:
             row["points_float_bits_ingress_profile"] = POINTS_FLOAT_BITS_INGRESS_PROFILE
+        if entry["program_key"] in DLA_KEYS:
+            row["dla_bit_ingress_profile"] = DLA_BIT_INGRESS_PROFILE
         if entry["program_key"] == FLOW_AGENT_KEY:
             row["flow_round_profile"] = FLOW_ROUND_PROFILE
         if entry["program_key"] in POINTS_POST_KEYS:

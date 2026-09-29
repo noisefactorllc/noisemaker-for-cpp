@@ -3689,6 +3689,26 @@
     },
     {
       "effect_id": "points/dla",
+      "normalized_bytes": 4464,
+      "normalized_sha256": "10230df7fdf7fe5a02b8a62f410d28e2606a12d175741c25ec1f746e3ed35b8e",
+      "outputs": [
+        "outXYZ",
+        "outVel",
+        "outRGBA"
+      ],
+      "pass_index": 2,
+      "pass_name": "agent",
+      "program": "agent",
+      "program_key": "points/dla:agent",
+      "raw_bytes": 5928,
+      "raw_sha256": "5f11d2d5096ac4f54b243a2e9de1d7526960be76c460314f8ec7142c21c9995a",
+      "runtime_key": "points/dla:agent",
+      "source": "sources/points/dla/agent.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/dla",
       "normalized_bytes": 194,
       "normalized_sha256": "9b32532434939428ac985b21e4cba477ecf4f9648a05362398b699d3b60f8c21",
       "outputs": [

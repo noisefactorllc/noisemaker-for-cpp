@@ -163,7 +163,8 @@ if __package__ in (None, ""):
         DLA_KEYS,
         PROFILE as DLA_BIT_INGRESS_PROFILE,
         apply_dla_bit_ingress_admission,
-        authenticate_dla_bit_ingress_sites)
+        authenticate_dla_bit_ingress_sites,
+        authenticate_dla_bit_ingress_parameter)
     from tools.glslcpp.frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -588,7 +589,8 @@ else:
         DLA_KEYS,
         PROFILE as DLA_BIT_INGRESS_PROFILE,
         apply_dla_bit_ingress_admission,
-        authenticate_dla_bit_ingress_sites)
+        authenticate_dla_bit_ingress_sites,
+        authenticate_dla_bit_ingress_parameter)
     from .frontend.points_float_bits_ingress_profile import (
         POINTS_FLOAT_BITS_INGRESS_KEYS,
         PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE,
@@ -1670,6 +1672,10 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key in HASH_SCALAR_UINT_RSHIFT_KEYS and key in HASH_SCALAR_UINT_XOR_KEYS and key in POINTS_FLOAT_BITS_INGRESS_KEYS else
                     {"defines", "points_float_bits_ingress_profile", "program_key"}
                     if key in POINTS_FLOAT_BITS_INGRESS_KEYS else
+                    {"dla_bit_ingress_profile", "defines",
+                     "hash_scalar_uint_rshift_profile",
+                     "hash_scalar_uint_xor_profile", "program_key"}
+                    if key in DLA_KEYS else
                     {"defines", "hash_scalar_uint_rshift_profile",
                      "hash_scalar_uint_xor_profile", "program_key"}
                     if key in HASH_SCALAR_UINT_RSHIFT_KEYS and key in HASH_SCALAR_UINT_XOR_KEYS else
@@ -2077,6 +2083,15 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         for key in sorted(POINTS_FLOAT_BITS_INGRESS_KEYS)
         if key in keys
     ]
+    dla_bit_ingress_profiles = [
+        (item["program_key"], item.get("dla_bit_ingress_profile"),
+         item["defines"])
+        for item in programs if "dla_bit_ingress_profile" in item]
+    expected_dla_bit_ingress_profiles = [
+        (key, DLA_BIT_INGRESS_PROFILE, {})
+        for key in sorted(DLA_KEYS)
+        if key in keys
+    ]
     if (keys != sorted(set(keys)) or keys != typed_corpus_keys()
             or lane_profiles != [(key, LITERAL_VEC3_LANE_INDEX_PROFILE)
                                   for key in LITERAL_VEC3_LANE_INDEX_KEYS]
@@ -2089,6 +2104,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             or hash_scalar_uint_rshift_profiles != expected_hash_scalar_uint_rshift_profiles
             or vec_scalar_modulo_profiles != expected_vec_scalar_modulo_profiles
             or points_float_bits_ingress_profiles != expected_points_float_bits_ingress_profiles
+            or dla_bit_ingress_profiles != expected_dla_bit_ingress_profiles
             or scalar_uint_xor_profiles != [
                 # kaleido reuses the frozen carrier verbatim as the REQUIRED
                 # companion of its mutable-global array row and sorts first
@@ -4033,6 +4049,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     visited_cross_sites: list[TypedExpression] = []
     authorized_dla_bit_ingress_sites: tuple[TypedExpression, ...] = ()
     visited_dla_bit_ingress_sites: list[TypedExpression] = []
+    authorized_dla_bit_ingress_parameters: tuple[object, ...] = ()
+    visited_dla_bit_ingress_parameters: list[object] = []
     authorized_points_float_bits_ingresses: tuple[TypedExpression, ...] = ()
     visited_points_float_bits_ingresses: list[TypedExpression] = []
     authorized_points_post_nodes: tuple[TypedExpression, ...] = ()
@@ -5370,6 +5388,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         try:
             authorized_dla_bit_ingress_sites = authenticate_dla_bit_ingress_sites(
                 typed, source_hash, dla_bit_ingress_profile)
+            authorized_dla_bit_ingress_parameters = (
+                authenticate_dla_bit_ingress_parameter(
+                    typed, source_hash, dla_bit_ingress_profile))
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
     elif typed.key in DLA_KEYS:
@@ -7508,6 +7529,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                         raise GeneratorError(
                             f"{location(value)}: malformed authenticated scalar int bitwise op")
                     visited_bitwise_scalar_int_ops_sites.append(value)
+                elif any(value is item for item in authorized_dla_bit_ingress_sites):
+                    if (value.type.display() != "uint"
+                            or len(value.children) != 2
+                            or any(child.type.display() != "uint"
+                                   for child in value.children)):
+                        raise GeneratorError(
+                            f"{location(value)}: malformed authenticated DLA mask")
+                    if any(value is item for item in visited_dla_bit_ingress_sites):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated DLA mask visited twice")
+                    visited_dla_bit_ingress_sites.append(value)
                 elif (authorized_median_frontend_proof is not None
                       and any(value is item
                               for item in authorized_median_frontend_proof.expression_nodes
@@ -8386,6 +8418,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                                 for item in authorized_inout_vec3_swap_proof.parameters)):
                     pass
                 elif any(parameter is item
+                         for item in authorized_dla_bit_ingress_parameters):
+                    if (parameter.direction != "inout"
+                            or parameter.type.display() != "float"):
+                        raise GeneratorError(
+                            f"{location(parameter)}: malformed authenticated DLA inout parameter")
+                    if any(parameter is item
+                           for item in visited_dla_bit_ingress_parameters):
+                        raise GeneratorError(
+                            f"{typed.key}: authenticated DLA inout parameter visited twice")
+                    visited_dla_bit_ingress_parameters.append(parameter)
+                elif any(parameter is item
                          for item in authorized_out_inout_parameters):
                     if any(parameter is item for item in visited_out_inout_parameters):
                         raise GeneratorError(
@@ -8500,6 +8543,11 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                        for value in authorized_out_inout_parameters)):
             raise GeneratorError(
                 f"{typed.key}: authenticated out/inout parameter visitation mismatch")
+    if (authorized_dla_bit_ingress_parameters
+            and tuple(visited_dla_bit_ingress_parameters)
+            != authorized_dla_bit_ingress_parameters):
+        raise GeneratorError(
+            f"{typed.key}: authenticated DLA inout parameter visitation mismatch")
     if authorized_out_inout_calls:
         if (len(visited_out_inout_calls) != len(authorized_out_inout_calls)
                 or any(not any(value is item for item in visited_out_inout_calls)
@@ -9283,6 +9331,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: points float-bit ingress identity profile mutated program")
             typed = profiled
+        dla_bit_ingress_profile = slice_spec["programs"][index].get(
+            "dla_bit_ingress_profile")
         scalar_uint_xor_profile = slice_spec["programs"][index].get(
             "scalar_uint_xor_profile")
         if scalar_uint_xor_profile is not None:
@@ -9887,6 +9937,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                               points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                               points_post_profile=points_post_profile,
+                              dla_bit_ingress_profile=dla_bit_ingress_profile,
                               scalar_uint_xor_profile=scalar_uint_xor_profile,
                               bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                               bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -9967,6 +10018,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            vec_scalar_modulo_profile=vec_scalar_modulo_profile,
                                            points_float_bits_ingress_profile=points_float_bits_ingress_profile,
                                            points_post_profile=points_post_profile,
+                                           dla_bit_ingress_profile=dla_bit_ingress_profile,
                                            scalar_uint_xor_profile=scalar_uint_xor_profile,
                                            bitwise_scalar_int_ops_profile=bitwise_scalar_int_ops_profile,
                                            bit_effects_frontend_profile=bit_effects_frontend_profile,
@@ -10100,6 +10152,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if points_float_bits_ingress_profile is not None:
             manifest_program["points_float_bits_ingress_profile"] = (
                 points_float_bits_ingress_profile)
+        if dla_bit_ingress_profile is not None:
+            manifest_program["dla_bit_ingress_profile"] = (
+                dla_bit_ingress_profile)
         if points_post_profile is not None:
             manifest_program["points_post_profile"] = (
                 points_post_profile)

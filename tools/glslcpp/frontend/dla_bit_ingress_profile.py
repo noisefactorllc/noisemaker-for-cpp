@@ -6,7 +6,10 @@ overload:
 
 - points/dla:agent -- three ``uintBitsToFloat(uint) -> float`` sites
   (45:12, 48:12, 104:12) plus the two ``floatBitsToUint(float) -> uint``
-  sites (43:17, 103:48) of the same float-seed bit-cast closure.
+  sites (43:17, 103:48) of the same float-seed bit-cast closure, and the
+  five scalar ``uint`` ``&``/``|`` mask sites of that closure (45:28,
+  48:29 twice, 104:29 twice) that materialize the mantissa/exponent
+  pattern around the reinterpreted bits.
 
 ``floatBitsToUint`` alone would only swap the first diagnostic for its
 inverse, so the closure is admitted as one unit: both directions lower to
@@ -75,6 +78,41 @@ _NODES = (
      "ee1b2dec3648b0f5e41276c4471d7f51662e23ebb3b969f044ac279794a643f7",
      "binary", "-", ("uint",),
      ("c538c1466bd7ed81c63a4d5ed54597949fb2aeebdcca2e5b41dba8ce1aca15ab",),
+     (("expr", "48:5-48:70"),)),
+)
+
+# The five scalar ``uint`` ``&``/``|`` mask sites of the same closure, in
+# walk order. Each row is (operator, span, node sha, parent kind, parent
+# operator, child type tuple, child sha tuple, ancestor-chain tuple).
+# `bits | 0x3F800000u` and `(bits & 0x007FFFFFu) | 0x3F800000u` are the
+# classic float-seed mantissa/exponent pattern; on GLSL ``uint`` operands
+# both lower to the exact unsigned C++ operators (no JS int32 boundary is
+# crossed: the operands are already uint words in the typed IR).
+_MASKS = (
+    ("|", "104:29-104:67", "e040f65668deae4562552773e2e94714706a6c15f2aa1afc314fa6f84b9494fc",
+     "builtin", None, ("uint", "uint"),
+     ("97887fbff50634ffcd2f02d86e801da96642a092ca5f32f310ad8b79b4f4ec4e",
+      "bc015d783b04fa3aac4fe17f45fd0007b528a14424f611fe7d9891162679f5c0"),
+     (("expr", "104:5-104:75"),)),
+    ("&", "104:29-104:52", "97887fbff50634ffcd2f02d86e801da96642a092ca5f32f310ad8b79b4f4ec4e",
+     "binary", "|", ("uint", "uint"),
+     ("9e7b2e3453624c6fde92c1f923d6e3d7894c4174a1610ac4c757c37e60aef5f8",
+      "c359d35935f3d76599b75c8c9d63a4ce6ba369ec139f19efafbe76a8911aa577"),
+     (("expr", "104:5-104:75"),)),
+    ("|", "45:28-45:46", "4f37cc3f609fea56baae3e38e68a5cd22afef8600d4531334844bb38124e1105",
+     "builtin", None, ("uint", "uint"),
+     ("56967af465e65900750a463d137aff52edd7d6f5b3ca25295205523b66652377",
+      "cf2510b4285d4d17cea83b1abe80892cf65a8ffb5c6a7f025c9479ce1eb47433"),
+     (("expr", "45:5-45:54"),)),
+    ("|", "48:29-48:62", "c538c1466bd7ed81c63a4d5ed54597949fb2aeebdcca2e5b41dba8ce1aca15ab",
+     "builtin", None, ("uint", "uint"),
+     ("f003331c87288244f4a961f08e8fd4ee40b5f01972208ddd24f5d219281c97bf",
+      "2750c2bdbb44ab2671288a535cb250b8b4487486eb1201037b877207a0c1ace5"),
+     (("expr", "48:5-48:70"),)),
+    ("&", "48:29-48:47", "f003331c87288244f4a961f08e8fd4ee40b5f01972208ddd24f5d219281c97bf",
+     "binary", "|", ("uint", "uint"),
+     ("31eb7fc98a568f4fa911623875e725be6ef2d02c49bc8be4156eb7ee5dbe5876",
+      "2d3268b9422ca3d22950898ea3655b2ee9c5ee7038f64f27f70dca0685aa9b59"),
      (("expr", "48:5-48:70"),)),
 )
 
@@ -209,7 +247,84 @@ def authenticate_dla_bit_ingress_sites(
     if actual != _NODES:
         raise ValueError(f"{PROFILE}: {program.key} closure node identity mismatch")
 
-    return tuple(item for item, _, _ in located)
+    # The scalar uint &/| mask sites of the same closure, censused over the
+    # WHOLE program: any extra scalar uint bitwise op outside the frozen
+    # table is a hard failure.
+    located_masks: list[tuple[TypedExpression, tuple[object, ...],
+                              tuple[TypedStatement, ...]]] = []
+    for item, path, chain, _ in _with_parents(program):
+        if (item.kind == "binary" and item.operator in ("&", "|")
+                and item.type.display() == "uint"
+                and len(item.children) == 2
+                and all(child.type.display() == "uint"
+                        for child in item.children)):
+            located_masks.append((item, path, chain))
+
+    if len(located_masks) != len(_MASKS):
+        raise ValueError(
+            f"{PROFILE}: {program.key} expected {len(_MASKS)} scalar uint "
+            f"mask sites, found {len(located_masks)}")
+
+    actual_masks = tuple(
+        (item.operator, _span(item), _sha(item), parent_kind, parent_operator,
+         tuple(child.type.display() for child in item.children),
+         tuple(_sha(child) for child in item.children),
+         tuple((statement.kind, _span(statement)) for statement in chain))
+        for item, _, chain, (parent_kind, parent_operator) in _with_parents(program)
+        if (item.kind == "binary" and item.operator in ("&", "|")
+            and item.type.display() == "uint"
+            and len(item.children) == 2
+            and all(child.type.display() == "uint"
+                    for child in item.children)))
+    if actual_masks != _MASKS:
+        raise ValueError(f"{PROFILE}: {program.key} mask site identity mismatch")
+
+    # One authorized tuple in whole-program walk order so the exact
+    # visited-sequence completeness checks in the validator and the emitter
+    # compare like with like.
+    authorized_items = {
+        id(item): item for item, _, _ in located}
+    authorized_items.update({id(item): item for item, _, _ in located_masks})
+    return tuple(authorized_items[id(item)]
+                 for item, _, _, _ in _with_parents(program)
+                 if id(item) in authorized_items)
+
+
+def authenticate_dla_bit_ingress_parameter(
+        program: TypedProgram, source_hash: str | None,
+        profile: str | None) -> tuple[object, ...]:
+    """Authenticate the single ``inout float seed`` parameter of the closure.
+
+    ``rand(inout float seed)`` is the accumulator of the same float-seed
+    bit-cast closure: every update goes through the frozen bit-ingress and
+    mask sites above.  Admission is fail-closed: the program must carry
+    exactly one inout parameter, the float-typed ``seed`` of ``rand``, at
+    the frozen span; anything else aborts.
+    """
+    if profile != PROFILE:
+        raise ValueError(f"{PROFILE}: exact profile carrier required")
+    if program.key not in DLA_KEYS:
+        raise ValueError(f"{PROFILE}: program key {program.key} not in {DLA_KEYS}")
+    if source_hash != _PIN["raw_sha256"]:
+        raise ValueError(f"{PROFILE}: {program.key} caller source hash mismatch")
+
+    expected = (
+        ("seed", "float", "inout", "42:12-42:28"),
+        ("seed", "float", "inout", "52:22-52:38"),
+    )
+    actual = tuple(
+        (parameter.name, parameter.type.display(), parameter.direction,
+         _span(parameter))
+        for function in program.functions for parameter in function.parameters
+        if parameter.direction != "in")
+    if actual != expected:
+        raise ValueError(
+            f"{PROFILE}: {program.key} inout parameter identity mismatch "
+            f"(expected {expected}, found {actual})")
+
+    return tuple(
+        parameter for function in program.functions
+        for parameter in function.parameters if parameter.direction != "in")
 
 
 def _with_parents(program: TypedProgram):

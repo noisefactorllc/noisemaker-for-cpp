@@ -3484,19 +3484,6 @@
       "source": "pending-sources/points/attractor/agent.glsl"
     },
     {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/dla:agent:33:19: unsupported binary operator ^",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/dla",
-      "program": "agent",
-      "program_key": "points/dla:agent",
-      "raw_bytes": 5928,
-      "raw_sha256": "5f11d2d5096ac4f54b243a2e9de1d7526960be76c460314f8ec7142c21c9995a",
-      "source": "pending-sources/points/dla/agent.glsl"
-    },
-    {
       "authority_status": "adapter",
       "blocker": {
         "diagnostic": "points/dla:depositGrid: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",

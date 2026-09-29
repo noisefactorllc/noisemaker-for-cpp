@@ -212,6 +212,7 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernelMrt bind_points_buddhabrot_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_buddhabrot_zWrite(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernelMrt bind_points_dla_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_copyGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_initGrid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_dla_passthrough(const glsl::Bindings& bindings);

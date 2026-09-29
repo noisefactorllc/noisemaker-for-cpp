@@ -22576,17 +22576,17 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                38075,
+                "50f1b4c23845e64a54e67ae38b0a618b91228ae721d34a2079490db5a1c78bcf"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3237839,
+                "2b9de5737c9f66efb1432cc3b526fdc239dcd98ffe2a1c1b3e2b0167d8a9b92a"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                845252,
+                "1f0c430f08e509515179d4df9f6dca851a54ccf915542ef0a22dc9d9ba46c534"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27181,
+                "41d4ac79ad0681aaf53aad50cf423f10114e33289099b330540cfff9dcb02d83"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23356,17 +23356,17 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                38075,
+                "50f1b4c23845e64a54e67ae38b0a618b91228ae721d34a2079490db5a1c78bcf"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3237839,
+                "2b9de5737c9f66efb1432cc3b526fdc239dcd98ffe2a1c1b3e2b0167d8a9b92a"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                845252,
+                "1f0c430f08e509515179d4df9f6dca851a54ccf915542ef0a22dc9d9ba46c534"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27181,
+                "41d4ac79ad0681aaf53aad50cf423f10114e33289099b330540cfff9dcb02d83"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24112,17 +24112,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                38075,
+                "50f1b4c23845e64a54e67ae38b0a618b91228ae721d34a2079490db5a1c78bcf"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3237839,
+                "2b9de5737c9f66efb1432cc3b526fdc239dcd98ffe2a1c1b3e2b0167d8a9b92a"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                845252,
+                "1f0c430f08e509515179d4df9f6dca851a54ccf915542ef0a22dc9d9ba46c534"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27181,
+                "41d4ac79ad0681aaf53aad50cf423f10114e33289099b330540cfff9dcb02d83"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24648,17 +24648,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                38075,
+                "50f1b4c23845e64a54e67ae38b0a618b91228ae721d34a2079490db5a1c78bcf"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3237839,
+                "2b9de5737c9f66efb1432cc3b526fdc239dcd98ffe2a1c1b3e2b0167d8a9b92a"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                845252,
+                "1f0c430f08e509515179d4df9f6dca851a54ccf915542ef0a22dc9d9ba46c534"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27181,
+                "41d4ac79ad0681aaf53aad50cf423f10114e33289099b330540cfff9dcb02d83"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25248,17 +25248,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                37800,
-                "6b72861572a68e46eb4950f225f5c3dcdd29be0f2ac184cac4c48bc18f3ec321"),
+                38075,
+                "50f1b4c23845e64a54e67ae38b0a618b91228ae721d34a2079490db5a1c78bcf"),
             "src/typed_generated/typed_slice.cpp": (
-                3224853,
-                "1807bb05706e71a8e2ff7abc95356ac242ee1c2f3c75a06ac363858b32add9bd"),
+                3237839,
+                "2b9de5737c9f66efb1432cc3b526fdc239dcd98ffe2a1c1b3e2b0167d8a9b92a"),
             "src/typed_generated/typed_manifest.json": (
-                841716,
-                "02712ef0cf840049b9bf3b6d20f55ebbbb200cec2393873fea903388eedcde6c"),
+                845252,
+                "1f0c430f08e509515179d4df9f6dca851a54ccf915542ef0a22dc9d9ba46c534"),
             "include/noisemaker/generated/catalog.hpp": (
-                27097,
-                "b3012537bc3e7b9129b28544099501a63f6ba8cf5d0f01422095a3bc1acec3c8"),
+                27181,
+                "41d4ac79ad0681aaf53aad50cf423f10114e33289099b330540cfff9dcb02d83"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25919,6 +25919,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/flock:agent": {"xors": 2, "rel": "points/flock/agent.glsl"},
             "points/life:agent": {"xors": 2, "rel": "points/life/agent.glsl"},
             "points/physarum:agent": {"xors": 2, "rel": "points/physarum/agent.glsl"},
+            "points/dla:agent": {"xors": 2, "rel": "points/dla/agent.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_XOR_KEYS, frozenset(expected_counts.keys()))
@@ -26131,6 +26132,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             "points/flock:agent": {"rshifts": 3, "rel": "points/flock/agent.glsl"},
             "points/life:agent": {"rshifts": 3, "rel": "points/life/agent.glsl"},
             "points/physarum:agent": {"rshifts": 3, "rel": "points/physarum/agent.glsl"},
+            "points/dla:agent": {"rshifts": 3, "rel": "points/dla/agent.glsl"},
         }
 
         self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))
@@ -26843,11 +26845,20 @@ void main() {
 
         record = next((item for item in pending["pending"]
                        if item["program_key"] == DLA_AGENT_KEY), None)
-        self.assertIsNotNone(record)
-        source_path = corpus_root / record["source"]
+        if record is not None:
+            source_path = corpus_root / record["source"]
+            raw_sha = record["raw_sha256"]
+        else:
+            # Promoted: load from the vendored corpus manifest.
+            import hashlib as _hashlib
+            manifest = json.loads((corpus_root / "manifest.json").read_bytes())
+            manifest_row = next(item for item in manifest["programs"]
+                                if item["program_key"] == DLA_AGENT_KEY)
+            source_path = corpus_root / manifest_row["source"]
+            raw_sha = manifest_row["raw_sha256"]
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
-        self.assertEqual(shash, record["raw_sha256"])
+        self.assertEqual(shash, raw_sha)
 
         eff = (metadata["effects"].get("points/dla")
                or pending["effects"].get("points/dla"))
@@ -26857,15 +26868,21 @@ void main() {
         ast = parse_program(raw, DLA_AGENT_KEY, defaults)
         typed = analyze_program(ast, DLA_AGENT_KEY)
 
-        # 1. Direct authentication: exactly five sites (two floatBitsToUint,
-        # three uintBitsToFloat), all single-operand bit casts.
+        # 1. Direct authentication: exactly five bit-cast sites (two
+        # floatBitsToUint, three uintBitsToFloat), all single-operand bit
+        # casts, plus the five scalar uint &/| mask sites of the same closure
+        # (binary nodes, whole-program walk order).
         nodes = authenticate_dla_bit_ingress_sites(typed, shash, DLA_PROFILE)
-        self.assertEqual(len(nodes), 5)
+        self.assertEqual(len(nodes), 10)
+        cast_nodes = [node for node in nodes if node.kind == "builtin"]
+        mask_nodes = [node for node in nodes if node.kind == "binary"]
+        self.assertEqual(len(cast_nodes), 5)
+        self.assertEqual(len(mask_nodes), 5)
         self.assertEqual(
-            [node.callee for node in nodes],
+            [node.callee for node in cast_nodes],
             ["floatBitsToUint", "uintBitsToFloat", "floatBitsToUint",
              "uintBitsToFloat", "uintBitsToFloat"])
-        for node in nodes:
+        for node in cast_nodes:
             self.assertEqual(node.kind, "builtin")
             expected_result = "uint" if node.callee == "floatBitsToUint" else "float"
             expected_operand = "float" if node.callee == "floatBitsToUint" else "uint"
@@ -26928,6 +26945,36 @@ void main() {
                 "bind_points_dla_agent",
             )
         self.assertIn("unsupported binary operator ^", str(ctx.exception))
+
+        # 4. Full admission: with the hash XOR + rshift companions the
+        # closure validates and the emitter renders cleanly (points/dla:agent
+        # promoted to the typed corpus, scalar uint ^, >> and the float-seed
+        # &/| mask sites lower to exact unsigned C++).
+        from tools.glslcpp.frontend.hash_scalar_uint_xor_profile import (
+            PROFILE as HASH_XOR_PROFILE,
+        )
+        from tools.glslcpp.frontend.hash_scalar_uint_rshift_profile import (
+            PROFILE as HASH_RSHIFT_PROFILE,
+        )
+        generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=shash,
+            hash_scalar_uint_xor_profile=HASH_XOR_PROFILE,
+            hash_scalar_uint_rshift_profile=HASH_RSHIFT_PROFILE,
+            dla_bit_ingress_profile=DLA_PROFILE,
+        )
+        cpp = emit_typed_cpp.render_typed_cpp(
+            typed, DLA_AGENT_KEY, shash, "pixel",
+            "bind_points_dla_agent",
+            hash_scalar_uint_xor_profile=HASH_XOR_PROFILE,
+            hash_scalar_uint_rshift_profile=HASH_RSHIFT_PROFILE,
+            dla_bit_ingress_profile=DLA_PROFILE,
+        )
+        self.assertIn("noisemaker::float_bits_to_uint", cpp)
+        self.assertIn("noisemaker::uint_bits_to_float", cpp)
+        self.assertIn("& std::uint32_t(8388607)", cpp)
+        self.assertIn("| std::uint32_t(1065353216)", cpp)
+        self.assertIn("^ state", cpp)
 
     def test_cross_builtin_profile(self) -> None:
         import dataclasses

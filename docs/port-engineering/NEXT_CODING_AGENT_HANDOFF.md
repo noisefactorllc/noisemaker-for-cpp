@@ -1439,23 +1439,51 @@
 > 4. **[IN PROGRESS] Close the frontier construct blockers** for the pending programs (`resync-2026-09/frontier-92.md`):
 >    - **Counted-for proofs [COMPLETED]**: Closed loop proof blockers across 4 programs (`points/buddhabrot:zWrite`, `render/renderCubemapSurface:renderCubemapSurface`, `filter/convolutionFeedback:cfBlur`, `filter/convolutionFeedback:cfSharpen`). Ratcheted corpus from 256 to 260 vendored programs.
 >    - **Simulation sampler parameters [COMPLETED]**: Closed sampler parameter blockers across 4 simulation programs (`synth/cellularAutomata:ca`, `synth/mnca:mnca`, `synth/reactionDiffusion:rd`, `synth/reactionDiffusion:rdFb`). Ratcheted corpus from 260 to 264 vendored programs (40 pending, down from 44).
->    - **Remaining frontier construct blockers (40 programs)**:
->      - 8x: unsupported binary operator ^ (scalar uint XOR / bitwise XOR)
->      - 5x: unsupported counted-for program proof
->      - 5x: drawMode points is a scatter pass (scatter contract registration)
->      - 3x: % requires same integral operands (vecN % scalar)
->      - 3x: no exact overload for cross
->      - 2x: unsupported typed type vec4[9]
->      - 1x: unsupported typed expression index
->      - 1x: drawMode billboards is a scatter pass
->      - 1x: unsupported global declaration
->      - 1x: unsupported typed expression post (postfix ++)
->      - 1x: unsupported builtin any
->      - 1x: unsupported builtin floatBitsToUint
->      - 1x: no exact overload for uintBitsToFloat
->      - 1x: no exact overload for isnan
->      - 1x: no exact overload for tan
->      - 5x: multipass-bound authority programs (2x: 3 programs, 8x: 1 program, 22x: 1 program)
+>    - **Scalar uint XOR, last `^` program [COMPLETED]**: Closed the final scalar-uint-XOR blocker (`points/dla:agent`).
+>      Admission extends the existing `dla-bit-ingress-admission-v1` closure to its full float-seed round trip:
+>      the two `hash_uint` scalar `^` sites (`hash-scalar-uint-xor-v1`, xor_count=2), the three scalar `>>` sites
+>      (`hash-scalar-uint-rshift-v1`, rshift_count=3), the five scalar `uint` `&`/`|` mask sites of the same
+>      closure (45:28, 48:29 twice, 104:29 twice -- exact node-identity rows frozen in `_MASKS`), and the two
+>      `inout float seed` accumulator parameters of `rand`/`randomDirection` (lowered to C++ references).
+>      The emitter's DLA bit-ingress completeness check is span-sorted (helpers are emitted before `main`, so
+>      emission order cannot equal the profile's `main`-first walk order; the check remains exact on span sets
+>      and still fail-closed on missing/extra/duplicate sites). Ratcheted corpus from 276 to 277 vendored
+>      programs (27 pending, down from 28). All five generator `--check` gates clean; artifacts regenerated to
+>      fixed point; live pins re-frozen (pooled-array alias census 35 -> 36: `vec2 stepDir = randomDir;`;
+>      DLA closure node census 5 -> 10 with the five `&`/`|` mask rows; four generated-artifact size/sha256
+>      pins re-quoted from the regenerated files; effect-catalog counts compatible 274 -> 275 and
+>      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4. Local Python evidence (pyshards.sh,
+>      Python 3.13.13, Node v26.0.0, pytest venv, absolute-path authority ledger exactly as CI writes it):
+>      shard 2 400 passed OK, shard 3 442 passed OK; shard 1 527 passed with 2 failures and shard 0 732
+>      passed with the pre-existing local-environment failure set, all red-before (their generator inputs are
+>      untouched by this pass, verified against the commit file list): the g++ 12.2
+>      `-Werror=misleading-indentation` smoke compile on `typed_slice.cpp:10110` (CI's clang passes; the
+>      CMake build suppresses it via `set_source_files_properties`), the three `test_lightleak192_oracle`
+>      symlink errors, and the julia / shape-mixer / mandelbrot oracle package drifts whose rebuilt bytes
+>      differ ONLY in NaN sign payloads (`0x7fc00000`/`0x7fe00000` -> `0xffc00000`): the frozen packages
+>      were written by a Node build that yields positive quiet NaNs where this container's official
+>      linux-x64 v26.0.0 build yields negative ones. Refreshing those frozen packages from this build was
+>      considered and rejected: it would re-pin parity bytes to a different NaN producer without a parity
+>      claim.
+>    - **Remaining frontier construct blockers (27 programs)**:
+>      - 6x: unsupported counted-for program proof (`points/lenia:convolve`, `render/render3d:render3d`,
+>        `render/renderCubemap3d:renderCubemap3d`, `render/renderLit3d:renderLit3d`,
+>        `synth3d/flythrough3d:precompute`, `synth3d/fractal3d:precompute`)
+>      - 6x: drawMode points/billboards is a scatter pass (scatter contract registration beyond
+>        `filter/wormhole:deposit`): `filter3d/flow3d:deposit`, `points/dla:depositGrid`, `points/lenia:deposit`,
+>        `points/physarum:deposit`, `render/pointsRender:deposit`, `render/pointsBillboardRender:deposit`
+>      - 5x: multi-pass authority bindings (corpus manifest records one pass per program):
+>        `filter/temporalAberration:delayShift` (8 passes), `render/pointsBillboardRender:depthMerge` (22),
+>        `points/physarum:passthrough` (2), `render/loopEnd:copy` (2), `render/pointsBillboardRender:depthKeys` (2)
+>      - 2x: unsupported typed type vec4[9] (`filter/temporalAberration:temporalAberration`,
+>        `synth/navierStokes:nsSmooth`)
+>      - 2x: unsupported builtin any (`points/attractor:agent` -- semantics.defaults, with `||`-on-bool and
+>        `isnan`; `synth3d/heightmap3d:precompute` -- typed.validator)
+>      - 2x: unsupported global declaration (`classicNoisedeck/noise3d:noise3d`, `filter3d/palette3d`)
+>      - 1x: unsupported struct declaration (`classicNoisedeck/shapes3d:shapes3d`)
+>      - 1x: unsupported typed expression index (`filter/feedback:feedback`)
+>      - 1x: unsupported typed expression post (`synth3d/cellularAutomata3d:simulate`)
+>      - 1x: no exact overload for tan (`render/renderLandscape3d:landscape`, VIEW_MODE=2 variant)
 > 5. **Re-derive the verified kit list** once the above land. Build, run `tools/parity/sweep.py --variants 20` plus
 >    `--define-enum` with `--timeout-retry-factor 4`, then run `tools/parity/verified_effects.py --sweep <main>
 >    --sweep <defines>` and `node export-kit/generate-compat.mjs`.
