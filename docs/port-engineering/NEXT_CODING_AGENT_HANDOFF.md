@@ -809,6 +809,18 @@
 > not the reviewed header `cc2f552f6268f4f17d14be002c40cc2be0b284059ceb7abbb80214bbd2ce332e`.
 > This is a verified stale delivery, not a successful release inferred from a dispatch.
 >
+> **UPDATE (ced9055 delivery):** the stale-delivery condition above is superseded. The release shipped for
+> candidate `ced90558815c3478c784b2bd12cc77ebf4186a31` now serves live:
+> `deployment-meta.json` reports `"git_hash": "ced90558815c3478c784b2bd12cc77ebf4186a31"` (version 0.1.2),
+> `kit.json` reports `source.sha = ced9055…`, and all 98 manifest files were fetched and byte-match their
+> manifest SHA-256 hashes, with every `engine/noisemaker/*` file byte-matching its
+> `td/noisemaker/*` source at `ced9055…` (verified 2026-09-29; see the supervisor receipt archive for the
+> verification transcript). Because the prior release failed Scaffold's kits-cpp validation and did NOT
+> ship, while this release shipped and serves exact bytes, the downstream validation and publication-path
+> acceptance criteria are met by the shipped release. Remaining criterion: the assembled-kit acceptance
+> image render (Scaffold-side) — retain this dependency until that render evidence is available from the
+> publication system.
+>
 > **Bounded external action:** reconcile the Scaffold compatibility/refusal tests with authenticated current
 > kit claims and demonstrated runtime behavior while preserving genuine negative cases. Acceptance:
 > existing downstream validation passes on the intended C++ SHA, the normal publication path succeeds,
@@ -1462,44 +1474,20 @@
 >      DLA closure node census 5 -> 10 with the five `&`/`|` mask rows; four generated-artifact size/sha256
 >      pins re-quoted from the regenerated files; effect-catalog counts compatible 274 -> 275 and
 >      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4 with g++ 12.2 on this Linux
->      container, matching ci.yml's native steps (`cmake --build` + `ctest --test-dir build
->      --output-on-failure`); the ci.yml native matrix also runs macos-latest, which this Linux container
->      cannot execute (automatable only through the macOS Apple-silicon host). Served-kit readback at the
->      exact candidate SHA: `https://kits.noisedeck.app/cpp/0/deployment-meta.json` reports
->      `"git_hash": "ced90558815c3478c784b2bd12cc77ebf4186a31"`, version 0.1.2 — the export-kit
->      downstream release blocker recorded at lines 791-812 (stale served SHA) is resolved at this
->      candidate. Local Python evidence (pyshards.sh, Python 3.13.13, Node v26.0.0, pytest venv,
->      absolute-path authority ledger exactly as CI writes it): shard 2 400 passed OK, shard 3 442 passed
->      OK; shard 1 527 passed with 2 failures and shard 0 732 passed with the residual failure set, all
->      red-before (their generator inputs are untouched by this pass, verified against the commit file
->      list; the typed-slice smoke compile additionally re-verified empirically against HEAD's committed
->      typed_slice.cpp). Exact residual diagnoses, no longer attributed generically to "environment":
->      (a) `test_lightleak192_oracle` live/snapshot leaf-symlink tests hardcode `/private/tmp` (a macOS
->      path) and ERROR on Linux with FileNotFoundError at mkdtemp — macOS-only tests that cannot pass on
->      this container and that also fail CI's ubuntu python-tests job; the automatable fixes are a
->      platform-aware skip on Linux or a platform-appropriate temp root, deferred to their own leg to keep
->      this cycle bounded. (b) the LightLeakPhase2 portable-C++20 smoke compile compiles
->      `src/typed_generated/typed_slice.cpp` directly with `-Wall -Wextra -Wpedantic -Werror` WITHOUT the
->      `-Wno-misleading-indentation` suppression that the published CMake policy (CMakeLists.txt
->      set_source_files_properties) applies to these dense generated files — tripped by the double-`if`
->      source lines at typed_slice.cpp:10110-10113 under g++ 12.2; the automatable fix is applying the
->      same published suppression to the test's compile command, deferred to its own leg. (c) the julia /
->      shape-mixer / mandelbrot oracle package drifts whose rebuilt bytes differ ONLY in NaN sign payloads
->      (`0x7fc00000`/`0x7fe00000` -> `0xffc00000`): the frozen packages were produced on ARM64 (where
->      IEEE-754 operations such as 0/0 yield the positive quiet NaN); every x86 build of the pinned
->      Node v26.0.0 yields the negative quiet NaN, so no x86 execution can reproduce the frozen bytes.
->      Refreshing those frozen packages from this x86 build was considered and rejected: it would re-pin
->      parity bytes to a different NaN producer without a parity claim; the automatable path is
->      regenerating them on the macOS Apple-silicon host, listed as a follow-up leg.
->    - **ci.yml failure decomposition at ced9055 (run 36512386540, pre-existing at ff3aec4)**: reproduced
->      locally. (1) corpus-parity lane: `tests.test_dsl_corpus_parity` fails
->      `test_every_dispatched_corpus_program_is_byte_exact` — the C++ executor refuses 6 admitted
->      authority programs with "multi-output pass inside an iterated group is unsupported":
->      points/buddhabrot, points/flock, points/flow, points/hydraulic, points/life, render/pointsEmit
->      (authority itself refuses 5 others). This is the known multi-output-pass frontier cluster — a
->      product gap, scheduled as the next implementation leg, not an environment issue. (2) python-tests:
->      the (a)/(b) items above. (3) native: not executable on this container for macos-latest. export-kit
->      run 36512386576 succeeded and the served manifest at the exact SHA is verified above.
+>      container, matching ci.yml's native steps; the ci.yml native matrix also runs macos-latest, which
+>      this Linux container cannot execute. Run evidence (shards, sweep, run ids) lives in the supervisor
+>      receipts. Residual-failure diagnoses (all red-before; their generator inputs are untouched by this
+>      pass), kept as the next legs: (a) `test_lightleak192_oracle` leaf-symlink tests hardcode `/private/tmp`
+>      (macOS path) and ERROR on Linux; automatable fix is a platform-aware skip or platform-appropriate
+>      temp root. (b) the LightLeakPhase2 smoke compile omits the `-Wno-misleading-indentation` suppression
+>      that the published CMake policy applies to these generated files (g++ 12.2, typed_slice.cpp:10110);
+>      fix is applying the same suppression to the test's compile command. (c) julia/shape-mixer/mandelbrot
+>      oracle packages were produced on ARM64 (positive quiet NaN); x86 Node v26.0.0 yields the negative
+>      quiet NaN, so the packages must be regenerated on the macOS Apple-silicon host. (d) the C++ executor
+>      refuses 6 admitted authority programs with "multi-output pass inside an iterated group is
+>      unsupported" (points/buddhabrot, points/flock, points/flow, points/hydraulic, points/life,
+>      render/pointsEmit) — the known multi-output-pass product gap, the next implementation leg, and the
+>      cause of ci.yml's corpus-parity lane failure at ced9055 and its parents.
 >    - **Remaining frontier construct blockers (27 programs)**:
 >      - 6x: unsupported counted-for program proof (`points/lenia:convolve`, `render/render3d:render3d`,
 >        `render/renderCubemap3d:renderCubemap3d`, `render/renderLit3d:renderLit3d`,
