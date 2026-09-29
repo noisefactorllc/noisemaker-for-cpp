@@ -809,17 +809,15 @@
 > not the reviewed header `cc2f552f6268f4f17d14be002c40cc2be0b284059ceb7abbb80214bbd2ce332e`.
 > This is a verified stale delivery, not a successful release inferred from a dispatch.
 >
-> **UPDATE (ced9055 delivery):** the stale-delivery condition above is superseded. The release shipped for
-> candidate `ced90558815c3478c784b2bd12cc77ebf4186a31` now serves live:
+> **UPDATE (ced9055 delivery, partial):** a live readback from this worker's network on 2026-09-29 measured:
 > `deployment-meta.json` reports `"git_hash": "ced90558815c3478c784b2bd12cc77ebf4186a31"` (version 0.1.2),
-> `kit.json` reports `source.sha = ced9055…`, and all 98 manifest files were fetched and byte-match their
-> manifest SHA-256 hashes, with every `engine/noisemaker/*` file byte-matching its
-> `td/noisemaker/*` source at `ced9055…` (verified 2026-09-29; see the supervisor receipt archive for the
-> verification transcript). Because the prior release failed Scaffold's kits-cpp validation and did NOT
-> ship, while this release shipped and serves exact bytes, the downstream validation and publication-path
-> acceptance criteria are met by the shipped release. Remaining criterion: the assembled-kit acceptance
-> image render (Scaffold-side) — retain this dependency until that render evidence is available from the
-> publication system.
+> `kit.json` reports `source.sha = ced9055…`, and all 98 manifest files fetched and byte-matched their
+> manifest SHA-256 hashes, with every `engine/noisemaker/*` file byte-matching its `td/noisemaker/*`
+> source at `ced9055…` (transcript in the supervisor receipt archive). This readback is from the worker
+> container only: no verification receipt has yet carried deployment evidence for it, so the delivery is
+> NOT independently confirmed. Treat the delivery as unverified until a supervisor-side readback or
+> deployment check reproduces it. The downstream criteria therefore remain open at this SHA: independent
+> confirmation of the served delivery, and the assembled-kit acceptance-image render (Scaffold-side).
 >
 > **Bounded external action:** reconcile the Scaffold compatibility/refusal tests with authenticated current
 > kit claims and demonstrated runtime behavior while preserving genuine negative cases. Acceptance:
