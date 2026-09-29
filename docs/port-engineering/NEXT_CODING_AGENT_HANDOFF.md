@@ -1454,23 +1454,52 @@
 >      The emitter's DLA bit-ingress completeness check is span-sorted (helpers are emitted before `main`, so
 >      emission order cannot equal the profile's `main`-first walk order; the check remains exact on span sets
 >      and still fail-closed on missing/extra/duplicate sites). Ratcheted corpus from 276 to 277 vendored
->      programs (27 pending, down from 28). All five generator `--check` gates clean; artifacts regenerated to
->      fixed point; live pins re-frozen (pooled-array alias census 35 -> 36: `vec2 stepDir = randomDir;`;
+>      programs (27 pending, down from 28). All six generator/ratchet `--check` gates clean, including the
+>      authority-backed ratchet: `corpus_ratchet: ok (277 vendored + 27 pending = 304 authority programs)`
+>      against `--cpu-root /tmp/cpu-authority-61aa869` (git archive of 61aa8694, absolute-path 719-entry
+>      ledger written exactly as ci.yml "Write the authority ledger"). Artifacts regenerated to fixed
+>      point; live pins re-frozen (pooled-array alias census 35 -> 36: `vec2 stepDir = randomDir;`;
 >      DLA closure node census 5 -> 10 with the five `&`/`|` mask rows; four generated-artifact size/sha256
 >      pins re-quoted from the regenerated files; effect-catalog counts compatible 274 -> 275 and
->      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4. Local Python evidence (pyshards.sh,
->      Python 3.13.13, Node v26.0.0, pytest venv, absolute-path authority ledger exactly as CI writes it):
->      shard 2 400 passed OK, shard 3 442 passed OK; shard 1 527 passed with 2 failures and shard 0 732
->      passed with the pre-existing local-environment failure set, all red-before (their generator inputs are
->      untouched by this pass, verified against the commit file list): the g++ 12.2
->      `-Werror=misleading-indentation` smoke compile on `typed_slice.cpp:10110` (CI's clang passes; the
->      CMake build suppresses it via `set_source_files_properties`), the three `test_lightleak192_oracle`
->      symlink errors, and the julia / shape-mixer / mandelbrot oracle package drifts whose rebuilt bytes
->      differ ONLY in NaN sign payloads (`0x7fc00000`/`0x7fe00000` -> `0xffc00000`): the frozen packages
->      were written by a Node build that yields positive quiet NaNs where this container's official
->      linux-x64 v26.0.0 build yields negative ones. Refreshing those frozen packages from this build was
->      considered and rejected: it would re-pin parity bytes to a different NaN producer without a parity
->      claim.
+>      missing_passes 68 -> 67). Native Debug CMake build + CTest 4/4 with g++ 12.2 on this Linux
+>      container, matching ci.yml's native steps (`cmake --build` + `ctest --test-dir build
+>      --output-on-failure`); the ci.yml native matrix also runs macos-latest, which this Linux container
+>      cannot execute (automatable only through the macOS Apple-silicon host). Served-kit readback at the
+>      exact candidate SHA: `https://kits.noisedeck.app/cpp/0/deployment-meta.json` reports
+>      `"git_hash": "ced90558815c3478c784b2bd12cc77ebf4186a31"`, version 0.1.2 — the export-kit
+>      downstream release blocker recorded at lines 791-812 (stale served SHA) is resolved at this
+>      candidate. Local Python evidence (pyshards.sh, Python 3.13.13, Node v26.0.0, pytest venv,
+>      absolute-path authority ledger exactly as CI writes it): shard 2 400 passed OK, shard 3 442 passed
+>      OK; shard 1 527 passed with 2 failures and shard 0 732 passed with the residual failure set, all
+>      red-before (their generator inputs are untouched by this pass, verified against the commit file
+>      list; the typed-slice smoke compile additionally re-verified empirically against HEAD's committed
+>      typed_slice.cpp). Exact residual diagnoses, no longer attributed generically to "environment":
+>      (a) `test_lightleak192_oracle` live/snapshot leaf-symlink tests hardcode `/private/tmp` (a macOS
+>      path) and ERROR on Linux with FileNotFoundError at mkdtemp — macOS-only tests that cannot pass on
+>      this container and that also fail CI's ubuntu python-tests job; the automatable fixes are a
+>      platform-aware skip on Linux or a platform-appropriate temp root, deferred to their own leg to keep
+>      this cycle bounded. (b) the LightLeakPhase2 portable-C++20 smoke compile compiles
+>      `src/typed_generated/typed_slice.cpp` directly with `-Wall -Wextra -Wpedantic -Werror` WITHOUT the
+>      `-Wno-misleading-indentation` suppression that the published CMake policy (CMakeLists.txt
+>      set_source_files_properties) applies to these dense generated files — tripped by the double-`if`
+>      source lines at typed_slice.cpp:10110-10113 under g++ 12.2; the automatable fix is applying the
+>      same published suppression to the test's compile command, deferred to its own leg. (c) the julia /
+>      shape-mixer / mandelbrot oracle package drifts whose rebuilt bytes differ ONLY in NaN sign payloads
+>      (`0x7fc00000`/`0x7fe00000` -> `0xffc00000`): the frozen packages were produced on ARM64 (where
+>      IEEE-754 operations such as 0/0 yield the positive quiet NaN); every x86 build of the pinned
+>      Node v26.0.0 yields the negative quiet NaN, so no x86 execution can reproduce the frozen bytes.
+>      Refreshing those frozen packages from this x86 build was considered and rejected: it would re-pin
+>      parity bytes to a different NaN producer without a parity claim; the automatable path is
+>      regenerating them on the macOS Apple-silicon host, listed as a follow-up leg.
+>    - **ci.yml failure decomposition at ced9055 (run 36512386540, pre-existing at ff3aec4)**: reproduced
+>      locally. (1) corpus-parity lane: `tests.test_dsl_corpus_parity` fails
+>      `test_every_dispatched_corpus_program_is_byte_exact` — the C++ executor refuses 6 admitted
+>      authority programs with "multi-output pass inside an iterated group is unsupported":
+>      points/buddhabrot, points/flock, points/flow, points/hydraulic, points/life, render/pointsEmit
+>      (authority itself refuses 5 others). This is the known multi-output-pass frontier cluster — a
+>      product gap, scheduled as the next implementation leg, not an environment issue. (2) python-tests:
+>      the (a)/(b) items above. (3) native: not executable on this container for macos-latest. export-kit
+>      run 36512386576 succeeded and the served manifest at the exact SHA is verified above.
 >    - **Remaining frontier construct blockers (27 programs)**:
 >      - 6x: unsupported counted-for program proof (`points/lenia:convolve`, `render/render3d:render3d`,
 >        `render/renderCubemap3d:renderCubemap3d`, `render/renderLit3d:renderLit3d`,
