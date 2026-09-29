@@ -37,8 +37,14 @@ _PROFILES = {
         "raw_sha256": "5ff6fc621924c7c53425c2f18202e549ace6a4ff8a96f9e908ad26bba6e0c7e2",
         "norm_bytes": 10945,
         "norm_sha256": "0fde47a6fd4d39a0cd085a5af72e87de5f3fdf2456c24c2c11667318866dcffb",
-        "functions_sha256": "166c56ce8104f1a6c480d77de96c719662b3ecb549f7b3ef7dc7c1bf52723161",
-        "whole_sha256": "a72dd52f6be51ef8fe24d07d4a7ab69e6f31e0f56c7375f288cf4577da08c5f7",
+        # Re-locked to the seed-attached post-proof tree: this key is also a
+        # source-global-literal-int-v1 carrier (MAX_STEPS=256 march bound),
+        # and the attached counted-loop proofs change the functions and
+        # whole-program identity authenticated below. Pre-re-lock values were
+        # functions 166c56ce… / whole a72dd52f… (the pre-proof tree); the
+        # interface identity is unchanged (it never folds in the proofs).
+        "functions_sha256": "f6bbb586902c4a17f95866f17f1696059021943a1af07e404d398833942d0d84",
+        "whole_sha256": "00dfc79804df55b1d20d681fc67ad5da40e6f5effa37c38f26a212063221a744",
         "interface_sha256": "33bbe0c8346497495b7d0bab56b40840854e27a6e56ec14e876000d716e101e6",
         "cross_count": 2,
     },
@@ -47,8 +53,10 @@ _PROFILES = {
         "raw_sha256": "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f",
         "norm_bytes": 9504,
         "norm_sha256": "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980",
-        "functions_sha256": "53177f751e12bdfc19a8921a6731f69dfb454e528356f88fee450e8d5462030b",
-        "whole_sha256": "45ddfc7d6db5b45b5721b01a4d9f98af4285a06aec29bd597c3fe72b67aa5a46",
+        # Re-locked to the seed-attached post-proof tree (see the render3d
+        # note above). Pre-re-lock: functions 53177f75… / whole 45ddfc7d….
+        "functions_sha256": "82752b9a047ff5613dbf7073aad1a4358ed83b46cb93b406aa5b4f78c9cdb11c",
+        "whole_sha256": "a7553f3dcf3c0ff6bf74e8d55bb6976c8c70dff4bda014fb3cdd59db50b4450c",
         "interface_sha256": "ec6d329d5512d28f68ce1ea7b2bd102a7ef1985fe5e72d8ed6cf3c11b918ca49",
         "cross_count": 2,
     },

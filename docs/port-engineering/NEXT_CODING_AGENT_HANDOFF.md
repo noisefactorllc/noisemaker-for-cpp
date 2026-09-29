@@ -1,5 +1,86 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-09-29: RENDER-FAMILY MARCH PROOFS ADMITTED (render3d, renderLit3d, renderCubemap3d); CROSS PROFILES RE-LOCKED; NO PROMOTION
+>
+> This checkpoint supersedes earlier checkpoint ordering only for the closed
+> render3d/renderLit3d/renderCubemap3d counted-for cluster; all other ordering
+> and census rules apply unchanged.
+>
+> ### What landed (this pass)
+> - **Counted-for loop proofs for the three render-family march programs** through the
+>   existing `source-global-literal-int-v1` mechanism: three frozen entries in
+>   `tools/glslcpp/frontend/loop_proof.py::_SOURCE_GLOBAL_LITERAL_INT_PROFILES` seed the
+>   const-global `MAX_STEPS = 256` march bound (render3d symbol 17, renderLit3d 28,
+>   renderCubemap3d 16), each entry computed mechanically with the module's own
+>   helpers (rebuild/attach + `validate_source_global_literal_int_program` round-trip).
+> - **Sound product bound (`proved id * int literal`)** in `_annotate_statement`: a
+>   proved upper-bounded id times an int literal (either operand order; a non-positive
+>   factor only shortens the loop) yields a genuine upper bound and keeps the seed's
+>   provenance. This is what proves render3d/renderCubemap3d's DDA traversal
+>   (`i < MAX_STEPS * 2` -- 256*2=512 trips, exactly the trip cap). Fail-closed: an
+>   unbounded operand (uniform or rewritten local) leaves the loop unproved, pinned by
+>   the `product-bound-unbounded` unit shape in the new test.
+> - **Cross-builtin profile re-lock**: the `cross-builtin-admission-v1` entries for
+>   `render/render3d:render3d` and `render/renderLit3d:renderLit3d` are re-locked to the
+>   seed-attached post-proof trees (functions `f6bbb586…`/`82752b9a…`, whole
+>   `00dfc798…`/`a7553f3d…`; interface unchanged -- it never folds in the proofs;
+>   pre-re-lock values retained in the profile comments). `validate_capabilities` and
+>   the emitter no longer forbid composing the cross carrier with the
+>   source-global-literal-int carrier for these keys: the re-locked hashes can only be
+>   satisfied by the exact seed-attached tree, so the two authentications cannot bind
+>   different trees. `synth3d/flythrough3d:precompute`'s cross profile is unchanged
+>   (it carries no loop proof).
+> - **Corpus ratchet** (`--write`, `promoted: []`): vendored **277**, pending **27**
+>   (304 authority programs; typed slice 276, backend compatible 275, missing passes 67
+>   -- all unchanged, no program promoted). All three programs advance from
+>   `unsupported counted-for program proof` (render3d:281, renderCubemap3d:280,
+>   renderLit3d:227) to their next authentic frontier `unsupported struct declaration`
+>   (render3d:113, renderCubemap3d:112, renderLit3d:190). Proof summaries:
+>   render3d/renderCubemap3d `(3, 0, 2, 2048, 2304, True)`, renderLit3d
+>   `(2, 0, 2, 2048, 2304, True)`.
+> - **Tests**: new
+>   `test_render3d_family_source_global_literal_int_pending_advancement`
+>   (key-set membership, entry pins, carrier-required fail-closed, proof summaries,
+>   re-locked cross authentication + forged-source rejection, validator frontier,
+>   emitter frontier `unsupported typed type` (the emitter surfaces the struct
+>   frontier as the unsupported `IsoHit` type), product-bound proved/unbounded unit
+>   shapes) and `test_cross_builtin_profile` updated for the composed carriers
+>   (flythrough3d's expectations unchanged). The Task-22
+>   `test_task22_crt_exclusions_remain_closed` carrier-set pin gains the three keys
+>   (the only fresh failure in the shard run, fixed).
+>
+> ### Verification
+> - All seven generator gates pass (`check_corpus`, `check_semantics`, `corpus_ratchet
+>   --check`, `generate_typed_slice`, `generate_kernels`, `generate_backend_compatibility
+>   --check`, `generate_effect_catalog --check`; 277 + 27 = 304).
+> - `tools/resync/regen_all.sh .` twice to a fixed point (`REGEN OK` twice, zero
+>   generated-file drift); native Debug CMake configure/build + CTest 4/4; zero
+>   symlinks (`find . -type l` empty).
+> - Full 4-shard Python suite (pyshards.sh, Python 3.13.13): 2,097 tests, 72 skipped,
+>   24 failures + 6 errors -- every one is the pre-existing local-environment gap,
+>   re-verified red-before where not previously enumerated (Node v26.5.1-local vs
+>   v26.0.0-pinned oracle gap across osd/julia/median/fractal/colorLab/texture/
+>   emboss/dither/palette/spooky/noise/lightleak192/dsl-frontend-oracle plus the four
+>   `unittest.loader._FailedTest` oracle bridges). All touched modules are green
+>   (test_typed_generator incl. the new/updated tests and both counted-for suites,
+>   test_corpus_ratchet, test_backend_compatibility, test_effect_catalog_generator).
+>
+> ### Remaining counted-for queue (exact diagnostics from pending.json, 3 programs)
+> - `points/lenia:convolve:36` -- nested `dy`/`dx` loops bounded by `int iRadius =
+>   int(ceil(searchRadius));` where `searchRadius` is a **uniform float**; needs a
+>   runtime uniform-ceil bound seed (the `_ceil_cast_int_bound` path requires a
+>   proved-bounded float local, not a uniform).
+> - `synth3d/fractal3d:precompute:68`, `synth3d/flythrough3d:precompute:236` -- loops
+>   bounded by the **function parameter** `int maxIter`; needs a parameter-bound proof
+>   mechanism.
+> - Non-counted frontier census (pending.json, 27): 11 pass binding (drawMode/scatter
+>   and multi-pass bound), 5 struct/global declarations (shapes3d:54, render3d:113,
+>   renderCubemap3d:112, renderLit3d:190, palette3d:27), 5 SemanticError/variant
+>   semantics (attractor `any`, dla `^`->deposit/passthrough cluster, landscape viewMode
+>   variant), 2 vec4[9] (temporalAberration:30, nsSmooth:74), 1 index expression
+>   (feedback:339), 1 post `++` (cellularAutomata3d:56), 1 builtin `any`
+>   (heightmap3d:25).
+
 > ## CONTINUATION CHECKPOINT 2026-09-28: COUNTED-FOR LOCAL-LITERAL-NEVER-REWRITTEN PROOF ADMITTED FOR classicNoisedeck/noise3d:noise3d; NO PROMOTION
 >
 > This checkpoint supersedes earlier checkpoint ordering only for the closed noise3d

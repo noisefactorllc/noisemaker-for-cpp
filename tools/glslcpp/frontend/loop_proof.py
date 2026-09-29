@@ -283,6 +283,64 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "fdd41134212bfb343a643861cd2fed235e5d83c13da7f81aeb27f0ec2a980316",
         "interface": "e347814a67a9611866fcb8c923c5f32e3e96a850ab08116dd23471e3b66fc24a",
     },
+    # The three render-family march programs. renderLit3d's single march loop
+    # is a plain MAX_STEPS read; render3d and renderCubemap3d additionally
+    # bound their DDA traversal with `MAX_STEPS * 2` (the sound product bound
+    # in _annotate_statement: 256*2=512, exactly the trip cap). The two cross
+    # carriers' cross-builtin profiles are re-locked to these seed-attached
+    # post-proof trees (same pre_functions as the profile's frozen
+    # functions_sha256 -- proof the profile was locked pre-proof).
+    "render/render3d:render3d": {
+        "raw": "5ff6fc621924c7c53425c2f18202e549ace6a4ff8a96f9e908ad26bba6e0c7e2",
+        "source": "0fde47a6fd4d39a0cd085a5af72e87de5f3fdf2456c24c2c11667318866dcffb",
+        "defines": (("FILTERING", "int", "0"), ("INVERT", "bool", "false")),
+        "integer": ("MAX_STEPS", 17, "256", 256),
+        "globals": (("TAU", 15, "float", "6.283185307179586"),
+                    ("PI", 16, "float", "3.141592653589793"),
+                    ("MAX_STEPS", 17, "int", "256"),
+                    ("MAX_DIST", 18, "float", "10.0")),
+        "reads": (("isosurfaceTrace", 48, 281, 25, 281, 34),
+                  ("voxelTrace", 55, 161, 25, 161, 34)),
+        "pre_functions": "166c56ce8104f1a6c480d77de96c719662b3ecb549f7b3ef7dc7c1bf52723161",
+        "post_functions": "f6bbb586902c4a17f95866f17f1696059021943a1af07e404d398833942d0d84",
+        "pre_whole": "a72dd52f6be51ef8fe24d07d4a7ab69e6f31e0f56c7375f288cf4577da08c5f7",
+        "post_whole": "00dfc79804df55b1d20d681fc67ad5da40e6f5effa37c38f26a212063221a744",
+        "interface": "33bbe0c8346497495b7d0bab56b40840854e27a6e56ec14e876000d716e101e6",
+    },
+    "render/renderLit3d:renderLit3d": {
+        "raw": "77460fb4a9e53f7776d7a3d73cb3fcc1840dce577c6f0989354eeb540011529f",
+        "source": "cc72ea7149272c38ff05fb6842a4f7f720ea05c4065b2e6900edb7f1885ec980",
+        "defines": (),
+        "integer": ("MAX_STEPS", 28, "256", 256),
+        "globals": (("TAU", 26, "float", "6.283185307179586"),
+                    ("PI", 27, "float", "3.141592653589793"),
+                    ("MAX_STEPS", 28, "int", "256"),
+                    ("MAX_DIST", 29, "float", "10.0"),
+                    ("NEAR_CLIP", 30, "float", "0.01")),
+        "reads": (("raymarch", 66, 227, 25, 227, 34),),
+        "pre_functions": "53177f751e12bdfc19a8921a6731f69dfb454e528356f88fee450e8d5462030b",
+        "post_functions": "82752b9a047ff5613dbf7073aad1a4358ed83b46cb93b406aa5b4f78c9cdb11c",
+        "pre_whole": "45ddfc7d6db5b45b5721b01a4d9f98af4285a06aec29bd597c3fe72b67aa5a46",
+        "post_whole": "a7553f3dcf3c0ff6bf74e8d55bb6976c8c70dff4bda014fb3cdd59db50b4450c",
+        "interface": "ec6d329d5512d28f68ce1ea7b2bd102a7ef1985fe5e72d8ed6cf3c11b918ca49",
+    },
+    "render/renderCubemap3d:renderCubemap3d": {
+        "raw": "bcebff481c2d945e140870b50ce3e32e12bc3f198f75a53dc6d2450d5777db26",
+        "source": "57a7ef1b4ac2174dbd69fecc64f46259a82c2b55cc0e493373e9b6ac11f82b0e",
+        "defines": (("FILTERING", "int", "0"), ("INVERT", "bool", "false")),
+        "integer": ("MAX_STEPS", 16, "256", 256),
+        "globals": (("TAU", 14, "float", "6.283185307179586"),
+                    ("PI", 15, "float", "3.141592653589793"),
+                    ("MAX_STEPS", 16, "int", "256"),
+                    ("MAX_DIST", 17, "float", "10.0")),
+        "reads": (("isosurfaceTrace", 47, 280, 25, 280, 34),
+                  ("voxelTrace", 54, 160, 25, 160, 34)),
+        "pre_functions": "b6d1371705e73f9b5d7a6635c107b023b0012c465e9235317ed2d965dbbfaaf9",
+        "post_functions": "97abf4cd61079737e7ee7a5e3166ca7973b7cac65482ad79773916d5427ddd75",
+        "pre_whole": "5c75a95c6c97407d073a2f4059c49b3c292f99cd8cd10f64dccadea5b48b69bf",
+        "post_whole": "b0abe54e4d65256ddebe7496c9842158eb75a67f9b949e061e1bc5087cc82e8f",
+        "interface": "d17ef2b2ff37f039f346057c9545147f5f865975399678017d66237332938dc1",
+    },
     "render/renderCubemapSurface:renderCubemapSurface": {
         "raw": "ce467e742120b8a2ec9c34898a2fd1e2f56a85cbe5d27774bcbb1b7f204511fc",
         "source": "0c1460653b347fcf2c27eebc51424190bf186648d23a348b34736ec8469f2c05",
@@ -760,6 +818,31 @@ def _annotate_statement(value: TypedStatement, key: str, depth: int,
             bound, bound_kind, bound_symbol = bounded[bound_expression.symbol_id]
             if bound_expression.symbol != bound_symbol:
                 return value
+        # Sound product bound: `A * B` where each factor is an int literal or
+        # an id with a proved upper bound. A proved bound B on the runtime
+        # value of the id makes B * |literal| a genuine upper bound on the
+        # product, so the seed's own provenance carries over unchanged; a
+        # non-positive literal factor only shortens the loop (the trip formula
+        # clamps at 0). Anything else (an unbounded id, a float, another
+        # operator) stays rejected -- fail closed.
+        if bound is None and bound_expression.kind == "binary" \
+                and bound_expression.operator == "*" and len(bound_expression.children) == 2:
+            left, right = bound_expression.children
+            factors = []
+            for first, second in ((left, right), (right, left)):
+                factor = _integer_literal(first)
+                other = second
+                if factor is not None and other.kind == "id" \
+                        and other.symbol_id in bounded:
+                    break
+                factor = None
+            if factor is not None:
+                seed_bound, seed_kind, seed_symbol = bounded[other.symbol_id]
+                if other.symbol != seed_symbol:
+                    return value
+                bound = _checked_mul(seed_bound, factor)
+                bound_kind = seed_kind
+                bound_symbol = seed_symbol
         if bound is None and bound_expression.kind == "swizzle" and lane_bounded:
             matches = tuple(seed for seed in lane_bounded
                             if seed.expression == bound_expression)

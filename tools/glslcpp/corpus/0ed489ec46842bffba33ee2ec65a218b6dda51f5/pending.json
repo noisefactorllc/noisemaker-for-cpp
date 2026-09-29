@@ -3616,7 +3616,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/render3d:render3d:281:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: render/render3d:render3d:113:1: unsupported struct declaration",
         "stage": "typed.validator"
       },
       "effect_id": "render/render3d",
@@ -3629,7 +3629,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/renderCubemap3d:renderCubemap3d:280:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: render/renderCubemap3d:renderCubemap3d:112:1: unsupported struct declaration",
         "stage": "typed.validator"
       },
       "effect_id": "render/renderCubemap3d",
@@ -3655,7 +3655,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:227:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:190:1: unsupported struct declaration",
         "stage": "typed.validator"
       },
       "effect_id": "render/renderLit3d",

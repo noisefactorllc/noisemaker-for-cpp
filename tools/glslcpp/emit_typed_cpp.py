@@ -3668,10 +3668,14 @@ class _Emitter:
                     or self.compatibility_transform is not None
                     or self.custom_comparer_profile is not None
                     or self.numeric_literal_contract != "glsl-f32"
-                    or self.source_global_literal_int_profile is not None
                     or self.gather_sorted_round_profile is not None
                     or self.literal_vec3_lane_index_profile is not None
                     or self.smooth_edge_luma_weights_profile is not None):
+                # source_global_literal_int_profile composes deliberately with
+                # the cross carrier for render/render3d:render3d and
+                # render/renderLit3d:renderLit3d: their cross profiles are
+                # re-locked to the seed-attached post-proof trees, so the two
+                # authentications cannot be satisfied by different trees.
                 raise _error(
                     self.program, self.program,
                     "cross builtin profile metadata mismatch")

@@ -10864,14 +10864,21 @@ and item["program_key"] != "filter/wobble:wobble"
         # check.
         # classicNoisedeck/shapes3d:shapes3d joined with the 2026-09-27B
         # counted-for leg (MAX_STEPS=100 march bound, same const-global
-        # literal shape, no promotion).
+        # literal shape, no promotion). The three render-family march
+        # programs joined with the 2026-09-29 leg (MAX_STEPS=256 march bound;
+        # render3d and renderCubemap3d additionally bound their DDA traversal
+        # with the sound `MAX_STEPS * 2` product bound; the two cross
+        # carriers' cross profiles are re-locked to the seed-attached trees).
         self.assertEqual(frozenset((*task23_keys, "filter/reindex:nmReindexStats",
                                    "filter/reindex:nmReindexReduce",
                                    "filter/parallax:parallax",
                                    "filter/lightLeak:lightLeak",
                                    "synth/mandelbrot:mandelbrot",
                                    "render/renderCubemapSurface:renderCubemapSurface",
-                                   "classicNoisedeck/shapes3d:shapes3d")),
+                                   "classicNoisedeck/shapes3d:shapes3d",
+                                   "render/render3d:render3d",
+                                   "render/renderCubemap3d:renderCubemap3d",
+                                   "render/renderLit3d:renderLit3d")),
                          generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         post_task22_keys = frozenset((
             *task23_keys,
@@ -25648,6 +25655,141 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 generate_typed_slice.validate_capabilities(
                     typed_rejected, generate_typed_slice.APPROVED_CAPABILITIES)
 
+    def test_render3d_family_source_global_literal_int_pending_advancement(self) -> None:
+        import hashlib
+        import json as _json
+        import pathlib
+
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import loop_proof, parse_program
+        from tools.glslcpp.frontend.cross_builtin_profile import (
+            PROFILE as CROSS_PROFILE, authenticate_cross_sites, apply_cross_admission)
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        # The three render-family march programs share the const-global
+        # `MAX_STEPS = 256` bound (already inside the Task-23 mechanism) and
+        # additionally -- for render3d and renderCubemap3d -- a DDA traversal
+        # bounded by `MAX_STEPS * 2` (256*2=512, exactly the trip cap), proved
+        # by the sound product bound in _annotate_statement. The two cross
+        # carriers' cross-builtin profiles are re-locked to these
+        # seed-attached post-proof trees. Every loop proves; the frontier
+        # advances from `unsupported counted-for program proof` to the
+        # struct declaration in all three, and no program is promoted.
+        corpus = pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
+        expected = {
+            "render/render3d:render3d": (3, 0, 2, 2048, 2304, True),
+            "render/renderLit3d:renderLit3d": (2, 0, 2, 2048, 2304, True),
+            "render/renderCubemap3d:renderCubemap3d": (3, 0, 2, 2048, 2304, True),
+        }
+        for key, summary_expected in sorted(expected.items()):
+            effect_id, program_name = key.split(":")
+            self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
+            self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+            self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+            landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+            self.assertEqual(("MAX_STEPS", landed["integer"][1], "256", 256),
+                             landed["integer"])
+            source_path = corpus / f"pending-sources/{effect_id}/{program_name}.glsl"
+            raw = source_path.read_text(encoding="utf-8")
+            self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+                             landed["raw"])
+            record = next(item for item in pending["pending"]
+                          if item["program_key"] == key)
+            self.assertEqual(record["raw_sha256"], landed["raw"])
+
+            defaults = check_semantics._metadata_defaults(
+                {"effects": {effect_id: pending["effects"][effect_id]}}, key)
+
+            # Without the profile the carrier requirement fails closed.
+            typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=landed["raw"])
+            self.assertIn("exact source-global literal-int carrier required",
+                          str(ctx.exception))
+
+            # With the seed carrier every loop proves and the frontier is the
+            # struct declaration.
+            typed = analyze_program(
+                parse_program(raw, key, defaults), key,
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+            summary = typed.counted_loop_proof
+            self.assertEqual(
+                summary_expected,
+                (summary.loop_count, summary.unproved_loop_count,
+                 summary.max_effective_depth, summary.max_lexical_product,
+                 summary.entrypoint_charge, summary.call_graph_acyclic))
+            cross_kwargs = (
+                {"cross_builtin_profile": CROSS_PROFILE}
+                if key in ("render/render3d:render3d", "render/renderLit3d:renderLit3d")
+                else {})
+            if cross_kwargs:
+                # The re-locked cross profile authenticates the seed-attached
+                # tree (object-identity carrier).
+                self.assertIs(apply_cross_admission(
+                    typed, landed["raw"], CROSS_PROFILE), typed)
+                self.assertEqual(2, len(authenticate_cross_sites(
+                    typed, landed["raw"], CROSS_PROFILE)))
+                # Forged source bytes fail closed through the cross profile.
+                import dataclasses
+                with self.assertRaises(ValueError) as ctx:
+                    authenticate_cross_sites(
+                        dataclasses.replace(typed, raw_source=raw + "\n"),
+                        landed["raw"], CROSS_PROFILE)
+                self.assertIn("mismatch", str(ctx.exception))
+            with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+                generate_typed_slice.validate_capabilities(
+                    typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                    source_hash=landed["raw"],
+                    source_global_literal_int_profile=
+                    loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+                    **cross_kwargs)
+            self.assertIn("unsupported struct declaration", str(ctx.exception))
+            with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+                emit_typed_cpp.render_typed_cpp(
+                    typed, key, landed["raw"], "pixel",
+                    "bind_" + key.replace("/", "_").replace(":", "_"),
+                    source_global_literal_int_profile=
+                    loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+                    **cross_kwargs)
+            self.assertIn("unsupported typed type", str(ctx.exception))
+
+            # Forged source bytes fail closed even with the exact profile.
+            with self.assertRaises(Exception) as ctx:
+                analyze_program(
+                    parse_program(raw + "\n", key, defaults), key,
+                    source_global_literal_int_profile=
+                    loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+            self.assertIn("mismatch", str(ctx.exception))
+
+        # Product-bound proof boundary (mechanism unit shapes, keyed off the
+        # closed corpus's directionalBlur profile tree): a proved seed times a
+        # positive literal is admitted; an UNBOUNDED operand (a rewritten or
+        # runtime-dependent local) is not.
+        from tools.glslcpp.frontend.semantic import analyze_program as analyze
+        proved = ("out vec4 fragColor; void main(){ const int N = 4; "
+                  "float x = 0.0; for (int i = 0; i < N * 2; i++) { x += 1.0; } "
+                  "fragColor = vec4(x); }")
+        typed_proved = analyze(parse_program(proved, "product-bound-proved"),
+                               "product-bound-proved")
+        proofs = [s.loop_proof for f in typed_proved.functions for s in f.body
+                  if s.kind == "for" and s.loop_proof is not None]
+        self.assertEqual([(8, 0, "local-const-literal")],
+                         [(p.trip_count, p.start_value, p.bound_kind)
+                          for p in proofs])
+        unbounded = ("out vec4 fragColor; uniform int N; void main(){ "
+                     "float x = 0.0; for (int i = 0; i < N * 2; i++) { x += 1.0; } "
+                     "fragColor = vec4(x); }")
+        typed_unbounded = analyze(parse_program(unbounded, "product-bound-unbounded"),
+                                  "product-bound-unbounded")
+        unproved = [s for f in typed_unbounded.functions for s in f.body
+                    if s.kind == "for" and s.loop_proof is None]
+        self.assertEqual(1, len(unproved))
+
     def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice
         from tools.glslcpp.frontend import parse_program
@@ -26993,6 +27135,7 @@ void main() {
             authenticate_cross_sites, apply_cross_admission,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
+        from tools.glslcpp.frontend import loop_proof as loop_proof_module
 
         repo_root = Path(__file__).resolve().parent.parent
         corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
@@ -27022,7 +27165,16 @@ void main() {
                 {"effects": {effect_id: eff}}, key)
 
             ast = parse_program(raw, key, defaults)
-            typed = analyze_program(ast, key)
+            # The two render-family carriers are also
+            # source-global-literal-int-v1 keys: their cross profiles are
+            # re-locked to the seed-attached post-proof trees, so the analysis
+            # must attach the MAX_STEPS march-loop seeds for the cross
+            # authentication to bind. flythrough3d is loop-proof-free.
+            seed_kwargs = (
+                {"source_global_literal_int_profile":
+                 loop_proof_module.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY}
+                if key in loop_proof_module.SOURCE_GLOBAL_LITERAL_INT_KEYS else {})
+            typed = analyze_program(ast, key, **seed_kwargs)
 
             # 1. Direct authentication
             nodes = authenticate_cross_sites(typed, shash, CROSS_PROFILE)
@@ -27061,39 +27213,48 @@ void main() {
                 generate_typed_slice.validate_capabilities(
                     typed, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=shash,
+                    **seed_kwargs,
                 )
             self.assertIn(
                 "exact cross builtin admission profile carrier required",
                 str(ctx.exception))
 
-            # Passing valid profile advances to the next authentic blocker
-            # (the counted-for program proof), never silently passing.
+            # Passing the cross profile (with the march-loop seed carrier for
+            # the two render-family keys) advances to the next authentic
+            # blocker. flythrough3d keeps its counted-for frontier; the two
+            # render keys' proofs land with this pass, so their frontier is
+            # the struct declaration.
             with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
                 generate_typed_slice.validate_capabilities(
                     typed, generate_typed_slice.APPROVED_CAPABILITIES,
                     source_hash=shash,
                     cross_builtin_profile=CROSS_PROFILE,
+                    **seed_kwargs,
                 )
-            self.assertIn("unsupported counted-for program proof",
-                          str(ctx.exception))
+            self.assertIn(
+                ("unsupported struct declaration" if seed_kwargs
+                 else "unsupported counted-for program proof"),
+                str(ctx.exception))
 
-            # 3. Emitter integration. These three carriers' next authentic
-            # blocker is their counted-for program proof, which the emitter
-            # validates at construction: with the profile the cross sites are
-            # authenticated and the counted-for loop is the remaining
-            # blocker; without the profile the same frontier is reached, so
-            # admission is fail-closed either way and glsl::cross lowering
-            # becomes observable only after the counted-for proofs land
-            # (same boundary as the spriteMeanTiles modulo carrier).
-            for profile_kwargs in ({"cross_builtin_profile": CROSS_PROFILE}, {}):
+            # 3. Emitter integration. With the full carrier set the cross
+            # sites are authenticated and the next authentic frontier is the
+            # program's remaining blocker (struct declaration for the two
+            # render keys, the unproved counted-for loop for flythrough3d);
+            # without the cross profile the carrier requirement fires first,
+            # so admission is fail-closed either way and glsl::cross lowering
+            # becomes observable only after the struct declarations land.
+            for profile_kwargs in (dict(cross_builtin_profile=CROSS_PROFILE, **seed_kwargs),
+                                   dict(seed_kwargs)):
                 with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                     emit_typed_cpp.render_typed_cpp(
                         typed, key, shash, "pixel",
                         "bind_" + key.replace("/", "_").replace(":", "_"),
                         **profile_kwargs,
                     )
-                self.assertIn("unsupported counted-for program proof",
-                              str(ctx.exception))
+                self.assertIn(
+                    ("unsupported typed type" if seed_kwargs
+                     else "unsupported counted-for program proof"),
+                    str(ctx.exception))
 
     def test_points_post_profile(self) -> None:
         import dataclasses
