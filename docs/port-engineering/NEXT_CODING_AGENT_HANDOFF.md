@@ -1491,10 +1491,15 @@
 >      `authenticate_factory_route_mrt`, and all 6 programs render byte-exact against the authority
 >      (corpus parity byteExactCount 168 -> 174; suite `tests.test_dsl_corpus_parity` +
 >      `tests.test_typed_generator` 297 tests OK; evidence: Worker Elves job e5c685f8, evidence archive).
->      Still open in ci.yml's byte-exact job: the sweep gate's 3 `filter__dither` both_refused cases
->      (palette 2+): the authority's `ditherWithPalette` NaN-corruption bug is upstream
->      (noisemaker-for-cpu canonical-kernels.js), both lanes refuse, and sweep.py's 984d4ad fail-closed
->      policy rightly fails claimed support — fixing it requires the upstream authority leg.
+>      Still open in ci.yml's byte-exact job — **blocked, upstream** (confirmed at 4b4e3ab, CI run
+>      36598761795): the corpus-parity lane itself now PASSES (executor fix verified in CI; python
+>      test suite, all four native lanes and sanitizers also green), and the only failing step is the
+>      sweep parity gate's 3 `filter__dither` both_refused cases (palette 2+). Root cause is the
+>      authority's `ditherWithPalette`/`findClosestPaletteColor` NaN-corruption bug in
+>      noisemaker-for-cpu canonical-kernels.js — a repository this job holds read-only — and sweep.py's
+>      984d4ad fail-closed policy rightly refuses a claimed kit effect that neither lane can render, so
+>      no in-repo fix exists that does not weaken that gate. Resolution requires the upstream authority
+>      leg (fix the authority bug or re-contract the kit's dither parameter claim there).
 >    - **Remaining frontier construct blockers (27 programs)**:
 >      - 6x: unsupported counted-for program proof (`points/lenia:convolve`, `render/render3d:render3d`,
 >        `render/renderCubemap3d:renderCubemap3d`, `render/renderLit3d:renderLit3d`,
