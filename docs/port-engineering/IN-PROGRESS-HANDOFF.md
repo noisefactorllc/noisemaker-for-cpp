@@ -6,7 +6,7 @@
 - All four generator gates exit 0
 - Native **176 PASS / 0 FAIL**
 - Snapshot: `~/platform/.noisemaker-cpp-snapshots/green-170.tar.gz`
-- Full Python suite: running on a copy at `/Users/aayars/platform/.nm-validate/v171/`
+- Full Python suite: running on a copy at `../.nm-validate/v171/`
   (log `v171.log`) — **check it before trusting this state completely.**
 
 ## What landed most recently

@@ -637,7 +637,7 @@ function makeReport(data) {
   lines.push('## Deliberate unreachable traps', '')
   for (const trap of data.unreachable_traps) lines.push(`- ${trap}`)
   lines.push('', 'These are reported as unreachable instead of manufacturing a false pixel witness. Structural authentication must still freeze the immediate unsigned constructor parent and the fact that the owner is reachable from `main`.', '')
-  lines.push('## Regeneration', '', 'From `/Users/aayars/platform/noisemaker-for-cpp`:', '', '```sh', 'node docs/port-engineering/bitops/grain-parity/grain_parity_oracle_generator.mjs', 'node docs/port-engineering/bitops/grain-parity/grain_parity_oracle_generator.mjs --check', '```', '')
+  lines.push('## Regeneration', '', 'From the repository root:', '', '```sh', 'node docs/port-engineering/bitops/grain-parity/grain_parity_oracle_generator.mjs', 'node docs/port-engineering/bitops/grain-parity/grain_parity_oracle_generator.mjs --check', '```', '')
   return `${lines.join('\n')}\n`
 }
 

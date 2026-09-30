@@ -100,7 +100,7 @@ console.log("sign(customNaN)", bits(Math.sign(nA)));
 
 Each of `docs/port-engineering/scatter-adapters/oracle/{dla,lenia,physarum,points_render,
 points_billboard_render,flow3d}_oracle_generator.mjs` imports the real, unmodified adapter function
-from the pinned authority snapshot (`/Users/alex/platform/.nm-cpp-work/authority/61aa869`) and
+from the pinned authority snapshot (`../.nm-cpp-work/authority/61aa869`) and
 calls it directly — never reimplements the algorithm. Each produces:
 
 - `<name>-oracles.json` — a curated, human-reviewable case set (hand-designed discrimination cases

@@ -8,5 +8,5 @@ Five source mutations are authenticated by exact anchor, replacement, factory, c
 
 ## Reproduction
 
-    NOISEMAKER_FOR_CPU=/Users/aayars/platform/noisemaker-for-cpu node docs/port-engineering/moodscape-parity/moodscape_oracle_generator.mjs --check --cpu-root /private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu
+    NOISEMAKER_FOR_CPU=../noisemaker-for-cpu node docs/port-engineering/moodscape-parity/moodscape_oracle_generator.mjs --check --cpu-root /private/tmp/noisemaker-cpp-continuation.e033lt/oracle/noisemaker-for-cpu
     PYTHONDONTWRITEBYTECODE=1 python3 -B tools/glslcpp/generate_moodscape_native_oracle_include.py --check

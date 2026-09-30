@@ -4,13 +4,26 @@
 // pinned authority snapshot below and calls it directly -- nothing here
 // reimplements any adapter's algorithm; this file only builds fuzzed
 // inputs and serializes cases for the C++ differential harness.
-//
-// AUTHORITY SNAPSHOT: this is a fixed local path to the read-only
-// noisemaker-for-cpu checkout at commit 61aa869, per the campaign's lane
-// contract. Adjust here (only) if the snapshot ever moves.
-export const AUTHORITY_ROOT = '/Users/alex/platform/.nm-cpp-work/authority/61aa869'
 
 import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+
+// AUTHORITY SNAPSHOT: the read-only noisemaker-for-cpu checkout at commit
+// 61aa869, per the campaign's lane contract, expected at
+// ../.nm-cpp-work/authority/61aa869 beside this repository (resolved from
+// this file, not the working directory). Adjust here (only) if the snapshot
+// ever moves.
+export const AUTHORITY_ROOT = fileURLToPath(new URL('../../../../../.nm-cpp-work/authority/61aa869', import.meta.url))
+
+// Import one module of the authority snapshot by its snapshot-relative path.
+export function loadAuthority(relative) {
+  const file = path.join(AUTHORITY_ROOT, relative)
+  if (!fs.existsSync(file)) {
+    throw new Error(`authority snapshot module not found: ${file} (expected a read-only noisemaker-for-cpu checkout at commit 61aa869 in ../.nm-cpp-work/authority/61aa869 beside this repository)`)
+  }
+  return import(pathToFileURL(file).href)
+}
 
 // Deterministic PRNG (mulberry32) -- NOT required to match any C++ RNG bit
 // for bit, because every case's inputs are serialized as literal bytes into

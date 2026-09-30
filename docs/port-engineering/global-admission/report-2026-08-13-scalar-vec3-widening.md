@@ -104,7 +104,7 @@ blockers are downstream of admission entirely.
 ## 2. The verified (but unlanded) admission mechanism
 
 Designed and tested only in a throwaway rsync copy
-(`/Users/aayars/platform/.nm-validate/global-batch/`, outside the live tree),
+(`../.nm-validate/global-batch/`, outside the live tree),
 never applied to `tools/glslcpp/generate_typed_slice.py` or
 `emit_typed_cpp.py` on disk. Zero-vocabulary-growth (never calls
 `used.add(...)`), matching the existing const-float and `mat3` admission

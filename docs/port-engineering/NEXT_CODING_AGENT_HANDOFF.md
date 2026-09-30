@@ -1921,7 +1921,7 @@
 >   untouched typed_slice.cpp. Sanitizer runs need `ulimit -s 65520`.
 > - **Generator gates:** typed slice (211 programs), effect catalog, backend
 >   compatibility all `--check` exit 0. Compatibility regeneration needs
->   `--cpu-root <frozen mirror> --shader-git /Users/aayars/platform/noisemaker`
+>   `--cpu-root <frozen mirror> --shader-git ../noisemaker`
 >   (read-only, cat-file only).
 > - **Shader smoke (real browser):** webgl2 145 pass / 15 fail / 3 compile,
 >   webgpu 139 / 21 / 3; honest cross-backend intersection **138 records**
@@ -2267,7 +2267,7 @@
 > Stable Scaffold link:
 >
 > ```text
-> /Users/aayars/platform/scaffold/.cpp-staging-link
+> ../scaffold/.cpp-staging-link
 > ```
 >
 > The checkout is still not a Git repository.  Do not create a branch,
@@ -2397,8 +2397,8 @@
 > Read the severity-ranked review and numeric trace before editing:
 >
 > ```text
-> /Users/aayars/platform/scaffold/.codex-noisemaker-classic208/task-26-fractal-numeric-review.md
-> /Users/aayars/platform/scaffold/.codex-noisemaker-classic208/task-23-fractal-newton-diagnosis.md
+> ../scaffold/.codex-noisemaker-classic208/task-26-fractal-numeric-review.md
+> ../scaffold/.codex-noisemaker-classic208/task-23-fractal-newton-diagnosis.md
 > ```
 >
 > ### Python integration checkpoint
@@ -2429,7 +2429,7 @@
 > this restart, so its exact final failure count remains unknown.  Read:
 >
 > ```text
-> /Users/aayars/platform/scaffold/.codex-noisemaker-classic208/task-24-fractal-typed-generator-repair.md
+> ../scaffold/.codex-noisemaker-classic208/task-24-fractal-typed-generator-repair.md
 > ```
 >
 > Re-run the full module and record exact remaining failures.  Repair live
@@ -2462,7 +2462,7 @@
 > Scaffold exposes it as:
 >
 > ```text
-> /Users/aayars/platform/scaffold/.cpp-staging-link
+> ../scaffold/.cpp-staging-link
 > ```
 >
 > The checkout is **not a Git repository yet**. Do not create a branch,
@@ -2556,7 +2556,7 @@
 > ```text
 > 7768dad900e68e565eb9a5857f423dbbe4a892234b56116f3cf705456664f28d  docs/port-engineering/classic-noise-parity/classic_noise_oracle_generator.mjs
 > a0e39957155553cb21e814339e502d272db1c6640f5bfc9ea6a47a659032877d  docs/port-engineering/classic-noise-parity/classic-noise-oracles.json
-> f85c69762d07fa49c0002725c92b5f679ae6bb52c09e1e7b20f08c0067e217f2  docs/port-engineering/classic-noise-parity/classic-noise-oracle-report.md
+> 0c386f2f22beefd6b524f45fd1bbaa4ee516365a7b51ab73d2d21c730b1b53d7  docs/port-engineering/classic-noise-parity/classic-noise-oracle-report.md
 > 7821daf2782c2ad47110b381b63cada71415c3358d0c2d818d48006fd9e86f5d  tools/glslcpp/generate_classic_noise_native_oracle_include.py
 > ae4bee722021289b31e66c2875cd595379858f3cd387429708adcf8945b579e5  tests/oracles/classic_noise_expected.inc
 > ```
@@ -2994,7 +2994,7 @@
 > Curl's neighbour window `[174:177]`→`[175:178]` and its live namespace
 > 175→176 (task31 — two pins, the second only visible after the first was
 > fixed). `REMAINING-EFFECTS.md`'s "Current state" was still the 189-row
-> census and is refreshed. Three newly-committed absolute `/Users/aayars/…`
+> census and is refreshed. Three newly-committed absolute home-directory
 > paths in the design docs are now sibling-relative.
 >
 > ### Gates after the fix and the oracle package
@@ -3328,8 +3328,8 @@ assembly inspection.
 
 ## Global constraints
 
-- Repository: `/Users/aayars/platform/noisemaker-for-cpp`.
-- Behavioral reference: `/Users/aayars/platform/noisemaker-for-cpu`.
+- Repository: this checkout (`noisemaker-for-cpp`).
+- Behavioral reference: `../noisemaker-for-cpu`.
 - The checkout currently has no `.git` metadata. Do not initialize or use Git
   during implementation. No worktrees, feature branches, or pull requests.
 - Work autonomously and fan out independent mechanical work, with disjoint
@@ -3479,7 +3479,7 @@ task; do not scan or bulk-delete them.
 For Shapes allocate exactly one owned root:
 
 ```bash
-CPP_ROOT=/Users/aayars/platform/noisemaker-for-cpp
+CPP_ROOT="$(pwd -P)"  # run from the repository root
 RUN_ROOT="$(mktemp -d /private/tmp/noisemaker-shapes183.XXXXXX)"
 test -d "$RUN_ROOT"
 case "$(cd "$RUN_ROOT" && pwd -P)" in
@@ -3903,7 +3903,7 @@ program is implemented and pixel-level parity is proven:
 4. Perform the final secrets, license, README, CI, example, package, and clean
    clone/publication audit.
    **Known item, scanned 2026-08-16 at `git init`, partially resolved:** no
-   secrets, no key material, no `.env` files. Absolute `/Users/aayars` paths
+   secrets, no key material, no `.env` files. Absolute home-directory paths
    were present in **11 files**; **8 remain**.
 
    The three that were hardest are now **fixed at the root cause**, not
@@ -3919,7 +3919,7 @@ program is implemented and pixel-level parity is proven:
 
    The remaining 8 are prose in engineering docs, where a path is usually
    recording where something ran. Scrub or parameterise them before any push;
-   none is load-bearing. Current list: `git grep -Il /Users/aayars`.
+   none is load-bearing. Current list: `git grep -Il /Users/`.
    Factor OSS presentation.
 5. Only then initialize the repository, create a new public GitHub repository,
    commit the exact reviewed tree on the default branch, and perform the one

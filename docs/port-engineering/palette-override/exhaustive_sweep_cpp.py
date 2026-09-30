@@ -12,11 +12,16 @@ import pathlib
 import subprocess
 import tempfile
 
-PALETTE = pathlib.Path("/Users/alex/platform/.nm-cpp-work/lanes/palette")
+# The palette lane lives in ../.nm-cpp-work/lanes/palette beside this
+# repository, resolved from this file rather than the working directory.
+PALETTE = pathlib.Path(__file__).resolve().parents[4] / ".nm-cpp-work/lanes/palette"
 DRIVER = PALETTE / "build-lane/noisemaker-dsl-cpu-case"
-CASES = json.loads(pathlib.Path(
-    "/private/tmp/claude-502/-Users-alex-platform-scaffold/4b35d94f-8f1c-451d-b220-88b458c1bfa7/scratchpad/exhaustive_cases.json"
-).read_text())
+if not DRIVER.is_file():
+    raise SystemExit(f"palette lane driver not found: {DRIVER} "
+                     "(build noisemaker-dsl-cpu-case in ../.nm-cpp-work/lanes/palette/build-lane "
+                     "beside this repository)")
+# exhaustive_sweep_js.mjs writes the cases to the same temporary directory.
+CASES = json.loads((pathlib.Path(tempfile.gettempdir()) / "exhaustive_cases.json").read_text())
 
 mismatches = []
 errors = []

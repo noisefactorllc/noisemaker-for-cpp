@@ -21,7 +21,7 @@ with zero tolerance via tools.benchmark.exact_compare.
 Usage:
   NOISEMAKER_DSL_CPU_CASE=<build>/noisemaker-dsl-cpu-case \\
     python3 docs/port-engineering/remap-parity/remap_dsl_parity.py \\
-      --cpu-root /Users/alex/platform/.nm-cpp-work/authority/61aa869
+      --cpu-root ../.nm-cpp-work/authority/61aa869
 """
 from __future__ import annotations
 

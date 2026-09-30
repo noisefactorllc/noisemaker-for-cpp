@@ -8,7 +8,7 @@ export PYTHONDONTWRITEBYTECODE=1
 if [ -n "$authority" ]; then
   [ -x "/opt/homebrew/bin/node" ] && export PATH="/opt/homebrew/bin:$PATH"
   export NOISEMAKER_CPU_ROOT=${NOISEMAKER_CPU_ROOT:?} NOISEMAKER_CPU_AUTHORITY_LEDGER=${NOISEMAKER_CPU_AUTHORITY_LEDGER:-$NOISEMAKER_CPU_ROOT.ledger.sha256}
-  [ -d "/Users/alex/platform/noisemaker-for-cpu" ] && export NOISEMAKER_FOR_CPU=${NOISEMAKER_FOR_CPU:-/Users/alex/platform/noisemaker-for-cpu}
+  [ -n "${NOISEMAKER_FOR_CPU:-}" ] && export NOISEMAKER_FOR_CPU
   [ -x "$PWD/build/noisemaker-dsl-frontend-oracle" ] && export NOISEMAKER_DSL_CPP_ORACLE=${NOISEMAKER_DSL_CPP_ORACLE:-$PWD/build/noisemaker-dsl-frontend-oracle}
   [ -x "$PWD/build/noisemaker-dsl-parser-oracle" ] && export NOISEMAKER_DSL_PARSER_ORACLE=${NOISEMAKER_DSL_PARSER_ORACLE:-$PWD/build/noisemaker-dsl-parser-oracle}
   [ -x "$PWD/build/noisemaker-dsl-compiler-oracle" ] && export NOISEMAKER_DSL_COMPILER_ORACLE=${NOISEMAKER_DSL_COMPILER_ORACLE:-$PWD/build/noisemaker-dsl-compiler-oracle}

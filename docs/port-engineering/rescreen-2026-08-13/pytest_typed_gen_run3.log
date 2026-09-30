@@ -181,29 +181,29 @@ test_vector_vector_declaration_remains_concrete_storage (tests.test_typed_genera
 [31mERROR[0m[1;31m: test_task23_rejected_structural_mutations_have_exact_native_sensitivity (tests.test_typed_generator.TypedGeneratorTests.test_task23_rejected_structural_mutations_have_exact_native_sensitivity)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2848[0m, in [35mtest_task23_rejected_structural_mutations_have_exact_native_sensitivity[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m2848[0m, in [35mtest_task23_rejected_structural_mutations_have_exact_native_sensitivity[0m
     rendered = render_rejected_mutation(
         mutated, source_hashes[key], f"task23_mut_{index}",
         f"bind_task23_mut_{index}")
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2831[0m, in [35mrender_rejected_mutation[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m2831[0m, in [35mrender_rejected_mutation[0m
     return "\n".join([31memitter.render_body[0m[1;31m(namespace, factory)[0m) + "\n"
                      [31m~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^[0m
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35mrender_body[0m
+  File [35m"tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35mrender_body[0m
     [31mlines.extend[0m[1;31m(self.function_declaration(function) for function in helpers)[0m
     [31m~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35m<genexpr>[0m
+  File [35m"tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2398[0m, in [35m<genexpr>[0m
     lines.extend([31mself.function_declaration[0m[1;31m(function)[0m for function in helpers)
                  [31m~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^[0m
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2341[0m, in [35mfunction_declaration[0m
+  File [35m"tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2341[0m, in [35mfunction_declaration[0m
     parameters = ", ".join([1;31m["[[maybe_unused]] const State& state",[0m
                            [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
     ...<3 lines>...
         [1;31mfor ordinal, parameter in enumerate(function.parameters))][0m)
         [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2343[0m, in [35m<genexpr>[0m
+  File [35m"tools/glslcpp/emit_typed_cpp.py"[0m, line [35m2343[0m, in [35m<genexpr>[0m
     f"[[maybe_unused]] {[31mself.function_parameter_type[0m[1;31m(function, ordinal, parameter)[0m} "
                         [31m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tools/glslcpp/emit_typed_cpp.py"[0m, line [35m1272[0m, in [35mfunction_parameter_type[0m
+  File [35m"tools/glslcpp/emit_typed_cpp.py"[0m, line [35m1272[0m, in [35mfunction_parameter_type[0m
     inout_proof = [1;31mself.authorized_inout_vec3_swap_proof[0m
                   [1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
 [1;35mAttributeError[0m: [35m'tools.glslcpp.emit_typed_cpp._Emitter' object has no attribute 'authorized_inout_vec3_swap_proof'[0m
@@ -212,7 +212,7 @@ Traceback (most recent call last):
 [31mFAIL[0m[1;31m: test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte (tests.test_typed_generator.Task31CurlVectorMathTests.test_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m16050[0m, in [35mtest_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m16050[0m, in [35mtest_task31_removing_only_curl_regenerates_task30_outputs_byte_for_byte[0m
     [31mself.assertEqual[0m[1;31m(145, len(task30_keys))[0m
     [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
 [1;35mAssertionError[0m: [35m145 != 151[0m
@@ -221,7 +221,7 @@ Traceback (most recent call last):
 [31mFAIL[0m[1;31m: test_task33_history_schema_and_vendored_oracle_match_152_program_state (tests.test_typed_generator.Task33DerivativeAdmissionTests.test_task33_history_schema_and_vendored_oracle_match_152_program_state)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m17150[0m, in [35mtest_task33_history_schema_and_vendored_oracle_match_152_program_state[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m17150[0m, in [35mtest_task33_history_schema_and_vendored_oracle_match_152_program_state[0m
     [31mself.assertEqual[0m[1;31m(DERIVATIVE_ADMISSION_KEYS,[0m
     [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
                      [1;31mfrozenset(item["key"] for item in oracle["programs"].values()))[0m
@@ -234,7 +234,7 @@ Traceback (most recent call last):
 [31mFAIL[0m[1;31m: test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys (tests.test_typed_generator.TypedGeneratorTests.test_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m5171[0m, in [35mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m5171[0m, in [35mtest_allowlist_is_schema_locked_sorted_and_contains_exactly_one_hundred_twenty_six_typed_keys[0m
     [31mself.assertEqual[0m[1;31m(50, len(corpus_keys - public_keys))[0m
     [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
 [1;35mAssertionError[0m: [35m50 != 46[0m
@@ -243,7 +243,7 @@ Traceback (most recent call last):
 [31mFAIL[0m[1;31m: test_task23_six_key_counts_positions_and_generated_isolation_are_exact (tests.test_typed_generator.TypedGeneratorTests.test_task23_six_key_counts_positions_and_generated_isolation_are_exact)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m2414[0m, in [35mtest_task23_six_key_counts_positions_and_generated_isolation_are_exact[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m2414[0m, in [35mtest_task23_six_key_counts_positions_and_generated_isolation_are_exact[0m
     [31mself.assertEqual[0m[1;31m((122, 124, 88, 212), ([0m
     [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^[0m
         [1;31mlen(keys), len(public), len(corpus["programs"]) - len(public),[0m
@@ -267,7 +267,7 @@ First differing element 0:
 [31mFAIL[0m[1;31m: test_task26_loader_admits_only_exact_smooth_carrier_and_census (tests.test_typed_generator.TypedGeneratorTests.test_task26_loader_admits_only_exact_smooth_carrier_and_census)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m11468[0m, in [35mtest_task26_loader_admits_only_exact_smooth_carrier_and_census[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m11468[0m, in [35mtest_task26_loader_admits_only_exact_smooth_carrier_and_census[0m
     [31mself.assertEqual[0m[1;31m((147, 149, 63, 212),[0m
     [31m~~~~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^[0m
                      [1;31m(len(typed), len(public), len(unported),[0m
@@ -287,7 +287,7 @@ First differing element 0:
 [31mFAIL[0m[1;31m: test_typed_generation_is_cwd_independent_and_matches_committed_slice (tests.test_typed_generator.TypedGeneratorTests.test_typed_generation_is_cwd_independent_and_matches_committed_slice)[0m
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File [35m"/Users/aayars/platform/noisemaker-for-cpp/tests/test_typed_generator.py"[0m, line [35m6168[0m, in [35mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[0m
+  File [35m"tests/test_typed_generator.py"[0m, line [35m6168[0m, in [35mtest_typed_generation_is_cwd_independent_and_matches_committed_slice[0m
     [31mself.assertIn[0m[1;31m("typed slice ok (160 programs)", output)[0m
     [31m~~~~~~~~~~~~~[0m[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
 [1;35mAssertionError[0m: [35m'typed slice ok (160 programs)' not found in 'generate_typed_slice: typed slice ok (166 programs)\n'[0m

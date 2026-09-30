@@ -112,7 +112,7 @@ Use exactly the six authenticated compact matrix-precompute cases as the initial
 
 ### 4.1 Independent JavaScript authority
 
-Define `CPP_ROOT=/Users/aayars/platform/noisemaker-for-cpp` and create one immutable `CPU_ROOT=$RUN_ROOT/oracle/noisemaker-for-cpu` snapshot of `/Users/aayars/platform/noisemaker-for-cpu`. Generate through the public path in that frozen snapshot via the C++-repository script's required `--cpu-root "$CPU_ROOT"` argument. Pin these exact CPU-relative paths and current full hashes in fixture metadata:
+Define `CPP_ROOT` as the repository root and create one immutable `CPU_ROOT=$RUN_ROOT/oracle/noisemaker-for-cpu` snapshot of `../noisemaker-for-cpu`. Generate through the public path in that frozen snapshot via the C++-repository script's required `--cpu-root "$CPU_ROOT"` argument. Pin these exact CPU-relative paths and current full hashes in fixture metadata:
 
 - `src/effects/generated/canonical-kernels.js`: `66adc01c7df07298b40eaf74fddb7226fdf87bb18dea75b527640c88d0f40ebe`;
 - `src/effects/catalog.js`: `d8cf312294ccd915892a4a668432ca2533ab255fb24664d89dee8456331e4ea4`;

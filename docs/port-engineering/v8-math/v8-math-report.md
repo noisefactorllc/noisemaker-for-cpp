@@ -16,7 +16,7 @@ real implementation.
   official `node-v26.0.0-darwin-x64.tar.gz` from `nodejs.org/dist/v26.0.0/`,
   verified its SHA256 against the published `SHASUMS256.txt`
   (`f488ab543fe202d8a2d56e661682117d3c56903a2bf64f2ec1ff7bd421cfd875`,
-  matched), kept under `/Users/alex/platform/.nm-cpp-work/tools/` (not in
+  matched), kept under `../.nm-cpp-work/tools/` (not in
   the repo). Runs natively under Rosetta on this Apple Silicon Mac;
   `process.versions.v8` reports the identical `14.6.202.33-node.19`, so both
   architectures are being measured against the same V8 revision.
@@ -583,7 +583,7 @@ Every site below was established two ways, not one: (a) direct
 disassembly of the real, unmodified `base::ieee754::*` machine code in
 this environment's `libnode.147.dylib` (V8 14.6.202.33-node.19, arm64;
 symbols are present and unstripped in this Homebrew build -- `nm
-/Users/alex/homebrew/lib/libnode.147.dylib | grep ieee754`), decoding each
+~/homebrew/lib/libnode.147.dylib | grep ieee754`), decoding each
 `fmadd`/`fmsub`/`fnmadd`/`fnmsub` instruction's operands back to the
 matching `fdlibm.cpp` source expression by tracing register moves; and
 (b) cross-checked against a mechanical rule (`A*B+C`->fmadd,

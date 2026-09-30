@@ -37,7 +37,7 @@ and is rejected structurally; inverse OKLab matrices are authenticated globals
 but their conversion function is unreachable from `main`; and omitting only a
 vector helper's final narrowing is immediately rematerialized by the factory.
 
-Run from `/Users/aayars/platform/noisemaker-for-cpp`, with all disposable state
+Run from the repository root, with all disposable state
 outside the repository:
 
 ```sh

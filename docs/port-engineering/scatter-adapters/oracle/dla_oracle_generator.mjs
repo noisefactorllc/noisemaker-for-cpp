@@ -7,10 +7,10 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { dlaDepositGridAdapter } from '/Users/alex/platform/.nm-cpp-work/authority/61aa869/src/effects/cpu/points-deposit.js'
-import { Surface } from '/Users/alex/platform/.nm-cpp-work/authority/61aa869/src/runtime/surface.js'
+import { CaseWriter, loadAuthority, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
 
-import { CaseWriter, makeSurfaceData, mulberry32, randomInt, randomUniform } from './common.mjs'
+const { dlaDepositGridAdapter } = await loadAuthority('src/effects/cpu/points-deposit.js')
+const { Surface } = await loadAuthority('src/runtime/surface.js')
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const jsonPath = path.join(here, 'dla-oracles.json')

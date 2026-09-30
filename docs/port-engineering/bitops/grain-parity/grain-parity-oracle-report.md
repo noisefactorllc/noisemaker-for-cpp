@@ -64,7 +64,7 @@ These are reported as unreachable instead of manufacturing a false pixel witness
 
 ## Regeneration
 
-From `/Users/aayars/platform/noisemaker-for-cpp`:
+From the repository root:
 
 ```sh
 node docs/port-engineering/bitops/grain-parity/grain_parity_oracle_generator.mjs

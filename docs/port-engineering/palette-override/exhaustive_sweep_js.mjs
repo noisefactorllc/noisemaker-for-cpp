@@ -8,9 +8,19 @@
 // a JSON file the C++ side then replays byte-for-byte.
 import crypto from 'node:crypto'
 import fs from 'node:fs'
+import os from 'node:os'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { createDefaultRegistry, kernelFactories, kernels } from '/Users/alex/platform/.nm-cpp-work/authority/61aa869/src/effects/catalog.js'
-import { CpuRenderer } from '/Users/alex/platform/.nm-cpp-work/authority/61aa869/src/runtime/renderer.js'
+// The pinned JS authority: a read-only noisemaker-for-cpu checkout at commit
+// 61aa869 in ../.nm-cpp-work/authority/61aa869 beside this repository,
+// resolved from this file rather than the working directory.
+const authorityRoot = new URL('../../../../.nm-cpp-work/authority/61aa869/', import.meta.url)
+if (!fs.existsSync(authorityRoot)) {
+  throw new Error(`authority snapshot not found: ${fileURLToPath(authorityRoot)} (expected a read-only noisemaker-for-cpu checkout at commit 61aa869 in ../.nm-cpp-work/authority/61aa869 beside this repository)`)
+}
+const { createDefaultRegistry, kernelFactories, kernels } = await import(new URL('src/effects/catalog.js', authorityRoot).href)
+const { CpuRenderer } = await import(new URL('src/runtime/renderer.js', authorityRoot).href)
 
 function sha256(buf) { return crypto.createHash('sha256').update(buf).digest('hex') }
 function renderer() { return new CpuRenderer({ registry: createDefaultRegistry(), kernels, kernelFactories, tileRows: 8 }) }
@@ -65,5 +75,6 @@ for (const [name, spec] of Object.entries(EFFECTS)) {
     }
   }
 }
-fs.writeFileSync('/private/tmp/claude-502/-Users-alex-platform-scaffold/4b35d94f-8f1c-451d-b220-88b458c1bfa7/scratchpad/exhaustive_cases.json', JSON.stringify(cases))
+// The C++ side reads the cases from the same temporary directory.
+fs.writeFileSync(path.join(os.tmpdir(), 'exhaustive_cases.json'), JSON.stringify(cases))
 console.log(`wrote ${cases.length} cases`)
