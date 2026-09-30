@@ -2,9 +2,17 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-29: RENDER-FAMILY MARCH PROOFS ADMITTED (render3d, renderLit3d, renderCubemap3d); CROSS PROFILES RE-LOCKED; NO PROMOTION
 >
-> This checkpoint supersedes earlier checkpoint ordering only for the closed
-> render3d/renderLit3d/renderCubemap3d counted-for cluster; all other ordering
-> and census rules apply unchanged.
+> Ordering: the 2026-09-24 review's first action, grouped multi-output execution
+> with seed binding, is **[COMPLETED at f2d9822]** and its byte-exact result is
+> verified in CI (see the record below at 4b4e3ab). The review's full-parity
+> closure action is the only item after it that does not admit further work in
+> this repo, and its residual is **blocked, upstream** (the authority's
+> `ditherWithPalette`/`findClosestPaletteColor` NaN bug in read-only
+> noisemaker-for-cpu; sweep.py's fail-closed policy rightly refuses the claimed
+> kit effect). With those two settled by the published record, the review's
+> remaining order -- complete particle families, then authority reconciliation,
+> then full parity closure -- makes the counted-for admission queue the
+> operative frontier; this pass advances it. No other ordering rule changes.
 >
 > ### What landed (this pass)
 > - **Counted-for loop proofs for the three render-family march programs** through the
@@ -52,18 +60,31 @@
 > ### Verification
 > - All seven generator gates pass (`check_corpus`, `check_semantics`, `corpus_ratchet
 >   --check`, `generate_typed_slice`, `generate_kernels`, `generate_backend_compatibility
->   --check`, `generate_effect_catalog --check`; 277 + 27 = 304).
+>   --check`, `generate_effect_catalog --check`; 277 + 27 = 304). The six job-declared
+>   checks plus `corpus_ratchet --check` all pass on the exact published candidate
+>   6c817485c20c9b32ebcd92b911e1688fbb980e74 (machine verification receipt
+>   verified_at 2026-09-30T01:21:18.683Z, review c1ee20af-f715-49d3-8f9f-b764341809d5).
 > - `tools/resync/regen_all.sh .` twice to a fixed point (`REGEN OK` twice, zero
->   generated-file drift); native Debug CMake configure/build + CTest 4/4; zero
->   symlinks (`find . -type l` empty).
-> - Full 4-shard Python suite (pyshards.sh, Python 3.13.13): 2,097 tests, 72 skipped,
->   24 failures + 6 errors -- every one is the pre-existing local-environment gap,
->   re-verified red-before where not previously enumerated (Node v26.5.1-local vs
->   v26.0.0-pinned oracle gap across osd/julia/median/fractal/colorLab/texture/
->   emboss/dither/palette/spooky/noise/lightleak192/dsl-frontend-oracle plus the four
->   `unittest.loader._FailedTest` oracle bridges). All touched modules are green
->   (test_typed_generator incl. the new/updated tests and both counted-for suites,
->   test_corpus_ratchet, test_backend_compatibility, test_effect_catalog_generator).
+>   generated-file drift; `git status --short` empty after the second run); native
+>   Debug CMake configure/build + CTest 4/4; zero symlinks (`find . -type l` empty).
+> - Full 4-shard Python suite **status=0**: `tools/resync/pyshards.sh . 4 … authority`
+>   on the macOS Apple-silicon host lane with the pinned toolchain the suite's oracle
+>   lanes require -- Node v26.0.0 arm64 (`/opt/homebrew/Cellar/node/26.0.0`), Python
+>   3.14.5, pytest, `NOISEMAKER_CPU_ROOT`/`NOISEMAKER_CPU_AUTHORITY_LEDGER` from the
+>   frozen 61aa869 export, `NOISEMAKER_FOR_CPU` at the live 61aa869 checkout, the
+>   shader repo at 0ed489ec46842bffba33ee2ec65a218b6dda51f5, and host-built Mach-O dsl
+>   oracles + `noisemaker-dsl-cpu-case`: shard0 764 tests OK (18 skipped), shard1 529
+>   OK (16 skipped), shard2 400 OK (7 skipped), shard3 437 OK (0 skipped), 2,130 total,
+>   zero failures/errors, including the byte-exact
+>   `tests.test_dsl_corpus_parity` corpus lane (174/174 admitted programs byte-exact).
+>   The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
+>   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
+>   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;
+>   with the pinned Node 26.0.0, live checkout and built C++ oracles the same modules
+>   pass on the host. Exact-candidate shard logs and the local-gate outputs above are
+>   archived under /workspace/evidence/cpp-continuation-20260929. The only test change
+>   this pass needed was the Task-22 carrier-set pin gaining the three keys (shard run
+>   before that fix had exactly that one fresh failure).
 >
 > ### Remaining counted-for queue (exact diagnostics from pending.json, 3 programs)
 > - `points/lenia:convolve:36` -- nested `dy`/`dx` loops bounded by `int iRadius =
