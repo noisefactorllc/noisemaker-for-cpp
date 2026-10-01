@@ -64,30 +64,52 @@
 > - All seven generator gates pass (`check_corpus`, `check_semantics`, `corpus_ratchet
 >   --check`, `generate_typed_slice`, `generate_kernels`, `generate_backend_compatibility
 >   --check`, `generate_effect_catalog --check`; 277 + 27 = 304). The six job-declared
->   checks plus `corpus_ratchet --check` all pass on the exact published candidate
->   6c817485c20c9b32ebcd92b911e1688fbb980e74 (machine verification receipt
->   verified_at 2026-09-30T01:21:18.683Z, review c1ee20af-f715-49d3-8f9f-b764341809d5).
+>   checks pass on the exact published candidates (implementation 6c817485…, records
+>   b7267dc…, entrypoint+records f44efd1bf21056e83a9ef693e32900d119037449; machine
+>   verification receipts verified_at 2026-09-30T01:21:18.683Z and 2026-10-01T00:35:24.810Z).
 > - `tools/resync/regen_all.sh .` twice to a fixed point (`REGEN OK` twice, zero
 >   generated-file drift; `git status --short` empty after the second run); native
 >   Debug CMake configure/build + CTest 4/4; zero symlinks (`find . -type l` empty).
-> - Full 4-shard Python suite **status=0**: `tools/resync/pyshards.sh . 4 … authority`
->   on the macOS Apple-silicon host lane with the pinned toolchain the suite's oracle
->   lanes require -- Node v26.0.0 arm64 (`/opt/homebrew/Cellar/node/26.0.0`), Python
->   3.14.5, pytest, `NOISEMAKER_CPU_ROOT`/`NOISEMAKER_CPU_AUTHORITY_LEDGER` from the
->   frozen 61aa869 export, `NOISEMAKER_FOR_CPU` at the live 61aa869 checkout, the
->   shader repo at 0ed489ec46842bffba33ee2ec65a218b6dda51f5, and host-built Mach-O dsl
+> - Full 4-shard Python suite **status=0 at the exact candidate f44efd1… with Python
+>   3.13.13**: `tools/resync/pyshards.sh . 4 … authority` on the macOS Apple-silicon
+>   host lane with the pinned toolchain the suite's oracle lanes require -- Python
+>   3.13.13 (uv-managed CPython, pytest installed into its venv), Node v26.0.0 arm64
+>   (`/opt/homebrew/Cellar/node/26.0.0`), `NOISEMAKER_CPU_ROOT`/
+>   `NOISEMAKER_CPU_AUTHORITY_LEDGER` from the frozen 61aa869 export (719-entry
+>   CI-format ledger), `NOISEMAKER_FOR_CPU` at the live 61aa869 checkout, the shader
+>   repo at 0ed489ec46842bffba33ee2ec65a218b6dda51f5, and host-built Mach-O dsl
 >   oracles + `noisemaker-dsl-cpu-case`: shard0 764 tests OK (18 skipped), shard1 529
 >   OK (16 skipped), shard2 400 OK (7 skipped), shard3 437 OK (0 skipped), 2,130 total,
->   zero failures/errors, including the byte-exact `tests.test_dsl_corpus_parity`
->   corpus lane (174 of the 179 admitted records byte-exact; the other 5 are the
->   authority-refused records authenticated in
->   tests/oracles/dsl_corpus_parity_exclusions.json and remain open gaps, not passes).
->   The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
+>   zero failures/errors. The toolchain probe and per-shard logs (rev=f44efd1…,
+>   python3=Python 3.13.13, pytest 9, node v26.0.0) are archived under
+>   /workspace/evidence/cpp-continuation-20260929 (pyshards_gpu3.shard0-3.log,
+>   toolchain.txt).
+> - **Rendered parity, entrypoint `scripts/parity-summary` (published at f44efd1…)**:
+>   over the whole authenticated executable-corpus manifest
+>   (`tests/fixtures/dsl/executable-corpus.json`, manifest digest
+>   `tests/oracles/dsl_executable_corpus.sha256`) with the pinned authority runner and
+>   the host-built driver, the run reports `PARITY-SUMMARY
+>   {"expected":179,"executed":174,"exact":174,"strict":0,"near":0,"defer":0,
+>   "skip":5,"fail":0,"missing":0}`. Parity cases: the 179 admitted records
+>   (effectIds in tests/fixtures/dsl/executable-corpus.json). 174 records are
+>   byte-exact; the 5 skips are the authority-refused records authenticated in
+>   tests/oracles/dsl_corpus_parity_exclusions.json (`filter/lighting`,
+>   `filter/parallax`, `filter/text`, `points/heightGrid`, `synth/media`) -- open
+>   gaps, not passes. The zero-rest rendered-parity closure criteria are therefore
+>   NOT met (skip=5, executed 174 != expected 179) and no rendered-parity gap is
+>   claimed closed; both the 5 authority-refused records and the sweep-gate dither
+>   residual stay actionable in the frontier census below. The exact-candidate run
+>   log is archived under /workspace/evidence/cpp-continuation-20260929
+>   (parity_summary.log; supervisor-computed during verify as well).
+> - The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
 >   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
 >   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;
 >   with the pinned Node 26.0.0, live checkout and built C++ oracles the same modules
->   pass on the host. Exact-candidate shard logs and the local-gate outputs above are
->   archived under /workspace/evidence/cpp-continuation-20260929. The only test change
+>   pass on the host. Handoff integrity at the exact candidate: `shasum -a 256
+>   docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md` =
+>   da654ff0312b39256ea2edc3b27ee3bd8cd5dbe32c621f5fd7c3957bb4023008, matching the
+>   sidecar (archived as handoff_sha256_check.log under
+>   /workspace/evidence/cpp-continuation-20260929). The only test change
 >   this pass needed was the Task-22 carrier-set pin gaining the three keys (shard run
 >   before that fix had exactly that one fresh failure).
 >
