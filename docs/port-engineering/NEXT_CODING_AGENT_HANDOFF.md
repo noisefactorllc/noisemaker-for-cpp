@@ -2,17 +2,20 @@
 
 > ## CONTINUATION CHECKPOINT 2026-09-29: RENDER-FAMILY MARCH PROOFS ADMITTED (render3d, renderLit3d, renderCubemap3d); CROSS PROFILES RE-LOCKED; NO PROMOTION
 >
-> Ordering: the 2026-09-24 review's first action, grouped multi-output execution
-> with seed binding, is **[COMPLETED at f2d9822]** and its byte-exact result is
-> verified in CI (see the record below at 4b4e3ab). The review's full-parity
-> closure action is the only item after it that does not admit further work in
-> this repo, and its residual is **blocked, upstream** (the authority's
-> `ditherWithPalette`/`findClosestPaletteColor` NaN bug in read-only
-> noisemaker-for-cpu; sweep.py's fail-closed policy rightly refuses the claimed
-> kit effect). With those two settled by the published record, the review's
-> remaining order -- complete particle families, then authority reconciliation,
-> then full parity closure -- makes the counted-for admission queue the
-> operative frontier; this pass advances it. No other ordering rule changes.
+> Ordering: the controlling 2026-09-24 acceptance order remains (1) grouped
+> multi-output execution with seed binding, (2) complete particle families, (3)
+> authority reconciliation including Dither, (4) full parity closure. Action 1
+> is complete at f2d9822 with CI-verified byte-exact results. Actions 2-4 are
+> OPEN: the counted-for admission queue below -- including the uniform-ceil
+> bound (lenia) and parameter-bound proofs (fractal3d, flythrough3d), plus the
+> pass-binding, struct/global-declaration and remaining frontier clusters --
+> advances actions 2 and 3 and stays fully actionable; the sweep-gate
+> filter/dither both_refused residual (recorded below at 4b4e3ab, root cause
+> the authority's `ditherWithPalette`/`findClosestPaletteColor` NaN bug in
+> read-only noisemaker-for-cpu) is one open item inside action 3's
+> reconciliation, not evidence that authorized automated work is exhausted and
+> not a closure of the parity action. This pass continues the admission queue;
+> no ordering rule changes.
 >
 > ### What landed (this pass)
 > - **Counted-for loop proofs for the three render-family march programs** through the
@@ -75,8 +78,10 @@
 >   shader repo at 0ed489ec46842bffba33ee2ec65a218b6dda51f5, and host-built Mach-O dsl
 >   oracles + `noisemaker-dsl-cpu-case`: shard0 764 tests OK (18 skipped), shard1 529
 >   OK (16 skipped), shard2 400 OK (7 skipped), shard3 437 OK (0 skipped), 2,130 total,
->   zero failures/errors, including the byte-exact
->   `tests.test_dsl_corpus_parity` corpus lane (174/174 admitted programs byte-exact).
+>   zero failures/errors, including the byte-exact `tests.test_dsl_corpus_parity`
+>   corpus lane (174 of the 179 admitted records byte-exact; the other 5 are the
+>   authority-refused records authenticated in
+>   tests/oracles/dsl_corpus_parity_exclusions.json and remain open gaps, not passes).
 >   The Linux worker's earlier 24 failures + 6 errors were its environment gap, not
 >   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
 >   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;

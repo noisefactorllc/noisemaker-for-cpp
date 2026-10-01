@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""Rendered-parity summary for the executable DSL corpus.
+
+Renders every selected case of the current authority's manifest
+(``tests/fixtures/dsl/executable-corpus.json``, authenticated through its own
+digest) twice -- once with the pinned JavaScript CPU authority runner and once
+with this port's ``noisemaker-dsl-cpu-case`` driver -- from the same
+authenticated source bytes and the same options, then byte-compares the RGBA8
+buffers with the shared comparer. With no arguments every admitted record is
+rendered; with arguments only those effect ids.
+
+Counting contract (last line of output, and the only machine-readable one)::
+
+    PARITY-SUMMARY {"expected":N,"executed":N,"exact":N,"strict":N,"near":N,
+                    "defer":N,"skip":N,"fail":N,"missing":N}
+
+``expected`` is the number of selected manifest cases. ``executed`` counts the
+cases both lanes rendered. ``exact`` counts byte-identical buffers; ``strict``
+would count passes under a published numerical contract (the corpus lane is
+zero-tolerance, so it stays 0). ``near``/``defer`` stay 0 -- a tolerated
+mismatch would be a gate change, not a summary. ``skip`` counts cases the
+authority itself refuses (recorded in the authenticated exclusions file, where
+they remain actionable gaps, never passes). ``fail`` counts every real
+divergence: a byte mismatch, one lane refusing where the other renders, or a
+case the exclusions file does not authenticate. ``missing`` counts requested
+ids that are not admitted manifest cases.
+
+Exit status: 0 only when there are no fails and no missing cases and every
+executed case is exact or strict. Skips keep the exit at 0 (they are reported,
+open gaps, not parity defects); they do prevent a whole-port zero-rest closure.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import pathlib
+import subprocess
+import sys
+import tempfile
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from tools.benchmark.corpus_lane import (  # noqa: E402
+    JS_RUNNER,
+    admitted_records,
+    load_corpus,
+    record_flags,
+)
+from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics  # noqa: E402
+
+CPU_REV = "61aa8694d60e6e25d8d3e8c872c971be329458bc"
+CPU_CHECKOUT = pathlib.Path(
+    os.environ.get("NOISEMAKER_FOR_CPU") or "/workspace/repos/noisemaker-for-cpu")
+DRIVER_ENV = "NOISEMAKER_DSL_CPU_CASE"
+
+
+def resolve_driver() -> pathlib.Path:
+    configured = os.environ.get(DRIVER_ENV)
+    candidates = [pathlib.Path(configured)] if configured else []
+    candidates.append(ROOT / "build" / "noisemaker-dsl-cpu-case")
+    for candidate in candidates:
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return candidate
+    raise SystemExit(
+        f"{DRIVER_ENV} must point at an executable noisemaker-dsl-cpu-case build "
+        f"(looked at: {', '.join(str(c) for c in candidates)})")
+
+
+def resolve_authority_env() -> dict[str, str]:
+    """Reuse the declared authority root, or materialize the frozen export."""
+    env = dict(os.environ)
+    if env.get("NOISEMAKER_CPU_ROOT") and env.get("NOISEMAKER_CPU_AUTHORITY_LEDGER"):
+        root = pathlib.Path(env["NOISEMAKER_CPU_ROOT"])
+        if not root.is_absolute() or not root.is_dir():
+            raise SystemExit(f"NOISEMAKER_CPU_ROOT is not an absolute directory: {root}")
+        return env
+    if not CPU_CHECKOUT.is_dir():
+        raise SystemExit(f"no CPU authority checkout at {CPU_CHECKOUT}")
+    snapshot = pathlib.Path(tempfile.mkdtemp(prefix="cpu-authority-")) / "root"
+    snapshot.mkdir()
+    with subprocess.Popen(["git", "-C", str(CPU_CHECKOUT), "archive", CPU_REV],
+                          stdout=subprocess.PIPE) as archive:
+        subprocess.run(["tar", "-x", "-C", str(snapshot)], stdin=archive.stdout, check=True)
+        archive.stdout.close()
+        if archive.wait() != 0:
+            raise SystemExit(f"git archive {CPU_REV} failed")
+    import hashlib
+    lines = [f"{hashlib.sha256(f.read_bytes()).hexdigest()}  {f}"
+             for f in sorted(p for p in snapshot.rglob("*") if p.is_file())]
+    ledger = pathlib.Path(str(snapshot) + ".ledger.sha256")
+    ledger.write_text("\n".join(lines) + "\n")
+    env["NOISEMAKER_CPU_ROOT"] = str(snapshot)
+    env["NOISEMAKER_CPU_AUTHORITY_LEDGER"] = str(ledger)
+    return env
+
+
+def select_cases(manifest: dict, ids: list[str]) -> list[dict]:
+    records = admitted_records(manifest)
+    if not records:
+        raise SystemExit("the manifest has no admitted records")
+    if not ids:
+        return records
+    by_id = {record["effectId"]: record for record in records}
+    selected, missing = [], []
+    for effect_id in ids:
+        record = by_id.get(effect_id)
+        (selected.append(record) if record else missing.append(effect_id))
+    return selected
+
+
+def main() -> int:
+    ids = sys.argv[1:]
+    manifest = load_corpus()
+    records = admitted_records(manifest)
+    if len(records) != manifest["counts"]["admitted"]:
+        raise SystemExit("manifest counts.admitted disagrees with the admitted records")
+    selected = select_cases(manifest, ids)
+    driver = resolve_driver()
+    node = os.environ.get("NOISEMAKER_NODE") or "node"
+    env = resolve_authority_env()
+
+    expected = len(selected)
+    executed = exact = strict = near = defer = skip = fail = 0
+    failures: list[str] = []
+    with tempfile.TemporaryDirectory(prefix="noisemaker-parity-summary-") as temporary:
+        scratch = pathlib.Path(temporary)
+        for record in selected:
+            name = record["effectId"]
+            source = scratch / "case.dsl"
+            source.write_text(record["source"], encoding="utf-8")
+            case = scratch / "case.json"
+            case.write_text(json.dumps(record), encoding="utf-8")
+            options = record["options"]
+
+            js_raw = scratch / "js.rgba8"
+            js = subprocess.run(
+                [node, str(JS_RUNNER), "--cpu-root", env["NOISEMAKER_CPU_ROOT"],
+                 "--case", str(case), "--rgba8-output", str(js_raw),
+                 "--metadata-output", str(scratch / "js.json")],
+                capture_output=True, text=True, env=env)
+            cpp_raw = scratch / "cpp.rgba8"
+            cpp = subprocess.run(
+                [str(driver), *record_flags(record, source),
+                 "--rgba8-output", str(cpp_raw),
+                 "--metadata-output", str(scratch / "cpp.json")],
+                capture_output=True, text=True, env=env)
+
+            if js.returncode != 0 and cpp.returncode != 0:
+                skip += 1
+                continue
+            if js.returncode != 0 or cpp.returncode != 0:
+                fail += 1
+                lane = "authority" if js.returncode != 0 else "executor"
+                failures.append(f"{name}: {lane} refused while the other lane rendered bytes")
+                continue
+            executed += 1
+            result = compare_rgba8(options["width"], options["height"],
+                                   js_raw.read_bytes(), cpp_raw.read_bytes())
+            if result["ok"]:
+                exact += 1
+            else:
+                fail += 1
+                failures.append(f"{name}: {format_diagnostics(result)}")
+
+    missing = max(0, len(ids) - (executed + skip + fail))
+    for line in failures[:10]:
+        print(line)
+    if len(failures) > 10:
+        print(f"... {len(failures) - 10} more failures")
+    print("PARITY-SUMMARY "
+          + json.dumps({"expected": expected, "executed": executed, "exact": exact,
+                        "strict": strict, "near": near, "defer": defer,
+                        "skip": skip, "fail": fail, "missing": missing},
+                       separators=(",", ":")))
+    return 0 if fail == 0 and missing == 0 and exact + strict == executed else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
