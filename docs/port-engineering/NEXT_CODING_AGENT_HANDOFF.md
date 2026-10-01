@@ -105,11 +105,15 @@
 >   candidate defects: x86 Node v26.5.1 vs the v26.0.0-pinned ARM64 oracle packages
 >   (julia/shape-mixer/mandelbrot NaN drift) plus missing live-checkout/oracle env;
 >   with the pinned Node 26.0.0, live checkout and built C++ oracles the same modules
->   pass on the host. Handoff integrity at the exact candidate: `shasum -a 256
->   docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md` =
->   da654ff0312b39256ea2edc3b27ee3bd8cd5dbe32c621f5fd7c3957bb4023008, matching the
->   sidecar (archived as handoff_sha256_check.log under
->   /workspace/evidence/cpp-continuation-20260929). The only test change
+>   pass on the host. Handoff integrity: every handoff edit refreshes the sidecar
+>   in the same commit, and the archive holds the exact-candidate `shasum -a 256
+>   docs/port-engineering/NEXT_CODING_AGENT_HANDOFF.md` result --
+>   da654ff0312b39256ea2edc3b27ee3bd8cd5dbe32c621f5fd7c3957bb4023008 at f44efd1…,
+>   matching that commit's sidecar (archived as handoff_sha256_check.log under
+>   /workspace/evidence/cpp-continuation-20260929); at 578b86f… the refreshed
+>   sidecar is e22a921c4d3a77afdba78749c0d0f56d8a59eb42dacdcf72fc711c08c5df453e,
+>   and this commit's own sidecar covers the text it publishes (verify recomputes
+>   both against the publishing head). The only test change
 >   this pass needed was the Task-22 carrier-set pin gaining the three keys (shard run
 >   before that fix had exactly that one fresh failure).
 >

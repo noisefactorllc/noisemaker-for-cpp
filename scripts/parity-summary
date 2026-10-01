@@ -19,10 +19,11 @@ cases both lanes rendered. ``exact`` counts byte-identical buffers; ``strict``
 would count passes under a published numerical contract (the corpus lane is
 zero-tolerance, so it stays 0). ``near``/``defer`` stay 0 -- a tolerated
 mismatch would be a gate change, not a summary. ``skip`` counts cases the
-authority itself refuses (recorded in the authenticated exclusions file, where
-they remain actionable gaps, never passes). ``fail`` counts every real
-divergence: a byte mismatch, one lane refusing where the other renders, or a
-case the exclusions file does not authenticate. ``missing`` counts requested
+authority itself refuses where tests/oracles/dsl_corpus_parity_exclusions.json
+authenticates the record (they remain actionable gaps, never passes). ``fail``
+counts every real divergence: a byte mismatch, one lane refusing where the
+other renders, or a both-lane refusal the exclusions file does not
+authenticate. ``missing`` counts requested
 ids that are not admitted manifest cases.
 
 Exit status: 0 only when there are no fails and no missing cases and every
@@ -46,6 +47,7 @@ from tools.benchmark.corpus_lane import (  # noqa: E402
     JS_RUNNER,
     admitted_records,
     load_corpus,
+    load_exclusions,
     record_flags,
 )
 from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics  # noqa: E402
@@ -113,6 +115,7 @@ def select_cases(manifest: dict, ids: list[str]) -> list[dict]:
 def main() -> int:
     ids = sys.argv[1:]
     manifest = load_corpus()
+    authority_refused = load_exclusions()["authorityRefused"]
     records = admitted_records(manifest)
     if len(records) != manifest["counts"]["admitted"]:
         raise SystemExit("manifest counts.admitted disagrees with the admitted records")
@@ -148,7 +151,13 @@ def main() -> int:
                 capture_output=True, text=True, env=env)
 
             if js.returncode != 0 and cpp.returncode != 0:
-                skip += 1
+                if name in authority_refused:
+                    skip += 1
+                    continue
+                fail += 1
+                failures.append(
+                    f"{name}: both lanes refuse but the authenticated exclusions "
+                    f"file does not list this record as authority-refused")
                 continue
             if js.returncode != 0 or cpp.returncode != 0:
                 fail += 1
