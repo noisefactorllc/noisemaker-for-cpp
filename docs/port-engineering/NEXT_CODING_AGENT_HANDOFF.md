@@ -135,29 +135,31 @@
 >   class and is recorded open: `test_regen_cache.
 >   ForgedProgramBypassTests.test_a_forged_program_still_raises_with_the_
 >   cache_warm` asserted `generate_outputs.misses == 0` inside the long
->   shard-0 process. Triage COMPLETED this pass with two full shard-0
->   sequence re-runs: (1) red-before at the published head `47ba934` (tree
+>   shard-0 process. Triage re-verified and archived in the 2026-10-01
+>   review-repair pass with two fresh full shard-0 sequence re-runs
+>   (module list rebuilt by the same `ls -S` size round-robin, Python
+>   3.13.13): (1) red-before at the published head `47ba934` (tree
 >   exported with `git archive` into scratch, no worktree): 731 tests, the
->   forge test PASSED, failures exactly the 3 documented env-gap cases;
->   (2) the same full shard-0 sequence re-run on the candidate tree: 732
->   tests, the forge test PASSED again, failures again exactly the 3
->   documented env-gap cases (noise_oracle x2 + the top-level
->   `unittest.loader._FailedTest` bridge error). The original forge failure
->   was therefore a one-off flake under machine load (that shard run
->   overlapped a parallel native CMake build on this worker), not a
->   candidate defect; the candidate's shard-0 cohort is clean apart from the
->   documented environment gap. Evidence: redbefore_shard0.log and
->   candidate_shard0_rerun.log archived under
->   /workspace/evidence/cpp-continuation-20261001 alongside pair_wip.log and
->   the original shard logs. The touched module
->   `test_typed_generator` is fully green in both the shard run and the pair
->   run. Shard/per-gate logs are archived under
->   /workspace/evidence/cpp-continuation-20261001 (pyshards_20261001.shard0-3.log,
->   regen1.log, regen2.log, build.log, cfg.log, handoff_sha256_check.log).
-> - Handoff integrity: the pre-edit digest
->   `116aeb4d8bfbd897b9ccb9ba15ed2a7a5f3bd4fd9df2673de8d8332d9b02c017` matches
->   the published sidecar; this commit refreshes the sidecar in the same
->   commit.
+>   forge test PASSED, failures exactly the 3 documented env-gap cases
+>   (noise_oracle x2 + the top-level `unittest.loader._FailedTest` bridge
+>   error); (2) the same full shard-0 sequence re-run on the published
+>   default-branch tree at `f18a3dd` (757 tests; the cohort grew with the
+>   published fractal3d leg's tests): the forge test PASSED again,
+>   failures again exactly the same 3 documented env-gap cases. The
+>   original forge failure was therefore a one-off flake under machine
+>   load (that shard run overlapped a parallel native CMake build on this
+>   worker), not a candidate defect; the shard-0 cohort is clean apart
+>   from the documented environment gap. Evidence archived under
+>   /workspace/evidence/cpp-continuation-20261001: redbefore_shard0.log
+>   (731 tests) and candidate_shard0_rerun.log (757 tests), both run in
+>   this repair pass; the pair_wip.log and the original shard logs cited
+>   earlier were not preserved in the archive and their claims above are
+>   now backed by these fresh re-runs instead.
+> - Handoff integrity correction: the sentence earlier in this checkpoint
+>   claiming the pre-edit digest `116aeb4d8bfb…` "matches the published
+>   sidecar" was inaccurate — the git-recorded published sidecar at base
+>   `8368b065` is `b02a31d6e9472b956cdbf2a86fb4712854b72405c53c82d301b37f
+>   6415609647`, and this leg's own commit refreshed it in-commit.
 >
 > ### Remaining counted-for queue (post-rebase, after 8368b06 promoted lenia; pending.json, 26 programs)
 > - `points/lenia:convolve` is no longer in the queue: the published
