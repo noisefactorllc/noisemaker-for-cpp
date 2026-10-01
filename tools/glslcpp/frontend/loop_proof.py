@@ -353,6 +353,48 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "e231d8537589aceb772d0053cb37f9f109cbe26a04fcaac4db53277acd023d86",
         "interface": "dae25c3eaef96bcdabf93ba0681b2b2978d4da0e534ee05bd42aa397cda31cb9",
     },
+    # The parameter-bound counted-for program: synth3d/fractal3d:precompute
+    # (2026-10-01 leg). Third schema shape, authenticated by
+    # _authenticate_parameter_uniform_int below: the loop bound is a function
+    # parameter (`int maxIter`), and the proof is INTERPROCEDURAL -- every call
+    # site of each carrier function (exactly one, inside computeFractal) binds
+    # the parameter to the runtime value of the `iterations` int uniform, so
+    # the frozen authority metadata maximum (20) is a genuine upper bound
+    # wherever the loop can execute. Fail-closed against: a second call site
+    # for any carrier function, a call argument that is not exactly the
+    # uniform symbol, any rewrite of the parameter inside its function, a
+    # parameter-identity mismatch, and read-span drift. The corpus ratchet
+    # additionally authenticates the pending.json metadata record through
+    # authenticate_parameter_uniform_metadata, binding the frozen maximum to
+    # the authority record. The schema returns the same 4-tuple seed shape as
+    # the const-global path, so attach/rebuild/validate machinery is shared
+    # unchanged and no generated artifact moves.
+    "synth3d/fractal3d:precompute": {
+        "raw": "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41",
+        "source": "bfc4b9e886fa4dc5d642abfd6457c643a47287f2095ccac0f99759ad5ff1d5a6",
+        "defines": (),
+        "parameter_uniform": (
+            "iterations", 4, "int",
+            {"default": 10, "max": 20, "min": 1, "type": "int", "uniform": "iterations"},
+        ),
+        "parameters": (
+            ("mandelbulb", 42, 17, "maxIter", 2),
+            ("juliaBulb", 39, 22, "maxIter", 3),
+            ("mandelcube", 43, 28, "maxIter", 2),
+            ("juliaCube", 40, 33, "maxIter", 3),
+        ),
+        "reads": (
+            (("mandelbulb", 42, 30, 25, 30, 32), ("mandelbulb", 42, 57, 42, 57, 49)),
+            (("juliaBulb", 39, 68, 25, 68, 32), ("juliaBulb", 39, 94, 42, 94, 49)),
+            (("mandelcube", 43, 113, 25, 113, 32), ("mandelcube", 43, 142, 42, 142, 49)),
+            (("juliaCube", 40, 156, 25, 156, 32), ("juliaCube", 40, 185, 42, 185, 49)),
+        ),
+        "pre_functions": "a6c435a3887543d3aa3dc4e3560369a877f1a7b37083197b8e8324da26991a3a",
+        "post_functions": "c014facaa7abbd70dac21bb5f14bdea505355de3b8daf4d5312dd8ef28d3aa1c",
+        "pre_whole": "e8266219a128492532d69183fd0b55ed862ea8eb1a625021ef8fa13fe4dc990e",
+        "post_whole": "76914c2bc26cc25f68a44477f33abe280386e596495458ed416b10d9fcb55a95",
+        "interface": "47b3ed25f3ccea8f7e58ad566c7a2df79cdac82674aa728985d1dae7bfacf9cb",
+    },
 }
 SOURCE_GLOBAL_LITERAL_INT_KEYS = frozenset(_SOURCE_GLOBAL_LITERAL_INT_PROFILES)
 
@@ -412,6 +454,14 @@ def authenticate_source_global_literal_int(
     if _sha(functions) != expected["pre_functions"]:
         raise ValueError(f"{key}: source-global literal-int pre-function profile mismatch")
 
+    # Third schema shape: parameter-bound loops (see the entry comment). The
+    # bound is a function parameter whose every call site binds it to the
+    # runtime value of an int uniform; the seed reuses the const-global
+    # 4-tuple shape so all downstream attach/rebuild/validate machinery is
+    # shared unchanged.
+    if "parameter_uniform" in expected:
+        return _authenticate_parameter_uniform_int(key, expected, declarations, functions)
+
     source_globals = tuple(item for item in declarations
                            if item.symbol.storage not in {"uniform", "output"})
     actual_globals = tuple((item.symbol.name, item.symbol.id, item.type.display(),
@@ -470,6 +520,122 @@ def authenticate_source_global_literal_int(
             raise ValueError(f"{key}: source-global literal-int read profile mismatch")
         seeds.append((integer_id, integer_value, "source-global-const-literal", integer.symbol))
     return tuple(seeds)
+
+
+def _authenticate_parameter_uniform_int(
+        key: str, expected: dict, declarations: tuple[object, ...],
+        functions: tuple[TypedFunction, ...],
+) -> tuple[tuple[int, int, str, object], ...]:
+    """Authenticate the parameter-bound schema and return one seed per carrier.
+
+    The proof is interprocedural: each carrier function's counted loop is
+    bounded by its ``maxIter`` parameter, and the authentication proves that
+    every call site of the function binds that parameter to the runtime value
+    of the exact int uniform frozen in the entry (exactly one call site per
+    carrier exists in the whole program, and its argument at the frozen
+    position is that uniform symbol). The seed's maximum is the frozen
+    authority metadata maximum, which ``authenticate_parameter_uniform_metadata``
+    binds to the live authority record in the ratchet path.
+    """
+    uniform_name, uniform_id, uniform_type, metadata = expected["parameter_uniform"]
+    uniform = next((item for item in declarations if item.symbol.id == uniform_id), None)
+    if (uniform is None or uniform.symbol.name != uniform_name
+            or uniform.symbol.storage != "uniform" or uniform.symbol.writable
+            or uniform.type.display() != uniform_type):
+        raise ValueError(f"{key}: malformed parameter-uniform declaration")
+    maximum = metadata["max"]
+    if not isinstance(maximum, int) or maximum < 0:
+        raise ValueError(f"{key}: malformed parameter-uniform maximum")
+
+    # Rewrite barrier: an assignment, compound assignment, or ++/-- whose
+    # operand tree is the parameter, or a call actual that could rewrite it
+    # (an out/inout formal), would detach the runtime value from the
+    # authenticated call-site binding -- fail closed.
+    rewrite_kinds = {"assign", "inc", "dec"}
+    parameter_ids = {item[2] for item in expected["parameters"]}
+    callee_forms = {function.signature.id: function
+                    for function in functions if function.body}
+    call_sites: dict[int, list] = {}
+    for function in functions:
+        for statement in function.body:
+            for expression in _walk_statement_expressions(statement):
+                if expression.kind in rewrite_kinds and any(
+                        child.kind == "id" and child.symbol_id in parameter_ids
+                        for child in _walk_expression(expression)):
+                    raise ValueError(
+                        f"{key}: parameter-uniform carrier parameter is rewritten")
+                if expression.kind == "call" and expression.signature_id is not None:
+                    callee = callee_forms.get(expression.signature_id)
+                    if callee is None:
+                        raise ValueError(
+                            f"{key}: parameter-uniform callee identity missing")
+                    if (len(expression.children) == len(callee.parameters)
+                            and any(child.kind == "id"
+                                    and child.symbol_id in parameter_ids
+                                    and callee.parameters[index].direction != "in"
+                                    for index, child in enumerate(expression.children))):
+                        raise ValueError(
+                            f"{key}: parameter-uniform carrier parameter is rewritten")
+                    call_sites.setdefault(expression.signature_id, []).append(expression)
+
+    seeds: list[tuple[int, int, str, object]] = []
+    for spec, expected_reads in zip(expected["parameters"], expected["reads"]):
+        function_name, signature_id, parameter_id, parameter_name, argument_index = spec
+        function = next((item for item in functions
+                         if item.name == function_name
+                         and item.signature.id == signature_id and item.body), None)
+        if function is None:
+            raise ValueError(f"{key}: parameter-uniform carrier function missing")
+        if (argument_index >= len(function.parameters)
+                or function.parameters[argument_index].id != parameter_id
+                or function.parameters[argument_index].name != parameter_name
+                or function.parameters[argument_index].type.display() != "int"
+                or function.parameters[argument_index].direction != "in"):
+            raise ValueError(f"{key}: malformed parameter-uniform carrier parameter")
+        parameter = function.parameters[argument_index]
+        reads = []
+        for statement in function.body:
+            for expression in _walk_statement_expressions(statement):
+                if expression.kind == "id" and expression.symbol_id == parameter_id:
+                    span = expression.span
+                    if expression.symbol != parameter:
+                        raise ValueError(f"{key}: malformed parameter-uniform read")
+                    reads.append((function.name, function.signature.id,
+                                  span.start_line, span.start_column,
+                                  span.end_line, span.end_column))
+        if tuple(reads) != expected_reads:
+            raise ValueError(f"{key}: parameter-uniform read profile mismatch")
+        sites = call_sites.get(signature_id, ())
+        if len(sites) != 1 or argument_index >= len(sites[0].children):
+            raise ValueError(
+                f"{key}: parameter-uniform call-site cardinality mismatch")
+        argument = sites[0].children[argument_index]
+        if (argument.kind != "id" or argument.symbol_id != uniform_id
+                or argument.symbol != uniform.symbol):
+            raise ValueError(
+                f"{key}: parameter-uniform call-site argument mismatch")
+        seeds.append((parameter_id, maximum,
+                      "parameter-uniform-argument-bound", parameter))
+    return tuple(seeds)
+
+
+def authenticate_parameter_uniform_metadata(effect: object, key: str) -> None:
+    """Bind the frozen parameter-uniform maximum to the authority metadata record.
+
+    Called from the corpus ratchet with the pending.json effect projection so
+    the seed maximum can never drift from the record the authority actually
+    declares (a raised maximum would silently unsound every bound loop).
+    """
+    expected = _SOURCE_GLOBAL_LITERAL_INT_PROFILES.get(key)
+    if expected is None or "parameter_uniform" not in expected:
+        return
+    uniform_name, _uniform_id, _uniform_type, metadata = expected["parameter_uniform"]
+    try:
+        record = effect["params"][uniform_name]  # type: ignore[index]
+    except (KeyError, TypeError):
+        raise ValueError(f"{key}: parameter-uniform metadata record missing") from None
+    if record != metadata:
+        raise ValueError(f"{key}: parameter-uniform metadata record mismatch")
 
 
 def _checked_add(left: int, right: int) -> int:

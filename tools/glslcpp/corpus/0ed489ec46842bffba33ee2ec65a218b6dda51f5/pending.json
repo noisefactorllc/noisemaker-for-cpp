@@ -3694,7 +3694,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: synth3d/fractal3d:precompute:68:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: synth3d/fractal3d:precompute:93:24: unsupported builtin log",
         "stage": "typed.validator"
       },
       "effect_id": "synth3d/fractal3d",

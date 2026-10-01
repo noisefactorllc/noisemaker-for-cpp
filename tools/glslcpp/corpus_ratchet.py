@@ -207,7 +207,15 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     source_hash = _sha(source_bytes)
     from tools.glslcpp.frontend.loop_proof import (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY, SOURCE_GLOBAL_LITERAL_INT_KEYS,
+        authenticate_parameter_uniform_metadata,
     )
+    # Parameter-bound counted-for entries: bind the frozen seed maximum to the
+    # authority metadata record before any proof is attached (a raised
+    # authority maximum would silently unsound the bound loops).
+    try:
+        authenticate_parameter_uniform_metadata(effect, key)
+    except ValueError as error:
+        return {"stage": "corpus.parameter_uniform", "diagnostic": _diagnostic(error)}
     from tools.glslcpp.frontend.runtime_loop_bound_profile import (
         RUNTIME_LOOP_BOUND_KEYS, PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         apply_runtime_loop_bound,

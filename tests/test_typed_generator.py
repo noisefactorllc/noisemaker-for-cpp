@@ -10878,7 +10878,13 @@ and item["program_key"] != "filter/wobble:wobble"
                                    "classicNoisedeck/shapes3d:shapes3d",
                                    "render/render3d:render3d",
                                    "render/renderCubemap3d:renderCubemap3d",
-                                   "render/renderLit3d:renderLit3d")),
+                                   "render/renderLit3d:renderLit3d",
+                                   # synth3d/fractal3d:precompute joined with the
+                                   # 2026-10-01 parameter-bound leg (interprocedural
+                                   # `int maxIter` bound; every call site binds the
+                                   # parameter to the `iterations` uniform whose
+                                   # authority metadata maximum is 20).
+                                   "synth3d/fractal3d:precompute")),
                          generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         post_task22_keys = frozenset((
             *task23_keys,
@@ -25816,6 +25822,125 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         unproved = [s for f in typed_unbounded.functions for s in f.body
                     if s.kind == "for" and s.loop_proof is None]
         self.assertEqual(1, len(unproved))
+
+    def test_fractal3d_parameter_uniform_int_pending_advancement(self) -> None:
+        import hashlib
+        import json as _json
+        import pathlib
+
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import loop_proof, parse_program
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        # The parameter-bound counted-for program: the four fractal carriers'
+        # loops are bounded by the function parameter `int maxIter`, and the
+        # proof is interprocedural -- each function has exactly one call site
+        # (inside computeFractal) whose argument at the frozen position is the
+        # `iterations` int uniform, so the frozen authority metadata maximum
+        # (20) is a genuine upper bound. The seed reuses the const-global
+        # 4-tuple shape; the ratchet additionally binds the frozen maximum to
+        # the pending.json metadata record. Every loop proves; the frontier
+        # advances from `unsupported counted-for program proof` to the `log`
+        # builtin; no program is promoted.
+        key = "synth3d/fractal3d:precompute"
+        corpus = pathlib.Path(
+            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
+        self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
+        self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+        self.assertEqual(
+            ("iterations", 4, "int",
+             {"default": 10, "max": 20, "min": 1, "type": "int",
+              "uniform": "iterations"}),
+            landed["parameter_uniform"])
+        self.assertEqual((("mandelbulb", 42, 17, "maxIter", 2),
+                          ("juliaBulb", 39, 22, "maxIter", 3),
+                          ("mandelcube", 43, 28, "maxIter", 2),
+                          ("juliaCube", 40, 33, "maxIter", 3)),
+                         landed["parameters"])
+        source_path = corpus / "pending-sources/synth3d/fractal3d/precompute.glsl"
+        raw = source_path.read_text(encoding="utf-8")
+        self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+                         landed["raw"])
+        record = next(item for item in pending["pending"]
+                      if item["program_key"] == key)
+        self.assertEqual(record["raw_sha256"], landed["raw"])
+
+        effect = pending["effects"]["synth3d/fractal3d"]
+        defaults = check_semantics._metadata_defaults(
+            {"effects": {"synth3d/fractal3d": effect}}, key)
+
+        # The frozen maximum binds to the live authority metadata record.
+        loop_proof.authenticate_parameter_uniform_metadata(effect, key)
+        drifted = _json.loads(_json.dumps(effect))
+        drifted["params"]["iterations"]["max"] = 21
+        with self.assertRaises(ValueError) as ctx:
+            loop_proof.authenticate_parameter_uniform_metadata(drifted, key)
+        self.assertIn("metadata record mismatch", str(ctx.exception))
+
+        # Without the profile the carrier requirement fails closed.
+        typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"])
+        self.assertIn("exact source-global literal-int carrier required",
+                      str(ctx.exception))
+
+        # With the seed carrier all four loops prove (one per carrier
+        # function; trips <= 20 each, charge 4*20) and the frontier is the
+        # `log` builtin at 93:24 -- juliaBulb's `0.5 * log(r)` distance
+        # estimate (mandelbulb's own log read is normalized line 55 and is
+        # only reached after the frontier construct is admitted).
+        typed = analyze_program(
+            parse_program(raw, key, defaults), key,
+            source_global_literal_int_profile=
+            loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        summary = typed.counted_loop_proof
+        self.assertEqual(
+            (4, 0, 1, 20, 80, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic))
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"],
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("93:24: unsupported builtin log", str(ctx.exception))
+        with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, key, landed["raw"], "pixel",
+                "bind_synth3d_fractal3d_precompute",
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("93:24: unsupported builtin log", str(ctx.exception))
+
+        # Forged source bytes fail closed even with the exact profile.
+        with self.assertRaises(Exception) as ctx:
+            analyze_program(
+                parse_program(raw + "\n", key, defaults), key,
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("mismatch", str(ctx.exception))
+
+        # Call-site identity pin: exactly one call site for the mandelbulb
+        # carrier exists in the whole program and its maxIter argument is the
+        # `iterations` uniform symbol (the interprocedural binding the seed
+        # authenticates). The rewrite barrier (assign/inc/dec touching the
+        # parameter) and the call-site cardinality/argument checks fail
+        # closed inside _authenticate_parameter_uniform_int; they are
+        # unreachable from a forged source because the digest gate aborts
+        # first, so they are pinned structurally here.
+        profiled_functions = typed.functions
+        calls = [e for f in profiled_functions for s in f.body
+                 for e in loop_proof._walk_statement_expressions(s)
+                 if e.kind == "call" and e.signature_id == 42]
+        self.assertEqual(1, len(calls))
+        self.assertEqual("iterations", calls[0].children[2].symbol.name)
 
     def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice

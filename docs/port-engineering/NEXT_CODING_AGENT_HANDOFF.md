@@ -57,6 +57,129 @@
 > parameter-bound proofs, pass-binding and remaining frontier clusters) and
 > the 26 pending programs. Next: re-read the pending blockers with the ratchet
 > after this promotion lands.
+> ## CONTINUATION CHECKPOINT 2026-10-01: PARAMETER-BOUND COUNTED-FOR PROOF ADMITTED FOR synth3d/fractal3d:precompute; NO PROMOTION
+>
+> Ordering: the controlling 2026-09-24 acceptance order remains (1) grouped
+> multi-output execution with seed binding [DONE], (2) complete particle
+> families, (3) authority reconciliation including Dither, (4) full parity
+> closure. This pass continues the counted-for admission queue (one program
+> of it), advancing actions 2 and 3; no ordering rule changes.
+>
+> ### What landed (this pass)
+> - **Sound interprocedural parameter-bound counted-for proof** through the
+>   existing `source-global-literal-int-v1` mechanism's third schema shape: the
+>   new frozen entry `synth3d/fractal3d:precompute` in
+>   `tools/glslcpp/frontend/loop_proof.py::_SOURCE_GLOBAL_LITERAL_INT_PROFILES`
+>   freezes the bound parameter set (`mandelbulb`/`juliaBulb`/`mandelcube`/
+>   `juliaCube` each carrying `int maxIter` at its exact parameter index), the
+>   bound-uniform identity (`iterations`, symbol 4, int) with the exact
+>   authority metadata record `{"default":10,"max":20,"min":1,"type":"int",
+>   "uniform":"iterations"}`, per-function read spans, and the pre/post
+>   functions/whole/interface digests. `_authenticate_parameter_uniform_int`
+>   proves the bound interprocedurally and fail-closed: each carrier has
+>   EXACTLY ONE call site in the whole program (inside `computeFractal`) and
+>   that site's `maxIter` argument is the `iterations` uniform by object
+>   identity, so the metadata maximum 20 is a genuine upper bound wherever the
+>   loop can execute; barriers abort on a second call site, a non-uniform
+>   argument, a parameter-identity/type/direction mismatch, read-span drift,
+>   any assign/inc/dec whose operand tree is the parameter, and any call
+>   actual that could rewrite it (out/inout formal, callee identity
+>   fail-closed). The seed reuses the const-global 4-tuple shape
+>   (`parameter-uniform-argument-bound` provenance), so attach/rebuild/
+>   validate machinery and all existing profiles are shared unchanged and no
+>   generated artifact moves. The capability vocabulary (APPROVED_CAPABILITIES)
+>   is deliberately NOT extended: a new capability string would regenerate
+>   every typed_manifest row and the ~4.4 MiB effect_catalog.cpp.
+> - **Authority metadata binding**: `loop_proof.authenticate_parameter_uniform_metadata`
+>   is called by the corpus ratchet (`probe_program`) before any proof is
+>   attached; the frozen maximum must equal the live pending.json record
+>   (`stage corpus.parameter_uniform` on drift), so a raised authority maximum
+>   cannot silently unsound the bound loops.
+> - **Corpus ratchet** (`--write`, `promoted: []`): vendored **277**, pending
+>   **27** (304 authority programs; typed slice 276, backend compatible 275 --
+>   all unchanged, no program promoted). `synth3d/fractal3d:precompute` advances
+>   from `precompute:68:5: unsupported counted-for program proof` to its next
+>   authentic frontier `precompute:93:24: unsupported builtin log` (`0.5 * log(r)`
+>   in juliaBulb's distance estimate; mandelbulb's own log read is normalized
+>   line 55 and is only reached after the frontier construct is admitted). Proof summary
+>   `(4, 0, 1, 20, 80, True)` (all four carrier loops proved; trips <= 20 each,
+>   entrypoint charge 4*20, acyclic).
+> - **Tests**: new `test_fractal3d_parameter_uniform_int_pending_advancement`
+>   (key-set membership, entry pins incl. the frozen metadata record, metadata
+>   bind + drifted-max rejection, carrier-required fail-closed, proof summary,
+>   validator and emitter frontiers at `93:24: unsupported builtin log`,
+>   forged-source rejection, the single-call-site uniform-argument identity
+>   pin) and the Task-22 `test_task22_crt_exclusions_remain_closed` carrier-set
+>   pin gains the key.
+>
+> ### Verification
+> - All seven generator gates pass (`check_corpus`, `check_semantics`,
+>   `corpus_ratchet --check`, `generate_typed_slice` 276 programs,
+>   `generate_kernels` 3 outputs, `generate_backend_compatibility --check` and
+>   `generate_effect_catalog --check` against the frozen 61aa869 export +
+>   719-entry CI-format ledger; 278 vendored + 26 pending = 304 after the
+>   published lenia promotion 8368b06 that this leg rebased onto; this leg's
+>   own ratchet result was 277 + 27 = 304 pre-rebase).
+> - `tools/resync/regen_all.sh .` twice to a fixed point (`REGEN OK` twice,
+>   zero generated-file drift; `git status --short` shows only the four
+>   intended files after the second run); native Debug CMake configure/build +
+>   CTest 4/4; zero symlinks (`find . -type l` empty).
+> - Full 4-shard Python suite (`pyshards.sh . 4 … authority`, Python 3.13.13,
+>   local Linux lane): 2,098 tests, 20 failures + 6 errors. 19 failures + 6
+>   errors are the documented local environment gap (Node v26.5.1-local vs
+>   v26.0.0-pinned oracle packages across noise/palette/spooky_ticker/osd/
+>   julia/median/dither/colorLab/texture/emboss/flow-plus lightleak192 symlink
+>   cases, and the kaleido/bitEffects/testpattern/mandelbrot/top-level
+>   `unittest.loader._FailedTest` oracle bridges), byte-consistent with the
+>   failure sets recorded at 2026-09-27/28/29. One failure is NOT in that
+>   class and is recorded open: `test_regen_cache.
+>   ForgedProgramBypassTests.test_a_forged_program_still_raises_with_the_
+>   cache_warm` asserted `generate_outputs.misses == 0` inside the long
+>   shard-0 process. Triage COMPLETED this pass with two full shard-0
+>   sequence re-runs: (1) red-before at the published head `47ba934` (tree
+>   exported with `git archive` into scratch, no worktree): 731 tests, the
+>   forge test PASSED, failures exactly the 3 documented env-gap cases;
+>   (2) the same full shard-0 sequence re-run on the candidate tree: 732
+>   tests, the forge test PASSED again, failures again exactly the 3
+>   documented env-gap cases (noise_oracle x2 + the top-level
+>   `unittest.loader._FailedTest` bridge error). The original forge failure
+>   was therefore a one-off flake under machine load (that shard run
+>   overlapped a parallel native CMake build on this worker), not a
+>   candidate defect; the candidate's shard-0 cohort is clean apart from the
+>   documented environment gap. Evidence: redbefore_shard0.log and
+>   candidate_shard0_rerun.log archived under
+>   /workspace/evidence/cpp-continuation-20261001 alongside pair_wip.log and
+>   the original shard logs. The touched module
+>   `test_typed_generator` is fully green in both the shard run and the pair
+>   run. Shard/per-gate logs are archived under
+>   /workspace/evidence/cpp-continuation-20261001 (pyshards_20261001.shard0-3.log,
+>   regen1.log, regen2.log, build.log, cfg.log, handoff_sha256_check.log).
+> - Handoff integrity: the pre-edit digest
+>   `116aeb4d8bfbd897b9ccb9ba15ed2a7a5f3bd4fd9df2673de8d8332d9b02c017` matches
+>   the published sidecar; this commit refreshes the sidecar in the same
+>   commit.
+>
+> ### Remaining counted-for queue (post-rebase, after 8368b06 promoted lenia; pending.json, 26 programs)
+> - `points/lenia:convolve` is no longer in the queue: the published
+>   8368b06 promoted it as the first float-uniform-ceil runtime loop bound.
+> - `synth3d/flythrough3d:precompute:236` -- loops bounded by the **function
+>   parameter** `int maxIter` (uniform `iterations`, max 24); the parameter-bound
+>   mechanism now exists, but the program also carries a `FractalResult` struct
+>   declaration (line 173) and is a `cross-builtin-admission-v1` carrier, so the
+>   leg needs the struct frontier plus a cross-profile re-lock to the
+>   seed-attached tree (same mechanical re-lock shape as the 2026-09-29 render
+>   family).
+> - `synth3d/fractal3d:precompute` (this pass's program) is no longer counted-for:
+>   its frontier is `93:24: unsupported builtin log`.
+> - Non-counted frontier census (pending.json, 26, post-rebase): 11 pass binding
+>   (6 drawMode scatter + 5 multi-pass bound), 6 struct/global declarations
+>   (noise3d:70, shapes3d:54, render3d:113, renderCubemap3d:112, renderLit3d:190,
+>   palette3d:27), 2 SemanticError/variant semantics (attractor `any` cluster,
+>   landscape viewMode variant), 2 vec4[9] (temporalAberration:30, nsSmooth:74),
+>   1 index expression (feedback:339), 1 post `++` (cellularAutomata3d:56),
+>   1 builtin `any` (heightmap3d:25), 1 builtin `log` (fractal3d:93, new),
+>   1 counted-for (flythrough3d:236, the parameter-bound leg above).
+>
 
 > ## CONTINUATION CHECKPOINT 2026-09-29: RENDER-FAMILY MARCH PROOFS ADMITTED (render3d, renderLit3d, renderCubemap3d); CROSS PROFILES RE-LOCKED; NO PROMOTION
 >
