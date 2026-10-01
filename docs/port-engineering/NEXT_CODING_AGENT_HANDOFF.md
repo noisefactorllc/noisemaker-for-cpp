@@ -1,5 +1,63 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-10-01: LENIA CONVOLVE PROMOTED (FIRST FLOAT-UNIFORM-CEIL LOOP BOUND); 278 VENDORED / 26 PENDING
+>
+> Ordering: unchanged; the controlling 2026-09-24 acceptance order remains as
+> stated in the 2026-09-29 checkpoint below. This pass promotes one counted-for
+> queue entry (`points/lenia:convolve`, the uniform-ceil bound named there) out
+> of pending; no ordering rule changes.
+>
+> ### What landed (this pass)
+> - **`points/lenia:convolve` promoted to vendored** (corpus now 278 vendored +
+>   26 pending = 304 authority programs). The first *float-uniform-ceil*
+>   runtime-loop-bound record in `tools/glslcpp/frontend/runtime_loop_bound_profile.py`:
+>   main owns `int iRadius = int(ceil(searchRadius));` (normalized 44:5) and the
+>   symmetric `dy`/`dx` window loops read it directly. The authenticated
+>   `searchRadius` metadata record is `f(25, 5, 40)` in both authorities
+>   (corpus metadata.json and shipped upstream-snapshot.js); `ceil` is
+>   monotonic non-decreasing, so binding the uniform to [5,40] makes the int
+>   seed maximum 40 genuine, and both window loops prove 81 trips each.
+> - **Composition, curl-style**: the program carries BOTH the
+>   `runtime_loop_bound_profile` and its independent `ceil_admission_profile`
+>   companion (the `int(ceil(searchRadius))` cast site, 44:23-44:41, exact
+>   block in `ceil_admission_profile.py`). The emitter's shared mutual-exclusion
+>   cluster and `generate_typed_slice.validate_capabilities` accept this one
+>   pair and still require both absent everywhere else; the generated binding
+>   guard clamps `searchRadius` to [5,40] (`KernelBindingError` otherwise,
+>   new `float-ceil-radius` contract kind).
+> - **Mechanical ratchet promotion** wired through `probe_program`'s
+>   ceil-admission authentication; `--check` reproduces 278 vendored + 26
+>   pending with every pending blocker re-probed.
+> - **Tests added**: `tests/test_runtime_loop_bound.py::RuntimeLoopBoundLeniaTests`
+>   (both-authorities accept, guard text, exact metadata contract with a
+>   mutation matrix, source-tamper and unrelated-carrier rejection).
+> - **Re-frozen pins** (all quoted from regenerated files): the five live
+>   artifact pins in `tests/test_typed_generator.py`
+>   (typed_slice.json 38268/d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3,
+>   typed_slice.cpp 3243517/3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c,
+>   typed_manifest.json 847924/174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee,
+>   catalog.hpp 27267/4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b),
+>   `points/lenia:convolve` added to the three `LATER_ROWS` milestone tuples
+>   and the ceil-carrier and `RUNTIME_LOOP_BOUND_KEYS` exact enumerations, and
+>   `tests/test_effect_catalog_generator.py` counts compatible_programs 276 /
+>   missing_passes 66. The new manifest serialization writes the
+>   ceil-admission field only on the lenia row (GRAIN_KEY precedent) so the
+>   historical oilPaint/smoothBlend manifest rows stay byte-identical.
+> - **Full verification**: two consecutive `regen_all.sh` fixed points (`REGEN
+>   OK`), all seven generator `--check` gates, cmake build + ctest 4/4, zero
+>   symlinks, and the macOS host lane at pinned Python 3.13.13/Node v26.0.0
+>   (build/host-shards2.py, job receipt) returned PYSHARDS DONE status=0 on all
+>   four shards (789+529+400+417 tests). `scripts/parity-summary` unchanged:
+>   PARITY-SUMMARY {"expected":179,"executed":174,"exact":174,"strict":0,
+>   "near":0,"defer":0,"skip":5,"fail":0,"missing":0}.
+>
+> ### Remaining queue
+> Unchanged from the 2026-09-29 checkpoint below, minus the lenia entry:
+> the counted-for first blockers listed there (fractal3d/flythrough3d
+> parameter-bound proofs, pass-binding and remaining frontier clusters) and
+> the 26 pending programs. Next: re-read the pending blockers with the ratchet
+> after this promotion lands.
+
 > ## CONTINUATION CHECKPOINT 2026-09-29: RENDER-FAMILY MARCH PROOFS ADMITTED (render3d, renderLit3d, renderCubemap3d); CROSS PROFILES RE-LOCKED; NO PROMOTION
 >
 > Ordering: the controlling 2026-09-24 acceptance order remains (1) grouped

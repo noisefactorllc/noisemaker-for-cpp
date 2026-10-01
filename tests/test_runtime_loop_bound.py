@@ -773,5 +773,98 @@ class RuntimeLoopBoundStatsTests(unittest.TestCase):
             program, source_hash, custom_comparer_profile="foreign-profile")
 
 
+class RuntimeLoopBoundLeniaTests(unittest.TestCase):
+    KEY = "points/lenia:convolve"
+    SOURCE = CORPUS / "sources/points/lenia/convolve.glsl"
+
+    def _unproved(self):
+        source = self.SOURCE.read_text(encoding="utf-8")
+        return analyze_program(parse_program(source, self.KEY, {}), self.KEY)
+
+    def _profiled(self):
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            PROFILE, apply_runtime_loop_bound,
+        )
+        program = self._unproved()
+        source_hash = hashlib.sha256(
+            program.raw_source.encode("utf-8")).hexdigest()
+        return apply_runtime_loop_bound(program, source_hash, PROFILE), source_hash
+
+    def _assert_both_authorities_reject(self, program, source_hash: str,
+                                        **extra) -> None:
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE
+        kwargs = {"runtime_loop_bound_profile": PROFILE, **extra}
+        with self.assertRaises((GeneratorError, ValueError)):
+            validate_capabilities(program, APPROVED_CAPABILITIES,
+                                  source_hash=source_hash, **kwargs)
+        with self.assertRaises((TypedEmissionError, ValueError)):
+            render_typed_cpp(program, program.key, source_hash, **kwargs)
+
+    def _accept_kwargs(self):
+        from tools.glslcpp.frontend.ceil_admission_profile import (
+            PROFILE as CEIL_ADMISSION_PROFILE,
+        )
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE
+        return {"runtime_loop_bound_profile": PROFILE,
+                "ceil_admission_profile": CEIL_ADMISSION_PROFILE}
+
+    def test_exact_profile_proves_both_window_loops_for_both_authorities(
+            self) -> None:
+        program, source_hash = self._profiled()
+        self.assertEqual(program.counted_loop_proof.unproved_loop_count, 0)
+        validate_capabilities(program, APPROVED_CAPABILITIES,
+                              source_hash=source_hash, **self._accept_kwargs())
+        render_typed_cpp(program, self.KEY, source_hash,
+                         **self._accept_kwargs())
+
+    def test_binding_guard_clamps_searchRadius_to_metadata_range(self) -> None:
+        program, source_hash = self._profiled()
+        rendered = render_typed_cpp(program, self.KEY, source_hash,
+                                    **self._accept_kwargs())
+        self.assertIn("searchRadius", rendered)
+        self.assertIn("searchRadius must be finite and in [5,40]", rendered)
+        self.assertIn("KernelBindingError", rendered)
+
+    def test_lenia_metadata_contract_is_exact(self) -> None:
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import (
+            LENIA_KEY, validate_lenia_metadata,
+        )
+        metadata = json.loads(
+            (CORPUS / "metadata.json").read_text(encoding="utf-8"))
+        effect = metadata["effects"]["points/lenia"]
+        validate_lenia_metadata(effect)
+        bad = copy.deepcopy(effect)
+        bad["params"]["searchRadius"]["max"] = 41
+        with self.assertRaisesRegex(ValueError, "metadata contract mismatch"):
+            validate_lenia_metadata(bad)
+        for axis, field, value in (("searchRadius", "type", "int"),
+                                   ("searchRadius", "min", 4),
+                                   ("searchRadius", "default", 24),
+                                   ("searchRadius", "max", 39)):
+            changed = copy.deepcopy(effect)
+            changed["params"][axis][field] = value
+            with self.subTest(axis=axis, field=field):
+                with self.assertRaisesRegex(ValueError,
+                                            "metadata contract mismatch"):
+                    validate_lenia_metadata(changed)
+
+    def test_source_tampering_rejects_in_both_authorities(self) -> None:
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE
+        source = self.SOURCE.read_text(encoding="utf-8")
+        tampered = source.replace("int(ceil(searchRadius))",
+                                  "int(ceil(searchRadius + 0.0))", 1)
+        self.assertNotEqual(tampered, source)
+        program = analyze_program(parse_program(tampered, self.KEY, {}), self.KEY)
+        source_hash = hashlib.sha256(
+            program.raw_source.encode("utf-8")).hexdigest()
+        self._assert_both_authorities_reject(program, source_hash)
+
+    def test_unrelated_carrier_profile_rejects(self) -> None:
+        from tools.glslcpp.frontend.runtime_loop_bound_profile import PROFILE
+        program, source_hash = self._profiled()
+        self._assert_both_authorities_reject(
+            program, source_hash, curl_vector_math_profile="foreign-profile")
+
+
 if __name__ == "__main__":
     unittest.main()

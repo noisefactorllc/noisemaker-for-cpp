@@ -1177,6 +1177,12 @@
     },
     {
       "defines": {},
+      "program_key": "points/lenia:convolve",
+      "ceil_admission_profile": "ceil-admission-v1",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
+    },
+    {
+      "defines": {},
       "program_key": "points/lenia:passthrough"
     },
     {

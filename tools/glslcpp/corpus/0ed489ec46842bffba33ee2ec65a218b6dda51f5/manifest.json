@@ -3953,6 +3953,24 @@
     },
     {
       "effect_id": "points/lenia",
+      "normalized_bytes": 1412,
+      "normalized_sha256": "066659ba74c22a997773d408977f4e3871f25b9f1f5b59770561bc60a30157b2",
+      "outputs": [
+        "fragColor"
+      ],
+      "pass_index": 2,
+      "pass_name": "convolve",
+      "program": "convolve",
+      "program_key": "points/lenia:convolve",
+      "raw_bytes": 2019,
+      "raw_sha256": "911443464a21bac3436a3d8a9505859b1f6eda97aa0e24ce633aa312970dbc44",
+      "runtime_key": "points/lenia:convolve",
+      "source": "sources/points/lenia/convolve.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "points/lenia",
       "normalized_bytes": 178,
       "normalized_sha256": "1c50029c0b27ac3e9ebd3e53191e4e3d84c85872e5bb89d7fd0a023c09a6d850",
       "outputs": [

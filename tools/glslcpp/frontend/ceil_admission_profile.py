@@ -115,6 +115,26 @@ _PROFILES: dict[str, dict] = {
              "5105faf67c1fdaabce2af946c6577d9c3ee7fe88462c5607dcb02f182779ca8a"),
         ),
     },
+    # points/lenia:convolve -- one ceil site in main, the operand of the
+    # `int(ceil(searchRadius))` window-radius cast (44:23). Composes with the
+    # program's runtime-loop-bound record exactly like synth/curl composes
+    # with its vector-math closure: an independent companion authenticated by
+    # its own exact block. Figures measured on the post-runtime-apply tree
+    # (proofs attached), the tree both the generator and the emitter see.
+    "points/lenia:convolve": {
+        "raw_bytes": 2019,
+        "raw_sha256": "911443464a21bac3436a3d8a9505859b1f6eda97aa0e24ce633aa312970dbc44",
+        "normalized_bytes": 1412,
+        "normalized_sha256": "066659ba74c22a997773d408977f4e3871f25b9f1f5b59770561bc60a30157b2",
+        "functions_sha256": "7ce243bd6ad3b0d3861addc987f515cf196b4b9d21299814f6cadece0d09e09f",
+        "whole_program_sha256": "31976ede7a915da80db83452260a36268e95efa577223d30637b008d36f5446e",
+        "interface_sha256": "abc96797b7cc6aac133bd6a6f26ef2139f030d430e3d853021dd49cbdc2e9428",
+        "ceil_sites": (
+            ("main", "44:23-44:41",
+             "24d5cf57fed715ab8f2f84048bbc9c578c21968dc7755f7e5c835c2c5fcba64d",
+             "f1d724f5dbc549e1a1bb41e3d326549b2fe20f6d4f8d522f89836361c8e884e9"),
+        ),
+    },
 }
 
 CEIL_ADMISSION_KEYS = frozenset(_PROFILES)

@@ -133,9 +133,12 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(208, provenance["counts"]["definitions"])
             self.assertEqual(344, provenance["counts"]["passes"])
             self.assertEqual(304, provenance["counts"]["reference_program_keys"])
-            self.assertEqual(275, provenance["counts"]["compatible_programs"])
+            # 276: points/lenia:convolve joined the vendored corpus with its
+            # runtime-loop-bound + ceil-admission admission.
+            self.assertEqual(276, provenance["counts"]["compatible_programs"])
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
-            self.assertEqual(67, provenance["counts"]["missing_passes"])
+            # 66: lenia's convolve pass now has a generated output.
+            self.assertEqual(66, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
             self.assertEqual("2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)

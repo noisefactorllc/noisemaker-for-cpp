@@ -53,11 +53,21 @@ NOISE_KEY = "synth/noise:noise"
 # authenticate -- one loop, one program, one uniform read in its condition.
 CURL_KEY = "synth/curl:curl"
 SPRITE_MEAN_TILES_KEY = "render/pointsBillboardRender:spriteMeanTiles"
+# points/lenia's sixth key and the module's first *float-uniform-ceil* record:
+# main owns `int iRadius = int(ceil(searchRadius));` (normalized 44:5) and the
+# symmetric `dy`/`dx` window loops read it directly -- no helper-parameter
+# indirection, no call site. The seed's maximum is `ceil(searchRadius_max)`:
+# both authorities' metadata (corpus metadata.json and the shipped
+# upstream-snapshot.js) record `searchRadius: float, min 5, max 40, default
+# 25`, `ceil` is monotonic non-decreasing, and the int cast of a float in
+# [5,40] yields at most 40 -- so the runtime guard on the uniform float makes
+# the 40 bound genuine.
+LENIA_KEY = "points/lenia:convolve"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
     {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, SPRITE_MEAN_TILES_KEY,
-     *BLUR_KEYS, *CF_KEYS})
+     LENIA_KEY, *BLUR_KEYS, *CF_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -359,6 +369,37 @@ _SPRITE_MEAN_TILES_EXPECTED = {
 }
 
 
+# Every figure measured against the pinned corpus this session, mechanically:
+# the raw/normalized digests, the cleared-function tuple formula, the
+# `searchRadius` uniform row, the `iRadius` ceil-cast declaration, and both
+# window loops (the `dy` outer at 46:5, the `dx` inner at 47:9).
+_LENIA_EXPECTED = {
+    "raw_bytes": 2019,
+    "raw_sha256": "911443464a21bac3436a3d8a9505859b1f6eda97aa0e24ce633aa312970dbc44",
+    "normalized_bytes": 1412,
+    "normalized_sha256": "066659ba74c22a997773d408977f4e3871f25b9f1f5b59770561bc60a30157b2",
+    "defines": (),
+    "functions_sha256": "d03a8ed09701418c95e7dde11fd6abb60e1077f94c048aec49eb7fdfdd563f66",
+    "whole_program_sha256": "71c56586bf8c0f162cd045eadbe4dba6ebf3a9be603708314e295eb1927ae7fd",
+    "interface_sha256": "abc96797b7cc6aac133bd6a6f26ef2139f030d430e3d853021dd49cbdc2e9428",
+    "uniform": (5, "searchRadius", "float", "uniform", False, "12:1-12:28"),
+    "radius_symbol": (25, "iRadius", "int", "local", True, "44:9-44:42"),
+    "radius_declaration": ("44:9-44:42",
+                           "33757cd76c66830cec84c0425301e30121d278aeb5e1ff01e01ec15ccb998c09"),
+    "radius_statement": ("44:5-44:43",
+                         "b2d85902564200165a424243a3f350b929eba4961f06d49576472ea61585ecad"),
+    "ceil_expression": ("44:23-44:41",
+                        "24d5cf57fed715ab8f2f84048bbc9c578c21968dc7755f7e5c835c2c5fcba64d"),
+    "num_samples_loop": ("36:5-39:6",
+                         "156beb6f8c9fb8dbcb9eab360a8c928ecfb92af2849091ad1873984d1b8a5cf0"),
+    "outer_loop": ("46:5-61:6",
+                   "62c26293113356eddb530ff4e621a8baf0c64b4af9e2e2fefec6c860cf2e3e44"),
+    "inner_loop": ("47:9-60:10",
+                   "367f4d112fccc11ec051d4aa5b2bdced7b725d0cb055c64eec00f68b0d0d9ade"),
+    "metadata": ("float", 5, 25, 40),
+}
+
+
 def _sha(value: object) -> str:
     return hashlib.sha256(repr(value).encode("utf-8")).hexdigest()
 
@@ -484,11 +525,22 @@ def validate_runtime_loop_contract(
                              for item in contract.tile_seeds)
                    == ((1, 64, "runtime-texture-tile-bound"),
                        (0, 64, "runtime-texture-tile-bound")))
+    lenia = (contract.seed is not None
+             and contract.key == LENIA_KEY and contract.kind == "float-ceil-radius"
+             and contract.uniform_name == "searchRadius"
+             and contract.minimum == 5 and contract.uniform_maximum == 40
+             and contract.default == 25
+             and contract.maximum == 40
+             and contract.render_scale_name is None
+             and contract.radius_declaration is not None
+             and contract.radius_declaration.symbol == contract.seed.symbol
+             and contract.seed.provenance == "runtime-metadata-uniform-ceil")
     malformed_scalar = (contract.seed is not None
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
-    if not (tetra or blur or cf or stats or noise or curl or sprite_mean) or malformed_scalar:
+    if not (tetra or blur or cf or stats or noise or curl or sprite_mean
+            or lenia) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -574,6 +626,24 @@ def validate_curl_metadata(effect: object) -> None:
         raise _fail("metadata contract mismatch")
 
 
+def validate_lenia_metadata(effect: object) -> None:
+    """Validate points/lenia's authoritative ``searchRadius`` metadata record.
+
+    Both authorities agree: the corpus ``metadata.json`` and the shipped
+    ``upstream-snapshot.js`` read ``searchRadius: f(25, 5, 40)`` -- float,
+    minimum 5, default 25, maximum 40. ``ceil`` is monotonic non-decreasing,
+    so the seed's maximum (40) is ``ceil(max(searchRadius))``, by construction.
+    """
+    try:
+        record = effect["params"]["searchRadius"]  # type: ignore[index]
+        actual = (record["type"], record["min"], record["default"],
+                  record["max"])
+    except (KeyError, TypeError):
+        raise _fail("metadata contract mismatch") from None
+    if actual != _LENIA_EXPECTED["metadata"]:
+        raise _fail("metadata contract mismatch")
+
+
 def authenticate_runtime_loop_bound(
         program: TypedProgram, source_hash: str | None,
         profile: str | None) -> RuntimeLoopBoundContract | None:
@@ -604,6 +674,8 @@ def authenticate_runtime_loop_bound(
         return _authenticate_curl(program, source_hash)
     if program.key == SPRITE_MEAN_TILES_KEY:
         return _authenticate_sprite_mean_tiles(program, source_hash)
+    if program.key == LENIA_KEY:
+        return _authenticate_lenia(program, source_hash)
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
@@ -1069,6 +1141,122 @@ def _authenticate_convolution_feedback(
         scale.name, radius))
 
 
+def _authenticate_lenia(program: TypedProgram,
+                        source_hash: str | None) -> RuntimeLoopBoundContract:
+    """Authenticate points/lenia's float-uniform-ceil window-radius contract.
+
+    main owns `int iRadius = int(ceil(searchRadius));` and reads it as both
+    bound of the symmetric `dy`/`dx` window loops. The contract's runtime
+    guard constrains the `searchRadius` float uniform to its authenticated
+    metadata range [5,40]; `ceil` is monotonic non-decreasing, so the int
+    cast of the guarded uniform never exceeds 40 and the seed transfers that
+    bound to `iRadius` losslessly (both window loops then prove 81 trips
+    each). There is no helper, parameter, or call site to authenticate: the
+    census requires exactly the two window loops, by span and node hash, in
+    main.
+    """
+    expected = _LENIA_EXPECTED
+    raw = program.raw_source.encode("utf-8")
+    normalized = program.source.encode("utf-8")
+    defines = tuple((item.name, item.kind, item.canonical_value)
+                    for item in program.preprocessor_defines)
+    if (source_hash != expected["raw_sha256"] or len(raw) != expected["raw_bytes"]
+            or hashlib.sha256(raw).hexdigest() != expected["raw_sha256"]
+            or len(normalized) != expected["normalized_bytes"]
+            or hashlib.sha256(normalized).hexdigest() != expected["normalized_sha256"]
+            or defines != expected["defines"] or program.body_status != "analyzed"):
+        raise _fail("source or define profile mismatch")
+
+    functions = _cleared_functions(program)
+    whole = (program.key, program.source, program.raw_source,
+             program.declarations, functions, program.resources,
+             program.body_status, program.local_type_names, program.structs,
+             program.uniform_blocks, program.interface_symbols,
+             program.builtin_symbols, program.preprocessor_defines)
+    interface = (program.declarations, program.resources,
+                 program.local_type_names, program.structs,
+                 program.uniform_blocks, program.interface_symbols,
+                 program.builtin_symbols, program.preprocessor_defines)
+    if (_sha(functions) != expected["functions_sha256"]
+            or _sha(whole) != expected["whole_program_sha256"]
+            or _sha(interface) != expected["interface_sha256"]):
+        raise _fail("interface, function, or call-graph profile mismatch")
+
+    uniform = next((item.symbol for item in program.declarations
+                    if item.symbol.id == expected["uniform"][0]), None)
+    if (uniform is None
+            or (uniform.id, uniform.name, uniform.type.display(), uniform.storage,
+                uniform.writable, _span(uniform)) != expected["uniform"]):
+        raise _fail("uniform profile mismatch")
+
+    main = next((item for item in functions if item.name == "main"), None)
+    if main is None or len(functions) != 2:
+        raise _fail("interface, function, or call-graph profile mismatch")
+    radius_statement = next((item for item in main.body
+                             if item.kind == "decl" and item.expressions
+                             and item.expressions[0].symbol is not None
+                             and item.expressions[0].symbol.name == "iRadius"), None)
+    if radius_statement is None:
+        raise _fail("declaration profile mismatch")
+    radius = radius_statement.expressions[0]
+    if ((radius.symbol.id, radius.symbol.name, radius.symbol.type.display(),
+         radius.symbol.storage, radius.symbol.writable, _span(radius.symbol))
+            != expected["radius_symbol"]
+            or (_span(radius), _sha(radius)) != expected["radius_declaration"]
+            or (_span(radius_statement), _sha(radius_statement))
+            != expected["radius_statement"]
+            or len(radius.children) != 1
+            or radius.children[0].kind != "construct"
+            or radius.children[0].type.display() != "int"
+            or len(radius.children[0].children) != 1):
+        raise _fail("declaration profile mismatch")
+    ceiling = radius.children[0].children[0]
+    if ((_span(ceiling), _sha(ceiling)) != expected["ceil_expression"]
+            or ceiling.kind != "builtin" or ceiling.callee != "ceil"
+            or len(ceiling.children) != 1
+            or ceiling.children[0].kind != "id"
+            or ceiling.children[0].symbol_id != uniform.id
+            or ceiling.children[0].symbol != uniform):
+        raise _fail("ceil-cast profile mismatch")
+
+    loops = [value for statement in main.body for value in _walk_statement(statement)
+             if isinstance(value, TypedStatement) and value.kind == "for"]
+    # The census: exactly three loops in main -- the numSamples normalization
+    # loop (a proved companion under the canonical literal-local proof) plus
+    # exactly the two window loops, named by span and node hash.
+    if len(loops) != 3:
+        raise _fail("loop-site profile mismatch")
+    if ((_span(loops[0]), _sha(loops[0])) != _LENIA_EXPECTED["num_samples_loop"]):
+        raise _fail("loop-site profile mismatch")
+    outer, inner = loops[1], loops[2]
+    if ((_span(outer), _sha(outer)) != expected["outer_loop"]
+            or (_span(inner), _sha(inner)) != expected["inner_loop"]):
+        raise _fail("loop-site profile mismatch")
+    for loop in (outer, inner):
+        if len(loop.expressions) != 2 or len(loop.children) != 2:
+            raise _fail("loop-site profile mismatch")
+        init = loop.children[0].expressions[0]
+        start = init.children[0] if len(init.children) == 1 else None
+        bound = loop.expressions[0].children[1] if loop.expressions[0].children else None
+        if (start is None or bound is None
+                or start.kind != "unary" or start.operator != "-"
+                or len(start.children) != 1
+                or start.children[0].kind != "id"
+                or start.children[0].symbol_id != radius.symbol.id
+                or start.children[0].symbol != radius.symbol
+                or bound.kind != "id" or bound.symbol_id != radius.symbol.id
+                or bound.symbol != radius.symbol):
+            raise _fail("loop-site profile mismatch")
+
+    seed = RuntimeScalarBoundSeed(radius.symbol.id, 40,
+                                  "runtime-metadata-uniform-ceil",
+                                  radius.symbol)
+    return validate_runtime_loop_contract(RuntimeLoopBoundContract(
+        LENIA_KEY, seed, "float-ceil-radius", "searchRadius", 5, 40, 25,
+        f"{LENIA_KEY} searchRadius must be finite and in [5,40]",
+        radius_declaration=radius))
+
+
 def _authenticate_stats(program: TypedProgram,
                         source_hash: str | None) -> RuntimeLoopBoundContract:
     expected = _STATS_EXPECTED
@@ -1290,7 +1478,7 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 __all__ = (
     "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS",
     "CF_BLUR_KEY", "CF_SHARPEN_KEY", "CF_KEYS", "STATS_KEY",
-    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY",
+    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY", "LENIA_KEY",
     "RUNTIME_LOOP_BOUND_KEYS", "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
     "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeTileBoundSeed",
     "RuntimeLoopBoundContract",
@@ -1298,4 +1486,5 @@ __all__ = (
     "validate_runtime_loop_contract", "validate_tetra_metadata",
     "validate_blur_metadata", "validate_cf_metadata",
     "validate_noise_metadata", "validate_curl_metadata",
+    "validate_lenia_metadata",
 )

@@ -245,6 +245,12 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
         POINTS_POST_KEYS, PROFILE as POINTS_POST_PROFILE,
         apply_points_post_admission,
     )
+    from tools.glslcpp.frontend.ceil_admission_profile import (
+        CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
+    )
+    ceil_admission_profile = (
+        CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
+    )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
     )
@@ -310,7 +316,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             dla_bit_ingress_profile=dla_bit_ingress_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
-            points_post_profile=points_post_profile)
+            points_post_profile=points_post_profile,
+            ceil_admission_profile=ceil_admission_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -327,7 +334,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             dla_bit_ingress_profile=dla_bit_ingress_profile,
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
-            points_post_profile=points_post_profile)
+            points_post_profile=points_post_profile,
+            ceil_admission_profile=ceil_admission_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None

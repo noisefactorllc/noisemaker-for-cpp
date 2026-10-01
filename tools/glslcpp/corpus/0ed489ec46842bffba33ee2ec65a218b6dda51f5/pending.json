@@ -3497,19 +3497,6 @@
       "source": "pending-sources/points/dla/depositGrid.frag"
     },
     {
-      "authority_status": "generated",
-      "blocker": {
-        "diagnostic": "GeneratorError: points/lenia:convolve:36:5: unsupported counted-for program proof",
-        "stage": "typed.validator"
-      },
-      "effect_id": "points/lenia",
-      "program": "convolve",
-      "program_key": "points/lenia:convolve",
-      "raw_bytes": 2019,
-      "raw_sha256": "911443464a21bac3436a3d8a9505859b1f6eda97aa0e24ce633aa312970dbc44",
-      "source": "pending-sources/points/lenia/convolve.glsl"
-    },
-    {
       "authority_status": "adapter",
       "blocker": {
         "diagnostic": "points/lenia:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",

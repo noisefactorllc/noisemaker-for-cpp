@@ -415,7 +415,7 @@ if __package__ in (None, ""):
         allowed_row_fields as texture_lod_admission_allowed_row_fields,
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from tools.glslcpp.frontend.runtime_loop_bound_profile import (
-        BLUR_KEYS, CF_KEYS,
+        BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
@@ -423,7 +423,8 @@ if __package__ in (None, ""):
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata,
         validate_cf_metadata, validate_curl_metadata,
-        validate_noise_metadata, validate_tetra_metadata)
+        validate_lenia_metadata, validate_noise_metadata,
+        validate_tetra_metadata)
     from tools.glslcpp.frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
         authenticate_gabor_effective_depth,
@@ -841,14 +842,15 @@ else:
         allowed_row_fields as texture_lod_admission_allowed_row_fields,
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from .frontend.runtime_loop_bound_profile import (
-        BLUR_KEYS, CF_KEYS,
+        BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
         PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
         RUNTIME_LOOP_BOUND_KEYS, STATS_KEY, TETRA_KEY,
         apply_runtime_loop_bound, validate_blur_metadata, validate_cf_metadata,
-        validate_curl_metadata, validate_noise_metadata, validate_tetra_metadata)
+        validate_curl_metadata, validate_lenia_metadata,
+        validate_noise_metadata, validate_tetra_metadata)
     from .frontend.gabor_effective_depth_profile import (
         GABOR_KEY, PROFILE as GABOR_EFFECTIVE_DEPTH_PROFILE,
         authenticate_gabor_effective_depth,
@@ -1845,6 +1847,12 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             expected = expected | {"runtime_loop_bound_profile"}
         if key == RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY:
             expected = expected | {"runtime_loop_bound_profile"}
+        # points/lenia:convolve carries BOTH its runtime window-radius
+        # loop-bound record and its independent ceil-admission companion
+        # (the int(ceil(searchRadius)) cast), curl-style composition.
+        if key == RUNTIME_LOOP_BOUND_LENIA_KEY:
+            expected = expected | {"ceil_admission_profile",
+                                   "runtime_loop_bound_profile"}
         if set(item) != expected:
             raise GeneratorError("typed slice programs are invalid")
     keys = [item["program_key"] for item in programs]
@@ -3728,11 +3736,15 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 # synth/curl is the one member of this cluster that ALSO
                 # carries curl_vector_math_profile (the tanh/wide-mod
                 # closure): a second, independent companion authenticated
-                # by its own exact block below, not by this one. Every
-                # other member of RUNTIME_LOOP_BOUND_KEYS still requires it
-                # absent.
+                # by its own exact block below, not by this one.
+                # points/lenia:convolve likewise composes with its ceil
+                # admission (the window-radius cast) as an independent
+                # companion. Every other member of RUNTIME_LOOP_BOUND_KEYS
+                # still requires both absent.
                 or (curl_vector_math_profile is not None
                     and typed.key != RUNTIME_LOOP_BOUND_CURL_KEY)
+                or (ceil_admission_profile is not None
+                    and typed.key != RUNTIME_LOOP_BOUND_LENIA_KEY)
                 or (vec_scalar_modulo_profile is not None
                     and typed.key != RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY)
                 or grade_luma_weights_profile is not None
@@ -3742,7 +3754,6 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or reflect_admission_profile is not None
                 or posterize_round_profile is not None
                 or as_u32_round_profile is not None
-                or ceil_admission_profile is not None
                 or waves_any_notequal_profile is not None
                 or inout_vec3_swap_profile is not None):
             raise GeneratorError(
@@ -9057,6 +9068,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 elif key == RUNTIME_LOOP_BOUND_CURL_KEY:
                     validate_curl_metadata(
                         metadata.get("effects", {}).get("synth/curl"))
+                elif key == RUNTIME_LOOP_BOUND_LENIA_KEY:
+                    validate_lenia_metadata(
+                        metadata.get("effects", {}).get("points/lenia"))
                 elif key in CF_KEYS:
                     validate_cf_metadata(
                         metadata.get("effects", {}).get("filter/convolutionFeedback"))
@@ -10135,6 +10149,14 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if runtime_loop_bound_profile is not None:
             manifest_program["runtime_loop_bound_profile"] = (
                 runtime_loop_bound_profile)
+        if (key == RUNTIME_LOOP_BOUND_LENIA_KEY
+                and ceil_admission_profile is not None):
+            # Only points/lenia:convolve serializes its ceil admission into
+            # the manifest row: oilPaint/smoothBlend keep their historical
+            # field-free rows byte-identical (same precedent as the GRAIN_KEY
+            # as_u32_round_profile pin above).
+            manifest_program["ceil_admission_profile"] = (
+                ceil_admission_profile)
         if gabor_effective_depth_profile is not None:
             manifest_program["gabor_effective_depth_profile"] = (
                 gabor_effective_depth_profile)

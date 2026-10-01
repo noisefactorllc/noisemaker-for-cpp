@@ -268,6 +268,7 @@ from .frontend.out_inout_admission_profile import (
     _JULIA_CALL_ARGUMENTS as JULIA_OUT_CALL_ARGUMENTS)
 from .frontend.runtime_loop_bound_profile import (
     PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
+    LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
     PREPARED_RUNTIME_LOOP_BOUND_KEYS,
     RUNTIME_LOOP_BOUND_KEYS,
     SPRITE_MEAN_TILES_KEY,
@@ -2348,11 +2349,15 @@ class _Emitter:
                     # synth/curl carries curl_vector_math_profile (the
                     # tanh/wide-mod closure) ALONGSIDE this loop-bound
                     # profile -- a second, independent companion
-                    # authenticated by its own exact block elsewhere, not by
-                    # this one. Every other member of this cluster still
-                    # requires it absent.
+                    # authenticated by its own exact block elsewhere, not
+                    # by this one. points/lenia:convolve likewise composes
+                    # with its ceil admission (the window-radius cast).
+                    # Every other member of this cluster still requires
+                    # both absent.
                     or (self.curl_vector_math_profile is not None
                         and self.program.key != CURL_KEY)
+                    or (self.ceil_admission_profile is not None
+                        and self.program.key != RUNTIME_LOOP_BOUND_LENIA_KEY)
                     or (self.vec_scalar_modulo_profile is not None
                         and self.program.key != SPRITE_MEAN_TILES_KEY)
                     or self.grade_luma_weights_profile is not None
@@ -2362,7 +2367,6 @@ class _Emitter:
                     or self.reflect_admission_profile is not None
                     or self.posterize_round_profile is not None
                     or self.as_u32_round_profile is not None
-                    or self.ceil_admission_profile is not None
                     or self.waves_any_notequal_profile is not None
                     or self.inout_vec3_swap_profile is not None)):
                 raise _error(self.program, self.program,
@@ -12288,6 +12292,20 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                     f'bindings.get<std::int32_t>("{contract.uniform_name}");',
                     f"  if ({contract.uniform_name} < {contract.minimum} || "
                     f"{contract.uniform_name} > {contract.uniform_maximum}) {{",
+                    f'    throw glsl::KernelBindingError("{contract.binding_error}");',
+                    "  }",
+                ])
+            elif contract.kind == "float-ceil-radius":
+                # A float uniform whose int(ceil(...)) window radius the
+                # proof bounds: guard the uniform to its authenticated
+                # metadata range at bind time, so `ceil(uniform) <= maximum`
+                # holds whenever the kernel body runs.
+                lines.extend([
+                    f'  const auto {contract.uniform_name} = '
+                    f'bindings.get_number("{contract.uniform_name}");',
+                    f"  if (!std::isfinite({contract.uniform_name}) || "
+                    f"{contract.uniform_name} < {float(contract.minimum):.1f} || "
+                    f"{contract.uniform_name} > {float(contract.uniform_maximum):.1f}) {{",
                     f'    throw glsl::KernelBindingError("{contract.binding_error}");',
                     "  }",
                 ])

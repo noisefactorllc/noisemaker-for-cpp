@@ -264,6 +264,9 @@ class NoiseRuntimeLoopBoundRecordTests(unittest.TestCase):
         self.assertEqual(frozenset({module.TETRA_KEY, module.STATS_KEY,
                                     module.NOISE_KEY, module.CURL_KEY,
                                     module.SPRITE_MEAN_TILES_KEY,
+                                    # points/lenia:convolve joined with the
+                                    # float-uniform-ceil window-radius record.
+                                    module.LENIA_KEY,
                                     *module.BLUR_KEYS, *module.CF_KEYS}),
                          module.RUNTIME_LOOP_BOUND_KEYS)
         for name in ("NOISE_KEY", "validate_noise_metadata"):
