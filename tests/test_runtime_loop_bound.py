@@ -8,6 +8,7 @@ import pathlib
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -20,7 +21,7 @@ from tools.glslcpp.generate_typed_slice import (
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
 KEY = "filter/tetraColorArray:tetraColorArray"
 SOURCE = CORPUS / "sources/filter/tetraColorArray/tetraColorArray.glsl"
 

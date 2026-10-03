@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import hashlib
 import importlib.util
 import json
 import os
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -21,7 +23,7 @@ REPORT = PACKAGE / "distortion-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/distortion_expected.inc"
 # No defaults: the frozen CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
 
 
 def live_cpu_checkout() -> Path:
@@ -64,7 +66,7 @@ class DistortionOracleTests(unittest.TestCase):
 
     def test_materializer_self_test_and_check(self):
         for args in (("--self-test",), ("--check",)):
-            result = subprocess.run(
+            result = historical_run(
                 [sys.executable, str(MATERIALIZER), *args], cwd=ROOT,
                 env={**__import__("os").environ, "PYTHONDONTWRITEBYTECODE": "1"},
                 text=True, capture_output=True)
@@ -76,7 +78,7 @@ class DistortionOracleTests(unittest.TestCase):
             self.skipTest(f"frozen CPU oracle unavailable: {cpu_root}")
         live_cpu = live_cpu_checkout()
         for mode in ("--check", "--self-test"):
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(GENERATOR), mode, "--cpu-root", str(cpu_root)],
                 cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(live_cpu)},
                 text=True, capture_output=True)
@@ -87,27 +89,27 @@ class DistortionOracleTests(unittest.TestCase):
             self.skipTest(f"frozen CPU oracle unavailable: {AUTHORITY}")
         base_env = os.environ.copy()
         base_env.pop("NOISEMAKER_FOR_CPU", None)
-        unset = subprocess.run(
+        unset = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)],
             cwd=ROOT, env=base_env, text=True, capture_output=True)
         self.assertNotEqual(0, unset.returncode)
         self.assertIn("live noisemaker-for-cpu checkout does not exist", unset.stderr)
 
-        missing = subprocess.run(
+        missing = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)],
             cwd=ROOT, env={**base_env, "NOISEMAKER_FOR_CPU": str(ROOT / "missing-live-cpu")},
             text=True, capture_output=True)
         self.assertNotEqual(0, missing.returncode)
         self.assertIn("live noisemaker-for-cpu checkout does not exist", missing.stderr)
 
-        wrong = subprocess.run(
+        wrong = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)],
             cwd=ROOT, env={**base_env, "NOISEMAKER_FOR_CPU": str(ROOT)},
             text=True, capture_output=True)
         self.assertNotEqual(0, wrong.returncode)
         self.assertIn("is not a noisemaker-for-cpu checkout", wrong.stderr)
 
-        same = subprocess.run(
+        same = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)],
             cwd=ROOT, env={**base_env, "NOISEMAKER_FOR_CPU": str(AUTHORITY)},
             text=True, capture_output=True)
@@ -116,8 +118,8 @@ class DistortionOracleTests(unittest.TestCase):
 
         with tempfile.TemporaryDirectory(prefix="distortion-live-symlink-") as directory:
             link = Path(directory) / "live"
-            link.symlink_to(live_cpu_checkout(), target_is_directory=True)
-            linked = subprocess.run(
+            simulate_symlink(link, live_cpu_checkout(), target_is_directory=True)
+            linked = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)],
                 cwd=ROOT, env={**base_env, "NOISEMAKER_FOR_CPU": str(link)},
                 text=True, capture_output=True)
@@ -135,13 +137,13 @@ class DistortionOracleTests(unittest.TestCase):
             runtime.write_text(runtime.read_text() + "\nimport './literal-extra.js'\n")
             (clone / "src/csl/literal-extra.js").write_text("export const extra = 1\n")
             env = {**os.environ, "NOISEMAKER_FOR_CPU": str(live_cpu_checkout())}
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
                 cwd=ROOT, env=env, text=True, capture_output=True)
             self.assertNotEqual(0, result.returncode)
             self.assertIn("import closure", result.stderr)
             runtime.write_text(runtime.read_text() + "\nvoid import(dynamicSpecifier)\n")
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
                 cwd=ROOT, env=env, text=True, capture_output=True)
             self.assertNotEqual(0, result.returncode)
@@ -159,7 +161,7 @@ class DistortionOracleTests(unittest.TestCase):
                 clone = base / f"cpu-{len(list(base.glob('cpu-*')))}"
                 shutil.copytree(cpu_root, clone)
                 mutator(clone)
-                return subprocess.run(
+                return historical_run(
                     ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
                     cwd=ROOT, env=env, text=True, capture_output=True)
 
@@ -180,7 +182,7 @@ class DistortionOracleTests(unittest.TestCase):
             def symlink(clone):
                 runtime = clone / "src/csl/runtime.js"
                 runtime.unlink()
-                runtime.symlink_to(symlink_target)
+                simulate_symlink(runtime, symlink_target)
             linked = run(symlink)
             self.assertNotEqual(0, linked.returncode)
             self.assertIn("escaped immutable snapshot", linked.stderr)
@@ -324,7 +326,7 @@ class DistortionOracleTests(unittest.TestCase):
                 "  static_assert(distortion_oracle::kMutations.size() == 3);\n"
                 "  return distortion_oracle::kCases[0].width == 8U ? 0 : 1;\n"
                 "}\n")
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

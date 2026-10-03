@@ -9,6 +9,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -26,7 +27,7 @@ from tools.glslcpp.frontend.typed_ir import PreprocessorDefine
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
 RAW_SHA256 = "91665da2d584d6d88b38e8ba314dfc0b546dd49d29aa161f5d66aecf6bf67bf5"
 
 

@@ -100,8 +100,8 @@ _KALEIDO = _Profile(
 # multires()'s -- GLSL/the typed IR scope these independently per function
 # and per brace block, so the two same-named locals never collide).
 _NOISE = _Profile(
-    raw_sha256="8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138",
-    raw_bytes=31258,
+    raw_sha256="e8eeb7d9134b7c08901df12f041767151b26b23ee534d038d1b71b6e47f69586",
+    raw_bytes=31461,
     hoists=(
         _Hoist("vec2", "nominalFreq", "#if NOISE_TYPE == 11", 1, 3),
         _Hoist("float", "baseLoop", "#if NOISE_TYPE == 11", 3, 3),

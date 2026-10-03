@@ -192,7 +192,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/historic-palette-parity/historic_palette_oracle_generator.mjs",
-      "sha256": "eeec96093939cf7e4bb7df214f0a2b25a205959ca1b895f3805bd2b736959bca"
+      "sha256": "1ea37928a63cc323a78989b7233400ad070d84a8fb641db06110c12ac8dcfd07"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_historic_palette_native_oracle_include.py"

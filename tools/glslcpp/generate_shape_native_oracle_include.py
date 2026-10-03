@@ -40,10 +40,8 @@ SCHEMA = "noisemaker-for-cpp.shape184.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "synth/shape:shape"
 EFFECT_KEY = "synth/shape"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
 FACTORY_NAME = "canonicalFactory282"
 FACTORY_SHA256 = "2244ce51eb45a6b0c9448179c5a29d39d2636aa6e832b0a403c7d554b38af3c4"

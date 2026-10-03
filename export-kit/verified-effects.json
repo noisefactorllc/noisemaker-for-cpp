@@ -4,15 +4,19 @@
     {
       "seed": 20260916,
       "variants": 20,
-      "cases": 4685
+      "mode": "sampled",
+      "cases": 3220,
+      "manifest_sha256": "8985c666b4fef3bf82078fffcbb9516f2f7cf2a0c51b3c9014059466a60fca1b"
     },
     {
       "seed": 20260916,
-      "variants": 24,
-      "cases": 4872
+      "variants": 20,
+      "mode": "define-enum",
+      "cases": 720,
+      "manifest_sha256": "d4ad4cad59ffd0aea46d671293406188724ac06524f193914de69f2ab88c8e9b"
     }
   ],
-  "swept_effects": 208,
+  "swept_effects": 140,
   "effects": [
     "classicNoisedeck/bitEffects",
     "classicNoisedeck/cellNoise",
@@ -25,7 +29,6 @@
     "classicNoisedeck/refract",
     "classicNoisedeck/splat",
     "filter/adjust",
-    "filter/bc",
     "filter/bloom",
     "filter/blur",
     "filter/bulge",
@@ -36,7 +39,6 @@
     "filter/chrome",
     "filter/clouds",
     "filter/colorReplace",
-    "filter/colorspace",
     "filter/corrupt",
     "filter/craquelure",
     "filter/crt",
@@ -55,7 +57,6 @@
     "filter/grime",
     "filter/highPass",
     "filter/historicPalette",
-    "filter/hs",
     "filter/invert",
     "filter/lens",
     "filter/lensFlare",
@@ -138,6 +139,8 @@
     "mixer/split",
     "mixer/thresholdMix",
     "mixer/uvRemap",
+    "render/meshLoader",
+    "render/meshRender",
     "synth/bitwise",
     "synth/cell",
     "synth/curl",
@@ -148,7 +151,10 @@
     "synth/osc2d",
     "synth/polygon",
     "synth/remap",
+    "synth/roll",
+    "synth/scope",
     "synth/solid",
+    "synth/spectrum",
     "synth/subdivide",
     "synth/testPattern"
   ]

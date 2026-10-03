@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import dataclasses
 import copy
 import hashlib
@@ -7,11 +10,11 @@ import json
 import os
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import dither_frontend_profile as profile
@@ -19,7 +22,7 @@ from tools.glslcpp import generate_dither_native_oracle_include as materializer
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/dither/dither.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/dither/dither.glsl"
 PACKAGE = ROOT / "docs/port-engineering/dither-parity"
 GENERATOR = PACKAGE / "dither_oracle_generator.mjs"
 ORACLE = PACKAGE / "dither-oracles.json"
@@ -521,24 +524,24 @@ class DitherPreparedFrontendTests(unittest.TestCase):
         # Env-only, and a skip rather than a failure when unset: the frozen CPU
         # authority is an external checkout, so its absence is a missing input,
         # not a defect in the port. A configured-but-wrong root still fails.
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = historical_cpu_root()
         if not configured:
-            self.skipTest("NOISEMAKER_CPU_ROOT must be supplied for authority gates")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT must be supplied for authority gates")
         authority = Path(configured)
-        self.assertTrue(authority.is_dir(), "NOISEMAKER_CPU_ROOT must name a directory")
-        self.assertFalse(authority.is_symlink(), "NOISEMAKER_CPU_ROOT must not be a symlink")
+        self.assertTrue(authority.is_dir(), "NOISEMAKER_HISTORICAL_CPU_ROOT must name a directory")
+        self.assertFalse(authority.is_symlink(), "NOISEMAKER_HISTORICAL_CPU_ROOT must not be a symlink")
         for command in (
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(authority)),
                 ("node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)),
                 (sys.executable, "-B", str(MATERIALIZER), "--self-test"),
                 (sys.executable, "-B", str(MATERIALIZER), "--check")):
-            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+            result = historical_run(command, cwd=ROOT, capture_output=True, text=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
         with tempfile.TemporaryDirectory(prefix="dither-authority-probes-") as raw:
             raw_root = Path(raw)
             identical = raw_root / "identical"
             shutil.copytree(authority, identical)
-            identical_result = subprocess.run(
+            identical_result = historical_run(
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(identical)),
                 cwd=ROOT, capture_output=True, text=True)
             self.assertEqual(0, identical_result.returncode,
@@ -547,11 +550,11 @@ class DitherPreparedFrontendTests(unittest.TestCase):
             shutil.copytree(authority, mutated)
             canonical = mutated / "src/effects/generated/canonical-kernels.js"
             canonical.write_bytes(canonical.read_bytes() + b"\n")
-            mutated_result = subprocess.run(
+            mutated_result = historical_run(
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(mutated)),
                 cwd=ROOT, capture_output=True, text=True)
             self.assertNotEqual(0, mutated_result.returncode)
-            live_result = subprocess.run(
+            live_result = historical_run(
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(authority)),
                 cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(authority)},
                 capture_output=True, text=True)
@@ -560,14 +563,14 @@ class DitherPreparedFrontendTests(unittest.TestCase):
             shutil.copytree(authority, escaping)
             escaped_catalog = escaping / "src/effects/catalog.js"
             escaped_catalog.unlink()
-            escaped_catalog.symlink_to(authority / "src/effects/catalog.js")
-            escaping_result = subprocess.run(
+            simulate_symlink(escaped_catalog, authority / "src/effects/catalog.js")
+            escaping_result = historical_run(
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(escaping)),
                 cwd=ROOT, capture_output=True, text=True)
             self.assertNotEqual(0, escaping_result.returncode)
             linked = raw_root / "linked"
-            linked.symlink_to(authority, target_is_directory=True)
-            linked_result = subprocess.run(
+            simulate_symlink(linked, authority, target_is_directory=True)
+            linked_result = historical_run(
                 ("node", str(GENERATOR), "--check", "--cpu-root", str(linked)),
                 cwd=ROOT, capture_output=True, text=True)
             self.assertNotEqual(0, linked_result.returncode)
@@ -719,7 +722,7 @@ int main() {
   return 0;
 }
 ''', encoding="utf-8")
-            result = subprocess.run((compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror", "-I", str(ROOT), "-fsyntax-only", str(unit)), cwd=ROOT, capture_output=True, text=True)
+            result = historical_run((compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror", "-I", str(ROOT), "-fsyntax-only", str(unit)), cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
 

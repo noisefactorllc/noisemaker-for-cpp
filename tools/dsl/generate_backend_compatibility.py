@@ -26,6 +26,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
 
 from tools.glslcpp import check_corpus, check_semantics, corpus_ratchet, generate_typed_slice
+from tools.dsl import mesh_render_contract
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.remap_profile import (
     KEY as REMAP_KEY,
@@ -52,18 +53,18 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 OUTPUT = ROOT / "src/effects/generated/backend_compatibility.json"
-UPSTREAM_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
-UPSTREAM_TREE = "cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6"
-SOURCE_LOCK_SHA256 = "4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812"
-CPU_PACKAGE_SHA256 = "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a"
+UPSTREAM_REVISION = "e24c844f8dada85551ab084f41db8944fbc176c8"
+UPSTREAM_TREE = "106256378f2462e38d31023cd2872e0dd8c63f88"
+SOURCE_LOCK_SHA256 = "c2e0c264dc20338b19a144ee0888bd2ca39edcf325315a7d7ae1f5ced920804d"
+CPU_PACKAGE_SHA256 = "55512494c653fa73478b165abc7e3dcb87fe5855dbb4a6135b1fa1542dd0bda0"
 CPU_LOCK_SHA256 = "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d"
-UPSTREAM_PACKAGE_SHA256 = "08cb3f947196e49c009a8eba0bcb1350c68a2fe98444d61fb2cd680ed95ffd50"
-UPSTREAM_LOCK_SHA256 = "b4fa6f5d08263c6ee6eef2dbf5d0426f833fce827a32205c79ea3bc295bd8c4b"
+UPSTREAM_PACKAGE_SHA256 = "c01127034a8ba662a53801faaf1310129892690ad60f6985b605a314feb9e74f"
+UPSTREAM_LOCK_SHA256 = "dc60539c95e9bf6e7da34250701a898a053e5a3c86f605d0dd6108d95e3e3b56"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
 RESERVED_RUNTIME = frozenset({
     "resolution", "fullResolution", "renderScale", "tileOffset", "time",
-    "frame", "seed", "deltaTime",
+    "frame", "seed", "deltaTime", "audioWaveform", "audioSpectrum", "midiClockCount",
 })
 # These uniforms are supplied by the canonical CPU binding layer rather than
 # by an effect parameter or pass map. Keep the list explicit: an unlisted
@@ -456,6 +457,10 @@ _LEGACY_FACTORY_FLOAT_UNIFORMS = frozenset({
 
 def _cpp_type(display: str, name: str | None = None, source: str | None = None,
              program_key: str | None = None) -> str:
+    if (display == "float[128]" and source == "reserved_runtime_state"
+            and (program_key, name) in {("synth/scope:scope", "audioWaveform"),
+                                      ("synth/spectrum:spectrum", "audioSpectrum")}):
+        return "glsl::AudioUniform128"
     if display == "float" and (program_key, name) in _LEGACY_FACTORY_FLOAT_UNIFORMS:
         return "float"
     if display == "float" and (name, source) not in _FROUNDED_SCALAR_UNIFORMS:
@@ -497,7 +502,7 @@ def _typed_manifest(repository: pathlib.Path, generated: dict[str, Any], corpus_
                 or not isinstance(item.get("factory_route"), dict):
             raise CompatibilityError(f"{key}: typed manifest emitter ABI missing")
         result[key] = item
-    expected = corpus_keys - {SCATTER_KEY}
+    expected = corpus_keys - {SCATTER_KEY, mesh_render_contract.KEY}
     if set(result) != expected:
         raise CompatibilityError("typed manifest/corpus closure mismatch")
     return result
@@ -1103,6 +1108,10 @@ def _factory_evidence(repository: pathlib.Path, typed_rows: dict[str, dict[str, 
     for key in sorted(rows):
         if key == SCATTER_KEY:
             continue
+        if key == mesh_render_contract.KEY:
+            mesh_render_contract.validate_row(rows[key], repository)
+            selected[key] = rows[key]["factory"]
+            continue
         typed = typed_rows.get(key)
         if not isinstance(typed, dict) or not isinstance(typed.get("factory_route"), dict):
             raise CompatibilityError(f"{key}: selected factory evidence missing")
@@ -1137,6 +1146,8 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     manifest = check_corpus._load_json(corpus_root / "manifest.json", "manifest")
     entries = check_corpus._validate_manifest(manifest)
     corpus_keys = {item["program_key"] for item in entries}
+    if mesh_render_contract.KEY in corpus_keys:
+        mesh_render_contract.authenticate_authority(cpu_root, shader_git)
     authenticated_typed = _authenticated_typed_manifest(repository)
     typed_rows = _typed_manifest(repository, authenticated_typed, corpus_keys)
     metadata = check_corpus._load_json(corpus_root / "metadata.json", "metadata")
@@ -1156,7 +1167,12 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
         current_pass = _pass_index(effect, key)
         old = (corpus_root / entry["source"]).read_bytes()
         new = _git_blob(shader_git, UPSTREAM_REVISION, _shader_path(entry))
-        if key == SCATTER_KEY:
+        if key == mesh_render_contract.KEY:
+            mesh_render_contract.authenticate_fragment(old, metadata["effects"][entry["effect_id"]])
+            if new != old:
+                raise CompatibilityError("mesh whole-pass source identity drift")
+            source_rows.append(mesh_render_contract.compatibility_row(repository))
+        elif key == SCATTER_KEY:
             scatter_row = _scatter_source_entry(entry, effect, old, new)
             scatter_extent = scatter_row["output_abi"]["extent"]
             source_rows.append(scatter_row)
@@ -1368,6 +1384,12 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
     if not isinstance(selected_evidence, dict) or not isinstance(legacy_evidence, dict):
         raise CompatibilityError("authenticated factory evidence missing")
     for row in canonical:
+        if row.get("program_key") == mesh_render_contract.KEY:
+            try:
+                mesh_render_contract.validate_row(row, repository)
+            except ValueError as error:
+                raise CompatibilityError(str(error)) from error
+            continue
         if not isinstance(row, dict) or row.get("status") not in {"compatible", "incompatible"} \
                 or not isinstance(row.get("source"), str) \
                 or not _SHA256.fullmatch(str(row.get("old_raw_sha256", ""))) \
@@ -1509,6 +1531,7 @@ def write(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pathl
     target = repository / OUTPUT.relative_to(ROOT)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_bytes(data)
+    (repository / mesh_render_contract.HEADER).write_bytes(mesh_render_contract.render_header(repository))
 
 
 def check(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pathlib.Path = ROOT) -> None:
@@ -1517,6 +1540,8 @@ def check(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pathl
     # failed check cannot mutate the checkout or leave a generated candidate in
     # the repository. Only the byte comparison is authoritative.
     expected = _encoded(generate(cpu_root=cpu_root, shader_git=shader_git, repository=repository))
+    if (repository / mesh_render_contract.HEADER).read_bytes() != mesh_render_contract.render_header(repository):
+        raise CompatibilityError("mesh whole-pass generated contract drift")
     with tempfile.TemporaryDirectory(prefix="noisemaker-backend-compat-") as directory:
         candidate = pathlib.Path(directory) / "backend_compatibility.json"
         candidate.write_bytes(expected)

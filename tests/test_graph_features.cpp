@@ -210,9 +210,136 @@ static_assert(
                    ExecutionResult (GraphExecutor::*)(const ExecutionPlan&,
                                                       const ExecutionInputs&) const>);
 
+TEST(graph_audio_uniforms_default_to_zero_and_snapshot_independent_arrays) {
+  Renderer renderer;
+  for (const auto effect : {"scope", "spectrum"}) {
+    const std::string effect_id = std::string("synth/") + effect;
+    const std::string uniform = std::string(effect) == "scope" ? "audioWaveform" : "audioSpectrum";
+    auto plan = renderer.compile(std::string("search synth\n") + effect +
+                                 "().write(o0)\nrender(o0)\n", "audio-input.dsl");
+    ExecutionInputs inputs;
+    inputs.width = 7U;
+    inputs.height = 5U;
+    const auto defaults = bind_compiled_pass(plan, effect_id, 0U, inputs, 7U, 5U)
+                              .get<glsl::AudioUniform128>(uniform);
+    for (float value : defaults.data) REQUIRE(value == 0.0F);
+    inputs.audio_state.emplace();
+    inputs.audio_state->waveform.data.fill(0.1234567F);
+    inputs.audio_state->spectrum.data.fill(0.7654321F);
+    const auto bound = bind_compiled_pass(plan, effect_id, 0U, inputs, 7U, 5U);
+    const float expected = std::string(effect) == "scope" ? 0.1234567F : 0.7654321F;
+    inputs.audio_state->waveform.data.fill(0.9F);
+    inputs.audio_state->spectrum.data.fill(0.9F);
+    for (float value : bound.get<glsl::AudioUniform128>(uniform).data) REQUIRE(value == expected);
+    const auto rebound = bind_compiled_pass(plan, effect_id, 0U, inputs, 7U, 5U);
+    for (float value : rebound.get<glsl::AudioUniform128>(uniform).data) REQUIRE(value == 0.9F);
+  }
+}
+
+TEST(graph_roll_binds_zero_grid_then_uploaded_channel_one_at_the_bottom) {
+  Renderer renderer;
+  const auto source = "search synth\nroll().write(o0)\nrender(o0)\n";
+  auto opts = options(17U, 256U);
+  const auto empty = renderer.render(source, opts);
+  opts.midi_state.emplace();
+  opts.midi_state->note_grid[60U * 4U] = 1.0F;
+  opts.midi_state->note_grid[60U * 4U + 1U] = 1.0F;
+  opts.midi_state->clock_count = 241.5;
+  const auto original = opts.midi_state->note_grid;
+  const auto active = renderer.render(source, opts);
+  REQUIRE(active.pass_count() == 2U);
+  REQUIRE(opts.midi_state->note_grid == original);
+  const auto bottom = (247U * 17U) * 4U + 1U;
+  const auto top = (7U * 17U) * 4U + 1U;
+  REQUIRE(empty.surface().data()[bottom] == 0.0F);
+  REQUIRE(active.surface().data()[bottom] == 1.0F);
+  REQUIRE(active.surface().data()[top] == empty.surface().data()[top]);
+  auto plan = renderer.compile(source);
+  REQUIRE(bind_compiled_pass(plan, "synth/roll", 0U, opts, 17U, 256U)
+              .get_number("midiClockCount") == 241.5);
+  opts.external_textures.push_back({"midiNoteGrid", Surface(128U, 16U)});
+  REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
+}
+
+TEST(graph_mesh_loader_binds_packed_data_with_upload_row_orientation) {
+  Renderer renderer;
+  auto opts = options(3U, 2U);
+  opts.mesh_data = MeshData{2U, 2U,
+      {-0.5F, 0.25F, 0.75F, 1.0F, 1.5F, -0.75F, 0.125F, 1.0F,
+       0.125F, 0.5F, -1.0F, 1.0F, -0.25F, 1.5F, 0.5F, 1.0F},
+      {1.0F, 0.0F, -1.0F, 0.0F, 0.5F, -0.5F, 0.25F, 0.0F,
+       -0.25F, 0.75F, 0.5F, 0.0F, 0.125F, -0.75F, 1.0F, 0.0F}};
+  const auto original = opts.mesh_data->position_data;
+  const auto result = renderer.render("search render\nmeshLoader().write(o0)\nrender(o0)\n", opts);
+  REQUIRE(result.pass_count() == 1U);
+  const std::vector<float> expected{
+      0.5625F, 0.75F, 0.0F, 1.0F, 0.5625F, 0.125F, 1.0F, 1.0F, 0.5625F, 0.125F, 1.0F, 1.0F,
+      0.25F, 0.625F, 0.875F, 1.0F, 0.75F, 0.25F, 0.625F, 1.0F, 0.75F, 0.25F, 0.625F, 1.0F};
+  const auto actual = result.surface().data();
+  REQUIRE(std::vector<float>(actual.begin(), actual.end()) == expected);
+  REQUIRE(opts.mesh_data->position_data == original);
+}
+
+TEST(graph_mesh_loader_requires_external_data_and_preserves_default_dimensions) {
+  Renderer renderer;
+  const auto source = "search render\nmeshLoader().write(o0)\nrender(o0)\n";
+  auto opts = options(1U, 1U);
+  REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
+  opts.mesh_data.emplace();
+  REQUIRE(opts.mesh_data->tex_width == 256U);
+  REQUIRE(opts.mesh_data->tex_height == 256U);
+  opts.mesh_data->position_data.resize(256U * 256U * 4U);
+  opts.mesh_data->normal_data.resize(256U * 256U * 4U);
+  REQUIRE(renderer.render(source, opts).pass_count() == 1U);
+  opts.mesh_data->tex_width = 0U;
+  REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
+  opts.mesh_data->tex_width = 256U;
+  opts.external_textures.push_back({"global_mesh0_positions", Surface(1U, 1U)});
+  REQUIRE_THROWS_AS(renderer.render(source, opts), GraphError);
+}
+
+TEST(graph_mesh_loader_pads_short_arrays_and_ignores_extra_upload_words) {
+  Renderer renderer;
+  const auto source = "search render\nmeshLoader().write(o0)\nrender(o0)\n";
+  auto opts = options(2U, 2U);
+  opts.mesh_data = MeshData{1U, 2U, {}, {}};
+  auto empty = renderer.render(source, opts);
+  for (std::size_t pixel = 0; pixel < 4U; ++pixel) {
+    const auto lanes = empty.surface().data();
+    REQUIRE(lanes[pixel * 4U] == 0.5F);
+    REQUIRE(lanes[pixel * 4U + 1U] == 0.5F);
+    REQUIRE(lanes[pixel * 4U + 2U] == 0.5F);
+    REQUIRE(lanes[pixel * 4U + 3U] == 1.0F);
+  }
+  opts.mesh_data->position_data = {-0.5F, 0.25F, 0.75F, 1.0F, 0.125F};
+  opts.mesh_data->normal_data = {0.5F};
+  const auto partial = renderer.render(source, opts);
+  const std::vector<float> expected{
+      0.5625F, 0.5F, 0.5F, 1.0F, 0.5F, 0.5F, 0.5F, 1.0F,
+      0.25F, 0.625F, 0.875F, 1.0F, 0.75F, 0.5F, 0.5F, 1.0F};
+  const auto actual = partial.surface().data();
+  REQUIRE(std::vector<float>(actual.begin(), actual.end()) == expected);
+  opts.mesh_data->position_data.resize(8U, 0.0F);
+  opts.mesh_data->normal_data.resize(8U, 0.0F);
+  opts.mesh_data->position_data.insert(opts.mesh_data->position_data.end(), {32.0F, -32.0F, 64.0F});
+  opts.mesh_data->normal_data.insert(opts.mesh_data->normal_data.end(), {-8.0F, 8.0F});
+  const auto extra = renderer.render(source, opts);
+  const auto extra_lanes = extra.surface().data();
+  REQUIRE(std::vector<float>(extra_lanes.begin(), extra_lanes.end()) == expected);
+}
+
+TEST(graph_mesh_loader_preserves_float32_until_output_quantization) {
+  Renderer renderer;
+  auto opts = options(2U, 1U);
+  opts.mesh_data = MeshData{1U, 1U, {-0.9999F, 0.0F, 0.0F, 1.0F}, {}};
+  const auto result = renderer.render("search render\nmeshLoader().write(o0)\nrender(o0)\n", opts);
+  // CPU 26d6f42: quantizing this input to half first instead produces 0.000244140625.
+  REQUIRE(result.surface().data()[0] == 0.000050008296966552734F);
+}
+
 TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   const auto routes = canonical_factory_routes();
-  REQUIRE(routes.size() == corpus_census::single_output_program_keys().size());
+  REQUIRE(routes.size() == corpus_census::single_output_program_keys().size() + 1U);
   // Every multi-output corpus program is published through the MRT table
   // instead, and never through the single-output one.
   const auto mrt_routes = canonical_factory_routes_mrt();
@@ -262,8 +389,16 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
 
   std::size_t typed_emitter = 0;
   std::size_t custom_adapter = 0;
+  std::size_t whole_pass = 0;
   for (const auto& route : routes) {
-    REQUIRE(route.bind != nullptr);
+    if (route.route_kind == "whole_pass") {
+      REQUIRE(route.program_key == "render/meshRender:render");
+      REQUIRE(route.canonical_factory == "noisemaker::effects::render_triangles");
+      REQUIRE(route.bind == nullptr);
+      ++whole_pass;
+    } else {
+      REQUIRE(route.bind != nullptr);
+    }
     REQUIRE(route.source_sha256.size() == 64U);
     REQUIRE(route.typed_abi_sha256.size() == 64U);
     if (route.route_kind == "typed_emitter") ++typed_emitter;
@@ -272,6 +407,7 @@ TEST(graph_generated_canonical_route_table_is_connected_and_duplicate_safe) {
   // Four hand-written custom adapters (bitEffects, median, remap, snow);
   // every other single-output corpus program is a typed-emitter route.
   REQUIRE(custom_adapter == 4U);
+  REQUIRE(whole_pass == 1U);
   REQUIRE(typed_emitter == corpus_census::single_output_program_keys().size() - custom_adapter);
 }
 

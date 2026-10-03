@@ -64,11 +64,11 @@
     "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/shapes-parity/shapes183_oracle_generator.mjs",
-      "sha256": "4b424811a84714050d3f3b32a00a885f8ab2b6d797cfa50c2abb12f9529cf6cc"
+      "sha256": "d5eb960d336ffdb3452b50ab748112b1af81009b84163b1cdcf0089d99d8d83e"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_shapes_native_oracle_include.py",
-      "sha256": "ca950171ec4c1ec11340e13e7320939941a11e7f920130ed3a60290a04a98f5f"
+      "sha256": "cafe94741483f3f4624283ab166314d53a186db330001e65c1fad03f4c55fbe6"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",

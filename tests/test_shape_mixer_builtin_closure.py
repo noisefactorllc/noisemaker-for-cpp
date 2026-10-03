@@ -12,6 +12,7 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -24,7 +25,7 @@ SCALAR_XOR_PROFILE = "scalar-uint-xor-v1"
 RAW_SHA256 = "51bee071387b3498bd9e8abad5ca3b93b3e38100b9a56b8f4abcb177ea9d675b"
 SOURCE = (
     ROOT
-    / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+    / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
     / "sources/classicNoisedeck/shapeMixer/shapeMixer.glsl"
 )
 MODULE = "tools.glslcpp.frontend.shape_mixer_builtin_profile"
@@ -613,7 +614,7 @@ class ShapeMixerBuiltinClosureTests(unittest.TestCase):
         mutations["carrier-collision"] = collision
         foreign = copy.deepcopy(exact)
         next(item for item in foreign["programs"]
-             if item["program_key"] == "filter/bc:bc")[
+             if item["program_key"] == "filter/invert:inv")[
                  "shape_mixer_builtin_profile"] = PROFILE
         mutations["foreign-key"] = foreign
         duplicate = copy.deepcopy(exact)

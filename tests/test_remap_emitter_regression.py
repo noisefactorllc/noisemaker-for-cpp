@@ -32,7 +32,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 # and deliberately never run against the live 0ed489ec... source (see that
 # module's docstring). This test authenticates that same frozen record, so
 # it reads the OLD corpus, matching test_remap_frontend_profile.py.
-CORPUS = ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6/sources"
+HISTORICAL_CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{HISTORICAL_CORPUS_REVISION}/sources"
 SOURCE = (CORPUS / "synth/remap/remap.glsl").read_text(encoding="utf-8")
 DEFINES = {}
 

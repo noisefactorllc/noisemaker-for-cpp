@@ -2,9 +2,8 @@
 """Fail-closed materializer for the synth/noise exact oracle."""
 from __future__ import annotations
 import argparse, copy, hashlib, json, math, pathlib, re, sys, tempfile
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 ROOT=pathlib.Path(__file__).resolve().parents[2]
 PACKAGE=ROOT/'docs/port-engineering/noise-parity'; ORACLE=PACKAGE/'noise-oracles.json'; GENERATOR=PACKAGE/'noise_oracle_generator.mjs'; REPORT=PACKAGE/'noise-oracle-report.md'; TARGET=ROOT/'tests/oracles/noise_expected.inc'
 SCHEMA='noisemaker-for-cpp.synth-noise.pixel-parity.v1'; KEY='synth/noise:noise'; WORD=re.compile(r'^0x[0-9a-f]{8}$'); SHA=re.compile(r'^[0-9a-f]{64}$')

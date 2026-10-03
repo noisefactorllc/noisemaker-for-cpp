@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import copy
 import hashlib
 import json
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -21,12 +22,12 @@ INCLUDE = ROOT / "tests/oracles/median_expected.inc"
 
 
 def authority() -> pathlib.Path:
-    configured = __import__("os").environ.get("NOISEMAKER_CPU_ROOT")
+    configured = historical_cpu_root()
     if not configured:
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable")
     value = pathlib.Path(configured)
     if not value.is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable")
     return value
 
 
@@ -90,7 +91,7 @@ class MedianOraclePreparationTests(unittest.TestCase):
     def test_standalone_generators_and_materializer_are_green(self):
         root = authority()
         for command in (("node", str(GENERATOR), "--check", "--cpu-root", str(root)), ("node", str(GENERATOR), "--self-test", "--cpu-root", str(root)), (sys.executable, "-B", str(MATERIALIZER), "--self-test"), (sys.executable, "-B", str(MATERIALIZER), "--check")):
-            result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+            result = historical_run(command, cwd=ROOT, capture_output=True, text=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_materializer_rejects_dimension_and_digest_mutations(self):
@@ -108,7 +109,7 @@ class MedianOraclePreparationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="median-oracle-cxx-") as raw:
             unit = pathlib.Path(raw) / "smoke.cpp"
             unit.write_text('#include "tests/oracles/median_expected.inc"\nint main() { using namespace noisemaker_median_oracle; static_assert(kCases.size() >= 9U); static_assert(kMutations.size() >= 4U); return 0; }\n')
-            result = subprocess.run((compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror", "-I", str(ROOT), "-fsyntax-only", str(unit)), cwd=ROOT, capture_output=True, text=True)
+            result = historical_run((compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror", "-I", str(ROOT), "-fsyntax-only", str(unit)), cwd=ROOT, capture_output=True, text=True)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
 

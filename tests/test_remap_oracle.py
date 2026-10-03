@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import json
 import importlib.util
 import os
@@ -10,7 +13,7 @@ import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 GENERATOR = ROOT / "docs/port-engineering/remap-parity/remap_oracle_generator.mjs"
-CPU = pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"]) if os.environ.get("NOISEMAKER_CPU_ROOT") else None
+CPU = pathlib.Path(historical_cpu_root()) if historical_cpu_root() else None
 LIVE = pathlib.Path(os.environ["NOISEMAKER_FOR_CPU"]) if os.environ.get("NOISEMAKER_FOR_CPU") else None
 TMP_ROOTS = (pathlib.Path(os.sep) / "tmp", pathlib.Path(os.sep) / "private" / "tmp")
 
@@ -23,7 +26,7 @@ class RemapOracleTests(unittest.TestCase):
         merged["NOISEMAKER_FOR_CPU"] = str(LIVE)
         if env:
             merged.update(env)
-        return subprocess.run(
+        return historical_run(
             ["node", str(GENERATOR), *args], cwd=ROOT, env=merged,
             text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             check=False,
@@ -35,7 +38,7 @@ class RemapOracleTests(unittest.TestCase):
         checked = self.node("--check", "--cpu-root", str(CPU))
         self.assertEqual(0, checked.returncode, checked.stderr)
         self.assertIn("14 cases, 7 mutations", checked.stdout)
-        materializer = subprocess.run(
+        materializer = historical_run(
             ["python3", "-B", "tools/glslcpp/generate_remap_native_oracle_include.py", "--check"],
             cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         )
@@ -43,11 +46,11 @@ class RemapOracleTests(unittest.TestCase):
 
     def test_unset_authority_fails_closed(self):
         if CPU is None or not CPU.is_dir():
-            self.skipTest("NOISEMAKER_CPU_ROOT is not configured")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT is not configured")
         env = os.environ.copy()
         env.pop("NOISEMAKER_FOR_CPU", None)
         env.pop("NOISEMAKER_CPU_ROOT", None)
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(CPU)],
             cwd=ROOT, env=env, text=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, check=False,
@@ -63,7 +66,7 @@ class RemapOracleTests(unittest.TestCase):
                 self.skipTest(f"temporary root is unavailable: {base}")
             with tempfile.TemporaryDirectory(prefix="remap-authority-", dir=str(base)) as td:
                 alias = pathlib.Path(td) / "alias"
-                alias.symlink_to(CPU, target_is_directory=True)
+                simulate_symlink(alias, CPU, target_is_directory=True)
                 result = self.node("--check", "--cpu-root", str(alias))
                 self.assertNotEqual(0, result.returncode)
                 self.assertIn("non-symlink", result.stderr)
@@ -90,7 +93,7 @@ class RemapOracleTests(unittest.TestCase):
         materializer = ROOT / "tools/glslcpp/generate_remap_native_oracle_include.py"
         duplicate = '{"schema":1,"schema":2}'
         self.assertEqual(json.loads(duplicate, object_pairs_hook=lambda pairs: pairs), [("schema", 1), ("schema", 2)])
-        result = subprocess.run(["python3", "-B", str(materializer), "--self-test"], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = historical_run(["python3", "-B", str(materializer), "--self-test"], cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertIn("JSON forgeries rejected", result.stdout)
         self.assertIn("matching-sidecar include forge rejected", result.stdout)
@@ -151,7 +154,7 @@ int main() {
   return 0;
 }
 '''
-        completed = subprocess.run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=source, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        completed = historical_run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=source, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         self.assertEqual(0, completed.returncode, completed.stderr)
 
 

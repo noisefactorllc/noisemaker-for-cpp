@@ -1,0 +1,496 @@
+[
+  {
+    "name": "filter__osd__v0_solid",
+    "width": 1,
+    "height": 1,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v0_asymmetric",
+    "width": 1,
+    "height": 1,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v1_solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v1_asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v2_solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.3778877011143148,
+      "seed": 58.0,
+      "speed": 1.5354505138586882,
+      "corner": 2
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v2_asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.3778877011143148,
+      "seed": 58.0,
+      "speed": 1.5354505138586882,
+      "corner": 2
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v3_solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.41807626965470057,
+      "seed": 30.0,
+      "speed": 41.98706834853439,
+      "corner": 3
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v3_asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.41807626965470057,
+      "seed": 30.0,
+      "speed": 41.98706834853439,
+      "corner": 3
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v4_solid",
+    "width": 128,
+    "height": 37,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v4_asymmetric",
+    "width": 128,
+    "height": 37,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v5_solid",
+    "width": 1,
+    "height": 1,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v5_asymmetric",
+    "width": 1,
+    "height": 1,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v6_solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.435875978644399,
+      "seed": 17.0,
+      "speed": 46.33227024427088,
+      "corner": 2
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v6_asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.435875978644399,
+      "seed": 17.0,
+      "speed": 46.33227024427088,
+      "corner": 2
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v7_solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.05829436501434326,
+      "seed": 77.0,
+      "speed": 15.189036935344241,
+      "corner": 3
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v7_asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.05829436501434326,
+      "seed": 77.0,
+      "speed": 15.189036935344241,
+      "corner": 3
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v8_solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v8_asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v9_solid",
+    "width": 128,
+    "height": 37,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v9_asymmetric",
+    "width": 128,
+    "height": 37,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v10_solid",
+    "width": 1,
+    "height": 1,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.8135201378798779,
+      "seed": 19.0,
+      "speed": 4.579113305661248,
+      "corner": 2
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v10_asymmetric",
+    "width": 1,
+    "height": 1,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.8135201378798779,
+      "seed": 19.0,
+      "speed": 4.579113305661248,
+      "corner": 2
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v11_solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.2633328410059548,
+      "seed": 76.0,
+      "speed": 16.021415943423712,
+      "corner": 3
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v11_asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.2633328410059548,
+      "seed": 76.0,
+      "speed": 16.021415943423712,
+      "corner": 3
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v12_solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v12_asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v13_solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v13_asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v14_solid",
+    "width": 128,
+    "height": 37,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.09419058456649854,
+      "seed": 69.0,
+      "speed": 2.829860221276009,
+      "corner": 2
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v14_asymmetric",
+    "width": 128,
+    "height": 37,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 0.09419058456649854,
+      "seed": 69.0,
+      "speed": 2.829860221276009,
+      "corner": 2
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v15_solid",
+    "width": 1,
+    "height": 1,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.5339447000973321,
+      "seed": 19.0,
+      "speed": 10.72052395628269,
+      "corner": 3
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v15_asymmetric",
+    "width": 1,
+    "height": 1,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.5339447000973321,
+      "seed": 19.0,
+      "speed": 10.72052395628269,
+      "corner": 3
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v16_solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v16_asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "uniforms": {
+      "alpha": 0.0,
+      "seed": 1.0,
+      "speed": 0.0,
+      "corner": 0
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v17_solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v17_asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "uniforms": {
+      "alpha": 1.0,
+      "seed": 100.0,
+      "speed": 50.0,
+      "corner": 1
+    },
+    "image": "asymmetric"
+  },
+  {
+    "name": "filter__osd__v18_solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.07823559935067281,
+      "seed": 38.0,
+      "speed": 43.96690260105364,
+      "corner": 2
+    },
+    "image": "solid"
+  },
+  {
+    "name": "filter__osd__v18_asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "uniforms": {
+      "alpha": 0.07823559935067281,
+      "seed": 38.0,
+      "speed": 43.96690260105364,
+      "corner": 2
+    },
+    "image": "asymmetric"
+  }
+]

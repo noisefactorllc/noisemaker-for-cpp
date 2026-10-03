@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import hashlib
 import json
 import os
 import pathlib
-import subprocess
 import sys
 import tempfile
 import shutil
@@ -24,9 +26,9 @@ INCLUDE = ROOT / "tests/oracles/mandelbrot_expected.inc"
 
 
 def _authority() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value or not pathlib.Path(value).is_dir():
-        pytest.skip("NOISEMAKER_CPU_ROOT unavailable; authority test skipped")
+        pytest.skip("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable; authority test skipped")
     return pathlib.Path(value)
 
 
@@ -89,13 +91,13 @@ def test_package_and_sidecars_are_exact_and_semantic() -> None:
 def test_generator_check_self_test_and_materializer_contract() -> None:
     authority = _authority()
     env = os.environ.copy()
-    check = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, env=env, text=True, capture_output=True)
+    check = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, env=env, text=True, capture_output=True)
     assert check.returncode == 0, check.stdout + check.stderr
-    self_test = subprocess.run(["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)], cwd=ROOT, env=env, text=True, capture_output=True)
+    self_test = historical_run(["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)], cwd=ROOT, env=env, text=True, capture_output=True)
     assert self_test.returncode == 0, self_test.stdout + self_test.stderr
-    materializer = subprocess.run([sys.executable, str(MATERIALIZER), "--self-test"], cwd=ROOT, text=True, capture_output=True)
+    materializer = historical_run([sys.executable, str(MATERIALIZER), "--self-test"], cwd=ROOT, text=True, capture_output=True)
     assert materializer.returncode == 0, materializer.stdout + materializer.stderr
-    assert subprocess.run([sys.executable, str(MATERIALIZER), "--check"], cwd=ROOT, text=True).returncode == 0
+    assert historical_run([sys.executable, str(MATERIALIZER), "--check"], cwd=ROOT, text=True).returncode == 0
 
 
 def test_materializer_rejects_forged_semantic_fields_even_with_recomputed_payload() -> None:
@@ -155,7 +157,7 @@ def test_generated_include_compiles_as_cxx20() -> None:
     with tempfile.TemporaryDirectory(prefix="mandelbrot-include-") as raw:
         unit = pathlib.Path(raw) / "smoke.cpp"
         unit.write_text('#include "tests/oracles/mandelbrot_expected.inc"\nint main() { const auto& controls = mandelbrot_oracle::kCases.front().bindings; return static_cast<int>(mandelbrot_oracle::kBindingNames.size() + mandelbrot_oracle::kBindingAbi.size() + controls.iterations); }\n')
-        result = subprocess.run([compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)], cwd=ROOT, text=True, capture_output=True)
+        result = historical_run([compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)], cwd=ROOT, text=True, capture_output=True)
         assert result.returncode == 0, result.stdout + result.stderr
 
 
@@ -167,11 +169,11 @@ def test_generator_rejects_transitive_mutation_and_nonliteral_import() -> None:
         shutil.copytree(authority, clone)
         runtime = clone / "src/csl/runtime.js"
         runtime.write_text(runtime.read_text() + "\nexport const deliberateMutation = 1\n")
-        bad = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
+        bad = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
         assert bad.returncode != 0
         assert "import closure" in bad.stderr
         runtime.write_text(runtime.read_text() + "\nvoid import(dynamicSpecifier)\n")
-        bad_dynamic = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
+        bad_dynamic = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
         assert bad_dynamic.returncode != 0
         assert "nonliteral dynamic import" in bad_dynamic.stderr
 
@@ -181,11 +183,11 @@ def test_generator_rejects_literal_extra_import_and_symlink_or_live_roots() -> N
     with tempfile.TemporaryDirectory(prefix="mandelbrot-oracle-paths-") as raw:
         base = pathlib.Path(raw)
         link = base / "cpp-link"
-        link.symlink_to(ROOT, target_is_directory=True)
-        escaped = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(link)], cwd=ROOT, text=True, capture_output=True)
+        simulate_symlink(link, ROOT, target_is_directory=True)
+        escaped = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(link)], cwd=ROOT, text=True, capture_output=True)
         assert escaped.returncode != 0
         assert "C++ repository" in escaped.stderr
-        live = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(authority)}, text=True, capture_output=True)
+        live = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(authority)}, text=True, capture_output=True)
         assert live.returncode != 0
         assert "immutable snapshot" in live.stderr or "live checkout" in live.stderr
         clone = base / "cpu"
@@ -194,6 +196,6 @@ def test_generator_rejects_literal_extra_import_and_symlink_or_live_roots() -> N
         dependency = clone / "src/csl/runtime.js"
         dependency.write_text(dependency.read_text() + "\nimport './literal-extra.js'\n")
         (clone / "src/csl/literal-extra.js").write_text("export const literalExtra = 1\n")
-        extra = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
+        extra = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(clone)], cwd=ROOT, text=True, capture_output=True)
         assert extra.returncode != 0
         assert "import closure" in extra.stderr

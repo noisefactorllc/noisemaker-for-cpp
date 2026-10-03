@@ -3,8 +3,6 @@
 from __future__ import annotations
 import argparse, copy, hashlib, json, math, pathlib, re, sys
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/julia-parity"
@@ -12,7 +10,8 @@ ORACLE = PACKAGE / "julia-oracles.json"
 TARGET = ROOT / "tests/oracles/julia_expected.inc"
 SCHEMA = "noisemaker-for-cpp.julia.pixel-parity.v1"
 KEY = "synth/julia:julia"
-CORPUS = check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 SOURCE = f"tools/glslcpp/corpus/{CORPUS}/sources/synth/julia/julia.glsl"
 SOURCE_SHA = "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0"
 FACTORY_SOURCE = "src/effects/adapters/julia.js"
@@ -20,7 +19,7 @@ FACTORY_SOURCE_SHA = "0f9cc65f966a358bc4671399e8de49d144d0272a07ef2ae15a0bfb5704
 FACTORY_SHA = "ed39921d1b85c59d7c86caa715c50987525bc9bcc6903a885810f133480545d6"
 GENERATOR_RELATIVE = "docs/port-engineering/julia-parity/julia_oracle_generator.mjs"
 MATERIALIZER_RELATIVE = "tools/glslcpp/generate_julia_native_oracle_include.py"
-GENERATOR_SHA = "7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031"
+GENERATOR_SHA = "7c4633b2fc439da3871764755608a1d889fb838d1aa015655f5e51ae04d37188"
 UPSTREAM = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 EXPECTED_NAMES = ["resolution", "tileOffset", "fullResolution", "time", "cReal", "cImag", "poi", "outputMode", "centerX", "centerY", "rotation", "iterations", "stripeFreq", "trapShape", "lightAngle", "cPath", "cSpeed", "cRadius", "invert", "zoomSpeed", "zoomDepth"]
 EXPECTED_ABI = {"resolution":"Vec2", "tileOffset":"Vec2", "fullResolution":"Vec2", "time":"number", "cReal":"number", "cImag":"number", "poi":"int32", "outputMode":"int32", "centerX":"number", "centerY":"number", "rotation":"number", "iterations":"int32", "stripeFreq":"number", "trapShape":"int32", "lightAngle":"number", "cPath":"int32", "cSpeed":"number", "cRadius":"number", "invert":"bool", "zoomSpeed":"number", "zoomDepth":"number"}

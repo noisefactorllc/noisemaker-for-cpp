@@ -3,6 +3,8 @@
 #include "noisemaker/effects/cpu/worm_overlay.hpp"
 #include "noisemaker/effects/scatter/catalog.hpp"
 #include "noisemaker/effects/scatter/registry.hpp"
+#include "noisemaker/effects/mesh_render.hpp"
+#include "noisemaker/effects/mesh_render_contract.hpp"
 #include "noisemaker/fdlibm.hpp"
 #include "noisemaker/generated/catalog.hpp"
 #include "noisemaker/graph/chain_bundle.hpp"
@@ -252,15 +254,32 @@ struct BindingAbiSections {
   return noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key) != nullptr;
 }
 
-[[nodiscard]] std::unordered_set<std::string> unproduced_declared_textures(
+[[nodiscard]] bool mesh_adapter_available(const PassAdmission& admission) {
+  return admission.status == AvailabilityStatus::compatible &&
+         admission.identity.program_key == effects::mesh_contract::route.program_key &&
+         admission.route_kind == "whole_pass";
+}
+
+[[nodiscard]] bool direct_mesh_resource(const PassAdmission& admission,
+                                        std::string_view resource) {
+  return mesh_adapter_available(admission) &&
+         (resource == "global_mesh0_positions" || resource == "global_mesh0_normals");
+}
+
+[[nodiscard]] std::unordered_set<std::string> initialized_declared_textures(
     const effects::EffectDefinition& definition) {
   std::unordered_set<std::string> produced;
+  std::unordered_set<std::string> consumed;
   for (const auto& pass : definition.passes) {
     for (const auto& output : pass.outputs) produced.insert(output.second);
+    for (const auto& input : pass.inputs) consumed.insert(input.second);
   }
   std::unordered_set<std::string> result;
   for (const auto& texture : definition.textures) {
-    if (produced.find(texture.name) == produced.end()) result.insert(texture.name);
+    if (produced.find(texture.name) == produced.end() ||
+        (texture.name.starts_with('_') && consumed.contains(texture.name))) {
+      result.insert(texture.name);
+    }
   }
   return result;
 }
@@ -650,6 +669,17 @@ void validate_ordinary_pass_metadata(const EffectStep& step,
                                      const PassAdmission& admission,
                                      const effects::PassDefinition& pass,
                                      std::size_t pass_index) {
+  if (mesh_adapter_available(admission)) {
+    if (!pass.count.has_value() || pass.count->kind != effects::ValueKind::string ||
+        pass.count->string != "input" || pass.viewport.has_value() ||
+        !pass.draw_mode.has_value() || *pass.draw_mode != "triangles" ||
+        admission.draw_mode != "triangles" || !pass.blend.has_value() ||
+        pass.blend->kind != effects::BlendKind::boolean || pass.blend->enabled) {
+      throw GraphError(GraphErrorCode::invalid_snapshot, "mesh whole-pass controls differ from the admitted contract",
+                       step.effect.id, pass_index, pass.name, admission.identity.program_key);
+    }
+    return;
+  }
   // A dispatchable scatter pass legitimately declares `count` (JS's
   // `count:"input"` -- the adapter itself iterates once per source pixel,
   // never the ordinary ABI's ordinary-count/viewport machinery). Its own
@@ -979,6 +1009,28 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                        "effect admission cardinality mismatch",
                        snapshot.definition.id);
     }
+  }
+  // Reject the CPU's unsupported whole-pass iteration before an unrelated
+  // pass (such as loopEnd's unavailable copy) or input route obscures it.
+  // Snapshot integrity and cardinality are established above; authenticate
+  // the exact mesh route before applying this specific refusal.
+  for (const auto& chain : plan.chains) {
+    for (const auto& group : iteration::compute_iteration_groups(plan, chain)) {
+      if (!group.iterated) continue;
+      for (const auto index : group.step_indices) {
+        const auto* step = std::get_if<EffectStep>(&chain.steps.at(index));
+        if (step == nullptr) continue;
+        const auto& snapshot = plan.effects.at(step->snapshot_index);
+        for (const auto& admission : snapshot.admissions) {
+          if (!mesh_adapter_available(admission)) continue;
+          (void)authenticate_factory_route(*step, admission);
+          throw binding_error(*step, admission, GraphErrorCode::unsupported_draw_mode,
+                              "CPU authority does not support mesh whole-pass rendering inside iterated groups");
+        }
+      }
+    }
+  }
+  for (const auto& snapshot : plan.effects) {
     for (std::size_t pass_index = 0; pass_index < snapshot.admissions.size();
          ++pass_index) {
       const auto& admission = snapshot.admissions[pass_index];
@@ -1029,6 +1081,32 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
       throw GraphError(GraphErrorCode::duplicate_output, "duplicate external texture route");
     }
   }
+  const bool needs_midi = std::any_of(plan.effects.begin(), plan.effects.end(),
+      [](const auto& snapshot) { return snapshot.definition.id == "synth/roll"; });
+  if (needs_midi && !names.insert("midiNoteGrid").second) {
+    throw GraphError(GraphErrorCode::duplicate_output, "duplicate MIDI note grid route");
+  }
+  const bool needs_mesh = std::any_of(plan.effects.begin(), plan.effects.end(),
+      [](const auto& snapshot) {
+        return snapshot.definition.id == "render/meshLoader" ||
+               snapshot.definition.id == "render/meshRender";
+      });
+  if (needs_mesh) {
+    if (!inputs.mesh_data.has_value()) {
+      throw GraphError(GraphErrorCode::missing_resource,
+                       "mesh effect requires external mesh data");
+    }
+    const auto& mesh = *inputs.mesh_data;
+    if (mesh.tex_width == 0U || mesh.tex_height == 0U ||
+        mesh.tex_height > noisemaker::kMaxSurfacePixels / mesh.tex_width) {
+      throw GraphError(GraphErrorCode::invalid_dimension, "mesh texture dimensions are invalid");
+    }
+    for (const auto name : {"global_mesh0_positions", "global_mesh0_normals"}) {
+      if (!names.insert(name).second) {
+        throw GraphError(GraphErrorCode::duplicate_output, "duplicate mesh data route");
+      }
+    }
+  }
 
   // Authenticate every allocation-relevant declaration and producer route
   // while the executor still owns no caller-derived resources.
@@ -1048,6 +1126,11 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
   std::unordered_set<std::string> available_routes;
   for (const auto& input : inputs.seed_surfaces) available_routes.insert(input.name);
   for (const auto& input : inputs.external_textures) available_routes.insert(input.name);
+  if (needs_midi) available_routes.insert("midiNoteGrid");
+  if (needs_mesh) {
+    available_routes.insert("global_mesh0_positions");
+    available_routes.insert("global_mesh0_normals");
+  }
   for (const auto& chain : plan.chains) {
     bool have_current = false;
     std::unordered_set<std::string> produced;
@@ -1083,15 +1166,16 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         const auto& snapshot = plan.effects[effect.snapshot_index];
         const auto* group = group_of[step_index];
         const bool iterated = group != nullptr && group->iterated;
-        // Declared textures with no producer (including `overlayTex` on the
-        // three worm-overlay effects, now that the adapter is implemented)
-        // are initialized by the executor before the first pass runs, so
-        // they are available routes from the start of the step -- see the
+        // Declared textures with no producer, and consumed underscore-prefixed
+        // feedback textures even when also produced (including `_rollFb`),
+        // are initialized before execution. This includes `overlayTex` on the
+        // three worm-overlay effects. They are available routes from the
+        // start of the step -- see the
         // `declared_textures` exemption in the pass.inputs loop below. In an
         // iterated group EVERY declared texture is zero-filled scratch before
         // the first iteration (ensure_group_scratch_resources /
         // renderer.js ensureGroupScratchResources), produced or not.
-        auto declared_textures = unproduced_declared_textures(snapshot.definition);
+        auto declared_textures = initialized_declared_textures(snapshot.definition);
         if (iterated) {
           for (const auto& texture : snapshot.definition.textures) declared_textures.insert(texture.name);
         }
@@ -1100,6 +1184,11 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
         for (std::size_t pass_index = 0; pass_index < snapshot.definition.passes.size(); ++pass_index) {
           const auto& pass = snapshot.definition.passes[pass_index];
           const auto& admission = snapshot.admissions[pass_index];
+          if (iterated && mesh_adapter_available(admission)) {
+            throw GraphError(GraphErrorCode::unsupported_draw_mode,
+                             "CPU authority does not support mesh whole-pass rendering inside iterated groups",
+                             effect.effect.id, pass_index, pass.name, admission.identity.program_key);
+          }
           validate_pass_identity_and_output(effect, snapshot.definition, pass,
                                             admission, pass_index);
           validate_ordinary_pass_metadata(effect, admission, pass, pass_index);
@@ -1148,6 +1237,7 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
                 // global_accum is seeded for a loop region; everything else
                 // is step-local (declared scratch or this step's own output).
                 if (route == "selfTex" || route == "feedback" ||
+                    (route == "midiNoteGrid" && needs_midi) ||
                     iteration::is_particle_state_name(route) ||
                     (route == "global_accum" && group->loop) ||
                     step_produced.find(route) != step_produced.end()) {
@@ -1293,8 +1383,8 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
             throw GraphError(GraphErrorCode::unsupported_blend, "blend is not enabled in Task 6",
                              effect->effect.id, index, admission.identity.name, admission.identity.program_key);
           }
-          if (admission.draw_mode != "fragment" ||
-              (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) {
+          if (!mesh_adapter_available(admission) && (admission.draw_mode != "fragment" ||
+              (pass.draw_mode.has_value() && *pass.draw_mode != "fragment"))) {
             throw GraphError(GraphErrorCode::unsupported_draw_mode, "draw mode is not fragment",
                              effect->effect.id, index, admission.identity.name, admission.identity.program_key);
           }
@@ -1355,7 +1445,8 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 [[nodiscard]] bool is_reserved_name(std::string_view name) noexcept {
   return name == "resolution" || name == "fullResolution" ||
          name == "renderScale" || name == "tileOffset" || name == "time" ||
-         name == "frame" || name == "seed" || name == "deltaTime";
+         name == "frame" || name == "seed" || name == "deltaTime" ||
+         name == "audioWaveform" || name == "audioSpectrum" || name == "midiClockCount";
 }
 
 [[nodiscard]] bool is_finite_plan_number(const PlanValue& value) noexcept {
@@ -1376,6 +1467,19 @@ void validate_plan_before_allocation(const ExecutionPlan& plan,
 void validate_uniform_abi_shape(const EffectStep& step,
                                 const PassAdmission& admission,
                                 const CompatibilityBinding& abi) {
+  const bool audio_binding = abi.name == "audioWaveform" || abi.name == "audioSpectrum" ||
+                             abi.type == "float[128]" || abi.cpp_type == "glsl::AudioUniform128";
+  if (audio_binding) {
+    const bool correct_program =
+        (admission.identity.program_key == "synth/scope:scope" && abi.name == "audioWaveform") ||
+        (admission.identity.program_key == "synth/spectrum:spectrum" && abi.name == "audioSpectrum");
+    if (!correct_program || abi.type != "float[128]" || abi.cpp_type != "glsl::AudioUniform128" ||
+        abi.source != "reserved_runtime_state" || abi.source_name != abi.name || !abi.resource.empty()) {
+      throw binding_error(step, admission, GraphErrorCode::binding_type,
+                          "audio uniform ABI is not authenticated");
+    }
+    return;
+  }
   // "vec3"->"glsl::DVec3" is the classicNoisedeck palette-uniform
   // double-precision carrier (see apply_classic_noisedeck_palette_override
   // and tools/glslcpp/emit_typed_cpp.py's
@@ -1661,6 +1765,16 @@ void validate_uniform_abi_shape(const EffectStep& step,
                         "runtime inputs are missing");
   }
   const auto& inputs = *context.inputs;
+  if (abi.source_name == "midiClockCount") {
+    return materialize_plan_value(PlanValue::number_value(inputs.midi_state ? inputs.midi_state->clock_count : 0.0),
+                                  abi.cpp_type, step, admission, abi.name);
+  }
+  if (abi.source_name == "audioWaveform") {
+    return inputs.audio_state ? inputs.audio_state->waveform : glsl::AudioUniform128{};
+  }
+  if (abi.source_name == "audioSpectrum") {
+    return inputs.audio_state ? inputs.audio_state->spectrum : glsl::AudioUniform128{};
+  }
   if (abi.source_name == "tileOffset") {
     return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(0.0), PlanValue::number_value(0.0)}), abi.cpp_type, step, admission, abi.name);
   }
@@ -1793,7 +1907,9 @@ void validate_pass_controls(const EffectStep& step, const PassAdmission& admissi
     if (std::find(allowed_domains.begin(), allowed_domains.end(), admission.dimensionality) == allowed_domains.end()) {
       throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "unsupported dimensionality");
     }
-    if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
+    if (mesh_adapter_available(admission)) {
+      validate_ordinary_pass_metadata(step, admission, pass, admission.identity.index);
+    } else if (admission.draw_mode != "fragment" || (pass.draw_mode.has_value() && *pass.draw_mode != "fragment")) throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode, "only fragment draw mode is supported");
   }
   // See the sibling check in the plan dry-run loop above: `unsupported_mrt`
   // now means "declared drawBuffers disagrees with the pass's own output
@@ -1851,6 +1967,7 @@ std::span<const FactoryRouteDescriptor> canonical_factory_routes() {
                         route.output_abi_sha256, route.output_extent_sha256,
                         route.compile_define_abi_sha256, route.bind});
     }
+    result.push_back(effects::mesh_contract::route);
     return result;
   }();
   return routes;
@@ -1862,7 +1979,8 @@ const FactoryRouteDescriptor* authenticate_factory_route(
   const auto table = routes.empty() ? canonical_factory_routes() : routes;
   const auto* route = find_factory_route(table, admission.identity.program_key,
                                          admission.canonical_factory);
-  if (route == nullptr || route->bind == nullptr) {
+  if (route == nullptr || (route->bind == nullptr &&
+      !(route->route_kind == "whole_pass" && route->program_key == effects::mesh_contract::route.program_key))) {
     throw binding_error(step, admission, GraphErrorCode::unavailable_pass,
                         "canonical factory route is not admitted");
   }
@@ -1985,6 +2103,10 @@ noisemaker::BoundKernel bind_factory_route(
     const effects::EffectDefinition& definition, const glsl::Bindings& bindings,
     std::span<const FactoryRouteDescriptor> routes) {
   const auto* route = authenticate_factory_route(step, admission, routes);
+  if (route->bind == nullptr) {
+    throw binding_error(step, admission, GraphErrorCode::unsupported_draw_mode,
+                        "whole-pass adapter cannot be bound as a fragment kernel");
+  }
   authenticate_compile_define_parameters(step, admission, definition, *route);
   authenticate_palette_override(step, admission, definition);
   authenticate_measured_parity(step, admission);
@@ -2446,7 +2568,12 @@ void preflight_pass_abi(const EffectStep& step, const PassAdmission& admission,
       throw binding_error(step, admission, GraphErrorCode::missing_binding,
                           "sampler ABI route is invalid");
     }
-    if (context.lookup_surface != nullptr &&
+    if (direct_mesh_resource(admission, sampler.resource)) {
+      if (context.inputs == nullptr || !context.inputs->mesh_data.has_value()) {
+        throw binding_error(step, admission, GraphErrorCode::missing_resource,
+                            "declared mesh data resource is unavailable");
+      }
+    } else if (context.lookup_surface != nullptr &&
         context.lookup_surface(context.lookup_context, sampler.resource) == nullptr) {
       throw binding_error(step, admission, GraphErrorCode::missing_resource,
                           "declared sampler resource is unavailable");
@@ -2498,6 +2625,9 @@ void materialize_sampler_bindings(
     return;
   }
   for (const auto& sampler : admission.samplers) {
+    // The whole-pass CPU adapter reads these exact authenticated inputs from
+    // MeshData. Their route/type ABI and presence were checked in preflight.
+    if (direct_mesh_resource(admission, sampler.resource)) continue;
     const auto* surface = context.lookup_surface(context.lookup_context,
                                                   sampler.resource);
     if (surface == nullptr) {
@@ -2786,6 +2916,7 @@ struct GroupStepRouteContext {
   GroupStepState* state = nullptr;
   iteration::GroupResourceMap* group_resources = nullptr;
   const noisemaker::Surface* empty_surface = nullptr;
+  const ResourceArena* arena = nullptr;
 };
 
 // renderer.js:726-743 -- groupInputTextures' per-route resolution (the lazy
@@ -2796,6 +2927,10 @@ struct GroupStepRouteContext {
                                                                   std::string_view route) {
   auto* ctx = static_cast<GroupStepRouteContext*>(context);
   if (ctx == nullptr) return nullptr;
+  if (route == "midiNoteGrid") {
+    const auto* resource = ctx->arena == nullptr ? nullptr : find_named_resource(*ctx->arena, route);
+    return resource == nullptr ? nullptr : &resource->surface();
+  }
   if (route == "selfTex" || route == "feedback") {
     return ctx->state->self_tex.has_value() ? &*ctx->state->self_tex : ctx->empty_surface;
   }
@@ -2960,6 +3095,10 @@ struct GroupStepIterationResult {
   for (std::size_t pass_index = 0; pass_index < definition.passes.size(); ++pass_index) {
     const auto& pass = definition.passes[pass_index];
     const auto& admission = admissions[pass_index];
+    if (mesh_adapter_available(admission)) {
+      throw binding_error(state.effective_step, admission, GraphErrorCode::unsupported_draw_mode,
+                          "CPU authority does not support mesh whole-pass rendering inside iterated groups");
+    }
     bool enabled = false;
     std::size_t repeats = 0U;
     try {
@@ -3009,7 +3148,7 @@ struct GroupStepIterationResult {
           }
           destinations.push_back({pass.outputs[slot].second, format});
         }
-        GroupStepRouteContext route_context{&state, &group_resources, &empty_surface};
+        GroupStepRouteContext route_context{&state, &group_resources, &empty_surface, &arena};
         const BindingMaterializationContext binding_context{
             &iteration_inputs, &definition, mrt_width, mrt_height,
             &lookup_group_step_route, &route_context};
@@ -3071,7 +3210,7 @@ struct GroupStepIterationResult {
       const std::size_t width = destination.width();
       const std::size_t height = destination.height();
 
-      GroupStepRouteContext route_context{&state, &group_resources, &empty_surface};
+      GroupStepRouteContext route_context{&state, &group_resources, &empty_surface, &arena};
       const BindingMaterializationContext binding_context{
           &iteration_inputs, &definition, width, height,
           &lookup_group_step_route, &route_context};
@@ -3231,7 +3370,29 @@ struct GroupPublishResult {
     throw GraphError(GraphErrorCode::execution_failure,
                      "iterated group's owning step is not an effect step");
   }
-  const auto resolved = iteration::resolve_iteration_count(parameter(*owner_step, "iterationCount"));
+  const auto* requested = parameter(*owner_step, "iterationCount");
+  const auto& owner_passes = plan.effects[owner_step->snapshot_index].definition.passes;
+  const bool has_pass_repeat = std::any_of(owner_passes.begin(), owner_passes.end(),
+      [](const auto& pass) {
+        if (!pass.repeat.has_value()) return false;
+        return (pass.repeat->kind == effects::ValueKind::number && pass.repeat->number != 0.0) ||
+               (pass.repeat->kind == effects::ValueKind::string && !pass.repeat->string.empty());
+      });
+  // CPU authority ea4abf3: pass repeats already specify the per-frame
+  // iteration count. Keep zero-iteration bypass and avoid multiplying it
+  // by the group count a second time.
+  PlanValue group_count;
+  if (has_pass_repeat) {
+    if (requested == nullptr || requested->kind == PlanValue::Kind::null_value) {
+      group_count = PlanValue::number_value(1.0);
+    } else if (requested->kind == PlanValue::Kind::number) {
+      group_count = PlanValue::number_value(std::min(requested->number, 1.0));
+    } else {
+      group_count = *requested;
+    }
+    requested = &group_count;
+  }
+  const auto resolved = iteration::resolve_iteration_count(requested);
   if (resolved.zero_iterations) {
     return zero_iteration_group_output(group_input, inputs);
   }
@@ -3380,6 +3541,43 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
     }
   }
 
+  if (std::any_of(plan.effects.begin(), plan.effects.end(),
+      [](const auto& snapshot) { return snapshot.definition.id == "synth/roll"; })) {
+    noisemaker::Surface grid(128U, 16U);
+    grid.set_filter(noisemaker::TextureFilter::nearest);
+    if (inputs.midi_state) {
+      constexpr std::size_t row_lanes = 128U * 4U;
+      for (std::size_t row = 0; row < 16U; ++row) {
+        std::copy_n(inputs.midi_state->note_grid.data() + (15U - row) * row_lanes,
+                    row_lanes, grid.data().data() + row * row_lanes);
+      }
+    }
+    arena.copy("midiNoteGrid", grid, TextureFormat::rgba32f, ResourceLifetime::external);
+  }
+
+  // Only meshLoader samples uploaded mesh textures. meshRender's whole-pass
+  // adapter consumes the same validated external data directly.
+  if (inputs.mesh_data.has_value() &&
+      std::any_of(plan.effects.begin(), plan.effects.end(),
+          [](const auto& snapshot) { return snapshot.definition.id == "render/meshLoader"; })) {
+    const auto& mesh = *inputs.mesh_data;
+    const auto bind_mesh_texture = [&](const char* name, const std::vector<float>& packed) {
+      noisemaker::Surface surface(mesh.tex_width, mesh.tex_height);
+      surface.set_filter(noisemaker::TextureFilter::nearest);
+      const auto row_lanes = mesh.tex_width * 4U;
+      for (std::size_t row = 0; row < mesh.tex_height; ++row) {
+        const auto source = (mesh.tex_height - 1U - row) * row_lanes;
+        if (source < packed.size()) {
+          std::copy_n(packed.data() + source, std::min(row_lanes, packed.size() - source),
+                      surface.data().data() + row * row_lanes);
+        }
+      }
+      arena.copy(name, surface, TextureFormat::rgba32f, ResourceLifetime::external);
+    };
+    bind_mesh_texture("global_mesh0_positions", mesh.position_data);
+    bind_mesh_texture("global_mesh0_normals", mesh.normal_data);
+  }
+
   GraphResource* current = nullptr;
   // renderer.js:97-124 -- the chain-bundle threading Family D needs
   // (docs/port-engineering/chain-bundle-volume-geometry-threading.md).
@@ -3482,9 +3680,9 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
         // resource retired, turning the later `retain` into a throw.
         const ResourceArena::ScopedPin effect_input_pin(arena, effect_input);
         // initializeCanonicalResources(): create and clear every declared
-        // texture that no pass of this effect produces, at its own declared
-        // extent and format, before the first pass runs.
-        const auto declared_textures = unproduced_declared_textures(snapshot.definition);
+        // unproduced texture and consumed underscore-prefixed feedback texture,
+        // at its declared extent and format, before the first pass runs.
+        const auto declared_textures = initialized_declared_textures(snapshot.definition);
         for (const auto& texture : snapshot.definition.textures) {
           if (declared_textures.find(texture.name) == declared_textures.end()) continue;
           // initializeCanonicalResources() skips a texture whose name is
@@ -3614,6 +3812,7 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
             borrowed.clear();
           };
           for (const auto& sampler : admission.samplers) {
+            if (direct_mesh_resource(admission, sampler.resource)) continue;
             const auto route = resolve_route(sampler.resource);
             if (route.surface == nullptr) {
               release_borrowed();
@@ -3802,16 +4001,33 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
                                          step, pass);
             apply_classic_noisedeck_palette_override(bindings, step,
                                                      snapshot.definition);
-            auto kernel = bind_factory_route(step, admission, snapshot.definition,
-                                             bindings);
             // Render and quantize off-route.  A failed factory or kernel must
             // never publish a partially initialized destination into the
             // arena, so route replacement is one atomic insert after all work
             // has completed successfully.
-            auto rendered = noisemaker::run_pass(kernel, width, height,
+            auto rendered = [&]() -> noisemaker::Surface {
+            if (mesh_adapter_available(admission)) {
+              (void)authenticate_factory_route(step, admission);
+              if (!inputs.mesh_data.has_value()) {
+                throw binding_error(step, admission, GraphErrorCode::missing_binding,
+                                    "mesh whole-pass adapter requires external mesh data");
+              }
+              noisemaker::Surface destination(width, height);
+              const auto* previous = arena.find(output_route);
+              if (previous != nullptr && previous->surface().data().size() == destination.data().size()) {
+                std::copy(previous->surface().data().begin(), previous->surface().data().end(), destination.data().begin());
+              } else {
+                destination.clear();
+              }
+              (void)effects::render_triangles(*inputs.mesh_data, bindings, destination);
+              return destination;
+            }
+            auto kernel = bind_factory_route(step, admission, snapshot.definition, bindings);
+            return noisemaker::run_pass(kernel, width, height,
                                                  noisemaker::f32(inputs.time),
                                                  noisemaker::f32(inputs.seed), inputs.frame,
                                                  noisemaker::f32(inputs.delta_time));
+            }();
             noisemaker::quantize_texture(rendered, format);
             auto& destination = arena.insert(output_route, std::move(rendered),
                                               format, ResourceLifetime::transient);

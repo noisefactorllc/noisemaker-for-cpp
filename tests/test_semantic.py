@@ -1300,22 +1300,23 @@ class SemanticTests(unittest.TestCase):
         self.assertEqual("not attempted", report["compile"])
         self.assertEqual((report["expected_variant_candidates"], report["expected_variant_success"]),
                          (report["variant_candidates"], report["variant_success"]))
-        # 215 initializers across the pre-expansion corpus, plus whatever the
-        # corpus expansion's programs declare, counted independently here.
+        # Count every current source initializer before semantic analysis.
+        # The historical subtotal included three retired Colorspace globals.
         from tools.glslcpp import check_corpus, check_semantics
         from tools.glslcpp.frontend import parse_program
-        from tools.glslcpp.frontend.semantic import analyze_program
         root = check_corpus._corpus_root(REPOSITORY)
         metadata = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
-        expansion_initializers = 0
+        source_initializers = 0
         for entry in corpus_census.manifest_programs():
-            if entry["program_key"] not in corpus_census.expansion_keys():
-                continue
             key = entry["program_key"]
-            typed = analyze_program(parse_program((root / entry["source"]).read_text(encoding="utf-8"), key,
-                                                  check_semantics._metadata_defaults(metadata, key)), key)
-            expansion_initializers += sum(item.initializer is not None for item in typed.declarations)
-        self.assertEqual(215 + expansion_initializers, report["global_initializer_success"])
+            parsed = parse_program((root / entry["source"]).read_text(encoding="utf-8"), key,
+                                   check_semantics._metadata_defaults(metadata, key))
+            source_initializers += sum(
+                declarator["init"] is not None
+                for declaration in parsed["ast"]["decls"]
+                if declaration["k"] == "decl"
+                for declarator in declaration["declarators"])
+        self.assertEqual(source_initializers, report["global_initializer_success"])
         self.assertNotIn(str(REPOSITORY), first)
 
     def test_every_vendored_program_passes_the_body_checker(self) -> None:

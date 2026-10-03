@@ -16,6 +16,9 @@ import subprocess
 import tempfile
 import unittest
 from dataclasses import dataclass
+from unittest import mock
+
+from tests.simulated_links import simulate_symlink, run_with_simulated_links
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -104,25 +107,69 @@ def node() -> str:
     return value
 
 
+def oracle_environment() -> dict[str, str]:
+    environment = dict(os.environ)
+    for name in ("CPU_ROOT", "ORACLE_LEDGER"):
+        scoped = f"NOISEMAKER_DSL_RENDER_{name}"
+        if scoped in environment:
+            environment[f"NOISEMAKER_{name}"] = environment[scoped]
+    return environment
+
+
 def run_oracle(*args: str, check: bool = False) -> subprocess.CompletedProcess[str]:
     command = [node(), str(ORACLE), *args]
-    return subprocess.run(command, cwd=ROOT, text=True, capture_output=True, check=check)
+    return run_with_simulated_links(command, cwd=ROOT, env=oracle_environment(),
+                                    text=True, capture_output=True, check=check)
 
 
 class DslRenderOracleTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.cpu_root = pathlib.Path(os.environ.get("NOISEMAKER_CPU_ROOT", ""))
+        environment = oracle_environment()
+        cls.cpu_root = pathlib.Path(environment.get("NOISEMAKER_CPU_ROOT", ""))
 
     def require_authority(self) -> pathlib.Path:
-        if not self.cpu_root or not self.cpu_root.is_absolute():
+        environment = oracle_environment()
+        if "NOISEMAKER_CPU_ROOT" not in environment:
             self.skipTest("NOISEMAKER_CPU_ROOT must identify the immutable CPU authority")
-        if not self.cpu_root.is_dir():
-            self.skipTest(f"CPU authority is unavailable: {self.cpu_root}")
-        oracle_ledger = os.environ.get("NOISEMAKER_ORACLE_LEDGER")
-        if not oracle_ledger or not pathlib.Path(oracle_ledger).is_file():
+        self.assertTrue(self.cpu_root.is_absolute() and self.cpu_root.is_dir(),
+                        f"configured CPU authority must be an existing absolute directory: {self.cpu_root}")
+        if "NOISEMAKER_ORACLE_LEDGER" not in environment:
             self.skipTest("NOISEMAKER_ORACLE_LEDGER must identify the oracle ledger")
+        oracle_ledger = pathlib.Path(environment["NOISEMAKER_ORACLE_LEDGER"])
+        self.assertTrue(oracle_ledger.is_absolute() and oracle_ledger.is_file(),
+                        f"configured oracle ledger must be an existing absolute file: {oracle_ledger}")
         return self.cpu_root
+
+    def test_authority_environment_scoping_preserves_standalone_names(self) -> None:
+        standalone = {"NOISEMAKER_CPU_ROOT": "/standalone/root",
+                      "NOISEMAKER_ORACLE_LEDGER": "/standalone/ledger"}
+        with mock.patch.dict(os.environ, standalone, clear=True):
+            self.assertEqual(oracle_environment(), standalone)
+            with mock.patch.dict(os.environ, {
+                "NOISEMAKER_DSL_RENDER_CPU_ROOT": "/historical/root",
+                "NOISEMAKER_DSL_RENDER_ORACLE_LEDGER": "/historical/ledger",
+            }):
+                environment = oracle_environment()
+                self.assertEqual(environment["NOISEMAKER_CPU_ROOT"], "/historical/root")
+                self.assertEqual(environment["NOISEMAKER_ORACLE_LEDGER"], "/historical/ledger")
+                self.assertEqual(os.environ["NOISEMAKER_CPU_ROOT"], "/standalone/root")
+
+    def test_explicit_invalid_authority_paths_fail_without_skipping(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = pathlib.Path(temporary)
+            ledger = directory / "ledger.sha256"
+            ledger.write_text("", encoding="utf-8")
+            for root, ledger_path in ((directory / "missing", ledger),
+                                      (directory, directory / "missing")):
+                with self.subTest(root=root, ledger=ledger_path), \
+                     mock.patch.object(self, "cpu_root", root), \
+                     mock.patch.dict(os.environ, {
+                         "NOISEMAKER_DSL_RENDER_CPU_ROOT": str(root),
+                         "NOISEMAKER_DSL_RENDER_ORACLE_LEDGER": str(ledger_path),
+                     }):
+                    with self.assertRaisesRegex(AssertionError, "configured"):
+                        self.require_authority()
 
     def test_fixtures_and_metadata_are_source_bound(self) -> None:
         self.assertEqual(
@@ -193,7 +240,7 @@ class DslRenderOracleTest(unittest.TestCase):
         authority = self.require_authority()
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-forge-", dir="/private/tmp") as temporary:
             root = pathlib.Path(temporary) / "cpu"
-            shutil.copytree(authority, root, symlinks=True)
+            shutil.copytree(authority, root)
             marker = root / "imported-marker"
             renderer = root / "src/runtime/renderer.js"
             renderer.write_text(f"import fs from 'node:fs'; fs.writeFileSync({json.dumps(str(marker))}, 'imported');\n", encoding="utf-8")
@@ -202,7 +249,7 @@ class DslRenderOracleTest(unittest.TestCase):
             self.assertTrue("sha256" in result.stderr or "behavioral lock" in result.stderr)
             self.assertFalse(marker.exists())
             link = pathlib.Path(temporary) / "cpu-link"
-            link.symlink_to(authority, target_is_directory=True)
+            simulate_symlink(link, authority, target_is_directory=True)
             result = run_oracle("--cpu-root", str(link), "--fixture", str(FIXTURE), "--scratch", str(pathlib.Path(temporary) / "symlink-scratch"))
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("symlink", result.stderr)
@@ -232,7 +279,7 @@ class DslRenderOracleTest(unittest.TestCase):
         sentinel = METADATA.read_bytes()
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-scratch-link-", dir="/private/tmp") as temporary:
             link = pathlib.Path(temporary) / "scratch-link"
-            link.symlink_to(ROOT / "tests/oracles", target_is_directory=True)
+            simulate_symlink(link, ROOT / "tests/oracles", target_is_directory=True)
             result = run_oracle(
                 "--cpu-root", str(authority), "--fixture", str(FIXTURE),
                 "--nonconstant-fixture", str(NONCONSTANT_FIXTURE), "--scratch", str(link),
@@ -246,7 +293,7 @@ class DslRenderOracleTest(unittest.TestCase):
         sentinel = METADATA.read_bytes()
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-output-link-", dir="/private/tmp") as temporary:
             output = pathlib.Path(temporary) / "output-link.json"
-            output.symlink_to(METADATA)
+            simulate_symlink(output, METADATA)
             result = run_oracle(
                 "--cpu-root", str(authority), "--fixture", str(FIXTURE),
                 "--nonconstant-fixture", str(NONCONSTANT_FIXTURE), "--output", str(output),
@@ -261,7 +308,7 @@ class DslRenderOracleTest(unittest.TestCase):
         sentinel = METADATA.read_bytes()
         with tempfile.TemporaryDirectory(prefix="noisemaker-dsl-render-parent-link-", dir="/private/tmp") as temporary:
             parent = pathlib.Path(temporary) / "parent-link"
-            parent.symlink_to(ROOT / "tests/oracles", target_is_directory=True)
+            simulate_symlink(parent, ROOT / "tests/oracles", target_is_directory=True)
             result = run_oracle(
                 "--cpu-root", str(authority), "--fixture", str(FIXTURE),
                 "--nonconstant-fixture", str(NONCONSTANT_FIXTURE),

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import copy
 import hashlib
 import importlib.util
@@ -7,10 +10,10 @@ import json
 import os
 from pathlib import Path
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,9 +25,9 @@ REPORT = PACKAGE / "moodscape-oracle-report.md"
 INCLUDE = ROOT / "tests/oracles/moodscape_expected.inc"
 # No defaults: the frozen CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/moodscape/moodscape.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/moodscape/moodscape.glsl"
 
 
 def materializer_module():
@@ -42,7 +45,7 @@ def run_generator(*args, cpu_root=AUTHORITY, live=LIVE):
         env.pop("NOISEMAKER_FOR_CPU", None)
     else:
         env["NOISEMAKER_FOR_CPU"] = str(live)
-    return subprocess.run(
+    return historical_run(
         ["node", str(GENERATOR), *args, "--cpu-root", str(cpu_root)],
         cwd=ROOT, env=env, text=True, capture_output=True,
     )
@@ -124,7 +127,7 @@ class MoodscapeOracleTests(unittest.TestCase):
         self.assertIn("immutable snapshot", same.stderr)
         with tempfile.TemporaryDirectory(prefix="moodscape-live-") as raw:
             link = Path(raw) / "live"
-            link.symlink_to(LIVE, target_is_directory=True)
+            simulate_symlink(link, LIVE, target_is_directory=True)
             linked = run_generator("--check", live=link)
         self.assertNotEqual(0, linked.returncode)
         self.assertIn("must not be a symlink", linked.stderr)
@@ -175,7 +178,7 @@ class MoodscapeOracleTests(unittest.TestCase):
             def symlink(clone):
                 runtime = clone / "src/csl/runtime.js"
                 runtime.unlink()
-                runtime.symlink_to(outside)
+                simulate_symlink(runtime, outside)
             linked = run(symlink, "symlink")
             self.assertNotEqual(0, linked.returncode)
             self.assertIn("must not be a symlink", linked.stderr)
@@ -220,7 +223,7 @@ class MoodscapeOracleTests(unittest.TestCase):
 
     def test_materializer_modes_and_cxx20_include_smoke_compile(self):
         for args in (("--self-test",), ("--check",)):
-            result = subprocess.run(
+            result = historical_run(
                 [sys.executable, "-B", str(MATERIALIZER), *args], cwd=ROOT,
                 env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
                 text=True, capture_output=True)
@@ -239,7 +242,7 @@ class MoodscapeOracleTests(unittest.TestCase):
                 "  static_assert(noisemaker_moodscape_oracle::kMutations.size() == 5);\n"
                 "  return 0;\n}\n"
             )
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

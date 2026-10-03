@@ -13,13 +13,9 @@ const generatorPath = fileURLToPath(import.meta.url);
 const materializer = path.join(repo, "tools/glslcpp/generate_bitEffects_native_oracle_include.py");
 const include = path.join(repo, "tests/oracles/bitEffects_expected.inc");
 const key = "classicNoisedeck/bitEffects:bitEffects";
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, "tools/glslcpp/check_corpus.py"), "utf8");
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m);
-  if (!match) throw Error("cannot derive corpus revision from tools/glslcpp/check_corpus.py");
-  return match[1];
-}
-const revision = deriveCorpusRevision(repo);
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const revision = HISTORICAL_CORPUS_REVISION;
 const sourceRel = `tools/glslcpp/corpus/${revision}/sources/classicNoisedeck/bitEffects/bitEffects.glsl`;
 const sourceRawSha = "1066c6794400f025288147568179b2913b3f6464201e21fa470f3f5a1f6ca06b";
 const sourceNormalizedSha = "70c88967c308368f81a8739296786c3e501005e536e987446bdc9c1dc93b7bb0";

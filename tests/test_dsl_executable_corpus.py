@@ -7,6 +7,7 @@ import json
 import os
 import pathlib
 import shutil
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -51,10 +52,117 @@ class ExecutableCorpusTest(unittest.TestCase):
             capture_output=True,
         )
 
+    def external_input_records(self):
+        script = f"""
+import {{externalInputsFor}} from {json.dumps(GENERATOR.as_uri())};
+import {{decodeMeshData}} from {json.dumps((ROOT / 'tools/benchmark/mesh_inputs.mjs').as_uri())};
+import {{decodeAudioState}} from {json.dumps((ROOT / 'tools/benchmark/audio_inputs.mjs').as_uri())};
+import {{decodeMidiState}} from {json.dumps((ROOT / 'tools/benchmark/midi_inputs.mjs').as_uri())};
+const packed = value => {{
+  const words = new Uint32Array(value.buffer, value.byteOffset, value.length);
+  const bytes = Buffer.alloc(words.length * 4);
+  for (let i = 0; i < words.length; ++i) bytes.writeUInt32LE(words[i], i * 4);
+  return bytes.toString('hex');
+}};
+const records = {{}};
+for (const effect of ['render/meshLoader', 'render/meshRender', 'synth/roll', 'synth/scope', 'synth/spectrum', 'synth/solid']) {{
+  const inputs = externalInputsFor(effect);
+  if (JSON.stringify(inputs) !== JSON.stringify(externalInputsFor(effect))) throw new Error('nondeterministic fixture');
+  const decoded = {{}};
+  if (inputs?.meshData) {{
+    const mesh = decodeMeshData(inputs.meshData);
+    decoded.positions = packed(mesh.positionData); decoded.normals = packed(mesh.normalData);
+  }}
+  if (inputs?.audioState) {{
+    const audio = decodeAudioState(inputs.audioState);
+    decoded.waveform = packed(audio.waveform); decoded.spectrum = packed(audio.spectrum);
+  }}
+  if (inputs?.midiState) {{
+    const midi = decodeMidiState(inputs.midiState);
+    decoded.midi = packed(midi.noteGrid); decoded.clock = midi.clockCount;
+  }}
+  records[effect] = {{inputs: inputs ?? null, decoded}};
+}}
+console.log(JSON.stringify(records));
+"""
+        result = subprocess.run([self.node(), "--input-type=module", "-e", script],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return json.loads(result.stdout)
+
+    def test_external_inputs_exercise_triangles_audio_and_midi(self) -> None:
+        records = self.external_input_records()
+        mesh = records["render/meshRender"]["inputs"]["meshData"]
+        self.assertEqual((mesh["texWidth"], mesh["texHeight"]), (3, 2))
+        positions = struct.unpack("<24f", bytes.fromhex(mesh["positionRgba32f"]))
+        normals = struct.unpack("<24f", bytes.fromhex(mesh["normalRgba32f"]))
+        for first in (0, 12):
+            a, b, c = (positions[first + offset:first + offset + 4] for offset in (0, 4, 8))
+            self.assertGreater((b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1]), 0)
+            self.assertEqual([a[3], b[3], c[3]], [1, 1, 1])
+        self.assertGreater(len(set(positions[2::4])), 1)
+        self.assertGreater(len({normals[i:i + 3] for i in range(0, 24, 4)}), 1)
+        for effect in ("synth/scope", "synth/spectrum"):
+            audio = records[effect]["inputs"]["audioState"]
+            self.assertNotEqual(audio["waveformFloat32"], audio["spectrumFloat32"])
+            for field in ("waveformFloat32", "spectrumFloat32"):
+                samples = struct.unpack("<128f", bytes.fromhex(audio[field]))
+                self.assertGreater(max(samples), .9)
+                self.assertLess(min(samples), .1)
+                self.assertGreater(len(set(samples)), 100)
+        midi = records["synth/roll"]["inputs"]["midiState"]
+        grid = struct.unpack("<8192f", bytes.fromhex(midi["noteGridRgba32f"]))
+        velocities = []
+        for channel in range(16):
+            notes = [grid[(channel * 128 + key) * 4:(channel * 128 + key) * 4 + 4] for key in range(128)]
+            active = [note for note in notes if note[1] > .5]
+            self.assertEqual(len(active), 1)
+            velocities.append(active[0][0])
+        self.assertEqual(len(set(velocities)), 16)
+        self.assertTrue(all(0 < velocity <= 1 for velocity in velocities))
+        self.assertEqual(midi["clockCount"], 48)
+        self.assertIsNone(records["synth/solid"]["inputs"])
+
+    def test_native_flags_and_cpu_decoders_receive_identical_input_words(self) -> None:
+        from tools.benchmark.corpus_lane import record_flags
+        records = self.external_input_records()
+        with tempfile.TemporaryDirectory(prefix="external-input-transport-") as raw:
+            for effect, item in records.items():
+                if item["inputs"] is None:
+                    continue
+                record = {"sourceSha256": "a" * 64, "externalInputs": item["inputs"],
+                          "options": {"width": 17, "height": 11, "time": .25,
+                                      "frame": 0, "seed": 1}}
+                source = pathlib.Path(raw) / (effect.replace("/", "_") + ".dsl")
+                flags = record_flags(record, source)
+                for field, flag in (("positions", "--mesh-positions-file"),
+                                    ("normals", "--mesh-normals-file"),
+                                    ("waveform", "--audio-waveform-file"),
+                                    ("spectrum", "--audio-spectrum-file"),
+                                    ("midi", "--midi-note-grid-file")):
+                    if field in item["decoded"]:
+                        payload = pathlib.Path(flags[flags.index(flag) + 1]).read_bytes()
+                        self.assertEqual(payload.hex(), item["decoded"][field], (effect, field))
+                if effect == "synth/roll":
+                    self.assertEqual(float(flags[flags.index("--midi-clock") + 1]), item["decoded"]["clock"])
+
+    def test_checked_external_inputs_match_the_generator(self) -> None:
+        records = {row["effectId"]: row for row in json.loads(FIXTURE.read_text())["records"]}
+        for effect, generated in self.external_input_records().items():
+            if generated["inputs"] is None:
+                self.assertNotIn("externalInputs", records[effect])
+                continue
+            with self.subTest(effect=effect):
+                self.assertEqual(records[effect]["recordKind"], "admitted")
+                self.assertEqual(records[effect]["externalInputs"], generated["inputs"])
+
     def test_checked_manifest_has_dynamic_counts_and_required_provenance(self) -> None:
         manifest = json.loads(FIXTURE.read_text(encoding="utf-8"))
         self.assertEqual(manifest["schema"], "noisemaker-cpp.dsl-executable-corpus.v1")
         self.assertEqual(manifest["manifestSha256"], ORACLE.read_text(encoding="utf-8").strip())
+        compatibility = json.loads((ROOT / "src/effects/generated/backend_compatibility.json").read_text())
+        expected_tree = compatibility["authority"]["upstream_tree"]
+        self.assertEqual(manifest["provenance"]["upstreamTree"], expected_tree)
         records = manifest["records"]
         self.assertEqual(manifest["counts"]["admitted"], sum(r["recordKind"] == "admitted" for r in records))
         self.assertEqual(manifest["counts"]["excluded"], sum(r["recordKind"] == "excluded" for r in records))
@@ -62,6 +170,12 @@ class ExecutableCorpusTest(unittest.TestCase):
         self.assertGreater(manifest["counts"]["admitted"], 0)
         self.assertGreater(manifest["counts"]["excluded"], 0)
         self.assertTrue(any(r["effectId"] == "filter/blur" and r["recordKind"] == "admitted" for r in records))
+        mesh = next(r for r in records if r["effectId"] == "render/meshLoader")
+        self.assertEqual(mesh["recordKind"], "admitted")
+        mesh_data = mesh["externalInputs"]["meshData"]
+        self.assertEqual((mesh_data["texWidth"], mesh_data["texHeight"]), (2, 2))
+        self.assertEqual(len(bytes.fromhex(mesh_data["positionRgba32f"])), 64)
+        self.assertEqual(len(bytes.fromhex(mesh_data["normalRgba32f"])), 64)
         feedback = next(r for r in records if r["effectId"] == "filter/feedback")
         self.assertEqual(feedback["recordKind"], "excluded")
         self.assertEqual(feedback["firstFailure"]["code"], "unsupported_pass")
@@ -71,6 +185,7 @@ class ExecutableCorpusTest(unittest.TestCase):
             self.assertEqual(record["options"]["height"], 11)
             self.assertIn("coverage", record)
             self.assertIn("provenance", record)
+            self.assertEqual(record["provenance"]["upstreamTree"], expected_tree)
             if record["recordKind"] == "admitted":
                 self.assertIn("plan", record)
             else:

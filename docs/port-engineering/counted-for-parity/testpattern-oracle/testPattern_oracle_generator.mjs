@@ -6,13 +6,9 @@ import { spawnSync } from 'node:child_process'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(here, '../../../..')
-function deriveCorpusRevision(cppRoot) {
-  const text = fs.readFileSync(path.join(cppRoot, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const revision = deriveCorpusRevision(root)
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const revision = HISTORICAL_CORPUS_REVISION
 const sourceRel = `tools/glslcpp/corpus/${revision}/sources/synth/testPattern/testPattern.glsl`
 const sourceSha = 'f913300a1312c6630d56fa1cc2faf2cb17fe0643d832473fdec7b66dd373cb20'
 const sourceBytes = 5919

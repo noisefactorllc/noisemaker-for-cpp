@@ -31,11 +31,11 @@ This package authenticates `classicNoisedeck/kaleido:kaleido` against the unmodi
 
 ## Files and hashes
 
-- Oracle JSON SHA-256: `5acebba86967527b3484b64e53cbbff54d62a9a1b6def7326a1df5a1748b720b` (sidecar is authoritative for the exact bytes).
-- kaleido187_oracle_generator.mjs: 39420 bytes, SHA-256 `209d48277aa645f585baa7e75cc1f5e534bcc67f2bd7eb1ec4585510c97d861f`
-- kaleido187-oracles.json: 46715 bytes, SHA-256 `5acebba86967527b3484b64e53cbbff54d62a9a1b6def7326a1df5a1748b720b`
-- generate_kaleido_native_oracle_include.py: 50598 bytes, SHA-256 `a1b62f73fc099034e142ae91136301eb64266e43c848c8cbbd2cdbf74da827f4`
-- kaleido187_expected.inc: 17892 bytes, SHA-256 `5679591fb69e08b320130aa43c2b54b4ca5d94691035b311489debc8b989e6a9`
+- Oracle JSON SHA-256: `490b9431e100ca234c55afe8661c644ea7bd4fa5f7c9291ed1a1f76c4b09d405` (sidecar is authoritative for the exact bytes).
+- kaleido187_oracle_generator.mjs: 39262 bytes, SHA-256 `cbb5410118525d3672b3dce3020d4f8a1ae3695cab1842d6f6a40dda68f0f79d`
+- kaleido187-oracles.json: 46715 bytes, SHA-256 `490b9431e100ca234c55afe8661c644ea7bd4fa5f7c9291ed1a1f76c4b09d405`
+- generate_kaleido_native_oracle_include.py: 50495 bytes, SHA-256 `18982ae7334bdfbdab6afb34f7f7ea94a2812319e0b2014684ce455d513d4d06`
+- kaleido187_expected.inc: 17892 bytes, SHA-256 `4b9a6f0aedf2db95ec82050ee61b8e681a39b4ae50e5b82b3f4d6dee64125795`
 - Generator, report, native materializer, include, and each sidecar are generated/checked as one package.
 
 ## Concerns

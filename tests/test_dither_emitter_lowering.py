@@ -5,8 +5,12 @@ import pathlib
 import unittest
 import dataclasses
 import copy
+import shutil
+import subprocess
+import tempfile
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import dither_frontend_profile as dither
 from tools.glslcpp.frontend import parse_program
@@ -16,7 +20,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = dither.KEY
 SOURCE = ROOT / (
-    "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+    f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
     "sources/filter/dither/dither.glsl"
 )
 
@@ -27,6 +31,52 @@ def _program():
 
 
 class DitherEmitterLoweringTests(unittest.TestCase):
+    def test_bayer8_emitted_helper_preserves_all_authority_cells_and_wraps(self):
+        # CPU 26d6f42be38da7172f602373e844f85a8155356f, canonicalFactory46
+        # getBayer8x8. Missing final-row initializers used to shift four cells
+        # and silently zero-fill four more, changing palette selection.
+        expected = (
+            0, 32, 8, 40, 2, 34, 10, 42,
+            48, 16, 56, 24, 50, 18, 58, 26,
+            12, 44, 4, 36, 14, 46, 6, 38,
+            60, 28, 52, 20, 62, 30, 54, 22,
+            3, 35, 11, 43, 1, 33, 9, 41,
+            51, 19, 59, 27, 49, 17, 57, 25,
+            15, 47, 7, 39, 13, 45, 5, 37,
+            63, 31, 55, 23, 61, 29, 53, 21,
+        )
+        rendered = emit_typed_cpp.render_typed_cpp(
+            _program(), KEY, hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
+            dither_frontend_profile=dither.PROFILE)
+        start = rendered.index("[[nodiscard]] inline float dither_bayer8(")
+        end = rendered.index("\n}", start) + 2
+        unit = ('#include "noisemaker/glsl_runtime.hpp"\n'
+                '#include <iostream>\n'
+                'namespace glsl = noisemaker::glsl;\n' + rendered[start:end] +
+                '\nint main() { for (int y = -8; y < 16; ++y) '
+                'for (int x = -8; x < 16; ++x) '
+                'std::cout << dither_bayer8(x, y) * 64.0F << "\\n"; }\n')
+        compiler = shutil.which("c++") or shutil.which("clang++")
+        self.assertIsNotNone(compiler, "a C++ compiler is required")
+        with tempfile.TemporaryDirectory(prefix="dither-bayer8-") as raw:
+            source = pathlib.Path(raw) / "bayer8.cpp"
+            binary = pathlib.Path(raw) / "bayer8"
+            source.write_text(unit, encoding="utf-8")
+            built = subprocess.run(
+                [compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror",
+                 "-I", str(ROOT / "include"), str(source),
+                 str(ROOT / "src/glsl_runtime.cpp"),
+                 str(ROOT / "src/numeric.cpp"), "-o", str(binary)],
+                capture_output=True, text=True, check=False)
+            self.assertEqual(built.returncode, 0, built.stderr)
+            result = subprocess.run([str(binary)], capture_output=True,
+                                    text=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        actual = [int(value) for value in result.stdout.splitlines()]
+        wanted = [expected[(y % 8) * 8 + x % 8]
+                  for y in range(-8, 16) for x in range(-8, 16)]
+        self.assertEqual(actual, wanted)
+
     def test_emits_authenticated_dither_lane_and_runtime_abi(self):
         source_hash = hashlib.sha256(SOURCE.read_bytes()).hexdigest()
         rendered = emit_typed_cpp.render_typed_cpp(

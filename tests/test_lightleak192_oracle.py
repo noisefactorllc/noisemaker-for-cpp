@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import json
 import hashlib
 import os
@@ -14,8 +17,8 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "docs/port-engineering/counted-for-parity/lightleak192-oracle"
 GENERATOR = PACKAGE / "lightleak192_oracle_generator.mjs"
-CPU_ROOT = (pathlib.Path(os.environ["NOISEMAKER_CPU_ROOT"])
-            if os.environ.get("NOISEMAKER_CPU_ROOT") else None)
+CPU_ROOT = (pathlib.Path(historical_cpu_root())
+            if historical_cpu_root() else None)
 WORKER = pathlib.Path(os.environ.get("LIGHTLEAK192_TEST_TMP", tempfile.gettempdir()))
 
 
@@ -38,14 +41,14 @@ def _explicit_temp_root() -> pathlib.Path:
 class LightLeak192OracleTests(unittest.TestCase):
     def _authority(self) -> pathlib.Path:
         if CPU_ROOT is None or not CPU_ROOT.is_dir():
-            self.skipTest("set NOISEMAKER_CPU_ROOT to an immutable CPU snapshot")
+            self.skipTest("set NOISEMAKER_HISTORICAL_CPU_ROOT to an immutable CPU snapshot")
         return CPU_ROOT
 
     def _node(self, *args, cpu_root: pathlib.Path | None = CPU_ROOT,
               env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         environment = os.environ.copy()
         environment.update(env or {})
-        return subprocess.run(
+        return historical_run(
             ("node", str(GENERATOR), *args, "--cpu-root", str(cpu_root)),
             cwd=ROOT, env=environment, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -56,14 +59,14 @@ class LightLeak192OracleTests(unittest.TestCase):
         self.assertEqual(0, checked.returncode, checked.stderr)
         self.assertIn("11 cases, 11 behavioral mutations, 2 structural-only",
                       checked.stdout)
-        materializer = subprocess.run(
+        materializer = historical_run(
             ("python3", "-B", "tools/glslcpp/generate_lightleak192_native_oracle_include.py", "--check"),
             cwd=ROOT, env=os.environ.copy(), text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
         self.assertEqual(0, materializer.returncode, materializer.stderr)
 
     def test_materializer_self_test(self):
-        completed = subprocess.run(
+        completed = historical_run(
             ("python3", "-B", "tools/glslcpp/generate_lightleak192_native_oracle_include.py", "--self-test"),
             cwd=ROOT, env=os.environ.copy(), text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -262,7 +265,7 @@ class LightLeak192OracleTests(unittest.TestCase):
                 'kBindingAbi[0].runtime_abi == "sampler2D" && '
                 'kSourceBindingAbi[0].source_abi == "sampler2D" && '
                 'kCases[1].resolution.values[0] == 7.0f ? 0 : 1;\n}\n')
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -283,7 +286,7 @@ class LightLeak192OracleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(
                 prefix="lightleak192-symlink-") as temp:
             link = pathlib.Path(temp) / "cpp-root"
-            link.symlink_to(ROOT, target_is_directory=True)
+            simulate_symlink(link, ROOT, target_is_directory=True)
             completed = self._node("--check", cpu_root=link)
         self.assertNotEqual(0, completed.returncode)
         self.assertTrue(
@@ -298,7 +301,7 @@ class LightLeak192OracleTests(unittest.TestCase):
                     prefix="lightleak192-snapshot-leaf-",
                     dir=str(temp_dir) if temp_dir else None) as temp:
                 link = pathlib.Path(temp) / "snapshot-leaf"
-                link.symlink_to(authority, target_is_directory=True)
+                simulate_symlink(link, authority, target_is_directory=True)
                 completed = self._node("--check", cpu_root=link)
             self.assertNotEqual(0, completed.returncode)
             self.assertIn("--cpu-root must not be a symlink",
@@ -313,7 +316,7 @@ class LightLeak192OracleTests(unittest.TestCase):
                     prefix="lightleak192-live-leaf-",
                     dir=str(temp_dir) if temp_dir else None) as temp:
                 link = pathlib.Path(temp) / "live-leaf"
-                link.symlink_to(live, target_is_directory=True)
+                simulate_symlink(link, live, target_is_directory=True)
                 completed = self._node(
                     "--check", cpu_root=authority,
                     env={"NOISEMAKER_FOR_CPU": str(link)})

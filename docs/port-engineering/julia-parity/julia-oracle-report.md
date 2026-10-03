@@ -307,11 +307,11 @@ The following canonical JSON record is emitted directly from the generator docum
     },
     "generator": {
       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
-      "sha256": "7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031"
+      "sha256": "7c4633b2fc439da3871764755608a1d889fb838d1aa015655f5e51ae04d37188"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
-      "sha256": "f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86"
+      "sha256": "2d1e5c3b0738364d749d6312d7eb5696fa389496b1af8d20370167caadac1fc5"
     }
   },
   "render_cases": [
@@ -10732,7 +10732,7 @@ The Task34 brief records the required pre-expansion baseline as the 8-case/23-mu
 - Owned authored/tool files: docs/port-engineering/julia-parity/julia_oracle_generator.mjs; tools/glslcpp/generate_julia_native_oracle_include.py; tests/test_julia_oracle.py.
 - Owned generated artifacts and sidecars: docs/port-engineering/julia-parity/julia-oracles.json(.sha256); docs/port-engineering/julia-parity/julia-oracle-report.md(.sha256); tests/oracles/julia_expected.inc(.sha256).
 - No frontend, emitter, generated typed slice/catalog/runtime, corpus metadata, authority snapshot, unrelated tests/docs, build outputs, or Git files were changed.
-- JSON SHA-256: 707a127c01d927bc6b9eedab18a4390dae74cbaca9815f81992b6e39c2d8e491.
+- JSON SHA-256: 44158cfda5dc54f147bc61ad0d91dbf1fdc3cae8e79abb9155ac15506f86d6e2.
 
 ## Remaining concerns
 
@@ -10746,18 +10746,18 @@ This table supersedes the earlier abbreviated audit. It is the complete Task34-o
 
 | Task34-owned relative path | Frozen baseline SHA-256 | Current SHA-256 or generation marker | Disposition |
 | --- | --- | --- | --- |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031 | changed |
-| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 868e4aa3e210a5b0229b940f7670201c81b9cd849cbc54ad7c15a5d45776e9e2 | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | 707a127c01d927bc6b9eedab18a4390dae74cbaca9815f81992b6e39c2d8e491 | changed |
-| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 868c3d6cd6980309b817b712bfcf04e969afe91c6665a8199075c4bf74a3d81b | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs | 99783dcab73ddd3b333495d70390e6a3e6333b0ea068ec3ab13f03a1278f4647 | 7c4633b2fc439da3871764755608a1d889fb838d1aa015655f5e51ae04d37188 | changed |
+| docs/port-engineering/julia-parity/julia_oracle_generator.mjs.sha256 | cacaaef1b8403925cfda2aa3b911387e896d29724aa2c1ca5b5c0422f3208cff | 613cd7dae23663f4ca0cfae291a850b456c7d5635dc665e09e4f9cc62ac4897c | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json | 1e79bbc37b90164259f7005762239d082184e1cb43fe0efd3dcfec14659ebd64 | 44158cfda5dc54f147bc61ad0d91dbf1fdc3cae8e79abb9155ac15506f86d6e2 | changed |
+| docs/port-engineering/julia-parity/julia-oracles.json.sha256 | 6ad87dda7864df0053aa0d1d0e64c16787f91b0970163bba49d9faf29a1c17a4 | 8d847d879d24b7bf93650d9b2795e049e62dcbd3b0a7931fe546a0fe0236bada | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md | c3813c7024c861fcba27809c66997f97947bcd621842c4ef396a4f827d25bccf | generated-by-this-report | changed |
 | docs/port-engineering/julia-parity/julia-oracle-report.md.sha256 | c3c3da4de0568075bbc18dadb9cbc12e007b7d8d18c9ef9a888ee9c848f51479 | generated-by-this-report | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86 | changed |
-| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | 8a5becb34bee12999524d8ffa89c60ee571ddd7e28ea901dd677ba9e9aa80b35 | new |
+| tools/glslcpp/generate_julia_native_oracle_include.py | 5745ce5bc874908a55210ea748e5266ef8e7863dafed6cae34710fae94030a74 | 2d1e5c3b0738364d749d6312d7eb5696fa389496b1af8d20370167caadac1fc5 | changed |
+| tools/glslcpp/generate_julia_native_oracle_include.py.sha256 | ABSENT | 879d38ebdecd8523ca3d59db8818270ea82f6646b7b3a6246c2e8c688066ffd9 | new |
 | tests/oracles/julia_expected.inc | 111b1ed7c0e5132335c81c6aab353744c8d1d882960f616f0e587127ff3fc057 | f2750a281665d2c55375502325820b861e4d9efe681687ec072962c938e36776 | changed |
 | tests/oracles/julia_expected.inc.sha256 | 2c0a2e7f0c71d6f75b597bae93c7f77b7526a677db099144111cbc3efdc87288 | 24249a39f39046768c762d56fe772e9add131f59b1c66ca5486faabf382cb93d | changed |
 | tests/test_generated_kernels.cpp | d2210b840fa6ffe3b07b73330f7a336d01683c163e5887f276c254de40beb685 | e375c33914a968634ab7276c1f1146031c57ea182ae63c269bad72e81559649b | changed (recorded at Task34; cross-lane file, not re-read) |
-| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 39a2c1cd9fd8f6c8a8acb6663f462daaabdfecf0c046d4c9611e25a7e90d7b87 | changed |
+| tests/test_julia_oracle.py | c2e58eb8673ba45191e7ddfcf0841d1decb4bf204af71e6f97066a6f19d8bfdb | 5098b4d5a8d806e9e8eb0d98de85e1307ef1e31f1298b8f49c0b62c33a871d67 | changed |
 
 ## Fix3 observed seven-test RED reconstruction
 

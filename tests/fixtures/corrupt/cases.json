@@ -1,0 +1,344 @@
+[
+  {
+    "name": "v1-solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v1-asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.25,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v2-solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 94.24119450469604,
+      "bandHeight": 28.078442899798258,
+      "sort": 87.47204814259504,
+      "shift": 13.341812935936847,
+      "channelShift": 29.49916726820534,
+      "melt": 68.27105520418058,
+      "scatter": 87.64384638552852,
+      "bits": 74.56757439290871,
+      "speed": 4.0,
+      "seed": 86.0
+    }
+  },
+  {
+    "name": "v2-asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 94.24119450469604,
+      "bandHeight": 28.078442899798258,
+      "sort": 87.47204814259504,
+      "shift": 13.341812935936847,
+      "channelShift": 29.49916726820534,
+      "melt": 68.27105520418058,
+      "scatter": 87.64384638552852,
+      "bits": 74.56757439290871,
+      "speed": 4.0,
+      "seed": 86.0
+    }
+  },
+  {
+    "name": "v3-solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 40.984639797210775,
+      "bandHeight": 9.171226404765857,
+      "sort": 94.2554767410206,
+      "shift": 13.211117969422027,
+      "channelShift": 24.802328562064503,
+      "melt": 88.68756428073337,
+      "scatter": 64.25211670670556,
+      "bits": 48.08619315795567,
+      "speed": 4.0,
+      "seed": 13.0
+    }
+  },
+  {
+    "name": "v3-asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 40.984639797210775,
+      "bandHeight": 9.171226404765857,
+      "sort": 94.2554767410206,
+      "shift": 13.211117969422027,
+      "channelShift": 24.802328562064503,
+      "melt": 88.68756428073337,
+      "scatter": 64.25211670670556,
+      "bits": 48.08619315795567,
+      "speed": 4.0,
+      "seed": 13.0
+    }
+  },
+  {
+    "name": "v6-solid",
+    "width": 17,
+    "height": 11,
+    "time": 0.0,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 93.74599436311497,
+      "bandHeight": 69.0304254912294,
+      "sort": 77.24976046387212,
+      "shift": 36.18198869329383,
+      "channelShift": 93.00703504018144,
+      "melt": 52.82337624340114,
+      "scatter": 88.83719239540552,
+      "bits": 41.171593839612896,
+      "speed": 0.0,
+      "seed": 67.0
+    }
+  },
+  {
+    "name": "v6-asymmetric",
+    "width": 17,
+    "height": 11,
+    "time": 0.0,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 93.74599436311497,
+      "bandHeight": 69.0304254912294,
+      "sort": 77.24976046387212,
+      "shift": 36.18198869329383,
+      "channelShift": 93.00703504018144,
+      "melt": 52.82337624340114,
+      "scatter": 88.83719239540552,
+      "bits": 41.171593839612896,
+      "speed": 0.0,
+      "seed": 67.0
+    }
+  },
+  {
+    "name": "v7-solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.25,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 61.59278617373673,
+      "bandHeight": 49.93363033464619,
+      "sort": 13.551211213242532,
+      "shift": 18.87911958759778,
+      "channelShift": 66.39547675654308,
+      "melt": 55.12108702745462,
+      "scatter": 51.35901375815168,
+      "bits": 47.19261547757354,
+      "speed": 2.0,
+      "seed": 54.0
+    }
+  },
+  {
+    "name": "v7-asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.25,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 61.59278617373673,
+      "bandHeight": 49.93363033464619,
+      "sort": 13.551211213242532,
+      "shift": 18.87911958759778,
+      "channelShift": 66.39547675654308,
+      "melt": 55.12108702745462,
+      "scatter": 51.35901375815168,
+      "bits": 47.19261547757354,
+      "speed": 2.0,
+      "seed": 54.0
+    }
+  },
+  {
+    "name": "v9-solid",
+    "width": 128,
+    "height": 37,
+    "time": 0.0,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v9-asymmetric",
+    "width": 128,
+    "height": 37,
+    "time": 0.0,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v13-solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.25,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v13-asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.25,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v17-solid",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v17-asymmetric",
+    "width": 97,
+    "height": 61,
+    "time": 0.999,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 100.0,
+      "bandHeight": 100.0,
+      "sort": 100.0,
+      "shift": 100.0,
+      "channelShift": 100.0,
+      "melt": 100.0,
+      "scatter": 100.0,
+      "bits": 100.0,
+      "speed": 5.0,
+      "seed": 100.0
+    }
+  },
+  {
+    "name": "v18-solid",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "image": "solid",
+    "uniforms": {
+      "intensity": 33.685952453230485,
+      "bandHeight": 50.04173894425268,
+      "sort": 72.87491777040947,
+      "shift": 23.73429722500563,
+      "channelShift": 6.854018215622915,
+      "melt": 48.988831902076946,
+      "scatter": 18.783992291520292,
+      "bits": 89.97719942763064,
+      "speed": 3.0,
+      "seed": 26.0
+    }
+  },
+  {
+    "name": "v18-asymmetric",
+    "width": 64,
+    "height": 64,
+    "time": 0.0,
+    "image": "asymmetric",
+    "uniforms": {
+      "intensity": 33.685952453230485,
+      "bandHeight": 50.04173894425268,
+      "sort": 72.87491777040947,
+      "shift": 23.73429722500563,
+      "channelShift": 6.854018215622915,
+      "melt": 48.988831902076946,
+      "scatter": 18.783992291520292,
+      "bits": 89.97719942763064,
+      "speed": 3.0,
+      "seed": 26.0
+    }
+  }
+]

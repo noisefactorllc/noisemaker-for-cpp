@@ -20,6 +20,7 @@ import unittest
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json"
 TYPED_SLICE = ROOT / "src/typed_generated/typed_slice.cpp"
+MESH_CONTRACT = ROOT / "include/noisemaker/effects/mesh_render_contract.hpp"
 EXECUTOR = ROOT / "src/graph/executor.cpp"
 REGISTRY = ROOT / "src/effects/registry.cpp"
 JS_ORACLE = ROOT / "tools/dsl/js_frontend_oracle.mjs"
@@ -107,6 +108,17 @@ class BindingAbiDigestTest(unittest.TestCase):
             block += text[text.index("kCanonicalRoutesMrt{{"):
                           text.index("std::span<const FactoryRouteMrt> canonical_routes_mrt()")]
         entries = re.findall(r'^\s*\{"([^"]+)",((?:\s*"[^"]*",)+)\s*&', block, re.MULTILINE)
+        # Whole-pass Mesh has no fragment binder; its independent route
+        # descriptor carries the same five ABI anchors in a separate header.
+        whole_pass_entries = re.findall(
+            r'^inline const graph::FactoryRouteDescriptor route\{"([^"]+)",'
+            r'((?:\s*"[^"]*",)+)\s*nullptr\};$',
+            MESH_CONTRACT.read_text(encoding="utf-8"), re.MULTILINE)
+        self.assertEqual([key for key, _ in whole_pass_entries], ["render/meshRender:render"])
+        self.assertEqual({key for key, _ in whole_pass_entries},
+                         {key for key, row in rows.items()
+                          if row["factory"]["route"]["kind"] == "whole_pass"})
+        entries += whole_pass_entries
         self.assertEqual(len(entries), len(rows))
         seen = set()
         for key, fields in entries:

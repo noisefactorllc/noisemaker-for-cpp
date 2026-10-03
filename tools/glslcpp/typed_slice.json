@@ -76,7 +76,7 @@
   "compatibility_transforms": {
     "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
     "classicNoisedeck/refract:refract": "refract-truthy-vector-conditional-noop-v1",
-    "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+    "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
     "filter/crt:crt": "crt-metal-sine-v1",
     "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
     "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -224,10 +224,6 @@
     },
     {
       "defines": {},
-      "program_key": "filter/bc:bc"
-    },
-    {
-      "defines": {},
       "program_key": "filter/bloom:brightPass"
     },
     {
@@ -297,11 +293,6 @@
     {
       "defines": {},
       "program_key": "filter/colorReplace:colorReplace"
-    },
-    {
-      "defines": {},
-      "linear_srgb_lane_index_profile": "linear-srgb-colorspace-lane-index-v1",
-      "program_key": "filter/colorspace:colorspace"
     },
     {
       "defines": {},
@@ -469,10 +460,6 @@
       "defines": {},
       "historic_palette_profile": "historic-palette-frontend-admission-v1",
       "program_key": "filter/historicPalette:historicPalette"
-    },
-    {
-      "defines": {},
-      "program_key": "filter/hs:hs"
     },
     {
       "defines": {},
@@ -1176,9 +1163,9 @@
       "program_key": "points/lenia:clear"
     },
     {
+      "ceil_admission_profile": "ceil-admission-v1",
       "defines": {},
       "program_key": "points/lenia:convolve",
-      "ceil_admission_profile": "ceil-admission-v1",
       "runtime_loop_bound_profile": "runtime-loop-bound-v1"
     },
     {
@@ -1227,6 +1214,14 @@
     {
       "defines": {},
       "program_key": "render/loopBegin:loopBegin"
+    },
+    {
+      "defines": {},
+      "program_key": "render/meshLoader:preview"
+    },
+    {
+      "defines": {},
+      "program_key": "render/meshRender:clear"
     },
     {
       "defines": {},
@@ -1430,7 +1425,21 @@
     },
     {
       "defines": {},
+      "program_key": "synth/roll:copy"
+    },
+    {
+      "ceil_admission_profile": "ceil-admission-v1",
+      "defines": {},
+      "program_key": "synth/roll:roll",
+      "runtime_loop_bound_profile": "runtime-loop-bound-v1"
+    },
+    {
+      "defines": {},
       "program_key": "synth/sacredGeometry:sacredGeometry"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/scope:scope"
     },
     {
       "defines": {
@@ -1444,6 +1453,10 @@
     {
       "defines": {},
       "program_key": "synth/solid:solid"
+    },
+    {
+      "defines": {},
+      "program_key": "synth/spectrum:spectrum"
     },
     {
       "defines": {},
@@ -1476,7 +1489,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "0ed489ec46842bffba33ee2ec65a218b6dda51f5",
+  "revision": "e24c844f8dada85551ab084f41db8944fbc176c8",
   "schema": 1,
   "types": [
     "bool",

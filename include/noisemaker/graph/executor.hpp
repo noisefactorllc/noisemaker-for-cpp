@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <stdexcept>
 #include <span>
 #include <string>
@@ -71,6 +72,26 @@ class GraphError final : public std::runtime_error {
 // here so there is exactly one table.
 [[nodiscard]] const char* code_name(GraphErrorCode code) noexcept;
 
+// Packed RGBA32F mesh texels in upload order: row zero is the GL bottom row.
+// Dimensions default to the CPU authority's mesh texture size.
+struct MeshData {
+  std::size_t tex_width = 256;
+  std::size_t tex_height = 256;
+  std::vector<float> position_data;
+  std::vector<float> normal_data;
+};
+
+struct AudioState {
+  glsl::AudioUniform128 waveform;
+  glsl::AudioUniform128 spectrum;
+};
+
+struct MidiState {
+  // Upload order: row zero is MIDI channel 1, RG stores velocity and gate.
+  std::array<float, 128U * 16U * 4U> note_grid{};
+  double clock_count = 0.0;
+};
+
 struct ExecutionInputs {
   std::size_t width = 512;
   std::size_t height = 512;
@@ -81,6 +102,9 @@ struct ExecutionInputs {
   bool one_shot = true;
   std::vector<NamedSurface> seed_surfaces;
   std::vector<NamedSurface> external_textures;
+  std::optional<MeshData> mesh_data;
+  std::optional<AudioState> audio_state;
+  std::optional<MidiState> midi_state;
 };
 
 struct ExecutionResult {

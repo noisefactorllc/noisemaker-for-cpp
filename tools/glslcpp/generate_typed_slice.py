@@ -20,6 +20,7 @@ if __package__ in (None, ""):
     from tools.glslcpp import check_corpus, check_semantics
     from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
     from tools.glslcpp.frontend import parse_program
+    from tools.glslcpp.frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
     from tools.glslcpp.frontend.historic_palette_profile import (
         PROFILE as HISTORIC_PALETTE_PROFILE,
         apply_historic_palette,
@@ -416,6 +417,7 @@ if __package__ in (None, ""):
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from tools.glslcpp.frontend.runtime_loop_bound_profile import (
         BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
+        ROLL_KEY as RUNTIME_LOOP_BOUND_ROLL_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
@@ -447,6 +449,7 @@ else:
     from . import check_corpus, check_semantics
     from .emit_typed_cpp import TypedEmissionError, render_typed_cpp
     from .frontend import parse_program
+    from .frontend.corrupt_value_copy_profile import authenticate_corrupt_value_copy
     from .frontend.historic_palette_profile import (
         PROFILE as HISTORIC_PALETTE_PROFILE,
         apply_historic_palette,
@@ -843,6 +846,7 @@ else:
         apply_texture_lod_admission, authenticate_texture_lod_admission)
     from .frontend.runtime_loop_bound_profile import (
         BLUR_KEYS, CF_KEYS, LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
+        ROLL_KEY as RUNTIME_LOOP_BOUND_ROLL_KEY,
         CURL_KEY as RUNTIME_LOOP_BOUND_CURL_KEY,
         NOISE_KEY as RUNTIME_LOOP_BOUND_NOISE_KEY,
         SPRITE_MEAN_TILES_KEY as RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY,
@@ -1596,7 +1600,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     if data["compatibility_transforms"] != {
             "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
             "classicNoisedeck/refract:refract": REFRACT_COMPATIBILITY_TRANSFORM,
-            "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+            "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             CRT_KEY: CRT_COMPATIBILITY_TRANSFORM,
             "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
             "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -1850,7 +1854,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
         # points/lenia:convolve carries BOTH its runtime window-radius
         # loop-bound record and its independent ceil-admission companion
         # (the int(ceil(searchRadius)) cast), curl-style composition.
-        if key == RUNTIME_LOOP_BOUND_LENIA_KEY:
+        if key in {RUNTIME_LOOP_BOUND_LENIA_KEY, RUNTIME_LOOP_BOUND_ROLL_KEY}:
             expected = expected | {"ceil_admission_profile",
                                    "runtime_loop_bound_profile"}
         if set(item) != expected:
@@ -2188,7 +2192,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                 # at its exact 40/30 default pair.
                 (key, LINEAR_SRGB_LANE_INDEX_PROFILES[key],
                  _SHAPES_DEFINES if key == SHAPES_KEY else {})
-                for key in LINEAR_SRGB_LANE_INDEX_KEYS]
+                for key in LINEAR_SRGB_LANE_INDEX_KEYS
+                if key in typed_corpus_keys()]
             or derivative_profiles != [
                 (key, DERIVATIVE_ADMISSION_PROFILE,
                  {"MODE": 0, "PATTERN": 0} if key == "filter/halftone:halftone" else
@@ -2485,7 +2490,9 @@ def typed_corpus_keys() -> list[str]:
     """
     root = check_corpus._corpus_root(_ROOT)
     programs = check_corpus._validate_manifest(check_corpus._load_json(root / "manifest.json", "manifest"))
-    return sorted(entry["program_key"] for entry in programs if entry["runtime_key"] is not None)
+    return sorted(entry["program_key"] for entry in programs
+                  if entry["runtime_key"] is not None
+                  and entry["program_key"] != "render/meshRender:render")
 
 
 def mrt_corpus_keys() -> frozenset[str]:
@@ -2919,6 +2926,13 @@ def _defaults(repository: pathlib.Path, key: str) -> dict:
 
 def apply_compatibility_transform(typed, transform_name: str):
     """Apply one schema-locked typed-IR semantic compatibility repair."""
+    if transform_name == "corrupt-sample-uv-copy-v2":
+        try:
+            authenticate_corrupt_value_copy(
+                typed, hashlib.sha256(typed.raw_source.encode()).hexdigest(), transform_name)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+        return typed
     if transform_name == CRT_COMPATIBILITY_TRANSFORM:
         try:
             return apply_crt_metal_sine(typed)
@@ -3531,6 +3545,13 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           noise_frontend_profile: str | None = None,
                           dither_frontend_profile: str | None = None) -> None:
     """Prove every emitted typed construct is explicitly approved by this slice."""
+    from tools.glslcpp.frontend.audio_uniform_profile import authenticate_audio_uniform
+    try:
+        audio_proof = authenticate_audio_uniform(typed, source_hash)
+    except ValueError as error:
+        raise GeneratorError(f"{typed.key}: {error}") from error
+    visited_audio_declarations = []
+    visited_audio_reads = []
     capabilities = tuple(declared)
     literal_source_key = literal_vec3_lane_selected_source_key(typed)
     unknown = sorted(set(capabilities) - set(APPROVED_CAPABILITIES))
@@ -3744,7 +3765,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 or (curl_vector_math_profile is not None
                     and typed.key != RUNTIME_LOOP_BOUND_CURL_KEY)
                 or (ceil_admission_profile is not None
-                    and typed.key != RUNTIME_LOOP_BOUND_LENIA_KEY)
+                    and typed.key not in {RUNTIME_LOOP_BOUND_LENIA_KEY, RUNTIME_LOOP_BOUND_ROLL_KEY})
                 or (vec_scalar_modulo_profile is not None
                     and typed.key != RUNTIME_LOOP_BOUND_SPRITE_MEAN_TILES_KEY)
                 or grade_luma_weights_profile is not None
@@ -6281,6 +6302,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             raise GeneratorError(
                 f"{location(value)}: unsupported typed type {typ.display()}")
         if typ.kind == "array":
+            if audio_proof is not None and value is audio_proof.declaration:
+                visited_audio_declarations.append(value)
+                return
             if any(value is item for item in authorized_dither_globals):
                 return
             if any(value is item for item in authorized_dither_arrays):
@@ -6450,7 +6474,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             max_trip_count = (
                 BUDDHABROT_MAX_TRIP_COUNT if typed.key in BUDDHABROT_KEYS
                 else (1000 if typed.key == JULIA_KEY
-                      else COUNTED_FOR_V1_MAX_TRIP_COUNT))
+                      else (1537 if typed.key == RUNTIME_LOOP_BOUND_ROLL_KEY
+                            else COUNTED_FOR_V1_MAX_TRIP_COUNT)))
             max_charge = (
                 BUDDHABROT_MAX_ENTRYPOINT_CHARGE if typed.key in BUDDHABROT_KEYS
                 else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
@@ -8016,6 +8041,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 (visited_historic_indexes if historic_index_valid
                  else visited_palette_indexes).append(value)
                 return
+            if audio_proof is not None and any(value is n for n in audio_proof.reads):
+                if context != "rvalue":
+                    raise GeneratorError(f"{location(value)}: audio array write refused")
+                visited_audio_reads.append(value)
+                expression(index)
+                return
             declaration = proved_array_declarations.get(base.symbol_id)
             parameter = proved_array_parameters.get(base.symbol_id)
             base_valid = (base.symbol is not None
@@ -8467,6 +8498,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 visited_color_lab_indexes, authorized_color_lab_indexes)):
         raise GeneratorError(
             f"{typed.key}: authenticated ColorLab index traversal mismatch")
+    if audio_proof is not None and (
+            len(visited_audio_declarations) != 1
+            or visited_audio_declarations[0] is not audio_proof.declaration
+            or len(visited_audio_reads) != 2
+            or any(a is not b for a, b in zip(visited_audio_reads, audio_proof.reads))):
+        raise GeneratorError(f"{typed.key}: audio uniform traversal mismatch")
     if authorized_median_frontend_proof is not None:
         if (not _same_object_sequence(
                 visited_median_array_declarations,
@@ -10149,7 +10186,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         if runtime_loop_bound_profile is not None:
             manifest_program["runtime_loop_bound_profile"] = (
                 runtime_loop_bound_profile)
-        if (key == RUNTIME_LOOP_BOUND_LENIA_KEY
+        if (key in {RUNTIME_LOOP_BOUND_LENIA_KEY, RUNTIME_LOOP_BOUND_ROLL_KEY}
                 and ceil_admission_profile is not None):
             # Only points/lenia:convolve serializes its ceil admission into
             # the manifest row: oilPaint/smoothBlend keep their historical

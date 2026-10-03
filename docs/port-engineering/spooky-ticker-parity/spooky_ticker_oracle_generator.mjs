@@ -11,13 +11,9 @@ const cppLexical = path.resolve(here, '../../..')
 const outputPath = path.join(here, 'spooky-ticker-oracles.json')
 const reportPath = path.join(here, 'spooky-ticker-oracle-report.md')
 const programKey = 'filter/spookyTicker:spookyTicker'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const sourceRelative = `tools/glslcpp/corpus/${deriveCorpusRevision(cppLexical)}/sources/filter/spookyTicker/spookyTicker.glsl`
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const sourceRelative = `tools/glslcpp/corpus/${HISTORICAL_CORPUS_REVISION}/sources/filter/spookyTicker/spookyTicker.glsl`
 const sourceBytesExpected = 4276
 const sourceShaExpected = 'd50ca880cd6c6c03dd01a7ae683316d42ed93baddaadce9f3b918be1c816d50f'
 const factoryName = 'canonicalFactory147'

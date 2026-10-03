@@ -18,6 +18,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import unittest
 from typing import Any, Iterable
 
@@ -140,6 +141,52 @@ def record_flags(record: dict, source_path: os.PathLike[str] | str) -> list[str]
     for texture in record.get("externalTextures") or []:
         flags += ["--external-texture",
                   f"{texture['name']}={texture['width']}x{texture['height']}:{texture['rgba8']}"]
+    mesh = (record.get("externalInputs") or {}).get("meshData")
+    if mesh is not None:
+        width = 256 if mesh.get("texWidth") is None else mesh["texWidth"]
+        height = 256 if mesh.get("texHeight") is None else mesh["texHeight"]
+        if (type(width) is not int or type(height) is not int or width <= 0 or height <= 0):
+            raise ValueError("mesh texture dimensions must be positive integers")
+        payloads = []
+        for field, suffix, flag in (("positionRgba32f", "positions", "--mesh-positions-file"),
+                                    ("normalRgba32f", "normals", "--mesh-normals-file")):
+            payload = bytes.fromhex(mesh[field])
+            if len(payload) % 4:
+                raise ValueError("mesh data must contain whole float32 words")
+            path = pathlib.Path(source_path).resolve().with_suffix(f".mesh-{suffix}.f32")
+            if path.is_symlink():
+                raise ValueError("mesh input file must not be a symlink")
+            payloads.append((path, flag, payload))
+        flags += ["--mesh-size", f"{width}x{height}"]
+        for path, flag, payload in payloads:
+            path.write_bytes(payload)
+            flags += [flag, str(path)]
+    audio = (record.get("externalInputs") or {}).get("audioState")
+    if audio is not None:
+        payloads = []
+        for field, name in (("waveformFloat32", "waveform"), ("spectrumFloat32", "spectrum")):
+            if field not in audio:
+                continue
+            packed = audio[field]
+            if not isinstance(packed, str) or re.fullmatch(r"[0-9a-fA-F]{1024}", packed) is None:
+                raise ValueError("audio data requires exactly 128 float32 samples")
+            path = pathlib.Path(source_path).resolve().with_suffix(f".audio-{name}.f32")
+            if path.is_symlink():
+                raise ValueError("audio input file must not be a symlink")
+            payloads.append((path, name, bytes.fromhex(packed)))
+        for path, name, payload in payloads:
+            path.write_bytes(payload)
+            flags += [f"--audio-{name}-file", str(path)]
+    midi = (record.get("externalInputs") or {}).get("midiState")
+    if midi is not None:
+        packed = midi.get("noteGridRgba32f", "00" * (128 * 16 * 16))
+        if not isinstance(packed, str) or re.fullmatch(r"[0-9a-fA-F]{65536}", packed) is None:
+            raise ValueError("MIDI note grid requires 128x16 RGBA float32 texels")
+        path = pathlib.Path(source_path).resolve().with_suffix(".midi-grid.f32")
+        if path.is_symlink():
+            raise ValueError("MIDI input file must not be a symlink")
+        path.write_bytes(bytes.fromhex(packed))
+        flags += ["--midi-note-grid-file", str(path), "--midi-clock", repr(midi.get("clockCount", 0))]
     return flags
 
 

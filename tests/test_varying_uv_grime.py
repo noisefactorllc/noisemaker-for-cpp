@@ -50,13 +50,14 @@ import types
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program, named_type
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources")
 MODULE = "tools.glslcpp.frontend.varying_uv_profile"
 
@@ -705,8 +706,8 @@ class GrimeVaryingCensusTests(unittest.TestCase):
             for item in candidate.declarations))
 
     def test_the_whole_corpus_still_carries_exactly_five_varying_programs(self):
-        """Design 1.6 re-derived: the regex sweep over all corpus sources
-        finds exactly the five programs, grime among them, one varying each."""
+        """The source census retains the original five varying programs and
+        Mesh Render's exact three geometry inputs."""
         pattern = re.compile(
             r"^[ \t]*(?:flat[ \t]+)?in[ \t]+(vec2|vec3|vec4)[ \t]+(\w+)[ \t]*;"
             r"[ \t]*$", re.MULTILINE)
@@ -720,10 +721,15 @@ class GrimeVaryingCensusTests(unittest.TestCase):
                 found.setdefault(key, []).append(
                     (match.group(1), match.group(2)))
         self.assertEqual(
-            {"filter/grime:grime", "filter/texture:texture",
-             "filter/wobble:wobble", "filter/spookyTicker:spookyTicker",
-             "filter/wormhole:deposit"},
-            set(found))
+            {"filter/grime:grime": [("vec2", "v_texCoord")],
+             "filter/texture:texture": [("vec2", "v_texCoord")],
+             "filter/wobble:wobble": [("vec2", "v_texCoord")],
+             "filter/spookyTicker:spookyTicker": [("vec2", "v_texCoord")],
+             "filter/wormhole:deposit": [("vec4", "vColor")],
+             "render/meshRender:render": [("vec3", "vNormal"),
+                                           ("vec2", "vUV"),
+                                           ("vec3", "vPosition")]},
+            found)
         self.assertEqual([("vec2", "v_texCoord")], found[KEY])
 
 

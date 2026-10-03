@@ -21,7 +21,7 @@ EFFECTS_KEY = "classicNoisedeck/effects:effects"
 # Per-key registry since the effects row: the module is a whole-program
 # freeze per key (NOT the ceil/XOR shared-string form -- each record's
 # identity is one program's exact text), so each key carries its own
-# profile string. glitch's record, messages and self-hash stay byte-ident.
+# profile string. Each record authenticates its own reviewed source revision.
 PROFILES = {GLITCH_KEY: PROFILE, EFFECTS_KEY: EFFECTS_PROFILE}
 KEYS = tuple(PROFILES)
 
@@ -35,16 +35,16 @@ REQUIRED_COMPANION_PROFILES = {
                   ("ceil_admission_profile", "ceil-admission-v1")),
 }
 
-_RAW_BYTES = 7894
-_RAW_SHA256 = "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134"
-_NORMALIZED_BYTES = 7415
-_NORMALIZED_BYTES_SHA256 = "f5692ee8ef38007a7db090a5027da5a48f58bc9529bc6ab12cf17f4ec7a6978e"
-_NORMALIZED_IR_SHA256 = "ca3932d19ca01fcc11d1336f4026b5f21622a27eb1e2e7b3d75858b56473a224"
-_RAW_IR_SHA256 = "326e44df7aaf2767dbc5848c0dde543f1b45863ecabb8b925e580704327e91ee"
-_FUNCTIONS_SHA256 = "0ce0022ffb116a4ea03a82e32c372b52b41f67e42b11d4aca2b067da2fa22e61"
+_RAW_BYTES = 8195
+_RAW_SHA256 = "9ed4cce15c5d4358f191d8beeaae93624520530f1c4181dd7a5895e47821cc0e"
+_NORMALIZED_BYTES = 7575
+_NORMALIZED_BYTES_SHA256 = "d73526898d099818d6d6bc9efb3810b8c8e636aae47741feda7f9e7b0ae4badd"
+_NORMALIZED_IR_SHA256 = "7e9e8ef537289448a41961f886ee48136e98b3c6270ca6573c1730ea33fd191d"
+_RAW_IR_SHA256 = "c1b52fd92974886db55d2ba2b8541f10f35f78903535a2db1db1255bd591fad7"
+_FUNCTIONS_SHA256 = "a36d53eebe262b2874535ea260ae76928eeb131c3d958100adbfec9c439a3d54"
 _DECLARATIONS_SHA256 = "3501eee0dc5daa002d085d9a272fb8f39dd387d311f77f09f87f47601d2c50d4"
-_WHOLE_SHA256 = "c5cb35d06830b48a1f0cba9b5f493c1aac9ec6fb3eeba2ca15ec6ca6449e1178"
-_INTERFACE_SHA256 = "5c67224f53f6b88d52e64fd8e888478c6e43ccceeb2ddd8f68d06e8418dc0b92"
+_WHOLE_SHA256 = "77ac4023cc522790da6b8d3450d0e1b41f926b5c6737dab1e15655c746e57a9a"
+_INTERFACE_SHA256 = "cccab93b4e2a271eea295b4fe6c1099b88d144b1c60a5abd222674cbf2cf61de"
 _FUNCTIONS = (
     (33, "bicubic"), (34, "f"), (35, "glitch"), (36, "main"),
     (37, "map"), (38, "offsets"), (39, "pcg"),
@@ -114,21 +114,28 @@ _MATRIX_NODES = (
 # updated value through ``floor(st * freq)``.  Freeze this one source-owned
 # site so the C++ emitter can preserve that observable evaluation order
 # without changing vector compound-assignment semantics globally.
+# The upstream zero-control guard owns the complete frequency/refraction block.
+_ORDERED_FREQ_GUARD = (
+    "134:5-161:6",
+    "55bd81f950e92a2141420240aaa0b1840193df2a1c5aee039634a388456189f8",
+    "134:29-161:6",
+    "ee20c4863f836c60de13d84d51626092c623b8d206b627bd502f7afa5f00cb4e",
+)
 _ORDERED_FREQ_SPLAT = (
-    (3,),
-    "137:5-137:80",
-    "fe9595ed956e25d542bdf5860f4909b97016b785d6b11710140607926187274f",
-    "137:5-137:79",
-    "a86c859f6e5d58c63e9558a070e964f7c77d6553092f03d001a624eb56e51187",
-    "137:5-137:9",
-    "a33ddfb753151a7a3366bbf89274bf44974ebf3236e92afff024d45c85977f8b",
-    "137:13-137:79",
-    "a4c107b693b854292c760ac0852ac92d25ec7563a41a3482a0a9fd5a3ce61947",
-    "137:18-137:78",
-    "8c201ca789555a6f0761a0fec0b23f0393d63bcd1d77e23efcf4c04891a168c3",
+    (0, 0, 3),
+    "139:9-139:84",
+    "01b20e09dc06fb0fdb465f4df13a532a927162c39179f648e72fb88acc5827c7",
+    "139:9-139:83",
+    "e1111b47cc0e315927b2cc226b9002951e4fac8a3b7a8eaaf8f85eab560c44a3",
+    "139:9-139:13",
+    "d383e9fb4c9cefcd36a3913760da56c2aee9b4401f13fff7373e2cc4bc81337d",
+    "139:17-139:83",
+    "2432b035487c0763ddd0f9f3c2afdef528ab56fd44a04d5edc8790cedeb2dc34",
+    "139:22-139:82",
+    "78e7858935345d594910dd94e739b49350f8dec6a5ec95fc17db8df24502d678",
 )
 
-_PROFILE_SHA256 = "3197412490d41987d5a9c608ef802ec92fd42638b906bc1711bc763cf1423a12"
+_PROFILE_SHA256 = "fb4e4cbc70a5341b3bf42f9272f4084ba51d32e5b36e21813f8b694325f31e12"
 
 # --- effects' frozen record (measured; see effects-design.md §§1, 4) ------
 # Structurally the same bicubic closure as glitch's (the upstream author
@@ -332,7 +339,8 @@ def _profile_tuple() -> tuple[object, ...]:
             _NORMALIZED_IR_SHA256, _RAW_IR_SHA256, _FUNCTIONS_SHA256,
             _DECLARATIONS_SHA256, _WHOLE_SHA256, _INTERFACE_SHA256,
             _FUNCTIONS, tuple(sorted(_CALL_GRAPH.items())), _RESOURCES,
-            _LOOP_PROOF, _MATRIX_NODES, _ORDERED_FREQ_SPLAT)
+            _LOOP_PROOF, _MATRIX_NODES, _ORDERED_FREQ_GUARD,
+            _ORDERED_FREQ_SPLAT)
 
 
 def _fail(message: str) -> ValueError:
@@ -442,7 +450,19 @@ def authenticate_glitch_mat4_chain(
     if (glitch.id != 35 or glitch.name != "glitch"
             or len(glitch.body) <= _ORDERED_FREQ_SPLAT[0][0]):
         raise _fail("ordered frequency splat host mismatch")
-    splat_statement = glitch.body[_ORDERED_FREQ_SPLAT[0][0]]
+    guard = glitch.body[_ORDERED_FREQ_SPLAT[0][0]]
+    if (guard.kind != "if" or len(guard.expressions) != 1
+            or len(guard.children) != 1
+            or _span(guard) != _ORDERED_FREQ_GUARD[0]
+            or _sha(guard) != _ORDERED_FREQ_GUARD[1]):
+        raise _fail("ordered frequency splat guard mismatch")
+    block = guard.children[_ORDERED_FREQ_SPLAT[0][1]]
+    if (block.kind != "block" or block.expressions
+            or len(block.children) != 14
+            or _span(block) != _ORDERED_FREQ_GUARD[2]
+            or _sha(block) != _ORDERED_FREQ_GUARD[3]):
+        raise _fail("ordered frequency splat guarded block mismatch")
+    splat_statement = block.children[_ORDERED_FREQ_SPLAT[0][2]]
     if (splat_statement.kind != "expr"
             or _span(splat_statement) != _ORDERED_FREQ_SPLAT[1]
             or _sha(splat_statement) != _ORDERED_FREQ_SPLAT[2]

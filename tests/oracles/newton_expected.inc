@@ -8,7 +8,7 @@
 
 namespace newton_oracle {
 inline constexpr std::string_view kProgramKey = "synth/newton:newton";
-inline constexpr std::string_view kOracleSha256 = "9d081985869d41d45fa66f9e97ddab9bf7207438deda1accae47b0283758355a";
+inline constexpr std::string_view kOracleSha256 = "c8f3b6a32d3718a3bfde5c6f8315c9fdcec28e14b00d93d1a109a29887fc7a3e";
 inline constexpr std::string_view kFactoryTextSha256 = "ecd6c15bf91ce96c9a0f1e36691c848129942ad2ec292194c66a78816e5f2df1";
 inline constexpr std::array<std::string_view, 22> kBindingNames{{
   "resolution", "tileOffset", "fullResolution", "time", "degree", "relaxation", "iterations", "tolerance", "poi", "centerHiX", "centerHiY", "centerLoX", "centerLoY", "zoomSpeed", "zoomDepth", "degreeSpeed", "degreeRange", "relaxSpeed", "relaxRange", "rotation", "outputMode", "invert"

@@ -20,17 +20,26 @@ def _span(value: object) -> str:
             f"{span.end_line}:{span.end_column}")
 
 
-def _load_program(key: str):
+def _load_program(key: str, *, historical: bool = False):
     from tools.glslcpp import check_corpus, generate_typed_slice
     from tools.glslcpp.frontend import parse_program
     from tools.glslcpp.frontend.semantic import analyze_program
 
-    corpus = check_corpus._corpus_root(REPOSITORY)
-    manifest = json.loads((corpus / "manifest.json").read_text())
+    corpus = (corpus_census.HISTORICAL_CORPUS if historical
+              else check_corpus._corpus_root(REPOSITORY))
+    manifest = (corpus_census.historical_document("manifest.json") if historical
+                else json.loads((corpus / "manifest.json").read_text()))
     entry = next(item for item in manifest["programs"]
                  if item["program_key"] == key)
     raw = (corpus / entry["source"]).read_text()
-    defines = generate_typed_slice._defaults(REPOSITORY, key)
+    if hashlib.sha256(raw.encode()).hexdigest() != entry["raw_sha256"]:
+        raise AssertionError(f"source hash mismatch: {key}")
+    if historical:
+        from tools.glslcpp import check_semantics
+        defines = check_semantics._metadata_defaults(
+            corpus_census.historical_document("metadata.json"), key)
+    else:
+        defines = generate_typed_slice._defaults(REPOSITORY, key)
     program = analyze_program(parse_program(raw, key, defines), key)
     if key == "synth/noise:noise":
         from tools.glslcpp.frontend.runtime_loop_bound_profile import (
@@ -211,7 +220,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
                     dataclasses.replace(program, key="foreign:key"),
                     source_hash, PROFILE)
 
-        source_hash, ordinary = _load_program("filter/bc:bc")
+        source_hash, ordinary = _load_program("filter/bc:bc", historical=True)
         self.assertEqual((), authenticate_scalar_uint_xor(
             ordinary, source_hash, None))
         with self.assertRaises(ValueError):
@@ -483,6 +492,7 @@ class ScalarUintXorProfileTests(unittest.TestCase):
     def test_grain_is_exact_single_program_delta_from_174(self) -> None:
         import copy
         from tools.glslcpp import generate_typed_slice
+        from tests.historical_cross_lane import historical_cross_lane
 
         # Reconstruct the exact Grain-175 milestone before comparing it with
         # StatsFinal-174; Gabor, Scanline Error, Glyph Map, and Shapes are
@@ -523,15 +533,15 @@ class ScalarUintXorProfileTests(unittest.TestCase):
                 "filter/historicPalette:historicPalette", "filter/median:median",
                 "filter/osd:osd", "filter/palette:palette",
                 "filter/spookyTicker:spookyTicker", "filter/texture:texture"}]
-        with mock.patch.object(generate_typed_slice, "load_slice",
-                               return_value=spec):
+        with historical_cross_lane(spec), mock.patch.object(
+                generate_typed_slice, "load_slice", return_value=spec):
             current = generate_typed_slice.generate_outputs(REPOSITORY)
         prior_spec = copy.deepcopy(spec)
         prior_spec["programs"] = [
             item for item in prior_spec["programs"]
             if item["program_key"] != "filter/grain:grain"]
-        with mock.patch.object(generate_typed_slice, "load_slice",
-                               return_value=prior_spec):
+        with historical_cross_lane(prior_spec), mock.patch.object(
+                generate_typed_slice, "load_slice", return_value=prior_spec):
             prior = generate_typed_slice.generate_outputs(REPOSITORY)
 
         marker = re.compile(r"(?m)^// Typed IR program: ([^\n]+)\n")

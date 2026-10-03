@@ -30,7 +30,7 @@ else:
 
 
 SCHEMA = 1
-REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+REVISION = "e24c844f8dada85551ab084f41db8944fbc176c8"
 _ROOT = pathlib.Path(__file__).resolve().parents[2]
 _CORPUS_RELATIVE = pathlib.PurePosixPath("tools/glslcpp/corpus") / REVISION
 _ADAPTERS = frozenset({
@@ -266,7 +266,11 @@ def validate_corpus(repository: pathlib.Path | None = None) -> dict[str, Any]:
                 raise CorpusError(f"{key}: normalized source hash or size mismatch")
             if normalized["outputs"] != entry["outputs"] or normalized["varyings"] != entry["varyings"]:
                 raise CorpusError(f"{key}: normalized interface mismatch")
-            parse_program(source, key)
+            if key == "render/meshRender:render":
+                from tools.dsl.mesh_render_contract import authenticate_fragment
+                authenticate_fragment(raw, metadata["effects"][entry["effect_id"]])
+            else:
+                parse_program(source, key)
             text = normalized["source"]
             for name, pattern in (("struct", r"\bstruct\b"), ("for", r"\bfor\b"), ("while", r"\bwhile\b"),
                                   ("do", r"\bdo\b"), ("ternary", r"\?"), ("uniform_block", r"\buniform\s+\w+\s*\{"),

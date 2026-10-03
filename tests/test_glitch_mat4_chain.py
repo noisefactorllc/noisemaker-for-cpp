@@ -27,8 +27,8 @@ from tests.historical_cross_lane import historical_cross_lane
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "classicNoisedeck/glitch:glitch"
 PROFILE = "glitch-mat4-chain-v1"
-RAW_SHA256 = "13d6350eb21cfb5a7c9f0d0a8fffe8e7495068ca2e082d1520ef14ca5b34c134"
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+RAW_SHA256 = "9ed4cce15c5d4358f191d8beeaae93624520530f1c4181dd7a5895e47821cc0e"
+SOURCE = (ROOT / "tools/glslcpp/corpus/e24c844f8dada85551ab084f41db8944fbc176c8"
           / "sources/classicNoisedeck/glitch/glitch.glsl")
 MODULE = "tools.glslcpp.frontend.glitch_mat4_chain_profile"
 
@@ -63,13 +63,20 @@ def _coarse_refreeze(profile, candidate):
     }
 
 
+def _ordered_guard_tuple(profile, candidate):
+    guard = candidate.functions[2].body[0]
+    block = guard.children[0]
+    return (profile._span(guard), profile._sha(guard),
+            profile._span(block), profile._sha(block))
+
+
 def _ordered_splat_tuple(profile, candidate):
-    statement = candidate.functions[2].body[3]
+    statement = candidate.functions[2].body[0].children[0].children[3]
     assignment = statement.expressions[0]
     target, constructor = assignment.children
     scalar = constructor.children[0]
     return (
-        (3,), profile._span(statement), profile._sha(statement),
+        (0, 0, 3), profile._span(statement), profile._sha(statement),
         profile._span(assignment), profile._sha(assignment),
         profile._span(target), profile._sha(target),
         profile._span(constructor), profile._sha(constructor),
@@ -182,7 +189,7 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
         profile = _profile()
         proof = profile.authenticate_glitch_mat4_chain(
             _analyzed(), RAW_SHA256, PROFILE)
-        self.assertEqual("137:5-137:79", profile._span(
+        self.assertEqual("139:9-139:83", profile._span(
             proof.ordered_freq_splat_assignment))
         self.assertEqual("*=", proof.ordered_freq_splat_assignment.operator)
         self.assertEqual(
@@ -207,6 +214,64 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
             "freq = glsl::Vec2((freq * glsl::FloatExpr<2>(periodicFunction(",
             rendered)
 
+    def test_zero_control_guards_enclose_the_original_effect_work(self):
+        program = _analyzed()
+        proof = _profile().authenticate_glitch_mat4_chain(
+            program, RAW_SHA256, PROFILE)
+        guard = program.functions[2].body[0]
+        self.assertEqual("if", guard.kind)
+        self.assertEqual("!=", guard.expressions[0].operator)
+        self.assertEqual("glitchiness", guard.expressions[0].children[0].symbol.name)
+        self.assertEqual(0.0, guard.expressions[0].children[1].literal_value)
+        self.assertIs(proof.ordered_freq_splat_assignment,
+                      guard.children[0].children[3].expressions[0])
+
+        rendered = emit_typed_cpp.render_typed_cpp(
+            program, KEY, RAW_SHA256, "glitch_probe", "bind_glitch_probe",
+            glitch_mat4_chain_profile=PROFILE)
+        frequency_block = rendered.split(
+            "  if (state.glitchiness != static_cast<float>(0.0)) {\n", 1)[1]
+        frequency_block = frequency_block.split("\n  }", 1)[0]
+        for lane in (0, 1):
+            self.assertIn(
+                f"glsl::set_swizzle<{lane}>(freq, (glsl::swizzle<{lane}>(freq) * "
+                "periodicFunction(", frequency_block)
+        for control, function in (("scanlinesAmt", "scanlines"),
+                                  ("snowAmt", "snow")):
+            self.assertIn(
+                f"  if (state.{control} != static_cast<float>(0.0)) {{\n"
+                f"    color = glsl::Vec4({function}(state, context, color, uv));\n"
+                "  }", rendered)
+
+    def test_refrozen_coarse_identity_rejects_changed_guard_and_escaped_splat(self):
+        profile = _profile()
+        exact = _analyzed()
+        glitch = exact.functions[2]
+        guard = glitch.body[0]
+        block = guard.children[0]
+        escaped_guard = dataclasses.replace(
+            guard, children=(dataclasses.replace(
+                block, children=(*block.children[:3], *block.children[4:])),))
+        escaped_glitch = dataclasses.replace(
+            glitch, body=(block.children[3], escaped_guard, *glitch.body[1:]))
+        escaped = dataclasses.replace(
+            exact, functions=(*exact.functions[:2], escaped_glitch,
+                              *exact.functions[3:]))
+        changed = _replace_expression(
+            exact, guard.expressions[0],
+            dataclasses.replace(guard.expressions[0], operator="=="))
+        for name, candidate in (("changed-condition", changed),
+                                ("escaped-splat", escaped)):
+            replacements = _coarse_refreeze(profile, candidate)
+            with self.subTest(name=name), mock.patch.multiple(
+                    profile, **replacements):
+                profile_hash = profile._sha(profile._profile_tuple())
+                with mock.patch.object(profile, "_PROFILE_SHA256", profile_hash), \
+                        self.assertRaisesRegex(ValueError,
+                                               "ordered frequency splat guard"):
+                    profile.authenticate_glitch_mat4_chain(
+                        candidate, replacements["_RAW_SHA256"], PROFILE)
+
     def test_profile_rejects_carrier_identity_and_reviewed_source_mutations(self):
         profile = _profile()
         program = _analyzed()
@@ -227,6 +292,12 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
 
         raw = SOURCE.read_text(encoding="utf-8")
         mutations = (
+            ("zero-glitchiness-guard", "if (glitchiness != 0.0)",
+             "if (glitchiness == 0.0)"),
+            ("zero-scanlines-guard", "if (scanlinesAmt != 0.0)",
+             "if (scanlinesAmt == 0.0)"),
+            ("zero-snow-guard", "if (snowAmt != 0.0)",
+             "if (snowAmt == 0.0)"),
             ("association", "mat4 A = T * Q * S;",
              "mat4 A = T * (Q * S);"),
             ("inner-order", "mat4 A = T * Q * S;",
@@ -291,6 +362,8 @@ class GlitchMat4ChainProfileTests(unittest.TestCase):
             candidate = _analyzed(changed)
             replacements = _coarse_refreeze(profile, candidate)
             if not name.startswith("ordered-splat"):
+                replacements["_ORDERED_FREQ_GUARD"] = _ordered_guard_tuple(
+                    profile, candidate)
                 replacements["_ORDERED_FREQ_SPLAT"] = _ordered_splat_tuple(
                     profile, candidate)
             with self.subTest(name=name), mock.patch.multiple(

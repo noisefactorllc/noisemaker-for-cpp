@@ -1,11 +1,9 @@
-"""The pooled-array alias emission (DEFECTS-FOUND item 6).
+"""Pooled-array aliases retained outside authenticated CPU26d copy sites.
 
-The JavaScript authority materializes ``vecN`` locals as
-``PooledFloat32Array``, and ``var a = b;`` over one of them binds a
-**reference**, not a copy. Whole-vector assignment is materialized in place,
-so a later write through either name is visible through both. A value copy
-diverges the moment either name is written -- which is exactly how
-``filter/parallax`` shipped wrong as typed row 190.
+CPU61aa shared vector locals in the Parallax refinement. CPU26d copies that
+declaration, along with the exact Corrupt, Grade LUT, Reverb and FXAA sites
+authenticated by their current profiles. Historical Parallax remains frozen
+separately; these tests retain the collector's other existing constraints.
 
 ``emit_typed_cpp`` models that. This module holds the emission's GREEN facts
 and, more importantly, the RED ones: every clause of the collector is
@@ -19,6 +17,7 @@ text, so no assertion string disappears from the module under test.
 from __future__ import annotations
 
 import pathlib
+import hashlib
 import re
 import sys
 import unittest
@@ -28,10 +27,12 @@ REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 if str(REPOSITORY) not in sys.path:
     sys.path.insert(0, str(REPOSITORY))
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice  # noqa: E402
 
 SLICE_CPP = REPOSITORY / "src/typed_generated/typed_slice.cpp"
 PARALLAX_ALIAS = "[[maybe_unused]] glsl::Vec2& prevUV = rayUV;"
+CURRENT_ALIAS_COUNT = 30
 # One line per emitted alias: `[[maybe_unused]] glsl::VecN& name = source;`
 ALIAS_DECLARATION = re.compile(
     r"\[\[maybe_unused\]\] glsl::Vec[234]& (\w+) = ([A-Za-z_]\w*);")
@@ -52,16 +53,25 @@ def _alias_sites(text: str) -> list[tuple[str, str]]:
 class CommittedEmissionTests(unittest.TestCase):
     """What the committed slice carries. Fast -- reads the file, renders nothing."""
 
-    def test_parallax_declares_prev_uv_as_a_reference_not_a_copy(self) -> None:
-        self.assertIn(PARALLAX_ALIAS, _COMMITTED_SLICE)
-        # The copy form must be gone: its presence IS the defect.
-        self.assertNotIn("[[maybe_unused]] glsl::Vec2 prevUV = rayUV;", _COMMITTED_SLICE)
+    def test_current_parallax_copies_prev_uv(self) -> None:
+        self.assertNotIn(PARALLAX_ALIAS, _COMMITTED_SLICE)
+        self.assertIn("[[maybe_unused]] glsl::Vec2 prevUV = rayUV;", _COMMITTED_SLICE)
+
+    def test_historical_parallax_retains_the_exact_alias_kernel(self) -> None:
+        fixture = (REPOSITORY / "tests/fixtures/historical/parallax_kernel.cpp").read_bytes()
+        block = fixture[fixture.index(b"// Typed IR program: filter/parallax:parallax\n"):
+                        fixture.index(b"// End frozen Parallax block\n")]
+        self.assertEqual(hashlib.sha256(block).hexdigest(),
+                         "c09dd3fbd9685caa9836add2b30addb9cbb4253b259a3f6bc575b8f1ec3d7b15")
+        self.assertIn(PARALLAX_ALIAS.encode(), block)
+        self.assertNotIn(b"[[maybe_unused]] glsl::Vec2 prevUV = rayUV;", block)
 
     def test_alias_site_census_is_exact(self) -> None:
         sites = _alias_sites(_COMMITTED_SLICE)
-        # 36 after the current live slice's later admitted rows
-        # (points/dla:agent adds `vec2 stepDir = randomDir;`).
-        self.assertEqual(36, len(sites))
+        # Six authenticated copies replace the old 36 aliases: Corrupt's
+        # sampleUv, Grade LUT's graded, Reverb's current/accum, FXAA's
+        # result_texel and Parallax's prevUV. Other sites are unchanged.
+        self.assertEqual(CURRENT_ALIAS_COUNT, len(sites))
         # Every alias binds a bare identifier, never a state field or a call.
         for name, source in sites:
             self.assertNotIn(".", source)
@@ -94,8 +104,8 @@ class NeutralizationTests(unittest.TestCase):
             text = _regenerate()
         self.assertEqual([], _alias_sites(text))
         self.assertNotIn(PARALLAX_ALIAS, text)
-        # Exactly the 36 ampersands, and nothing else, distinguish the two.
-        self.assertEqual(len(_COMMITTED_SLICE) - 36, len(text))
+        # Authenticated value-copy declarations stay values under this mutant.
+        self.assertEqual(len(_COMMITTED_SLICE) - CURRENT_ALIAS_COUNT, len(text))
 
     def test_the_observability_condition_is_not_vacuous(self) -> None:
         # Alias every bare-identifier vector declaration, whether or not a
@@ -106,6 +116,8 @@ class NeutralizationTests(unittest.TestCase):
         def alias_everything(self, statement):
             if statement.kind == "decl":
                 for declaration in statement.expressions:
+                    if any(declaration is node for node in self.authorized_vector_value_copies):
+                        continue
                     if (declaration.kind != "declaration"
                             or declaration.symbol_id is None
                             or len(declaration.children) != 1
@@ -124,7 +136,7 @@ class NeutralizationTests(unittest.TestCase):
         with mock.patch.object(emit_typed_cpp._Emitter,
                                "_collect_pooled_vector_aliases", alias_everything):
             text = _regenerate()
-        self.assertGreater(len(_alias_sites(text)), 35)
+        self.assertGreater(len(_alias_sites(text)), CURRENT_ALIAS_COUNT)
         self.assertNotEqual(_COMMITTED_SLICE, text)
         self.assertIs(original, emit_typed_cpp._Emitter._collect_pooled_vector_aliases)
 
@@ -208,15 +220,15 @@ class ParallaxSourceContractTests(unittest.TestCase):
     """The GLSL side of the contract, read from the pinned corpus."""
 
     SOURCE = (REPOSITORY / "tools/glslcpp/corpus"
-              / "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+              / CORPUS_REVISION
               / "sources/filter/parallax/parallax.glsl")
 
-    def test_the_refinement_the_authority_makes_dead_is_present_in_the_glsl(self) -> None:
+    def test_the_current_refinement_uses_a_distinct_previous_coordinate(self) -> None:
         text = self.SOURCE.read_text(encoding="utf-8")
         self.assertIn("vec2 prevUV = rayUV;", text)
         self.assertIn("rayUV = mix(rayUV, prevUV, w);", text)
-        # The GLSL says interpolate; the JS materialization makes it a no-op.
-        # Porting the GLSL rather than the materialization is the defect.
+        # CPU26d's copied prevUV preserves this interpolation. The explicit
+        # historical kernel above retains CPU61aa's aliased no-op instead.
         self.assertEqual(1, text.count("prevUV = rayUV;"))
 
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import unittest
 from tests import corpus_census
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -15,7 +16,7 @@ from tools.glslcpp.frontend import struct_declaration_profile as struct_profile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources/synth/julia/julia.glsl")
 
 

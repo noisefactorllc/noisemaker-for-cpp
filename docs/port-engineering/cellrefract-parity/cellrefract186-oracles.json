@@ -177,11 +177,11 @@
     "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/cellrefract-parity/cellrefract186_oracle_generator.mjs",
-      "sha256": "42b635b400122e61f973e0b37c72033a4cd0f28e14ada46b8fd84cacf33f7919"
+      "sha256": "7728a07dd4a206b0f6e3dad64bfb50ce29cb89ad7df3a700d405eac9587618e1"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_cellrefract_native_oracle_include.py",
-      "sha256": "d1ad2185e0abb767aa1f955d159f7922f7a113f7efef3b5c3941cfcbeb45fb32"
+      "sha256": "376240b6263b6eee1203d5217a6ff3a568edccbcaacb1035dfabf94d48deebaa"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",

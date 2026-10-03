@@ -2,24 +2,20 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 import { authenticateCpuRoot, importCpu, sha256, EXPECTED } from './corpus_authority.mjs'
 
 const ROOT = path.resolve(new URL('.', import.meta.url).pathname, '../..')
 const COMPATIBILITY = path.join(ROOT, 'src/effects/generated/backend_compatibility.json')
 const PROVENANCE = path.join(ROOT, 'src/effects/generated/effect_catalog.provenance.json')
 const TYPED_MANIFEST = path.join(ROOT, 'src/typed_generated/typed_manifest.json')
-const BACKEND_SHA256 = 'f3c613fe57dd9d253351c94b2b84dff0ace842bc1ba897bca2f8e3b3c746fd2e'
+const BACKEND_SHA256 = '2a9c070597dca0589e2e3843fc424cd67ee004f15ffb0e94f7838b7a288cad26'
 
 function usage(message) {
   if (message) console.error(`generate_executable_corpus: ${message}`)
   console.error('usage: node generate_executable_corpus.mjs --cpu-root ABS --output ABS')
   process.exit(2)
 }
-const args = process.argv.slice(2)
-function arg(name) { const i = args.indexOf(name); return i < 0 ? null : args[i + 1] ?? usage(`${name} requires a value`) }
-const cpuRootArg = arg('--cpu-root'); const outputArg = arg('--output')
-if (!cpuRootArg || !path.isAbsolute(cpuRootArg)) usage('explicit absolute --cpu-root is required')
-if (!outputArg || !path.isAbsolute(outputArg)) usage('absolute --output is required')
 
 function readJson(file, label) {
   const bytes = fs.readFileSync(file)
@@ -99,7 +95,61 @@ function coverage(effect, rows, kind) {
   return [...new Set(result)].sort()
 }
 
+function packFloat32(values) {
+  const bytes = Buffer.alloc(values.length * 4)
+  values.forEach((value, index) => bytes.writeFloatLE(value, index * 4))
+  return bytes.toString('hex')
+}
+
+function meshLoaderInputs() {
+  return { meshData: { texWidth: 2, texHeight: 2,
+    positionRgba32f: packFloat32([-0.9999, 0.25, 0.75, 1, 1.5, -0.75, 0.125, 1,
+      0.125, 0.5, -1, 1, -0.25, 1.5, 0.5, 1]),
+    normalRgba32f: packFloat32([1, 0, -1, 0, 0.5, -0.5, 0.25, 0,
+      -0.25, 0.75, 0.5, 0, 0.125, -0.75, 1, 0]),
+  } }
+}
+
+export function externalInputsFor(effectId) {
+  if (effectId === 'render/meshLoader') return meshLoaderInputs()
+  if (effectId === 'render/meshRender') {
+    // Two CCW, overlapping triangle texel triples; upload-order rows are bottom-up.
+    return { meshData: { texWidth: 3, texHeight: 2,
+      positionRgba32f: packFloat32([
+        -0.9, -0.75, -0.1, 1, 0.8, -0.65, 0.2, 1, -0.2, 0.85, 0, 1,
+        -0.6, -0.45, -0.4, 1, 0.65, -0.35, -0.1, 1, 0.35, 0.65, -0.25, 1,
+      ]),
+      normalRgba32f: packFloat32([
+        0, 0, 1, 0, 0.6, 0, 0.8, 0, 0, 0.6, 0.8, 0,
+        -0.6, 0, 0.8, 0, 0, -0.6, 0.8, 0, 0, 0, 1, 0,
+      ]),
+    } }
+  }
+  if (effectId === 'synth/scope' || effectId === 'synth/spectrum') {
+    return { audioState: {
+      waveformFloat32: packFloat32(Array.from({ length: 128 }, (_, i) => ((i * 37) % 131) / 130)),
+      spectrumFloat32: packFloat32(Array.from({ length: 128 }, (_, i) => ((i * 19 + 11) % 127) / 126)),
+    } }
+  }
+  if (effectId === 'synth/roll') {
+    const grid = new Array(128 * 16 * 4).fill(0)
+    for (let channel = 0; channel < 16; ++channel) {
+      const key = 36 + (channel * 7) % 49
+      const offset = (channel * 128 + key) * 4
+      grid[offset] = 0.25 + 0.75 * (channel + 1) / 16
+      grid[offset + 1] = 1
+    }
+    return { midiState: { noteGridRgba32f: packFloat32(grid), clockCount: 48 } }
+  }
+  return undefined
+}
+
 async function main() {
+  const args = process.argv.slice(2)
+  function arg(name) { const i = args.indexOf(name); return i < 0 ? null : args[i + 1] ?? usage(`${name} requires a value`) }
+  const cpuRootArg = arg('--cpu-root'); const outputArg = arg('--output')
+  if (!cpuRootArg || !path.isAbsolute(cpuRootArg)) usage('explicit absolute --cpu-root is required')
+  if (!outputArg || !path.isAbsolute(outputArg)) usage('absolute --output is required')
   authenticateCpuRoot(cpuRootArg)
   const { snapshot, catalog, api } = await importCpu(cpuRootArg)
   const compatibility = readJson(COMPATIBILITY, 'backend compatibility')
@@ -115,7 +165,7 @@ async function main() {
     const source = sourceFor(effect)
     const sourceSha256 = sha256(Buffer.from(source))
     const options = { width: 17, height: 11, time: 0.25, frame: 0, seed: seedFor(`${effect.id}#default`), oneShot: 'ready', renderScale: 1 }
-    const provenanceRecord = { cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: 'cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6', compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256 }
+    const provenanceRecord = { cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: compatibility.value.authority.upstream_tree, compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256 }
     const admissionFailure = firstFailure(effect, rows, source)
     let failure = admissionFailure
     if (!failure && effect.domain === 'image') {
@@ -126,6 +176,8 @@ async function main() {
     const record = { schema: 'noisemaker-cpp.dsl-executable-corpus.v1', recordKind: kind, id: `${effect.id}#default`, effectId: effect.id, variant: 'default', sourceName: `${effect.id.replaceAll('/', '__')}__default.dsl`, source, sourceSha256, width: options.width, height: options.height, options, search: effect.kind === 'generator' ? [effect.namespace] : ['synth', effect.namespace].filter((item, index, list) => list.indexOf(item) === index), parameters: Object.fromEntries(Object.entries(effect.params ?? {}).map(([name, param]) => [name, param.default])), coverage: coverage(effect, rows, kind), provenance: provenanceRecord }
     if (failure) { record.firstFailure = failure; record.allReasons = [{ code: failure.code, detail: failure.detail }, ...(rows.flatMap((row) => row.reasons ?? []).map((reason) => ({ code: reason.code, detail: reason.detail })))]; record.allReasons = [...new Map(record.allReasons.map((item) => [`${item.code}:${item.detail}`, item])).values()] }
     else record.plan = planFor(effect, rows, source)
+    const externalInputs = externalInputsFor(effect.id)
+    if (externalInputs) record.externalInputs = externalInputs
     records.push(record)
   }
   const buckets = {}
@@ -134,7 +186,7 @@ async function main() {
     buckets[bucket] = count ? { available: true, count } : { available: false, count: 0, reason: 'no admitted definition in authenticated current intersection' }
   }
   const counts = { admitted: records.filter((record) => record.recordKind === 'admitted').length, excluded: records.filter((record) => record.recordKind === 'excluded').length, variants: records.length, coverage: Object.fromEntries(Object.entries(buckets).map(([key, value]) => [key, value.count])) }
-  const manifest = { schema: 'noisemaker-cpp.dsl-executable-corpus.v1', generator: 'generate_executable_corpus.mjs', provenance: { compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256, cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: 'cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6', }, counts, coverage: buckets, records }
+  const manifest = { schema: 'noisemaker-cpp.dsl-executable-corpus.v1', generator: 'generate_executable_corpus.mjs', provenance: { compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256, cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: compatibility.value.authority.upstream_tree, }, counts, coverage: buckets, records }
   const canonical = Buffer.from(json(manifest))
   manifest.manifestSha256 = sha256(canonical)
   const output = path.resolve(outputArg)
@@ -143,4 +195,6 @@ async function main() {
   fs.writeFileSync(output, `${JSON.stringify(manifest, null, 2)}\n`, { flag: 'w' })
   console.log(JSON.stringify({ output, manifestSha256: manifest.manifestSha256, counts }, null, 2))
 }
-main().catch((error) => { console.error(`generate_executable_corpus: ${error.message}`); process.exitCode = 1 })
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => { console.error(`generate_executable_corpus: ${error.message}`); process.exitCode = 1 })
+}

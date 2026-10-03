@@ -104,6 +104,7 @@ import types
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend import loop_proof as loop_proof_module
@@ -115,7 +116,7 @@ from tools.glslcpp.frontend.typed_ir import PreprocessorDefine, TypedProgram
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources")
 MODULE = "tools.glslcpp.frontend.texture_lod_admission_profile"
 

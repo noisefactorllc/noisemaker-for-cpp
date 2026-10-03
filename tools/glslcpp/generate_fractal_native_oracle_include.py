@@ -10,8 +10,6 @@ import re
 import struct
 import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
 
 ROOT = Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/fractal-parity"
@@ -20,7 +18,9 @@ REPORT = PACKAGE / "fractal-oracle-report.md"
 OUTPUT = ROOT / "tests/oracles/fractal_expected.inc"
 SCHEMA = "noisemaker-for-cpp.fractal.pixel-parity.v1"
 KEY = "classicNoisedeck/fractal:fractal"
-SOURCE = f"tools/glslcpp/corpus/{check_corpus.REVISION}/sources/classicNoisedeck/fractal/fractal.glsl"
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/fractal/fractal.glsl"
 SOURCE_SHA = "a73c8044185be58e3ae1b0f14b954dbaa7bb8852290b821dba44167fee5e037b"
 FACTORY_SOURCE = "src/effects/adapters/fractal.js"
 FACTORY_SHA = "0c90d859a589d4bfd0f9a82b2f601675b6116671e20b2dfba9bab2b98fc72a29"

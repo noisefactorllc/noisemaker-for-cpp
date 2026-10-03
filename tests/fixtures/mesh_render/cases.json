@@ -1,0 +1,2007 @@
+[
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "basic-top-down"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 0.831247893,
+      "meshOffsetX": 0.114692831,
+      "meshOffsetY": -0.171429385,
+      "meshOffsetZ": 0.23947,
+      "rotateX": 23.7,
+      "rotateY": -41.3,
+      "rotateZ": 13.2,
+      "posX": 0.171938291,
+      "posY": -0.219384718,
+      "viewScale": 1.37,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "transform-double-inputs"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {
+      "fullResolution": [
+        17.3,
+        11.7
+      ]
+    },
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "full-resolution-aspect"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 2.7,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0.8,
+      "posY": -0.4,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "partial-viewport"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "back-face"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      -0.8,
+      -0.7,
+      0,
+      1,
+      -0.8,
+      -0.7,
+      0,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "degenerate"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      0,
+      0.7,
+      -0.6,
+      0.4,
+      0,
+      -0.1,
+      0.9,
+      -0.2,
+      0
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "all-invalid-alpha"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      0,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      0
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "one-valid-alpha"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "missing-position-tail"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "missing-normal-tail"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "missing-position-alpha"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 0,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "zero-vertices"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 4,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1,
+      0.4,
+      0.4,
+      0,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "incomplete-final-triangle"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 12,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "depth-far-clipped"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": -12,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "depth-negative-kept"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 1,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "wireframe-smooth-discard"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 1,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "wireframe-normal-gradients"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 2,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "wireframe-non-one-is-filled"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 0,
+      "rimPower": 0,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0,
+        0,
+        -1
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "zero-powers"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0,
+      "specularIntensity": 0,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        -0.1,
+        0.2,
+        0.4
+      ],
+      "ambientColor": [
+        1,
+        1,
+        1
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "negative-color-nan"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 2,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1,
+      -0.8,
+      -0.7,
+      -1,
+      1,
+      0.7,
+      -0.6,
+      -0.6,
+      1,
+      -0.1,
+      0.9,
+      -1.2,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "depth-overlap"
+  },
+  {
+    "width": 9,
+    "height": 7,
+    "tex_width": 3,
+    "tex_height": 2,
+    "positions": [
+      -0.8,
+      -0.7,
+      0,
+      1,
+      0.7,
+      -0.6,
+      0.4,
+      1,
+      -0.1,
+      0.9,
+      -0.2,
+      1,
+      -0.8,
+      -0.7,
+      1,
+      1,
+      0.7,
+      -0.6,
+      1.4,
+      1,
+      -0.1,
+      0.9,
+      0.8,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 1,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "wireframe-discard-writes-depth"
+  },
+  {
+    "width": 4,
+    "height": 4,
+    "tex_width": 3,
+    "tex_height": 1,
+    "positions": [
+      -0.75,
+      -0.75,
+      0,
+      1,
+      0.75,
+      -0.75,
+      0,
+      1,
+      -0.75,
+      0.75,
+      0,
+      1
+    ],
+    "normals": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    "uniforms": {
+      "meshScale": 1,
+      "meshOffsetX": 0,
+      "meshOffsetY": 0,
+      "meshOffsetZ": 0,
+      "rotateX": 0,
+      "rotateY": 0,
+      "rotateZ": 0,
+      "posX": 0,
+      "posY": 0,
+      "viewScale": 1,
+      "diffuseIntensity": 0.83,
+      "specularIntensity": 0.41,
+      "shininess": 17.3,
+      "rimPower": 2.7,
+      "rimIntensity": 0.13,
+      "wireframe": 0,
+      "lightDirection": [
+        0.3,
+        -0.4,
+        1.0
+      ],
+      "meshColor": [
+        0.31,
+        0.67,
+        0.93
+      ],
+      "ambientColor": [
+        0.13,
+        0.19,
+        0.07
+      ],
+      "diffuseColor": [
+        0.9,
+        0.8,
+        0.7
+      ],
+      "specularColor": [
+        0.8,
+        0.9,
+        1
+      ]
+    },
+    "bindings": {},
+    "clear": [
+      0.03125,
+      0.0625,
+      0.125,
+      0.25
+    ],
+    "name": "inclusive-pixel-center-edge"
+  }
+]

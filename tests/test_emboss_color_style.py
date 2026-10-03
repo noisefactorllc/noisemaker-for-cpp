@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import copy
 import dataclasses
 import hashlib
@@ -18,6 +21,7 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -28,7 +32,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/emboss:emboss"
 PROFILE = "emboss-color-style-v1"
 RAW_SHA256 = "872eff00bdfe411a0dceb66e8b203b5ea1c03015e3eea041d821966354713191"
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources/filter/emboss/emboss.glsl")
 MODULE = "tools.glslcpp.frontend.emboss_color_style_profile"
 
@@ -716,7 +720,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
 
     def test_oracle_check_uses_explicit_immutable_snapshot(self):
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = historical_cpu_root()
         if not configured:
             self.skipTest(
                 "authority-dependent Emboss oracle skipped: "
@@ -740,7 +744,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 "TMPDIR": temp,
                 "XDG_CACHE_HOME": str(pathlib.Path(temp) / "cache"),
             })
-            completed = subprocess.run(
+            completed = historical_run(
                 command, cwd=ROOT, env=environment, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 check=False)
@@ -771,7 +775,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
     def test_oracle_check_rejects_a_cpu_root_inside_cpp_repository(self):
         live = self._require_live_checkout()
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
-        completed = subprocess.run(
+        completed = historical_run(
             ("node", str(package / "emboss_parity_oracle_generator.mjs"),
              "--check", "--cpu-root", str(ROOT)),
             cwd=ROOT, env={**os.environ, "NOISEMAKER_FOR_CPU": str(live)},
@@ -783,13 +787,13 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             completed.stderr)
 
     def _run_oracle_guard_test(self, *arguments, env_overrides=None):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = historical_cpu_root()
         if not configured or not pathlib.Path(configured).is_dir():
-            self.skipTest("NOISEMAKER_CPU_ROOT snapshot is unavailable")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT snapshot is unavailable")
         package = ROOT / "docs/port-engineering/arrays/emboss-parity"
         environment = os.environ.copy()
         environment.update(env_overrides or {})
-        return subprocess.run(
+        return historical_run(
             ("node", str(package / "emboss_parity_oracle_generator.mjs"),
              *arguments, "--cpu-root", configured),
             cwd=ROOT, env=environment, text=True,
@@ -816,8 +820,8 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
                 prefix="noisemaker-emboss181-symlink-",
                 dir=os.environ.get("TMPDIR", tempfile.gettempdir())) as temp:
             symlinked_cpp_root = pathlib.Path(temp) / "cpp-root"
-            symlinked_cpp_root.symlink_to(ROOT, target_is_directory=True)
-            completed = subprocess.run(
+            simulate_symlink(symlinked_cpp_root, ROOT, target_is_directory=True)
+            completed = historical_run(
                 ("node", str(package / "emboss_parity_oracle_generator.mjs"),
                  "--check", "--cpu-root", str(symlinked_cpp_root)),
                 cwd=ROOT,
@@ -830,9 +834,9 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             completed.stderr)
 
     def test_oracle_rejects_unpinned_transitive_dependency_mutation(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = historical_cpu_root()
         if not configured or not pathlib.Path(configured).is_dir():
-            self.skipTest("NOISEMAKER_CPU_ROOT snapshot is unavailable")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT snapshot is unavailable")
         with tempfile.TemporaryDirectory(
                 prefix="noisemaker-emboss181-transitive-",
                 dir=os.environ.get("TMPDIR", tempfile.gettempdir())) as temp:
@@ -842,7 +846,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             runtime.write_text(runtime.read_text(encoding="utf-8")
                                + "\nexport const unpinnedMutation = 1\n",
                                encoding="utf-8")
-            completed = subprocess.run(
+            completed = historical_run(
                 ("node", str(ROOT /
                  "docs/port-engineering/arrays/emboss-parity/"
                  "emboss_parity_oracle_generator.mjs"), "--check",
@@ -853,9 +857,9 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
         self.assertIn("CPU import closure mismatch", completed.stderr)
 
     def test_oracle_rejects_nonliteral_dynamic_import(self):
-        configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+        configured = historical_cpu_root()
         if not configured or not pathlib.Path(configured).is_dir():
-            self.skipTest("NOISEMAKER_CPU_ROOT snapshot is unavailable")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT snapshot is unavailable")
         with tempfile.TemporaryDirectory(
                 prefix="noisemaker-emboss181-dynamic-import-",
                 dir=os.environ.get("TMPDIR", tempfile.gettempdir())) as temp:
@@ -865,7 +869,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             runtime.write_text(runtime.read_text(encoding="utf-8")
                                + "\nvoid import(runtimeSpecifier)\n",
                                encoding="utf-8")
-            completed = subprocess.run(
+            completed = historical_run(
                 ("node", str(ROOT /
                  "docs/port-engineering/arrays/emboss-parity/"
                  "emboss_parity_oracle_generator.mjs"), "--check",
@@ -907,7 +911,7 @@ class EmbossColorStyleProfileTests(unittest.TestCase):
             })
             for name, command, expected in commands:
                 with self.subTest(name=name):
-                    completed = subprocess.run(
+                    completed = historical_run(
                         command, cwd=ROOT, env=environment, text=True,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                         check=False)

@@ -10,13 +10,9 @@ const here = path.dirname(fileURLToPath(import.meta.url))
 const cppRoot = fs.realpathSync(path.resolve(here, '../../..'))
 const key = 'mixer/distortion:distortion'
 const effect = 'mixer/distortion'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const corpus = deriveCorpusRevision(cppRoot)
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const corpus = HISTORICAL_CORPUS_REVISION
 const sourceRelative = `tools/glslcpp/corpus/${corpus}/sources/mixer/distortion/distortion.glsl`
 const outPath = path.join(here, 'distortion-oracles.json')
 const reportPath = path.join(here, 'distortion-oracle-report.md')

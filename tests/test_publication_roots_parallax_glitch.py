@@ -1,7 +1,9 @@
 """Strict A/L publication-root contracts for the Parallax and Glitch oracles."""
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import os
-import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 # No defaults: the frozen CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 PARALLAX = ROOT / "docs/port-engineering/counted-for-parity/parallax190_oracle_generator.mjs"
 GLITCH = ROOT / "docs/port-engineering/matrix/glitch-parity/glitch_parity_oracle_generator.mjs"
@@ -21,7 +23,7 @@ def run(generator, *args, env=None):
     child_env.pop("NOISEMAKER_FOR_CPU", None)
     if env:
         child_env.update(env)
-    return subprocess.run(
+    return historical_run(
         ["node", str(generator), *args],
         cwd=ROOT,
         env=child_env,
@@ -33,7 +35,7 @@ def run(generator, *args, env=None):
 class PublicationRootContractTests(unittest.TestCase):
     def setUp(self) -> None:
         if not AUTHORITY.is_dir() or not LIVE.is_dir():
-            self.skipTest("NOISEMAKER_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
 
     def test_both_generators_accept_only_explicit_a_and_l(self):
         for generator in (PARALLAX, GLITCH):
@@ -60,7 +62,7 @@ class PublicationRootContractTests(unittest.TestCase):
                 ("same", AUTHORITY),
             ]
             symlink = temporary_root / "live-link"
-            symlink.symlink_to(LIVE, target_is_directory=True)
+            simulate_symlink(symlink, LIVE, target_is_directory=True)
             cases.append(("symlink", symlink))
             for generator in (PARALLAX, GLITCH):
                 for label, live in cases:
@@ -76,7 +78,7 @@ class PublicationRootContractTests(unittest.TestCase):
     def test_authority_symlink_and_cpp_containment_are_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             symlink = Path(temporary) / "authority-link"
-            symlink.symlink_to(AUTHORITY, target_is_directory=True)
+            simulate_symlink(symlink, AUTHORITY, target_is_directory=True)
             for generator in (PARALLAX, GLITCH):
                 linked = run(
                     generator,

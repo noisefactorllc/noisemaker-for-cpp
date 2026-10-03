@@ -1,17 +1,19 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import importlib
 import json
 import os
 import pathlib
 import shutil
-import subprocess
 import tempfile
 import unittest
 from dataclasses import replace
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -20,7 +22,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/gradient:gradient"
 PROFILE = "cross-lane-assignment-v1"
-RAW = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/synth/gradient/gradient.glsl"
+RAW = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/synth/gradient/gradient.glsl"
 RAW_SHA256 = "308537be8f376750a2239be89a07e558e54ee1661a0ea360c6a3e48b8c6e7a75"
 ORACLE = ROOT / "docs/port-engineering/cross-lane-parity/gradient_oracle.mjs"
 
@@ -46,12 +48,12 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         return env
 
     def _authority_root(self):
-        value = os.environ.get("NOISEMAKER_CPU_ROOT")
+        value = historical_cpu_root()
         if not value:
-            self.skipTest("authority-dependent oracle test skipped: NOISEMAKER_CPU_ROOT is unset")
+            self.skipTest("authority-dependent oracle test skipped: NOISEMAKER_HISTORICAL_CPU_ROOT is unset")
         root = pathlib.Path(value)
         if not root.is_dir():
-            self.skipTest(f"authority-dependent oracle test skipped: NOISEMAKER_CPU_ROOT is missing: {root}")
+            self.skipTest(f"authority-dependent oracle test skipped: NOISEMAKER_HISTORICAL_CPU_ROOT is missing: {root}")
         return root
 
     def _assignment_parts(self, program):
@@ -137,7 +139,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
     def test_shape_mask_is_not_admitted_by_gradient_profile(self):
         module = importlib.import_module("tools.glslcpp.frontend.cross_lane_assignment_profile")
         shape_key = "mixer/shapeMask:shapeMask"
-        source = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/mixer/shapeMask/shapeMask.glsl"
+        source = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/mixer/shapeMask/shapeMask.glsl"
         raw = source.read_text(encoding="utf-8")
         candidate = analyze_program(parse_program(raw, shape_key, generate_typed_slice._defaults(ROOT, shape_key)), shape_key)
         with self.assertRaises(ValueError):
@@ -250,7 +252,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
         authority_root = self._authority_root()
         env = self._oracle_env()
         for mode in ("--check", "--self-test"):
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(ORACLE), "--cpu-root", str(authority_root), mode],
                 cwd=ROOT, env=env, text=True, capture_output=True, check=False)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -274,7 +276,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
             zero_source = canonical.read_text()
             (zero_root / "src/effects/generated/canonical-kernels.js").write_text(
                 zero_source.replace(needle, "var rotatedCentered = new $runtime.PooledFloat32Array(centered);", 1))
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(ORACLE), "--cpu-root", str(zero_root), "--check"],
                 cwd=ROOT, env=env, text=True, capture_output=True, check=False)
             self.assertNotEqual(0, result.returncode)
@@ -285,7 +287,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
             multiple_source = canonical.read_text()
             (multiple_root / "src/effects/generated/canonical-kernels.js").write_text(
                 multiple_source.replace(needle, f"{needle}\n{needle}", 1))
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(ORACLE), "--cpu-root", str(multiple_root), "--check"],
                 cwd=ROOT, env=env, text=True, capture_output=True, check=False)
             self.assertNotEqual(0, result.returncode)
@@ -299,7 +301,7 @@ class CrossLaneAssignmentProfileTests(unittest.TestCase):
             record = json.loads((ORACLE.parent / "gradient_expected.json").read_text())
             record["mutant_ledger"]["comparison"]["float32_word_difference_count"] = 89
             forged.write_text(json.dumps(record, indent=2) + "\n")
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(ORACLE), "--cpu-root", str(authority_root), "--json", str(forged), "--check"],
                 cwd=ROOT, env=env, text=True, capture_output=True, check=False)
             self.assertNotEqual(0, result.returncode)

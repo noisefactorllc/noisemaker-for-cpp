@@ -6,13 +6,14 @@ import unittest
 import dataclasses
 import copy
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/historicPalette:historicPalette"
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/filter/historicPalette/historicPalette.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/filter/historicPalette/historicPalette.glsl"
 RAW_SHA256 = "cc0feb09e2f90505766a0b8b0d61ca0cf83a1121ec7b104eea5ff806c9ce0c33"
 PROFILE = "historic-palette-frontend-admission-v1"
 

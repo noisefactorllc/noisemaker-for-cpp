@@ -223,7 +223,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/mandelbrot-parity/mandelbrot_oracle_generator.mjs",
-      "sha256": "7deac12a469b55558378935c9458bd7b359ad497206077ce05c4d73919dca932"
+      "sha256": "65b88ca1f177b9daddd68a812b06b48343f95cfe56780489c21073b738f47b99"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_mandelbrot_native_oracle_include.py"

@@ -24,11 +24,8 @@ GENERATOR = PARITY / "effects188_oracle_generator.mjs"
 TARGET = ROOT / "tests/oracles/effects188_expected.inc"
 SCHEMA = "noisemaker-for-cpp.effects188.pixel-parity.v1"
 PROGRAM = "classicNoisedeck/effects:effects"
-# Derived from the single source of truth (never transcribed): this script's
-# own directory (tools/glslcpp) is on sys.path[0] when run directly.
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS = check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 SOURCE_RELATIVE = f"tools/glslcpp/corpus/{CORPUS}/sources/classicNoisedeck/effects/effects.glsl"
 SOURCE_SHA = "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c"
 CASE_INPUT_DIMS = {

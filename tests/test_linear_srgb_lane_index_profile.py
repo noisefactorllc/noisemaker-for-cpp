@@ -15,17 +15,20 @@ import hashlib
 import importlib
 import importlib.util
 import pathlib
+import json
+import tempfile
 import unittest
 from unittest import mock
 
+from tools.glslcpp import check_corpus
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
-          / "sources")
+CORPUS = ROOT / "tools/glslcpp/corpus" / check_corpus.REVISION / "sources"
+HISTORICAL_CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources"
 MODULE = "tools.glslcpp.frontend.linear_srgb_lane_index_profile"
 
 SHAPES_KEY = "classicNoisedeck/shapes:shapes"
@@ -68,14 +71,15 @@ def _module():
 
 
 def _raw(key: str) -> str:
-    return (CORPUS / SOURCES[key]).read_text(encoding="utf-8")
+    root = HISTORICAL_CORPUS if key == "filter/colorspace:colorspace" else CORPUS
+    return (root / SOURCES[key]).read_text(encoding="utf-8")
 
 
 def _analyzed(key: str = SHAPES_KEY, raw: str | None = None,
               defines: dict | None = None,
               parse_key: str | None = None):
     raw = _raw(key) if raw is None else raw
-    defines = (generate_typed_slice._defaults(ROOT, key)
+    defines = (({} if key == "filter/colorspace:colorspace" else generate_typed_slice._defaults(ROOT, key))
                if defines is None else defines)
     parse_key = key if parse_key is None else parse_key
     return analyze_program(parse_program(raw, parse_key, defines), key)
@@ -562,3 +566,19 @@ class LinearSrgbFrozenVocabularyTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ActiveLinearSrgbCensusTests(unittest.TestCase):
+    def test_current_slice_requires_all_surviving_carriers(self):
+        spec = generate_typed_slice.load_slice(ROOT)
+        self.assertNotIn("filter/colorspace:colorspace", [row["program_key"] for row in spec["programs"]])
+        for key in ("classicNoisedeck/cellNoise:cellNoise", "classicNoisedeck/shapes:shapes", "filter/adjust:adjust"):
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                target = root / "tools/glslcpp/typed_slice.json"
+                target.parent.mkdir(parents=True)
+                mutant = json.loads(json.dumps(spec))
+                next(row for row in mutant["programs"] if row["program_key"] == key).pop("linear_srgb_lane_index_profile")
+                target.write_text(json.dumps(mutant))
+                with self.assertRaises(generate_typed_slice.GeneratorError):
+                    generate_typed_slice.load_slice(root)

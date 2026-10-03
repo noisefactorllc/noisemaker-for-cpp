@@ -15,13 +15,9 @@ const baselineNames = ['bayer2-input', 'bayer8-tiled', 'dot-input', 'line-input'
 const adversarialNames = ['error-diffusion-negative-tile', 'levels-2-boundary', 'levels-16-boundary']
 const caseNames = [...baselineNames, ...adversarialNames]
 const mutationNames = ['fallback-default', 'quantize-levels', 'error-diffusion-route']
-function deriveCorpusRevision(cppRoot) {
-  const text = fs.readFileSync(path.join(cppRoot, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw new Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const corpusSourceRelative = `tools/glslcpp/corpus/${deriveCorpusRevision(root)}/sources/filter/dither/dither.glsl`
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const corpusSourceRelative = `tools/glslcpp/corpus/${HISTORICAL_CORPUS_REVISION}/sources/filter/dither/dither.glsl`
 const corpusSourcePath = path.join(root, corpusSourceRelative)
 const sha = value => crypto.createHash('sha256').update(value).digest('hex')
 const corpusSourceBytes = fs.readFileSync(corpusSourcePath)

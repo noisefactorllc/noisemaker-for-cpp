@@ -17,6 +17,7 @@
 #include "noisemaker/renderer.hpp"
 #include "noisemaker/surface.hpp"
 
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
@@ -43,7 +44,10 @@ constexpr std::string_view kSchema = "noisemaker-cpp.dsl-cpu-run.v1";
                " --rgba8-output ABS --metadata-output ABS"
                " [--record-id STRING] [--repo-root ABS]"
                " [--plan-relation-output ABS] [--float32-output ABS]"
-               " [--external-texture NAME=WxH:HEX ...]\n";
+               " [--external-texture NAME=WxH:HEX ...]"
+               " [--mesh-size WxH --mesh-positions-file ABS --mesh-normals-file ABS]"
+               " [--audio-waveform-file ABS] [--audio-spectrum-file ABS]"
+               " [--midi-note-grid-file ABS] [--midi-clock NUMBER]\n";
   std::exit(nb::kExitUsage);
 }
 
@@ -187,6 +191,99 @@ template <typename Integer>
   return textures;
 }
 
+[[nodiscard]] std::optional<noisemaker::graph::MeshData> parse_mesh_data(
+    const std::vector<std::string>& args) {
+  for (const auto name : {"--mesh-size", "--mesh-positions-file", "--mesh-normals-file"}) {
+    if (arguments_all(args, name).size() > 1U) usage(std::string(name) + " was given more than once");
+    if (!args.empty() && args.back() == name) usage(std::string(name) + " requires a value");
+  }
+  const auto positions = argument(args, "--mesh-positions-file", false);
+  const auto normals = argument(args, "--mesh-normals-file", false);
+  const auto size = argument(args, "--mesh-size", false);
+  if (positions.empty() && normals.empty() && size.empty()) return std::nullopt;
+  if (positions.empty() || normals.empty() || positions.front() != '/' || normals.front() != '/') {
+    usage("both absolute --mesh-positions-file and --mesh-normals-file paths are required");
+  }
+  noisemaker::graph::MeshData mesh;
+  if (!size.empty()) {
+    const auto separator = size.find('x');
+    if (separator == std::string::npos) usage("--mesh-size must be WIDTHxHEIGHT");
+    mesh.tex_width = positive_integer(size.substr(0, separator), "--mesh-size width");
+    mesh.tex_height = positive_integer(size.substr(separator + 1), "--mesh-size height");
+  }
+  if (mesh.tex_height > noisemaker::kMaxSurfacePixels / mesh.tex_width) {
+    usage("mesh texture dimensions exceed surface limits");
+  }
+  const auto decode = [&](const std::string& path) {
+    const auto bytes = read_file(path);
+    if (bytes.size() % 4U != 0U) usage("mesh data must contain whole float32 words");
+    const auto lanes = bytes.size() / 4U;
+    std::vector<float> values(lanes);
+    for (std::size_t index = 0; index < lanes; ++index) {
+      std::uint32_t word = 0;
+      for (unsigned int byte = 0; byte < 4U; ++byte) {
+        word |= static_cast<std::uint32_t>(static_cast<unsigned char>(bytes[index * 4U + byte])) << (byte * 8U);
+      }
+      values[index] = std::bit_cast<float>(word);
+    }
+    return values;
+  };
+  mesh.position_data = decode(positions);
+  mesh.normal_data = decode(normals);
+  return mesh;
+}
+
+[[nodiscard]] std::optional<noisemaker::graph::AudioState> parse_audio_state(
+    const std::vector<std::string>& args) {
+  std::optional<noisemaker::graph::AudioState> audio;
+  for (const auto name : {"--audio-waveform-file", "--audio-spectrum-file"}) {
+    if (arguments_all(args, name).size() > 1U) usage(std::string(name) + " was given more than once");
+    if (!args.empty() && args.back() == name) usage(std::string(name) + " requires a value");
+    const auto path = argument(args, name, false);
+    if (path.empty()) continue;
+    if (path.front() != '/') usage("absolute audio input paths are required");
+    const auto bytes = read_file(path);
+    if (bytes.size() != 128U * 4U) usage("audio data requires exactly 128 float32 samples");
+    if (!audio) audio.emplace();
+    auto& data = std::string_view(name) == "--audio-waveform-file"
+                     ? audio->waveform.data : audio->spectrum.data;
+    for (std::size_t index = 0; index < data.size(); ++index) {
+      std::uint32_t word = 0;
+      for (unsigned int byte = 0; byte < 4U; ++byte) {
+        word |= static_cast<std::uint32_t>(static_cast<unsigned char>(bytes[index * 4U + byte])) << (byte * 8U);
+      }
+      data[index] = std::bit_cast<float>(word);
+    }
+  }
+  return audio;
+}
+
+[[nodiscard]] std::optional<noisemaker::graph::MidiState> parse_midi_state(
+    const std::vector<std::string>& args) {
+  for (const auto name : {"--midi-note-grid-file", "--midi-clock"}) {
+    if (arguments_all(args, name).size() > 1U) usage(std::string(name) + " was given more than once");
+    if (!args.empty() && args.back() == name) usage(std::string(name) + " requires a value");
+  }
+  const auto path = argument(args, "--midi-note-grid-file", false);
+  const auto clock = argument(args, "--midi-clock", false);
+  if (path.empty() && clock.empty()) return std::nullopt;
+  noisemaker::graph::MidiState midi;
+  if (!clock.empty()) midi.clock_count = number(clock, "--midi-clock");
+  if (!path.empty()) {
+    if (path.front() != '/') usage("absolute MIDI note grid path is required");
+    const auto bytes = read_file(path);
+    if (bytes.size() != 128U * 16U * 16U) usage("MIDI note grid requires 128x16 RGBA float32 texels");
+    for (std::size_t index = 0; index < midi.note_grid.size(); ++index) {
+      std::uint32_t word = 0;
+      for (unsigned int byte = 0; byte < 4U; ++byte) {
+        word |= static_cast<std::uint32_t>(static_cast<unsigned char>(bytes[index * 4U + byte])) << (byte * 8U);
+      }
+      midi.note_grid[index] = std::bit_cast<float>(word);
+    }
+  }
+  return midi;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -237,6 +334,9 @@ int main(int argc, char** argv) {
   options.frame = whole_number<std::uint32_t>(argument(args, "--frame"), "--frame", 0.0);
   options.seed = number(argument(args, "--seed"), "--seed");
   options.external_textures = parse_external_textures(args);
+  options.mesh_data = parse_mesh_data(args);
+  options.audio_state = parse_audio_state(args);
+  options.midi_state = parse_midi_state(args);
 
   std::vector<std::uint8_t> bytes;
   std::vector<std::uint8_t> float32_bytes;

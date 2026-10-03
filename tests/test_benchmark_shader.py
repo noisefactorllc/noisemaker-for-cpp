@@ -42,6 +42,9 @@ LANE_FILES = (
     "tools/dsl/generate_executable_corpus.mjs",
     "tools/dsl/js_render_oracle.mjs",
     "tools/benchmark/run_cpu_case.mjs",
+    "tools/benchmark/mesh_inputs.mjs",
+    "tools/benchmark/audio_inputs.mjs",
+    "tools/benchmark/midi_inputs.mjs",
     "tools/benchmark/exact_compare.py",
     "tools/benchmark/corpus_lane.py",
     "tools/benchmark/two_pass_corpus.py",
@@ -60,7 +63,7 @@ VALID_RECORD = """{
   program: {id:'synth/solid+filter/blur#default',sourceSha256:'a'.repeat(64),planSha256:'b'.repeat(64),width:17,height:11,options:{time:0.25,frame:0,seed:17,oneShot:'ready',renderScale:1}},
   provenance: {
     cpuBehavioralLock:'c'.repeat(64),cpuSourceLockSha256:'d'.repeat(64),upstreamSourceDigest:'e'.repeat(64),
-    upstreamRevision:'0ed489ec46842bffba33ee2ec65a218b6dda51f5',upstreamTree:'cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6',
+    upstreamRevision:'e24c844f8dada85551ab084f41db8944fbc176c8',upstreamTree:'106256378f2462e38d31023cd2872e0dd8c63f88',
     catalogPayloadSha256:'1'.repeat(64),compatibilitySha256:'2'.repeat(64),
     expectation:{schema:'noisemaker-cpp.dsl-cpu-expectation.v1',id:'synth/solid+filter/blur#default',rgba8Sha256:'3'.repeat(64),runnerSha256:'4'.repeat(64),cpuBehavioralLock:'c'.repeat(64)}
   },
@@ -376,7 +379,7 @@ let document = null;
 try {{ assertUpstreamPinAgreement('0'.repeat(40)); }}
 catch (error) {{ document = error instanceof BenchmarkError ? error.toDocument() : {{raw: String(error)}}; }}
 console.log(JSON.stringify({{
-  agrees: assertUpstreamPinAgreement('0ed489ec46842bffba33ee2ec65a218b6dda51f5'),
+  agrees: assertUpstreamPinAgreement('e24c844f8dada85551ab084f41db8944fbc176c8'),
   document,
 }}));
 """
@@ -386,7 +389,7 @@ console.log(JSON.stringify({{
         self.assertTrue(values["agrees"])
         self.assertEqual(values["document"]["schema"], "noisemaker-cpp.benchmark-error.v1")
         self.assertEqual(values["document"]["code"], "ERR_PIN_DRIFT")
-        self.assertEqual(values["document"]["detail"]["benchmark"], "0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        self.assertEqual(values["document"]["detail"]["benchmark"], "e24c844f8dada85551ab084f41db8944fbc176c8")
 
     def test_driver_describes_exact_pinned_platform_contract(self) -> None:
         result = subprocess.run(
@@ -399,8 +402,8 @@ console.log(JSON.stringify({{
         self.assertEqual(result.returncode, 0, result.stderr)
         description = json.loads(result.stdout)
         self.assertEqual(description["schema"], "noisemaker-cpp.benchmark-result.v2")
-        self.assertEqual(description["upstreamRevision"], "0ed489ec46842bffba33ee2ec65a218b6dda51f5")
-        self.assertEqual(description["upstreamTree"], "cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6")
+        self.assertEqual(description["upstreamRevision"], "e24c844f8dada85551ab084f41db8944fbc176c8")
+        self.assertEqual(description["upstreamTree"], "106256378f2462e38d31023cd2872e0dd8c63f88")
         self.assertEqual(description["playwrightVersion"], "1.62.1")
         self.assertEqual(description["orientation"], {
             "contract": "top_down",

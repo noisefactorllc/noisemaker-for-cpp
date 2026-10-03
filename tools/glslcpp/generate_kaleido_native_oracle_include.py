@@ -28,10 +28,8 @@ TARGET = REPOSITORY / "tests/oracles/kaleido187_expected.inc"
 SCHEMA = "noisemaker-for-cpp.kaleido187.pixel-parity.v1"
 PROGRAM_KEY = "classicNoisedeck/kaleido:kaleido"
 EFFECT_KEY = "classicNoisedeck/kaleido"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 FACTORY_TEXT_SHA256 = "4ab626fda5e91e7f89b93c9d863cda497b85d79239183499785c03607cce19a3"
 SOURCE_SHA256 = "18a201e5189430578a2cd1d03cea911957a08f3bd7f3e74e78b97eb9f946ed52"
 ORACLE_AUTHORITY = "unmodified public canonicalFactory9 from the immutable noisemaker-for-cpu snapshot through bindCanonicalKernel/GlslCpuRuntime/runPass; no C++ output participates"

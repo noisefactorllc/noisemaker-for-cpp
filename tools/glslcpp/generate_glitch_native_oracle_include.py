@@ -19,10 +19,8 @@ SIDECAR = ORACLE.with_suffix(ORACLE.suffix + ".sha256")
 OUTPUT = ROOT / "tests/oracles/glitch-parity-native.inc"
 ORACLE_SHA256 = "4d336018f947f0356d2a876fadf7fdeaf89a07c23bb0b8f52ba140f95c630a57"
 PROGRAM_KEY = "classicNoisedeck/glitch:glitch"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 EXPECTED_CASES = (
     ("matrix-masked-control", 9, 7),
     ("scanlines-max-seed-one", 11, 9),

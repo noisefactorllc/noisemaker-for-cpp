@@ -67,11 +67,11 @@
     "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/normalmap-parity/normalmap_oracle_generator.mjs",
-      "sha256": "ecd65ab815370d778d8983d2741e3a117ed2ae1aa2003973aed7a4058a8f8830"
+      "sha256": "5e5afd40e4e3ca4dfe3e6e91d1b865a36e7baf23b77eeb8e836c61540bd4e5d4"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_normalmap_native_oracle_include.py",
-      "sha256": "63ddc02cfec7317cbe7d3c78c544aace4d02e86d95e4f52fcc890e13811c167f"
+      "sha256": "bafcfa9ff4e68c0cee2e7b39b1ccf59d11c0b0611be45e8b2293e0dad90157ae"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",

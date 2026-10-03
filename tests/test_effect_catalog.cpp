@@ -4,7 +4,7 @@
 
 TEST(effect_catalog_is_ordered_and_lookup_is_secondary) {
   const auto& catalog = noisemaker::effects::effect_catalog();
-  REQUIRE(catalog.definitions.size() == 208);
+  REQUIRE(catalog.definitions.size() == 210);
   REQUIRE(catalog.definitions.front().id == "classicNoisedeck/bitEffects");
   REQUIRE(catalog.definitions.back().id == "synth3d/shape3d");
   REQUIRE(catalog.find("filter/blur") != nullptr);
@@ -115,5 +115,15 @@ TEST(effect_catalog_value_preserves_negative_zero) {
 
 TEST(effect_catalog_provenance_contains_non_self_referential_payload_hash) {
   const auto& provenance = noisemaker::effects::effect_catalog().provenance;
-  REQUIRE(provenance.generated_payload_sha256 == "004c2c9e6a9b6d3eaee171cc167eb47bbe33ed07e26d6d1ef28e103e04a76b95");
+  REQUIRE(provenance.generated_payload_sha256 == "9780a70ae8a152804f78e2aa1bd4bee0f59f52225e9af6dee51a744c84c3b6cf");
+}
+
+TEST(effect_catalog_matches_current_authority_retirements_and_additions) {
+  const auto& catalog = noisemaker::effects::effect_catalog();
+  for (const char* id : {"filter/bc", "filter/colorspace", "filter/hs"}) {
+    REQUIRE(catalog.find(id) == nullptr);
+  }
+  for (const char* id : {"render/meshLoader", "render/meshRender", "synth/roll", "synth/scope", "synth/spectrum"}) {
+    REQUIRE(catalog.find(id) != nullptr);
+  }
 }

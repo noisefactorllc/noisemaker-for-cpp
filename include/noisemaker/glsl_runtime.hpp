@@ -434,7 +434,17 @@ template <std::size_t N> [[nodiscard]] inline Vec<N,float> smoothstep(double edg
 struct RemapUniformData {
   std::array<Vec4, 275> data{};
 };
-using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData>;
+// Owned float32 audio samples. The graph snapshots input values at binding;
+// scalar reads widen to JS Number. Out-of-range typed-array reads become NaN
+// in the authority's subsequent arithmetic, never an unchecked native read.
+struct AudioUniform128 {
+  std::array<float, 128> data{};
+  [[nodiscard]] double sample(std::int64_t index) const noexcept {
+    if (index < 0 || index >= 128) return std::numeric_limits<double>::quiet_NaN();
+    return static_cast<double>(data[static_cast<std::size_t>(index)]);
+  }
+};
+using UniformValue=std::variant<float,double,std::int32_t,std::uint32_t,bool,Vec2,Vec3,Vec4,DVec2,DVec3,DVec4,IVec2,IVec3,IVec4,UVec2,UVec3,UVec4,BVec2,BVec3,BVec4,Mat2,Mat3,Mat4,RemapUniformData,AudioUniform128>;
 class KernelBindingError : public std::runtime_error { public: using std::runtime_error::runtime_error; };
 class Bindings {
  public:

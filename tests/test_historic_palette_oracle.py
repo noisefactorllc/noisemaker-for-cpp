@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import copy
 import importlib.util
 import json
 import os
 import pathlib
-import subprocess
 import unittest
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -17,11 +18,11 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_historic_palette_native_oracle_inc
 INCLUDE = ROOT / "tests/oracles/historic_palette_expected.inc"
 class HistoricPaletteOracleTests(unittest.TestCase):
     def _authority(self):
-        raw = os.environ.get("NOISEMAKER_CPU_ROOT")
+        raw = historical_cpu_root()
         if not raw:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required for the frozen JS authority")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT is required for the frozen JS authority")
         authority = pathlib.Path(raw).resolve()
-        self.assertTrue(authority.is_dir(), f"NOISEMAKER_CPU_ROOT is not a directory: {authority}")
+        self.assertTrue(authority.is_dir(), f"NOISEMAKER_HISTORICAL_CPU_ROOT is not a directory: {authority}")
         return authority
 
     def _materializer_module(self):
@@ -66,18 +67,18 @@ class HistoricPaletteOracleTests(unittest.TestCase):
     def test_generator_check_self_test_and_materializer(self):
         env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}
         authority = self._authority()
-        check = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, text=True, capture_output=True, env=env)
+        check = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(authority)], cwd=ROOT, text=True, capture_output=True, env=env)
         self.assertEqual(check.returncode, 0, check.stdout + check.stderr)
         self.assertIn("historic palette oracle: ok", check.stdout)
-        self_test = subprocess.run(["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)], cwd=ROOT, text=True, capture_output=True, env=env)
+        self_test = historical_run(["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)], cwd=ROOT, text=True, capture_output=True, env=env)
         self.assertEqual(self_test.returncode, 0, self_test.stdout + self_test.stderr)
-        materializer = subprocess.run(["python3", "-B", str(MATERIALIZER), "--check"], cwd=ROOT, text=True, capture_output=True, env=env)
+        materializer = historical_run(["python3", "-B", str(MATERIALIZER), "--check"], cwd=ROOT, text=True, capture_output=True, env=env)
         self.assertEqual(materializer.returncode, 0, materializer.stdout + materializer.stderr)
         self.assertIn("historic palette materializer: ok", materializer.stdout)
 
     def test_generator_self_test_rejects_symlink_escape(self):
         authority = self._authority()
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)],
             cwd=ROOT,
             text=True,
@@ -91,12 +92,12 @@ class HistoricPaletteOracleTests(unittest.TestCase):
         sidecar = INCLUDE.with_name(INCLUDE.name + ".sha256")
         expected = f"{hashlib.sha256(INCLUDE.read_bytes()).hexdigest()}  {INCLUDE.name}\n"
         self.assertEqual(sidecar.read_text(), expected)
-        compiler = subprocess.run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=f'#include "tests/oracles/{INCLUDE.name}"\nint main() {{ using namespace historic_palette_oracle; static_assert(kCases.size() == 21U); return 0; }}\n', cwd=ROOT, text=True, capture_output=True)
+        compiler = historical_run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=f'#include "tests/oracles/{INCLUDE.name}"\nint main() {{ using namespace historic_palette_oracle; static_assert(kCases.size() == 21U); return 0; }}\n', cwd=ROOT, text=True, capture_output=True)
         self.assertEqual(compiler.returncode, 0, compiler.stdout + compiler.stderr)
         self.assertIn("kInput", INCLUDE.read_text())
         self.assertIn("kBindingWords", INCLUDE.read_text())
         smoke = '#include "tests/oracles/historic_palette_expected.inc"\nint main() { using namespace historic_palette_oracle; static_assert(kCases[0].input_f32_words.size() == 80U); static_assert(kCases[0].binding_words.palette_index == 0); static_assert(kCases[1].binding_words.rotation == 0); static_assert(kCases[0].binding_words.input_width == 5U); static_assert(kCases[0].input_immutable_exact_bits); static_assert(kCases[0].input_surface_not_released); static_assert(kCases[0].input_storage_independent); return 0; }\n'
-        smoke_result = subprocess.run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=smoke, cwd=ROOT, text=True, capture_output=True)
+        smoke_result = historical_run(["c++", "-std=c++20", "-I", str(ROOT), "-x", "c++", "-fsyntax-only", "-"], input=smoke, cwd=ROOT, text=True, capture_output=True)
         self.assertEqual(smoke_result.returncode, 0, smoke_result.stdout + smoke_result.stderr)
 
     def test_materializer_rejects_input_and_binding_sabotage(self):

@@ -10,9 +10,8 @@ import pathlib
 import re
 import sys
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/newton-parity"
@@ -25,7 +24,7 @@ SOURCE_SHA = "603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac"
 FACTORY_SHA = "ecd6c15bf91ce96c9a0f1e36691c848129942ad2ec292194c66a78816e5f2df1"
 GENERATOR_RELATIVE = "docs/port-engineering/newton-parity/newton_oracle_generator.mjs"
 MATERIALIZER_RELATIVE = "tools/glslcpp/generate_newton_native_oracle_include.py"
-GENERATOR_SHA = "108c99b3d762b8175559671a8273c1f50ee7a6334fe1fa2bd6649e1a473859a5"
+GENERATOR_SHA = "238c934989110a9282ed8ff43e5f9b931abd2cbc5fcbe4ae5863dc4bc72fb649"
 EXPECTED_BINDING_NAMES = ["resolution", "tileOffset", "fullResolution", "time", "degree", "relaxation", "iterations", "tolerance", "poi", "centerHiX", "centerHiY", "centerLoX", "centerLoY", "zoomSpeed", "zoomDepth", "degreeSpeed", "degreeRange", "relaxSpeed", "relaxRange", "rotation", "outputMode", "invert"]
 EXPECTED_BINDING_ABI = {name: ("Vec2" if name in {"resolution", "tileOffset", "fullResolution"} else "number") for name in EXPECTED_BINDING_NAMES}
 EXPECTED_CLOSURE = {

@@ -26,11 +26,12 @@ namespace corpus_census {
   return 0U;
 }
 
-// Every canonical single-output program key, sorted.
+// Every fragment factory with one output, excluding the mesh whole-pass route.
 [[nodiscard]] inline std::vector<std::string> single_output_program_keys() {
   std::vector<std::string> keys;
   for (const auto& row : noisemaker::effects::effect_catalog().canonical_programs) {
-    if (output_count(row) == 1U) keys.push_back(row.program_key);
+    if (output_count(row) == 1U && row.program_key != "render/meshRender:render")
+      keys.push_back(row.program_key);
   }
   std::sort(keys.begin(), keys.end());
   return keys;

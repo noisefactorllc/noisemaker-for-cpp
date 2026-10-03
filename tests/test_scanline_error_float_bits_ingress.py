@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -20,7 +21,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/scanlineError:scanlineError"
 PROFILE = "scanline-error-float-bits-ingress-v1"
 RAW_SHA256 = "66556b29659b479edd397f8e0c87c176cafa7560c426eab8211b6939a08f2198"
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources/filter/scanlineError/scanlineError.glsl")
 MODULE = "tools.glslcpp.frontend.scanline_error_float_bits_ingress_profile"
 

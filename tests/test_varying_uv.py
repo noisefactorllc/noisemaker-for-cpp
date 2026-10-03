@@ -64,6 +64,7 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program, named_type
@@ -71,7 +72,7 @@ from tools.glslcpp.frontend.typed_ir import TypedProgram
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources")
 MODULE = "tools.glslcpp.frontend.varying_uv_profile"
 
@@ -907,9 +908,8 @@ class VaryingUvCensusTests(unittest.TestCase):
         self.assertEqual(total, len(reads) + len(writes))
 
     def test_the_whole_corpus_carries_exactly_five_varying_programs(self):
-        """Design 1.6 frozen: a corpus-wide analyze census -- four
-        `vec2 v_texCoord` programs plus `wormhole:deposit`'s `vec4 vColor`,
-        one varying each, zero everywhere else."""
+        """Keep the original five varying programs and Mesh Render's exact
+        three geometry inputs explicit in the current corpus census."""
         from tools.glslcpp import check_corpus
         root = check_corpus._corpus_root(ROOT)
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
@@ -932,7 +932,10 @@ class VaryingUvCensusTests(unittest.TestCase):
              "filter/texture:texture": (("v_texCoord", "vec2"),),
              "filter/wobble:wobble": (("v_texCoord", "vec2"),),
              "filter/spookyTicker:spookyTicker": (("v_texCoord", "vec2"),),
-             "filter/wormhole:deposit": (("vColor", "vec4"),)},
+             "filter/wormhole:deposit": (("vColor", "vec4"),),
+             "render/meshRender:render": (("vNormal", "vec3"),
+                                           ("vPosition", "vec3"),
+                                           ("vUV", "vec2"))},
             carriers)
 
 

@@ -285,11 +285,11 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/julia-parity/julia_oracle_generator.mjs",
-      "sha256": "7779fb99ddfbdea14b08918de19f092fb54276bb46ffbcd6df5f1ccc7e644031"
+      "sha256": "7c4633b2fc439da3871764755608a1d889fb838d1aa015655f5e51ae04d37188"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_julia_native_oracle_include.py",
-      "sha256": "f87ce4cba307ee5918436fb22ec1ae6fed62327742f3e1fa644999ed1e335e86"
+      "sha256": "2d1e5c3b0738364d749d6312d7eb5696fa389496b1af8d20370167caadac1fc5"
     }
   },
   "render_cases": [

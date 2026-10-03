@@ -13,6 +13,7 @@ import unittest
 from tests import corpus_census
 from unittest import mock
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -23,7 +24,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "filter/edge:edge"
 PROFILE = "edge-bvec3-contour-v1"
 RAW_SHA256 = "841f9f547d06aace8444953f401009abd02758f9dff271097b2799424c1db5d0"
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           / "sources/filter/edge/edge.glsl")
 MODULE = "tools.glslcpp.frontend.edge_bvec3_contour_profile"
 

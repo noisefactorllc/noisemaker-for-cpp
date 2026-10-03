@@ -8,6 +8,18 @@ import hashlib
 import math
 import struct
 
+from .frontend.audio_uniform_profile import authenticate_audio_uniform
+from .frontend.corrupt_value_copy_profile import (
+    PROFILE as CORRUPT_VALUE_COPY_PROFILE, authenticate_corrupt_value_copy)
+from .frontend.grade_value_copy_profile import (
+    KEY as GRADE_VALUE_COPY_KEY, authenticate_grade_value_copy)
+from .frontend.reverb_value_copy_profile import (
+    KEY as REVERB_VALUE_COPY_KEY, authenticate_reverb_value_copies)
+from .frontend.chain_value_copy_profile import (
+    KEYS as CHAIN_VALUE_COPY_KEYS, authenticate_chain_value_copies)
+
+CURRENT_AUTHORITY_VALUE_COPIES = True
+
 from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE, COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT,
     COUNTED_FOR_V1_MAX_TRIP_COUNT,
@@ -269,6 +281,7 @@ from .frontend.out_inout_admission_profile import (
 from .frontend.runtime_loop_bound_profile import (
     PROFILE as RUNTIME_LOOP_BOUND_PROFILE,
     LENIA_KEY as RUNTIME_LOOP_BOUND_LENIA_KEY,
+    ROLL_KEY as RUNTIME_LOOP_BOUND_ROLL_KEY,
     PREPARED_RUNTIME_LOOP_BOUND_KEYS,
     RUNTIME_LOOP_BOUND_KEYS,
     SPRITE_MEAN_TILES_KEY,
@@ -292,6 +305,10 @@ from .frontend.osd_frontend_profile import (
     PREPARED_PROFILES as OSD_PREPARED_PROFILES,
     FrontendProof as OsdFrontendProof,
     authenticate_osd_frontend)
+# CPU26d truncates the authenticated OSD glyph cell index; historical
+# reconstruction explicitly selects the pre-ddf8 behavior in tests only.
+OSD_GLYPH_INDEX_TRUNCATES = True
+
 from .frontend.moodscape_frontend_profile import (
     KEY as MOODSCAPE_KEY,
     PROFILE as MOODSCAPE_FRONTEND_PROFILE,
@@ -1128,6 +1145,8 @@ class _Emitter:
     program_scope_symbol_ids: set[int] = field(init=False)
     alias_declaration_symbol_ids: set[int] = field(init=False)
     alias_source_symbol_ids: set[int] = field(init=False)
+    authorized_vector_value_copies: tuple[TypedExpression, ...] = field(init=False, default=())
+    emitted_vector_value_copies: list[TypedExpression] = field(init=False, default_factory=list)
     locals: dict[int, str] = field(init=False)
     current_function_name: str | None = field(init=False, default=None)
     current_function_signature_id: int | None = field(init=False, default=None)
@@ -1781,7 +1800,15 @@ class _Emitter:
     emitted_palette_counts: list[object] = field(
         init=False, default_factory=list)
 
+    audio_uniform_proof: object | None = field(init=False, default=None)
+    emitted_audio_reads: list[TypedExpression] = field(init=False, default_factory=list)
+
     def __post_init__(self) -> None:
+        try:
+            self.audio_uniform_proof = authenticate_audio_uniform(self.program, self.source_hash)
+        except ValueError as error:
+            raise _error(self.program, self.program, str(error)) from error
+        self.emitted_audio_reads = []
         self.authorized_round_parent = None
         self.authorized_round = None
         self.authorized_literal_vec3_lane_sites = ()
@@ -2357,7 +2384,7 @@ class _Emitter:
                     or (self.curl_vector_math_profile is not None
                         and self.program.key != CURL_KEY)
                     or (self.ceil_admission_profile is not None
-                        and self.program.key != RUNTIME_LOOP_BOUND_LENIA_KEY)
+                        and self.program.key not in {RUNTIME_LOOP_BOUND_LENIA_KEY, RUNTIME_LOOP_BOUND_ROLL_KEY})
                     or (self.vec_scalar_modulo_profile is not None
                         and self.program.key != SPRITE_MEAN_TILES_KEY)
                     or self.grade_luma_weights_profile is not None
@@ -5007,6 +5034,30 @@ class _Emitter:
                                          if item.symbol is not None}
         self.alias_declaration_symbol_ids: set[int] = set()
         self.alias_source_symbol_ids: set[int] = set()
+        if self.compatibility_transform == CORRUPT_VALUE_COPY_PROFILE:
+            try:
+                self.authorized_vector_value_copies = (authenticate_corrupt_value_copy(
+                    self.program, self.source_hash, self.compatibility_transform),)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if CURRENT_AUTHORITY_VALUE_COPIES and self.program.key == GRADE_VALUE_COPY_KEY:
+            try:
+                self.authorized_vector_value_copies += (authenticate_grade_value_copy(
+                    self.program, self.source_hash, self.grade_index_expression_profile),)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if CURRENT_AUTHORITY_VALUE_COPIES and self.program.key == REVERB_VALUE_COPY_KEY:
+            try:
+                self.authorized_vector_value_copies += authenticate_reverb_value_copies(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        if CURRENT_AUTHORITY_VALUE_COPIES and self.program.key in CHAIN_VALUE_COPY_KEYS:
+            try:
+                self.authorized_vector_value_copies += authenticate_chain_value_copies(
+                    self.program, self.source_hash)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
         for function in self.program.functions:
             for statement in function.body:
                 self._collect_pooled_vector_aliases(statement)
@@ -5087,6 +5138,8 @@ class _Emitter:
     def _collect_pooled_vector_aliases(self, statement: TypedStatement) -> None:
         if statement.kind == "decl":
             for declaration in statement.expressions:
+                if any(declaration is node for node in self.authorized_vector_value_copies):
+                    continue
                 if (declaration.kind != "declaration"
                         or declaration.symbol_id is None
                         or len(declaration.children) != 1
@@ -5154,7 +5207,8 @@ class _Emitter:
                 max_trip_count = (
                     BUDDHABROT_MAX_TRIP_COUNT if self.program.key in BUDDHABROT_KEYS
                     else (1000 if self.program.key == JULIA_FRONTEND_KEY
-                          else COUNTED_FOR_V1_MAX_TRIP_COUNT))
+                          else (1537 if self.program.key == RUNTIME_LOOP_BOUND_ROLL_KEY
+                                else COUNTED_FOR_V1_MAX_TRIP_COUNT)))
                 max_charge = (
                     BUDDHABROT_MAX_ENTRYPOINT_CHARGE if self.program.key in BUDDHABROT_KEYS
                     else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
@@ -6326,6 +6380,9 @@ class _Emitter:
         return self.function_type(function.return_type)
 
     def type(self, value: object) -> str:
+        if (self.audio_uniform_proof is not None
+                and value is self.audio_uniform_proof.declaration.type):
+            return "glsl::AudioUniform128"
         name = value.display()
         if name == "mat4" and self.authorized_glitch_proof is not None:
             return "glsl::Mat4"
@@ -7520,6 +7577,13 @@ class _Emitter:
             self.emitted_newton_members.append(value)
             return f"{self.expression(value.children[0])}.{value.member}"
         if value.kind == "index":
+            audio = self.audio_uniform_proof
+            if audio is not None and any(value is n for n in audio.reads):
+                if any(value is n for n in self.emitted_audio_reads):
+                    raise _error(self.program, value, "audio read emitted twice")
+                self.emitted_audio_reads.append(value)
+                return (f"state.{audio.declaration.symbol.name}.sample("
+                        f"static_cast<std::int64_t>({self.expression(value.children[1])}))")
             if self._proved_color_lab_index(value):
                 return (
                     f"{self.expression(value.children[0])}"
@@ -9604,6 +9668,9 @@ class _Emitter:
                         initializer = (
                             f"(static_cast<double>({self.expression(left)}) / "
                             f"static_cast<double>({self.expression(right)}))")
+                        if (declaration.symbol.name == "glyph_idx"
+                                and OSD_GLYPH_INDEX_TRUNCATES):
+                            initializer = f"std::trunc({initializer})"
                 out_abi = self.authorized_out_inout_argument_abis.get(
                     declaration.symbol_id)
                 if out_abi is not None:
@@ -9635,6 +9702,8 @@ class _Emitter:
                         f"{indent}[[maybe_unused]] {declaration_type}& "
                         f"{emitted_name} = {initializer};")
                 else:
+                    if any(declaration is node for node in self.authorized_vector_value_copies):
+                        self.emitted_vector_value_copies.append(declaration)
                     lines.append(
                         f"{indent}[[maybe_unused]] {declaration_type} "
                         f"{emitted_name} = {initializer};")
@@ -12295,6 +12364,13 @@ BoundKernel {factory}(const glsl::Bindings& bindings) {{
                     f'    throw glsl::KernelBindingError("{contract.binding_error}");',
                     "  }",
                 ])
+            elif contract.kind == "positive-height-spread":
+                lines.extend([
+                    '  const auto fullResolution = bindings.get<glsl::Vec2>("fullResolution");',
+                    '  if (!std::isfinite(fullResolution[1]) || fullResolution[1] < 1.0F) {',
+                    f'    throw glsl::KernelBindingError("{contract.binding_error}");',
+                    "  }",
+                ])
             elif contract.kind == "float-ceil-radius":
                 # A float uniform whose int(ceil(...)) window radius the
                 # proof bounds: guard the uniform to its authenticated
@@ -13034,7 +13110,8 @@ def _render_dither_typed_cpp(program: TypedProgram, source_hash: str,
         "[[nodiscard]] inline float dither_bayer8(std::int32_t x, std::int32_t y) noexcept {",
         "  x = glsl::detail::js_bitwise_and(static_cast<double>(x), 7.0);",
         "  y = glsl::detail::js_bitwise_and(static_cast<double>(y), 7.0);",
-        "  static constexpr float table[64] = {0.0F,32.0F/64.0F,8.0F/64.0F,40.0F/64.0F,2.0F/64.0F,34.0F/64.0F,10.0F/64.0F,42.0F/64.0F,48.0F/64.0F,16.0F/64.0F,56.0F/64.0F,24.0F/64.0F,50.0F/64.0F,18.0F/64.0F,58.0F/64.0F,26.0F/64.0F,12.0F/64.0F,44.0F/64.0F,4.0F/64.0F,36.0F/64.0F,14.0F/64.0F,46.0F/64.0F,6.0F/64.0F,38.0F/64.0F,60.0F/64.0F,28.0F/64.0F,52.0F/64.0F,20.0F/64.0F,62.0F/64.0F,30.0F/64.0F,54.0F/64.0F,22.0F/64.0F,3.0F/64.0F,35.0F/64.0F,11.0F/64.0F,43.0F/64.0F,1.0F/64.0F,33.0F/64.0F,9.0F/64.0F,41.0F/64.0F,51.0F/64.0F,19.0F/64.0F,59.0F/64.0F,27.0F/64.0F,49.0F/64.0F,17.0F/64.0F,57.0F/64.0F,25.0F/64.0F,15.0F/64.0F,47.0F/64.0F,7.0F/64.0F,39.0F/64.0F,13.0F/64.0F,45.0F/64.0F,5.0F/64.0F,37.0F/64.0F,61.0F/64.0F,29.0F/64.0F,53.0F/64.0F,21.0F/64.0F};",
+        "  static constexpr float table[] = {0.0F,32.0F/64.0F,8.0F/64.0F,40.0F/64.0F,2.0F/64.0F,34.0F/64.0F,10.0F/64.0F,42.0F/64.0F,48.0F/64.0F,16.0F/64.0F,56.0F/64.0F,24.0F/64.0F,50.0F/64.0F,18.0F/64.0F,58.0F/64.0F,26.0F/64.0F,12.0F/64.0F,44.0F/64.0F,4.0F/64.0F,36.0F/64.0F,14.0F/64.0F,46.0F/64.0F,6.0F/64.0F,38.0F/64.0F,60.0F/64.0F,28.0F/64.0F,52.0F/64.0F,20.0F/64.0F,62.0F/64.0F,30.0F/64.0F,54.0F/64.0F,22.0F/64.0F,3.0F/64.0F,35.0F/64.0F,11.0F/64.0F,43.0F/64.0F,1.0F/64.0F,33.0F/64.0F,9.0F/64.0F,41.0F/64.0F,51.0F/64.0F,19.0F/64.0F,59.0F/64.0F,27.0F/64.0F,49.0F/64.0F,17.0F/64.0F,57.0F/64.0F,25.0F/64.0F,15.0F/64.0F,47.0F/64.0F,7.0F/64.0F,39.0F/64.0F,13.0F/64.0F,45.0F/64.0F,5.0F/64.0F,37.0F/64.0F,63.0F/64.0F,31.0F/64.0F,55.0F/64.0F,23.0F/64.0F,61.0F/64.0F,29.0F/64.0F,53.0F/64.0F,21.0F/64.0F};",
+        "  static_assert(sizeof(table) / sizeof(table[0]) == 64U);",
         "  return table[static_cast<std::size_t>(y * 8 + x)];",
         "}",
         "[[nodiscard]] inline glsl::Vec4 dither_sample_texture(const Surface& surface, const glsl::Vec2& uv) noexcept {",
@@ -13810,6 +13887,10 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
             raise _error(
                 program, program,
                 "authenticated points post emission mismatch")
+    if (len(emitter.authorized_vector_value_copies) != len(emitter.emitted_vector_value_copies)
+            or any(expected is not actual for expected, actual in zip(
+                emitter.authorized_vector_value_copies, emitter.emitted_vector_value_copies))):
+        raise _error(program, program, "authenticated vector value-copy emission mismatch")
     if emitter.authorized_cross_lane_assignment is not None:
         if emitter.emitted_cross_lane_assignments != [
                 emitter.authorized_cross_lane_assignment.assignment]:
@@ -14032,6 +14113,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                    for value in emitter.authorized_grade_index_sites)):
         raise _error(program, program,
                      "authenticated Grade index expression emission mismatch")
+    if emitter.audio_uniform_proof is not None and (
+            len(emitter.emitted_audio_reads) != 2
+            or any(a is not b for a, b in zip(
+                emitter.emitted_audio_reads, emitter.audio_uniform_proof.reads))):
+        raise _error(program, program, "audio uniform read emission mismatch")
     if emitter.authorized_linear_srgb_lane_index_sites and (
             len(emitter.emitted_linear_srgb_lane_index_sites)
             != len(emitter.authorized_linear_srgb_lane_index_sites)

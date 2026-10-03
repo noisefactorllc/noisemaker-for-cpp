@@ -44,10 +44,8 @@ SCHEMA = "noisemaker-for-cpp.wobble189.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "filter/wobble:wobble"
 EFFECT_KEY = "filter/wobble"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 UPSTREAM_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 DEFINES: dict[str, int] = {}
 FACTORY_NAME = "canonicalFactory178"

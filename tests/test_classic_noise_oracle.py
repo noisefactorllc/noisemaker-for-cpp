@@ -1,3 +1,4 @@
+from tests.historical_cpu import historical_cpu_root, historical_run
 from pathlib import Path
 import copy
 import hashlib
@@ -5,7 +6,6 @@ import importlib.util
 import json
 import os
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -22,7 +22,7 @@ MATERIALIZER = ROOT / "tools/glslcpp/generate_classic_noise_native_oracle_includ
 INCLUDE = ROOT / "tests/oracles/classic_noise_expected.inc"
 # No defaults: the frozen CPU authority and the live checkout live outside
 # the repository at machine-specific locations, so they must arrive by env.
-AUTHORITY = Path(os.environ.get("NOISEMAKER_CPU_ROOT") or "/nonexistent")
+AUTHORITY = Path(historical_cpu_root() or "/nonexistent")
 LIVE = Path(os.environ.get("NOISEMAKER_FOR_CPU") or "/nonexistent")
 
 
@@ -75,7 +75,7 @@ class ClassicNoiseOracleTests(unittest.TestCase):
             self.skipTest("immutable or live CPU authority unavailable")
         env = {**os.environ, "NOISEMAKER_FOR_CPU": str(LIVE)}
         for mode in ("--check", "--self-test"):
-            result = subprocess.run(["node", str(GENERATOR), mode, "--cpu-root", str(AUTHORITY)], cwd=ROOT, env=env, text=True, capture_output=True)
+            result = historical_run(["node", str(GENERATOR), mode, "--cpu-root", str(AUTHORITY)], cwd=ROOT, env=env, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_generator_rejects_unset_wrong_and_same_authority(self):
@@ -83,16 +83,16 @@ class ClassicNoiseOracleTests(unittest.TestCase):
             self.skipTest("immutable CPU authority unavailable")
         base = os.environ.copy()
         base.pop("NOISEMAKER_FOR_CPU", None)
-        unset = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env=base, text=True, capture_output=True)
+        unset = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env=base, text=True, capture_output=True)
         self.assertNotEqual(0, unset.returncode)
-        wrong = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env={**base, "NOISEMAKER_FOR_CPU": str(ROOT)}, text=True, capture_output=True)
+        wrong = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env={**base, "NOISEMAKER_FOR_CPU": str(ROOT)}, text=True, capture_output=True)
         self.assertNotEqual(0, wrong.returncode)
-        same = subprocess.run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env={**base, "NOISEMAKER_FOR_CPU": str(AUTHORITY)}, text=True, capture_output=True)
+        same = historical_run(["node", str(GENERATOR), "--check", "--cpu-root", str(AUTHORITY)], cwd=ROOT, env={**base, "NOISEMAKER_FOR_CPU": str(AUTHORITY)}, text=True, capture_output=True)
         self.assertNotEqual(0, same.returncode)
 
     def test_materializer_check_and_self_test(self):
         for mode in ("--check", "--self-test"):
-            result = subprocess.run([sys.executable, "-B", str(MATERIALIZER), mode], cwd=ROOT, env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}, text=True, capture_output=True)
+            result = historical_run([sys.executable, "-B", str(MATERIALIZER), mode], cwd=ROOT, env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"}, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_materializer_rejects_forged_identity_payload_and_mutation(self):
@@ -123,9 +123,9 @@ class ClassicNoiseOracleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="classic-noise-oracle-cxx-") as raw:
             unit = Path(raw) / "smoke.cpp"
             unit.write_text('#include "tests/oracles/classic_noise_expected.inc"\n#include <cassert>\nint main() { assert(noisemaker_classic_noise_oracle::kCases.size() == 8); assert(noisemaker_classic_noise_oracle::kRuntimeBindings.size() == 29); assert(noisemaker_classic_noise_oracle::kMutations.size() == 5); return 0; }\n')
-            result = subprocess.run([compiler, "-std=c++20", "-I", str(ROOT), str(unit), "-o", str(Path(raw) / "smoke")], cwd=ROOT, text=True, capture_output=True)
+            result = historical_run([compiler, "-std=c++20", "-I", str(ROOT), str(unit), "-o", str(Path(raw) / "smoke")], cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-            run = subprocess.run([str(Path(raw) / "smoke")], cwd=ROOT, text=True, capture_output=True)
+            run = historical_run([str(Path(raw) / "smoke")], cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, run.returncode, run.stdout + run.stderr)
 
 

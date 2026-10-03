@@ -12,7 +12,7 @@
 
 namespace normalmap185_oracle {
 
-inline constexpr std::string_view kOracleSha256 = "affe8be8c85922fa49b0cbad5869db89146a9a354b51bd51caf6b7b96e3f0a25";
+inline constexpr std::string_view kOracleSha256 = "116ba1e83f8ea865aff5a60b771cf61962f542494c9ee443b84b63ff69e8e96f";
 inline constexpr std::string_view kProgramKey = "filter/normalMap:normalMap";
 inline constexpr std::string_view kCorpusRevision = "0ed489ec46842bffba33ee2ec65a218b6dda51f5";
 inline constexpr std::size_t kCaseCount = 8U;

@@ -14,6 +14,7 @@ from unittest import mock
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY))
 
+from tests.simulated_python_links import symlink_metadata
 from tools.glslcpp import generate_kernels
 from tools.glslcpp.parser import GeneratorError, parse_program
 
@@ -175,12 +176,10 @@ class GeneratorTests(unittest.TestCase):
             generate_kernels.write_outputs(root)
             target = root / "src" / "generated"
             link = target / "linked.cpp"
-            try:
-                link.symlink_to(target / "synth_solid.cpp")
-            except (NotImplementedError, OSError):
-                self.skipTest("symlink creation is unavailable")
-            with self.assertRaisesRegex(GeneratorError, "symlink"):
-                generate_kernels.check_outputs(root)
+            link.write_bytes(b"")
+            with symlink_metadata(link):
+                with self.assertRaisesRegex(GeneratorError, "symlink"):
+                    generate_kernels.check_outputs(root)
 
     def test_manifest_bindings_are_typed_authoritative_and_program_order_is_normalized(self) -> None:
         baseline = generate_kernels.generate_outputs(REPOSITORY)

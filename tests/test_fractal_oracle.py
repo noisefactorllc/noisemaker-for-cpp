@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import importlib.util
 import json
@@ -7,7 +9,6 @@ import os
 from pathlib import Path
 import shutil
 import struct
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -97,7 +98,7 @@ class FractalOracleTests(unittest.TestCase):
 
     def test_materializer_self_test_and_check(self):
         for args in (("--self-test",), ("--check",)):
-            result = subprocess.run(
+            result = historical_run(
                 [sys.executable, str(MATERIALIZER), *args], cwd=ROOT,
                 env={**__import__("os").environ, "PYTHONDONTWRITEBYTECODE": "1"},
                 text=True, capture_output=True)
@@ -121,20 +122,20 @@ class FractalOracleTests(unittest.TestCase):
                 loaded.validate(candidate)
 
     def test_generator_accepts_identical_copy_and_rejects_mutated_copy(self):
-        source_root = os.environ.get("NOISEMAKER_CPU_ROOT")
+        source_root = historical_cpu_root()
         if not source_root:
-            self.skipTest("NOISEMAKER_CPU_ROOT is required for authority-copy test")
+            self.skipTest("NOISEMAKER_HISTORICAL_CPU_ROOT is required for authority-copy test")
         with tempfile.TemporaryDirectory(prefix="fractal-authority-") as directory:
             clone = Path(directory) / "cpu"
             shutil.copytree(source_root, clone)
-            accepted = subprocess.run(
+            accepted = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, accepted.returncode, accepted.stdout + accepted.stderr)
             self.assertIn("fractal oracle check passed", accepted.stdout)
             target = clone / "src/effects/generated/upstream-snapshot.js"
             target.write_text(target.read_text() + "\n// forged closure mutation\n")
-            result = subprocess.run(
+            result = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertNotEqual(0, result.returncode)
@@ -158,7 +159,7 @@ class FractalOracleTests(unittest.TestCase):
                 "  static_assert(fractal_oracle::kCase8Rgba8[56] == 245U);\n"
                 "  return fractal_oracle::kCases[8].width == 9U ? 0 : 1;\n"
                 "}\n")
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

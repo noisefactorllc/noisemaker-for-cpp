@@ -7,11 +7,12 @@ import pathlib
 import unittest
 from dataclasses import replace
 from unittest import mock
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 
 REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 CORPUS = (REPOSITORY / "tools/glslcpp/corpus"
-          / "0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+          / CORPUS_REVISION)
 KEY = "synth/julia:julia"
 RAW_SHA256 = "825e175c22fea086ad2860e16bcf0a79d797574a9dfad937a23baaadaffdeef0"
 

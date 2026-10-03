@@ -48,10 +48,8 @@ SCHEMA = "noisemaker-for-cpp.normalmap185.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "filter/normalMap:normalMap"
 EFFECT_KEY = "filter/normalMap"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 FACTORY_NAME = "canonicalFactory86"
 FACTORY_SHA256 = "9b1348836825b6efe90109747ca5ef341651527077d8ad7dbbcbc7080369842a"
 SOURCE_RELATIVE = (

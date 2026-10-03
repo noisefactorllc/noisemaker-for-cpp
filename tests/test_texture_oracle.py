@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import copy
 import hashlib
 import os
 import json
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -25,9 +26,9 @@ def sha(path: pathlib.Path) -> str:
 
 
 def authority() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value or not pathlib.Path(value).is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable")
     return pathlib.Path(value)
 
 
@@ -64,7 +65,7 @@ class TextureOracleTests(unittest.TestCase):
                 ["node", str(GENERATOR), "--self-test", "--cpu-root", str(root)],
                 [sys.executable, "-B", str(MATERIALIZER), "--self-test"],
                 [sys.executable, "-B", str(MATERIALIZER), "--check"]):
-            result = subprocess.run(command, cwd=ROOT, text=True,
+            result = historical_run(command, cwd=ROOT, text=True,
                                     capture_output=True, env={**__import__("os").environ,
                                                               "PYTHONDONTWRITEBYTECODE": "1"})
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -95,7 +96,7 @@ class TextureOracleTests(unittest.TestCase):
                             'int main() { using namespace noisemaker_texture_oracle; '
                             'static_assert(kCases.size() == 8U); '
                             'static_assert(kMutations.size() == 4U); return 0; }\n')
-            result = subprocess.run([compiler, "-std=c++20", "-I", str(ROOT),
+            result = historical_run([compiler, "-std=c++20", "-I", str(ROOT),
                                      "-fsyntax-only", str(unit)], cwd=ROOT,
                                     text=True, capture_output=True)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)

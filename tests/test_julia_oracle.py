@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import hashlib
 import importlib.util
 import json
 import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -32,7 +34,7 @@ LIVE_ENV = "NOISEMAKER_FOR_CPU"
 # emboss_parity_oracle_generator.mjs) reads it as the *live* mutable checkout
 # and refuses a --cpu-root that overlaps it. One ambient value cannot satisfy
 # both readings, so this module stops reading the ambient NOISEMAKER_FOR_CPU
-# altogether: it derives its own authority from NOISEMAKER_CPU_ROOT and passes
+# altogether: it derives its own authority from NOISEMAKER_HISTORICAL_CPU_ROOT and passes
 # that same root as NOISEMAKER_FOR_CPU to every generator it launches.
 #
 # Nothing is relaxed by that. The generator's same-root requirement is still
@@ -42,14 +44,14 @@ LIVE_ENV = "NOISEMAKER_FOR_CPU"
 # asserts the generator refuses a NOISEMAKER_FOR_CPU that is a symlink, that is
 # missing, or that names a different real directory.
 def _authority() -> pathlib.Path:
-    value = os.environ.get(AUTHORITY_ENV)
+    value = historical_cpu_root()
     if not value:
         # Unset means the machine has no frozen authority (e.g. public CI):
         # skip visibly. A SET-but-wrong root still fails loudly below.
-        raise unittest.SkipTest(f"{AUTHORITY_ENV} (the frozen CPU authority) is required")
+        raise unittest.SkipTest(f"NOISEMAKER_HISTORICAL_CPU_ROOT (the frozen CPU authority) is required")
     path = pathlib.Path(value)
     if not path.is_dir() or path.is_symlink():
-        raise AssertionError(f"{AUTHORITY_ENV} must be a non-symlink directory")
+        raise AssertionError("NOISEMAKER_HISTORICAL_CPU_ROOT must be a non-symlink directory")
     return path
 
 
@@ -135,7 +137,7 @@ class JuliaOracleTests(unittest.TestCase):
             [sys.executable, str(MATERIALIZER), "--check"],
         )
         for command in commands:
-            result = subprocess.run(command, cwd=ROOT, env=env, text=True,
+            result = historical_run(command, cwd=ROOT, env=env, text=True,
                                     capture_output=True)
             self.assertEqual(0, result.returncode,
                              result.stdout + result.stderr)
@@ -262,7 +264,7 @@ class JuliaOracleTests(unittest.TestCase):
                 'kMutations[0].replacement_sha256.size() + b.iterations);\n'
                 '}\n'
             )
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -271,7 +273,7 @@ class JuliaOracleTests(unittest.TestCase):
         authority = _authority()
         with tempfile.TemporaryDirectory(prefix="julia-oracle-paths-") as raw:
             base = pathlib.Path(raw)
-            escaped = subprocess.run(
+            escaped = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(ROOT)],
                 cwd=ROOT, text=True, capture_output=True,
                 env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(authority)},
@@ -291,7 +293,7 @@ class JuliaOracleTests(unittest.TestCase):
                 relative_clone = None
             if relative_clone is not None and tmp_alias.resolve() == private_tmp.resolve():
                 snapshot_argument = tmp_alias / relative_clone
-            dynamic = subprocess.run(
+            dynamic = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(snapshot_argument)],
                 cwd=ROOT, text=True, capture_output=True,
                 env={**os.environ, AUTHORITY_ENV: str(clone), LIVE_ENV: str(clone)},
@@ -303,7 +305,7 @@ class JuliaOracleTests(unittest.TestCase):
             shutil.copytree(authority, quoted)
             quoted_runtime = quoted / "src/csl/runtime.js"
             quoted_runtime.write_text(quoted_runtime.read_text() + "\nvoid import('./missing.js' + suffix)\n")
-            quoted_result = subprocess.run(
+            quoted_result = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(quoted)],
                 cwd=ROOT, text=True, capture_output=True,
                 env={**os.environ, AUTHORITY_ENV: str(quoted), LIVE_ENV: str(quoted)},
@@ -312,8 +314,8 @@ class JuliaOracleTests(unittest.TestCase):
             self.assertIn("nonliteral dynamic import", quoted_result.stderr)
 
             snapshot_link = base / "snapshot-link"
-            snapshot_link.symlink_to(authority, target_is_directory=True)
-            symlink_snapshot = subprocess.run(
+            simulate_symlink(snapshot_link, authority, target_is_directory=True)
+            symlink_snapshot = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(snapshot_link)],
                 cwd=ROOT, env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(authority)},
                 text=True, capture_output=True)
@@ -321,15 +323,15 @@ class JuliaOracleTests(unittest.TestCase):
             self.assertIn("must not be a symlink", symlink_snapshot.stderr)
 
             live_link = base / "live-link"
-            live_link.symlink_to(authority, target_is_directory=True)
-            symlink_live = subprocess.run(
+            simulate_symlink(live_link, authority, target_is_directory=True)
+            symlink_live = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(authority)],
                 cwd=ROOT, env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(live_link)},
                 text=True, capture_output=True)
             self.assertNotEqual(0, symlink_live.returncode)
             self.assertIn("same pinned authority", symlink_live.stderr)
 
-            mismatched_pinned = subprocess.run(
+            mismatched_pinned = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(authority)],
                 cwd=ROOT, env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(base / "missing-live")},
                 text=True, capture_output=True)
@@ -338,7 +340,7 @@ class JuliaOracleTests(unittest.TestCase):
 
             other_root = base / "other-real-root"
             other_root.mkdir()
-            divergent_pinned = subprocess.run(
+            divergent_pinned = historical_run(
                 ["node", str(GENERATOR), "--check", "--cpu-root", str(authority)],
                 cwd=ROOT, env={**os.environ, AUTHORITY_ENV: str(authority), LIVE_ENV: str(other_root)},
                 text=True, capture_output=True)

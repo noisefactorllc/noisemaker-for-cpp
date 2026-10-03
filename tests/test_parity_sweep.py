@@ -102,7 +102,7 @@ class SweepEvidenceTest(unittest.TestCase):
                 self.assertEqual(result["classification"], "harness_error")
                 self.assertEqual(self.gate([result]), 1)
 
-    def test_dsl_refusals_and_known_dither_authority_failure_remain_refusals(self) -> None:
+    def test_dsl_refusals_pass_but_retired_dither_crash_is_a_harness_error(self) -> None:
         valid = {"schema": "noisemaker-cpp.dsl-cpu-run.v1", "status": "refused",
                  "code": "exception", "detail": "invalid parameter"}
         self.assertEqual(self.failed_render(1, 4, json.dumps(valid), "DslError: invalid parameter")
@@ -113,7 +113,7 @@ class SweepEvidenceTest(unittest.TestCase):
                            '(canonical-kernels.js copy()/findClosest4-15-16)')
         self.assertEqual(self.failed_render(1, 4, json.dumps(valid),
                                            "TypeError: ditherWithPalette(...).reduce is not a function")
-                         ["classification"], "both_refused")
+                         ["classification"], "harness_error")
         valid["detail"] = "an unrelated exception"
         self.assertEqual(self.failed_render(1, 4, json.dumps(valid),
                                            "TypeError: ditherWithPalette(...).reduce is not a function")

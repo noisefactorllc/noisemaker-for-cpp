@@ -240,7 +240,7 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/newton-parity/newton_oracle_generator.mjs",
-      "sha256": "108c99b3d762b8175559671a8273c1f50ee7a6334fe1fa2bd6649e1a473859a5"
+      "sha256": "238c934989110a9282ed8ff43e5f9b931abd2cbc5fcbe4ae5863dc4bc72fb649"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_newton_native_oracle_include.py"

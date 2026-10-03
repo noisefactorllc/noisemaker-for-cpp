@@ -4,6 +4,7 @@ import dataclasses
 import pathlib
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp import emit_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -14,7 +15,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/newton:newton"
 STRUCT_PROFILE = "struct-declaration-newton-v1"
 OUT_PROFILE = "out-inout-admission-newton-v1"
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/newton/newton.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/synth/newton/newton.glsl"
 SOURCE_HASH = "603090e299ccb08fd4db4bf54a2aa6668ed81be971a84a8b679c7f560e5c27ac"
 
 

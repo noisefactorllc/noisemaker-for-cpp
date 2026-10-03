@@ -40,13 +40,9 @@ const schema = 'noisemaker-for-cpp.normalmap185.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'filter/normalMap:normalMap'
 const effectKey = 'filter/normalMap'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const corpusRevision = deriveCorpusRevision(cppRoot)
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const corpusRevision = HISTORICAL_CORPUS_REVISION
 const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const authorityNode = 'v26.0.0'
 const factoryName = 'canonicalFactory86'

@@ -6,9 +6,10 @@ import hashlib
 import pathlib
 import sys
 import unittest
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SOURCE = (ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
           "/sources/filter/palette/palette.glsl")
 KEY = "filter/palette:palette"
 PROFILE = "palette-frontend-admission-v1"

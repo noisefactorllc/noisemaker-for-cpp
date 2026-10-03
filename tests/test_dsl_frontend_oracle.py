@@ -16,6 +16,8 @@ import tempfile
 import unittest
 from unittest import mock
 
+from tests.simulated_links import simulate_symlink, run_with_simulated_links
+
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests/fixtures/dsl/frontend-cases.json"
@@ -25,7 +27,7 @@ COMPILER_FIXTURES = ROOT / "tests/fixtures/dsl/compiler-cases.json"
 COMPILER_EXPECTED = ROOT / "tests/oracles/dsl_compiler_expected.txt"
 COMPILER_ORACLE_JS = ORACLE_JS
 COMPILER_FIXTURES_SHA256 = "2cddd52470fe345cd70936141316aeae1ccf0b1d259bc23bb2bdc26c318828b6"
-COMPILER_EXPECTED_SHA256 = "7da11eb389d32681bc363523ee81336822143f99d8e674592cd4027129e69aca"
+COMPILER_EXPECTED_SHA256 = "fa931e39b353e02e0fedd0b1620f0a00393e2ab4ab21efd9429a72267462a526"
 CPU_TOKENIZE_SHA256 = "83249cc23e612f6b2655ec2a1cdfcbdf1bbe83179793531b45c63fc8738f3cc2"
 
 
@@ -94,7 +96,7 @@ class DslFrontendOracleTest(unittest.TestCase):
         js = subprocess.run([node, str(COMPILER_ORACLE_JS), "--compiler", "--list", "--cpu-root", str(cpu_root), "--fixtures", str(COMPILER_FIXTURES)], check=True, capture_output=True, text=True).stdout
         native = subprocess.run([str(cpp), "--list", "--mode", "catalog_records"], check=True, capture_output=True, text=True).stdout
         self.assertEqual(js, native)
-        self.assertEqual(len(json.loads(js)), 208)
+        self.assertEqual(len(json.loads(js)), 210)
 
     def test_checked_compiler_stream_matches_node_cpp_and_is_deterministic(self) -> None:
         cpu_root = require_cpu_root(self)
@@ -350,14 +352,14 @@ class DslFrontendOracleTest(unittest.TestCase):
             real_module.parent.mkdir(parents=True)
             shutil.copy2(authority_root / "src/dsl/tokenize.js", real_module)
             symlink_root = pathlib.Path(temporary) / "symlink-root"
-            symlink_root.symlink_to(real_root, target_is_directory=True)
-            root_result = subprocess.run([*args[:2], "--cpu-root", str(symlink_root), "--fixtures", str(FIXTURES)], capture_output=True, text=True)
+            simulate_symlink(symlink_root, real_root, target_is_directory=True)
+            root_result = run_with_simulated_links([*args[:2], "--cpu-root", str(symlink_root), "--fixtures", str(FIXTURES)], capture_output=True, text=True)
             self.assertNotEqual(root_result.returncode, 0)
             self.assertIn("symlink", root_result.stderr)
 
             module.unlink()
-            module.symlink_to(real_module)
-            module_result = subprocess.run(args, capture_output=True, text=True)
+            simulate_symlink(module, real_module)
+            module_result = run_with_simulated_links(args, capture_output=True, text=True)
             self.assertNotEqual(module_result.returncode, 0)
             self.assertIn("symlink", module_result.stderr)
 

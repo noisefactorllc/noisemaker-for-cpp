@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import json
 import os
 import pathlib
 import copy
 import shutil
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -21,9 +22,9 @@ INCLUDE = ROOT / "tests/oracles/palette_expected.inc"
 
 
 def _authority() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value or not pathlib.Path(value).is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable")
     return pathlib.Path(value)
 
 
@@ -80,12 +81,12 @@ class PaletteOracleTests(unittest.TestCase):
             [sys.executable, "-B", str(MATERIALIZER), "--self-test"],
             [sys.executable, "-B", str(MATERIALIZER), "--check"],
         ):
-            result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
+            result = historical_run(command, cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_comparer_checks_dimensions_before_storage_access(self):
         authority = _authority()
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), "--self-test", "--cpu-root", str(authority)],
             cwd=ROOT, text=True, capture_output=True,
         )
@@ -106,7 +107,7 @@ class PaletteOracleTests(unittest.TestCase):
                             'static_assert(kCases[0].binding_words.input_width == 4U); '
                             'static_assert(kCases[0].input_immutable_exact_bits); '
                             'static_assert(kMutations.size() >= 12U); return 0; }\n')
-            result = subprocess.run([compiler, "-std=c++20", "-I", str(ROOT),
+            result = historical_run([compiler, "-std=c++20", "-I", str(ROOT),
                                      "-fsyntax-only", str(unit)], cwd=ROOT,
                                     text=True, capture_output=True)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)

@@ -1,4 +1,6 @@
 #include "test_harness.hpp"
+#include "fixtures/historical/retired_kernels.hpp"
+#include "fixtures/historical/reverb_kernel.hpp"
 
 #include <algorithm>
 #include <array>
@@ -125,7 +127,7 @@ void require_repeat(const noisemaker::Surface& first, const noisemaker::Surface&
   noisemaker::glsl::Bindings bindings; bindings.set_texture("inputTex", input);
   bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(3.0f, -2.0f)); bindings.set_uniform("fullResolution", noisemaker::glsl::Vec2(17.0f, 13.0f));
   bindings.set_uniform("brightness", 1.3f); bindings.set_uniform("contrast", 0.72f);
-  return noisemaker::run_pass(noisemaker::generated::bind_filter_bc_bc(bindings), 8U, 8U, 0.125f, 7.0f);
+  return noisemaker::run_pass(noisemaker::historical_generated::bind_filter_bc_bc(bindings), 8U, 8U, 0.125f, 7.0f);
 }
 
 [[nodiscard]] noisemaker::Surface render_threshold(const noisemaker::Surface& input) {
@@ -759,6 +761,10 @@ void populate_task11_bindings(noisemaker::glsl::Bindings& bindings, const Task11
   noisemaker::glsl::Bindings bindings;
   populate_task11_bindings(bindings, fixture, input, tex, edges, grayscale, tint_hybrid,
                            media, transparent, skip);
+  if (fixture.key == "filter/corrupt:corrupt") {
+    return noisemaker::run_pass(noisemaker::historical_generated::bind_filter_corrupt_corrupt(bindings),
+                               7U, 5U, 0.125f, 7.0f);
+  }
   return noisemaker::run_pass(noisemaker::generated::bind(fixture.key, bindings),
                               7U, 5U, 0.125f, 7.0f);
 }
@@ -1084,6 +1090,14 @@ void populate_task12_bindings(noisemaker::glsl::Bindings& bindings, const Task12
   }
 }
 
+[[nodiscard]] noisemaker::BoundKernel bind_task12(
+    std::string_view key, const noisemaker::glsl::Bindings& bindings) {
+  if (key == "filter/hs:hs") {
+    return noisemaker::historical_generated::bind_filter_hs_hs(bindings);
+  }
+  return noisemaker::generated::bind(key, bindings);
+}
+
 [[nodiscard]] noisemaker::Surface render_task12(const Task12Case& fixture, std::string_view skip = {}) {
   const noisemaker::Surface tag1 = source(5U, 3U, 1U);
   const noisemaker::Surface tag23 = source(7U, 2U, 23U);
@@ -1093,7 +1107,7 @@ void populate_task12_bindings(noisemaker::glsl::Bindings& bindings, const Task12
   const noisemaker::Surface hue_negative = constant_surface(3U, 2U, {230U, 10U, 180U, 177U});
   noisemaker::glsl::Bindings bindings;
   populate_task12_bindings(bindings, fixture, tag1, tag23, tag37, constant_a, constant_b, hue_negative, skip);
-  return noisemaker::run_pass(noisemaker::generated::bind(fixture.key, bindings), 9U, 7U, 0.375f, 7.0f);
+  return noisemaker::run_pass(bind_task12(fixture.key, bindings), 9U, 7U, 0.375f, 7.0f);
 }
 
 TEST(typed_task12_all_one_hundred_twenty_external_oracles_are_exact_and_repeatable) {
@@ -1289,17 +1303,17 @@ TEST(typed_task12_each_distinct_signature_and_sampler_fails_closed) {
     const Task12Case fixture{item.key, item.variant, "", "", {}};
     noisemaker::glsl::Bindings missing;
     populate_task12_bindings(missing, fixture, tag1, tag23, tag37, constant_a, constant_b, hue_negative, item.uniform);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing), noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(bind_task12(item.key, missing), noisemaker::glsl::KernelBindingError);
     noisemaker::glsl::Bindings wrong;
     populate_task12_bindings(wrong, fixture, tag1, tag23, tag37, constant_a, constant_b, hue_negative);
     wrong.set_uniform(std::string(item.uniform), item.wrong);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, wrong), noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(bind_task12(item.key, wrong), noisemaker::glsl::KernelBindingError);
   }
   for (const SamplerFixture& item : samplers) {
     const Task12Case fixture{item.key, item.variant, "", "", {}};
     noisemaker::glsl::Bindings missing;
     populate_task12_bindings(missing, fixture, tag1, tag23, tag37, constant_a, constant_b, hue_negative, item.sampler);
-    REQUIRE_THROWS_AS(noisemaker::generated::bind(item.key, missing), noisemaker::glsl::KernelBindingError);
+    REQUIRE_THROWS_AS(bind_task12(item.key, missing), noisemaker::glsl::KernelBindingError);
   }
 }
 
@@ -2597,7 +2611,9 @@ void populate_task15_oracle_bindings(
     const Task15OracleCase& fixture, const std::array<noisemaker::Surface, 9>& surfaces) {
   noisemaker::glsl::Bindings bindings;
   populate_task15_oracle_bindings(bindings, fixture, surfaces);
-  const noisemaker::BoundKernel kernel = noisemaker::generated::bind(fixture.key, bindings);
+  const noisemaker::BoundKernel kernel = fixture.key == "filter/reverb:reverb"
+      ? noisemaker::historical_generated::bind_filter_reverb_reverb(bindings)
+      : noisemaker::generated::bind(fixture.key, bindings);
   noisemaker::Surface result(9U, 7U);
   auto output = result.data();
   for (std::size_t y = 0; y < 7U; ++y) for (std::size_t x = 0; x < 9U; ++x) {

@@ -6,6 +6,7 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.emit_typed_cpp import render_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -24,11 +25,11 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / (
-    "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+    f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
     "sources/mixer/distortion/distortion.glsl"
 )
 FOCUS_BLUR_SOURCE = ROOT / (
-    "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+    f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
     "sources/mixer/focusBlur/focusBlur.glsl"
 )
 

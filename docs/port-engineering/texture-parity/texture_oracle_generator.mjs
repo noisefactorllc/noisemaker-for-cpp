@@ -12,13 +12,9 @@ const cppRoot = fs.realpathSync(path.resolve(here, '../../..'))
 const out = path.join(here, 'texture-oracles.json')
 const report = path.join(here, 'texture-oracle-report.md')
 const key = 'filter/texture:texture'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const sourceRelative = `tools/glslcpp/corpus/${deriveCorpusRevision(cppRoot)}/sources/filter/texture/texture.glsl`
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const sourceRelative = `tools/glslcpp/corpus/${HISTORICAL_CORPUS_REVISION}/sources/filter/texture/texture.glsl`
 const sha = value => crypto.createHash('sha256').update(value).digest('hex')
 const f = value => Math.fround(value)
 const words = surface => Array.from(new Uint32Array(surface.data.buffer, surface.data.byteOffset, surface.data.byteLength / 4), x => `0x${(x >>> 0).toString(16).padStart(8, '0')}`)

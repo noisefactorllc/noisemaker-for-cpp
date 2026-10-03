@@ -318,3 +318,26 @@ TEST(iterated_motion_blur_reads_its_scratch_self_texture_and_publishes_output_te
   // The rgba16f outputTex quantization of 0x33/255, not the rgba8unorm value.
   REQUIRE(lanes[0] == 0.199951171875F);
 }
+
+TEST(iterated_reaction_diffusion_does_not_multiply_pass_repeats_by_group_iterations) {
+  // noisemaker-for-cpu 390071fa078f: eight simulation passes plus one output
+  // pass, independently rendered at 17x11, time 0.25, seed 2334197866.
+  Renderer renderer;
+  for (const int count : {0, 1, 3, 60}) {
+    const std::string source =
+        "search synth\n"
+        "reactionDiffusion(tex: none, zoom: 8, smoothing: 1, speed: 100, "
+        "resetState: false, seed: 1, sourceF: 0, feed: 70, sourceK: 0, kill: 67, "
+        "sourceR1: 0, rate1: 92, sourceR2: 0, rate2: 22, iterations: 8, "
+        "weight: 0, inputIntensity: 0, iterationCount: " + std::to_string(count) +
+        ").write(o0)\nrender(o0)\n";
+    const auto result = renderer.render(
+        source, options(17U, 11U, 0.25, 2334197866.0), "reaction-diffusion-repeat.dsl");
+    REQUIRE(result.pass_count() == (count == 0 ? 0U : 9U));
+    const auto rgba = result.to_rgba8();
+    const std::string bytes(reinterpret_cast<const char*>(rgba.data()), rgba.size());
+    REQUIRE(detail::sha256(bytes) ==
+            (count == 0 ? "13a74e7dc8897b6489f66b39e0e4505a4e46a943f3635b5b0c68bbe571b682cf"
+                        : "e3d8af7a10e82d756fa8ec9570b39f663ae8a5baba7b32f00f379cd73797905d"));
+  }
+}

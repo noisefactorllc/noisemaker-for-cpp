@@ -4,6 +4,9 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { importCpu, sha256, EXPECTED, AUTHORITY_LEDGER_ENV } from '../dsl/corpus_authority.mjs'
+import { decodeMeshData } from './mesh_inputs.mjs'
+import { decodeAudioState } from './audio_inputs.mjs'
+import { decodeMidiState } from './midi_inputs.mjs'
 
 function usage(message) { if (message) console.error(`run_cpu_case: ${message}`); console.error(`usage: node run_cpu_case.mjs --cpu-root ABS --case FILE --rgba8-output ABS --metadata-output ABS [--expectation-output ABS] [--plan-relation-output ABS] [--float32-output ABS] [--authority-ledger ABS]\n  the CPU authority ledger comes from --authority-ledger, ${AUTHORITY_LEDGER_ENV}, or the ledger packaged with --cpu-root`); process.exit(2) }
 const args = process.argv.slice(2)
@@ -45,10 +48,21 @@ for (const seed of record.externalTextures ?? []) {
   const bytes = Uint8Array.from(Buffer.from(seed.rgba8, 'hex'))
   externalTextures[seed.name] = api.Surface.fromRgba8(seed.width, seed.height, bytes)
 }
+let externalInputs
+if (record.externalInputs?.meshData != null) {
+  externalInputs = { meshData: decodeMeshData(record.externalInputs.meshData) }
+}
+if (record.externalInputs?.audioState != null) {
+  externalInputs = { ...externalInputs, audioState: decodeAudioState(record.externalInputs.audioState) }
+}
+if (record.externalInputs?.midiState != null) {
+  externalInputs = { ...externalInputs, midiState: decodeMidiState(record.externalInputs.midiState) }
+}
 const options = {
   ...record.options,
   seedSurfaces: Object.keys(seedSurfaces).length ? seedSurfaces : undefined,
   externalTextures: Object.keys(externalTextures).length ? externalTextures : undefined,
+  externalInputs,
 }
 const result = renderer.render(record.source, options)
 const bytes = Buffer.from(result.toRgba8())

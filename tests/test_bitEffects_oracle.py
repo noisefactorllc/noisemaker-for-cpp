@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import json
 import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -26,12 +27,12 @@ def _sidecar(path: pathlib.Path) -> pathlib.Path:
 
 
 def _authority_snapshot() -> pathlib.Path:
-    configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+    configured = historical_cpu_root()
     if not configured:
-        pytest.skip("NOISEMAKER_CPU_ROOT is unset; immutable-authority test skipped")
+        pytest.skip("NOISEMAKER_HISTORICAL_CPU_ROOT is unset; immutable-authority test skipped")
     snapshot = pathlib.Path(configured)
     if not snapshot.is_dir():
-        pytest.skip("NOISEMAKER_CPU_ROOT does not name a directory; immutable-authority test skipped")
+        pytest.skip("NOISEMAKER_HISTORICAL_CPU_ROOT does not name a directory; immutable-authority test skipped")
     return snapshot
 
 
@@ -78,7 +79,7 @@ def test_bitEffects_oracle_package_is_authenticated_and_exact() -> None:
 def test_bitEffects_generator_check_and_self_test() -> None:
     snapshot = _authority_snapshot()
     for args in (("--check",), ("--self-test",)):
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), *args, "--cpu-root", str(snapshot)],
             cwd=REPOSITORY,
             check=False,
@@ -91,7 +92,7 @@ def test_bitEffects_generator_check_and_self_test() -> None:
         shutil.copytree(snapshot, clone)
         dependency = clone / "src/csl/runtime.js"
         dependency.write_bytes(dependency.read_bytes() + b"\n// unpinned mutation\n")
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
             cwd=REPOSITORY,
             check=False,
@@ -103,7 +104,7 @@ def test_bitEffects_generator_check_and_self_test() -> None:
 
 
 def test_bitEffects_materializer_self_test_and_check() -> None:
-    self_test = subprocess.run(
+    self_test = historical_run(
         [sys.executable, str(MATERIALIZER), "--self-test"],
         cwd=REPOSITORY,
         check=False,
@@ -114,7 +115,7 @@ def test_bitEffects_materializer_self_test_and_check() -> None:
     assert "mutation ledger" in self_test.stdout
     assert "unsafe case name rejected" in self_test.stdout
     assert "non-integer define rejected" in self_test.stdout
-    checked = subprocess.run(
+    checked = historical_run(
         [sys.executable, str(MATERIALIZER), "--check"],
         cwd=REPOSITORY,
         check=False,
@@ -136,7 +137,7 @@ def test_bitEffects_include_is_valid_cxx20() -> None:
             "static_assert(bitEffects_oracle::kCases.size() >= 20);\n"
             "static_assert(bitEffects_oracle::kNativeDirectCases.size() >= 4);\n"
         )
-        result = subprocess.run(
+        result = historical_run(
             [compiler, "-std=c++20", "-I", str(REPOSITORY), "-fsyntax-only", str(translation_unit)],
             cwd=REPOSITORY,
             check=False,

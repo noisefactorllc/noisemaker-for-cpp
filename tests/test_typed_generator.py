@@ -13,6 +13,7 @@ import sys
 import tempfile
 import unittest
 from tests import corpus_census
+from tests.simulated_python_links import symlink_metadata
 from unittest import mock
 
 
@@ -21,7 +22,9 @@ sys.path.insert(0, str(REPOSITORY))
 sys.path.insert(0, str(REPOSITORY / "docs/port-engineering"))
 
 from tests.historical_cross_lane import historical_cross_lane
+from tests.historical_authority import historical_authority
 from historical_compare import compare_artifact_pins, format_mismatches
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 
 
 _GENERATED_TRANSLATION_UNIT = "src/typed_generated/typed_slice.cpp"
@@ -917,7 +920,7 @@ and item["program_key"] != "filter/wobble:wobble"
         from tools.glslcpp.frontend import parse_program
         from tools.glslcpp.frontend.semantic import analyze_program
 
-        key = "filter/bc:bc"
+        key = "filter/invert:inv"
         corpus = check_corpus._corpus_root(REPOSITORY)
         manifest = json.loads((corpus / "manifest.json").read_text())
         entry = next(item for item in manifest["programs"]
@@ -2780,7 +2783,7 @@ and item["program_key"] != "filter/wobble:wobble"
                     bloom, declared, source_hash=bloom_entry["raw_sha256"],
                     source_global_literal_int_profile=profile)
 
-        prior_key = "filter/bc:bc"
+        prior_key = "filter/invert:inv"
         prior_entry = next(item for item in manifest["programs"]
                            if item["program_key"] == prior_key)
         prior_raw = (root / prior_entry["source"]).read_text()
@@ -6278,7 +6281,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertTrue(all(entry["defines"] == {} for entry in slice_spec["programs"]
                             if entry["program_key"] in task14))
         corpus_manifest = corpus_census.pre_expansion_manifest(json.loads((
-            REPOSITORY / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/manifest.json"
+            REPOSITORY / f"tools/glslcpp/corpus/{CORPUS_REVISION}/manifest.json"
         ).read_text()))
         corpus_keys = {entry["program_key"] for entry in corpus_manifest["programs"]}
         public_keys = {entry["program_key"] for entry in slice_spec["programs"]} | {
@@ -8070,7 +8073,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual({"classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
                           "classicNoisedeck/refract:refract":
                               "refract-truthy-vector-conditional-noop-v1",
-                          "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+                          "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
                           "filter/crt:crt": "crt-metal-sine-v1",
                           "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
                           "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -8831,9 +8834,8 @@ and item["program_key"] != "filter/wobble:wobble"
                         generate_typed_slice.write_outputs(root)
                 self.assertEqual(before, self.tree_bytes(root))
                 self.assertFalse(list((root / "src").glob(".typed-glslcpp-*")))
-            (target / "typed_slice.cpp").unlink()
-            (target / "typed_slice.cpp").symlink_to(target / "typed_manifest.json")
-            with mock.patch.object(generate_typed_slice, "generate_outputs", return_value=outputs):
+            with symlink_metadata(target / "typed_slice.cpp"), \
+                 mock.patch.object(generate_typed_slice, "generate_outputs", return_value=outputs):
                 with self.assertRaisesRegex(generate_typed_slice.GeneratorError, "symlink"):
                     generate_typed_slice.write_outputs(root)
 
@@ -8850,10 +8852,19 @@ and item["program_key"] != "filter/wobble:wobble"
             with self.assertRaisesRegex(generate_typed_slice.GeneratorError, "unexpected entry"):
                 generate_typed_slice._validate_owned_tree(target, {"typed_manifest.json", "typed_slice.cpp"})
             shutil.rmtree(target / "typed_slice.cpp")
-            try: os.mkfifo(target / "typed_slice.cpp")
-            except (AttributeError, OSError): self.skipTest("FIFO creation unavailable")
-            with self.assertRaisesRegex(generate_typed_slice.GeneratorError, "unexpected entry"):
-                generate_typed_slice._validate_owned_tree(target, {"typed_manifest.json", "typed_slice.cpp"})
+            (target / "typed_slice.cpp").write_bytes(b"regular placeholder")
+            generate_typed_slice._validate_owned_tree(target, {"typed_manifest.json", "typed_slice.cpp"})
+            # Exercise FIFO metadata without creating a non-regular file.
+            with os.scandir(target) as entries:
+                metadata = list(entries)
+            fifo = next(entry for entry in metadata if entry.name == "typed_slice.cpp")
+            fifo_metadata = mock.Mock(wraps=fifo)
+            fifo_metadata.is_file.return_value = False
+            metadata = [fifo_metadata if entry is fifo else entry for entry in metadata]
+            with mock.patch.object(os, "scandir", return_value=contextlib.nullcontext(iter(metadata))):
+                with self.assertRaisesRegex(generate_typed_slice.GeneratorError, "unexpected entry"):
+                    generate_typed_slice._validate_owned_tree(target, {"typed_manifest.json", "typed_slice.cpp"})
+            fifo_metadata.is_file.assert_called_once_with(follow_symlinks=False)
 
     def test_typed_check_rejects_committed_tamper_and_failed_restore_retains_backup(self) -> None:
         from tools.glslcpp import generate_typed_slice
@@ -9603,7 +9614,7 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual({
             "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
             "classicNoisedeck/refract:refract": "refract-truthy-vector-conditional-noop-v1",
-            "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+            "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             "filter/crt:crt": "crt-metal-sine-v1",
             "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
             "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -9686,13 +9697,15 @@ and item["program_key"] != "filter/wobble:wobble"
                           len(corpus_manifest["programs"]) - len(keys) - 2,
                           len(corpus_manifest["programs"])))
 
-        with mock.patch.object(generate_typed_slice, "load_slice", return_value=spec):
+        with historical_authority(spec), \
+                mock.patch.object(generate_typed_slice, "load_slice", return_value=spec):
             current = generate_typed_slice.generate_outputs(REPOSITORY)
         current_cpp = current["src/typed_generated/typed_slice.cpp"].decode()
         old = copy.deepcopy(spec)
         old["programs"] = [item for item in old["programs"]
                            if item["program_key"] != "filter/degauss:degauss"]
-        with mock.patch.object(generate_typed_slice, "load_slice", return_value=old):
+        with historical_authority(old), \
+                mock.patch.object(generate_typed_slice, "load_slice", return_value=old):
             prior_cpp = generate_typed_slice.generate_outputs(REPOSITORY)[
                 "src/typed_generated/typed_slice.cpp"].decode()
 
@@ -10662,7 +10675,7 @@ and item["program_key"] != "filter/wobble:wobble"
             "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
             "classicNoisedeck/refract:refract":
                 "refract-truthy-vector-conditional-noop-v1",
-            "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
+            "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             "filter/crt:crt": "crt-metal-sine-v1",
             "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
             "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -10978,7 +10991,8 @@ and item["program_key"] != "filter/wobble:wobble"
             return current_validate_capabilities(
                 typed_program, generate_typed_slice.APPROVED_CAPABILITIES,
                 **kwargs)
-        with mock.patch.object(generate_typed_slice, "load_slice",
+        with historical_authority(task22_spec), \
+                mock.patch.object(generate_typed_slice, "load_slice",
                                return_value=task22_spec), \
                 mock.patch.object(generate_typed_slice, "validate_capabilities",
                                   side_effect=validate_historical_task22):
@@ -10990,15 +11004,15 @@ and item["program_key"] != "filter/wobble:wobble"
             if item["program_key"] != "filter/crt:crt"]
         prior_spec["compatibility_transforms"].pop("filter/crt:crt")
         self.assertEqual(130, len(prior_spec["programs"]))
-        with mock.patch.object(generate_typed_slice, "load_slice",
+        with historical_authority(prior_spec), \
+                mock.patch.object(generate_typed_slice, "load_slice",
                                return_value=prior_spec), \
                 mock.patch.object(generate_typed_slice, "validate_capabilities",
                                   side_effect=validate_historical_task22):
             prior_cpp = generate_typed_slice.generate_outputs(REPOSITORY)[
                 "src/typed_generated/typed_slice.cpp"].decode()
-        # This is an intentional live projection: the Gradient carrier remains
-        # in the narrow exclusion set, so these two full-output hashes are
-        # current pins rather than historical reconstructions.
+        # These projections retain the Gradient carrier while selecting the
+        # original corpus and lowering rules that produced the frozen hashes.
         # Re-frozen 2026-08-25 because the DSL/Task-7 emitter now writes
         # FactoryRoute/define metadata into the emitted artifacts. The projected
         # input spec is unchanged -- the spec-level lock still passes -- so this
@@ -11518,8 +11532,10 @@ synth/subdivide:subdivide""".splitlines())
         # every platform from that commit until this one.
         # The CPU hash review appends independent Life/Hydraulic/Noise3D captures;
         # existing fixture assertions and all Task 25 resource pins are intact.
+        # The current authority migration routes frozen BC/HS/Corrupt/Reverb
+        # captures through historical factories without changing capture bytes.
         self.assertEqual(
-            "f5a09145dcb635104f80843e707984cf2789c4ef2268c4b369b78684b6e05c84",
+            "b9e4cd5ddcada75be889b0a6b731ecad831b5d644cf3322ad3fee3b936d9abb3",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -11530,8 +11546,13 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.derivative_admission_profile import (
             DERIVATIVE_ADMISSION_KEYS)
 
-        task24 = corpus_census.without_expansion(json.loads(
-            (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text()))
+        current = json.loads(
+            (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
+        task24 = corpus_census.without_expansion(current)
+        # Exercise the current loader's missing lane-carrier boundary, after
+        # satisfying its unrelated current Corrupt compatibility contract.
+        task24["compatibility_transforms"]["filter/corrupt:corrupt"] = (
+            current["compatibility_transforms"]["filter/corrupt:corrupt"])
         task24["programs"] = [item for item in task24["programs"]
                               if item["program_key"] not in KEYS
                               and item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
@@ -12311,7 +12332,7 @@ synth/subdivide:subdivide""".splitlines())
         self.assertEqual(6, writes)
         self.assertEqual(5, reads)
 
-        ordinary_key = "filter/bc:bc"
+        ordinary_key = "filter/invert:inv"
         entry = next(item for item in manifest["programs"]
                      if item["program_key"] == ordinary_key)
         ordinary = analyze_program(parse_program(
@@ -13834,7 +13855,8 @@ synth/subdivide:subdivide""".splitlines())
                     "classicNoisedeck/noise:noise",
                     "classicNoisedeck/kaleido:kaleido",
                     "classicNoisedeck/effects:effects"}]
-        with mock.patch.object(generate_typed_slice, "load_slice",
+        with historical_authority(task26_spec), \
+                mock.patch.object(generate_typed_slice, "load_slice",
                                return_value=task26_spec):
             current = generate_typed_slice.generate_outputs(REPOSITORY)
         self.assertNotIn("synth/perlin:perlin", {
@@ -13845,7 +13867,8 @@ synth/subdivide:subdivide""".splitlines())
         prior_spec["programs"] = [
             item for item in prior_spec["programs"]
             if item["program_key"] != SMOOTH_EDGE_KEY]
-        with mock.patch.object(generate_typed_slice, "load_slice",
+        with historical_authority(prior_spec), \
+                mock.patch.object(generate_typed_slice, "load_slice",
                                return_value=prior_spec):
             prior = generate_typed_slice.generate_outputs(REPOSITORY)
         prior["include/noisemaker/generated/catalog.hpp"] = (
@@ -14656,7 +14679,7 @@ class Task27PerlinTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         key = "synth/perlin:perlin"
-        raw = (REPOSITORY / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/synth/perlin/perlin.glsl").read_text()
+        raw = (REPOSITORY / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/synth/perlin/perlin.glsl").read_text()
         return (raw, hashlib.sha256(raw.encode()).hexdigest(),
                 analyze_program(parse_program(raw, key, {"DIMENSIONS": 2}), key))
 
@@ -15496,7 +15519,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
         from tools.glslcpp.frontend.rotate_mat2_return_profile import ROTATE_KEY
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+                  f"{CORPUS_REVISION}/"
                   "sources/filter/rotate/rot.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(source, ROTATE_KEY, {}), ROTATE_KEY))
@@ -15534,7 +15557,7 @@ class Task28RotateMat2ReturnTests(unittest.TestCase):
         self.assertEqual(1, emitted.count("rotate2D(state, context,"))
         self.assertNotRegex(emitted, r"Mat2\s*[&*]\s*rotate2D|sret|new\s+glsl::Mat2")
         from tools.glslcpp.emit_typed_cpp import _Emitter
-        ordinary_key = "filter/bc:bc"
+        ordinary_key = "filter/invert:inv"
         corpus = check_corpus._corpus_root(REPOSITORY)
         manifest = json.loads((corpus / "manifest.json").read_text())
         ordinary_entry = next(item for item in manifest["programs"]
@@ -16166,7 +16189,7 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+                  f"{CORPUS_REVISION}/"
                   "sources/mixer/focusBlur/focusBlur.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(source, FOCUS_BLUR_KEY, {}),
@@ -16768,14 +16791,14 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
                              "manifest.json").read_text())
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
-        # Live current state: later exact-profile landings, including Blur H/V
-        # and Tetra's color-array carrier, have moved the slice beyond the
-        # historical mat3/linear-srgb-lane-index Slice A state described here.
-        # The live slice now includes the ten post-Task-29 typed landings;
-        # they also reduce the remaining unported corpus by nine.
-        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
-                         (len(typed), len(public), len(unported),
-                          len(corpus["programs"])))
+        # Live typed/public membership excludes exactly the scatter deposit
+        # and whole-pass mesh adapter; historical reconstruction stays below.
+        self.assertEqual(
+            (corpus_census.typed_count(), corpus_census.typed_count(),
+             corpus_census.vendored_count()),
+            (len(typed), len(public), len(corpus["programs"])))
+        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+                         unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
@@ -17161,7 +17184,7 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+                  f"{CORPUS_REVISION}/"
                   "sources/filter/extrude/extrude.glsl").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
                 analyze_program(parse_program(
@@ -17564,9 +17587,12 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
                              "manifest.json").read_text())
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
-        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
-                         (len(typed), len(public), len(unported),
-                          len(corpus["programs"])))
+        self.assertEqual(
+            (corpus_census.typed_count(), corpus_census.typed_count(),
+             corpus_census.vendored_count()),
+            (len(typed), len(public), len(corpus["programs"])))
+        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+                         unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
@@ -18045,7 +18071,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         # OCTAVES's runtime loop bound attached -- so every Task 31 test below
         # exercises the carrier the generator actually authenticates.
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "a024dc3a960cc44af454abc7aebce50456c194e6/"
+                  f"{CORPUS_REVISION}/"
                   "sources/synth/curl/curl.glsl").read_text()
         source_hash = hashlib.sha256(source.encode()).hexdigest()
         parsed = parse_program(
@@ -18070,7 +18096,7 @@ class Task31CurlVectorMathTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+                  f"{CORPUS_REVISION}/"
                   "sources/synth/curl/curl.glsl").read_text()
         static = analyze_program(parse_program(
             source, CURL_KEY, {"OCTAVES": 1, "OUTPUT_MODE": 3, "RIDGES": True}),
@@ -18579,9 +18605,12 @@ class Task31CurlVectorMathTests(unittest.TestCase):
                              "manifest.json").read_text())
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
-        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
-                         (len(typed), len(public), len(unported),
-                          len(corpus["programs"])))
+        self.assertEqual(
+            (corpus_census.typed_count(), corpus_census.typed_count(),
+             corpus_census.vendored_count()),
+            (len(typed), len(public), len(corpus["programs"])))
+        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+                         unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
@@ -18799,7 +18828,7 @@ class Task32GradeClusterTests(unittest.TestCase):
         from tools.glslcpp.frontend.semantic import analyze_program
 
         source = (REPOSITORY / "tools/glslcpp/corpus/"
-                  "0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+                  f"{CORPUS_REVISION}/"
                   f"sources/filter/grade/"
                   f"{Task32GradeClusterTests.SOURCE_FILES[key]}").read_text()
         return (source, hashlib.sha256(source.encode()).hexdigest(),
@@ -19875,11 +19904,14 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
         unported = tuple(sorted(
             {item["program_key"] for item in corpus["programs"]} - set(public)))
         # This is a live census even though the test name preserves the
-        # original 152-program milestone. Later exact-profile landings have
-        # moved the current slice to 211 programs and 1 unported program.
-        self.assertEqual((corpus_census.typed_count(), corpus_census.typed_count(), 1, corpus_census.vendored_count()),
-                         (len(typed), len(public), len(unported),
-                          len(corpus["programs"])))
+        # original 152-program milestone. The two non-typed adapter routes
+        # remain outside the typed/public fragment catalog.
+        self.assertEqual(
+            (corpus_census.typed_count(), corpus_census.typed_count(),
+             corpus_census.vendored_count()),
+            (len(typed), len(public), len(corpus["programs"])))
+        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+                         unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
             hashlib.sha256(("\n".join(typed) + "\n").encode()).hexdigest())
@@ -20066,7 +20098,7 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
             hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest())
         # Sorted position, verified from the list rather than trusted.
         self.assertEqual(self.ORDINAL, keys.index(self.KEY))
-        self.assertEqual(("synth/sacredGeometry:sacredGeometry", self.KEY,
+        self.assertEqual(("synth/scope:scope", self.KEY,
                           "synth/solid:solid"),
                          tuple(keys[self.ORDINAL - 1:self.ORDINAL + 2]))
         self.assertEqual(self.ROW, spec["programs"][self.ORDINAL])
@@ -20095,12 +20127,11 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -20840,12 +20871,11 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY
@@ -22567,12 +22597,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -22600,24 +22629,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM
+        # The four artifacts of the LIVE 280-program tree at the current CPU authority, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38268,
-
-                "d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3"),
+                38541,
+                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
             "src/typed_generated/typed_slice.cpp": (
-                3243517,
-
-                "3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c"),
+                3248434,
+                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
             "src/typed_generated/typed_manifest.json": (
-                847924,
-                "174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee"),
+                855899,
+                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
             "include/noisemaker/generated/catalog.hpp": (
-                27267,
-
-                "4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b"),
+                27528,
+                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23347,12 +23373,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -23383,24 +23408,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 259-program tree with authenticated Gradient semantic repair, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 280-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38268,
-
-                "d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3"),
+                38541,
+                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
             "src/typed_generated/typed_slice.cpp": (
-                3243517,
-
-                "3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c"),
+                3248434,
+                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
             "src/typed_generated/typed_manifest.json": (
-                847924,
-                "174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee"),
+                855899,
+                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
             "include/noisemaker/generated/catalog.hpp": (
-                27267,
-
-                "4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b"),
+                27528,
+                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24084,7 +24106,8 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
              "filter/smooth:smoothBlend",
              # points/lenia:convolve composes its ceil admission (the
              # window-radius cast) with its runtime loop-bound record.
-             "points/lenia:convolve"],
+             "points/lenia:convolve",
+             "synth/roll:roll"],
             [item["program_key"] for item in spec["programs"]
              if "ceil_admission_profile" in item])
         self.assertEqual(
@@ -24111,12 +24134,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -24149,20 +24171,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38268,
-
-                "d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3"),
+                38541,
+                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
             "src/typed_generated/typed_slice.cpp": (
-                3243517,
-
-                "3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c"),
+                3248434,
+                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
             "src/typed_generated/typed_manifest.json": (
-                847924,
-                "174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee"),
+                855899,
+                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
             "include/noisemaker/generated/catalog.hpp": (
-                27267,
-
-                "4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b"),
+                27528,
+                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24653,12 +24672,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -24688,20 +24706,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38268,
-
-                "d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3"),
+                38541,
+                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
             "src/typed_generated/typed_slice.cpp": (
-                3243517,
-
-                "3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c"),
+                3248434,
+                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
             "src/typed_generated/typed_manifest.json": (
-                847924,
-                "174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee"),
+                855899,
+                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
             "include/noisemaker/generated/catalog.hpp": (
-                27267,
-
-                "4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b"),
+                27528,
+                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25255,12 +25270,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         corpus = json.loads((check_corpus._corpus_root(REPOSITORY)
                              / "manifest.json").read_text())
         public = set(keys) | {"filter/invert:inv", "synth/solid:solid"}
-        # Live corpus census: the current slice leaves three unported keys.
+        # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
+        self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            (corpus_census.vendored_count(), 1),
-            (len(corpus["programs"]),
-             len({item["program_key"] for item in corpus["programs"]}
-                 - public)))
+            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
             (REPOSITORY / "src/typed_generated/typed_manifest.json").read_text())
@@ -25291,20 +25305,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38268,
-
-                "d7f3723eb5d790683e9e133cc864c93468fc54581b53a4e1b31552fe2932d7e3"),
+                38541,
+                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
             "src/typed_generated/typed_slice.cpp": (
-                3243517,
-
-                "3f7c1644dc966f4f401e523ca0ea830d1ddc2e4372263e8710120930f2176b4c"),
+                3248434,
+                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
             "src/typed_generated/typed_manifest.json": (
-                847924,
-                "174c9554515c06a7d1fdbeec1bf2c005973efc35266787e1190b960b3ed46cee"),
+                855899,
+                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
             "include/noisemaker/generated/catalog.hpp": (
-                27267,
-
-                "4e29b9e21ff63bf835d57bf2116531b64d5d0c5fe13c3ce1eeb9b8bac9dd3d4b"),
+                27528,
+                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25473,7 +25484,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         import hashlib
         import pathlib
 
-        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/points/buddhabrot/zWrite.glsl")
+        source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/points/buddhabrot/zWrite.glsl")
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
         key = "points/buddhabrot:zWrite"
@@ -25509,7 +25520,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(("MAX_STEPS", 14, "256", 256), landed["integer"])
 
         source_path = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/render/renderCubemapSurface/renderCubemapSurface.glsl"
         )
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
@@ -25570,13 +25581,13 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(("MAX_STEPS", 37, "100", 100), landed["integer"])
 
         source_path = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
             "pending-sources/classicNoisedeck/shapes3d/shapes3d.glsl")
         raw = source_path.read_text(encoding="utf-8")
         self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(), landed["raw"])
 
         pending = _json.loads(pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
             "pending.json").read_text(encoding="utf-8"))
         effect = pending["effects"]["classicNoisedeck/shapes3d"]
         defaults = check_semantics._metadata_defaults(
@@ -25635,11 +25646,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # (the `const mat2 myt` global declaration at 70:1).
         key = "classicNoisedeck/noise3d:noise3d"
         source_path = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
             "pending-sources/classicNoisedeck/noise3d/noise3d.glsl")
         raw = source_path.read_text(encoding="utf-8")
         pending = _json.loads(pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/"
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
             "pending.json").read_text(encoding="utf-8"))
         from tools.glslcpp import check_semantics
         defaults = check_semantics._metadata_defaults(
@@ -25709,7 +25720,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # advances from `unsupported counted-for program proof` to the
         # struct declaration in all three, and no program is promoted.
         corpus = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
         expected = {
             "render/render3d:render3d": (3, 0, 2, 2048, 2304, True),
@@ -25844,7 +25855,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # builtin; no program is promoted.
         key = "synth3d/fractal3d:precompute"
         corpus = pathlib.Path(
-            "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
         self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
         self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
@@ -25962,7 +25973,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertTrue(CF_KEYS.issubset(generate_typed_slice.CF_KEYS))
 
         # Metadata validation test
-        metadata = json.loads(pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/metadata.json").read_text(encoding="utf-8"))
+        metadata = json.loads(pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json").read_text(encoding="utf-8"))
         effect = metadata["effects"]["filter/convolutionFeedback"]
         validate_cf_metadata(effect)
         with self.assertRaises(ValueError):
@@ -25972,7 +25983,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             (CF_BLUR_KEY, "filter/convolutionFeedback/cfBlur.glsl", "blurRadius", 4),
             (CF_SHARPEN_KEY, "filter/convolutionFeedback/cfSharpen.glsl", "sharpenRadius", 5),
         ):
-            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / rel_path
+            source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources") / rel_path
             raw = source_path.read_text(encoding="utf-8")
             shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -26034,7 +26045,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertIn(SPRITE_MEAN_TILES_KEY, generate_typed_slice.RUNTIME_LOOP_BOUND_KEYS)
         self.assertIn(SPRITE_MEAN_TILES_KEY, VEC_SCALAR_MODULO_KEYS)
 
-        source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/render/pointsBillboardRender/spriteMeanTiles.glsl")
+        source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/render/pointsBillboardRender/spriteMeanTiles.glsl")
         raw = source_path.read_text(encoding="utf-8")
         shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -26111,9 +26122,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(SIMULATION_SAMPLER_KEYS, frozenset(expected_counts.keys()))
 
         for key, exp in expected_counts.items():
-            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / exp["rel"]
+            source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources") / exp["rel"]
             if not source_path.exists():
-                source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / exp["rel"]
+                source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/pending-sources") / exp["rel"]
             raw = source_path.read_text(encoding="utf-8")
             shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -26154,9 +26165,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         }
 
         for key, rel in paths.items():
-            source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources") / rel
+            source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources") / rel
             if not source_path.exists():
-                source_path = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/pending-sources") / rel
+                source_path = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}/pending-sources") / rel
             raw = source_path.read_text(encoding="utf-8")
             shash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
@@ -26224,7 +26235,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         self.assertEqual(HASH_SCALAR_UINT_XOR_KEYS, frozenset(expected_counts.keys()))
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26281,7 +26292,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         key = "synth3d/noise3d:precompute"
         rel = "synth3d/noise3d/precompute.glsl"
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26346,7 +26357,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE, apply_points_float_bits_ingress,
         )
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26437,7 +26448,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         self.assertEqual(HASH_SCALAR_UINT_RSHIFT_KEYS, frozenset(expected_counts.keys()))
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26496,7 +26507,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         key = "points/life:matrix"
         rel = "points/life/matrix.glsl"
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26568,7 +26579,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             POINTS_FLOAT_BITS_INGRESS_KEYS, PROFILE as POINTS_FLOAT_BITS_INGRESS_PROFILE, apply_points_float_bits_ingress,
         )
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26677,7 +26688,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
 
         self.assertEqual(VEC_SCALAR_MODULO_KEYS, frozenset(expected_counts.keys()))
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26732,7 +26743,7 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             VEC_SCALAR_MODULO_KEYS,
         )
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26852,7 +26863,7 @@ void main() {
 
         self.assertEqual(POINTS_FLOAT_BITS_INGRESS_KEYS, frozenset(expected_counts.keys()))
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -26917,7 +26928,7 @@ void main() {
             POINTS_FLOAT_BITS_INGRESS_KEYS,
         )
 
-        corpus_root = pathlib.Path("tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5")
+        corpus_root = pathlib.Path(f"tools/glslcpp/corpus/{CORPUS_REVISION}")
         metadata = json.loads((corpus_root / "metadata.json").read_text())
         pending = json.loads((corpus_root / "pending.json").read_text())
 
@@ -27039,7 +27050,7 @@ void main() {
         from tools.glslcpp.frontend.semantic import analyze_program
 
         repo_root = Path(__file__).resolve().parent.parent
-        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        corpus_root = repo_root / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
         metadata = json.loads((corpus_root / "metadata.json").read_bytes())
         pending = json.loads((corpus_root / "pending.json").read_bytes())
 
@@ -27139,7 +27150,7 @@ void main() {
         from tools.glslcpp.frontend.semantic import analyze_program
 
         repo_root = Path(__file__).resolve().parent.parent
-        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        corpus_root = repo_root / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
         metadata = json.loads((corpus_root / "metadata.json").read_bytes())
         pending = json.loads((corpus_root / "pending.json").read_bytes())
 
@@ -27290,7 +27301,7 @@ void main() {
         from tools.glslcpp.frontend import loop_proof as loop_proof_module
 
         repo_root = Path(__file__).resolve().parent.parent
-        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        corpus_root = repo_root / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
         metadata = json.loads((corpus_root / "metadata.json").read_bytes())
         pending = json.loads((corpus_root / "pending.json").read_bytes())
 
@@ -27433,7 +27444,7 @@ void main() {
         from tools.glslcpp.frontend.semantic import analyze_program
 
         repo_root = Path(__file__).resolve().parent.parent
-        corpus_root = repo_root / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+        corpus_root = repo_root / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
         metadata = json.loads((corpus_root / "metadata.json").read_bytes())
         pending = json.loads((corpus_root / "pending.json").read_bytes())
 
@@ -27542,4 +27553,3 @@ void main() {
 
 if __name__ == "__main__":
     unittest.main()
-

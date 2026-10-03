@@ -5,6 +5,7 @@ import pathlib
 from dataclasses import replace
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
@@ -20,7 +21,7 @@ from tools.glslcpp.frontend import mandelbrot_sequential_dz_assignment_profile a
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/mandelbrot:mandelbrot"
 PROFILE = "mandelbrot-sequential-dz-assignment-v1"
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5" / "sources/synth/mandelbrot/mandelbrot.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/synth/mandelbrot/mandelbrot.glsl"
 RAW_SHA256 = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
 
 

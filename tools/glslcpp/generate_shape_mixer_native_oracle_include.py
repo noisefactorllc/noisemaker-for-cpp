@@ -18,10 +18,8 @@ PACKAGE = ROOT / "docs/port-engineering/shape-mixer-parity"
 ORACLE = PACKAGE / "shape-mixer-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/shape_mixer182_expected.inc"
 PROGRAM_KEY = "classicNoisedeck/shapeMixer:shapeMixer"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 SCHEMA = "noisemaker-for-cpp.shape-mixer182.pixel-parity.v1"
 WORD = re.compile(r"0x[0-9a-f]{8}")
 HEX64 = re.compile(r"[0-9a-f]{64}")

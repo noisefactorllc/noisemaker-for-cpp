@@ -5,6 +5,7 @@ from pathlib import Path
 import unittest
 from tests import corpus_census
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.osd_frontend_profile import (
@@ -13,7 +14,7 @@ from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}"
 
 
 def _program():
@@ -75,13 +76,13 @@ class OsdGeneratorEmitterTests(unittest.TestCase):
             "glsl::detail::js_logical_shift_right(state_glsl_74",
             rendered)
 
-    def test_osd_glyph_cell_math_preserves_frozen_js_number_division(self):
+    def test_osd_glyph_cell_index_truncates_current_cpu_integer_division(self):
         source_hash, program = _program()
         rendered = emit_typed_cpp.render_typed_cpp(
             program, KEY, source_hash, osd_frontend_profile=PROFILE)
         self.assertIn(
-            "double glyph_idx = (static_cast<double>(lx) / "
-            "static_cast<double>(cell_stride));",
+            "double glyph_idx = std::trunc((static_cast<double>(lx) / "
+            "static_cast<double>(cell_stride)));",
             rendered)
         self.assertIn(
             "double within_glyph_x = (lx - (glyph_idx * cell_stride));",

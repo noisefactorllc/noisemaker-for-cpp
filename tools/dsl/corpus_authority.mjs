@@ -12,14 +12,14 @@ import { pathToFileURL } from 'node:url'
 export const AUTHORITY_LEDGER_ENV = 'NOISEMAKER_CPU_AUTHORITY_LEDGER'
 
 export const EXPECTED = Object.freeze({
-  ledgerEntries: 719,
-  packageSha256: 'c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a',
+  ledgerEntries: 788,
+  packageSha256: '55512494c653fa73478b165abc7e3dcb87fe5855dbb4a6135b1fa1542dd0bda0',
   packageLockSha256: '724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d',
-  sourceLockSha256: '1fa90dfdeb0c854a1b910909d5f7788e9305f38b6ab39d6182058e914840c7e2',
-  behavioralLockSha256: '27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026',
-  behavioralFileCount: 91,
-  upstreamRevision: '0ed489ec46842bffba33ee2ec65a218b6dda51f5',
-  upstreamSourceDigest: '4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812',
+  sourceLockSha256: '0a979a158b9855341096504af629ba58ca69da91f842ecd8eb9801a3ec30045c',
+  behavioralLockSha256: '8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6',
+  behavioralFileCount: 94,
+  upstreamRevision: 'e24c844f8dada85551ab084f41db8944fbc176c8',
+  upstreamSourceDigest: 'c2e0c264dc20338b19a144ee0888bd2ca39edcf325315a7d7ae1f5ced920804d',
 })
 
 export function sha256(bytes) { return crypto.createHash('sha256').update(bytes).digest('hex') }

@@ -13,13 +13,9 @@ const outPath = path.join(here, 'fractal-oracles.json')
 const reportPath = path.join(here, 'fractal-oracle-report.md')
 const key = 'classicNoisedeck/fractal:fractal'
 const effect = 'classicNoisedeck/fractal'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const corpus = deriveCorpusRevision(cppRoot)
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const corpus = HISTORICAL_CORPUS_REVISION
 const upstream = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const sourceRelative = `tools/glslcpp/corpus/${corpus}/sources/classicNoisedeck/fractal/fractal.glsl`
 const factorySourceRelative = 'src/effects/adapters/fractal.js'

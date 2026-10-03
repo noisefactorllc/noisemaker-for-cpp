@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import copy
 import hashlib
 import importlib.util
 import json
 import os
 import pathlib
-import subprocess
 import sys
 import tempfile
 import unittest
@@ -24,9 +25,9 @@ INCLUDE = ROOT / "tests/oracles/colorLab_expected.inc"
 
 
 def _authority() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value or not pathlib.Path(value).is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable")
     return pathlib.Path(value)
 
 
@@ -107,7 +108,7 @@ class ColorLabOraclePreparationTests(unittest.TestCase):
             [sys.executable, "-B", str(MATERIALIZER), "--check"],
         )
         for command in commands:
-            result = subprocess.run(command, cwd=ROOT, text=True, capture_output=True)
+            result = historical_run(command, cwd=ROOT, text=True, capture_output=True)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
     def test_materializer_rejects_schema_and_digest_mutations(self):
@@ -133,7 +134,7 @@ class ColorLabOraclePreparationTests(unittest.TestCase):
                 'static_assert(kCases.size() >= 8U); '
                 'static_assert(kCases[0].input_f32.size() == 48U); '
                 'static_assert(kMutations.size() >= 10U); return 0; }\n')
-            result = subprocess.run(
+            result = historical_run(
                 [compiler, "-std=c++20", "-Wall", "-Wextra", "-Werror",
                  "-I", str(ROOT), "-fsyntax-only", str(unit)],
                 cwd=ROOT, text=True, capture_output=True)

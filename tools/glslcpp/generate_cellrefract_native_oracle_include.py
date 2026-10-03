@@ -44,11 +44,8 @@ SCHEMA = "noisemaker-for-cpp.cellrefract186.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "classicNoisedeck/cellRefract:cellRefract"
 EFFECT_KEY = "classicNoisedeck/cellRefract"
-# Derived from the single source of truth (never transcribed): this script's
-# own directory (tools/glslcpp) is on sys.path[0] when run directly.
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 DEFINES = {"KERNEL": 0, "SHAPE": 1}
 FACTORY_NAME = "canonicalFactory3"
 FACTORY_SHA256 = "329d54732a502bc227c25faa3261ba42e599a53ceebb2193b484bec6b79013e3"

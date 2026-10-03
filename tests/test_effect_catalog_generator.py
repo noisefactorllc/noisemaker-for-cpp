@@ -47,7 +47,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stderr)
             document = json.loads(output.read_text())
             self.assertEqual("noisemaker-cpp.cpu-effect-catalog.v1", document["schema"])
-            self.assertEqual(208, len(document["records"]))
+            self.assertEqual(210, len(document["records"]))
             self.assertEqual("string", document["records"][0]["id"]["$type"])
             self.assertEqual("synth3d/shape3d", load_export(output)[-1]["id"])
             first = load_export(output)[0]
@@ -71,12 +71,19 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
 
         passes = [current_pass for effect in records for current_pass in effect["passes"]]
         blends = [current_pass["blend"] for current_pass in passes if "blend" in current_pass]
-        self.assertEqual(16, len(blends))
-        self.assertEqual(12, sum(isinstance(value, bool) for value in blends))
+        self.assertEqual(17, len(blends))
+        self.assertEqual(13, sum(isinstance(value, bool) for value in blends))
         self.assertEqual(4, sum(isinstance(value, list) for value in blends))
         self.assertEqual(
             [["one", "one"], ["ONE", "ONE_MINUS_SRC_ALPHA"], ["ONE", "ONE_MINUS_SRC_ALPHA"], ["ONE", "ONE_MINUS_SRC_ALPHA"]],
             [value for value in blends if isinstance(value, list)],
+        )
+
+        by_id = {effect["id"]: effect for effect in records}
+        self.assertIs(by_id["render/meshRender"]["passes"][1]["blend"], False)
+        self.assertEqual(
+            {"width": "100%", "height": "100%", "format": "rgba16f"},
+            by_id["synth/roll"]["textures"]["_rollFb"],
         )
 
         textures = [texture for effect in records for texture in effect["textures"].values()]
@@ -91,7 +98,7 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             for dimension in (texture.get("width"), texture.get("height"))
         ))
         self.assertEqual(4, sum("format" not in texture for texture in textures))
-        self.assertEqual(108, sum("format" in texture for texture in textures))
+        self.assertEqual(109, sum("format" in texture for texture in textures))
         self.assertEqual(
             0,
             sum("outputTex" in effect for effect in records),
@@ -130,17 +137,17 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(first_bytes, (out / "effect_catalog.cpp").read_bytes())
             self.assertEqual(first_provenance, (out / "effect_catalog.provenance.json").read_bytes())
             provenance = json.loads(first_provenance)
-            self.assertEqual(208, provenance["counts"]["definitions"])
-            self.assertEqual(344, provenance["counts"]["passes"])
-            self.assertEqual(304, provenance["counts"]["reference_program_keys"])
-            # 276: points/lenia:convolve joined the vendored corpus with its
-            # runtime-loop-bound + ceil-admission admission.
-            self.assertEqual(276, provenance["counts"]["compatible_programs"])
+            self.assertEqual(210, provenance["counts"]["definitions"])
+            self.assertEqual(348, provenance["counts"]["passes"])
+            self.assertEqual(308, provenance["counts"]["reference_program_keys"])
+            # Current authority adds Roll, Scope, Spectrum and the exact
+            # Mesh Render whole-pass adapter to the compatible program census.
+            self.assertEqual(280, provenance["counts"]["compatible_programs"])
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
-            # 66: lenia's convolve pass now has a generated output.
+            # Pending authority passes remain explicit in the compatibility census.
             self.assertEqual(66, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
-            self.assertEqual("2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521", provenance["normalized_record_stream_sha256"])
+            self.assertEqual("1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]
             marker = f'c.provenance.generated_payload_sha256 = "{payload_hash}";'.encode()

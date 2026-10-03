@@ -12,10 +12,12 @@ from tools.glslcpp import emit_typed_cpp
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import noise_frontend_profile as profile
+from tools.glslcpp.frontend import dynamic_define_hoist
+from tools.glslcpp.frontend.typed_ir import TypedExpression, TypedStatement
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5"
+CORPUS = ROOT / "tools/glslcpp/corpus" / check_corpus.REVISION
 
 
 def analyzed():
@@ -78,6 +80,65 @@ class ClassicNoiseFrontendTests(unittest.TestCase):
             profile.authenticate_noise_runtime(
                 dataclasses.replace(program, key='foreign:key'),
                 profile.RAW_SHA256, profile.PROFILE)
+
+    def test_projection_preserves_zero_refraction_guards_and_guarded_calls(self):
+        projected = profile.apply_noise_frontend(
+            analyzed(), profile.RAW_SHA256, profile.PROFILE)
+        helper = next(item for item in projected.functions if item.name == 'multires')
+        guards = [item for statement in helper.body
+                  for item in profile._walk_statement(statement)
+                  if isinstance(item, TypedStatement) and item.kind == 'if']
+        self.assertEqual(2, len(guards))
+        for guard, expected_calls in zip(
+                guards, (('value', 'value', 'map'), ('generate_octave', 'map'))):
+            condition, = guard.expressions
+            self.assertEqual('!=', condition.operator)
+            self.assertEqual(('refractAmt', 0.0),
+                             (condition.children[0].symbol.name,
+                              condition.children[1].literal_value))
+            self.assertEqual(expected_calls, tuple(
+                item.callee for item in profile._walk_statement(guard)
+                if isinstance(item, TypedExpression) and item.kind == 'call'))
+        rendered = emit_typed_cpp.render_typed_cpp(
+            projected, profile.KEY, profile.RAW_SHA256,
+            noise_frontend_profile=profile.PROFILE)
+        self.assertEqual(2, rendered.count(
+            'if (state.refractAmt != static_cast<float>(0.0)) {'))
+
+    def test_authentication_rejects_forged_zero_refraction_guards(self):
+        def forge(statement):
+            expressions = statement.expressions
+            if (statement.kind == 'if' and expressions[0].operator == '!='
+                    and expressions[0].children[0].symbol is not None
+                    and expressions[0].children[0].symbol.name == 'refractAmt'):
+                expressions = (dataclasses.replace(expressions[0], operator='=='),)
+            return dataclasses.replace(
+                statement, expressions=expressions,
+                children=tuple(forge(child) for child in statement.children))
+
+        program = analyzed()
+        projected = profile.apply_noise_frontend(
+            program, profile.RAW_SHA256, profile.PROFILE)
+        for candidate, authenticate in (
+                (program, profile.authenticate_noise_frontend),
+                (projected, profile.authenticate_noise_projection)):
+            mutated = dataclasses.replace(candidate, functions=tuple(
+                dataclasses.replace(function, body=tuple(forge(s) for s in function.body))
+                if function.name == 'multires' else function
+                for function in candidate.functions))
+            for check in (authenticate, profile.authenticate_noise_runtime):
+                with self.subTest(check=check.__name__):
+                    with self.assertRaisesRegex(ValueError, 'fingerprint mismatch'):
+                        check(mutated, profile.RAW_SHA256, profile.PROFILE)
+
+    def test_dynamic_define_hoist_authenticates_current_source_and_keeps_guards(self):
+        raw = analyzed().raw_source
+        transformed = dynamic_define_hoist.transform_source(raw, profile.KEY)
+        self.assertEqual(2, transformed.count('if (refractAmt != 0.0) {'))
+        self.assertIn('vec2 nominalFreq;', transformed)
+        self.assertIn('float baseLoop;', transformed)
+        with self.assertRaisesRegex(dynamic_define_hoist.HoistError, 'hash mismatch'):
+            dynamic_define_hoist.transform_source(raw + '\n', profile.KEY)
 
     def test_projection_rejects_forged_stale_or_wrong_ordered_program(self):
         program = analyzed()

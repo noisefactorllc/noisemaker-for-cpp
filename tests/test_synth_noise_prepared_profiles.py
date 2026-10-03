@@ -267,8 +267,16 @@ class NoiseRuntimeLoopBoundRecordTests(unittest.TestCase):
                                     # points/lenia:convolve joined with the
                                     # float-uniform-ceil window-radius record.
                                     module.LENIA_KEY,
+                                    module.ROLL_KEY,
                                     *module.BLUR_KEYS, *module.CF_KEYS}),
                          module.RUNTIME_LOOP_BOUND_KEYS)
+        self.assertEqual("synth/roll:roll", module.ROLL_KEY)
+        committed = json.loads((REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
+        self.assertEqual(
+            module.RUNTIME_LOOP_BOUND_KEYS,
+            frozenset(row["program_key"] for row in committed["programs"]
+                      if row.get("runtime_loop_bound_profile") == module.PROFILE),
+        )
         for name in ("NOISE_KEY", "validate_noise_metadata"):
             self.assertIn(name, module.__all__)
 

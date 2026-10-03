@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import json
 import os
@@ -20,12 +22,12 @@ INCLUDE = ROOT / "tests/oracles/osd_expected.inc"
 
 
 def _authority() -> Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value:
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT is unset")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT is unset")
     path = Path(value)
     if not path.is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT is not a directory")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT is not a directory")
     return path
 
 
@@ -33,7 +35,7 @@ class OsdOracleTests(unittest.TestCase):
     def _node(self, *args):
         authority = _authority()
         env = os.environ.copy()
-        return subprocess.run(
+        return historical_run(
             ["node", str(GENERATOR), *args, "--cpu-root", str(authority)],
             cwd=ROOT, env=env, text=True,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
@@ -42,7 +44,7 @@ class OsdOracleTests(unittest.TestCase):
         checked = self._node("--check")
         self.assertEqual(0, checked.returncode, checked.stderr)
         self.assertIn("7 cases, 6 behavioral mutations", checked.stdout)
-        materialized = subprocess.run(
+        materialized = historical_run(
             [sys.executable, "-B", str(MATERIALIZER), "--check"],
             cwd=ROOT, text=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, check=False)
@@ -58,7 +60,7 @@ class OsdOracleTests(unittest.TestCase):
                 "public/direct/repeat identity",
                 "strict comparer self-tests"):
             self.assertIn(marker, checked.stdout)
-        materialized = subprocess.run(
+        materialized = historical_run(
             [sys.executable, "-B", str(MATERIALIZER), "--self-test"],
             cwd=ROOT, text=True, stdout=subprocess.PIPE,
             stderr=subprocess.PIPE, check=False)
@@ -132,7 +134,7 @@ int main() {
         with tempfile.TemporaryDirectory(prefix="osd-oracle-cxx-") as raw:
             unit = Path(raw) / "smoke.cpp"
             unit.write_text(source)
-            result = subprocess.run(
+            result = historical_run(
                 ["c++", "-std=c++20", "-I", str(ROOT), "-fsyntax-only",
                  str(unit)], cwd=ROOT, text=True,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)

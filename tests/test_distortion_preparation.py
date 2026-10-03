@@ -5,13 +5,14 @@ import hashlib
 from pathlib import Path
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp.frontend import distortion_frontend_profile as profile
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/mixer/distortion/distortion.glsl"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/mixer/distortion/distortion.glsl"
 
 
 def analyzed(raw: str | None = None, key: str = profile.KEY):

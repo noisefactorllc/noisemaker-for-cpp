@@ -66,6 +66,20 @@ def _absent_proof_fields(key: str) -> tuple[str, ...]:
 
 
 _PROFILES: dict[str, dict] = {
+    "synth/roll:roll": {
+        "raw_bytes": 2305,
+        "raw_sha256": "92b426fa60df51c3db057b8f93ce3c6525cf087fd2398c6e038046f9ede1d8c9",
+        "normalized_bytes": 1989,
+        "normalized_sha256": "0510d1d997a1c0c79eeece4a59c9fe184be7f6bf9f1e49b400771c2986b7174a",
+        "functions_sha256": "e6deb1e52c6bdf2a93af4bf67aeaeb9b5760ef0e0f9b45bc779fb18f8cf923f0",
+        "whole_program_sha256": "937886a84885a0faf8fdda051771317b7df7575f831368dee800de54137b815c",
+        "interface_sha256": "57bda2f873825d9287c4d4831d7d6a5ebf3457c090f66741ca22a13a02fbdd97",
+        "ceil_sites": (
+            ("main", "47:29-47:47",
+             "8e3da9af88b192ceb663108fe6945675fdd344e753e4653e3e3bc87fc7af4091",
+             "5c069493a46a824a6f1298050ba443461226b5a8b85f83eb4f20b4f8ee6d94d0"),
+        ),
+    },
     "filter/oilPaint:oilFlatten": {
         "raw_bytes": 7321,
         "raw_sha256": "f2f512b35b846d8a15362739a843c162199b7c53d95251918576726b1b094690",

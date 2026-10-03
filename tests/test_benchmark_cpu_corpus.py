@@ -11,6 +11,7 @@ the JS CPU authority's.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import pathlib
 import shutil
@@ -271,20 +272,49 @@ class BenchmarkDriverExecutionTest(unittest.TestCase):
         result = self.invoke(record, overrides={"--rgba8-output": "relative.rgba8"})
         self.assertEqual(result.returncode, 6, result.stdout)
 
+    def test_admitted_median_default_renders_and_emits_samples(self) -> None:
+        record = find_record("filter/median")
+        result = self.invoke(record)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        document = json.loads((self.scratch / "filter__median.benchmark.json").read_text())
+        self.assertEqual(document["correctness"]["status"], "rendered")
+        self.assertEqual(len(document["sampleNs"]), BENCHMARK_SAMPLES)
+        self.assertEqual(document["planIdentity"]["provenanceSourceSha256"],
+                         record["sourceSha256"])
+        self.assertEqual(len((self.scratch / "filter__median.rgba8").read_bytes()),
+                         record["options"]["width"] * record["options"]["height"] * 4)
+
     def test_refusals_are_structured_and_leave_no_partial_output(self) -> None:
         # Refusals are execute-time, never compile-time: both of these compile
         # cleanly and throw out of GraphExecutor::execute. Without the untimed
         # correctness execution the throw would land inside the timed region.
         exclusions = load_exclusions()
-        for effect_id, expected_code in (("filter/median", "7"), ("filter/lighting", "5")):
-            record = find_record(effect_id)
+        perlin = find_record("synth/perlin")
+        self.assertEqual(1, perlin["source"].count("dimensions: 2"))
+        source = perlin["source"].replace("dimensions: 2", "dimensions: 3")
+        unbaked = dict(perlin, source=source,
+                       sourceSha256=hashlib.sha256(source.encode("utf-8")).hexdigest(),
+                       id="synth/perlin#unbaked-dimensions", variant="unbaked-dimensions",
+                       parameters={**perlin["parameters"], "dimensions": 3})
+        # This schema-valid request reaches the executor's define guard, as
+        # independently exercised by the native graph feature test.
+        cases = (
+            (unbaked, "7", "synth/perlin:perlin",
+             "parameter dimensions requests compile define DIMENSIONS=3 but "
+             "the generated route bakes DIMENSIONS=2"),
+            (find_record("filter/lighting"), "5", "filter/lighting:lighting",
+             "input resource is not produced"),
+        )
+        for record, expected_code, expected_key, expected_detail in cases:
+            effect_id = record["effectId"]
             name = effect_id.replace("/", "__")
             result = self.invoke(record)
             self.assertEqual(result.returncode, 4, result.stdout)
             refusal = json.loads(result.stdout)
             self.assertEqual(refusal["status"], "refused")
             self.assertEqual(refusal["code"], expected_code)
-            self.assertTrue(refusal["detail"])
+            self.assertEqual(refusal["programKey"], expected_key)
+            self.assertEqual(refusal["detail"], expected_detail)
             if effect_id in exclusions["executorRefused"]:
                 self.assertEqual(refusal["detail"], exclusions["executorRefused"][effect_id])
             self.assertFalse((self.scratch / f"{name}.rgba8").exists())

@@ -5,7 +5,6 @@ import hashlib
 import pathlib
 import unittest
 
-from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.semantic import analyze_program
 from tools.glslcpp.frontend import remap_profile
@@ -19,15 +18,15 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 # 0ed489ec... source, which grew to 275 slots and introduced `struct
 # ZoneTest`. This test authenticates that frozen historical record, so it
 # must read the OLD corpus, not the live one.
-SOURCE = (ROOT / "tools/glslcpp/corpus/a024dc3a960cc44af454abc7aebce50456c194e6"
+HISTORICAL_CORPUS_REVISION = "a024dc3a960cc44af454abc7aebce50456c194e6"
+SOURCE = (ROOT / f"tools/glslcpp/corpus/{HISTORICAL_CORPUS_REVISION}"
           / "sources/synth/remap/remap.glsl")
 KEY = remap_profile.KEY
 
 
 def _program(key: str = KEY):
     raw = SOURCE.read_text(encoding="utf-8")
-    defines = generate_typed_slice._defaults(ROOT, key)
-    return analyze_program(parse_program(raw, key, defines), key)
+    return analyze_program(parse_program(raw, key, {}), key)
 
 
 def _walk_expr(value):

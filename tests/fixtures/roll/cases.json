@@ -1,0 +1,407 @@
+[
+  {
+    "name": "1x1-zero-dt0",
+    "width": 1,
+    "height": 1,
+    "grid": "zero",
+    "delta_time": 0,
+    "gain": 0.1,
+    "speed": 0.5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "1x1-zero-dt0.016",
+    "width": 1,
+    "height": 1,
+    "grid": "zero",
+    "delta_time": 0.016,
+    "gain": 1.37,
+    "speed": 5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "1x1-zero-dt0.2",
+    "width": 1,
+    "height": 1,
+    "grid": "zero",
+    "delta_time": 0.2,
+    "gain": 5,
+    "speed": 1.23,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "1x1-sparse-dt0",
+    "width": 1,
+    "height": 1,
+    "grid": "sparse",
+    "delta_time": 0,
+    "gain": 5,
+    "speed": 5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "1x1-sparse-dt0.016",
+    "width": 1,
+    "height": 1,
+    "grid": "sparse",
+    "delta_time": 0.016,
+    "gain": 0.1,
+    "speed": 1.23,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "1x1-sparse-dt0.2",
+    "width": 1,
+    "height": 1,
+    "grid": "sparse",
+    "delta_time": 0.2,
+    "gain": 1.37,
+    "speed": 0.5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "1x1-bright-dt0",
+    "width": 1,
+    "height": 1,
+    "grid": "bright",
+    "delta_time": 0,
+    "gain": 1.37,
+    "speed": 1.23,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "1x1-bright-dt0.016",
+    "width": 1,
+    "height": 1,
+    "grid": "bright",
+    "delta_time": 0.016,
+    "gain": 5,
+    "speed": 0.5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "1x1-bright-dt0.2",
+    "width": 1,
+    "height": 1,
+    "grid": "bright",
+    "delta_time": 0.2,
+    "gain": 0.1,
+    "speed": 5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-zero-dt0",
+    "width": 17,
+    "height": 11,
+    "grid": "zero",
+    "delta_time": 0,
+    "gain": 0.1,
+    "speed": 0.5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-zero-dt0.016",
+    "width": 17,
+    "height": 11,
+    "grid": "zero",
+    "delta_time": 0.016,
+    "gain": 1.37,
+    "speed": 5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "17x11-zero-dt0.2",
+    "width": 17,
+    "height": 11,
+    "grid": "zero",
+    "delta_time": 0.2,
+    "gain": 5,
+    "speed": 1.23,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-sparse-dt0",
+    "width": 17,
+    "height": 11,
+    "grid": "sparse",
+    "delta_time": 0,
+    "gain": 5,
+    "speed": 5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-sparse-dt0.016",
+    "width": 17,
+    "height": 11,
+    "grid": "sparse",
+    "delta_time": 0.016,
+    "gain": 0.1,
+    "speed": 1.23,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "17x11-sparse-dt0.2",
+    "width": 17,
+    "height": 11,
+    "grid": "sparse",
+    "delta_time": 0.2,
+    "gain": 1.37,
+    "speed": 0.5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-bright-dt0",
+    "width": 17,
+    "height": 11,
+    "grid": "bright",
+    "delta_time": 0,
+    "gain": 1.37,
+    "speed": 1.23,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "17x11-bright-dt0.016",
+    "width": 17,
+    "height": 11,
+    "grid": "bright",
+    "delta_time": 0.016,
+    "gain": 5,
+    "speed": 0.5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "17x11-bright-dt0.2",
+    "width": 17,
+    "height": 11,
+    "grid": "bright",
+    "delta_time": 0.2,
+    "gain": 0.1,
+    "speed": 5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-zero-dt0",
+    "width": 64,
+    "height": 256,
+    "grid": "zero",
+    "delta_time": 0,
+    "gain": 0.1,
+    "speed": 0.5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-zero-dt0.016",
+    "width": 64,
+    "height": 256,
+    "grid": "zero",
+    "delta_time": 0.016,
+    "gain": 1.37,
+    "speed": 5,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "64x256-zero-dt0.2",
+    "width": 64,
+    "height": 256,
+    "grid": "zero",
+    "delta_time": 0.2,
+    "gain": 5,
+    "speed": 1.23,
+    "color": [
+      0.123456789,
+      0.75,
+      0.951234567
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-sparse-dt0",
+    "width": 64,
+    "height": 256,
+    "grid": "sparse",
+    "delta_time": 0,
+    "gain": 5,
+    "speed": 5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-sparse-dt0.016",
+    "width": 64,
+    "height": 256,
+    "grid": "sparse",
+    "delta_time": 0.016,
+    "gain": 0.1,
+    "speed": 1.23,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "64x256-sparse-dt0.2",
+    "width": 64,
+    "height": 256,
+    "grid": "sparse",
+    "delta_time": 0.2,
+    "gain": 1.37,
+    "speed": 0.5,
+    "color": [
+      1,
+      0,
+      0.27
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-bright-dt0",
+    "width": 64,
+    "height": 256,
+    "grid": "bright",
+    "delta_time": 0,
+    "gain": 1.37,
+    "speed": 1.23,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  },
+  {
+    "name": "64x256-bright-dt0.016",
+    "width": 64,
+    "height": 256,
+    "grid": "bright",
+    "delta_time": 0.016,
+    "gain": 5,
+    "speed": 0.5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "linear"
+  },
+  {
+    "name": "64x256-bright-dt0.2",
+    "width": 64,
+    "height": 256,
+    "grid": "bright",
+    "delta_time": 0.2,
+    "gain": 0.1,
+    "speed": 5,
+    "color": [
+      0,
+      1,
+      0
+    ],
+    "filter": "nearest"
+  }
+]

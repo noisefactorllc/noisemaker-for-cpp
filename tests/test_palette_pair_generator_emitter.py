@@ -8,6 +8,7 @@ import unittest
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 from tests import corpus_census
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import generate_typed_slice
 from tools.glslcpp.emit_typed_cpp import TypedEmissionError, render_typed_cpp
 from tools.glslcpp.frontend import parse_program
@@ -16,7 +17,7 @@ from tools.glslcpp.generate_kernels import GeneratorError
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-CORPUS = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources"
+CORPUS = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources"
 HISTORIC_KEY = "filter/historicPalette:historicPalette"
 PALETTE_KEY = "filter/palette:palette"
 

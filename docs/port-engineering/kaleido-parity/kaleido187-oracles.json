@@ -175,11 +175,11 @@
     "node_version": "v26.0.0",
     "generator": {
       "relative_path": "docs/port-engineering/kaleido-parity/kaleido187_oracle_generator.mjs",
-      "sha256": "209d48277aa645f585baa7e75cc1f5e534bcc67f2bd7eb1ec4585510c97d861f"
+      "sha256": "cbb5410118525d3672b3dce3020d4f8a1ae3695cab1842d6f6a40dda68f0f79d"
     },
     "native_include_generator": {
       "relative_path": "tools/glslcpp/generate_kaleido_native_oracle_include.py",
-      "sha256": "a1b62f73fc099034e142ae91136301eb64266e43c848c8cbbd2cdbf74da827f4"
+      "sha256": "18982ae7334bdfbdab6afb34f7f7ea94a2812319e0b2014684ce455d513d4d06"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",

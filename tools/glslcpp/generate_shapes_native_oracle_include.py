@@ -35,10 +35,8 @@ SCHEMA = "noisemaker-for-cpp.shapes183.pixel-parity.v1"
 SCHEMA_VERSION = 1
 PROGRAM_KEY = "classicNoisedeck/shapes:shapes"
 EFFECT_KEY = "classicNoisedeck/shapes"
-import sys as _sys
-_sys.path.insert(0, str(__import__('pathlib').Path(__file__).resolve().parent))
-import check_corpus as _check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = _check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 DEFINES = {"LOOP_A_OFFSET": 40, "LOOP_B_OFFSET": 30}
 FACTORY_NAME = "canonicalFactory16"
 FACTORY_SHA256 = "a4e1aeaf8cbc3d748517369e054b7ec4a2fd5f70962cbafef61d5e473527c2c3"

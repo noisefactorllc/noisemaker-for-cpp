@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import os
 from pathlib import Path
 import subprocess
@@ -8,7 +11,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
-AUTHORITY = os.environ.get("NOISEMAKER_CPU_ROOT")
+AUTHORITY = historical_cpu_root()
 LIVE = os.environ.get("NOISEMAKER_FOR_CPU")
 SHAPE = ROOT / "docs/port-engineering/shape-mixer-parity/shape_mixer_parity_oracle_generator.mjs"
 SPOOKY = ROOT / "docs/port-engineering/spooky-ticker-parity/spooky_ticker_oracle_generator.mjs"
@@ -18,7 +21,7 @@ class PublicationRootShapeSpookyTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         if not AUTHORITY or not LIVE:
-            raise unittest.SkipTest("NOISEMAKER_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
+            raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT and NOISEMAKER_FOR_CPU are required")
         cls.authority = Path(AUTHORITY)
         cls.live = Path(LIVE)
         if not cls.authority.is_dir() or not cls.live.is_dir():
@@ -31,7 +34,7 @@ class PublicationRootShapeSpookyTests(unittest.TestCase):
             env.pop("NOISEMAKER_FOR_CPU", None)
         else:
             env["NOISEMAKER_FOR_CPU"] = live
-        return subprocess.run(
+        return historical_run(
             ["node", str(generator), mode, "--cpu-root", str(self.authority), *extra],
             cwd=ROOT, env=env, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
         )
@@ -43,7 +46,7 @@ class PublicationRootShapeSpookyTests(unittest.TestCase):
                 self.assertNotEqual(0, self.run_generator(SHAPE, "--check", live=live).returncode)
         with tempfile.TemporaryDirectory(prefix="shape-mixer-roots-") as raw:
             link = Path(raw) / "live-link"
-            link.symlink_to(self.live, target_is_directory=True)
+            simulate_symlink(link, self.live, target_is_directory=True)
             self.assertNotEqual(0, self.run_generator(SHAPE, "--check", live=str(link)).returncode)
 
     def test_shape_mixer_rejects_unknown_and_duplicate_options(self):
@@ -58,7 +61,7 @@ class PublicationRootShapeSpookyTests(unittest.TestCase):
                 self.assertNotEqual(0, self.run_generator(SPOOKY, "--check", live=live).returncode)
         with tempfile.TemporaryDirectory(prefix="spooky-ticker-roots-") as raw:
             link = Path(raw) / "live-link"
-            link.symlink_to(self.live, target_is_directory=True)
+            simulate_symlink(link, self.live, target_is_directory=True)
             self.assertNotEqual(0, self.run_generator(SPOOKY, "--check", live=str(link)).returncode)
 
     def test_spooky_ticker_rejects_unknown_and_duplicate_options(self):

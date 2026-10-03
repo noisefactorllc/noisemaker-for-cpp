@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+
 import hashlib
 import json
 import os
 import pathlib
 import shutil
-import subprocess
 import sys
 import tempfile
 
@@ -26,12 +27,12 @@ def _sidecar(path: pathlib.Path) -> pathlib.Path:
 
 
 def _authority_snapshot() -> pathlib.Path:
-    configured = os.environ.get("NOISEMAKER_CPU_ROOT")
+    configured = historical_cpu_root()
     if not configured:
-        pytest.skip("NOISEMAKER_CPU_ROOT is unset; immutable-authority test skipped")
+        pytest.skip("NOISEMAKER_HISTORICAL_CPU_ROOT is unset; immutable-authority test skipped")
     snapshot = pathlib.Path(configured)
     if not snapshot.is_dir():
-        pytest.skip("NOISEMAKER_CPU_ROOT does not name a directory; immutable-authority test skipped")
+        pytest.skip("NOISEMAKER_HISTORICAL_CPU_ROOT does not name a directory; immutable-authority test skipped")
     return snapshot
 
 
@@ -62,7 +63,7 @@ def test_kaleido_oracle_package_is_self_consistent() -> None:
 
 def test_kaleido_generator_check_requires_authority_snapshot() -> None:
     snapshot = _authority_snapshot()
-    assert subprocess.run(
+    assert historical_run(
         ["node", str(GENERATOR), "--check", "--cpu-root", str(snapshot)],
         cwd=REPOSITORY,
         check=False,
@@ -77,7 +78,7 @@ def test_generator_rejects_modified_unpinned_runtime_dependency() -> None:
         shutil.copytree(snapshot, clone)
         dependency = clone / "src/csl/runtime.js"
         dependency.write_bytes(dependency.read_bytes() + b"\n// deliberate unpinned dependency mutation\n")
-        result = subprocess.run(
+        result = historical_run(
             ["node", str(GENERATOR), "--check", "--cpu-root", str(clone)],
             cwd=REPOSITORY,
             check=False,
@@ -90,7 +91,7 @@ def test_generator_rejects_modified_unpinned_runtime_dependency() -> None:
 
 def test_generator_self_tests_cover_closure_and_pending_abi_contract() -> None:
     snapshot = _authority_snapshot()
-    generator = subprocess.run(
+    generator = historical_run(
         ["node", str(GENERATOR), "--self-test", "--cpu-root", str(snapshot)],
         cwd=REPOSITORY,
         check=False,
@@ -105,7 +106,7 @@ def test_generator_self_tests_cover_closure_and_pending_abi_contract() -> None:
 
 
 def test_materializer_self_tests_and_check_are_standalone() -> None:
-    materializer = subprocess.run(
+    materializer = historical_run(
         [sys.executable, str(MATERIALIZER), "--self-test"],
         cwd=REPOSITORY,
         check=False,
@@ -119,7 +120,7 @@ def test_materializer_self_tests_and_check_are_standalone() -> None:
     assert "native ABI table sabotage rejected" in materializer.stdout
     assert "semantic carrier sabotage rejected" in materializer.stdout
     assert "mutation ledger exactness rejected" in materializer.stdout
-    assert subprocess.run(
+    assert historical_run(
         [sys.executable, str(MATERIALIZER), "--check"],
         cwd=REPOSITORY,
         check=False,
@@ -145,7 +146,7 @@ def test_generated_include_is_valid_cxx20_and_exposes_native_table() -> None:
             "static_assert(kaleido187_oracle::kNativeExpectedRejections.size() == 11);\n"
             "static_assert(std::is_same_v<decltype(kaleido187_oracle::kNativeExpectedRejections[0].expected_category), kaleido187_oracle::NativeExpectedAbiCategory>);\n"
         )
-        result = subprocess.run(
+        result = historical_run(
             [compiler, "-std=c++20", "-I", str(REPOSITORY), "-fsyntax-only", str(translation_unit)],
             cwd=REPOSITORY,
             check=False,

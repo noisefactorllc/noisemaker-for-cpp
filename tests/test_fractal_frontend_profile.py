@@ -9,6 +9,7 @@ import struct
 import subprocess
 import unittest
 
+from tools.glslcpp.check_corpus import REVISION as CORPUS_REVISION
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
 from tools.glslcpp.frontend import parse_program
 from tools.glslcpp.frontend.loop_proof import summarize_counted_loop_proofs
@@ -17,8 +18,8 @@ from tools.glslcpp.frontend import fractal_frontend_profile as profile
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/sources/classicNoisedeck/fractal/fractal.glsl"
-METADATA = ROOT / "tools/glslcpp/corpus/0ed489ec46842bffba33ee2ec65a218b6dda51f5/metadata.json"
+SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/sources/classicNoisedeck/fractal/fractal.glsl"
+METADATA = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}/metadata.json"
 
 
 def analyzed(raw: str | None = None, key: str = profile.KEY):

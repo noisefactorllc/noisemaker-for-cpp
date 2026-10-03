@@ -1,6 +1,10 @@
 #include "noisemaker/effects/registry.hpp"
 
 #include "test_harness.hpp"
+#include "noisemaker/renderer.hpp"
+
+#include <array>
+#include <cmath>
 
 #include <algorithm>
 #include <utility>
@@ -98,6 +102,40 @@ TEST(effect_registry_rejects_typed_compatibility_value_mutants) {
   mutate([&](auto& row) { object_field(raw_field(row, "uniforms")->array.front(), "source")->string = "forged_source"; });
 }
 
+TEST(effect_registry_admits_only_authenticated_scope_and_spectrum_audio_arrays) {
+  EffectRegistry registry(noisemaker::effects::effect_catalog());
+  noisemaker::Renderer renderer;
+  for (const auto effect : {"scope", "spectrum"}) {
+    const auto* definition = registry.get("synth", effect);
+    REQUIRE(definition != nullptr);
+    const auto admission = registry.admission(*definition, 0U);
+    const std::string name = std::string(effect) == "scope" ? "audioWaveform" : "audioSpectrum";
+    const auto binding = std::find_if(admission.uniforms.begin(), admission.uniforms.end(),
+        [&](const auto& value) { return value.name == name; });
+    REQUIRE(binding != admission.uniforms.end());
+    REQUIRE(binding->type == "float[128]");
+    REQUIRE(binding->cpp_type == "glsl::AudioUniform128");
+    REQUIRE(binding->source == "reserved_runtime_state");
+    REQUIRE(binding->source_name == name);
+
+    const auto plan = renderer.compile(std::string("search synth\n") + effect + "().write(o0)\nrender(o0)\n");
+    const auto& step = std::get<noisemaker::graph::EffectStep>(plan.chains.front().steps.front());
+    REQUIRE(noisemaker::graph::authenticate_factory_route(step, admission) != nullptr);
+    for (const auto field : {"name", "type", "cpp_type", "source", "source_name", "program"}) {
+      auto forged = admission;
+      auto& audio = forged.uniforms[static_cast<std::size_t>(binding - admission.uniforms.begin())];
+      const std::string mutation = field;
+      if (mutation == "name") audio.name = "foreignAudio";
+      if (mutation == "type") audio.type = "float[127]";
+      if (mutation == "cpp_type") audio.cpp_type = "glsl::Vec4";
+      if (mutation == "source") audio.source = "effect_parameter";
+      if (mutation == "source_name") audio.source_name = "foreignAudio";
+      if (mutation == "program") forged.identity.program_key = "synth/shape:shape";
+      REQUIRE_THROWS_AS(noisemaker::graph::authenticate_factory_route(step, forged), noisemaker::graph::GraphError);
+    }
+  }
+}
+
 TEST(effect_registry_joins_repeated_reference_keys_by_structural_identity) {
   EffectRegistry registry(noisemaker::effects::effect_catalog());
   const auto* temporal = registry.get("filter", "temporalAberration");
@@ -136,7 +174,7 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   const auto& provenance = registry.provenance();
   REQUIRE(registry.manifest_backed());
   REQUIRE(provenance.backend_schema == "noisemaker-cpp.backend-compatibility.v1");
-  REQUIRE(provenance.corpus_revision == "0ed489ec46842bffba33ee2ec65a218b6dda51f5");
+  REQUIRE(provenance.corpus_revision == "e24c844f8dada85551ab084f41db8944fbc176c8");
   REQUIRE(provenance.cpu_package_sha256.size() == 64);
   REQUIRE(provenance.upstream_package_lock_sha256.size() == 64);
   const auto* wormhole = registry.get("filter", "wormhole");
@@ -166,7 +204,7 @@ TEST(effect_registry_preserves_complete_alias_census) {
   const auto& catalog = noisemaker::effects::effect_catalog();
   std::size_t aliases = 0;
   for (const auto& effect : catalog.definitions) aliases += effect.parameter_aliases.size();
-  REQUIRE(catalog.definitions.size() == 208);
+  REQUIRE(catalog.definitions.size() == 210);
   REQUIRE(aliases == 84);
 }
 
@@ -222,4 +260,51 @@ TEST(effect_registry_default_catalog_moves_remain_custom) {
   assigned = std::move(moved);
   EffectRegistry assignment_registry(assigned);
   REQUIRE(!assignment_registry.manifest_backed());
+}
+
+TEST(effect_registry_accepts_every_repaired_dither_palette) {
+  EffectRegistry registry(noisemaker::effects::effect_catalog());
+  const auto* effect = registry.get("filter", "dither");
+  REQUIRE(effect != nullptr);
+  for (int palette = 0; palette <= 9; ++palette) {
+    const auto normalized = registry.normalize(*effect, {{"palette", PlanValue::number_value(palette)}});
+    const auto found = std::find_if(normalized.values.begin(), normalized.values.end(),
+        [](const auto& value) { return value.name == "palette"; });
+    REQUIRE(found != normalized.values.end());
+    REQUIRE(found->value.number == palette);
+  }
+}
+
+TEST(dither_palette_endpoints_match_repaired_cpu_authority_and_repeat) {
+  // Captured from immutable CPU 26d6f42be38da7172f602373e844f85a8155356f.
+  // White/black nearest palette colors at threshold +/-0.5, 3x2 pixels.
+  constexpr std::array<std::array<std::array<unsigned char, 4>, 2>, 9> endpoints{{
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}},
+      {{{{156, 189, 15, 255}}, {{15, 56, 15, 255}}}},
+      {{{{255, 153, 0, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 241, 232, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}},
+      {{{{255, 255, 255, 255}}, {{0, 0, 0, 255}}}}
+  }};
+  noisemaker::Renderer renderer;
+  noisemaker::graph::ExecutionInputs options;
+  options.width = 3U;
+  options.height = 2U;
+  for (int palette = 1; palette <= 9; ++palette) {
+    for (const int color : {1, 0, 1, 0}) {
+      const std::string source = "search synth, filter\nsolid(color: [" +
+          std::to_string(color) + ", " + std::to_string(color) + ", " +
+          std::to_string(color) + "]).dither(palette: " + std::to_string(palette) +
+          ", threshold: " + (color ? "0.5" : "-0.5") + ").write(o0)\nrender(o0)\n";
+      const auto result = renderer.render(source, options, "dither-palette-endpoints.dsl");
+      for (const auto value : result.surface().data()) REQUIRE(std::isfinite(value));
+      const auto bytes = result.to_rgba8();
+      REQUIRE(bytes.size() == 24U);
+      const auto& expected = endpoints[static_cast<std::size_t>(palette - 1)][color ? 0U : 1U];
+      for (std::size_t lane = 0; lane < bytes.size(); ++lane) REQUIRE(bytes[lane] == expected[lane % 4U]);
+    }
+  }
 }

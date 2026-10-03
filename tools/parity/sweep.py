@@ -445,6 +445,32 @@ def synthetic_texture_rgba8_hex(size: int = _EXTERNAL_TEXTURE_SIZE) -> str:
     return pixels.hex()
 
 
+def synthetic_mesh_data() -> dict:
+    # Packed upload rows, with asymmetric signed and non-UNORM data. Both
+    # drivers consume these exact little-endian float32 words.
+    positions, normals = [], []
+    for y in range(3):
+        for x in range(4):
+            positions.extend((x * 0.375 - 0.625, y * 0.625 - 0.75, (x + y) * 0.375, 1.0))
+            normals.extend((y * 0.25 - 0.375, x * 0.25 - 0.25, 0.8125, 0.0))
+    positions[0] = -0.9999  # Early rgba16f truncation changes the preview's float32 output.
+    return {"texWidth": 4, "texHeight": 3,
+            "positionRgba32f": struct.pack("<48f", *positions).hex(),
+            "normalRgba32f": struct.pack("<48f", *normals).hex()}
+
+
+def synthetic_triangle_mesh_data() -> dict:
+    # Two overlapping CCW triangles with distinct depths and vertex normals,
+    # matching the executable corpus's MeshRender input in upload row order.
+    positions = [-0.9, -0.75, -0.1, 1, 0.8, -0.65, 0.2, 1, -0.2, 0.85, 0, 1,
+                 -0.6, -0.45, -0.4, 1, 0.65, -0.35, -0.1, 1, 0.35, 0.65, -0.25, 1]
+    normals = [0, 0, 1, 0, 0.6, 0, 0.8, 0, 0, 0.6, 0.8, 0,
+               -0.6, 0, 0.8, 0, 0, -0.6, 0.8, 0, 0, 0, 1, 0]
+    return {"texWidth": 3, "texHeight": 2,
+            "positionRgba32f": struct.pack("<24f", *positions).hex(),
+            "normalRgba32f": struct.pack("<24f", *normals).hex()}
+
+
 def build_single_jobs(effect: dict, n_variants: int, global_seed: int) -> list[Job]:
     jobs: list[Job] = []
     eff_id = effect["id"]
@@ -777,14 +803,26 @@ def _known_js_refusal(reason: str, job: Job, cpp_code: str, cpp_detail: str) -> 
                     r'|requires external texture "[^"\n]+"'
                     r'|pass "[^"\n]+" requires texture "[^"\n]+")', reason):
         return True
-    # Authenticated filter/dither palette 2+ failures are an explicit known
-    # authority limitation mirrored by the executor's exact diagnostic.
-    return ("filter/dither" in [job.effect_id, *job.chain_effects]
-            and reason == "TypeError: ditherWithPalette(...).reduce is not a function"
-            and cpp_code == "exception"
-            and cpp_detail == ('Parameter "palette" is not renderable by the authority: only input(0) '
-                               'and monochrome(1) avoid its findClosestPaletteColor NaN-corruption bug '
-                               '(canonical-kernels.js copy()/findClosest4-15-16)'))
+    return False
+
+
+def synthetic_audio_state() -> dict[str, str]:
+    """Asymmetric float32 samples exercise interpolation and both endpoints."""
+    waveform = [((index * 37) % 131) / 130.0 for index in range(128)]
+    spectrum = [((index * 19 + 11) % 127) / 126.0 for index in range(128)]
+    return {"waveformFloat32": struct.pack("<128f", *waveform).hex(),
+            "spectrumFloat32": struct.pack("<128f", *spectrum).hex()}
+
+
+def synthetic_midi_state() -> dict:
+    grid = [0.0] * (128 * 16 * 4)
+    for channel in range(16):
+        for key in range(36, 85):
+            if (channel * 11 + key * 7) % 13 < 3:
+                offset = (channel * 128 + key) * 4
+                grid[offset] = ((key * 17 + channel * 23) % 127 + 1) / 127.0
+                grid[offset + 1] = 1.0
+    return {"noteGridRgba32f": struct.pack("<8192f", *grid).hex(), "clockCount": 241}
 
 
 def run_job(job_dict: dict) -> dict:
@@ -805,6 +843,15 @@ def run_job(job_dict: dict) -> dict:
             "recordKind": "admitted", "id": job.case_id, "source": job.source,
             "sourceSha256": source_sha256, "options": options, "plan": None,
         }
+        if "render/meshRender" in [job.effect_id, *job.chain_effects]:
+            record["externalInputs"] = {"meshData": synthetic_triangle_mesh_data()}
+        elif "render/meshLoader" in [job.effect_id, *job.chain_effects]:
+            record["externalInputs"] = {"meshData": synthetic_mesh_data()}
+        if any(effect in {"synth/scope", "synth/spectrum"}
+               for effect in [job.effect_id, *job.chain_effects]):
+            record.setdefault("externalInputs", {})["audioState"] = synthetic_audio_state()
+        if "synth/roll" in [job.effect_id, *job.chain_effects]:
+            record.setdefault("externalInputs", {})["midiState"] = synthetic_midi_state()
         if job.external_texture:
             # Fed to BOTH lanes from this one field: the JS runner via
             # run_cpu_case.mjs's `record.externalTextures` ->
@@ -943,6 +990,9 @@ def run_manifest(config: RunConfig, jobs: list[Job], retry_factor: float,
         Path(__file__), DUMP_CATALOG, JS_RUNNER,
         LANE_ROOT / "tools/dsl/corpus_authority.mjs",
         LANE_ROOT / "tools/benchmark/corpus_lane.py",
+        LANE_ROOT / "tools/benchmark/mesh_inputs.mjs",
+        LANE_ROOT / "tools/benchmark/audio_inputs.mjs",
+        LANE_ROOT / "tools/benchmark/midi_inputs.mjs",
         LANE_ROOT / "tools/benchmark/exact_compare.py",
     )
     return {

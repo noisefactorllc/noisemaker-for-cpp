@@ -42,6 +42,7 @@ add_library(noisemaker-cpu
   src/effects/scatter/points_billboard_render.cpp
   src/effects/scatter/flow3d.cpp
   src/effects/scatter/catalog.cpp
+  src/effects/mesh_render.cpp
   src/effects/generated/effect_catalog.cpp
   src/dsl/error.cpp
   src/dsl/lexer.cpp
@@ -166,6 +167,10 @@ add_executable(noisemaker-cpu-tests
   tests/test_mrt_kernel_and_pass_runner.cpp
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
+  tests/fixtures/historical/retired_kernels.cpp
+  tests/fixtures/historical/reverb_kernel.cpp
+  tests/fixtures/historical/osd_kernel.cpp
+  tests/fixtures/historical/parallax_kernel.cpp
   tests/test_scatter_wormhole.cpp
   tests/test_scatter_dla.cpp
   tests/test_scatter_lenia.cpp
@@ -182,6 +187,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_graph_resources.cpp
   tests/test_graph_blur.cpp
   tests/test_graph_features.cpp
+  tests/test_mesh_render_graph.cpp
   tests/test_graph_iteration.cpp
   tests/test_graph_iterated_execution.cpp
   tests/test_graph_chain_bundle.cpp

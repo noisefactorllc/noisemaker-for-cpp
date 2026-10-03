@@ -1,10 +1,11 @@
-"""Test-only legacy lowering for historical Gradient reconstructions.
+"""Test-only authority and legacy lowering for historical reconstructions.
 
 The live Gradient row is authenticated and intentionally lowers its pooled
 vector alias in source order.  Frozen milestones predate that carrier and
 must continue to regenerate the old generic temporary assignment.  This
-module provides an explicit, fail-closed test gate for that projection; it is
-not imported by production tooling.
+module provides an explicit, fail-closed test gate for that projection and
+selects the original corpus, source profiles, and compatibility inputs. It
+is not imported by production tooling.
 """
 
 from __future__ import annotations
@@ -18,6 +19,7 @@ from typing import Any
 from unittest import mock
 
 from tools.glslcpp import emit_typed_cpp, generate_typed_slice
+from tests.historical_authority import historical_authority
 
 
 CROSS_LANE_KEY = "synth/gradient:gradient"
@@ -122,6 +124,7 @@ def historical_cross_lane(spec: dict[str, Any]) -> Iterator[dict[str, Any]]:
     try:
         del row["cross_lane_assignment_profile"]
         with contextlib.ExitStack() as stack:
+            stack.enter_context(historical_authority(spec))
             stack.enter_context(mock.patch.object(
                 generate_typed_slice, "CROSS_LANE_KEY", _VALIDATE_SENTINEL))
             stack.enter_context(mock.patch.object(

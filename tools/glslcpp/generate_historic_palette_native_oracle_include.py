@@ -10,9 +10,8 @@ import re
 import struct
 import sys
 
-sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = check_corpus.REVISION
+# Revision authenticated by the immutable oracle capture.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PACKAGE = ROOT / "docs/port-engineering/historic-palette-parity"

@@ -156,6 +156,14 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.preprocess import normalize
     from tools.glslcpp.frontend.semantic import analyze_program
 
+    from tools.dsl import mesh_render_contract
+    if key == mesh_render_contract.KEY:
+        try:
+            mesh_render_contract.authenticate_fragment(source_bytes, effect)
+        except ValueError as error:
+            return {"stage": "whole_pass.source", "diagnostic": str(error)}
+        return None
+
     effect_id, program = key.split(":", 1)
     passes = [item for item in effect["passes"] if item["program"] == program]
     scatter = sorted({item.get("drawMode") for item in passes if item.get("drawMode") in SCATTER_DRAW_MODES})
@@ -592,6 +600,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     """Give every promoted fragment program its plain typed-slice row (effect default defines)."""
     from tools.glslcpp import check_semantics
     from tools.glslcpp.frontend.runtime_loop_bound_profile import RUNTIME_LOOP_BOUND_KEYS
+    from tools.glslcpp.frontend.ceil_admission_profile import (
+        CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
+    )
     from tools.glslcpp.frontend.simulation_sampler_profile import (
         SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
     )
@@ -621,13 +632,15 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     spec = json.loads(path.read_text(encoding="utf-8"))
     rows = {item["program_key"]: item for item in spec["programs"]}
     for entry in entries:
-        if entry["runtime_key"] is None:
+        if entry["runtime_key"] is None or entry["program_key"] == "render/meshRender:render":
             continue
         row = {
             "defines": check_semantics._metadata_defaults(metadata, entry["program_key"]),
             "program_key": entry["program_key"]}
         if entry["program_key"] in RUNTIME_LOOP_BOUND_KEYS:
             row["runtime_loop_bound_profile"] = "runtime-loop-bound-v1"
+        if entry["program_key"] in CEIL_ADMISSION_KEYS:
+            row["ceil_admission_profile"] = CEIL_ADMISSION_PROFILE
         if entry["program_key"] in SIMULATION_SAMPLER_KEYS:
             row["simulation_sampler_profile"] = SIMULATION_SAMPLER_PROFILE
         if entry["program_key"] in HASH_SCALAR_UINT_XOR_KEYS:

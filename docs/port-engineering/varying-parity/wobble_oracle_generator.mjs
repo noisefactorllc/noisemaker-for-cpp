@@ -56,13 +56,9 @@ const schema = 'noisemaker-for-cpp.wobble189.pixel-parity.v1'
 const schemaVersion = 1
 const programKey = 'filter/wobble:wobble'
 const effectKey = 'filter/wobble'
-function deriveCorpusRevision(root) {
-  const text = fs.readFileSync(path.join(root, 'tools/glslcpp/check_corpus.py'), 'utf8')
-  const match = text.match(/^REVISION = "([0-9a-f]{40})"/m)
-  if (!match) throw Error('cannot derive corpus revision from tools/glslcpp/check_corpus.py')
-  return match[1]
-}
-const corpusRevision = deriveCorpusRevision(cppRoot)
+// This package reproduces the immutable historical source capture.
+const HISTORICAL_CORPUS_REVISION = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
+const corpusRevision = HISTORICAL_CORPUS_REVISION
 const upstreamRevisionExpected = '0ed489ec46842bffba33ee2ec65a218b6dda51f5'
 const authorityNode = 'v26.0.0'
 const defines = {}

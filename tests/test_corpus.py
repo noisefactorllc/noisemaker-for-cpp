@@ -16,6 +16,7 @@ REPOSITORY = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPOSITORY))
 
 from tests import corpus_census  # noqa: E402
+from tests.simulated_python_links import symlink_metadata  # noqa: E402
 
 
 class CorpusTests(unittest.TestCase):
@@ -44,6 +45,12 @@ class CorpusTests(unittest.TestCase):
         # Every cardinality is derived from the committed vendored/pending
         # split; the split itself is closed over the authority's program set.
         vendored = corpus_census.vendored_count()
+        runtime_keys = {row["runtime_key"] for row in corpus_census.manifest_programs()
+                        if row["runtime_key"] is not None}
+        # Mesh is an authenticated whole-pass runtime route, with no typed
+        # fragment factory. Only the scatter member has a null runtime key.
+        self.assertEqual(runtime_keys,
+                         set(corpus_census.typed_keys()) | {"render/meshRender:render"})
         self.assertEqual(vendored + corpus_census.pending_count(), corpus_census.authority_program_count())
         self.assertEqual(
             summary["counts"],
@@ -53,8 +60,8 @@ class CorpusTests(unittest.TestCase):
                 "sources": vendored,
                 "generated": vendored - 5,
                 "adapter": 5,
-                "keyed_runtime": corpus_census.typed_count(),
-                "draw_op_overrides": vendored - corpus_census.typed_count(),
+                "keyed_runtime": len(runtime_keys),
+                "draw_op_overrides": vendored - len(runtime_keys),
                 "authority_programs": corpus_census.authority_program_count(),
                 "pending": corpus_census.pending_count(),
             },
@@ -209,26 +216,18 @@ void main() {
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
             source = self.manifest_path(root).parent / "sources/classicNoisedeck/bitEffects/bitEffects.glsl"
-            replacement = source.with_name("replacement.glsl")
-            replacement.write_text("void main() {}", encoding="utf-8")
-            try:
-                source.unlink()
-                source.symlink_to(replacement)
-            except (NotImplementedError, OSError):
-                self.skipTest("symlink creation is unavailable")
-            with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
-                check_corpus.validate_corpus(root)
+            with symlink_metadata(source):
+                with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
+                    check_corpus.validate_corpus(root)
 
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)
             source_root = self.manifest_path(root).parent / "sources"
             linked = source_root / "linked"
-            try:
-                linked.symlink_to(source_root / "filter", target_is_directory=True)
-            except (NotImplementedError, OSError):
-                self.skipTest("symlink creation is unavailable")
-            with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
-                check_corpus.validate_corpus(root)
+            linked.mkdir()
+            with symlink_metadata(linked):
+                with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
+                    check_corpus.validate_corpus(root)
 
     def test_safe_path_accepts_ordinary_com10_and_reports_aggregate_failures(self) -> None:
         from tools.glslcpp import check_corpus
@@ -267,13 +266,9 @@ void main() {
             root = pathlib.Path(temporary)
             corpus = self.manifest_path(root).parent
             manifest = corpus / "manifest.json"
-            manifest.unlink()
-            try:
-                manifest.symlink_to("metadata.json")
-            except (NotImplementedError, OSError):
-                self.skipTest("symlink creation is unavailable")
-            with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
-                check_corpus.validate_corpus(root)
+            with symlink_metadata(manifest):
+                with self.assertRaisesRegex(check_corpus.CorpusError, "symlink"):
+                    check_corpus.validate_corpus(root)
 
         with self.temporary_repository() as temporary:
             root = pathlib.Path(temporary)

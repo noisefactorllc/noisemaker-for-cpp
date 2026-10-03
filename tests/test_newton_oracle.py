@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from tests.historical_cpu import historical_cpu_root, historical_run
+from tests.simulated_links import simulate_symlink
+
 import copy
 import hashlib
 import json
@@ -25,9 +28,9 @@ def _sha256(path: pathlib.Path) -> str:
 
 
 def _authority() -> pathlib.Path:
-    value = os.environ.get("NOISEMAKER_CPU_ROOT")
+    value = historical_cpu_root()
     if not value or not pathlib.Path(value).is_dir():
-        raise unittest.SkipTest("NOISEMAKER_CPU_ROOT unavailable; authority test skipped")
+        raise unittest.SkipTest("NOISEMAKER_HISTORICAL_CPU_ROOT unavailable; authority test skipped")
     return pathlib.Path(value)
 
 
@@ -35,7 +38,7 @@ class NewtonOracleTests(unittest.TestCase):
     def _node(self, *args: str, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
         environment = os.environ.copy()
         environment.update(env or {})
-        return subprocess.run(["node", str(GENERATOR), *args], cwd=ROOT, env=environment,
+        return historical_run(["node", str(GENERATOR), *args], cwd=ROOT, env=environment,
                               text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                               check=False)
 
@@ -125,11 +128,11 @@ class NewtonOracleTests(unittest.TestCase):
         self.assertIn("newton oracle: ok", checked.stdout)
         self_test = self._node("--self-test", "--cpu-root", str(authority))
         self.assertEqual(0, self_test.returncode, self_test.stdout + self_test.stderr)
-        materializer_self_test = subprocess.run(["python3", "-B", str(MATERIALIZER), "--self-test"],
+        materializer_self_test = historical_run(["python3", "-B", str(MATERIALIZER), "--self-test"],
             cwd=ROOT, text=True, capture_output=True, check=False)
         self.assertEqual(0, materializer_self_test.returncode,
                          materializer_self_test.stdout + materializer_self_test.stderr)
-        materializer_check = subprocess.run(["python3", "-B", str(MATERIALIZER), "--check"],
+        materializer_check = historical_run(["python3", "-B", str(MATERIALIZER), "--check"],
             cwd=ROOT, text=True, capture_output=True, check=False)
         self.assertEqual(0, materializer_check.returncode,
                          materializer_check.stdout + materializer_check.stderr)
@@ -208,7 +211,7 @@ class NewtonOracleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="newton-oracle-paths-") as raw:
             base = pathlib.Path(raw)
             link = base / "cpp-link"
-            link.symlink_to(ROOT, target_is_directory=True)
+            simulate_symlink(link, ROOT, target_is_directory=True)
             escaped = self._node("--check", "--cpu-root", str(link))
             self.assertNotEqual(0, escaped.returncode)
             self.assertIn("C++ repository", escaped.stderr)
@@ -250,7 +253,7 @@ class NewtonOracleTests(unittest.TestCase):
                 'static_assert(kBindingNames.size() == 22U); '
                 'static_assert(kCases.size() >= 8U); '
                 'static_assert(kMutations.size() >= 12U); return 0; }\n')
-            result = subprocess.run([compiler, "-std=c++20", "-I", str(ROOT),
+            result = historical_run([compiler, "-std=c++20", "-I", str(ROOT),
                                      "-fsyntax-only", str(unit)], cwd=ROOT,
                                     text=True, capture_output=True, check=False)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)

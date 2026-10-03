@@ -1,4 +1,5 @@
 #include "noisemaker/effects/registry.hpp"
+#include "noisemaker/effects/mesh_render_contract.hpp"
 
 #include "noisemaker/js_number.hpp"
 
@@ -125,6 +126,23 @@ void required_binding_array(const Value& value, const std::string& context, bool
     } else {
       nonempty_string(required_field(item.object, "name", ValueKind::string, context), context + ".name");
       const auto& type = required_field(item.object, "type", ValueKind::string, context);
+      const auto& name = required_field(item.object, "name", ValueKind::string, context).string;
+      const auto& cpp_type = required_field(item.object, "cpp_type", ValueKind::string, context).string;
+      const auto& source = required_field(item.object, "source", ValueKind::string, context);
+      const auto& source_name = required_field(item.object, "source_name", ValueKind::string, context).string;
+      // Audio arrays are reserved bindings of these two authenticated programs,
+      // not a general array type admitted for other uniform declarations.
+      const bool audio_binding = name == "audioWaveform" || name == "audioSpectrum" ||
+          type.string == "float[128]" || cpp_type == "glsl::AudioUniform128";
+      if (audio_binding) {
+        const bool correct_program =
+            (context == "synth/scope:scope.uniforms" && name == "audioWaveform") ||
+            (context == "synth/spectrum:spectrum.uniforms" && name == "audioSpectrum");
+        if (!correct_program || type.string != "float[128]" || cpp_type != "glsl::AudioUniform128" ||
+            source.string != "reserved_runtime_state" || source_name != name)
+          throw std::invalid_argument("Malformed compatible compatibility row " + context + ": audio uniform ABI");
+        continue;
+      }
       // "vec4[267]"/"vec4[275]": Remap's retired packed uniform, at its old
       // and new widths (see glsl::RemapUniformData). "double"/"dvec3"/
       // "dvec4": Remap's real custom_adapter ABI (bind_remap reads zone
@@ -135,7 +153,6 @@ void required_binding_array(const Value& value, const std::string& context, bool
       const std::array<std::string_view, 13> allowed_types = {"float", "int", "bool", "vec2", "vec3", "vec4", "ivec2", "vec4[267]", "vec4[275]", "double", "dvec3", "dvec4", "mat3"};
       if (std::find(allowed_types.begin(), allowed_types.end(), type.string) == allowed_types.end())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": uniform type");
-      const auto& source = required_field(item.object, "source", ValueKind::string, context);
       const std::array<std::string_view, 6> allowed_sources = {"effect_parameter", "pass_literal", "pass_derived", "reserved_runtime_state", "resource", "external_texture"};
       if (std::find(allowed_sources.begin(), allowed_sources.end(), source.string) == allowed_sources.end())
         throw std::invalid_argument("Malformed compatible compatibility row " + context + ": uniform source");
@@ -147,6 +164,14 @@ void required_binding_array(const Value& value, const std::string& context, bool
 void validate_compatible_raw(const ProgramCompatibility& row) {
   const auto& raw = row.raw;
   const std::string context = row.program_key;
+  if (context == mesh_contract::route.program_key) {
+    if (!same_value(Value::object_value(raw), Value::object_value(mesh_contract::expected_row())) ||
+        row.canonical_factory != mesh_contract::route.canonical_factory ||
+        row.source_sha256 != mesh_contract::route.source_sha256 || row.semantic_sha256.has_value()) {
+      throw std::invalid_argument("Malformed mesh whole-pass source/ABI contract");
+    }
+    return;
+  }
   exact_object(raw, {"row_kind", "effect_id", "program", "program_key", "status", "reasons", "source", "old_raw_sha256", "new_raw_sha256", "typed_abi_sha256", "old_raw_bytes", "new_raw_bytes", "source_classification", "compatibility_transform", "derivative_use", "draw_mode", "dimensionality", "capabilities", "uniforms", "samplers", "outputs", "output_abi", "semantic", "factory", "authority_pass"}, context);
   for (const auto name : {"effect_id", "program", "program_key"}) nonempty_string(required_field(raw, name, ValueKind::string, context), context + "." + std::string(name));
   if (field(raw, "program_key")->string != field(raw, "effect_id")->string + ":" + field(raw, "program")->string)
@@ -722,36 +747,36 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     throw std::invalid_argument("Production catalog requires the generated singleton");
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
-      provenance_.corpus_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.generated_payload_sha256 != "004c2c9e6a9b6d3eaee171cc167eb47bbe33ed07e26d6d1ef28e103e04a76b95" ||
-      provenance_.normalized_record_stream_sha256 != "2bd77d3b1516df1c34ff9c23896bbbea21d0f681a602a2e392ce5cbe95278521" ||
-      provenance_.compatibility_sha256 != "f3c613fe57dd9d253351c94b2b84dff0ace842bc1ba897bca2f8e3b3c746fd2e" ||
-      provenance_.cpu_behavioral_lock != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
-      provenance_.cpu_behavioral_file_count != 91 ||
-      provenance_.cpu_revision != "27a2a1978c53a3d0a9308a9102e83a26bb41f5e8d3af720597a361ebc6771026" ||
-      provenance_.source_lock_sha256 != "4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812" ||
-      provenance_.cpu_package_sha256 != "c7d8aec82725078b4d31d379323901e83bdfba0a0289ff8428beecdac2c9d78a" ||
+      provenance_.corpus_revision != "e24c844f8dada85551ab084f41db8944fbc176c8" ||
+      provenance_.generated_payload_sha256 != "9780a70ae8a152804f78e2aa1bd4bee0f59f52225e9af6dee51a744c84c3b6cf" ||
+      provenance_.normalized_record_stream_sha256 != "1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7" ||
+      provenance_.compatibility_sha256 != "2a9c070597dca0589e2e3843fc424cd67ee004f15ffb0e94f7838b7a288cad26" ||
+      provenance_.cpu_behavioral_lock != "8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6" ||
+      provenance_.cpu_behavioral_file_count != 94 ||
+      provenance_.cpu_revision != "8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6" ||
+      provenance_.source_lock_sha256 != "c2e0c264dc20338b19a144ee0888bd2ca39edcf325315a7d7ae1f5ced920804d" ||
+      provenance_.cpu_package_sha256 != "55512494c653fa73478b165abc7e3dcb87fe5855dbb4a6135b1fa1542dd0bda0" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||
-      provenance_.cpu_source_lock_sha256 != "1fa90dfdeb0c854a1b910909d5f7788e9305f38b6ab39d6182058e914840c7e2" ||
-      provenance_.upstream_revision != "0ed489ec46842bffba33ee2ec65a218b6dda51f5" ||
-      provenance_.upstream_tree != "cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6" ||
-      provenance_.upstream_package_sha256 != "08cb3f947196e49c009a8eba0bcb1350c68a2fe98444d61fb2cd680ed95ffd50" ||
-      provenance_.upstream_package_lock_sha256 != "b4fa6f5d08263c6ee6eef2dbf5d0426f833fce827a32205c79ea3bc295bd8c4b" ||
+      provenance_.cpu_source_lock_sha256 != "0a979a158b9855341096504af629ba58ca69da91f842ecd8eb9801a3ec30045c" ||
+      provenance_.upstream_revision != "e24c844f8dada85551ab084f41db8944fbc176c8" ||
+      provenance_.upstream_tree != "106256378f2462e38d31023cd2872e0dd8c63f88" ||
+      provenance_.upstream_package_sha256 != "c01127034a8ba662a53801faaf1310129892690ad60f6985b605a314feb9e74f" ||
+      provenance_.upstream_package_lock_sha256 != "dc60539c95e9bf6e7da34250701a898a053e5a3c86f605d0dd6108d95e3e3b56" ||
       provenance_.first_effect_id != "classicNoisedeck/bitEffects" || provenance_.last_effect_id != "synth3d/shape3d")
     throw std::invalid_argument("Production catalog provenance authentication failed");
   manifest_backed_ = true;
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 277 || reference_passes_.size() != 344 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 281 || reference_passes_.size() != 348 || !scatter_.has_value()))
     throw std::invalid_argument("Compatibility census cardinality drift");
-  if (strict_manifest && (provenance_.counts.definitions != 208 || provenance_.counts.passes != 344 || provenance_.counts.reference_program_keys != 304 ||
-      provenance_.counts.backend_programs != 278 || provenance_.counts.compatible_programs != 276 || provenance_.counts.incompatible_programs != 1 ||
-      provenance_.counts.missing_passes != 66 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 185 ||
+  if (strict_manifest && (provenance_.counts.definitions != 210 || provenance_.counts.passes != 348 || provenance_.counts.reference_program_keys != 308 ||
+      provenance_.counts.backend_programs != 282 || provenance_.counts.compatible_programs != 280 || provenance_.counts.incompatible_programs != 1 ||
+      provenance_.counts.missing_passes != 66 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 187 ||
       provenance_.counts.incomplete_definitions != 23 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
-  if (provenance_.backend_fragment_rows != 279 || provenance_.backend_unique_fragment_keys != 277 ||
-      provenance_.backend_raw_exact != 278 || provenance_.backend_semantic_exact != 0)
+  if (provenance_.backend_fragment_rows != 283 || provenance_.backend_unique_fragment_keys != 281 ||
+      provenance_.backend_raw_exact != 282 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());
@@ -884,7 +909,7 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       if (row.reasons != expected_reasons({{"explicit_scatter_adapter", row.program_key}})) throw std::invalid_argument("Scatter reference reason mismatch: " + row.program_key);
     } else throw std::invalid_argument("Invalid reference compatibility status");
   }
-  if (strict_manifest && expected_reference != 344) throw std::invalid_argument("Compatibility reference authority cardinality drift");
+  if (strict_manifest && expected_reference != 348) throw std::invalid_argument("Compatibility reference authority cardinality drift");
   if (scatter_ && (scatter_->program_key != "filter/wormhole:deposit" || scatter_->adapter != "noisemaker::scatter::wormhole::adapter" || scatter_->registry != "noisemaker::scatter::resolve_scatter_adapter" ||
       scatter_->draw_mode != "points" || scatter_->dimensionality != "image" || scatter_->count != "input" ||
       scatter_->input_texture != "inputTex" || scatter_->destination_mutation != "in_place_accumulate" ||
@@ -974,34 +999,6 @@ NormalizedArguments EffectRegistry::normalize(const EffectDefinition& definition
   }
   for (std::size_t index = 0; index < params.size(); ++index) {
     if (!present[index] && !params[index].default_value.has_value()) throw std::invalid_argument("Missing required parameter \"" + params[index].name + "\" for " + definition.id);
-  }
-  // filter/dither: the authority's findClosestPaletteColor (canonical-kernels.js)
-  // hands each non-trivial palette table (DOT_MATRIX, AMBER, PICO8, C64, CGA,
-  // ZX_SPECTRUM, APPLE_II, EGA -- palette values 2..9) through
-  // `$runtime.copy(pal)` (glsl-runtime.js `copy()`, `alloc(value.length);
-  // out.set(value)`). `pal` is an array of Float32Array triples, so
-  // `value.length` is the palette's ENTRY COUNT (4/15/16), and
-  // `Float32Array.prototype.set` coerces each Float32Array entry with
-  // `Number(...)`, which is NaN for a typed array -- corrupting the palette
-  // copy into an all-NaN flat array. `findClosest4/15/16` then returns a bare
-  // NaN (pal[0], never replaced because every `dist < minDist` compares NaN
-  // to NaN), and the caller's `ditherWithPalette(...).reduce(...)` throws
-  // `TypeError: ... .reduce is not a function`. Only palette 0 (input, which
-  // never reaches findClosestPaletteColor) and 1 (monochrome, whose branch
-  // returns before the corrupted copy) survive. Every other palette value
-  // crashes the authority unconditionally, independent of ditherType, size,
-  // time, or any other parameter -- so refuse it here rather than render a
-  // program the authority can never produce bytes for.
-  if (definition.id == "filter/dither") {
-    for (const auto& [name, value] : values) {
-      if (name == "palette" && value.kind == PlanValue::Kind::number &&
-          value.number != 0.0 && value.number != 1.0) {
-        throw std::invalid_argument(
-            "Parameter \"palette\" is not renderable by the authority: only "
-            "input(0) and monochrome(1) avoid its findClosestPaletteColor "
-            "NaN-corruption bug (canonical-kernels.js copy()/findClosest4-15-16)");
-      }
-    }
   }
   NormalizedArguments result;
   for (std::size_t index = 0; index < params.size(); ++index) if (present[index] || params[index].default_value.has_value()) result.values.push_back({params[index].name, std::move(values[index].second)});

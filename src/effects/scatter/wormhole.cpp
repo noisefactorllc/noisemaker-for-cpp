@@ -140,8 +140,21 @@ void run_deposit(const Surface& input, Surface& destination, const Uniforms& uni
       const double offset_x = mul(add(f32r(fdlibm::cos(angle)), 1.0), f32r(pixel_stride));
       const double offset_y = mul(add(f32r(fdlibm::sin(angle)), 1.0), f32r(pixel_stride));
 
-      std::int64_t destination_x = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_x), offset_x)));
-      std::int64_t destination_y = static_cast<std::int64_t>(std::floor(add(static_cast<double>(source_y), offset_y)));
+      double destination_x_number = std::floor(add(static_cast<double>(source_x), offset_x));
+      double destination_y_number = std::floor(add(static_cast<double>(source_y), offset_y));
+      // JS ignores TypedArray writes with NaN indices. Repeat/mirror also
+      // turn infinite coordinates into NaN, while clamp maps infinities to
+      // the appropriate edge. Preserve that distinction before converting
+      // any coordinate to an integer (non-finite casts are undefined in C++).
+      if (std::isnan(destination_x_number) || std::isnan(destination_y_number)) continue;
+      if (wrap == 2) {
+        destination_x_number = std::clamp(destination_x_number, 0.0, static_cast<double>(width - 1));
+        destination_y_number = std::clamp(destination_y_number, 0.0, static_cast<double>(height - 1));
+      } else if (!std::isfinite(destination_x_number) || !std::isfinite(destination_y_number)) {
+        continue;
+      }
+      std::int64_t destination_x = static_cast<std::int64_t>(destination_x_number);
+      std::int64_t destination_y = static_cast<std::int64_t>(destination_y_number);
 
       if (wrap == 0) {
         destination_x = wrap_mirror(destination_x, width);

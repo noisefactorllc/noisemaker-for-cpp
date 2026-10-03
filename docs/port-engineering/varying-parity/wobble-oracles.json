@@ -62,11 +62,11 @@
     "node_version": "v26.0.0",
     "generator": {
       "relative_path_from_noisemaker_for_cpp": "docs/port-engineering/varying-parity/wobble_oracle_generator.mjs",
-      "sha256": "23c2e15d77a5a1530e4e529a21d852a55f945d3300f588374a6028597d40e780"
+      "sha256": "9c24d085ee33aeea06a28f8fe673d5108c34834f0f968769860136339fbfc672"
     },
     "native_include_generator": {
       "relative_path_from_noisemaker_for_cpp": "tools/glslcpp/generate_wobble_native_oracle_include.py",
-      "sha256": "b97d718307f99b6ff3e2e84da6344d45e65eefc3f3d565583ac63d53a556db99"
+      "sha256": "c95325f8dc5b31abf6c015b1215aaaf882c8b890a340f4575cc6cc189baf2bc9"
     },
     "cpu_snapshot": {
       "argument": "<immutable-cpu-snapshot-root>",

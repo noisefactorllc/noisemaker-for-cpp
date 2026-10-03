@@ -11,6 +11,7 @@ import unittest
 
 from tests import corpus_census
 from tools.dsl import generate_backend_compatibility as generator
+from tools.dsl import mesh_render_contract
 
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
@@ -42,8 +43,16 @@ class BackendCompatibilityTests(unittest.TestCase):
 
     def test_authority_and_backend_census_are_authenticated(self) -> None:
         document = self.document
-        self.assertEqual(corpus_census.typed_count() + 2, document["counts"]["fragment_rows"])
-        self.assertEqual(corpus_census.typed_count(), document["counts"]["unique_fragment_keys"])
+        whole_pass = [row for row in document["canonical_programs"]
+                      if row["factory"]["route"]["kind"] == "whole_pass"]
+        self.assertEqual([mesh_render_contract.KEY], [row["program_key"] for row in whole_pass])
+        self.assertEqual(mesh_render_contract.compatibility_row(ROOT), whole_pass[0])
+        self.assertEqual(corpus_census.typed_count() + len(whole_pass) + 2,
+                         document["counts"]["fragment_rows"])
+        self.assertEqual(corpus_census.typed_count() + len(whole_pass),
+                         document["counts"]["unique_fragment_keys"])
+        self.assertNotIn("semantic", whole_pass[0])
+        self.assertNotIn("typed_manifest_output", whole_pass[0]["factory"])
         self.assertEqual(sorted(document["reference_key_closure"]),
                          [item["program_key"] for item in corpus_census.pending()["authority"]["programs"]])
         self.assertEqual(
@@ -51,9 +60,9 @@ class BackendCompatibilityTests(unittest.TestCase):
             document["counts"]["duplicate_fragment_keys"],
         )
         self.assertEqual("filter/wormhole:deposit", document["scatter"]["program_key"])
-        self.assertEqual("0ed489ec46842bffba33ee2ec65a218b6dda51f5", document["authority"]["upstream_revision"])
-        self.assertEqual("cde1fb6e5fc82a2fd65b2f9e35a72023e738f3f6", document["authority"]["upstream_tree"])
-        self.assertEqual("4377a61cae9f82b46b97ba87fffd8e1165c6ff7dfa04dff70500e96f16486812", document["authority"]["source_lock_sha256"])
+        self.assertEqual("e24c844f8dada85551ab084f41db8944fbc176c8", document["authority"]["upstream_revision"])
+        self.assertEqual("106256378f2462e38d31023cd2872e0dd8c63f88", document["authority"]["upstream_tree"])
+        self.assertEqual("c2e0c264dc20338b19a144ee0888bd2ca39edcf325315a7d7ae1f5ced920804d", document["authority"]["source_lock_sha256"])
         self.assertEqual(corpus_census.vendored_count(), document["counts"]["raw_exact"])
         self.assertEqual(0, document["counts"]["semantic_exact"])
         self.assertEqual([], document["counts"]["incompatible_keys"])
@@ -154,6 +163,22 @@ class BackendCompatibilityTests(unittest.TestCase):
     def test_draw_mode_and_dimensionality_fail_closed(self) -> None:
         self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(draw_mode="points"))
         self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(dimensionality="volume"))
+
+    def test_mesh_whole_pass_source_route_and_abi_forgery_fail_closed(self) -> None:
+        for change in (
+            lambda row: row["factory"]["route"].update(kind="typed_emitter"),
+            lambda row: row["whole_pass_contract"].update(cpu_adapter_sha256="0" * 64),
+            lambda row: row["whole_pass_contract"].update(vertex_sha256="0" * 64),
+            lambda row: row["whole_pass_contract"].update(definition_sha256="0" * 64),
+            lambda row: row["uniforms"].reverse(),
+            lambda row: row["samplers"][0].update(resource="forged"),
+            lambda row: row["output_abi"]["extent"].update(format="rgba32f"),
+        ):
+            def mutate(document, change=change):
+                row = next(row for row in document["canonical_programs"]
+                           if row["program_key"] == mesh_render_contract.KEY)
+                change(row)
+            self._assert_fails_closed(mutate)
 
     def test_unknown_status_reason_and_reference_key_fail_closed(self) -> None:
         self._assert_fails_closed(lambda document: document["canonical_programs"][0].update(status="maybe"))

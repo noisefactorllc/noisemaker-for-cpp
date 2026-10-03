@@ -63,11 +63,12 @@ SPRITE_MEAN_TILES_KEY = "render/pointsBillboardRender:spriteMeanTiles"
 # [5,40] yields at most 40 -- so the runtime guard on the uniform float makes
 # the 40 bound genuine.
 LENIA_KEY = "points/lenia:convolve"
+ROLL_KEY = "synth/roll:roll"
 # Noise lands atomically with its frame and scalar-XOR companions.
 PREPARED_RUNTIME_LOOP_BOUND_KEYS: tuple[str, ...] = ()
 RUNTIME_LOOP_BOUND_KEYS = frozenset(
     {TETRA_KEY, STATS_KEY, NOISE_KEY, CURL_KEY, SPRITE_MEAN_TILES_KEY,
-     LENIA_KEY, *BLUR_KEYS, *CF_KEYS})
+     LENIA_KEY, ROLL_KEY, *BLUR_KEYS, *CF_KEYS})
 
 
 @dataclass(frozen=True, slots=True)
@@ -535,12 +536,23 @@ def validate_runtime_loop_contract(
              and contract.radius_declaration is not None
              and contract.radius_declaration.symbol == contract.seed.symbol
              and contract.seed.provenance == "runtime-metadata-uniform-ceil")
+    roll = (contract.seed is not None
+            and contract.key == ROLL_KEY and contract.kind == "positive-height-spread"
+            and contract.uniform_name == "fullResolution"
+            and contract.minimum == 1 and contract.uniform_maximum == float("inf")
+            and contract.default == 512 and contract.maximum == 768
+            and contract.render_scale_name is None
+            and contract.radius_declaration is not None
+            and contract.radius_declaration.symbol == contract.seed.symbol
+            and contract.lane_seeds == () and contract.tile_seeds == ()
+            and contract.input_surface_name is None and contract.exact_output_extent is None
+            and contract.seed.provenance == "runtime-positive-height-spread")
     malformed_scalar = (contract.seed is not None
                         and (contract.seed.symbol_id != contract.seed.symbol.id
                              or type(contract.seed.maximum) is not int
                              or contract.seed.maximum < 0))
     if not (tetra or blur or cf or stats or noise or curl or sprite_mean
-            or lenia) or malformed_scalar:
+            or lenia or roll) or malformed_scalar:
         raise _fail("malformed authenticated runtime contract")
     return contract
 
@@ -676,6 +688,9 @@ def authenticate_runtime_loop_bound(
         return _authenticate_sprite_mean_tiles(program, source_hash)
     if program.key == LENIA_KEY:
         return _authenticate_lenia(program, source_hash)
+    if program.key == ROLL_KEY:
+        from .roll_loop_profile import authenticate
+        return authenticate(program, source_hash)
 
     raw = program.raw_source.encode("utf-8")
     normalized = program.source.encode("utf-8")
@@ -1478,7 +1493,7 @@ def apply_runtime_loop_bound(program: TypedProgram, source_hash: str,
 __all__ = (
     "PROFILE", "TETRA_KEY", "BLUR_H_KEY", "BLUR_V_KEY", "BLUR_KEYS",
     "CF_BLUR_KEY", "CF_SHARPEN_KEY", "CF_KEYS", "STATS_KEY",
-    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY", "LENIA_KEY",
+    "NOISE_KEY", "CURL_KEY", "SPRITE_MEAN_TILES_KEY", "LENIA_KEY", "ROLL_KEY",
     "RUNTIME_LOOP_BOUND_KEYS", "PREPARED_RUNTIME_LOOP_BOUND_KEYS",
     "RuntimeScalarBoundSeed", "RuntimeLaneBoundSeed", "RuntimeTileBoundSeed",
     "RuntimeLoopBoundContract",

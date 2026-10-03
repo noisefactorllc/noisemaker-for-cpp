@@ -27,7 +27,6 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_classicNoisedeck_shapes_shapes(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_classicNoisedeck_splat_splat(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_adjust_adjust(const glsl::Bindings& bindings);
-[[nodiscard]] BoundKernel bind_filter_bc_bc(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_bloom_brightPass(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_bloom_composite(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_bloom_ntapGather(const glsl::Bindings& bindings);
@@ -45,7 +44,6 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_chrome_chMap(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_clouds_clouds(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_colorReplace_colorReplace(const glsl::Bindings& bindings);
-[[nodiscard]] BoundKernel bind_filter_colorspace_colorspace(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfBlend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfBlur(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_convolutionFeedback_cfSharpen(const glsl::Bindings& bindings);
@@ -79,7 +77,6 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_filter_highPass_hpBlurV(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_highPass_hpCombine(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_historicPalette_historicPalette(const glsl::Bindings& bindings);
-[[nodiscard]] BoundKernel bind_filter_hs_hs(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_invert(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_invert_inv(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_filter_lens_lens(const glsl::Bindings& bindings);
@@ -236,6 +233,8 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernelMrt bind_points_physical_agent(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_points_physical_passthrough(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_loopBegin_loopBegin(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_meshLoader_preview(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_render_meshRender_clear(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_blend(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_clearDefocus(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_render_pointsBillboardRender_copy(const glsl::Bindings& bindings);
@@ -277,10 +276,14 @@ namespace noisemaker::generated {
 [[nodiscard]] BoundKernel bind_synth_reactionDiffusion_rd(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_reactionDiffusion_rdFb(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_remap_remap(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_roll_copy(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_roll_roll(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_sacredGeometry_sacredGeometry(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_scope_scope(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_shape_shape(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_solid(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_solid_solid(const glsl::Bindings& bindings);
+[[nodiscard]] BoundKernel bind_synth_spectrum_spectrum(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_subdivide_subdivide(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernel bind_synth_testPattern_testPattern(const glsl::Bindings& bindings);
 [[nodiscard]] BoundKernelMrt bind_synth3d_cell3d_precompute(const glsl::Bindings& bindings);

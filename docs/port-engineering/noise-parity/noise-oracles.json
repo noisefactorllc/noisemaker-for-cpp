@@ -189,11 +189,11 @@
     },
     "generator": {
       "relative_path": "docs/port-engineering/noise-parity/noise_oracle_generator.mjs",
-      "sha256": "87bf86fd731bcf1662df7991d19af1ab25fad932bfdd98f605381da86f49ce35"
+      "sha256": "93e36d585dce77b4a1542fe5c07ab8f2fc70cc231ea9babf6c1fd748fc516363"
     },
     "materializer": {
       "relative_path": "tools/glslcpp/generate_noise_native_oracle_include.py",
-      "sha256": "1dbf1385cbe987a3095cdba732a3d996b21a6f347077111144b499afd0b8ce6f"
+      "sha256": "2d817dddf752adeb553dc3ecf6cab1f54df0fe5601f3ad2b825d9dcf800044ef"
     },
     "cpu_root": "<immutable-cpu-snapshot-root>"
   },

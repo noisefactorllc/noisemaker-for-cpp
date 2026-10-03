@@ -1,6 +1,8 @@
 #include "test_harness.hpp"
 
 #include <cstdint>
+#include <cmath>
+#include <limits>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -150,6 +152,68 @@ TEST(scatter_wormhole_rejects_mismatched_dimensions) {
   noisemaker::Surface destination(3, 3);
   noisemaker::scatter::wormhole::Uniforms uniforms;
   REQUIRE_THROWS_AS(noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms), std::invalid_argument);
+}
+
+TEST(scatter_wormhole_ignores_nonfinite_destination_indices_like_js_typed_arrays) {
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  const double infinity = std::numeric_limits<double>::infinity();
+  for (const auto wrap : {0.0, 1.0, 2.0}) {
+    for (const auto stride : {nan, infinity, -infinity}) {
+      // Infinite offsets remain infinite for repeat/mirror, but clamp turns
+      // them into finite edge indices. NaN remains an ignored index in all modes.
+      noisemaker::Surface input(2U, 2U);
+      input.clear({0.25F, 0.5F, 0.75F, 1.0F});
+      noisemaker::Surface destination(2U, 2U);
+      destination.clear({0.125F, 0.25F, 0.5F, 1.0F});
+      auto expected = std::vector<float>(destination.data().begin(), destination.data().end());
+      // CPU26d runWormholeDeposit captures: clamp preserves infinite offset
+      // signs and accumulates all four source pixels at the selected corner.
+      if (wrap == 2.0 && !std::isnan(stride)) {
+        const auto offset = stride > 0.0 ? 4U : 8U;
+        expected[offset] = noisemaker::uint_bits_to_float(0x3f382000U);
+        expected[offset + 1U] = noisemaker::uint_bits_to_float(0x3fb82000U);
+        expected[offset + 2U] = noisemaker::uint_bits_to_float(0x40124000U);
+      }
+      noisemaker::scatter::wormhole::Uniforms uniforms;
+      uniforms.stride = stride;
+      uniforms.wrap = wrap;
+      noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms);
+      REQUIRE(std::vector<float>(destination.data().begin(), destination.data().end()) == expected);
+    }
+    noisemaker::Surface input(2U, 2U);
+    input.clear({static_cast<float>(nan), 0.5F, 0.75F, 1.0F});
+    noisemaker::Surface destination(2U, 2U);
+    const auto before = std::vector<float>(destination.data().begin(), destination.data().end());
+    noisemaker::scatter::wormhole::Uniforms uniforms;
+    uniforms.wrap = wrap;
+    noisemaker::scatter::wormhole::run_deposit(input, destination, uniforms);
+    REQUIRE(std::vector<float>(destination.data().begin(), destination.data().end()) == before);
+  }
+}
+
+TEST(scatter_wormhole_step_chain_matches_cpu26d_nan_input_capture) {
+  noisemaker::Renderer renderer;
+  const std::string source =
+      "search synth, filter\n"
+      "sacredGeometry(geometry: 0, scale: 10, rings: 3, starPoints: 5, rotation: 0, thickness: 0.2, smoothness: 0.02, fgColor: #ffffff, bgColor: #000000, animation: 0, speed: 1, pulseDepth: 0.15).step(threshold: 0, antialias: true).wormhole(kink: 1, stride: 1, rotation: 0, wrap: 1, alpha: 1).write(o0)\n"
+      "render(o0)\n";
+  noisemaker::RenderOptions options;
+  options.width = 17U;
+  options.height = 11U;
+  options.time = 0.25;
+  const auto result = renderer.render(source, options);
+  const auto bytes = result.to_rgba8();
+  std::string float_bytes;
+  for (const auto value : result.surface().data()) {
+    const auto word = noisemaker::float_bits_to_uint(value);
+    for (unsigned shift = 0U; shift < 32U; shift += 8U)
+      float_bytes.push_back(static_cast<char>((word >> shift) & 255U));
+  }
+  REQUIRE(noisemaker::graph::detail::sha256(float_bytes) ==
+          "1677bc99841a29708da0f53ce347455fdce634b7183cdb4f54c902c002e4f3d3");
+  REQUIRE(noisemaker::graph::detail::sha256(std::string_view(
+      reinterpret_cast<const char*>(bytes.data()), bytes.size())) ==
+      "e48a9e4d46e889df3994ec38f6da7764ad6194ff8549ec12f84ad464008292eb");
 }
 
 // Drives the real, live `GraphExecutor::execute()` dispatch branch end to

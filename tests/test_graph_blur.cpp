@@ -273,14 +273,12 @@ TEST(graph_executor_evaluates_ordered_uniform_conditions) {
       .second.array[0].object[1].second =
       noisemaker::effects::Value::number_value(99.0);
   reauthenticate(plan);
-  try {
-    static_cast<void>(renderer.render(plan, options(7U, 5U)));
-    REQUIRE(false);
-  } catch (const noisemaker::graph::GraphError& error) {
-    REQUIRE(error.code() == noisemaker::graph::GraphErrorCode::read_before_write);
-    REQUIRE(error.pass_name() == "blurV");
-    REQUIRE(error.program_key() == "filter/blur:blurV");
-  }
+  // CPU26d initializes consumed underscore-prefixed scratch even when its
+  // producer is conditional. With blurH skipped, blurV reads cleared _blurTemp.
+  const auto skipped = renderer.render(plan, options(7U, 5U));
+  REQUIRE(skipped.pass_count() == 2U);
+  for (const auto value : skipped.surface().data()) REQUIRE(value == 0.0F);
+  for (const auto value : skipped.to_rgba8()) REQUIRE(value == 0U);
 }
 
 TEST(graph_executor_rejects_reauthenticated_noncanonical_factory_pairs) {

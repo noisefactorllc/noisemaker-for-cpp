@@ -18,9 +18,8 @@ PACKAGE = ROOT / "docs/port-engineering/arrays/emboss-parity"
 ORACLE = PACKAGE / "emboss-parity-oracles.json"
 OUTPUT = ROOT / "tests/oracles/emboss181_expected.inc"
 PROGRAM_KEY = "filter/emboss:emboss"
-sys.path.insert(0, str(ROOT / "tools/glslcpp"))
-import check_corpus  # noqa: E402  (deliberately late and local)
-CORPUS_REVISION = check_corpus.REVISION
+# Historical capture source; independent of the current live corpus.
+CORPUS_REVISION = "0ed489ec46842bffba33ee2ec65a218b6dda51f5"
 EXPECTED_CASES = (
     ("full-frame-default-nonsquare", 9, 6),
     ("general-angle-only", 9, 6),
