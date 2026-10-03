@@ -1552,6 +1552,15 @@ double acos(double x) noexcept { return fd_acos(x); }
 double atan(double x) noexcept { return fd_atan(x); }
 double atan2(double y, double x) noexcept { return fd_atan2(y, x); }
 
+// JS never produces an observable NaN other than the canonical positive
+// quiet NaN: V8 canonicalizes every NaN when it crosses back into a JS
+// Number (heap-number boxing, typed-array loads and stores). C++-resident
+// call chains keep the raw libm NaN -- sign bit set on x86 -- so any
+// wrapper modeling a JS builtin must canonicalize its NaN results itself.
+[[nodiscard]] double canonicalize_js_nan(double value) noexcept {
+  return std::isnan(value) ? std::numeric_limits<double>::quiet_NaN() : value;
+}
+
 // ============================================================
 // pow(x, y): V8's LIVE Math.pow (v8::internal::math::pow,
 // src/numbers/ieee754.cc, active whenever `use_std_math_pow` is true --
@@ -1573,16 +1582,20 @@ double pow(double x, double y) noexcept {
   if (std::isinf(y) && (x == 1.0 || x == -1.0)) {
     return std::numeric_limits<double>::quiet_NaN();
   }
-  // std::pow distinguishes signaling/quiet NaN; JS doesn't, and any NaN
-  // canonicalizes to the same bit pattern once it crosses back into a JS
-  // Number, so no explicit canonicalization of x is needed here.
+  // JS never observes a signed NaN: every NaN result canonicalizes to the
+  // positive quiet NaN when it crosses back into a JS Number (V8 heap-number
+  // boxing and typed-array stores both canonicalize), so callers had no need
+  // to canonicalize here. But C++-resident call chains -- e.g. the mesh
+  // renderer's gamma, whose double never crosses a JS boundary -- keep the
+  // libm's raw NaN (sign bit set on x86), so pow must return the JS-visible
+  // bit pattern itself.
   if (y == 2.0) {
-    return x * x;
+    return canonicalize_js_nan(x * x);
   } else if (y == 0.5) {
     if (std::isinf(x)) return std::numeric_limits<double>::infinity();
-    return std::sqrt(x + 0.0);
+    return canonicalize_js_nan(std::sqrt(x + 0.0));
   }
-  return std::pow(x, y);
+  return canonicalize_js_nan(std::pow(x, y));
 }
 
 // hypot() (2/3/N-arg) lives in src/fdlibm_off.cpp -- Math.hypot is a

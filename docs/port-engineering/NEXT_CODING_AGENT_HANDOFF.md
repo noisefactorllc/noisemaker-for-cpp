@@ -1,5 +1,60 @@
 # noisemaker-for-cpp Continuation Plan
 
+> ## CONTINUATION CHECKPOINT 2026-10-03: FDLIBM POW NaN CANONICALIZATION REPAIRS THE CI PYTHON SUITE AT 4a68fe9; NO PROMOTION
+>
+> Ordering: unchanged; the controlling 2026-09-24 acceptance order remains as
+> stated in the earlier checkpoints below. This pass is a fix-forward repair of
+> a new exact-source CI failure; it promotes no program and changes no queue
+> entry.
+>
+> ### What landed (this pass)
+> - **Root cause of the `python test suite` CI failure at
+>   [4a68fe9](https://github.com/noisefactorllc/noisemaker-for-cpp/commit/4a68fe9cd51527dc7124777cd17c5c323d0161d9)**
+>   (run 37109786967, job 111165303125, step "Run full discovery", exit 1): the
+>   new mesh-render adapter capture case `negative-color-nan` recorded the CPU
+>   26d6f42 word `0x7FC00000` (+NaN) where the port produced `0xFFC00000`
+>   (-NaN). The chain is `fragment()`'s gamma, `fdlibm::pow(-0.1, 1/2.2)`: the
+>   `std::pow` fallback returns the x86 default negative quiet NaN, while a JS
+>   `Math.pow` result canonicalizes to the positive quiet NaN when it is boxed
+>   back into a JS Number — a boundary the C++-resident mesh renderer never
+>   crosses. The wrapper's old comment asserted canonicalization was needless;
+>   that only holds for callers whose values re-enter JS.
+> - **Fix (forward, in `src/fdlibm.cpp`)**: new `canonicalize_js_nan()` helper;
+>   all three `fdlibm::pow` result paths (`x * x`, the `y == 0.5`
+>   `std::sqrt` branch, and the `std::pow` fallback) now return the canonical
+>   positive quiet NaN whenever the result is NaN, reproducing the bit pattern
+>   JS actually observes. Provenance comment updated. Non-NaN results,
+>   including signed zeros, are untouched. Typed-slice/graph paths are
+>   unaffected: their existing Float32Array-boundary canonicalization is
+>   idempotent on an already-canonical NaN.
+> - **Verification**: `tests/test_mesh_render_adapter.py` (23-case exact
+>   capture, was RED on `negative-color-nan`, now GREEN) and
+>   `test_mesh_render_route.py` green; every other module added or changed in
+>   4a68fe9 re-run green (mesh loader, binding ABI digest, chain/grade value
+>   copy, corrupt kernel, export-kit coverage, historical CPU, midi/audio
+>   inputs, roll admission, osd current kernel, reverb/roll kernels, DSL
+>   executable corpus, historical retired kernels, audio uniform profile,
+>   glitch mat4 chain, dither emitter lowering — 51 passed, 5 skipped, 555
+>   subtests); cmake build + ctest 4/4 (local g++-12 needs a build-only
+>   `-Wno-restrict` for a pre-existing false positive in `js_number.hpp`; no
+>   committed change); all six declared generator `--check` gates green
+>   against the CPU 26d6f42 authority; zero symlinks.
+> - **Exact-source CI at 4a68fe9 (unchanged legs)**: generator determinism
+>   py3.12/py3.13, byte-exact corpus parity, native ubuntu/macos Debug+Release,
+>   sanitizers, and the install+consumer job all succeeded; `drift` failed with
+>   the same pre-existing authority-drift failure already excluded at
+>   f18a3dde — it remains the open gap it was before this commit.
+> - **Operational note (not a repo defect)**: the job check mirror for
+>   `backend-compatibility`/`effect-catalog` archives CPU authority 61aa869,
+>   which the repository no longer pins (ci.yml checks out 26d6f42); against
+>   the pinned authority both gates pass. Evidence:
+>   Worker Elves job 1e5e9761, /workspace/evidence/check-repair-4a68fe9.md.
+>
+> ### Remaining queue
+> Unchanged: the counted-for first blockers (flythrough3d parameter-bound
+> proof among them), pass-binding and remaining frontier clusters, and the 26
+> pending programs.
+
 > ## CONTINUATION CHECKPOINT 2026-10-01: LENIA CONVOLVE PROMOTED (FIRST FLOAT-UNIFORM-CEIL LOOP BOUND); 278 VENDORED / 26 PENDING
 >
 > Ordering: unchanged; the controlling 2026-09-24 acceptance order remains as
