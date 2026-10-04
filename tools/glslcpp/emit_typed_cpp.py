@@ -258,6 +258,11 @@ from .frontend.log_admission_profile import (
     MANDELBROT_PROFILE as LOG_ADMISSION_MANDELBROT_PROFILE,
     LOG_ADMISSION_KEYS,
     authenticate_log_admission)
+from .frontend.fractal3d_log_profile import (
+    KEY as FRACTAL3D_LOG_KEY,
+    PROFILE as FRACTAL3D_LOG_PROFILE,
+    FRACTAL3D_LOG_KEYS,
+    authenticate_fractal3d_log_admission)
 from .frontend.mandelbrot_sequential_dz_assignment_profile import (
     KEY as MANDELBROT_DZ_KEY,
     PROFILE as MANDELBROT_DZ_PROFILE,
@@ -1109,6 +1114,7 @@ class _Emitter:
     inout_vec3_swap_profile: str | None = None
     out_inout_admission_profile: str | None = None
     log_admission_profile: str | None = None
+    fractal3d_log_profile: str | None = None
     mandelbrot_sequential_dz_assignment_profile: str | None = None
     struct_declaration_profile: str | None = None
     remap_profile: str | None = None
@@ -1599,6 +1605,10 @@ class _Emitter:
         init=False, default=())
     emitted_mandelbrot_logs: list[TypedExpression] = field(
         init=False, default_factory=list)
+    authorized_fractal3d_logs: tuple[TypedExpression, ...] = field(
+        init=False, default=())
+    emitted_fractal3d_logs: list[TypedExpression] = field(
+        init=False, default_factory=list)
     authorized_mandelbrot_sequential_dz_assignment: object | None = field(
         init=False, default=None)
     emitted_mandelbrot_sequential_dz_assignment: list[TypedExpression] = field(
@@ -2021,6 +2031,8 @@ class _Emitter:
         self.emitted_newton_logs = []
         self.authorized_mandelbrot_logs = ()
         self.emitted_mandelbrot_logs = []
+        self.authorized_fractal3d_logs = ()
+        self.emitted_fractal3d_logs = []
         self.authorized_mandelbrot_sequential_dz_assignment = None
         self.emitted_mandelbrot_sequential_dz_assignment = []
         self.emitted_newton_struct_constructors = []
@@ -3473,6 +3485,25 @@ class _Emitter:
         elif self.program.key in LOG_ADMISSION_KEYS:
             raise _error(self.program, self.program,
                          "exact Mandelbrot log admission profile carrier required")
+        if self.fractal3d_log_profile is not None:
+            if (self.program.key != FRACTAL3D_LOG_KEY
+                    or self.fractal3d_log_profile != FRACTAL3D_LOG_PROFILE
+                    or self.compatibility_transform is not None
+                    or self.numeric_literal_contract != "glsl-f32"):
+                raise _error(self.program, self.program,
+                             "fractal3d log admission profile metadata mismatch")
+            try:
+                fractal3d_log_proof = authenticate_fractal3d_log_admission(
+                    self.program, self.source_hash, self.fractal3d_log_profile)
+                if fractal3d_log_proof is None:
+                    raise ValueError("fractal3d log admission proof is absent")
+                self.authorized_fractal3d_logs = tuple(
+                    site.node for site in fractal3d_log_proof.sites)
+            except ValueError as error:
+                raise _error(self.program, self.program, str(error)) from error
+        elif self.program.key in FRACTAL3D_LOG_KEYS:
+            raise _error(self.program, self.program,
+                         "exact fractal3d log admission profile carrier required")
         if self.mandelbrot_sequential_dz_assignment_profile is not None:
             if (self.program.key != MANDELBROT_DZ_KEY
                     or self.mandelbrot_sequential_dz_assignment_profile
@@ -4399,6 +4430,7 @@ class _Emitter:
                 "as_u32_round_profile", "ceil_admission_profile",
                 "waves_any_notequal_profile", "inout_vec3_swap_profile",
                 "out_inout_admission_profile", "log_admission_profile",
+                "fractal3d_log_profile",
                 "mandelbrot_sequential_dz_assignment_profile",
                 "shapes_float_bits_ingress_profile", "grime_float_bits_ingress_profile",
                 "shapes_rvalue_assign_profile", "mutable_global_frame_profile",
@@ -8650,6 +8682,23 @@ class _Emitter:
                                 if value.callee == "packHalf2x16"
                                 else arguments[0])
                     return f"glsl::{helper}({argument})"
+                if value.callee == "log" and self.authorized_fractal3d_logs:
+                    if (not any(value is item
+                                for item in self.authorized_fractal3d_logs)
+                            or len(arguments) != 1
+                            or value.type.display() != "float"
+                            or value.children[0].type.display() != "float"):
+                        raise _error(self.program, value,
+                                     "unsupported builtin log")
+                    if any(value is item
+                           for item in self.emitted_fractal3d_logs):
+                        raise _error(self.program, value,
+                                     "authenticated fractal3d log emitted twice")
+                    self.emitted_fractal3d_logs.append(value)
+                    # glsl::log routes through noisemaker::fdlibm::log (V8's
+                    # own ieee754::log), not std::log -- the same Math.log
+                    # authority contract as the Mandelbrot arm above.
+                    return f"glsl::log({arguments[0]})"
                 if value.callee == "log" and self.authorized_mandelbrot_logs:
                     if (not any(value is item
                                 for item in self.authorized_mandelbrot_logs)
@@ -13288,6 +13337,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                      inout_vec3_swap_profile: str | None = None,
                      out_inout_admission_profile: str | None = None,
                      log_admission_profile: str | None = None,
+                     fractal3d_log_profile: str | None = None,
                      mandelbrot_sequential_dz_assignment_profile: str | None = None,
                      shapes_float_bits_ingress_profile: str | None = None,
                      grime_float_bits_ingress_profile: str | None = None,
@@ -13398,6 +13448,7 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                        inout_vec3_swap_profile,
                        out_inout_admission_profile,
                        log_admission_profile,
+                       fractal3d_log_profile,
                        mandelbrot_sequential_dz_assignment_profile,
                        struct_declaration_profile,
                        remap_profile,
@@ -13625,6 +13676,11 @@ def render_typed_cpp(program: TypedProgram, program_key: str, source_hash: str,
                 != emitter.authorized_mandelbrot_logs):
             raise _error(program, program,
                          "authenticated Mandelbrot log emission mismatch")
+    if emitter.authorized_fractal3d_logs:
+        if (tuple(emitter.emitted_fractal3d_logs)
+                != emitter.authorized_fractal3d_logs):
+            raise _error(program, program,
+                         "authenticated fractal3d log emission mismatch")
     if emitter.authorized_mandelbrot_sequential_dz_assignment is not None:
         expected = emitter.authorized_mandelbrot_sequential_dz_assignment.assignment
         if emitter.emitted_mandelbrot_sequential_dz_assignment != [expected]:

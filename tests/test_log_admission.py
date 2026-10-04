@@ -726,18 +726,19 @@ class PreparedDisciplineTests(unittest.TestCase):
                       str(raised.exception))
 
     def test_corpus_log_census_names_all_three_carriers(self):
-        """Source-level census over the pinned corpus: exactly three
-        programs contain a `log(` token -- newton (its own prepared lane),
-        mandelbrot (this module's), and julia (adapter-only). The module's
-        authenticatable set is mandelbrot alone."""
+        """Source-level census over the pinned corpus: `log(` callers are
+        newton (its own prepared lane), mandelbrot (this module's), julia
+        (adapter-only), and -- since fractal3d:precompute was promoted with
+        its own log admission -- `synth3d/fractal3d:precompute` (that
+        module's). The module's authenticatable set is mandelbrot alone."""
         module = _module()
         carriers = sorted(
             path.relative_to(CORPUS).with_suffix("").as_posix().replace("/", ":")
             for path in CORPUS.rglob("*.glsl")
             if "log(" in path.read_text(encoding="utf-8"))
         self.assertEqual(
-            ["synth:julia:julia", "synth:mandelbrot:mandelbrot",
-             "synth:newton:newton"],
+            ["synth3d:fractal3d:precompute", "synth:julia:julia",
+             "synth:mandelbrot:mandelbrot", "synth:newton:newton"],
             carriers)
         self.assertEqual(frozenset({KEY}), module._authenticatable_keys())
         from tools.glslcpp import check_corpus

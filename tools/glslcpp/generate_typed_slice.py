@@ -403,6 +403,12 @@ if __package__ in (None, ""):
         MANDELBROT_KEY as LOG_ADMISSION_MANDELBROT_KEY,
         MANDELBROT_PROFILE as LOG_ADMISSION_MANDELBROT_PROFILE,
         apply_log_admission, authenticate_log_admission)
+    from tools.glslcpp.frontend.fractal3d_log_profile import (
+        KEY as FRACTAL3D_LOG_KEY,
+        PROFILE as FRACTAL3D_LOG_PROFILE,
+        FRACTAL3D_LOG_KEYS,
+        allowed_row_fields as fractal3d_log_allowed_row_fields,
+        apply_fractal3d_log_admission, authenticate_fractal3d_log_admission)
     from tools.glslcpp.frontend.struct_declaration_profile import (
         NEWTON_KEY as STRUCT_DECLARATION_NEWTON_KEY,
         NEWTON_PROFILE as STRUCT_DECLARATION_NEWTON_PROFILE,
@@ -832,6 +838,12 @@ else:
         MANDELBROT_KEY as LOG_ADMISSION_MANDELBROT_KEY,
         MANDELBROT_PROFILE as LOG_ADMISSION_MANDELBROT_PROFILE,
         apply_log_admission, authenticate_log_admission)
+    from .frontend.fractal3d_log_profile import (
+        KEY as FRACTAL3D_LOG_KEY,
+        PROFILE as FRACTAL3D_LOG_PROFILE,
+        FRACTAL3D_LOG_KEYS,
+        allowed_row_fields as fractal3d_log_allowed_row_fields,
+        apply_fractal3d_log_admission, authenticate_fractal3d_log_admission)
     from .frontend.struct_declaration_profile import (
         NEWTON_KEY as STRUCT_DECLARATION_NEWTON_KEY,
         NEWTON_PROFILE as STRUCT_DECLARATION_NEWTON_PROFILE,
@@ -1806,6 +1818,8 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
                     if key in JULIA_FRONTEND_KEYS else
                     set(struct_declaration_allowed_row_fields(key))
                     if key in STRUCT_DECLARATION_KEYS else
+                    set(fractal3d_log_allowed_row_fields(key))
+                    if key in FRACTAL3D_LOG_KEYS else
                     {"defines", "log_admission_profile",
                      "out_inout_admission_profile", "program_key"}
                     if key == MANDELBROT_SEQUENTIAL_DZ_KEY else
@@ -2392,6 +2406,12 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
             (LOG_ADMISSION_MANDELBROT_KEY,
              LOG_ADMISSION_MANDELBROT_PROFILE, {})]:
         raise GeneratorError("typed slice log admission profile drift")
+    fractal3d_log_profiles = [
+        (item["program_key"], item.get("fractal3d_log_profile"))
+        for item in programs if "fractal3d_log_profile" in item]
+    if fractal3d_log_profiles != [(FRACTAL3D_LOG_KEY, FRACTAL3D_LOG_PROFILE)]:
+        raise GeneratorError(
+            "typed slice fractal3d log admission profile drift")
     if struct_declaration_profiles != [
             (JULIA_KEY, "struct-declaration-julia-v1", {}),
             (STRUCT_DECLARATION_NEWTON_KEY,
@@ -3532,6 +3552,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           remap_frontend_proof: object | None = None,
                           mandelbrot_sequential_dz_assignment_profile: str | None = None,
                           log_admission_profile: str | None = None,
+                          fractal3d_log_profile: str | None = None,
                           struct_declaration_profile: str | None = None,
                           historic_palette_profile: str | None = None,
                           palette_frontend_profile: str | None = None,
@@ -3722,6 +3743,25 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     else:
         authorized_mandelbrot_logs = ()
     visited_mandelbrot_logs: list[TypedExpression] = []
+    if fractal3d_log_profile is not None:
+        if (typed.key != FRACTAL3D_LOG_KEY
+                or fractal3d_log_profile != FRACTAL3D_LOG_PROFILE
+                or numeric_literal_contract != "glsl-f32"):
+            raise GeneratorError(
+                f"{typed.key}: fractal3d log admission profile metadata mismatch")
+        try:
+            fractal3d_log_proof = authenticate_fractal3d_log_admission(
+                typed, source_hash, fractal3d_log_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+        authorized_fractal3d_logs = tuple(
+            item.node for item in fractal3d_log_proof.sites)
+    elif typed.key == FRACTAL3D_LOG_KEY:
+        raise GeneratorError(
+            f"{typed.key}: exact fractal3d log admission profile carrier required")
+    else:
+        authorized_fractal3d_logs = ()
+    visited_fractal3d_logs: list[TypedExpression] = []
     if capabilities.count(SOURCE_GLOBAL_LITERAL_INT_CAPABILITY) != 1:
         raise GeneratorError(
             f"{typed.key}: malformed slice-global source-global literal-int capability")
@@ -7676,7 +7716,12 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 for child in value.children:
                     expression(child)
                 return
-            if any(value is item for item in authorized_mandelbrot_logs):
+            if any(value is item for item in authorized_fractal3d_logs):
+                if any(value is item for item in visited_fractal3d_logs):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated fractal3d log visited twice")
+                visited_fractal3d_logs.append(value)
+            elif any(value is item for item in authorized_mandelbrot_logs):
                 if any(value is item for item in visited_mandelbrot_logs):
                     raise GeneratorError(
                         f"{typed.key}: authenticated Mandelbrot log visited twice")
@@ -8614,6 +8659,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
         if tuple(visited_newton_logs) != authorized_newton_logs:
             raise GeneratorError(
                 f"{typed.key}: authenticated Newton log traversal mismatch")
+    if authorized_fractal3d_logs:
+        if tuple(visited_fractal3d_logs) != authorized_fractal3d_logs:
+            raise GeneratorError(
+                f"{typed.key}: authenticated fractal3d log traversal mismatch")
     if authorized_mandelbrot_logs:
         if tuple(visited_mandelbrot_logs) != authorized_mandelbrot_logs:
             raise GeneratorError(
@@ -9955,6 +10004,19 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                 raise GeneratorError(
                     f"{key}: log admission identity profile mutated program")
             typed = profiled
+        fractal3d_log_profile = slice_spec["programs"][index].get(
+            "fractal3d_log_profile")
+        if fractal3d_log_profile is not None:
+            try:
+                profiled = apply_fractal3d_log_admission(
+                    typed, source_hash, fractal3d_log_profile)
+            except ValueError as error:
+                raise GeneratorError(f"{key}: {error}") from error
+            if profiled is not typed:
+                raise GeneratorError(
+                    f"{key}: fractal3d log admission identity profile "
+                    "mutated program")
+            typed = profiled
         mandelbrot_sequential_dz_assignment_profile = (
             slice_spec["programs"][index].get(
                 "mandelbrot_sequential_dz_assignment_profile"))
@@ -10054,7 +10116,8 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                               remap_frontend_proof=authorized_remap_proof,
                               mandelbrot_sequential_dz_assignment_profile=(
                                   mandelbrot_sequential_dz_assignment_profile),
-                              log_admission_profile=log_admission_profile)
+                              log_admission_profile=log_admission_profile,
+                              fractal3d_log_profile=fractal3d_log_profile)
         try:
             bodies.append(render_typed_cpp(typed, key, source_hash,
                                            f"typed_{index}", "bind_" + key.replace("/", "_").replace(":", "_"),
@@ -10136,7 +10199,9 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
                                            remap_frontend_proof=authorized_remap_proof,
                                            mandelbrot_sequential_dz_assignment_profile=(
                                                mandelbrot_sequential_dz_assignment_profile),
-                                           log_admission_profile=log_admission_profile))
+                                           log_admission_profile=log_admission_profile,
+                                           fractal3d_log_profile=(
+                                               fractal3d_log_profile)))
         except TypedEmissionError as error: raise GeneratorError(str(error)) from error
         factory_route = _factory_route(repository, key)
         manifest_program = {

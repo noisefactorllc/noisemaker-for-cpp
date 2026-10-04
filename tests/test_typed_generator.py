@@ -22629,21 +22629,21 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 280-program tree at the current CPU authority, QUOTED FROM
+        # The four artifacts of the LIVE 281-program tree at the current CPU authority, QUOTED FROM
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38541,
-                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
+                38688,
+                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
             "src/typed_generated/typed_slice.cpp": (
-                3248434,
-                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
+                3266548,
+                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
             "src/typed_generated/typed_manifest.json": (
-                855899,
-                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
+                858979,
+                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
             "include/noisemaker/generated/catalog.hpp": (
-                27528,
-                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
+                27624,
+                "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -23408,21 +23408,21 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
 
     def test_committed_artifacts_match_the_generator_now(self) -> None:
         import hashlib
-        # The four artifacts of the LIVE 280-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
+        # The four artifacts of the LIVE 281-program tree at the current CPU authority, QUOTED FROM THE GENERATED FILES at
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38541,
-                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
+                38688,
+                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
             "src/typed_generated/typed_slice.cpp": (
-                3248434,
-                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
+                3266548,
+                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
             "src/typed_generated/typed_manifest.json": (
-                855899,
-                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
+                858979,
+                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
             "include/noisemaker/generated/catalog.hpp": (
-                27528,
-                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
+                27624,
+                "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24171,17 +24171,17 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38541,
-                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
+                38688,
+                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
             "src/typed_generated/typed_slice.cpp": (
-                3248434,
-                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
+                3266548,
+                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
             "src/typed_generated/typed_manifest.json": (
-                855899,
-                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
+                858979,
+                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
             "include/noisemaker/generated/catalog.hpp": (
-                27528,
-                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
+                27624,
+                "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -24706,17 +24706,17 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38541,
-                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
+                38688,
+                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
             "src/typed_generated/typed_slice.cpp": (
-                3248434,
-                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
+                3266548,
+                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
             "src/typed_generated/typed_manifest.json": (
-                855899,
-                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
+                858979,
+                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
             "include/noisemaker/generated/catalog.hpp": (
-                27528,
-                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
+                27624,
+                "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25305,17 +25305,17 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38541,
-                "016418c4d6955b9dc6300953337cc2f8e90bbaef88c527849c56619bfdd70ec9"),
+                38688,
+                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
             "src/typed_generated/typed_slice.cpp": (
-                3248434,
-                "647a20c1491b1acbf6bfa5bbfc9a5ee400aad6de3baf9a65bd8e7078e0fa7172"),
+                3266548,
+                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
             "src/typed_generated/typed_manifest.json": (
-                855899,
-                "24ddcc05c4705909b1424ce14b9bc010e33611d3af86583b934984ed78f022f1"),
+                858979,
+                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
             "include/noisemaker/generated/catalog.hpp": (
-                27528,
-                "63ac8f921cfcb1027bbc4b2b1ad0c4a1960b582ad61d8a4fe958150daf62d8a1"),
+                27624,
+                "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
         }
         for artifact, (size, digest) in expected.items():
             with self.subTest(artifact=artifact):
@@ -25850,9 +25850,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # `iterations` int uniform, so the frozen authority metadata maximum
         # (20) is a genuine upper bound. The seed reuses the const-global
         # 4-tuple shape; the ratchet additionally binds the frozen maximum to
-        # the pending.json metadata record. Every loop proves; the frontier
-        # advances from `unsupported counted-for program proof` to the `log`
-        # builtin; no program is promoted.
+        # the metadata record. Every loop proves. PROMOTED: the program is
+        # vendored now -- the `log` frontier was admitted by
+        # `fractal3d_log_profile` (node-identity, both authorities), so the
+        # seed-only carrier demand is now the log admission carrier, and the
+        # full profile validates and emits the whole program.
         key = "synth3d/fractal3d:precompute"
         corpus = pathlib.Path(
             f"tools/glslcpp/corpus/{CORPUS_REVISION}")
@@ -25871,15 +25873,20 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                           ("mandelcube", 43, 28, "maxIter", 2),
                           ("juliaCube", 40, 33, "maxIter", 3)),
                          landed["parameters"])
-        source_path = corpus / "pending-sources/synth3d/fractal3d/precompute.glsl"
+        source_path = corpus / "sources/synth3d/fractal3d/precompute.glsl"
         raw = source_path.read_text(encoding="utf-8")
         self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
                          landed["raw"])
-        record = next(item for item in pending["pending"]
+        manifest = _json.loads((corpus / "manifest.json").read_text(
+            encoding="utf-8"))
+        record = next(item for item in manifest["programs"]
                       if item["program_key"] == key)
         self.assertEqual(record["raw_sha256"], landed["raw"])
+        self.assertNotIn(
+            key, [item["program_key"] for item in pending["pending"]])
 
-        effect = pending["effects"]["synth3d/fractal3d"]
+        effect = _json.loads((corpus / "metadata.json").read_text(
+            encoding="utf-8"))["effects"]["synth3d/fractal3d"]
         defaults = check_semantics._metadata_defaults(
             {"effects": {"synth3d/fractal3d": effect}}, key)
 
@@ -25891,20 +25898,21 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
             loop_proof.authenticate_parameter_uniform_metadata(drifted, key)
         self.assertIn("metadata record mismatch", str(ctx.exception))
 
-        # Without the profile the carrier requirement fails closed.
+        # Without the profile the carrier requirement fails closed: the log
+        # admission carrier is demanded first (both authorities' first gate
+        # for this key).
         typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
         with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
             generate_typed_slice.validate_capabilities(
                 typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=landed["raw"])
-        self.assertIn("exact source-global literal-int carrier required",
+        self.assertIn("exact fractal3d log admission profile carrier required",
                       str(ctx.exception))
 
         # With the seed carrier all four loops prove (one per carrier
-        # function; trips <= 20 each, charge 4*20) and the frontier is the
-        # `log` builtin at 93:24 -- juliaBulb's `0.5 * log(r)` distance
-        # estimate (mandelbulb's own log read is normalized line 55 and is
-        # only reached after the frontier construct is admitted).
+        # function; trips <= 20 each, charge 4*20). The seed-only carrier is
+        # no longer sufficient: both authorities now demand the exact
+        # fractal3d log admission profile (the promoted `log` frontier).
         typed = analyze_program(
             parse_program(raw, key, defaults), key,
             source_global_literal_int_profile=
@@ -25921,14 +25929,31 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 source_hash=landed["raw"],
                 source_global_literal_int_profile=
                 loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
-        self.assertIn("93:24: unsupported builtin log", str(ctx.exception))
+        self.assertIn("exact fractal3d log admission profile carrier required",
+                      str(ctx.exception))
         with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
             emit_typed_cpp.render_typed_cpp(
                 typed, key, landed["raw"], "pixel",
                 "bind_synth3d_fractal3d_precompute",
                 source_global_literal_int_profile=
                 loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
-        self.assertIn("93:24: unsupported builtin log", str(ctx.exception))
+        self.assertIn("exact fractal3d log admission profile carrier required",
+                      str(ctx.exception))
+        # With both carriers the whole program validates and emits, lowering
+        # both log sites through the Math.log contract.
+        self.assertIsNone(generate_typed_slice.validate_capabilities(
+            typed, generate_typed_slice.APPROVED_CAPABILITIES,
+            source_hash=landed["raw"],
+            source_global_literal_int_profile=
+            loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+            fractal3d_log_profile="fractal3d-log-admission-v1"))
+        emitted = emit_typed_cpp.render_typed_cpp(
+            typed, key, landed["raw"], "pixel",
+            "bind_synth3d_fractal3d_precompute",
+            source_global_literal_int_profile=
+            loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+            fractal3d_log_profile="fractal3d-log-admission-v1")
+        self.assertEqual(2, emitted.count("glsl::log("))
 
         # Forged source bytes fail closed even with the exact profile.
         with self.assertRaises(Exception) as ctx:

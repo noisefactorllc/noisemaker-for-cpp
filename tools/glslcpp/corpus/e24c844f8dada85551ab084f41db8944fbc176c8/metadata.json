@@ -24606,6 +24606,137 @@
         }
       }
     },
+    "synth3d/fractal3d": {
+      "func": "fractal3d",
+      "kind": "generator",
+      "namespace": "synth3d",
+      "params": {
+        "bailout": {
+          "default": 2,
+          "max": 8,
+          "min": 1,
+          "type": "float",
+          "uniform": "bailout"
+        },
+        "colorMode": {
+          "choices": {
+            "iteration": 2,
+            "mono": 0,
+            "orbitTrap": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "colorMode"
+        },
+        "iterations": {
+          "default": 10,
+          "max": 20,
+          "min": 1,
+          "type": "int",
+          "uniform": "iterations"
+        },
+        "juliaX": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaX"
+        },
+        "juliaY": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaY"
+        },
+        "juliaZ": {
+          "default": 0,
+          "max": 100,
+          "min": -100,
+          "type": "float",
+          "uniform": "juliaZ"
+        },
+        "power": {
+          "default": 8,
+          "max": 16,
+          "min": 2,
+          "type": "float",
+          "uniform": "power"
+        },
+        "type": {
+          "choices": {
+            "juliaBulb": 2,
+            "juliaCube": 3,
+            "mandelbulb": 0,
+            "mandelcube": 1
+          },
+          "default": 0,
+          "type": "int",
+          "uniform": "noiseType"
+        },
+        "volumeSize": {
+          "choices": {
+            "x128": 128,
+            "x16": 16,
+            "x32": 32,
+            "x64": 64
+          },
+          "default": 64,
+          "type": "int",
+          "uniform": "volumeSize"
+        }
+      },
+      "passes": [
+        {
+          "drawBuffers": 2,
+          "inputs": {},
+          "key": "synth3d/fractal3d:precompute",
+          "name": "precompute",
+          "outputs": {
+            "fragColor": "volumeCache",
+            "geoOut": "geoBuffer"
+          },
+          "program": "precompute",
+          "viewport": {
+            "height": {
+              "default": 4096,
+              "param": "volumeSize",
+              "power": 2
+            },
+            "width": {
+              "default": 64,
+              "param": "volumeSize"
+            }
+          }
+        }
+      ],
+      "textures": {
+        "geoBuffer": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        },
+        "volumeCache": {
+          "format": "rgba16f",
+          "height": {
+            "default": 4096,
+            "param": "volumeSize",
+            "power": 2
+          },
+          "width": {
+            "default": 64,
+            "param": "volumeSize"
+          }
+        }
+      }
+    },
     "synth3d/noise3d": {
       "func": "noise3d",
       "kind": "generator",
@@ -25072,6 +25203,7 @@
       "synth/scope",
       "synth/spectrum",
       "synth3d/cell3d",
+      "synth3d/fractal3d",
       "synth3d/noise3d",
       "synth3d/reactionDiffusion3d",
       "synth3d/shape3d"

@@ -1,5 +1,5 @@
 {
-  "metadata_sha256": "85d6844c518dc144002a85a5573858f2ef8608eb4b73dedc67afad570e1454b3",
+  "metadata_sha256": "9f5a4d774b5036fb0d94b159d0b93bb4d80cf5281cef11dd2a9763fadbbaef20",
   "programs": [
     {
       "effect_id": "classicNoisedeck/bitEffects",
@@ -5061,6 +5061,25 @@
       "raw_sha256": "83ef13ab1e5997c76e64280d11e0bdb0eaedd6f41a504d2b1e79761cd1dd1755",
       "runtime_key": "synth3d/cell3d:precompute",
       "source": "sources/synth3d/cell3d/precompute.glsl",
+      "status": "generated",
+      "varyings": []
+    },
+    {
+      "effect_id": "synth3d/fractal3d",
+      "normalized_bytes": 6409,
+      "normalized_sha256": "bfc4b9e886fa4dc5d642abfd6457c643a47287f2095ccac0f99759ad5ff1d5a6",
+      "outputs": [
+        "fragColor",
+        "geoOut"
+      ],
+      "pass_index": 0,
+      "pass_name": "precompute",
+      "program": "precompute",
+      "program_key": "synth3d/fractal3d:precompute",
+      "raw_bytes": 6912,
+      "raw_sha256": "8ab3dfe63e16d4406deee719c1f822d405c712bae21bd1348ae5b75b79a14d41",
+      "runtime_key": "synth3d/fractal3d:precompute",
+      "source": "sources/synth3d/fractal3d/precompute.glsl",
       "status": "generated",
       "varyings": []
     },

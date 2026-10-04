@@ -140,12 +140,13 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(210, provenance["counts"]["definitions"])
             self.assertEqual(348, provenance["counts"]["passes"])
             self.assertEqual(308, provenance["counts"]["reference_program_keys"])
-            # Current authority adds Roll, Scope, Spectrum and the exact
-            # Mesh Render whole-pass adapter to the compatible program census.
-            self.assertEqual(280, provenance["counts"]["compatible_programs"])
+            # Current authority adds Roll, Scope, Spectrum, the exact
+            # Mesh Render whole-pass adapter and the fractal3d:precompute
+            # log admission to the compatible program census.
+            self.assertEqual(281, provenance["counts"]["compatible_programs"])
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
             # Pending authority passes remain explicit in the compatibility census.
-            self.assertEqual(66, provenance["counts"]["missing_passes"])
+            self.assertEqual(65, provenance["counts"]["missing_passes"])
             self.assertEqual(1, provenance["counts"]["scatter_passes"])
             self.assertEqual("1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)

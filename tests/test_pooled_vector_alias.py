@@ -32,7 +32,7 @@ from tools.glslcpp import emit_typed_cpp, generate_typed_slice  # noqa: E402
 
 SLICE_CPP = REPOSITORY / "src/typed_generated/typed_slice.cpp"
 PARALLAX_ALIAS = "[[maybe_unused]] glsl::Vec2& prevUV = rayUV;"
-CURRENT_ALIAS_COUNT = 30
+CURRENT_ALIAS_COUNT = 34
 # One line per emitted alias: `[[maybe_unused]] glsl::VecN& name = source;`
 ALIAS_DECLARATION = re.compile(
     r"\[\[maybe_unused\]\] glsl::Vec[234]& (\w+) = ([A-Za-z_]\w*);")

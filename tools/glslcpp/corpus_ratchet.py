@@ -264,8 +264,14 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
     )
+    from tools.glslcpp.frontend.fractal3d_log_profile import (
+        FRACTAL3D_LOG_KEYS, PROFILE as FRACTAL3D_LOG_PROFILE,
+    )
     ceil_admission_profile = (
         CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
+    )
+    fractal3d_log_profile = (
+        FRACTAL3D_LOG_PROFILE if key in FRACTAL3D_LOG_KEYS else None
     )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
@@ -333,7 +339,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile,
-            ceil_admission_profile=ceil_admission_profile)
+            ceil_admission_profile=ceil_admission_profile,
+            fractal3d_log_profile=fractal3d_log_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
@@ -351,7 +358,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             points_float_bits_ingress_profile=points_float_bits_ingress_profile,
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile,
-            ceil_admission_profile=ceil_admission_profile)
+            ceil_admission_profile=ceil_admission_profile,
+            fractal3d_log_profile=fractal3d_log_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.emitter", "diagnostic": _diagnostic(error)}
     return None
@@ -603,6 +611,9 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
     from tools.glslcpp.frontend.ceil_admission_profile import (
         CEIL_ADMISSION_KEYS, PROFILE as CEIL_ADMISSION_PROFILE,
     )
+    from tools.glslcpp.frontend.fractal3d_log_profile import (
+        FRACTAL3D_LOG_KEYS, PROFILE as FRACTAL3D_LOG_PROFILE,
+    )
     from tools.glslcpp.frontend.simulation_sampler_profile import (
         SIMULATION_SAMPLER_KEYS, PROFILE as SIMULATION_SAMPLER_PROFILE,
     )
@@ -641,6 +652,8 @@ def _add_typed_slice_rows(repository: pathlib.Path, entries: list[dict[str, Any]
             row["runtime_loop_bound_profile"] = "runtime-loop-bound-v1"
         if entry["program_key"] in CEIL_ADMISSION_KEYS:
             row["ceil_admission_profile"] = CEIL_ADMISSION_PROFILE
+        if entry["program_key"] in FRACTAL3D_LOG_KEYS:
+            row["fractal3d_log_profile"] = FRACTAL3D_LOG_PROFILE
         if entry["program_key"] in SIMULATION_SAMPLER_KEYS:
             row["simulation_sampler_profile"] = SIMULATION_SAMPLER_PROFILE
         if entry["program_key"] in HASH_SCALAR_UINT_XOR_KEYS:
