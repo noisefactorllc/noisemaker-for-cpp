@@ -18,13 +18,18 @@ namespace {
 
 using graph::PlanValue;
 
-const Value* field(const std::vector<std::pair<std::string, Value>>& fields,
+// Generic over the two entry shapes in play: std::pair<std::string, Value>
+// rows (definition.raw and friends) and Value's own ObjectEntry rows
+// (include/noisemaker/effects/catalog_types.hpp).
+template <typename Entry>
+const Value* field(const std::vector<Entry>& fields,
                   std::string_view name) {
   for (const auto& item : fields) if (item.first == name) return &item.second;
   return nullptr;
 }
 
-const Value& required_field(const std::vector<std::pair<std::string, Value>>& fields,
+template <typename Entry>
+const Value& required_field(const std::vector<Entry>& fields,
                             std::string_view name, ValueKind kind, const std::string& context) {
   const auto* value = field(fields, name);
   if (value == nullptr || value->kind != kind) {
@@ -33,7 +38,8 @@ const Value& required_field(const std::vector<std::pair<std::string, Value>>& fi
   return *value;
 }
 
-void exact_object(const std::vector<std::pair<std::string, Value>>& fields,
+template <typename Entry>
+void exact_object(const std::vector<Entry>& fields,
                   std::initializer_list<std::string_view> allowed,
                   const std::string& context) {
   std::set<std::string_view> names(allowed.begin(), allowed.end());
@@ -365,7 +371,8 @@ void validate_reference_authority(const ReferencePassCompatibility& row, const P
     throw std::invalid_argument("Reference authority blend/repeat metadata mismatch: " + row.program_key);
 }
 
-std::string string_field(const std::vector<std::pair<std::string, Value>>& fields,
+template <typename Entry>
+std::string string_field(const std::vector<Entry>& fields,
                          std::string_view name) {
   const auto* value = field(fields, name);
   return value != nullptr && value->kind == ValueKind::string ? value->string : std::string{};

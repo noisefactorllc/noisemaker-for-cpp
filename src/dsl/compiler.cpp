@@ -92,7 +92,8 @@ void string_pairs(CanonicalWriter& writer, const std::vector<std::pair<std::stri
   });
 }
 
-void value_pairs(CanonicalWriter& writer, const std::vector<std::pair<std::string, effects::Value>>& values) {
+template <typename Entry>
+void value_pairs(CanonicalWriter& writer, const std::vector<Entry>& values) {
   vector_values(writer, values, [](CanonicalWriter& out, const auto& item) {
     out.token(item.first); value(out, item.second);
   });

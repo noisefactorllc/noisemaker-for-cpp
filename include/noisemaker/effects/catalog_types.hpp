@@ -12,21 +12,50 @@ namespace noisemaker::effects {
 
 enum class ValueKind { null_value, boolean, number, string, array, object };
 
+// Object entries use this complete element type instead of
+// std::pair<std::string, Value>. A std::vector<std::pair<std::string, Value>>
+// member inside Value is uncompilable under clang with libstdc++: instantiating
+// the pair's default constructor evaluates __is_implicitly_default_constructible<Value>,
+// whose SFINAE temporary destroys a Value, instantiating ~Value -> ~vector<pair>
+// -> _Vector_base's pointer arithmetic on the still-incomplete pair type
+// (GCC escapes through a compiler-builtin shortcut clang does not take). The
+// factory bodies stay out-of-line until ObjectEntry is complete; first/second
+// keep every existing element access working.
+struct ObjectEntry;
+
 struct Value {
   ValueKind kind = ValueKind::null_value;
   bool boolean = false;
   double number = 0.0;
   std::string string;
   std::vector<Value> array;
-  std::vector<std::pair<std::string, Value>> object;
+  std::vector<ObjectEntry> object;
 
-  static Value null() { return {}; }
-  static Value boolean_value(bool value) { Value result; result.kind = ValueKind::boolean; result.boolean = value; return result; }
-  static Value number_value(double value) { Value result; result.kind = ValueKind::number; result.number = value; return result; }
-  static Value string_value(std::string value) { Value result; result.kind = ValueKind::string; result.string = std::move(value); return result; }
-  static Value array_value(std::vector<Value> value) { Value result; result.kind = ValueKind::array; result.array = std::move(value); return result; }
-  static Value object_value(std::vector<std::pair<std::string, Value>> value) { Value result; result.kind = ValueKind::object; result.object = std::move(value); return result; }
+  static Value null();
+  static Value boolean_value(bool value);
+  static Value number_value(double value);
+  static Value string_value(std::string value);
+  static Value array_value(std::vector<Value> value);
+  static Value object_value(std::vector<std::pair<std::string, Value>> value);
 };
+
+struct ObjectEntry {
+  std::string first;
+  Value second;
+};
+
+inline Value Value::null() { return {}; }
+inline Value Value::boolean_value(bool value) { Value result; result.kind = ValueKind::boolean; result.boolean = value; return result; }
+inline Value Value::number_value(double value) { Value result; result.kind = ValueKind::number; result.number = value; return result; }
+inline Value Value::string_value(std::string value) { Value result; result.kind = ValueKind::string; result.string = std::move(value); return result; }
+inline Value Value::array_value(std::vector<Value> value) { Value result; result.kind = ValueKind::array; result.array = std::move(value); return result; }
+inline Value Value::object_value(std::vector<std::pair<std::string, Value>> value) {
+  Value result;
+  result.kind = ValueKind::object;
+  result.object.reserve(value.size());
+  for (auto& item : value) result.object.push_back(ObjectEntry{std::move(item.first), std::move(item.second)});
+  return result;
+}
 
 enum class DimensionKind { input, screen, literal, parameter, parameter_default, power, screen_division, resolution, unknown };
 
