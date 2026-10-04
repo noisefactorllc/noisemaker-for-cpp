@@ -21,7 +21,31 @@ enum class ValueKind { null_value, boolean, number, string, array, object };
 // (GCC escapes through a compiler-builtin shortcut clang does not take). The
 // factory bodies stay out-of-line until ObjectEntry is complete; first/second
 // keep every existing element access working.
+//
+// ObjectVector keeps the published pair-vector API surface: Value::object is
+// still assignable from and convertible to
+// std::vector<std::pair<std::string, Value>>, and ObjectEntry converts to and
+// from that pair, so downstream clients that pass or assign the member as a
+// pair vector keep compiling. Its member-function bodies are defined after
+// ObjectEntry/Value are complete.
 struct ObjectEntry;
+struct Value;
+
+// The member container keeps Value::object assignable from and convertible to
+// std::vector<std::pair<std::string, Value>> so downstream pair-vector code
+// keeps compiling. It must be defined (declarations only) before Value, whose
+// member needs the complete class; the bodies live after ObjectEntry/Value are
+// complete because they convert entries and pairs.
+class ObjectVector : public std::vector<ObjectEntry> {
+ public:
+  using std::vector<ObjectEntry>::vector;
+  ObjectVector() = default;
+  ObjectVector(std::vector<ObjectEntry> value);
+  ObjectVector(std::vector<std::pair<std::string, Value>> value);
+  ObjectVector& operator=(std::vector<ObjectEntry> value);
+  ObjectVector& operator=(std::vector<std::pair<std::string, Value>> value);
+  operator std::vector<std::pair<std::string, Value>>() const;
+};
 
 struct Value {
   ValueKind kind = ValueKind::null_value;
@@ -29,7 +53,7 @@ struct Value {
   double number = 0.0;
   std::string string;
   std::vector<Value> array;
-  std::vector<ObjectEntry> object;
+  ObjectVector object;
 
   static Value null();
   static Value boolean_value(bool value);
@@ -42,7 +66,43 @@ struct Value {
 struct ObjectEntry {
   std::string first;
   Value second;
+  ObjectEntry() = default;
+  ObjectEntry(std::string key, Value value) : first(std::move(key)), second(std::move(value)) {}
+  ObjectEntry(const std::pair<std::string, Value>& entry) : first(entry.first), second(entry.second) {}
+  template <typename Key, typename EntryValue,
+            typename = std::enable_if_t<std::is_convertible_v<const Key&, std::string> &&
+                                        std::is_convertible_v<EntryValue&&, Value>>>
+  ObjectEntry(std::pair<Key, EntryValue> entry) : first(std::move(entry.first)), second(std::move(entry.second)) {}
+  operator std::pair<std::string, Value>() const { return {first, second}; }
 };
+
+inline ObjectVector::ObjectVector(std::vector<ObjectEntry> value) {
+  std::vector<ObjectEntry>::operator=(std::move(value));
+}
+
+inline ObjectVector::ObjectVector(std::vector<std::pair<std::string, Value>> value) {
+  reserve(value.size());
+  for (auto& item : value) emplace_back(item.first, std::move(item.second));
+}
+
+inline ObjectVector& ObjectVector::operator=(std::vector<ObjectEntry> value) {
+  std::vector<ObjectEntry>::operator=(std::move(value));
+  return *this;
+}
+
+inline ObjectVector& ObjectVector::operator=(std::vector<std::pair<std::string, Value>> value) {
+  std::vector<ObjectEntry> converted;
+  converted.reserve(value.size());
+  for (auto& item : value) converted.emplace_back(item.first, std::move(item.second));
+  return *this = std::move(converted);
+}
+
+inline ObjectVector::operator std::vector<std::pair<std::string, Value>>() const {
+  std::vector<std::pair<std::string, Value>> result;
+  result.reserve(size());
+  for (const auto& entry : *this) result.emplace_back(entry.first, entry.second);
+  return result;
+}
 
 inline Value Value::null() { return {}; }
 inline Value Value::boolean_value(bool value) { Value result; result.kind = ValueKind::boolean; result.boolean = value; return result; }
