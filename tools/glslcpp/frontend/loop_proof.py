@@ -395,6 +395,48 @@ _SOURCE_GLOBAL_LITERAL_INT_PROFILES = {
         "post_whole": "76914c2bc26cc25f68a44477f33abe280386e596495458ed416b10d9fcb55a95",
         "interface": "47b3ed25f3ccea8f7e58ad566c7a2df79cdac82674aa728985d1dae7bfacf9cb",
     },
+    # The second parameter-bound counted-for program:
+    # synth3d/flythrough3d:precompute (2026-10-05 leg). Same third schema
+    # shape as fractal3d: the two fractal carriers' march loops are bounded
+    # by the function parameter `int maxIter` (argument index 2 in both),
+    # and the proof is INTERPROCEDURAL -- each carrier has exactly one call
+    # site (inside computeFractal) whose maxIter argument is the `iterations`
+    # int uniform by object identity, so the frozen authority metadata
+    # maximum (24) is a genuine upper bound wherever a loop can execute.
+    # Fail-closed against: a second call site for either carrier, a call
+    # argument that is not exactly the uniform symbol, any rewrite of the
+    # parameter inside its function, a parameter-identity/type/direction
+    # mismatch, and read-span drift. The corpus ratchet additionally
+    # authenticates the pending.json metadata record through
+    # authenticate_parameter_uniform_metadata. The cross-builtin carrier
+    # composes deliberately: this program's cross profile is re-locked to
+    # the seed-attached post-proof tree (pre-re-lock values functions
+    # 6f3edced… / whole 250d2cb9… are exactly this entry's pre digests), so
+    # the two authentications cannot bind different trees. The seed reuses
+    # the const-global 4-tuple shape; attach/rebuild/validate machinery is
+    # shared unchanged and no generated artifact moves.
+    "synth3d/flythrough3d:precompute": {
+        "raw": "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3",
+        "source": "b8ae9dac1d40943d7bd023fbd6bc26494c686fe62fecd2e26551367ea82eaa58",
+        "defines": (),
+        "parameter_uniform": (
+            "iterations", 8, "int",
+            {"default": 12, "max": 24, "min": 4, "type": "int", "uniform": "iterations"},
+        ),
+        "parameters": (
+            ("mandelbulb", 62, 38, "maxIter", 2),
+            ("mandelbox", 61, 44, "maxIter", 2),
+        ),
+        "reads": (
+            (("mandelbulb", 62, 186, 25, 186, 32), ("mandelbulb", 62, 213, 37, 213, 44)),
+            (("mandelbox", 61, 236, 25, 236, 32), ("mandelbox", 61, 264, 37, 264, 44)),
+        ),
+        "pre_functions": "6f3edced834a17851390e18356b9a4b6a5fb72edde48d69b50f95b8594b0e93a",
+        "post_functions": "7de221d4edf58a01ab203317ccca1cda66915a846e55798d1e12f161482d4375",
+        "pre_whole": "250d2cb9a66ad470c67489ba4e5af1f9036b9e21d5b0f8be39174df601e29258",
+        "post_whole": "0408c95a2a47cc03302de544b4f68cf50b6b607d2e77291d0c53c3f906424717",
+        "interface": "45e03760bdc51c6217d746b5fb329fe8c67e9f2b5301fb88660c79db93f32c8a",
+    },
 }
 SOURCE_GLOBAL_LITERAL_INT_KEYS = frozenset(_SOURCE_GLOBAL_LITERAL_INT_PROFILES)
 
@@ -547,10 +589,14 @@ def _authenticate_parameter_uniform_int(
     if not isinstance(maximum, int) or maximum < 0:
         raise ValueError(f"{key}: malformed parameter-uniform maximum")
 
-    # Rewrite barrier: an assignment, compound assignment, or ++/-- whose
-    # operand tree is the parameter, or a call actual that could rewrite it
-    # (an out/inout formal), would detach the runtime value from the
-    # authenticated call-site binding -- fail closed.
+    # Rewrite barrier: an assignment (plain or compound) or ++/-- whose
+    # TARGET operand tree is the parameter, or a call actual that could
+    # rewrite it (an out/inout formal), would detach the runtime value from
+    # the authenticated call-site binding -- fail closed. A read of the
+    # parameter inside an assigned value is not a rewrite and is sound: the
+    # bound value is unchanged, and every read inside a carrier function is
+    # enumerated and frozen by the read profile below (any additional read
+    # aborts the authentication).
     rewrite_kinds = {"assign", "inc", "dec"}
     parameter_ids = {item[2] for item in expected["parameters"]}
     callee_forms = {function.signature.id: function
@@ -559,9 +605,9 @@ def _authenticate_parameter_uniform_int(
     for function in functions:
         for statement in function.body:
             for expression in _walk_statement_expressions(statement):
-                if expression.kind in rewrite_kinds and any(
+                if expression.kind in rewrite_kinds and expression.children and any(
                         child.kind == "id" and child.symbol_id in parameter_ids
-                        for child in _walk_expression(expression)):
+                        for child in _walk_expression(expression.children[0])):
                     raise ValueError(
                         f"{key}: parameter-uniform carrier parameter is rewritten")
                 if expression.kind == "call" and expression.signature_id is not None:

@@ -10897,7 +10897,14 @@ and item["program_key"] != "filter/wobble:wobble"
                                    # `int maxIter` bound; every call site binds the
                                    # parameter to the `iterations` uniform whose
                                    # authority metadata maximum is 20).
-                                   "synth3d/fractal3d:precompute")),
+                                   "synth3d/fractal3d:precompute",
+                                   # synth3d/flythrough3d:precompute joined with
+                                   # the 2026-10-05 parameter-bound leg (same
+                                   # interprocedural `int maxIter` shape; the
+                                   # authority metadata maximum is 24 and the
+                                   # cross-builtin carrier composes through its
+                                   # re-locked seed-attached tree).
+                                   "synth3d/flythrough3d:precompute")),
                          generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
         post_task22_keys = frozenset((
             *task23_keys,
@@ -25978,6 +25985,159 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         self.assertEqual(1, len(calls))
         self.assertEqual("iterations", calls[0].children[2].symbol.name)
 
+    def test_flythrough3d_parameter_uniform_int_pending_advancement(self) -> None:
+        import dataclasses
+        import hashlib
+        import json as _json
+        import pathlib
+
+        from tools.glslcpp import check_semantics, emit_typed_cpp, generate_typed_slice
+        from tools.glslcpp.frontend import loop_proof, parse_program
+        from tools.glslcpp.frontend.cross_builtin_profile import (
+            PROFILE as CROSS_PROFILE, authenticate_cross_sites, apply_cross_admission)
+        from tools.glslcpp.frontend.semantic import analyze_program
+
+        # The second parameter-bound counted-for program: the two fractal
+        # carriers' march loops are bounded by the function parameter
+        # `int maxIter` (argument index 2 in both), and the proof is
+        # interprocedural -- each carrier has exactly one call site (inside
+        # computeFractal) whose maxIter argument is the `iterations` int
+        # uniform by object identity, so the frozen authority metadata
+        # maximum (24) is a genuine upper bound. The seed reuses the
+        # const-global 4-tuple shape; the ratchet additionally binds the
+        # frozen maximum to the metadata record. Every loop proves (2 loops,
+        # trips <= 24 each, charge 240). The cross-builtin carrier composes
+        # deliberately: the cross profile is re-locked to the seed-attached
+        # post-proof tree, so the two authentications cannot bind different
+        # trees. The program also carries the FractalResult struct
+        # declaration, which is the next authentic frontier -- no promotion.
+        key = "synth3d/flythrough3d:precompute"
+        corpus = pathlib.Path(
+            f"tools/glslcpp/corpus/{CORPUS_REVISION}")
+        pending = _json.loads((corpus / "pending.json").read_text(encoding="utf-8"))
+        self.assertIn(key, loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
+        self.assertIn(key, loop_proof.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        self.assertIn(key, generate_typed_slice.SOURCE_GLOBAL_LITERAL_INT_KEYS)
+        landed = loop_proof._SOURCE_GLOBAL_LITERAL_INT_PROFILES[key]
+        self.assertEqual(
+            ("iterations", 8, "int",
+             {"default": 12, "max": 24, "min": 4, "type": "int",
+              "uniform": "iterations"}),
+            landed["parameter_uniform"])
+        self.assertEqual((("mandelbulb", 62, 38, "maxIter", 2),
+                          ("mandelbox", 61, 44, "maxIter", 2)),
+                         landed["parameters"])
+        source_path = corpus / "pending-sources/synth3d/flythrough3d/precompute.glsl"
+        raw = source_path.read_text(encoding="utf-8")
+        self.assertEqual(hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+                         landed["raw"])
+        record = next(item for item in pending["pending"]
+                      if item["program_key"] == key)
+        self.assertEqual(record["raw_sha256"], landed["raw"])
+
+        effect = pending["effects"]["synth3d/flythrough3d"]
+        defaults = check_semantics._metadata_defaults(
+            {"effects": {"synth3d/flythrough3d": effect}}, key)
+
+        # The frozen maximum binds to the live authority metadata record.
+        loop_proof.authenticate_parameter_uniform_metadata(effect, key)
+        drifted = _json.loads(_json.dumps(effect))
+        drifted["params"]["iterations"]["max"] = 25
+        with self.assertRaises(ValueError) as ctx:
+            loop_proof.authenticate_parameter_uniform_metadata(drifted, key)
+        self.assertIn("metadata record mismatch", str(ctx.exception))
+
+        # Without the profile the carrier requirement fails closed.
+        typed_no_profile = analyze_program(parse_program(raw, key, defaults), key)
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed_no_profile, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"])
+        self.assertIn("exact source-global literal-int carrier required",
+                      str(ctx.exception))
+
+        # With the seed carrier both march loops prove (one per carrier
+        # function; trips <= 24 each, charge 2*24*5). Without the cross
+        # profile the cross carrier demand fires first (both authorities'
+        # first gate for this key).
+        typed = analyze_program(
+            parse_program(raw, key, defaults), key,
+            source_global_literal_int_profile=
+            loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        summary = typed.counted_loop_proof
+        self.assertEqual(
+            (2, 0, 1, 24, 240, True),
+            (summary.loop_count, summary.unproved_loop_count,
+             summary.max_effective_depth, summary.max_lexical_product,
+             summary.entrypoint_charge, summary.call_graph_acyclic))
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"],
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("exact cross builtin admission profile carrier required",
+                      str(ctx.exception))
+
+        # The re-locked cross profile authenticates the seed-attached tree
+        # (object-identity carrier); the pre-proof tree fails closed.
+        self.assertIs(apply_cross_admission(
+            typed, landed["raw"], CROSS_PROFILE), typed)
+        self.assertEqual(7, len(authenticate_cross_sites(
+            typed, landed["raw"], CROSS_PROFILE)))
+        with self.assertRaises(ValueError) as ctx:
+            authenticate_cross_sites(
+                dataclasses.replace(typed, raw_source=raw + "\n"),
+                landed["raw"], CROSS_PROFILE)
+        self.assertIn("mismatch", str(ctx.exception))
+
+        # With both carriers the frontier is the FractalResult struct
+        # declaration (the program's next authentic blocker); no promotion.
+        with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
+            generate_typed_slice.validate_capabilities(
+                typed, generate_typed_slice.APPROVED_CAPABILITIES,
+                source_hash=landed["raw"],
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+                cross_builtin_profile=CROSS_PROFILE)
+        self.assertIn("unsupported struct declaration", str(ctx.exception))
+        with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
+            emit_typed_cpp.render_typed_cpp(
+                typed, key, landed["raw"], "pixel",
+                "bind_synth3d_flythrough3d_precompute",
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
+                cross_builtin_profile=CROSS_PROFILE)
+        self.assertIn("unsupported typed type", str(ctx.exception))
+
+        # Forged source bytes fail closed even with the exact profile.
+        with self.assertRaises(Exception) as ctx:
+            analyze_program(
+                parse_program(raw + "\n", key, defaults), key,
+                source_global_literal_int_profile=
+                loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
+        self.assertIn("mismatch", str(ctx.exception))
+
+        # Call-site identity pins: exactly one call site per carrier exists
+        # in the whole program and its maxIter argument is the `iterations`
+        # uniform symbol (the interprocedural binding the seed
+        # authenticates). The rewrite barrier (assign/inc/dec whose TARGET
+        # operand tree is the parameter) and the call-site
+        # cardinality/argument checks fail closed inside
+        # _authenticate_parameter_uniform_int; they are unreachable from a
+        # forged source because the digest gate aborts first, so they are
+        # pinned structurally here. The `result.iterRatio = iter /
+        # float(maxIter)` reads are not rewrites and are part of the frozen
+        # read profile.
+        profiled_functions = typed.functions
+        for signature_id, argument_index in ((62, 2), (61, 2)):
+            calls = [e for f in profiled_functions for s in f.body
+                     for e in loop_proof._walk_statement_expressions(s)
+                     if e.kind == "call" and e.signature_id == signature_id]
+            self.assertEqual(1, len(calls))
+            self.assertEqual("iterations",
+                             calls[0].children[argument_index].symbol.name)
+
     def test_convolution_feedback_runtime_loop_bound_contracts(self) -> None:
         from tools.glslcpp import emit_typed_cpp, generate_typed_slice
         from tools.glslcpp.frontend import parse_program
@@ -27353,11 +27513,13 @@ void main() {
                 {"effects": {effect_id: eff}}, key)
 
             ast = parse_program(raw, key, defaults)
-            # The two render-family carriers are also
-            # source-global-literal-int-v1 keys: their cross profiles are
-            # re-locked to the seed-attached post-proof trees, so the analysis
-            # must attach the MAX_STEPS march-loop seeds for the cross
-            # authentication to bind. flythrough3d is loop-proof-free.
+            # The three cross carriers are also source-global-literal-int-v1
+            # keys: the render-family cross profiles are re-locked to the
+            # MAX_STEPS seed-attached post-proof trees, and flythrough3d's
+            # cross profile is re-locked to the parameter-uniform (`int
+            # maxIter`) seed-attached post-proof tree, so the analysis must
+            # attach the march-loop seeds for the cross authentication to
+            # bind in all three.
             seed_kwargs = (
                 {"source_global_literal_int_profile":
                  loop_proof_module.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY}
@@ -27408,10 +27570,10 @@ void main() {
                 str(ctx.exception))
 
             # Passing the cross profile (with the march-loop seed carrier for
-            # the two render-family keys) advances to the next authentic
-            # blocker. flythrough3d keeps its counted-for frontier; the two
-            # render keys' proofs land with this pass, so their frontier is
-            # the struct declaration.
+            # all three keys) advances to the next authentic blocker.
+            # flythrough3d joined the seed carrier with the 2026-10-05
+            # parameter-bound leg; all three programs' frontier is now the
+            # struct declaration.
             with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
                 generate_typed_slice.validate_capabilities(
                     typed, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -27425,12 +27587,13 @@ void main() {
                 str(ctx.exception))
 
             # 3. Emitter integration. With the full carrier set the cross
-            # sites are authenticated and the next authentic frontier is the
-            # program's remaining blocker (struct declaration for the two
-            # render keys, the unproved counted-for loop for flythrough3d);
-            # without the cross profile the carrier requirement fires first,
-            # so admission is fail-closed either way and glsl::cross lowering
-            # becomes observable only after the struct declarations land.
+            # sites are authenticated and the next authentic frontier is
+            # the struct declaration in all three programs (flythrough3d's
+            # unproved counted-for loop closed with the 2026-10-05
+            # parameter-bound leg); without the cross profile the carrier
+            # requirement fires first, so admission is fail-closed either
+            # way and glsl::cross lowering becomes observable only after the
+            # struct declarations land.
             for profile_kwargs in (dict(cross_builtin_profile=CROSS_PROFILE, **seed_kwargs),
                                    dict(seed_kwargs)):
                 with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:

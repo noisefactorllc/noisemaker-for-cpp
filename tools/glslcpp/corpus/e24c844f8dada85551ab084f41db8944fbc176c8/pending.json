@@ -3579,7 +3579,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: synth3d/flythrough3d:precompute:236:5: unsupported counted-for program proof",
+        "diagnostic": "GeneratorError: synth3d/flythrough3d:precompute:172:1: unsupported struct declaration",
         "stage": "typed.validator"
       },
       "effect_id": "synth3d/flythrough3d",

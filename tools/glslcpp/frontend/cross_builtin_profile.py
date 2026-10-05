@@ -65,8 +65,18 @@ _PROFILES = {
         "raw_sha256": "e4288dfc3384f76e63eda968ad4ce3219a9b96989d8e6ff38755dbcf44f788f3",
         "norm_bytes": 7766,
         "norm_sha256": "b8ae9dac1d40943d7bd023fbd6bc26494c686fe62fecd2e26551367ea82eaa58",
-        "functions_sha256": "6f3edced834a17851390e18356b9a4b6a5fb72edde48d69b50f95b8594b0e93a",
-        "whole_sha256": "250d2cb9a66ad470c67489ba4e5af1f9036b9e21d5b0f8be39174df601e29258",
+        # Re-locked to the seed-attached post-proof tree (2026-10-05 leg):
+        # this key is also a parameter-uniform counted-for carrier (`int
+        # maxIter` march bounds, see loop_proof.py's flythrough3d entry), and
+        # the attached counted-loop proofs change the functions and
+        # whole-program identity authenticated below. Pre-re-lock values were
+        # functions 6f3edced834a17851390e18356b9a4b6a5fb72edde48d69b50f95b859
+        # 4b0e93a / whole 250d2cb9a66ad470c67489ba4e5af1f9036b9e21d5b0f8be391
+        # 74df601e29258 (the pre-proof tree) — exactly the loop-proof entry's
+        # pre digests; the interface identity is unchanged (it never folds in
+        # the proofs).
+        "functions_sha256": "7de221d4edf58a01ab203317ccca1cda66915a846e55798d1e12f161482d4375",
+        "whole_sha256": "0408c95a2a47cc03302de544b4f68cf50b6b607d2e77291d0c53c3f906424717",
         "interface_sha256": "45e03760bdc51c6217d746b5fb329fe8c67e9f2b5301fb88660c79db93f32c8a",
         "cross_count": 7,
     },
