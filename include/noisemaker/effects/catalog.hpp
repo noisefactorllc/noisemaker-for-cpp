@@ -90,6 +90,7 @@ struct EffectCatalog {
   std::vector<ProgramCompatibility> canonical_programs;
   std::vector<ReferencePassCompatibility> reference_passes;
   std::optional<ScatterCompatibility> scatter;
+  std::vector<ScatterCompatibility> scatter_contracts;
   CatalogProvenance provenance;
 
   // Safe to call concurrently on a shared catalog; see EffectIndex.

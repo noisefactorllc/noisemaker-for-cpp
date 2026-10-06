@@ -34701,8 +34701,8 @@ NOISEMAKER_CATALOG_OUTLINE static void append_reference_pass_193(EffectCatalog& 
       p.pass_index = 3;
       p.pass_name = "deposit";
       p.program_key = "filter3d/flow3d:deposit";
-      p.status = "missing";
-      p.reasons = {{"missing_backend_program", "filter3d/flow3d:deposit"}};
+      p.status = "scatter";
+      p.reasons = {{"explicit_scatter_adapter", "filter3d/flow3d:deposit"}};
       p.authority_pass.name = "deposit";
       p.authority_pass.inputs.emplace_back("stateTex1", "global_flow3d_state1");
       p.authority_pass.inputs.emplace_back("stateTex2", "global_flow3d_state2");
@@ -35233,8 +35233,8 @@ NOISEMAKER_CATALOG_OUTLINE static void append_reference_pass_219(EffectCatalog& 
       p.pass_index = 3;
       p.pass_name = "depositGrid";
       p.program_key = "points/dla:depositGrid";
-      p.status = "missing";
-      p.reasons = {{"missing_backend_program", "points/dla:depositGrid"}};
+      p.status = "scatter";
+      p.reasons = {{"explicit_scatter_adapter", "points/dla:depositGrid"}};
       p.authority_pass.name = "depositGrid";
       p.authority_pass.inputs.emplace_back("xyzTex", "global_xyz");
       p.authority_pass.inputs.emplace_back("velTex", "global_vel");
@@ -35477,8 +35477,8 @@ NOISEMAKER_CATALOG_OUTLINE static void append_reference_pass_230(EffectCatalog& 
       p.pass_index = 1;
       p.pass_name = "deposit";
       p.program_key = "points/lenia:deposit";
-      p.status = "missing";
-      p.reasons = {{"missing_backend_program", "points/lenia:deposit"}};
+      p.status = "scatter";
+      p.reasons = {{"explicit_scatter_adapter", "points/lenia:deposit"}};
       p.authority_pass.name = "deposit";
       p.authority_pass.inputs.emplace_back("xyzTex", "global_xyz");
       p.authority_pass.outputs.emplace_back("fragColor", "global_lenia_density");
@@ -35704,8 +35704,8 @@ NOISEMAKER_CATALOG_OUTLINE static void append_reference_pass_240(EffectCatalog& 
       p.pass_index = 3;
       p.pass_name = "deposit";
       p.program_key = "points/physarum:deposit";
-      p.status = "missing";
-      p.reasons = {{"missing_backend_program", "points/physarum:deposit"}};
+      p.status = "scatter";
+      p.reasons = {{"explicit_scatter_adapter", "points/physarum:deposit"}};
       p.authority_pass.name = "deposit";
       p.authority_pass.inputs.emplace_back("xyzTex", "global_xyz");
       p.authority_pass.inputs.emplace_back("rgbaTex", "global_rgba");
@@ -38018,24 +38018,24 @@ const EffectCatalog& effect_catalog() {
     c.provenance.upstream_tree = "106256378f2462e38d31023cd2872e0dd8c63f88";
     c.provenance.upstream_package_sha256 = "c01127034a8ba662a53801faaf1310129892690ad60f6985b605a314feb9e74f";
     c.provenance.upstream_package_lock_sha256 = "dc60539c95e9bf6e7da34250701a898a053e5a3c86f605d0dd6108d95e3e3b56";
-    c.provenance.generated_payload_sha256 = "c11d1b44bd28203e34745e677422f0846d42b5d0e5e2282d917f9c3ad49aff0f";
+    c.provenance.generated_payload_sha256 = "4c4907c20906d0b50e27123df74de7a8a27211b62cfed99f585ded603de92ac4";
     c.provenance.normalized_record_stream_sha256 = "1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7";
-    c.provenance.compatibility_sha256 = "dc5eee49053a71aa26d38f5376131ee647da75d2d74376387eb5d6293fa697e2";
+    c.provenance.compatibility_sha256 = "c267bddaba70144eab9c2d16fd66d2e43e205e67c6fbcf27df237298a4ee87e6";
     c.provenance.first_effect_id = "classicNoisedeck/bitEffects";
     c.provenance.last_effect_id = "synth3d/shape3d";
     c.provenance.counts.definitions = 210;
     c.provenance.counts.passes = 348;
     c.provenance.counts.reference_program_keys = 308;
-    c.provenance.counts.backend_programs = 283;
+    c.provenance.counts.backend_programs = 287;
     c.provenance.counts.compatible_programs = 281;
     c.provenance.counts.incompatible_programs = 1;
-    c.provenance.counts.missing_passes = 65;
-    c.provenance.counts.scatter_passes = 1;
-    c.provenance.counts.executable_definitions = 188;
-    c.provenance.counts.incomplete_definitions = 22;
+    c.provenance.counts.missing_passes = 61;
+    c.provenance.counts.scatter_passes = 5;
+    c.provenance.counts.executable_definitions = 191;
+    c.provenance.counts.incomplete_definitions = 19;
     c.provenance.backend_fragment_rows = 284;
     c.provenance.backend_unique_fragment_keys = 282;
-    c.provenance.backend_raw_exact = 283;
+    c.provenance.backend_raw_exact = 287;
     c.provenance.backend_semantic_exact = 0;
     c.definitions.push_back(make_effect_0());
     c.definitions.push_back(make_effect_1());
@@ -38895,6 +38895,71 @@ const EffectCatalog& effect_catalog() {
       s.outputs.push_back({0, "fragColor", "wormhole_accum", "glsl::Vec4"});
       s.reasons = {{"explicit_scatter_adapter", "filter/wormhole:deposit"}};
       c.scatter = std::move(s);
+    }
+    {
+      ScatterCompatibility s;
+      s.program_key = "filter3d/flow3d:deposit";
+      s.adapter = "noisemaker::scatter::flow3d::adapter";
+      s.registry = "noisemaker::scatter::resolve_scatter_adapter";
+      s.draw_mode = "points";
+      s.dimensionality = "image";
+      s.count = "pass";
+      s.input_texture = "stateTex1";
+      s.destination_mutation = "in_place_accumulate";
+      s.blend = true;
+      s.uniforms.push_back({"density", "", "double", "effect_parameter", "", ""});
+      s.uniforms.push_back({"volumeSize", "", "double", "effect_parameter", "", ""});
+      s.outputs.push_back({0, "fragColor", "global_flow3d_trail", "glsl::Vec4"});
+      s.reasons = {{"explicit_scatter_adapter", "filter3d/flow3d:deposit"}};
+      c.scatter_contracts.push_back(std::move(s));
+    }
+    {
+      ScatterCompatibility s;
+      s.program_key = "points/dla:depositGrid";
+      s.adapter = "noisemaker::scatter::dla::adapter";
+      s.registry = "noisemaker::scatter::resolve_scatter_adapter";
+      s.draw_mode = "points";
+      s.dimensionality = "image";
+      s.count = "input";
+      s.input_texture = "xyzTex";
+      s.destination_mutation = "in_place_accumulate";
+      s.blend = true;
+      s.uniforms.push_back({"deposit", "", "double", "effect_parameter", "", ""});
+      s.outputs.push_back({0, "fragColor", "global_dla_grid", "glsl::Vec4"});
+      s.reasons = {{"explicit_scatter_adapter", "points/dla:depositGrid"}};
+      c.scatter_contracts.push_back(std::move(s));
+    }
+    {
+      ScatterCompatibility s;
+      s.program_key = "points/lenia:deposit";
+      s.adapter = "noisemaker::scatter::lenia::adapter";
+      s.registry = "noisemaker::scatter::resolve_scatter_adapter";
+      s.draw_mode = "points";
+      s.dimensionality = "image";
+      s.count = "input";
+      s.input_texture = "xyzTex";
+      s.destination_mutation = "in_place_accumulate";
+      s.blend = true;
+      s.uniforms.push_back({"depositAmount", "", "double", "effect_parameter", "", ""});
+      s.outputs.push_back({0, "fragColor", "global_lenia_density", "glsl::Vec4"});
+      s.reasons = {{"explicit_scatter_adapter", "points/lenia:deposit"}};
+      c.scatter_contracts.push_back(std::move(s));
+    }
+    {
+      ScatterCompatibility s;
+      s.program_key = "points/physarum:deposit";
+      s.adapter = "noisemaker::scatter::physarum::adapter";
+      s.registry = "noisemaker::scatter::resolve_scatter_adapter";
+      s.draw_mode = "points";
+      s.dimensionality = "image";
+      s.count = "input";
+      s.input_texture = "xyzTex";
+      s.destination_mutation = "in_place_accumulate";
+      s.blend = true;
+      s.uniforms.push_back({"deposit", "", "double", "effect_parameter", "", ""});
+      s.outputs.push_back({0, "fragColor", "global_physarum_pheromone", "glsl::Vec4"});
+      s.reasons = {{"explicit_scatter_adapter", "points/physarum:deposit"}};
+      c.scatter_contracts.push_back(std::move(s));
     }
     return c;
   }();

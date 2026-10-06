@@ -37,6 +37,10 @@ _ADAPTERS = frozenset({
     "classicNoisedeck/fractal:fractal",
     "filter/historicPalette:historicPalette",
     "filter/palette:palette",
+    "filter3d/flow3d:deposit",
+    "points/dla:depositGrid",
+    "points/lenia:deposit",
+    "points/physarum:deposit",
     "synth/julia:julia",
     "synth/remap:remap",
 })

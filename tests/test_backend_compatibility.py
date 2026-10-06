@@ -146,6 +146,62 @@ class BackendCompatibilityTests(unittest.TestCase):
     def test_missing_scatter_registration_fails_closed(self) -> None:
         self._assert_fails_closed(lambda document: document["scatter"].update(status="missing"))
 
+    def test_particle_family_scatter_contracts_are_registered(self) -> None:
+        contracts = {item["program_key"]: item for item in self.document["scatter_contracts"]}
+        self.assertEqual(
+            {"points/physarum:deposit", "points/dla:depositGrid",
+             "points/lenia:deposit", "filter3d/flow3d:deposit"},
+            set(contracts))
+        for key, item in contracts.items():
+            self.assertEqual("registered", item["status"])
+            self.assertEqual("noisemaker::scatter::resolve_scatter_adapter", item["registry"])
+            self.assertEqual("in_place_accumulate", item["destination_mutation"])
+            self.assertEqual("points", item["draw_mode"])
+            self.assertEqual(item["output_route"], item["output_abi"]["logical_routes"][0])
+        self.assertEqual(
+            "noisemaker::scatter::physarum::adapter",
+            contracts["points/physarum:deposit"]["adapter"])
+        self.assertEqual(["xyzTex", "rgbaTex"],
+                         contracts["points/physarum:deposit"]["samplers"])
+        self.assertEqual([{"name": "depositAmount", "cpp_type": "double",
+                           "source": "effect_parameter"}],
+                         contracts["points/lenia:deposit"]["uniforms"])
+        self.assertEqual("pass", contracts["filter3d/flow3d:deposit"]["count"])
+
+    def test_particle_family_scatter_contract_mutants_fail_closed(self) -> None:
+        for mutate in (
+            lambda document: document["scatter_contracts"][0].update(status="compatible"),
+            lambda document: document["scatter_contracts"][0].update(
+                adapter="noisemaker::scatter::forged::adapter"),
+            lambda document: document["scatter_contracts"].pop(),
+        ):
+            self._assert_fails_closed(mutate)
+
+    def test_particle_family_scatter_authentication_fails_closed(self) -> None:
+        import json as _json
+        from tools.glslcpp import check_corpus
+        metadata = _json.loads((ROOT / "tools/glslcpp/corpus" /
+                                check_corpus.REVISION / "metadata.json").read_text())
+        effect = metadata["effects"]["points/physarum"]
+        raw = (ROOT / "tools/glslcpp/corpus" / check_corpus.REVISION /
+               "sources/points/physarum/deposit.frag").read_bytes()
+        generator.authenticate_scatter_contract("points/physarum:deposit", raw, effect)
+        with self.assertRaises(ValueError):
+            generator.authenticate_scatter_contract("filter/wormhole:deposit", raw, effect)
+        deposit_index = next(index for index, item in enumerate(effect["passes"])
+                             if item["program"] == "deposit")
+        forged_pass = copy.deepcopy(effect)
+        forged_pass["passes"][deposit_index]["outputs"] = {"fragColor": "global_forged"}
+        with self.assertRaises(ValueError):
+            generator.authenticate_scatter_contract("points/physarum:deposit", raw, forged_pass)
+        forged_mode = copy.deepcopy(effect)
+        forged_mode["passes"][deposit_index]["drawMode"] = "triangles"
+        with self.assertRaises(ValueError):
+            generator.authenticate_scatter_contract("points/physarum:deposit", raw, forged_mode)
+        with self.assertRaises(ValueError):
+            generator.authenticate_scatter_contract(
+                "points/physarum:deposit", raw + b"\n", effect)
+
     def test_unclassified_binding_fails_closed(self) -> None:
         def remove_source(document):
             document["canonical_programs"][0]["uniforms"][0]["source"] = None

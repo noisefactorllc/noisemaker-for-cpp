@@ -25,7 +25,7 @@ DEFAULT_COMPATIBILITY = ROOT / "src/effects/generated/backend_compatibility.json
 CATALOG_SCHEMA = "noisemaker-cpp.cpu-effect-catalog.v1"
 GENERATOR_SCHEMA = "noisemaker-cpp.effect-catalog-generator.v1"
 BACKEND_SCHEMA = "noisemaker-cpp.backend-compatibility.v1"
-COMPATIBILITY_SHA256 = "dc5eee49053a71aa26d38f5376131ee647da75d2d74376387eb5d6293fa697e2"
+COMPATIBILITY_SHA256 = "c267bddaba70144eab9c2d16fd66d2e43e205e67c6fbcf27df237298a4ee87e6"
 EFFECT_KEYS = frozenset({
     "id", "directoryName", "name", "namespace", "func", "kind", "domain", "tags",
     "description", "paramAliases", "params", "passes", "textures", "externalTexture",
@@ -170,6 +170,14 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
     if not isinstance(scatter, dict) or scatter.get("program_key") != "filter/wormhole:deposit" or scatter.get("status") != "registered":
         raise CatalogError("compatibility scatter row is not exact")
     status_by_key[scatter["program_key"]] = "scatter"
+    contracts = compatibility.get("scatter_contracts")
+    from tools.dsl.generate_backend_compatibility import SCATTER_CONTRACT_KEYS
+    if (not isinstance(contracts, list)
+            or {item.get("program_key") for item in contracts} != set(SCATTER_CONTRACT_KEYS)
+            or any(item.get("status") != "registered" for item in contracts)):
+        raise CatalogError("compatibility particle-family scatter contracts are not exact")
+    for item in contracts:
+        status_by_key[item["program_key"]] = "scatter"
     joined = {key: status_by_key.get(key, "missing") for key in closure}
     if any(status not in {"compatible", "incompatible", "missing", "scatter"} for status in joined.values()):
         raise CatalogError("compatibility joined status is unknown")
@@ -196,7 +204,7 @@ def _validate_compatibility(compatibility: dict[str, Any], records: list[dict[st
         raise CatalogError("compatibility reference pass/key closure mismatch")
     pass_statuses = Counter(row["status"] for row in passes)
     backend_statuses = Counter(row["status"] for row in canonical)
-    backend_statuses["scatter"] = 1
+    backend_statuses["scatter"] = 1 + len(contracts)
     effect_status: dict[str, list[str]] = defaultdict(list)
     for row in passes:
         effect_status[row["effect_id"]].append(row["status"])
@@ -435,6 +443,8 @@ def _emit_cpp(records: list[dict[str, Any]], compatibility: dict[str, Any], auth
     lines += [f"    {name}(c);" for name in appenders]
     scatter = compatibility["scatter"]
     lines += _scatter_cpp(scatter)
+    for contract in compatibility.get("scatter_contracts", []):
+        lines += _scatter_cpp(contract, "c.scatter_contracts")
     lines += ["    return c;", "  }();", "  return catalog;", "}", "", "}  // namespace noisemaker::effects", ""]
     return "\n".join(lines).encode("utf-8")
 
@@ -460,14 +470,20 @@ def _reference_pass_cpp(reference: dict[str, Any], record_by_id: dict[str, Any])
     return lines
 
 
-def _scatter_cpp(scatter: dict[str, Any]) -> list[str]:
+def _scatter_cpp(scatter: dict[str, Any], target: str = "c.scatter") -> list[str]:
     lines: list[str] = []
     lines += ["    {", "      ScatterCompatibility s;", f"      s.program_key = {_cpp_string(scatter['program_key'])};", f"      s.adapter = {_cpp_string(scatter['adapter'])};", f"      s.registry = {_cpp_string(scatter['registry'])};", f"      s.draw_mode = {_cpp_string(scatter['draw_mode'])};", f"      s.dimensionality = {_cpp_string(scatter['dimensionality'])};", f"      s.count = {_cpp_string(scatter['count'])};", f"      s.input_texture = {_cpp_string(scatter['input_texture'])};", f"      s.destination_mutation = {_cpp_string(scatter['destination_mutation'])};", f"      s.blend = {'true' if scatter['blend'] else 'false'};"]
     for uniform in scatter["uniforms"]:
         lines.append("      s.uniforms.push_back({" + ", ".join(_cpp_string(str(uniform.get(k, ''))) for k in ("name", "type", "cpp_type", "source", "source_name", "resource")) + "});")
     for output in scatter.get("outputs", [{"slot": 0, "physical_name": "fragColor", "logical_route": scatter.get("output_route", ""), "cpp_type": "glsl::Vec4"}]):
         lines.append("      s.outputs.push_back({" + str(output.get("slot", 0)) + ", " + ", ".join(_cpp_string(str(output.get(k, ''))) for k in ("physical_name", "logical_route", "cpp_type")) + "});")
-    lines += ["      s.reasons = {{\"explicit_scatter_adapter\", \"filter/wormhole:deposit\"}};", "      c.scatter = std::move(s);", "    }"]
+    reasons = scatter.get("reasons") or [{"code": "explicit_scatter_adapter", "detail": scatter["program_key"]}]
+    lines.append("      s.reasons = {" + ", ".join("{" + _cpp_string(str(r.get("code", ""))) + ", " + _cpp_string(str(r.get("detail", ""))) + "}" for r in reasons) + "};")
+    if target == "c.scatter":
+        lines.append("      c.scatter = std::move(s);")
+    else:
+        lines.append(f"      {target}.push_back(std::move(s));")
+    lines.append("    }")
     return lines
 
 

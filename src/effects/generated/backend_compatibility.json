@@ -23,12 +23,13 @@
       "filter/invert:inv",
       "synth/solid:solid"
     ],
-    "raw_exact": 283,
+    "raw_exact": 287,
     "semantic_exact": 0,
     "incompatible": 0,
     "incompatible_keys": [],
     "status_compatible": 281,
-    "status_incompatible": 1
+    "status_incompatible": 1,
+    "registered_scatter_contracts": 4
   },
   "fragments": [
     {
@@ -116714,10 +116715,10 @@
       "pass_index": 3,
       "pass_name": "deposit",
       "program_key": "filter3d/flow3d:deposit",
-      "status": "missing",
+      "status": "scatter",
       "reasons": [
         {
-          "code": "missing_backend_program",
+          "code": "explicit_scatter_adapter",
           "detail": "filter3d/flow3d:deposit"
         }
       ],
@@ -117323,10 +117324,10 @@
       "pass_index": 3,
       "pass_name": "depositGrid",
       "program_key": "points/dla:depositGrid",
-      "status": "missing",
+      "status": "scatter",
       "reasons": [
         {
-          "code": "missing_backend_program",
+          "code": "explicit_scatter_adapter",
           "detail": "points/dla:depositGrid"
         }
       ],
@@ -117602,10 +117603,10 @@
       "pass_index": 1,
       "pass_name": "deposit",
       "program_key": "points/lenia:deposit",
-      "status": "missing",
+      "status": "scatter",
       "reasons": [
         {
-          "code": "missing_backend_program",
+          "code": "explicit_scatter_adapter",
           "detail": "points/lenia:deposit"
         }
       ],
@@ -117865,10 +117866,10 @@
       "pass_index": 3,
       "pass_name": "deposit",
       "program_key": "points/physarum:deposit",
-      "status": "missing",
+      "status": "scatter",
       "reasons": [
         {
-          "code": "missing_backend_program",
+          "code": "explicit_scatter_adapter",
           "detail": "points/physarum:deposit"
         }
       ],
@@ -121033,5 +121034,279 @@
     },
     "dimensionality": "image",
     "reasons": []
-  }
+  },
+  "scatter_contracts": [
+    {
+      "program_key": "filter3d/flow3d:deposit",
+      "effect_id": "filter3d/flow3d",
+      "program": "deposit",
+      "status": "registered",
+      "adapter": "noisemaker::scatter::flow3d::adapter",
+      "registry": "noisemaker::scatter::resolve_scatter_adapter",
+      "draw_mode": "points",
+      "count": "pass",
+      "input_texture": "stateTex1",
+      "samplers": [
+        "stateTex1",
+        "stateTex2"
+      ],
+      "destination_mutation": "in_place_accumulate",
+      "uniforms": [
+        {
+          "name": "density",
+          "cpp_type": "double",
+          "source": "effect_parameter"
+        },
+        {
+          "name": "volumeSize",
+          "cpp_type": "double",
+          "source": "effect_parameter"
+        }
+      ],
+      "output_route": "global_flow3d_trail",
+      "blend": true,
+      "source": "sources/filter3d/flow3d/deposit.frag",
+      "old_raw_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
+      "new_raw_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
+      "source_classification": "raw_exact",
+      "output_abi": {
+        "cardinality": 1,
+        "logical_routes": [
+          "global_flow3d_trail"
+        ],
+        "physical_names": [
+          "fragColor"
+        ],
+        "canonical_slots": [
+          0
+        ],
+        "extent": {
+          "width": {
+            "param": "volumeSize",
+            "default": 32
+          },
+          "height": {
+            "param": "volumeSize",
+            "power": 2,
+            "default": 1024
+          },
+          "format": "rgba16f"
+        },
+        "single_output_canonical": true
+      },
+      "dimensionality": "image",
+      "authority_pass": {
+        "blend": true,
+        "inputs": {
+          "stateTex1": "global_flow3d_state1",
+          "stateTex2": "global_flow3d_state2"
+        },
+        "name": "deposit",
+        "outputs": {
+          "fragColor": "global_flow3d_trail"
+        },
+        "repeat": null,
+        "uniforms": {
+          "density": "density",
+          "volumeSize": "volumeSize"
+        }
+      },
+      "reasons": []
+    },
+    {
+      "program_key": "points/dla:depositGrid",
+      "effect_id": "points/dla",
+      "program": "depositGrid",
+      "status": "registered",
+      "adapter": "noisemaker::scatter::dla::adapter",
+      "registry": "noisemaker::scatter::resolve_scatter_adapter",
+      "draw_mode": "points",
+      "count": "input",
+      "input_texture": "xyzTex",
+      "samplers": [
+        "xyzTex",
+        "velTex",
+        "rgbaTex"
+      ],
+      "destination_mutation": "in_place_accumulate",
+      "uniforms": [
+        {
+          "name": "deposit",
+          "cpp_type": "double",
+          "source": "effect_parameter"
+        }
+      ],
+      "output_route": "global_dla_grid",
+      "blend": true,
+      "source": "sources/points/dla/depositGrid.frag",
+      "old_raw_sha256": "bbafff4c1dcd4883c8c7ab243161074fb74313b744476a7f6f229a0165722439",
+      "new_raw_sha256": "bbafff4c1dcd4883c8c7ab243161074fb74313b744476a7f6f229a0165722439",
+      "source_classification": "raw_exact",
+      "output_abi": {
+        "cardinality": 1,
+        "logical_routes": [
+          "global_dla_grid"
+        ],
+        "physical_names": [
+          "fragColor"
+        ],
+        "canonical_slots": [
+          0
+        ],
+        "extent": {
+          "width": "100%",
+          "height": "100%",
+          "format": "rgba16f"
+        },
+        "single_output_canonical": true
+      },
+      "dimensionality": "image",
+      "authority_pass": {
+        "blend": [
+          "one",
+          "one"
+        ],
+        "inputs": {
+          "xyzTex": "global_xyz",
+          "velTex": "global_vel",
+          "rgbaTex": "global_rgba"
+        },
+        "name": "depositGrid",
+        "outputs": {
+          "fragColor": "global_dla_grid"
+        },
+        "repeat": null,
+        "uniforms": {
+          "deposit": "deposit"
+        }
+      },
+      "reasons": []
+    },
+    {
+      "program_key": "points/lenia:deposit",
+      "effect_id": "points/lenia",
+      "program": "deposit",
+      "status": "registered",
+      "adapter": "noisemaker::scatter::lenia::adapter",
+      "registry": "noisemaker::scatter::resolve_scatter_adapter",
+      "draw_mode": "points",
+      "count": "input",
+      "input_texture": "xyzTex",
+      "samplers": [
+        "xyzTex"
+      ],
+      "destination_mutation": "in_place_accumulate",
+      "uniforms": [
+        {
+          "name": "depositAmount",
+          "cpp_type": "double",
+          "source": "effect_parameter"
+        }
+      ],
+      "output_route": "global_lenia_density",
+      "blend": true,
+      "source": "sources/points/lenia/deposit.frag",
+      "old_raw_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
+      "new_raw_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
+      "source_classification": "raw_exact",
+      "output_abi": {
+        "cardinality": 1,
+        "logical_routes": [
+          "global_lenia_density"
+        ],
+        "physical_names": [
+          "fragColor"
+        ],
+        "canonical_slots": [
+          0
+        ],
+        "extent": {
+          "width": "50%",
+          "height": "50%",
+          "format": "rgba16f"
+        },
+        "single_output_canonical": true
+      },
+      "dimensionality": "image",
+      "authority_pass": {
+        "blend": true,
+        "inputs": {
+          "xyzTex": "global_xyz"
+        },
+        "name": "deposit",
+        "outputs": {
+          "fragColor": "global_lenia_density"
+        },
+        "repeat": null,
+        "uniforms": {
+          "depositAmount": "depositAmount"
+        }
+      },
+      "reasons": []
+    },
+    {
+      "program_key": "points/physarum:deposit",
+      "effect_id": "points/physarum",
+      "program": "deposit",
+      "status": "registered",
+      "adapter": "noisemaker::scatter::physarum::adapter",
+      "registry": "noisemaker::scatter::resolve_scatter_adapter",
+      "draw_mode": "points",
+      "count": "input",
+      "input_texture": "xyzTex",
+      "samplers": [
+        "xyzTex",
+        "rgbaTex"
+      ],
+      "destination_mutation": "in_place_accumulate",
+      "uniforms": [
+        {
+          "name": "deposit",
+          "cpp_type": "double",
+          "source": "effect_parameter"
+        }
+      ],
+      "output_route": "global_physarum_pheromone",
+      "blend": true,
+      "source": "sources/points/physarum/deposit.frag",
+      "old_raw_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+      "new_raw_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+      "source_classification": "raw_exact",
+      "output_abi": {
+        "cardinality": 1,
+        "logical_routes": [
+          "global_physarum_pheromone"
+        ],
+        "physical_names": [
+          "fragColor"
+        ],
+        "canonical_slots": [
+          0
+        ],
+        "extent": {
+          "width": "100%",
+          "height": "100%",
+          "format": "rgba16f"
+        },
+        "single_output_canonical": true
+      },
+      "dimensionality": "image",
+      "authority_pass": {
+        "blend": true,
+        "inputs": {
+          "xyzTex": "global_xyz",
+          "rgbaTex": "global_rgba"
+        },
+        "name": "deposit",
+        "outputs": {
+          "fragColor": "global_physarum_pheromone"
+        },
+        "repeat": null,
+        "uniforms": {
+          "deposit": "deposit"
+        }
+      },
+      "reasons": []
+    }
+  ]
 }

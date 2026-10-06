@@ -146,8 +146,8 @@ class EffectCatalogGeneratorTests(unittest.TestCase):
             self.assertEqual(281, provenance["counts"]["compatible_programs"])
             self.assertEqual(1, provenance["counts"]["incompatible_programs"])
             # Pending authority passes remain explicit in the compatibility census.
-            self.assertEqual(65, provenance["counts"]["missing_passes"])
-            self.assertEqual(1, provenance["counts"]["scatter_passes"])
+            self.assertEqual(61, provenance["counts"]["missing_passes"])
+            self.assertEqual(5, provenance["counts"]["scatter_passes"])
             self.assertEqual("1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7", provenance["normalized_record_stream_sha256"])
             self.assertIn("generated_payload_sha256", provenance)
             payload_hash = provenance["generated_payload_sha256"]

@@ -3343,19 +3343,6 @@
       "source": "pending-sources/filter/temporalAberration/temporalAberration.glsl"
     },
     {
-      "authority_status": "adapter",
-      "blocker": {
-        "diagnostic": "filter3d/flow3d:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "filter3d/flow3d",
-      "program": "deposit",
-      "program_key": "filter3d/flow3d:deposit",
-      "raw_bytes": 191,
-      "raw_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
-      "source": "pending-sources/filter3d/flow3d/deposit.frag"
-    },
-    {
       "authority_status": "generated",
       "blocker": {
         "diagnostic": "GeneratorError: filter3d/palette3d:palette3d:27:1: unsupported global declaration",
@@ -3380,45 +3367,6 @@
       "raw_bytes": 4936,
       "raw_sha256": "5ec5c8c92dc026ca123c37cb735386c4bca9df0e2b2ebbd9831d3fbc32ac127e",
       "source": "pending-sources/points/attractor/agent.glsl"
-    },
-    {
-      "authority_status": "adapter",
-      "blocker": {
-        "diagnostic": "points/dla:depositGrid: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "points/dla",
-      "program": "depositGrid",
-      "program_key": "points/dla:depositGrid",
-      "raw_bytes": 471,
-      "raw_sha256": "bbafff4c1dcd4883c8c7ab243161074fb74313b744476a7f6f229a0165722439",
-      "source": "pending-sources/points/dla/depositGrid.frag"
-    },
-    {
-      "authority_status": "adapter",
-      "blocker": {
-        "diagnostic": "points/lenia:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "points/lenia",
-      "program": "deposit",
-      "program_key": "points/lenia:deposit",
-      "raw_bytes": 271,
-      "raw_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
-      "source": "pending-sources/points/lenia/deposit.frag"
-    },
-    {
-      "authority_status": "adapter",
-      "blocker": {
-        "diagnostic": "points/physarum:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
-        "stage": "corpus.pass_binding"
-      },
-      "effect_id": "points/physarum",
-      "program": "deposit",
-      "program_key": "points/physarum:deposit",
-      "raw_bytes": 175,
-      "raw_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
-      "source": "pending-sources/points/physarum/deposit.frag"
     },
     {
       "authority_status": "generated",
@@ -3449,7 +3397,7 @@
     {
       "authority_status": "adapter",
       "blocker": {
-        "diagnostic": "render/pointsBillboardRender:deposit: drawMode billboards is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "diagnostic": "render/pointsBillboardRender:deposit: drawMode billboards is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit and filter3d/flow3d:deposit, points/dla:depositGrid, points/lenia:deposit, points/physarum:deposit",
         "stage": "corpus.pass_binding"
       },
       "effect_id": "render/pointsBillboardRender",
@@ -3488,7 +3436,7 @@
     {
       "authority_status": "adapter",
       "blocker": {
-        "diagnostic": "render/pointsRender:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit",
+        "diagnostic": "render/pointsRender:deposit: drawMode points is a scatter pass; backend compatibility registers a scatter contract only for filter/wormhole:deposit and filter3d/flow3d:deposit, points/dla:depositGrid, points/lenia:deposit, points/physarum:deposit",
         "stage": "corpus.pass_binding"
       },
       "effect_id": "render/pointsRender",

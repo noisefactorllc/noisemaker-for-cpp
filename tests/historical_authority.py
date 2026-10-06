@@ -82,6 +82,16 @@ def historical_authority(spec: dict):
         stack.enter_context(mock.patch.object(pathlib.Path, "read_text", historical_read_text))
         stack.enter_context(mock.patch.object(
             check_corpus, "REVISION", corpus_census.HISTORICAL_REVISION))
+        # The historical authority shipped exactly these five adapter-status
+        # programs; the live allowlist grew with the particle-family scatter
+        # contracts and must not retroactively apply to frozen revisions.
+        stack.enter_context(mock.patch.object(check_corpus, "_ADAPTERS", frozenset({
+            "classicNoisedeck/fractal:fractal",
+            "filter/historicPalette:historicPalette",
+            "filter/palette:palette",
+            "synth/julia:julia",
+            "synth/remap:remap",
+        })))
         stack.enter_context(mock.patch.object(
             check_corpus, "_CORPUS_RELATIVE",
             pathlib.PurePosixPath("tools/glslcpp/corpus") / corpus_census.HISTORICAL_REVISION))

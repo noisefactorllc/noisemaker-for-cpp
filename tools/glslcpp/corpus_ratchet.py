@@ -170,10 +170,18 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     if not passes:
         return {"stage": "corpus.pass_binding", "diagnostic": f"{key}: no authority pass runs this program"}
     if scatter:
-        from tools.dsl.generate_backend_compatibility import SCATTER_KEY
+        from tools.dsl.generate_backend_compatibility import (
+            SCATTER_CONTRACT_KEYS, SCATTER_KEY, authenticate_scatter_contract)
+        if key in SCATTER_CONTRACT_KEYS:
+            try:
+                authenticate_scatter_contract(key, source_bytes, effect)
+            except ValueError as error:
+                return {"stage": "corpus.scatter_contract", "diagnostic": str(error)}
+            return None
         return {"stage": "corpus.pass_binding",
                 "diagnostic": f"{key}: drawMode {'/'.join(scatter)} is a scatter pass; backend compatibility "
-                              f"registers a scatter contract only for {SCATTER_KEY}"}
+                              f"registers a scatter contract only for {SCATTER_KEY} "
+                              f"and {', '.join(sorted(SCATTER_CONTRACT_KEYS))}"}
     if len(passes) != 1:
         names = ", ".join(str(item.get("name")) for item in passes)
         return {"stage": "corpus.pass_binding",

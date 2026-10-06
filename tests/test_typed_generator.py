@@ -16804,7 +16804,10 @@ class Task29FocusBlurBorrowedSamplerTests(unittest.TestCase):
             (corpus_census.typed_count(), corpus_census.typed_count(),
              corpus_census.vendored_count()),
             (len(typed), len(public), len(corpus["programs"])))
-        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+        self.assertEqual((
+            "filter/wormhole:deposit", "filter3d/flow3d:deposit",
+            "points/dla:depositGrid", "points/lenia:deposit",
+            "points/physarum:deposit", "render/meshRender:render"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -17598,7 +17601,10 @@ class Task30ExtrudeBvec2RelationalReductionTests(unittest.TestCase):
             (corpus_census.typed_count(), corpus_census.typed_count(),
              corpus_census.vendored_count()),
             (len(typed), len(public), len(corpus["programs"])))
-        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+        self.assertEqual((
+            "filter/wormhole:deposit", "filter3d/flow3d:deposit",
+            "points/dla:depositGrid", "points/lenia:deposit",
+            "points/physarum:deposit", "render/meshRender:render"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -18616,7 +18622,10 @@ class Task31CurlVectorMathTests(unittest.TestCase):
             (corpus_census.typed_count(), corpus_census.typed_count(),
              corpus_census.vendored_count()),
             (len(typed), len(public), len(corpus["programs"])))
-        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+        self.assertEqual((
+            "filter/wormhole:deposit", "filter3d/flow3d:deposit",
+            "points/dla:depositGrid", "points/lenia:deposit",
+            "points/physarum:deposit", "render/meshRender:render"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -19917,7 +19926,10 @@ class Task33DerivativeAdmissionTests(unittest.TestCase):
             (corpus_census.typed_count(), corpus_census.typed_count(),
              corpus_census.vendored_count()),
             (len(typed), len(public), len(corpus["programs"])))
-        self.assertEqual(("filter/wormhole:deposit", "render/meshRender:render"),
+        self.assertEqual((
+            "filter/wormhole:deposit", "filter3d/flow3d:deposit",
+            "points/dla:depositGrid", "points/lenia:deposit",
+            "points/physarum:deposit", "render/meshRender:render"),
                          unported)
         self.assertEqual(
             corpus_census.typed_key_sha256(),
@@ -20137,7 +20149,9 @@ class MutableGlobalFrameIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -20881,7 +20895,9 @@ class ConstGlobalNineTableIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -22607,7 +22623,9 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -23383,7 +23401,9 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -24144,7 +24164,9 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -24682,7 +24704,9 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(
@@ -25280,7 +25304,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # Scatter deposit and the whole-pass mesh adapter bypass typed kernels.
         self.assertEqual(corpus_census.vendored_count(), len(corpus["programs"]))
         self.assertEqual(
-            {"filter/wormhole:deposit", "render/meshRender:render"},
+            {"filter/wormhole:deposit", "filter3d/flow3d:deposit",
+             "points/dla:depositGrid", "points/lenia:deposit",
+             "points/physarum:deposit", "render/meshRender:render"},
             {item["program_key"] for item in corpus["programs"]} - public)
 
         manifest = json.loads(

@@ -729,8 +729,8 @@ PlanValue normalize_value(const ParameterDefinition& parameter, PlanValue value,
 
 EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
     : canonical_programs_(catalog.canonical_programs), reference_passes_(catalog.reference_passes),
-      scatter_(catalog.scatter), provenance_(catalog.provenance) {
-  const bool has_admission = !canonical_programs_.empty() || !reference_passes_.empty() || scatter_.has_value();
+      scatter_(catalog.scatter), scatter_contracts_(catalog.scatter_contracts), provenance_(catalog.provenance) {
+  const bool has_admission = !canonical_programs_.empty() || !reference_passes_.empty() || scatter_.has_value() || !scatter_contracts_.empty();
   if (!has_admission) {
     if (!provenance_.schema.empty()) throw std::invalid_argument("Custom catalog cannot carry production provenance");
     for (const auto& definition : catalog.definitions) register_effect(definition);
@@ -756,9 +756,9 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "e24c844f8dada85551ab084f41db8944fbc176c8" ||
-      provenance_.generated_payload_sha256 != "c11d1b44bd28203e34745e677422f0846d42b5d0e5e2282d917f9c3ad49aff0f" ||
+      provenance_.generated_payload_sha256 != "4c4907c20906d0b50e27123df74de7a8a27211b62cfed99f585ded603de92ac4" ||
       provenance_.normalized_record_stream_sha256 != "1b2ce057d516077e12e13d8b2a9cb410447eb9aa90bcc9142b3b89a38067a4d7" ||
-      provenance_.compatibility_sha256 != "dc5eee49053a71aa26d38f5376131ee647da75d2d74376387eb5d6293fa697e2" ||
+      provenance_.compatibility_sha256 != "c267bddaba70144eab9c2d16fd66d2e43e205e67c6fbcf27df237298a4ee87e6" ||
       provenance_.cpu_behavioral_lock != "8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6" ||
       provenance_.cpu_behavioral_file_count != 94 ||
       provenance_.cpu_revision != "8c4ba7bde134ad664e80fba4690d48bb16f7af5e37d98ee232fe5dc3239b79f6" ||
@@ -776,15 +776,15 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   definitions_.reserve(catalog.definitions.size());
   for (const auto& definition : catalog.definitions) register_effect(definition);
   const bool strict_manifest = !catalog.provenance.schema.empty();
-  if (strict_manifest && (canonical_programs_.size() != 282 || reference_passes_.size() != 348 || !scatter_.has_value()))
+  if (strict_manifest && (canonical_programs_.size() != 282 || reference_passes_.size() != 348 || !scatter_.has_value() || scatter_contracts_.size() != 4))
     throw std::invalid_argument("Compatibility census cardinality drift");
   if (strict_manifest && (provenance_.counts.definitions != 210 || provenance_.counts.passes != 348 || provenance_.counts.reference_program_keys != 308 ||
-      provenance_.counts.backend_programs != 283 || provenance_.counts.compatible_programs != 281 || provenance_.counts.incompatible_programs != 1 ||
-      provenance_.counts.missing_passes != 65 || provenance_.counts.scatter_passes != 1 || provenance_.counts.executable_definitions != 188 ||
-      provenance_.counts.incomplete_definitions != 22 || !hex_sha256(provenance_.compatibility_sha256)))
+      provenance_.counts.backend_programs != 287 || provenance_.counts.compatible_programs != 281 || provenance_.counts.incompatible_programs != 1 ||
+      provenance_.counts.missing_passes != 61 || provenance_.counts.scatter_passes != 5 || provenance_.counts.executable_definitions != 191 ||
+      provenance_.counts.incomplete_definitions != 19 || !hex_sha256(provenance_.compatibility_sha256)))
     throw std::invalid_argument("Compatibility provenance census drift");
   if (provenance_.backend_fragment_rows != 284 || provenance_.backend_unique_fragment_keys != 282 ||
-      provenance_.backend_raw_exact != 283 || provenance_.backend_semantic_exact != 0)
+      provenance_.backend_raw_exact != 287 || provenance_.backend_semantic_exact != 0)
     throw std::invalid_argument("Backend provenance census drift");
   std::set<std::string> canonical_keys;
   canonical_views_.reserve(canonical_programs_.size());
@@ -910,10 +910,13 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       if (row.status == "compatible" && !row.reasons.empty()) throw std::invalid_argument("Compatible reference has reasons: " + row.program_key);
       if (row.status == "incompatible" && row.reasons != canonical->reasons) throw std::invalid_argument("Incompatible reference reason mismatch: " + row.program_key);
     } else if (row.status == "missing") {
-      if (canonical != canonical_programs_.end() || (scatter_ && scatter_->program_key == row.program_key)) throw std::invalid_argument("Missing reference has a backend row: " + row.program_key);
+      const bool contract_row = std::any_of(scatter_contracts_.begin(), scatter_contracts_.end(), [&](const auto& item) { return item.program_key == row.program_key; });
+      if (canonical != canonical_programs_.end() || (scatter_ && scatter_->program_key == row.program_key) || contract_row) throw std::invalid_argument("Missing reference has a backend row: " + row.program_key);
       if (row.reasons != expected_reasons({{"missing_backend_program", row.program_key}})) throw std::invalid_argument("Missing reference reason mismatch: " + row.program_key);
     } else if (row.status == "scatter") {
-      if (canonical != canonical_programs_.end() || !scatter_ || scatter_->program_key != row.program_key) throw std::invalid_argument("Invalid scatter reference row");
+      const bool contract_row = std::any_of(scatter_contracts_.begin(), scatter_contracts_.end(), [&](const auto& item) { return item.program_key == row.program_key; });
+      const bool wormhole_row = scatter_ && scatter_->program_key == row.program_key;
+      if (canonical != canonical_programs_.end() || (!wormhole_row && !contract_row)) throw std::invalid_argument("Invalid scatter reference row");
       if (row.reasons != expected_reasons({{"explicit_scatter_adapter", row.program_key}})) throw std::invalid_argument("Scatter reference reason mismatch: " + row.program_key);
     } else throw std::invalid_argument("Invalid reference compatibility status");
   }
@@ -927,6 +930,25 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
       std::any_of(scatter_->uniforms.begin(), scatter_->uniforms.end(), [](const auto& uniform) { return uniform.cpp_type != "double" || uniform.source != "effect_parameter" || uniform.name.empty(); }) ||
       scatter_->reasons != std::vector<std::pair<std::string, std::string>>{{"explicit_scatter_adapter", "filter/wormhole:deposit"}}))
     throw std::invalid_argument("Malformed scatter compatibility contract");
+  static const std::vector<std::tuple<const char*, const char*, const char*, const char*, const char*, size_t>> expected_contracts{
+      {"points/physarum:deposit", "noisemaker::scatter::physarum::adapter", "xyzTex", "input", "global_physarum_pheromone", 1},
+      {"points/dla:depositGrid", "noisemaker::scatter::dla::adapter", "xyzTex", "input", "global_dla_grid", 1},
+      {"points/lenia:deposit", "noisemaker::scatter::lenia::adapter", "xyzTex", "input", "global_lenia_density", 1},
+      {"filter3d/flow3d:deposit", "noisemaker::scatter::flow3d::adapter", "stateTex1", "pass", "global_flow3d_trail", 2},
+  };
+  if (scatter_contracts_.size() != expected_contracts.size()) throw std::invalid_argument("Scatter contract cardinality drift");
+  for (const auto& [key, adapter, input_texture, count, logical_route, uniform_count] : expected_contracts) {
+    const auto contract = std::find_if(scatter_contracts_.begin(), scatter_contracts_.end(), [&](const auto& item) { return item.program_key == key; });
+    if (contract == scatter_contracts_.end()) throw std::invalid_argument("Missing scatter compatibility contract: " + std::string(key));
+    if (contract->adapter != adapter || contract->registry != "noisemaker::scatter::resolve_scatter_adapter" || contract->draw_mode != "points" ||
+        contract->dimensionality != "image" || contract->count != count || contract->input_texture != input_texture ||
+        contract->destination_mutation != "in_place_accumulate" || !contract->blend || contract->uniforms.size() != uniform_count ||
+        contract->outputs.size() != 1 || contract->outputs[0].slot != 0 || contract->outputs[0].physical_name != "fragColor" ||
+        contract->outputs[0].logical_route != logical_route || contract->outputs[0].cpp_type != "glsl::Vec4" ||
+        std::any_of(contract->uniforms.begin(), contract->uniforms.end(), [](const auto& uniform) { return uniform.cpp_type != "double" || uniform.source != "effect_parameter" || uniform.name.empty(); }) ||
+        contract->reasons != std::vector<std::pair<std::string, std::string>>{{"explicit_scatter_adapter", key}})
+      throw std::invalid_argument("Malformed particle-family scatter contract: " + std::string(key));
+  }
 }
 
 EffectRegistry::EffectRegistry(std::vector<EffectDefinition> definitions) {

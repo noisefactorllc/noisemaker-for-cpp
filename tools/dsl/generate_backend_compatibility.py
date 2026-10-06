@@ -62,6 +62,62 @@ UPSTREAM_PACKAGE_SHA256 = "c01127034a8ba662a53801faaf1310129892690ad60f6985b605a
 UPSTREAM_LOCK_SHA256 = "dc60539c95e9bf6e7da34250701a898a053e5a3c86f605d0dd6108d95e3e3b56"
 CORPUS_REVISION = check_corpus.REVISION
 SCATTER_KEY = "filter/wormhole:deposit"
+# Particle-family deposit programs executed through registered C++ scatter
+# adapters (src/effects/scatter/*.cpp, behaviorally locked by
+# tests/test_scatter_*.cpp). wormhole keeps the singular historical `scatter`
+# contract; these single-pass programs register through `scatter_contracts`.
+# Multi-pass scatter programs (render/pointsRender:deposit,
+# render/pointsBillboardRender:deposit) stay refused until the corpus
+# manifest can represent their authority pass sets.
+SCATTER_CONTRACT_KEYS = frozenset({
+    "points/physarum:deposit",
+    "points/dla:depositGrid",
+    "points/lenia:deposit",
+    "filter3d/flow3d:deposit",
+})
+SCATTER_KEYS = frozenset({SCATTER_KEY}) | SCATTER_CONTRACT_KEYS
+# Adapter metadata mirrored from the C++ registrations: the adapter symbol,
+# the bindings each adapter reads, and the accumulate destination mutation.
+# `count` names where the draw count comes from: "input" iterates the input
+# texel count, "pass" reads the authority pass `count` (flow3d).
+_SCATTER_CONTRACTS: dict[str, dict[str, Any]] = {
+    "points/physarum:deposit": {
+        "adapter": "noisemaker::scatter::physarum::adapter", "draw_mode": "points",
+        "count": "input", "input_texture": "xyzTex",
+        "samplers": ["xyzTex", "rgbaTex"], "output_route": "global_physarum_pheromone",
+        "uniforms": ["deposit"],
+        "source_sha256": "340def672386279e0407bb56630bd37b78e6bdacd348d942737dfc268de6b72f",
+    },
+    "points/dla:depositGrid": {
+        "adapter": "noisemaker::scatter::dla::adapter", "draw_mode": "points",
+        "count": "input", "input_texture": "xyzTex",
+        "samplers": ["xyzTex", "velTex", "rgbaTex"], "output_route": "global_dla_grid",
+        "uniforms": ["deposit"],
+        "source_sha256": "bbafff4c1dcd4883c8c7ab243161074fb74313b744476a7f6f229a0165722439",
+    },
+    "points/lenia:deposit": {
+        "adapter": "noisemaker::scatter::lenia::adapter", "draw_mode": "points",
+        "count": "input", "input_texture": "xyzTex",
+        "samplers": ["xyzTex"], "output_route": "global_lenia_density",
+        "uniforms": ["depositAmount"],
+        "source_sha256": "7e1d94a931b0c5b5c2cc63bcc22c1f8dd9772c0a1df67224a67c73ad9d348f91",
+    },
+    "filter3d/flow3d:deposit": {
+        "adapter": "noisemaker::scatter::flow3d::adapter", "draw_mode": "points",
+        "count": "pass", "input_texture": "stateTex1",
+        "samplers": ["stateTex1", "stateTex2"], "output_route": "global_flow3d_trail",
+        "uniforms": ["density", "volumeSize"],
+        "source_sha256": "3df54b20e8dd1716c63156758097d1935c04082caac806a60c54611fc15df823",
+    },
+}
+for _key, _contract in _SCATTER_CONTRACTS.items():
+    _contract["program_key"] = _key
+    _contract["registry"] = "noisemaker::scatter::resolve_scatter_adapter"
+    _contract["destination_mutation"] = "in_place_accumulate"
+    _contract["blend"] = True
+    _contract["dimensionality"] = "image"
+    _contract["uniforms"] = [{"name": name, "cpp_type": "double", "source": "effect_parameter"}
+                             for name in _contract["uniforms"]]
 RESERVED_RUNTIME = frozenset({
     "resolution", "fullResolution", "renderScale", "tileOffset", "time",
     "frame", "seed", "deltaTime", "audioWaveform", "audioSpectrum", "midiClockCount",
@@ -502,7 +558,7 @@ def _typed_manifest(repository: pathlib.Path, generated: dict[str, Any], corpus_
                 or not isinstance(item.get("factory_route"), dict):
             raise CompatibilityError(f"{key}: typed manifest emitter ABI missing")
         result[key] = item
-    expected = corpus_keys - {SCATTER_KEY, mesh_render_contract.KEY}
+    expected = corpus_keys - SCATTER_KEYS - {mesh_render_contract.KEY}
     if set(result) != expected:
         raise CompatibilityError("typed manifest/corpus closure mismatch")
     return result
@@ -832,11 +888,14 @@ def _shader_path(entry: dict[str, Any]) -> str:
     return pathlib.PurePosixPath("shaders", "effects", *parts[:2], "glsl", parts[-1]).as_posix()
 
 
-def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: bytes, new: bytes) -> dict[str, Any]:
+def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: bytes, new: bytes,
+                          contract: dict[str, Any] | None = None) -> dict[str, Any]:
     classification = "raw_exact" if old == new else "incompatible"
     current_pass = _pass_index(effect, entry["program_key"])
     logical_outputs = list((current_pass.get("outputs") or {}).values())
-    if logical_outputs != ["wormhole_accum"]:
+    route = contract["output_route"] if contract else "wormhole_accum"
+    draw_mode = contract["draw_mode"] if contract else "points"
+    if logical_outputs != [route]:
         raise CompatibilityError(f"{entry['program_key']}: scatter output route drift")
     texture = (effect.get("textures") or {}).get(logical_outputs[0])
     if not isinstance(texture, dict):
@@ -851,16 +910,76 @@ def _scatter_source_entry(entry: dict[str, Any], effect: dict[str, Any], old: by
         "semantic": None, "compatibility_transform": "none",
         "uniforms": [], "samplers": [],
         "outputs": [{"slot": 0, "physical_name": "fragColor",
-                      "logical_route": "wormhole_accum", "cpp_type": "glsl::Vec4"}],
-        "output_abi": {"cardinality": 1, "logical_routes": ["wormhole_accum"],
+                      "logical_route": route, "cpp_type": "glsl::Vec4"}],
+        "output_abi": {"cardinality": 1, "logical_routes": [route],
                        "physical_names": ["fragColor"], "canonical_slots": [0],
                        "extent": extent,
                        "single_output_canonical": True},
-        "derivative_use": False, "draw_mode": "points", "dimensionality": "image",
+        "derivative_use": False, "draw_mode": draw_mode, "dimensionality": "image",
         "factory": {"canonical": None, "legacy_public": None,
                      "typed_manifest_output": None, "typed_manifest_output_sha256": None},
         "capabilities": [], "status": "registered", "reasons": [],
         "authority_pass": {},
+    }
+
+
+def authenticate_scatter_contract(key: str, source_bytes: bytes, effect: dict[str, Any]) -> None:
+    """Authenticate one registered particle-family scatter contract.
+
+    Fails closed unless the authority effect projects exactly one pass for the
+    program, that pass is the registered scatter draw mode routing fragColor
+    to the contract's destination texture, the texture is declared, and the
+    pinned corpus source round-trips the normalizer and parser unchanged.
+    """
+    contract = _SCATTER_CONTRACTS.get(key)
+    if contract is None:
+        raise ValueError(f"{key}: no registered scatter contract")
+    effect_id, program = key.split(":", 1)
+    passes = [item for item in effect.get("passes", []) if item.get("program") == program]
+    if len(passes) != 1:
+        raise ValueError(f"{key}: expected exactly one authority pass, found {len(passes)}")
+    current_pass = passes[0]
+    if current_pass.get("drawMode") != contract["draw_mode"]:
+        raise ValueError(f"{key}: authority drawMode {current_pass.get('drawMode')!r} "
+                         f"does not match the registered {contract['draw_mode']!r} contract")
+    outputs = current_pass.get("outputs") or {}
+    if outputs != {"fragColor": contract["output_route"]}:
+        raise ValueError(f"{key}: authority outputs {json.dumps(outputs, sort_keys=True)} "
+                         f"do not route fragColor to {contract['output_route']}")
+    texture = (effect.get("textures") or {}).get(contract["output_route"])
+    if not isinstance(texture, dict) or not isinstance(texture.get("format"), str):
+        raise ValueError(f"{key}: authority texture {contract['output_route']} is not declared")
+    if hashlib.sha256(source_bytes).hexdigest() != contract["source_sha256"]:
+        raise ValueError(f"{key}: scatter source bytes do not match the registered "
+                         f"corpus sha256 {contract['source_sha256']}")
+    try:
+        source = source_bytes.decode("utf-8")
+        normalize(source)
+        parse_program(source, key)
+    except Exception as error:  # noqa: BLE001 -- fail closed with the diagnostic
+        raise ValueError(f"{key}: scatter source failed the corpus front door: {error}") from error
+
+
+def _scatter_contract_document(contract: dict[str, Any], row: dict[str, Any],
+                               effect: dict[str, Any], current_pass: dict[str, Any]) -> dict[str, Any]:
+    """One registered particle-family scatter contract, mirrored from the C++
+    adapter registrations (src/effects/scatter/*.cpp) and authenticated
+    against the authority effect record."""
+    return {
+        "program_key": contract["program_key"], "effect_id": row["effect_id"],
+        "program": row["program"], "status": "registered",
+        "adapter": contract["adapter"], "registry": contract["registry"],
+        "draw_mode": contract["draw_mode"], "count": contract["count"],
+        "input_texture": contract["input_texture"], "samplers": list(contract["samplers"]),
+        "destination_mutation": contract["destination_mutation"],
+        "uniforms": [dict(item) for item in contract["uniforms"]],
+        "output_route": contract["output_route"], "blend": contract["blend"],
+        "source": row["source"], "old_raw_sha256": row["old_raw_sha256"],
+        "new_raw_sha256": row["new_raw_sha256"],
+        "source_classification": row["source_classification"],
+        "output_abi": row["output_abi"], "dimensionality": contract["dimensionality"],
+        "authority_pass": _authority_pass(current_pass),
+        "reasons": [],
     }
 
 
@@ -1106,7 +1225,7 @@ def _factory_evidence(repository: pathlib.Path, typed_rows: dict[str, dict[str, 
                      rows: dict[str, dict[str, Any]]) -> dict[str, Any]:
     selected: dict[str, dict[str, Any]] = {}
     for key in sorted(rows):
-        if key == SCATTER_KEY:
+        if key in SCATTER_KEYS:
             continue
         if key == mesh_render_contract.KEY:
             mesh_render_contract.validate_row(rows[key], repository)
@@ -1157,6 +1276,7 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
     }
     effect_records = _node_effect_records(cpu_root)
     effects = {item["id"]: item for item in effect_records}
+    contract_documents: list[dict[str, Any]] = []
     source_rows: list[dict[str, Any]] = []
     scatter_extent: dict[str, Any] | None = None
     for entry in entries:
@@ -1176,13 +1296,19 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             scatter_row = _scatter_source_entry(entry, effect, old, new)
             scatter_extent = scatter_row["output_abi"]["extent"]
             source_rows.append(scatter_row)
+        elif key in SCATTER_CONTRACT_KEYS:
+            contract = _SCATTER_CONTRACTS[key]
+            contract_row = _scatter_source_entry(entry, effect, old, new, contract)
+            source_rows.append(contract_row)
+            contract_documents.append(_scatter_contract_document(contract, contract_row, effect, current_pass))
         else:
             source_rows.append(_program_entry(repository, typed_rows, defines_by_key.get(key, {}), effect, entry, old, new))
     by_key = {item["program_key"]: item for item in source_rows}
-    if len(by_key) != len(entries) or set(by_key) != corpus_keys or SCATTER_KEY not in by_key:
+    if len(by_key) != len(entries) or set(by_key) != corpus_keys or SCATTER_KEY not in by_key \
+            or set(SCATTER_CONTRACT_KEYS) - set(by_key):
         raise CompatibilityError("corpus source closure cardinality drift")
-    fragment_unique = [item for item in source_rows if item["program_key"] != SCATTER_KEY]
-    if len(fragment_unique) != len(entries) - 1:
+    fragment_unique = [item for item in source_rows if item["program_key"] not in SCATTER_KEYS]
+    if len(fragment_unique) != len(entries) - len(SCATTER_KEYS):
         raise CompatibilityError("fragment unique census drift")
     factory_evidence = _factory_evidence(repository, typed_rows, by_key)
     legacy_factories = factory_evidence["legacy"]
@@ -1211,6 +1337,8 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             seen_pass_keys[key] += 1
             if key == SCATTER_KEY:
                 status, reasons = "scatter", [{"code": "explicit_scatter_adapter", "detail": "filter/wormhole:deposit"}]
+            elif key in SCATTER_CONTRACT_KEYS:
+                status, reasons = "scatter", [{"code": "explicit_scatter_adapter", "detail": key}]
             elif key in by_key:
                 status, reasons = by_key[key]["status"], by_key[key]["reasons"]
             else:
@@ -1252,12 +1380,14 @@ def generate(*, cpu_root: pathlib.Path, shader_git: pathlib.Path, repository: pa
             "incompatible": classifications["incompatible"], "incompatible_keys": incompatible_keys,
             "status_compatible": sum(item["status"] == "compatible" for item in fragment_unique),
             "status_incompatible": sum(item["status"] == "incompatible" for item in fragment_unique),
+            "registered_scatter_contracts": len(contract_documents),
         },
         "fragments": fragment_rows,
         "canonical_programs": sorted(fragment_unique, key=lambda item: item["program_key"]),
         "reference_passes": reference_passes,
         "reference_key_closure": sorted(seen_pass_keys),
         "scatter": scatter_contract,
+        "scatter_contracts": sorted(contract_documents, key=lambda item: item["program_key"]),
     }
     validate_document(document, expected_source_hashes={
         item["program_key"]: item["new_raw_sha256"] for item in source_rows
@@ -1301,7 +1431,7 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         raise CompatibilityError("backend compatibility sections are malformed")
     corpus_programs = check_corpus._validate_manifest(check_corpus._load_json(
         check_corpus._corpus_root(repository) / "manifest.json", "manifest"))
-    expected_canonical = {entry["program_key"] for entry in corpus_programs} - {SCATTER_KEY}
+    expected_canonical = {entry["program_key"] for entry in corpus_programs} - SCATTER_KEYS
     canonical_keys = [item.get("program_key") for item in canonical]
     if len(canonical) != len(expected_canonical) or set(canonical_keys) != expected_canonical \
             or len(fragments) != len(canonical) + 2:
@@ -1310,6 +1440,13 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         raise CompatibilityError("forged or duplicate canonical program key")
     if scatter.get("program_key") != SCATTER_KEY or scatter.get("status") != "registered":
         raise CompatibilityError("scatter registration missing or forged")
+    contracts = document.get("scatter_contracts")
+    if not isinstance(contracts, list) or len(contracts) != len(SCATTER_CONTRACT_KEYS) \
+            or {item.get("program_key") for item in contracts} != set(SCATTER_CONTRACT_KEYS) \
+            or any(item.get("status") != "registered"
+                   or item.get("adapter") != _SCATTER_CONTRACTS.get(item.get("program_key"), {}).get("adapter")
+                   for item in contracts):
+        raise CompatibilityError("particle-family scatter contract registration missing or forged")
     if not references or any(not isinstance(item, dict) for item in references):
         raise CompatibilityError("reference pass status closure drift")
     allowed_statuses = {"compatible", "incompatible", "missing", "scatter"}
@@ -1347,6 +1484,9 @@ def validate_document(document: dict[str, Any], *, expected_source_hashes: dict[
         elif key == SCATTER_KEY:
             expected_status = "scatter"
             expected_reasons = [{"code": "explicit_scatter_adapter", "detail": SCATTER_KEY}]
+        elif key in SCATTER_CONTRACT_KEYS:
+            expected_status = "scatter"
+            expected_reasons = [{"code": "explicit_scatter_adapter", "detail": key}]
         else:
             expected_status = "missing"
             expected_reasons = [{"code": "missing_backend_program", "detail": key}]

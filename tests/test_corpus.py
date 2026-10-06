@@ -52,14 +52,16 @@ class CorpusTests(unittest.TestCase):
         self.assertEqual(runtime_keys,
                          set(corpus_census.typed_keys()) | {"render/meshRender:render"})
         self.assertEqual(vendored + corpus_census.pending_count(), corpus_census.authority_program_count())
+        adapter_rows = [row for row in corpus_census.manifest_programs()
+                        if row["status"] == "adapter"]
         self.assertEqual(
             summary["counts"],
             {
                 "effects": corpus_census.metadata_effect_count(),
                 "passes": vendored,
                 "sources": vendored,
-                "generated": vendored - 5,
-                "adapter": 5,
+                "generated": vendored - len(adapter_rows),
+                "adapter": len(adapter_rows),
                 "keyed_runtime": len(runtime_keys),
                 "draw_op_overrides": vendored - len(runtime_keys),
                 "authority_programs": corpus_census.authority_program_count(),

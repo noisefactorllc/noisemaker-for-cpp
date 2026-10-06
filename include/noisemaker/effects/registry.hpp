@@ -50,6 +50,7 @@ class EffectRegistry {
   std::vector<ProgramCompatibility> canonical_programs_;
   std::vector<ReferencePassCompatibility> reference_passes_;
   std::optional<ScatterCompatibility> scatter_;
+  std::vector<ScatterCompatibility> scatter_contracts_;
   std::vector<graph::PassAdmission> canonical_views_;
   CatalogProvenance provenance_;
   bool manifest_backed_ = false;
