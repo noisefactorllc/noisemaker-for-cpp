@@ -415,6 +415,10 @@ if __package__ in (None, ""):
         STRUCT_DECLARATION_KEYS,
         allowed_row_fields as struct_declaration_allowed_row_fields,
         apply_struct_declaration, authenticate_struct_declaration)
+    from tools.glslcpp.frontend.struct_frontier_profile import (
+        PROFILES as STRUCT_FRONTIER_PROFILES,
+        STRUCT_FRONTIER_KEYS,
+        authenticate_struct_frontier)
     from tools.glslcpp.frontend.texture_lod_admission_profile import (
         PARALLAX_KEY as TEXTURE_LOD_ADMISSION_PARALLAX_KEY,
         PARALLAX_PROFILE as TEXTURE_LOD_ADMISSION_PROFILE,
@@ -850,6 +854,10 @@ else:
         STRUCT_DECLARATION_KEYS,
         allowed_row_fields as struct_declaration_allowed_row_fields,
         apply_struct_declaration, authenticate_struct_declaration)
+    from .frontend.struct_frontier_profile import (
+        PROFILES as STRUCT_FRONTIER_PROFILES,
+        STRUCT_FRONTIER_KEYS,
+        authenticate_struct_frontier)
     from .frontend.texture_lod_admission_profile import (
         PARALLAX_KEY as TEXTURE_LOD_ADMISSION_PARALLAX_KEY,
         PARALLAX_PROFILE as TEXTURE_LOD_ADMISSION_PROFILE,
@@ -3554,6 +3562,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                           log_admission_profile: str | None = None,
                           fractal3d_log_profile: str | None = None,
                           struct_declaration_profile: str | None = None,
+                          struct_frontier_profile: str | None = None,
                           historic_palette_profile: str | None = None,
                           palette_frontend_profile: str | None = None,
                           color_lab_frontend_profile: str | None = None,
@@ -3942,6 +3951,8 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     authorized_struct_constructors: tuple[object, ...] = ()
     authorized_struct_members: tuple[object, ...] = ()
     authorized_struct_type = None
+    authorized_struct_frontier = None
+    visited_struct_frontier_members: list[TypedExpression] = []
     authorized_historic_palette_proof = None
     authorized_palette_frontend_proof = None
     authorized_color_lab_frontend_proof = None
@@ -5450,6 +5461,24 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     elif typed.key in CROSS_KEYS:
         raise GeneratorError(
             f"{typed.key}: exact cross builtin admission profile carrier required")
+    if struct_frontier_profile is not None:
+        if (typed.key not in STRUCT_FRONTIER_KEYS
+                or struct_frontier_profile
+                != STRUCT_FRONTIER_PROFILES[typed.key]):
+            raise GeneratorError(
+                f"{typed.key}: struct frontier profile metadata mismatch")
+        try:
+            authorized_struct_frontier = authenticate_struct_frontier(
+                typed, source_hash, struct_frontier_profile)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+        if tuple(typed.structs) != authorized_struct_frontier.structs:
+            raise GeneratorError(
+                f"{typed.key}: struct frontier census does not cover "
+                "typed.structs")
+    elif typed.key in STRUCT_FRONTIER_KEYS:
+        raise GeneratorError(
+            f"{typed.key}: exact struct frontier profile carrier required")
     if dla_bit_ingress_profile is not None:
         if (typed.key not in DLA_KEYS
                 or compatibility_transform is not None
@@ -6334,6 +6363,9 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
     def reject_type(typ, value) -> None:
         if typ.kind == "struct":
             if (authorized_struct_type is typ
+                    or (authorized_struct_frontier is not None
+                        and any(typ is item for item in
+                                authorized_struct_frontier.struct_types))
                     or (authorized_historic_palette_proof is not None
                         and typ is authorized_historic_palette_proof.struct.type)
                     or (authorized_palette_frontend_proof is not None
@@ -7084,6 +7116,7 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
             and len(typed.structs) == 1
             and typed.structs[0] is authorized_palette_frontend_proof.struct)
         if (not authorized_historic_struct and not authorized_palette_struct
+                and authorized_struct_frontier is None
                 and (authorized_struct_declaration is None
                      or len(typed.structs) != 1
                      or typed.structs[0] is not authorized_struct_declaration)):
@@ -8283,6 +8316,17 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 if value in visited_palette_members:
                     raise GeneratorError(f"{typed.key}: authenticated Palette member visited twice")
                 visited_palette_members.append(value)
+            elif authorized_struct_frontier is not None:
+                if not any(value is item
+                           for item in authorized_struct_frontier.members):
+                    raise GeneratorError(
+                        f"{location(value)}: unsupported struct member expression")
+                if any(value is item
+                       for item in visited_struct_frontier_members):
+                    raise GeneratorError(
+                        f"{typed.key}: authenticated struct frontier member "
+                        "visited twice")
+                visited_struct_frontier_members.append(value)
             elif (not any(value is item for item in
                           (authorized_struct_members or ()) )):
                 raise GeneratorError(

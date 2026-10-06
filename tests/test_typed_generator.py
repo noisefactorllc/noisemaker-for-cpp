@@ -25626,7 +25626,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 typed, generate_typed_slice.APPROVED_CAPABILITIES,
                 source_hash=landed["raw"],
                 source_global_literal_int_profile=loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY)
-        self.assertIn("unsupported struct declaration", str(ctx.exception))
+        self.assertIn(
+            "exact struct frontier profile carrier required", str(ctx.exception))
 
         # Forged source bytes fail closed even with the exact profile.
         with self.assertRaises(Exception) as ctx:
@@ -25799,7 +25800,9 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                     source_global_literal_int_profile=
                     loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
                     **cross_kwargs)
-            self.assertIn("unsupported struct declaration", str(ctx.exception))
+            self.assertIn(
+                "exact struct frontier profile carrier required",
+                str(ctx.exception))
             with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
                 emit_typed_cpp.render_typed_cpp(
                     typed, key, landed["raw"], "pixel",
@@ -26100,7 +26103,8 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 source_global_literal_int_profile=
                 loop_proof.SOURCE_GLOBAL_LITERAL_INT_CAPABILITY,
                 cross_builtin_profile=CROSS_PROFILE)
-        self.assertIn("unsupported struct declaration", str(ctx.exception))
+        self.assertIn(
+            "exact struct frontier profile carrier required", str(ctx.exception))
         with self.assertRaises(emit_typed_cpp.TypedEmissionError) as ctx:
             emit_typed_cpp.render_typed_cpp(
                 typed, key, landed["raw"], "pixel",
@@ -27573,7 +27577,9 @@ void main() {
             # all three keys) advances to the next authentic blocker.
             # flythrough3d joined the seed carrier with the 2026-10-05
             # parameter-bound leg; all three programs' frontier is now the
-            # struct declaration.
+            # exact struct-frontier profile carrier requirement, which the
+            # struct-declaration admission composes behind the cross and
+            # seed carriers.
             with self.assertRaises(generate_typed_slice.GeneratorError) as ctx:
                 generate_typed_slice.validate_capabilities(
                     typed, generate_typed_slice.APPROVED_CAPABILITIES,
@@ -27582,7 +27588,7 @@ void main() {
                     **seed_kwargs,
                 )
             self.assertIn(
-                ("unsupported struct declaration" if seed_kwargs
+                ("exact struct frontier profile carrier required" if seed_kwargs
                  else "unsupported counted-for program proof"),
                 str(ctx.exception))
 

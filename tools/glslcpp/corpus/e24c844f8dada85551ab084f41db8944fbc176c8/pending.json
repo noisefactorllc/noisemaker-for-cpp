@@ -3293,7 +3293,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: classicNoisedeck/shapes3d:shapes3d:54:1: unsupported struct declaration",
+        "diagnostic": "GeneratorError: classicNoisedeck/shapes3d:shapes3d:328:35: unsupported builtin round",
         "stage": "typed.validator"
       },
       "effect_id": "classicNoisedeck/shapes3d",
@@ -3501,8 +3501,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/render3d:render3d:113:1: unsupported struct declaration",
-        "stage": "typed.validator"
+        "diagnostic": "TypedEmissionError: render/render3d:render3d:1:1: unsupported typed type IsoHit",
+        "stage": "typed.emitter"
       },
       "effect_id": "render/render3d",
       "program": "render3d",
@@ -3514,8 +3514,8 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/renderCubemap3d:renderCubemap3d:112:1: unsupported struct declaration",
-        "stage": "typed.validator"
+        "diagnostic": "TypedEmissionError: render/renderCubemap3d:renderCubemap3d:1:1: unsupported typed type IsoHit",
+        "stage": "typed.emitter"
       },
       "effect_id": "render/renderCubemap3d",
       "program": "renderCubemap3d",
@@ -3540,7 +3540,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:190:1: unsupported struct declaration",
+        "diagnostic": "GeneratorError: render/renderLit3d:renderLit3d:236:17: unsupported builtin any",
         "stage": "typed.validator"
       },
       "effect_id": "render/renderLit3d",
@@ -3579,7 +3579,7 @@
     {
       "authority_status": "generated",
       "blocker": {
-        "diagnostic": "GeneratorError: synth3d/flythrough3d:precompute:172:1: unsupported struct declaration",
+        "diagnostic": "GeneratorError: synth3d/flythrough3d:precompute:140:30: unsupported parameter direction out",
         "stage": "typed.validator"
       },
       "effect_id": "synth3d/flythrough3d",

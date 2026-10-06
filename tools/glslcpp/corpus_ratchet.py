@@ -267,11 +267,17 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
     from tools.glslcpp.frontend.fractal3d_log_profile import (
         FRACTAL3D_LOG_KEYS, PROFILE as FRACTAL3D_LOG_PROFILE,
     )
+    from tools.glslcpp.frontend.struct_frontier_profile import (
+        PROFILES as STRUCT_FRONTIER_PROFILES, STRUCT_FRONTIER_KEYS,
+    )
     ceil_admission_profile = (
         CEIL_ADMISSION_PROFILE if key in CEIL_ADMISSION_KEYS else None
     )
     fractal3d_log_profile = (
         FRACTAL3D_LOG_PROFILE if key in FRACTAL3D_LOG_KEYS else None
+    )
+    struct_frontier_profile = (
+        STRUCT_FRONTIER_PROFILES[key] if key in STRUCT_FRONTIER_KEYS else None
     )
     source_global_literal_int_profile = (
         SOURCE_GLOBAL_LITERAL_INT_CAPABILITY if key in SOURCE_GLOBAL_LITERAL_INT_KEYS else None
@@ -340,7 +346,8 @@ def probe_program(key: str, source_bytes: bytes, effect: dict[str, Any]) -> dict
             flow_round_profile=flow_round_profile,
             points_post_profile=points_post_profile,
             ceil_admission_profile=ceil_admission_profile,
-            fractal3d_log_profile=fractal3d_log_profile)
+            fractal3d_log_profile=fractal3d_log_profile,
+            struct_frontier_profile=struct_frontier_profile)
     except Exception as error:  # noqa: BLE001
         return {"stage": "typed.validator", "diagnostic": _diagnostic(error)}
     try:
