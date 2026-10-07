@@ -1052,7 +1052,20 @@ graph::PassAdmission EffectRegistry::admission(const EffectDefinition& definitio
   if (reference->status == "scatter") {
     result.status = graph::AvailabilityStatus::scatter;
     result.reasons = {{"explicit_scatter_adapter", result.identity.program_key}};
-    if (scatter_) result.scatter = scatter_contract(*scatter_);
+    // Bind the scatter contract that owns this exact program key.  The
+    // single wormhole row must never leak onto the particle-family rows:
+    // their routes differ (global_dla_grid vs wormhole_accum), and the
+    // executor's pass-output-ABI check fails closed on a foreign route.
+    if (scatter_ && scatter_->program_key == result.identity.program_key) {
+      result.scatter = scatter_contract(*scatter_);
+    } else {
+      for (const auto& item : scatter_contracts_) {
+        if (item.program_key == result.identity.program_key) {
+          result.scatter = scatter_contract(item);
+          break;
+        }
+      }
+    }
     return result;
   }
   result.status = reference->status == "compatible" ? graph::AvailabilityStatus::compatible :

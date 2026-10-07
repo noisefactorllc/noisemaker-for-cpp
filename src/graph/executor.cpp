@@ -2477,11 +2477,22 @@ void preflight_scatter_pass_abi(const EffectStep& step, const PassAdmission& adm
                         "output dimensions must be positive");
   }
   const auto& scatter = *admission.scatter;
-  // Exactly one declared input route, matching the adapter's single
-  // input-texture contract (mirrors JS's `buildScatterBindings`, which hands
-  // a scatter adapter exactly one resolved input surface today).
-  if (pass.inputs.size() != 1U || pass.inputs.front().first != scatter.input_texture ||
-      pass.inputs.front().second.empty()) {
+  // JS's canonicalTextures (renderer.js) resolves EVERY declared pass input
+  // under its own uniform name and hands the whole map to the adapter; the
+  // adapter reads the subset its shader documents. The contract's
+  // `input_texture` names the adapter's primary input and must appear among
+  // the declared inputs with a non-empty route; additional declared inputs
+  // (dla's velTex/rgbaTex) resolve like any other pass input at dispatch and
+  // fail closed there. The earlier "exactly one declared input" rule was
+  // written against the single-input wormhole/physarum contracts and
+  // refused the authority's own multi-input deposit passes.
+  bool contract_input_declared = false;
+  for (const auto& input : pass.inputs) {
+    if (input.first == scatter.input_texture && !input.second.empty()) {
+      contract_input_declared = true;
+    }
+  }
+  if (!contract_input_declared) {
     throw binding_error(step, admission, GraphErrorCode::missing_binding,
                         "scatter input route is invalid");
   }
@@ -2644,23 +2655,29 @@ void materialize_sampler_bindings(
 }
 
 // Builds the `glsl::Bindings` a scatter adapter reads, mirroring JS's
-// `buildScatterBindings` (renderer.js:819-830): the adapter's one input
-// texture plus its uniforms, each sourced from an ordinary effect parameter
-// (registry.cpp's construction-time authentication guarantees every scatter
-// uniform is `cpp_type=="double"`/`source=="effect_parameter"`). This is a
-// smaller, single-input analog of `materialize_uniform_bindings`/
-// `materialize_sampler_bindings` above, not a reuse of them, because a
-// scatter admission's own `admission.samplers`/`admission.uniforms` are
-// structurally empty (see registry.cpp's `admission()` early return) --
-// everything a scatter pass needs instead lives in `admission.scatter`.
+// scatter call sites (renderer.js:1331/1356): `canonicalTextures` resolves
+// EVERY declared pass input under its own declared uniform name (the adapter
+// reads the subset its shader documents -- xyzTex, velTex, rgbaTex,
+// stateTex1, inputTex, ...) and `buildScatterBindings` (renderer.js:819-830)
+// adds the scalar context; each uniform here is sourced from an ordinary
+// effect parameter (registry.cpp's construction-time authentication
+// guarantees every scatter uniform is `cpp_type=="double"`/
+// `source=="effect_parameter"`). This is a smaller analog of
+// `materialize_uniform_bindings`/`materialize_sampler_bindings` above, not a
+// reuse of them, because a scatter admission's own
+// `admission.samplers`/`admission.uniforms` are structurally empty (see
+// registry.cpp's `admission()` early return) -- everything a scatter pass
+// needs instead lives in `admission.scatter` plus the pass's declared
+// inputs. Callers pass every declared input already resolved; a null surface
+// here would mean a caller skipped its own read-before-write refusal.
 glsl::Bindings materialize_scatter_bindings(
     const EffectStep& step, const PassAdmission& admission,
     const effects::EffectDefinition& definition,
-    const noisemaker::Surface& input_surface) {
+    const std::vector<std::pair<std::string, const noisemaker::Surface*>>& inputs) {
   glsl::Bindings bindings;
   const auto& scatter = *admission.scatter;
   try {
-    bindings.set_texture(scatter.input_texture, input_surface);
+    for (const auto& input : inputs) bindings.set_texture(input.first, *input.second);
   } catch (const glsl::KernelBindingError& error) {
     throw binding_error(step, admission, GraphErrorCode::binding_type, error.what());
   }
@@ -3218,15 +3235,23 @@ struct GroupStepIterationResult {
       try {
         preflight_pass_abi(state.effective_step, admission, pass, binding_context);
         if (dispatch_scatter) {
-          const auto& scatter = *admission.scatter;
-          const auto* input_surface = lookup_group_step_route(&route_context, scatter.input_texture);
-          if (input_surface == nullptr) {
-            throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced",
-                             state.effective_step.effect.id, pass_index, pass.name,
-                             admission.identity.program_key);
+          // Same declared-name -> route mapping as the non-iterated branch:
+          // every declared pass input resolves under its own name from the
+          // group's step-local/group-shared resources (particle-state names
+          // were lazily created by ensure_group_particle_inputs above).
+          std::vector<std::pair<std::string, const noisemaker::Surface*>> scatter_inputs;
+          scatter_inputs.reserve(pass.inputs.size());
+          for (const auto& input : pass.inputs) {
+            const auto* input_surface = lookup_group_step_route(&route_context, input.second);
+            if (input_surface == nullptr) {
+              throw GraphError(GraphErrorCode::read_before_write, "input resource is not produced",
+                               state.effective_step.effect.id, pass_index, pass.name,
+                               admission.identity.program_key);
+            }
+            scatter_inputs.push_back({input.first, input_surface});
           }
           auto bindings =
-              materialize_scatter_bindings(state.effective_step, admission, definition, *input_surface);
+              materialize_scatter_bindings(state.effective_step, admission, definition, scatter_inputs);
           const noisemaker::scatter::ScatterAdapter adapter =
               noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
           if (adapter == nullptr) {
@@ -3954,22 +3979,31 @@ ExecutionResult GraphExecutor::execute(const ExecutionPlan& plan,
               // `destination_mutation == "in_place_accumulate"` -- run the
               // adapter IN PLACE, then quantize/store exactly like any
               // other pass.
-              const auto& scatter = *admission.scatter;
-              const auto input_route = resolve_route(scatter.input_texture);
-              if (input_route.surface == nullptr) {
-                release_borrowed();
-                throw GraphError(GraphErrorCode::read_before_write,
-                                 "input resource is not produced", step.effect.id,
-                                 pass_index, pass.name,
-                                 admission.identity.program_key);
-              }
-              if (input_route.resource != nullptr &&
-                  std::find(borrowed.begin(), borrowed.end(), input_route.resource) == borrowed.end()) {
-                arena.retain(*input_route.resource);
-                borrowed.push_back(input_route.resource);
+              // JS canonicalTextures (renderer.js:1331): every declared pass
+              // input resolves under its own declared uniform name -- the
+              // contract's `input_texture` is a variable NAME (xyzTex);
+              // resolving it as a route instead of the declared input's
+              // route (global_xyz) was the particle-family dispatch bug.
+              std::vector<std::pair<std::string, const noisemaker::Surface*>> scatter_inputs;
+              scatter_inputs.reserve(pass.inputs.size());
+              for (const auto& input : pass.inputs) {
+                const auto input_route = resolve_route(input.second);
+                if (input_route.surface == nullptr) {
+                  release_borrowed();
+                  throw GraphError(GraphErrorCode::read_before_write,
+                                   "input resource is not produced", step.effect.id,
+                                   pass_index, pass.name,
+                                   admission.identity.program_key);
+                }
+                if (input_route.resource != nullptr &&
+                    std::find(borrowed.begin(), borrowed.end(), input_route.resource) == borrowed.end()) {
+                  arena.retain(*input_route.resource);
+                  borrowed.push_back(input_route.resource);
+                }
+                scatter_inputs.push_back({input.first, input_route.surface});
               }
               auto bindings = materialize_scatter_bindings(
-                  step, admission, snapshot.definition, *input_route.surface);
+                  step, admission, snapshot.definition, scatter_inputs);
               const noisemaker::scatter::ScatterAdapter adapter =
                   noisemaker::scatter::resolve_scatter_adapter(admission.identity.program_key);
               if (adapter == nullptr) {

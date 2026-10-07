@@ -188,6 +188,36 @@ TEST(effect_registry_owns_authenticated_production_provenance_and_scatter_contra
   REQUIRE(scatter.scatter->outputs[0].logical_route == "wormhole_accum");
 }
 
+TEST(effect_registry_binds_each_particle_family_scatter_contract_to_its_own_row) {
+  const auto& registry = EffectRegistry(noisemaker::effects::effect_catalog());
+  struct Expected { const char* name_space; const char* function; const char* program; const char* adapter; const char* route; };
+  const std::vector<Expected> expected = {
+      {"points", "physarum", "deposit", "noisemaker::scatter::physarum::adapter", "global_physarum_pheromone"},
+      {"points", "dla", "depositGrid", "noisemaker::scatter::dla::adapter", "global_dla_grid"},
+      {"points", "lenia", "deposit", "noisemaker::scatter::lenia::adapter", "global_lenia_density"},
+      {"filter3d", "flow3d", "deposit", "noisemaker::scatter::flow3d::adapter", "global_flow3d_trail"},
+  };
+  for (const auto& [name_space, function, program, adapter, route] : expected) {
+    const auto* effect = registry.get(name_space, function);
+    REQUIRE(effect != nullptr);
+    bool found = false;
+    for (std::size_t index = 0; index < effect->passes.size(); ++index) {
+      if (effect->passes[index].program != program) continue;
+      found = true;
+      const auto admission = registry.admission(*effect, index);
+      REQUIRE(admission.identity.program_key == std::string(name_space) + "/" + function + ":" + program);
+      REQUIRE(admission.status == noisemaker::graph::AvailabilityStatus::scatter);
+      REQUIRE(admission.scatter.has_value());
+      REQUIRE(admission.scatter->adapter == adapter);
+      REQUIRE(admission.scatter->outputs.size() == 1);
+      REQUIRE(admission.scatter->outputs[0].physical_name == "fragColor");
+      REQUIRE(admission.scatter->outputs[0].logical_route == route);
+      REQUIRE(admission.scatter->outputs[0].cpp_type == "glsl::Vec4");
+    }
+    REQUIRE(found);
+  }
+}
+
 TEST(effect_registry_rejects_forged_reference_metadata_and_provenance) {
   auto metadata = noisemaker::effects::effect_catalog();
   metadata.reference_passes[0].authority_pass.name = "forged";

@@ -908,8 +908,9 @@ class VaryingUvCensusTests(unittest.TestCase):
         self.assertEqual(total, len(reads) + len(writes))
 
     def test_the_whole_corpus_carries_exactly_five_varying_programs(self):
-        """Keep the original five varying programs and Mesh Render's exact
-        three geometry inputs explicit in the current corpus census."""
+        """Keep the original five varying programs, Mesh Render's exact
+        three geometry inputs, and the four vendored particle-family
+        scatter deposits explicit in the current corpus census."""
         from tools.glslcpp import check_corpus
         root = check_corpus._corpus_root(ROOT)
         manifest = check_corpus._load_json(root / "manifest.json", "manifest")
@@ -933,6 +934,10 @@ class VaryingUvCensusTests(unittest.TestCase):
              "filter/wobble:wobble": (("v_texCoord", "vec2"),),
              "filter/spookyTicker:spookyTicker": (("v_texCoord", "vec2"),),
              "filter/wormhole:deposit": (("vColor", "vec4"),),
+             "filter3d/flow3d:deposit": (("vColor", "vec4"),),
+             "points/dla:depositGrid": (("v_color", "vec3"),
+                                        ("v_weight", "float")),
+             "points/physarum:deposit": (("vColor", "vec4"),),
              "render/meshRender:render": (("vNormal", "vec3"),
                                            ("vPosition", "vec3"),
                                            ("vUV", "vec2"))},
