@@ -4766,8 +4766,8 @@
       "effectId": "filter/lighting",
       "variant": "default",
       "sourceName": "filter__lighting__default.dsl",
-      "source": "search synth, filter\nsolid(color: #3a7).lighting(normalStrength: 1.5, smoothing: 1, diffuseColor: #ffffff, specularColor: #ffffff, specularIntensity: 0.5, shininess: 64, ambientColor: #333333, lightDirection: [0.5, 0.5, 1], reflection: 0, refraction: 0, aberration: 0, heightMap: o0).write(o0)\nrender(o0)\n",
-      "sourceSha256": "56b0c43ed3cdfa0f8789d532d2ee3c36c33834f22c1878fc9dcf683b7ce671cc",
+      "source": "search synth, filter\nsolid(color: #3a7).write(o1)\nsolid(color: #3a7).lighting(normalStrength: 1.5, smoothing: 1, diffuseColor: #ffffff, specularColor: #ffffff, specularIntensity: 0.5, shininess: 64, ambientColor: #333333, lightDirection: [0.5, 0.5, 1], reflection: 0, refraction: 0, aberration: 0, heightMap: o1).write(o0)\nrender(o0)\n",
+      "sourceSha256": "dc44a8c915cf7bfe9997b376c1cf5698c8756e850a9115a0a00839af54322f52",
       "width": 17,
       "height": 11,
       "options": {
@@ -5818,8 +5818,8 @@
       "effectId": "filter/parallax",
       "variant": "default",
       "sourceName": "filter__parallax__default.dsl",
-      "source": "search synth, filter\nsolid(color: #3a7).parallax(heightMap: o0, direction: [0.5, 0.5, 1], pivot: 0).write(o0)\nrender(o0)\n",
-      "sourceSha256": "2d9cd7e884bb39eee74eb69d9a1b23b3eebce4fd8156cd234b4357254864891a",
+      "source": "search synth, filter\nsolid(color: #3a7).write(o1)\nsolid(color: #3a7).parallax(heightMap: o1, direction: [0.5, 0.5, 1], pivot: 0).write(o0)\nrender(o0)\n",
+      "sourceSha256": "fab57ac15a67e99e38df3a62cdc7b93fe23e1e95c7b6c3e192fc31d716ec490d",
       "width": 17,
       "height": 11,
       "options": {
@@ -9058,7 +9058,15 @@
             "format": "rgba16f"
           }
         ]
-      }
+      },
+      "externalTextures": [
+        {
+          "name": "textTex",
+          "width": 4,
+          "height": 4,
+          "rgba8": "ebebebff282828ffebebebff282828ff282828ffebebebff282828ffebebebffebebebff282828ffebebebff282828ff282828ffebebebff282828ffebebebff"
+        }
+      ]
     },
     {
       "schema": "noisemaker-cpp.dsl-executable-corpus.v1",
@@ -11855,8 +11863,8 @@
       "effectId": "points/heightGrid",
       "variant": "default",
       "sourceName": "points__heightGrid__default.dsl",
-      "source": "search synth, points\nsolid(color: #3a7).heightGrid(heightTex: o0, diffuseTex: o0, gridScale: 80, heightScale: 20, heightOffset: 0).write(o0)\nrender(o0)\n",
-      "sourceSha256": "ca636c025405d107c72006a002ad0a68994ae51290baefdf75d32baa6496247a",
+      "source": "search synth, points, render\nsolid(color: #3a7).pointsEmit(stateSize: 256, layout: 0, seed: 0, attrition: 0, resetState: false, iterationCount: 60).heightGrid(gridScale: 80, heightScale: 20, heightOffset: 0).write(o0)\nrender(o0)\n",
+      "sourceSha256": "fe4a1243a5b44dad5ea01ce7b71254c9d5dc1a59465a18372e7a3794c218f241",
       "width": 17,
       "height": 11,
       "options": {
@@ -14123,7 +14131,15 @@
             "format": "rgba16f"
           }
         ]
-      }
+      },
+      "externalTextures": [
+        {
+          "name": "imageTex",
+          "width": 4,
+          "height": 4,
+          "rgba8": "ebebebff282828ffebebebff282828ff282828ffebebebff282828ffebebebffebebebff282828ffebebebff282828ff282828ffebebebff282828ffebebebff"
+        }
+      ]
     },
     {
       "schema": "noisemaker-cpp.dsl-executable-corpus.v1",
@@ -17748,5 +17764,5 @@
       ]
     }
   ],
-  "manifestSha256": "6e12f18bb512a3cdddcc5b4ad7d692b366ab9f092dc425d4091641e856493aec"
+  "manifestSha256": "14beaac8094d046c6f9e61571c04a330432b209dd6de89afeefb8fa5c7120141"
 }

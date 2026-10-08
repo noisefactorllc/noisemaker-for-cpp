@@ -29,24 +29,55 @@ function color(value) {
   const channels = value.length === 4 ? value : [...value, 1]
   return `#${channels.slice(0, 3).map((channel) => Math.max(0, Math.min(255, Math.round(channel * 255))).toString(16).padStart(2, '0')).join('')}${channels.length === 4 && channels[3] !== 1 ? Math.max(0, Math.min(255, Math.round(channels[3] * 255))).toString(16).padStart(2, '0') : ''}`
 }
-function dslValue(param, value) {
+function dslValue(param, value, surfaceTarget) {
   if (param.type === 'color' && Array.isArray(value)) return color(value)
   if (param.type === 'string') return JSON.stringify(value)
   if (param.type === 'bool' || param.type === 'boolean') return value ? 'true' : 'false'
-  if (param.type === 'surface') return value === null || value === 'none' ? 'none' : 'o0'
+  if (param.type === 'surface') return value === null || value === 'none' ? 'none' : surfaceTarget
   if (Array.isArray(value)) return `[${value.map((item) => number(item)).join(', ')}]`
   if (typeof value === 'number') return number(value)
   if (typeof value === 'boolean') return value ? 'true' : 'false'
   return String(value)
 }
-function defaultArgs(effect) {
-  return Object.entries(effect.params ?? {}).map(([name, param]) => `${name}: ${dslValue(param, param.default)}`).join(', ')
+function defaultArgs(effect, surfaceTarget) {
+  return Object.entries(effect.params ?? {}).map(([name, param]) => `${name}: ${dslValue(param, param.default, surfaceTarget)}`).join(', ')
 }
-function sourceFor(effect) {
-  const search = effect.kind === 'generator' ? [effect.namespace] : ['synth', effect.namespace].filter((item, index, list) => list.indexOf(item) === index)
-  const call = `${effect.func}(${defaultArgs(effect)})`
-  const chain = effect.kind === 'generator' ? call : `solid(color: #3a7).${call}`
-  return `search ${search.join(', ')}\n${chain}.write(o0)\nrender(o0)\n`
+function hasBoundSurface(effect) {
+  return Object.values(effect.params ?? {}).some((param) => param.type === 'surface' && param.default !== null && param.default !== 'none')
+}
+// Byte-for-byte the authority's particle-state contract
+// (src/runtime/iteration.js: PARTICLE_STATE_PATTERN + referencesParticleState).
+const PARTICLE_STATE_PATTERN = /^global_(xyz|vel|rgba|life_data)$|^global_.*_trail$/
+
+function referencesParticleState(effect) {
+  return (effect.passes ?? []).some((pass) =>
+    Object.values(pass.inputs ?? {}).some((value) => PARTICLE_STATE_PATTERN.test(value)) ||
+    Object.values(pass.outputs ?? {}).some((value) => PARTICLE_STATE_PATTERN.test(value)))
+}
+function sourceFor(effect, pointsEmit) {
+  let search = effect.kind === 'generator' ? [effect.namespace] : ['synth', effect.namespace].filter((item, index, list) => list.indexOf(item) === index)
+  // The authority's iteration contract (src/runtime/iteration.js): a step
+  // referencing particle state joins an OPEN particle group, and
+  // render/pointsEmit is the only definition that opens one. A non-iterated
+  // effect referencing particle state therefore needs the pointsEmit prefix:
+  // its one-shot chain alone refuses ("requires texture \"global_xyz\"") --
+  // no pass initializes the particle-state textures outside a group.
+  const needsParticleGroup = effect.iterated !== true && referencesParticleState(effect)
+  // Inside that iterated group a surface-typed parameter must stay at its
+  // default (the current input): an outer named write is not a surface the
+  // group's iterations can bind ("Surface o1 has not been written"), and a
+  // binding to the effect's own output route (o0) is a read-before-write
+  // both lanes refuse. Outside a particle group, surface parameters read o1
+  // written from the same solid first.
+  const boundSurface = !needsParticleGroup && hasBoundSurface(effect)
+  const prefix = needsParticleGroup ? `pointsEmit(${defaultArgs(pointsEmit, 'o1')}).` : ''
+  const call = needsParticleGroup
+    ? `${effect.func}(${Object.entries(effect.params ?? {}).filter(([, param]) => param.type !== 'surface').map(([name, param]) => `${name}: ${dslValue(param, param.default, 'o1')}`).join(', ')})`
+    : `${effect.func}(${defaultArgs(effect, 'o1')})`
+  if (needsParticleGroup && !search.includes('render')) search = [...search, 'render']
+  const chain = effect.kind === 'generator' ? call : `solid(color: #3a7).${prefix}${call}`
+  const body = boundSurface ? `solid(color: #3a7).write(o1)\n${chain}.write(o0)\nrender(o0)` : `${chain}.write(o0)\nrender(o0)`
+  return `search ${search.join(', ')}\n${body}\n`
 }
 function seedFor(id) {
   const value = Number.parseInt(sha256(Buffer.from(id)).slice(0, 8), 16) >>> 0
@@ -99,6 +130,24 @@ function packFloat32(values) {
   const bytes = Buffer.alloc(values.length * 4)
   values.forEach((value, index) => bytes.writeFloatLE(value, index * 4))
   return bytes.toString('hex')
+}
+
+// A small deterministic checkerboard fed to effects declaring
+// ``externalTexture`` (filter/text, synth/media) -- identically to both
+// lanes. Byte-for-byte the same pattern tools/parity/sweep.py's
+// ``synthetic_texture_rgba8_hex()`` feeds; keep them in sync.
+const EXTERNAL_TEXTURE_SIZE = 4
+
+function syntheticTextureRgba8Hex(size = EXTERNAL_TEXTURE_SIZE) {
+  const pixels = Buffer.alloc(size * size * 4)
+  for (let y = 0; y < size; ++y) {
+    for (let x = 0; x < size; ++x) {
+      const v = (x + y) % 2 === 0 ? 235 : 40
+      const i = (y * size + x) * 4
+      pixels[i] = v; pixels[i + 1] = v; pixels[i + 2] = v; pixels[i + 3] = 255
+    }
+  }
+  return pixels.toString('hex')
 }
 
 function meshLoaderInputs() {
@@ -159,10 +208,12 @@ async function main() {
   const typedManifestSha256 = sha256(typed.bytes)
   if (!typed.value || typed.value.schema !== 1 || !Array.isArray(typed.value.programs) || typed.value.programs.length === 0 || !typed.value.typed_slice_sha256 || typed.value.programs.some((row) => row.output_sha256 !== typed.value.typed_slice_sha256)) throw new Error('typed manifest is not an authenticated emitter manifest')
   const rowsByEffect = passRowsByEffect(compatibility.value.reference_passes)
+  const pointsEmit = snapshot.effectRecords.find((effect) => effect.id === 'render/pointsEmit')
+  if (!pointsEmit) throw new Error('render/pointsEmit is missing from the authenticated upstream snapshot')
   const records = []
   for (const effect of [...snapshot.effectRecords].sort((a, b) => a.id.localeCompare(b.id))) {
     const rows = rowsByEffect.get(effect.id) ?? []
-    const source = sourceFor(effect)
+    const source = sourceFor(effect, pointsEmit)
     const sourceSha256 = sha256(Buffer.from(source))
     const options = { width: 17, height: 11, time: 0.25, frame: 0, seed: seedFor(`${effect.id}#default`), oneShot: 'ready', renderScale: 1 }
     const provenanceRecord = { cpuBehavioralLock: EXPECTED.behavioralLockSha256, sourceLockSha256: EXPECTED.sourceLockSha256, upstreamSourceDigest: EXPECTED.upstreamSourceDigest, upstreamRevision: EXPECTED.upstreamRevision, upstreamTree: compatibility.value.authority.upstream_tree, compatibilitySha256: BACKEND_SHA256, typedManifestSha256, catalogPayloadSha256: provenance.value.generated_payload_sha256 }
@@ -178,6 +229,14 @@ async function main() {
     else record.plan = planFor(effect, rows, source)
     const externalInputs = externalInputsFor(effect.id)
     if (externalInputs) record.externalInputs = externalInputs
+    // An externalTexture-declared effect's bound input (filter/text's
+    // textTex, synth/media's imageTex): the same deterministic 4x4 RGBA8
+    // checkerboard tools/parity/sweep.py's synthetic_texture_rgba8_hex()
+    // feeds, so both lanes render this case from one source of truth and
+    // the authority refuses neither ("requires external texture").
+    if (!failure && effect.domain === 'image' && effect.externalTexture) {
+      record.externalTextures = [{ name: effect.externalTexture, width: EXTERNAL_TEXTURE_SIZE, height: EXTERNAL_TEXTURE_SIZE, rgba8: syntheticTextureRgba8Hex() }]
+    }
     records.push(record)
   }
   const buckets = {}
