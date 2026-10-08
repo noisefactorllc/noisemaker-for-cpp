@@ -1,12 +1,14 @@
 #include "test_harness.hpp"
 
 #include <cstdint>
+#include <string>
 #include <vector>
 
 #include "noisemaker/effects/scatter/catalog.hpp"
 #include "noisemaker/effects/scatter/dla.hpp"
 #include "noisemaker/effects/scatter/registry.hpp"
 #include "noisemaker/numeric.hpp"
+#include "noisemaker/renderer.hpp"
 #include "noisemaker/surface.hpp"
 
 namespace {
@@ -137,4 +139,42 @@ TEST(scatter_dla_via_registry_matches_js_oracle_1x7) {
   for (std::size_t i = 0; i < expected_bits.size(); ++i) {
     REQUIRE(noisemaker::float_bits_to_uint(got[i]) == expected_bits[i]);
   }
+}
+
+// Regression for the pointsEmit -> dla chain (issue #1): the authority's
+// effectParams() substitutes the RAW renderOptions.seed into the step's own
+// `seed` parameter when the DSL call did not name it, and
+// createCanonicalBindings' `...uniforms` spread binds that substituted value
+// un-narrowed, so the generated kernel's int-typed `seed` uniform must
+// truncate the raw render seed. Narrowing through float32 first delivered
+// 1365378816 instead of 1365378863, and every hash seeded from that uniform
+// diverged from the CPU authority -- on its own each effect stayed
+// byte-exact (corpus records bind seed explicitly), only the chain showed
+// it. The pinned frame below was captured from this port at the fixed
+// revision and is byte-exact against the pinned JS CPU authority
+// (noisemaker-for-cpu 5b686a4) at the same options; the corpus record cannot
+// cover this path because it renders dla without pointsEmit, so the dla
+// agent kernel never runs there. 64x64 is the reported geometry: at the
+// smaller corpus geometry the divergent deposits quantize to the same
+// RGBA8 frame.
+TEST(dsl_chain_with_unbound_int_seed_uniform_binds_the_raw_render_seed) {
+  noisemaker::Renderer renderer;
+  const std::string source =
+      "search synth, points, render\nsolid().pointsEmit().dla().write(o0)\nrender(o0)\n";
+  noisemaker::RenderOptions options;
+  options.width = 64U;
+  options.height = 64U;
+  options.time = 0.25;
+  options.frame = 0U;
+  options.seed = 1365378863.0;
+  const auto result = renderer.render(source, options);
+  REQUIRE(result.surface().width() == 64U);
+  REQUIRE(result.surface().height() == 64U);
+  const auto rgba8 = result.surface().to_rgba8();
+  REQUIRE(rgba8.size() == 64U * 64U * 4U);
+  std::uint64_t hash = 0xcbf29ce484222325ULL;
+  for (const std::uint8_t byte : rgba8) {
+    hash = (hash ^ byte) * 0x100000001b3ULL;
+  }
+  REQUIRE(hash == 0xa6ac3bf65d6620b0ULL);
 }

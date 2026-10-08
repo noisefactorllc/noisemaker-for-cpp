@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Local entrypoint for the repository's own test lanes, mirroring the CI
+# push gate: build the native test binary, run the CTest suite, then the
+# Python push-gate subset. The Python lane runs under the same uv-pinned
+# interpreter CI uses (the tests need Python 3.13).
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+if [ "${NOISEMAKER_TEST_SKIP_BUILD:-}" = "" ] || [ ! -x build/noisemaker-cpu-tests ]; then
+  cmake -S . -B build -DCMAKE_BUILD_TYPE=Release >&2
+  cmake --build build -j "$(nproc)" --target noisemaker-cpu-tests >&2
+fi
+
+ctest --test-dir build --output-on-failure "$@"
+# pytest is a LIBRARY dependency here, not the runner: five oracle modules
+# import it for `pytest.skip`/`pytest.raises` (ci.yml installs it for the
+# same reason), so unittest discovery cannot import them without it.
+uv run --no-project --python 3.13.13 --with pytest env NOISEMAKER_PUSH_GATE=1 \
+  python -m unittest discover -s tests -p 'test_*.py' -q

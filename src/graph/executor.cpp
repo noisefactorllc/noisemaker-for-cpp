@@ -1813,19 +1813,50 @@ void validate_uniform_abi_shape(const EffectStep& step,
     return materialize_plan_value(PlanValue::array_value({PlanValue::number_value(static_cast<double>(context.destination_width)), PlanValue::number_value(static_cast<double>(context.destination_height))}), abi.cpp_type, step, admission, abi.name);
   }
   if (abi.source_name == "renderScale") return materialize_plan_value(PlanValue::number_value(1.0), abi.cpp_type, step, admission, abi.name);
-  // `time`/`seed`/`deltaTime` are createCanonicalBindings' `f32(time)`,
-  // `f32(seed)`, `f32(deltaTime)` (glsl-kernel.js:56-58): every DSL-generated
-  // kernel observes these already float32-narrowed, at bind time, not at
-  // first use. The non-reserved `PixelContext::time/seed` fields a
-  // non-derivative `run_pass` call fills in get this same narrowing for
-  // free (both call sites pass `noisemaker::f32(inputs.time/seed)`
-  // straight through); a hand-written adapter that instead reads these as
-  // ordinary named uniforms via `Bindings` (`bind_snow`, `bind_bit_effects`)
-  // was going through this function unnarrowed, one rounding step later
-  // than the authority.
+  // `time`/`deltaTime` are createCanonicalBindings' `f32(time)` /
+  // `f32(deltaTime)` (glsl-kernel.js:56-58): every DSL-generated kernel
+  // observes these already float32-narrowed, at bind time, not at first use.
+  // The non-reserved `PixelContext::time/seed` fields a non-derivative
+  // `run_pass` call fills in get this same narrowing for free (both call
+  // sites pass `noisemaker::f32(inputs.time/seed)` straight through); a
+  // hand-written adapter that instead reads these as ordinary named uniforms
+  // via `Bindings` (`bind_snow`, `bind_bit_effects`) was going through this
+  // function unnarrowed, one rounding step later than the authority.
   if (abi.source_name == "time") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.time))), abi.cpp_type, step, admission, abi.name);
   if (abi.source_name == "frame") return materialize_plan_value(PlanValue::number_value(static_cast<double>(inputs.frame)), abi.cpp_type, step, admission, abi.name);
-  if (abi.source_name == "seed") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.seed))), abi.cpp_type, step, admission, abi.name);
+  // `seed` is double-edged: createCanonicalBindings' base entry is
+  // `f32(seed)`, but when the effect declares its own `seed` parameter the
+  // runtime's effectParams() substitution (renderer.js:433-437) puts the RAW
+  // `renderOptions.seed` into `params`, and the same function's
+  // `...uniforms` spread then overrides that base entry with it
+  // un-narrowed. So a `float`-typed seed uniform still observes
+  // `f32(inputs.seed)` (materialize_plan_value's float path narrows), but an
+  // `int`/`uint`-typed seed uniform must truncate the raw value: narrowing
+  // through float32 first would deliver e.g. 1365378816 where the authority
+  // delivers 1365378863, and every hash seeded from that uniform diverges
+  // (the pointsEmit -> dla chain defect).
+  //
+  // Integer-typed seed uniforms also use the authority's ToInt32/ToUint32
+  // wrap (every kernel consumes the seed through `seed|0` / `>>>0`): a
+  // render seed past 2^31 renders in the authority (e.g. 2453927936 becomes
+  // -1841039360) where a plain int32 range check would refuse a case the
+  // authority renders.
+  if (abi.source_name == "seed") {
+    const auto* seed_param = parameter(step, "seed");
+    const bool substituted = seed_param != nullptr &&
+        std::find(step.explicit_params.begin(), step.explicit_params.end(), "seed") ==
+            step.explicit_params.end();
+    double value = substituted ? inputs.seed : static_cast<double>(noisemaker::f32(inputs.seed));
+    if (abi.cpp_type == "std::int32_t" || abi.cpp_type == "std::uint32_t") {
+      const double truncated = std::trunc(value);
+      double wrapped = std::fmod(truncated, 4294967296.0);
+      if (wrapped < 0.0) wrapped += 4294967296.0;
+      if (abi.cpp_type == "std::int32_t" && wrapped >= 2147483648.0) wrapped -= 4294967296.0;
+      value = wrapped;
+    }
+    return materialize_plan_value(PlanValue::number_value(value), abi.cpp_type, step, admission,
+                                  abi.name);
+  }
   if (abi.source_name == "deltaTime") return materialize_plan_value(PlanValue::number_value(static_cast<double>(noisemaker::f32(inputs.delta_time))), abi.cpp_type, step, admission, abi.name);
   throw binding_error(step, admission, GraphErrorCode::missing_binding,
                       "unknown reserved runtime binding");
@@ -1898,7 +1929,8 @@ void validate_uniform_abi_shape(const EffectStep& step,
     // The authority's effectParams(): when the step owns a `seed` parameter
     // and the DSL did not name it explicitly, the render seed replaces the
     // parameter's own value. An absent parameter is a missing binding, not a
-    // silent fallback.
+    // silent fallback. The substitution predicate lives in reserved_uniform,
+    // where the raw-vs-f32 value rule is applied.
     if (abi.source_name == "seed" && value != nullptr &&
         std::find(step.explicit_params.begin(), step.explicit_params.end(), "seed") == step.explicit_params.end()) {
       return reserved_uniform({abi.name, abi.type, "reserved_runtime_state", "seed", {}, abi.cpp_type}, context, step, admission);
