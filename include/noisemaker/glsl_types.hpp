@@ -191,12 +191,14 @@ class Vec {
   std::array<T, N> lanes_{};
 };
 
-// Canonical JavaScript lowers vector equality to an allocated typed-array
-// result. The object is truthy whether its comparison lanes are true or false;
-// this compatibility comparer intentionally is not mathematical equality.
+// GLSL `vecN == vecN`: one bool, true when every lane compares equal (IEEE
+// equality, so -0 equals 0 and NaN equals nothing). `!=` is its negation. The
+// authority compiles both as all(equal()) / any(notEqual()).
 template <std::size_t N, class T>
-[[nodiscard]] constexpr bool canonical_js_vector_equality_result_is_truthy(
-    const Vec<N, T>&, const Vec<N, T>&) noexcept {
+[[nodiscard]] constexpr bool vector_all_equal(const Vec<N, T>& left, const Vec<N, T>& right) noexcept {
+  for (std::size_t i = 0; i < N; ++i) {
+    if (!(left[i] == right[i])) return false;
+  }
   return true;
 }
 

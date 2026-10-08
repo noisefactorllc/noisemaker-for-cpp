@@ -60,8 +60,8 @@ class BackendCompatibilityTests(unittest.TestCase):
             document["counts"]["duplicate_fragment_keys"],
         )
         self.assertEqual("filter/wormhole:deposit", document["scatter"]["program_key"])
-        self.assertEqual("e24c844f8dada85551ab084f41db8944fbc176c8", document["authority"]["upstream_revision"])
-        self.assertEqual("106256378f2462e38d31023cd2872e0dd8c63f88", document["authority"]["upstream_tree"])
+        self.assertEqual("5976b7a6b77f69c47c41f4ee296a54d5318e1f9d", document["authority"]["upstream_revision"])
+        self.assertEqual("b0729d2bf429e0e7307ff8f4fffe99422870c059", document["authority"]["upstream_tree"])
         self.assertEqual("c2e0c264dc20338b19a144ee0888bd2ca39edcf325315a7d7ae1f5ced920804d", document["authority"]["source_lock_sha256"])
         self.assertEqual(corpus_census.vendored_count(), document["counts"]["raw_exact"])
         self.assertEqual(0, document["counts"]["semantic_exact"])

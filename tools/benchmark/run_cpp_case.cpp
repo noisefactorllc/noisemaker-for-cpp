@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -201,7 +202,7 @@ template <typename Integer>
   const auto normals = argument(args, "--mesh-normals-file", false);
   const auto size = argument(args, "--mesh-size", false);
   if (positions.empty() && normals.empty() && size.empty()) return std::nullopt;
-  if (positions.empty() || normals.empty() || positions.front() != '/' || normals.front() != '/') {
+  if (positions.empty() || normals.empty() || !std::filesystem::path(positions).is_absolute() || !std::filesystem::path(normals).is_absolute()) {
     usage("both absolute --mesh-positions-file and --mesh-normals-file paths are required");
   }
   noisemaker::graph::MeshData mesh;
@@ -241,7 +242,7 @@ template <typename Integer>
     if (!args.empty() && args.back() == name) usage(std::string(name) + " requires a value");
     const auto path = argument(args, name, false);
     if (path.empty()) continue;
-    if (path.front() != '/') usage("absolute audio input paths are required");
+    if (!std::filesystem::path(path).is_absolute()) usage("absolute audio input paths are required");
     const auto bytes = read_file(path);
     if (bytes.size() != 128U * 4U) usage("audio data requires exactly 128 float32 samples");
     if (!audio) audio.emplace();
@@ -270,7 +271,7 @@ template <typename Integer>
   noisemaker::graph::MidiState midi;
   if (!clock.empty()) midi.clock_count = number(clock, "--midi-clock");
   if (!path.empty()) {
-    if (path.front() != '/') usage("absolute MIDI note grid path is required");
+    if (!std::filesystem::path(path).is_absolute()) usage("absolute MIDI note grid path is required");
     const auto bytes = read_file(path);
     if (bytes.size() != 128U * 16U * 16U) usage("MIDI note grid requires 128x16 RGBA float32 texels");
     for (std::size_t index = 0; index < midi.note_grid.size(); ++index) {
@@ -303,7 +304,7 @@ int main(int argc, char** argv) {
   // float32, width*height*4*4 bytes. Absent, behavior is unchanged.
   const auto float32_output = argument(args, "--float32-output", false);
   for (const auto* path : {&source_path, &raw_output, &metadata_output}) {
-    if (path->empty() || path->front() != '/') usage("absolute paths are required");
+    if (path->empty() || !std::filesystem::path(*path).is_absolute()) usage("absolute paths are required");
   }
   try {
     for (const auto* path : {&raw_output, &metadata_output}) {

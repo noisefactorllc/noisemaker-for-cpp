@@ -113,7 +113,7 @@ def run_pass(args: argparse.Namespace) -> int:
         name = safe_name(record["id"])
         options = record["options"]
         source = work_dir / f"{name}.dsl"
-        source.write_text(record["source"], encoding="utf-8")
+        source.write_text(record["source"], encoding="utf-8", newline="")
         case = work_dir / f"{name}.case.json"
         case.write_text(json.dumps(record), encoding="utf-8")
 

@@ -703,7 +703,7 @@ class SemanticTests(unittest.TestCase):
             attach_fixed_array_in_parameter_proof,
         )
         from tools.glslcpp.frontend.refract_compatibility import (
-            apply_refract_truthy_vector_noops,
+            apply_refract_vector_conditional_keeps,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
 
@@ -716,7 +716,7 @@ class SemanticTests(unittest.TestCase):
                                    entry["program_key"])
         self.assertIsNone(analyzed.fixed_array_in_parameter_proof)
         typed = attach_fixed_array_in_parameter_proof(
-            apply_refract_truthy_vector_noops(analyzed))
+            apply_refract_vector_conditional_keeps(analyzed))
         proof = typed.fixed_array_in_parameter_proof
         self.assertIsNotNone(proof)
         self.assertEqual("fixed-array-in-parameter-v1", proof.proof_kind)
@@ -802,10 +802,10 @@ class SemanticTests(unittest.TestCase):
             "36d7815ce5aa9efedf3144e199ae7b49dc5819c751475b815708424269033229",
             proof.interface_sha256)
         self.assertEqual(
-            "4c9e125cd4dda55f2688c362a5ab7e81acf1b08c9e284bc5c25e04da39020188",
+            "fd8038f0384e11f71499f6dd1aeb2c9620fdae3747d3742cd02ed5201a436865",
             proof.typed_ir_sha256)
         self.assertEqual(
-            "93329ab73d54ff1eb3b8ec43da8570365d58de8caaa1a36252ef1ad30a709de2",
+            "24a38b183300b5e2516f6c2bca021e42729a5385bacc350639df1be4b37c43c8",
             proof.whole_program_sha256)
 
     def test_cellrefract_convolve_fixed_array_input_parameter_record_is_frozen(self) -> None:

@@ -1,4 +1,14 @@
-"""Pinned canonical-JavaScript compatibility repair for Refract blend arms."""
+"""Pinned canonical-JavaScript compatibility repair for Refract blend arms.
+
+The authority's canonical JavaScript compiles `middle = (src == vec4(c)) ? src
+: f(...)` so that only the false arm writes `middle`; when the vector equality
+holds, `middle` keeps its value. The rewrite expresses exactly that:
+`middle = (src == vec4(c)) ? middle : f(...)`.
+
+Before 8ae8e2a the authority's condition was a typed array, always truthy, so
+`middle` was never written on these arms. That historical no-op stays available
+as ``HISTORICAL_TRANSFORM`` for reconstructing frozen milestones only.
+"""
 
 from __future__ import annotations
 
@@ -8,15 +18,18 @@ import hashlib
 from .typed_ir import TypedExpression, TypedFunction, TypedProgram, TypedStatement
 
 
-TRANSFORM = "refract-truthy-vector-conditional-noop-v1"
+TRANSFORM = "refract-vector-conditional-keep-v1"
 REFRACT_KEY = "classicNoisedeck/refract:refract"
 RAW_SOURCE_SHA256 = "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a49cfa2"
 NORMALIZED_SOURCE_SHA256 = "bff1818ad5db7e637a01d6f10476cebba8ac04d6ffdf467d02508fa23671757e"
 PRE_FUNCTIONS_SHA256 = "ccde114d367313d1feb218c7f956df4059534b5c139c757a30ae156292e9cc09"
 PRE_WHOLE_PROGRAM_SHA256 = "0b2ebb355e506de21ffd829a72302494bd8c77d7bd35fb7f7a5e4b3407ce7003"
 INTERFACE_SHA256 = "36d7815ce5aa9efedf3144e199ae7b49dc5819c751475b815708424269033229"
-POST_FUNCTIONS_SHA256 = "4c9e125cd4dda55f2688c362a5ab7e81acf1b08c9e284bc5c25e04da39020188"
-POST_WHOLE_PROGRAM_SHA256 = "93329ab73d54ff1eb3b8ec43da8570365d58de8caaa1a36252ef1ad30a709de2"
+POST_FUNCTIONS_SHA256 = "fd8038f0384e11f71499f6dd1aeb2c9620fdae3747d3742cd02ed5201a436865"
+POST_WHOLE_PROGRAM_SHA256 = "24a38b183300b5e2516f6c2bca021e42729a5385bacc350639df1be4b37c43c8"
+HISTORICAL_TRANSFORM = "refract-truthy-vector-conditional-noop-v1"
+HISTORICAL_POST_FUNCTIONS_SHA256 = "4c9e125cd4dda55f2688c362a5ab7e81acf1b08c9e284bc5c25e04da39020188"
+HISTORICAL_POST_WHOLE_PROGRAM_SHA256 = "93329ab73d54ff1eb3b8ec43da8570365d58de8caaa1a36252ef1ad30a709de2"
 
 _MODE_SEQUENCE = (0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18)
 _SITES = {
@@ -80,7 +93,7 @@ def _guard_mode(statement: TypedStatement, blend_mode_id: int) -> int | None:
 
 
 def _rewrite_site(statement: TypedStatement, mode: int,
-                  middle_id: int) -> TypedStatement:
+                  middle_id: int, keep: bool) -> TypedStatement:
     expected_line, source_id, constant, false_builtin, expected_hash = _SITES[mode]
     if (statement.kind != "block" or len(statement.children) != 1
             or statement.children[0].kind != "expr"
@@ -116,8 +129,11 @@ def _rewrite_site(statement: TypedStatement, mode: int,
             and constructor.children[0].literal_value == constant)
     if not equality:
         raise _fail(f"mode {mode} equality mismatch")
-    replacement = dataclasses.replace(
-        expression, children=(target, target))
+    if keep:
+        kept = dataclasses.replace(conditional, children=(predicate, target, false_value))
+        replacement = dataclasses.replace(expression, children=(target, kept))
+    else:
+        replacement = dataclasses.replace(expression, children=(target, target))
     return dataclasses.replace(
         statement,
         children=(dataclasses.replace(
@@ -125,7 +141,7 @@ def _rewrite_site(statement: TypedStatement, mode: int,
 
 
 def _rewrite_chain(root: TypedStatement, blend_mode_id: int,
-                   middle_id: int) -> TypedStatement:
+                   middle_id: int, keep: bool) -> TypedStatement:
     modes: list[int] = []
 
     def rewrite(statement: TypedStatement) -> TypedStatement:
@@ -135,7 +151,7 @@ def _rewrite_chain(root: TypedStatement, blend_mode_id: int,
         modes.append(mode)
         then = statement.children[0]
         if mode in _SITES:
-            then = _rewrite_site(then, mode, middle_id)
+            then = _rewrite_site(then, mode, middle_id, keep)
         if len(statement.children) == 1:
             children = (then,)
         elif (len(statement.children) == 2
@@ -151,8 +167,17 @@ def _rewrite_chain(root: TypedStatement, blend_mode_id: int,
     return result
 
 
+def apply_refract_vector_conditional_keeps(program: TypedProgram) -> TypedProgram:
+    """Rewrite exactly four burn/dodge arms to keep `middle` when the equality holds."""
+    return _apply(program, keep=True)
+
+
 def apply_refract_truthy_vector_noops(program: TypedProgram) -> TypedProgram:
-    """Rewrite exactly four truthy typed-array conditions to source-locked no-ops."""
+    """Historical only: the pre-8ae8e2a always-truthy arms, rewritten to no-ops."""
+    return _apply(program, keep=False)
+
+
+def _apply(program: TypedProgram, *, keep: bool) -> TypedProgram:
     raw_hash = hashlib.sha256(program.raw_source.encode("utf-8")).hexdigest()
     normalized_hash = hashlib.sha256(program.source.encode("utf-8")).hexdigest()
     if (program.key != REFRACT_KEY or program.preprocessor_defines
@@ -188,13 +213,15 @@ def apply_refract_truthy_vector_noops(program: TypedProgram) -> TypedProgram:
     rewritten_body = list(blend.body)
     rewritten_body[3] = _rewrite_chain(
         rewritten_body[3], blend_mode.id,
-        middle.expressions[0].symbol_id or 0)
+        middle.expressions[0].symbol_id or 0, keep)
     rewritten_blend = dataclasses.replace(blend, body=tuple(rewritten_body))
     functions = tuple(rewritten_blend if function.signature.id == blend.signature.id
                       else function for function in program.functions)
     transformed = dataclasses.replace(program, functions=functions)
-    if (_sha(transformed.functions) != POST_FUNCTIONS_SHA256
-            or whole_program_fingerprint(transformed) != POST_WHOLE_PROGRAM_SHA256
+    post_functions = POST_FUNCTIONS_SHA256 if keep else HISTORICAL_POST_FUNCTIONS_SHA256
+    post_whole = POST_WHOLE_PROGRAM_SHA256 if keep else HISTORICAL_POST_WHOLE_PROGRAM_SHA256
+    if (_sha(transformed.functions) != post_functions
+            or whole_program_fingerprint(transformed) != post_whole
             or _interface_fingerprint(transformed) != INTERFACE_SHA256):
         raise _fail("post-transform tree mismatch")
     return transformed

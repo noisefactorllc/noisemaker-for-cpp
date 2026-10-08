@@ -12,7 +12,9 @@ from unittest import mock
 
 from tests import corpus_census
 from tools.glslcpp import check_corpus, emit_typed_cpp, generate_typed_slice
-from tools.glslcpp.frontend import dynamic_define_hoist, noise_frontend_profile
+from tools.glslcpp.frontend import (
+    dynamic_define_hoist, fixed_array_in_parameter_proof, lens_distortion_comparer_profile,
+    mutable_global_array_profile, noise_frontend_profile, out_inout_admission_profile, typed_ir)
 
 
 # Original source bytes from noisemaker-for-cpp a15c4b6816a3cb4a1811a03429e4fbf84530c722.
@@ -21,6 +23,7 @@ from tools.glslcpp.frontend import dynamic_define_hoist, noise_frontend_profile
 # verifier, including every negative check, only for the old corpus context.
 _GLITCH_PROFILE_SHA256 = "1cd2fae1915c3dca8b41e25aa06d2e4872bd659cdac725983a40f1163c058de5"
 _COMPATIBILITY_SHA256 = "9a55bad28d4b7d9a8ab2cd4ad9af772b6d21a33ccf52f6d55deab5ddfa55eb6a"
+_PRE_5976B7A6_CONSTANTS_SHA256 = "be337fed1a31e0dd07eb8b15e162a3f49c2e6372eb119fd1c0145400aaa57fba"
 _NOISE_CONSTANTS = {
     "RAW_BYTES": 31258,
     "RAW_SHA256": "8629349c5cc4d44d7b4b7c1f0b3f27fe4fe82793461f26544c80a4fb5076d138",
@@ -51,6 +54,27 @@ def _glitch_profile():
     with mock.patch.dict(sys.modules, {name: module}):
         exec(compile(raw, str(path), "exec"), module.__dict__)
     return module
+
+
+def _pre_5976b7a6_constants():
+    """The profile constants the 0ed489ec corpus sources authenticate against.
+
+    The 5976b7a6 corpus moved five programs' sources and 8ae8e2a fixed vector
+    equality; the live profiles pin the new identities. Values are evaluated
+    with only the live record classes in scope.
+    """
+    path = pathlib.Path(__file__).parent / "fixtures/historical/pre_5976b7a6_profile_constants.py"
+    raw = path.read_bytes()
+    if hashlib.sha256(raw).hexdigest() != _PRE_5976B7A6_CONSTANTS_SHA256:
+        raise AssertionError("historical pre-5976b7a6 profile constants drift")
+    namespace = {"__builtins__": {"frozenset": frozenset}}
+    for module in (fixed_array_in_parameter_proof, mutable_global_array_profile,
+                   out_inout_admission_profile, typed_ir):
+        for name, value in vars(module).items():
+            if isinstance(value, type):
+                namespace.setdefault(name, value)
+    exec(compile(raw, str(path), "exec"), namespace)
+    return namespace["VALUES"]
 
 
 @contextlib.contextmanager
@@ -102,6 +126,21 @@ def historical_authority(spec: dict):
             generate_typed_slice, "apply_glitch_mat4_chain", glitch.apply_glitch_mat4_chain))
         for name, value in _NOISE_CONSTANTS.items():
             stack.enter_context(mock.patch.object(noise_frontend_profile, name, value))
+        # The historical vector equality was an always-truthy typed array, the
+        # refract arms were rewritten to no-ops, and every profile authenticates
+        # the 0ed489ec sources.
+        stack.enter_context(mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_VECTOR_EQUALITY", False))
+        stack.enter_context(mock.patch.object(fixed_array_in_parameter_proof, "_COMPATIBILITY_RHS", "noop"))
+        for module_name, attribute, keys, value in _pre_5976b7a6_constants():
+            module = sys.modules[module_name]
+            if keys is None:
+                stack.enter_context(mock.patch.object(module, attribute, value))
+            else:
+                stack.enter_context(mock.patch.dict(getattr(module, attribute), value))
+        historical_lens_profile = lens_distortion_comparer_profile.PROFILE
+        for module in (generate_typed_slice, emit_typed_cpp):
+            stack.enter_context(mock.patch.object(
+                module, "LENS_CUSTOM_COMPARER_PROFILE", historical_lens_profile))
         old_hoist = dataclasses.replace(
             dynamic_define_hoist.PROFILES[noise_frontend_profile.KEY],
             raw_sha256=_NOISE_CONSTANTS["RAW_SHA256"], raw_bytes=_NOISE_CONSTANTS["RAW_BYTES"])

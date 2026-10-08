@@ -833,7 +833,7 @@ def run_job(job_dict: dict) -> dict:
     scratch.mkdir(parents=True, exist_ok=True)
     try:
         source_path = scratch / "case.dsl"
-        source_path.write_text(job.source, encoding="utf-8")
+        source_path.write_text(job.source, encoding="utf-8", newline="")
         source_sha256 = hashlib.sha256(job.source.encode("utf-8")).hexdigest()
         options = {
             "width": job.width, "height": job.height, "time": job.time,

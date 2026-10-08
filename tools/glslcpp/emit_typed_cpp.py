@@ -19,6 +19,11 @@ from .frontend.chain_value_copy_profile import (
     KEYS as CHAIN_VALUE_COPY_KEYS, authenticate_chain_value_copies)
 
 CURRENT_AUTHORITY_VALUE_COPIES = True
+# GLSL vector `==`/`!=` is one bool over every lane, as the authority compiles
+# it since 8ae8e2a (all(equal()) / any(notEqual())). Historical reconstructions
+# turn this off to regenerate the always-true typed-array comparer they froze.
+CURRENT_AUTHORITY_VECTOR_EQUALITY = True
+HISTORICAL_VECTOR_EQUALITY_COMPARER = "glsl::canonical_js_vector_equality_result_is_truthy("
 
 from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE, COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT,
@@ -5240,7 +5245,8 @@ class _Emitter:
                     BUDDHABROT_MAX_TRIP_COUNT if self.program.key in BUDDHABROT_KEYS
                     else (1000 if self.program.key == JULIA_FRONTEND_KEY
                           else (1537 if self.program.key == RUNTIME_LOOP_BOUND_ROLL_KEY
-                                else COUNTED_FOR_V1_MAX_TRIP_COUNT)))
+                                else (2048 if self.program.key == LOG_ADMISSION_MANDELBROT_KEY
+                                      else COUNTED_FOR_V1_MAX_TRIP_COUNT))))
                 max_charge = (
                     BUDDHABROT_MAX_ENTRYPOINT_CHARGE if self.program.key in BUDDHABROT_KEYS
                     else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)
@@ -7818,8 +7824,9 @@ class _Emitter:
                 left = self.expression(value.children[0])
                 right = self.expression(value.children[1])
                 return (
-                    "glsl::canonical_js_vector_equality_result_is_truthy("
-                    f"glsl::Vec3({left}), glsl::Vec3({right}))")
+                    ("glsl::vector_all_equal(" if CURRENT_AUTHORITY_VECTOR_EQUALITY
+                     else HISTORICAL_VECTOR_EQUALITY_COMPARER)
+                    + f"glsl::Vec3({left}), glsl::Vec3({right}))")
             if any(value is item
                    for item in self.authorized_color_lab_vector_equalities):
                 if (value.operator != "==" or value.type.display() != "bool"
@@ -7838,8 +7845,23 @@ class _Emitter:
                 left = self.expression(value.children[0])
                 right = self.expression(value.children[1])
                 return (
-                    "glsl::canonical_js_vector_equality_result_is_truthy("
-                    f"glsl::Vec2({left}), glsl::Vec2({right}))")
+                    ("glsl::vector_all_equal(" if CURRENT_AUTHORITY_VECTOR_EQUALITY
+                     else HISTORICAL_VECTOR_EQUALITY_COMPARER)
+                    + f"glsl::Vec2({left}), glsl::Vec2({right}))")
+            if (CURRENT_AUTHORITY_VECTOR_EQUALITY
+                    and value.operator in ("==", "!=") and value.type.display() == "bool"
+                    and len(value.children) == 2):
+                displays = tuple(child.type.display() for child in value.children)
+                if (displays[0] == displays[1]
+                        and displays[0] in ("vec2", "vec3", "vec4")):
+                    # GLSL: one bool, every lane equal (`==`) or any lane
+                    # different (`!=`) -- the authority's all(equal()) and
+                    # any(notEqual()).
+                    vector = f"glsl::Vec{displays[0][-1]}"
+                    left = self.expression(value.children[0])
+                    right = self.expression(value.children[1])
+                    equal = f"glsl::vector_all_equal({vector}({left}), {vector}({right}))"
+                    return equal if value.operator == "==" else f"(!{equal})"
             folded = self.folded_float_literal(value)
             if folded is not None:
                 return folded

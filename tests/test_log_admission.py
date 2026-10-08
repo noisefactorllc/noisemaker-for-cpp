@@ -10,24 +10,25 @@ program (``counted-for-design.md`` §2.3 / §5, cost rank 3): measured **four
 rungs from CLEAN at both authorities** behind only KNOWN mechanisms --
 
 * rung 1 (mechanism A, the "const-global-literal" bound shape): the iteration
-  loop ``for (int n = 0; n < MAX_ITER; n++)`` (normalized ``226:5-261:6``,
+  loop ``for (int n = 0; n < MAX_ITER; n++)`` (normalized ``227:5-262:6``,
   owner ``mandelbrot_df64``) is bounded by the const global
-  ``const int MAX_ITER = 500;``. The bound proof rides the EXISTING
+  ``const int MAX_ITER = 2048;`` (500 until the reference raised the GLSL cap to
+  match its WGSL at 5976b7a6). The bound proof rides the EXISTING
   dict-keyed module -- a new key in ``loop_proof.py``'s
   ``_SOURCE_GLOBAL_LITERAL_INT_PROFILES``. This module does NOT add that
   key; it freezes the complete dict-entry data as ``counted_for_seed_contract``
   (the parallax-lane pattern) so the integration slice has a one-move
-  landing source. **The loop budget FITS the current caps**: trips 500,
-  product 500, charge 1500 against 512/262144/262656 -- the loop-proof
-  study's "needs budget increase" verdict is obsolete and must not be
-  planned against.
+  landing source. Trips 2048 exceed the v1 trip cap (512), so the generator
+  and emitter carry a per-key 2048 trip cap for this program, as they do for
+  julia (1000) and roll (1537); product 2048 and charge 6144 fit the v1
+  262144/262656 caps.
 * rung 2 (mechanism C): the validator rejects the first of the program's
-  TEN ``out`` parameters at ``116:24`` (``getPOI``'s ``cX_df``); that
+  TEN ``out`` parameters at ``117:24`` (``getPOI``'s ``cX_df``); that
   mechanism's frontend home is ``out_inout_admission_profile`` (newton's
   module, extended per-key by this lane -- see
   ``test_out_inout_admission_profile.py``'s mandelbrot section).
 * rung 3 (mechanism D): the emitter's bare-void-call gap fires at
-  ``320:5``; the five call sites are frozen in the out/inout module's call
+  ``321:5``; the five call sites are frozen in the out/inout module's call
   census.
 * rung 4 (mechanism E, THIS module's own mechanism): ``log`` is already
   VALIDATOR-approved (``APPROVED_CAPABILITIES`` carries it with the
@@ -59,28 +60,30 @@ Figures re-derived this session that DIVERGE from the design's §2.3 prose
   dz_final vec2s) and the owners are **THREE** functions (getPOI ×2,
   mandelbrot_df64 ×6, transformCoords_df64 ×2);
 * the design's "3 bare void-call statements" missed ``main``'s own
-  ``transformCoords_df64`` (``388:9``) and ``mandelbrot_df64`` (``389:9``)
+  ``transformCoords_df64`` (``389:9``) and ``mandelbrot_df64`` (``390:9``)
   calls: the true census is **FIVE** (the JS factory has five
   ``__out__``-destructuring call sites: 30427, 30431, 30463, 30472,
   30473), and mechanism D's "mandelbrot 3×" is really 5×;
 * the design's interface SHA has a one-character transcription error:
   ``...ecbd6bb2d0a5...`` should be ``...ecbd6bb2c0a5...`` (the pre-whole
-  fingerprint -- a strict superset of the interface tuple -- matches the
-  design exactly, so the components agree and the design's prose string is
-  the typo);
+  fingerprint -- a strict superset of the interface tuple -- matched the
+  design exactly at the design's corpus, so the components agreed and the
+  design's prose string is the typo; the 5976b7a6 source moved every
+  fingerprint, so the live lock now carries a different interface);
 * the house node census (global initializers included) freezes **999**
   nodes where the design counted 994 (function bodies only; the five const
   initializers are the difference), and the deduplicated call-graph edge
   SET freezes **31** edges where the design counted 46 call NODES;
 * the design's "log builtin in the df64 escape smoothing" places only two
-  of the three sites: the third (``295:30``, ``outputDistance``'s
+  of the three sites: the third (``296:30``, ``outputDistance``'s
   ``log(mag)``) lives in the distance estimator.
 
 The design's §8 open question -- "whether mandelbrot's ``iterations``
-metadata maximum exceeds 500" -- is RESOLVED by measurement:
-``src/effects/specs.js`` freezes ``iterations: i(500, 50, 2000)``, so the
-``min(iterations, MAX_ITER)`` clamp's discriminating arm (iterations in
-(500, 2000]) is reachable and an oracle case there is budgetable.
+metadata maximum exceeds 500" -- was RESOLVED by measurement at the design's
+authority: ``src/effects/specs.js`` froze ``iterations: i(500, 50, 2000)``,
+so the ``min(iterations, MAX_ITER)`` clamp's discriminating arm (iterations in
+(500, 2000]) was reachable. With MAX_ITER 2048 the clamp no longer bites
+inside that range.
 
 Corpus claim boundary: mandelbrot is NOT the only corpus ``log`` caller --
 newton carries two sites (its own prepared lane's business) and julia
@@ -121,24 +124,26 @@ KEY = "synth/mandelbrot:mandelbrot"
 PROFILE = "log-admission-mandelbrot-v1"
 SOURCE_PATH = "synth/mandelbrot/mandelbrot.glsl"
 SOURCE = CORPUS / SOURCE_PATH
-RAW_SHA256 = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
+RAW_SHA256 = "6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd"
 NORMALIZED_SHA256 = (
-    "c062ee7852d0bfab69ca1e2ead6ad68d95dfa5fda9cff8232254b38b34c311a9")
+    "4a28158eff2b0f94d9568c6a06aa61a924e51b4901cb59698a8a4498dd782986")
 
 MAX_SYMBOL_ID = 24
-MAX_VALUE = 500
-MAX_SPAN = "31:1-31:26"
-LOG_SPANS = ("273:24-273:33", "274:20-274:38", "295:30-295:38")
+MAX_VALUE = 2048
+MAX_SPAN = "32:1-32:27"
+LOG_SPANS = ("274:24-274:33", "275:20-275:38", "296:30-296:38")
 LOG_OWNERS = ("mandelbrot_df64", "mandelbrot_df64", "outputDistance")
-LOOP_SPAN = "226:5-261:6"
+LOOP_SPAN = "227:5-262:6"
 LIVE_SUMMARY = (0, 1, 0, 0, 0, True)
-CLOSED_SUMMARY = (1, 0, 1, 500, 1500, True)
+CLOSED_SUMMARY = (1, 0, 1, 2048, 6144, True)
 LEDGER = 9
 MECHANISM_CENSUS = (10, 5, 0, 0)
 
-# The design §2.3 interface figure carried a one-character typo (d for c at
-# position 26); the corrected measured value is frozen everywhere here.
 INTERFACE_SHA256 = (
+    "e8c746cd6e89dddbcc041f4498036036b171f9b3f9b24e2fd480f631ce92e124")
+# The design §2.3 interface figure carried a one-character typo (d for c at
+# position 26) against the value measured at the design's corpus (MAX_ITER 500).
+DESIGN_CORPUS_INTERFACE_SHA256 = (
     "2f497a1fb59406d16decbd6bb2c0a5e4e7e5536774fa7ec56a34de12de657c43")
 DESIGN_INTERFACE_TYPO = (
     "2f497a1fb59406d16decbd6bb2d0a5e4e7e5536774fa7ec56a34de12de657c43")
@@ -149,22 +154,22 @@ SEED_CONTRACT = {
     "raw": RAW_SHA256,
     "source": NORMALIZED_SHA256,
     "defines": (),
-    "integer": ("MAX_ITER", 24, "500", 500),
+    "integer": ("MAX_ITER", 24, "2048", 2048),
     "globals": (("PI", 20, "float", "3.14159265359"),
                 ("TAU", 21, "float", "6.28318530718"),
                 ("BAILOUT", 22, "float", "256.0"),
                 ("LOG2", 23, "float", "0.6931471805599453"),
-                ("MAX_ITER", 24, "int", "500")),
-    "reads": (("main", 110, 368, 35, 368, 43),
-              ("mandelbrot_df64", 111, 226, 25, 226, 33)),
+                ("MAX_ITER", 24, "int", "2048")),
+    "reads": (("main", 110, 369, 35, 369, 43),
+              ("mandelbrot_df64", 111, 227, 25, 227, 33)),
     "pre_functions":
-        "5b24f4c4818b8ffee46ca02f752e4e19223ac97e677cccce310510af9a274a3d",
+        "071753fc9985b4c09c1cb247522106ecc8a814b4e7a9a05f28acd302c3e6985e",
     "post_functions":
-        "8240975403a5fe23b71b16799b7617dece132599ccfea69b24e717710f76f39b",
+        "9df77469d8caf1799a6092f2f581aa2ad1516d715ab8737a1fb2f8e33d3bea70",
     "pre_whole":
-        "d6a5840667d7293fa428a88eef00f8bcf4612a733958e738628c876ed210ebd3",
+        "48a5b1c3f5fc6238a469521c8da9337e2683c3d9b371b5150c1810427aceb78b",
     "post_whole":
-        "1ca045076337edb3bfcb5e618e0eb83f9633858eafb91176a2e713b4be28314e",
+        "673a127ed44de1e7fa0ce7ea88db6a575035c58265f9f21323f9edf821a2b44d",
     "interface": INTERFACE_SHA256,
 }
 
@@ -374,10 +379,10 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
     def test_pinned_source_bytes_and_hash(self):
         module = _module()
         raw = SOURCE.read_bytes()
-        self.assertEqual(14855, len(raw))
+        self.assertEqual(14931, len(raw))
         self.assertEqual(RAW_SHA256, hashlib.sha256(raw).hexdigest())
         lock = module._LOCKS[KEY]
-        self.assertEqual(14855, lock["raw_bytes"])
+        self.assertEqual(14931, lock["raw_bytes"])
         self.assertEqual(RAW_SHA256, lock["raw_sha256"])
         self.assertEqual("sources/synth/mandelbrot/mandelbrot.glsl",
                          lock["source_path"])
@@ -386,7 +391,7 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
         module = _module()
         program = _analyzed(seeded=False)
         normalized = program.source.encode("utf-8")
-        self.assertEqual(10414, len(normalized))
+        self.assertEqual(10416, len(normalized))
         self.assertEqual(NORMALIZED_SHA256,
                          hashlib.sha256(normalized).hexdigest())
         self.assertEqual((), tuple((item.name, item.kind, item.canonical_value)
@@ -409,19 +414,18 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
                           summary.call_graph_acyclic))
 
     def test_the_design_interface_figure_was_a_one_character_typo(self):
-        """The design's §2.3 interface SHA (d at position 26) does not
-        reproduce; the measured value (c) is what every frozen record
-        carries. pre_whole -- a strict superset of the interface tuple --
-        matches the design exactly, so the components agree and the prose
-        string is the transcription error."""
+        """The design's §2.3 interface SHA (d at position 26) did not
+        reproduce at the design's corpus; the value measured there (c)
+        differs from it in that one character. The live lock and the seed
+        contract carry the interface measured on the pinned corpus."""
         module = _module()
         self.assertEqual(INTERFACE_SHA256, module._LOCKS[KEY][
             "interface_sha256"])
         self.assertEqual(INTERFACE_SHA256, SEED_CONTRACT["interface"])
-        self.assertEqual("c", INTERFACE_SHA256[26])
+        self.assertEqual("c", DESIGN_CORPUS_INTERFACE_SHA256[26])
         self.assertEqual("d", DESIGN_INTERFACE_TYPO[26])
-        self.assertEqual(INTERFACE_SHA256[:26], DESIGN_INTERFACE_TYPO[:26])
-        self.assertEqual(INTERFACE_SHA256[27:], DESIGN_INTERFACE_TYPO[27:])
+        self.assertEqual(DESIGN_CORPUS_INTERFACE_SHA256[:26], DESIGN_INTERFACE_TYPO[:26])
+        self.assertEqual(DESIGN_CORPUS_INTERFACE_SHA256[27:], DESIGN_INTERFACE_TYPO[27:])
 
     def test_rung0_rejects_at_the_iteration_loop_today(self):
         program = _analyzed(seeded=False)
@@ -445,7 +449,7 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
         """The frozen contract IS the dict entry: patched into a scratch
         loop_proof, the analyzed program passes both authenticate and the
         whole-program validator, and the next gate is the out parameter at
-        116:24 (mechanism C, the out/inout module's)."""
+        117:24 (mechanism C, the out/inout module's)."""
         module = _module()
         contract = module.counted_for_seed_contract(KEY)
         entry = contract._asdict()
@@ -498,15 +502,16 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
                       loop_proof_module._SOURCE_GLOBAL_LITERAL_INT_PROFILES)
 
     def test_the_loop_budget_fits_the_current_caps(self):
-        """trips 500 <= 512, product 500 <= 262144, charge 1500 <= 262656:
-        the loop-proof study's 'needs budget increase' verdict is obsolete."""
+        """trips 2048 > 512 rides the per-key 2048 trip cap (as julia's 1000
+        and roll's 1537 do); product 2048 <= 262144 and charge 6144 <= 262656
+        fit the v1 caps."""
         module = _module()
         loop = module._LOCKS[KEY]["iteration_loop"]
-        self.assertEqual(500, loop["trips"])
-        self.assertEqual(500, loop["product"])
-        self.assertEqual(1500, loop["charge"])
-        self.assertLessEqual(loop["trips"],
-                             loop_proof_module.COUNTED_FOR_V1_MAX_TRIP_COUNT)
+        self.assertEqual(2048, loop["trips"])
+        self.assertEqual(2048, loop["product"])
+        self.assertEqual(6144, loop["charge"])
+        self.assertGreater(loop["trips"],
+                           loop_proof_module.COUNTED_FOR_V1_MAX_TRIP_COUNT)
         self.assertLessEqual(
             loop["product"],
             loop_proof_module.COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT)
@@ -541,13 +546,13 @@ class MandelbrotFrozenFactTests(unittest.TestCase):
     def test_max_iter_reads_freeze_both_id_nodes(self):
         """The design's 'raw 381' cites the min(iterations, MAX_ITER) site;
         the frozen reads are the normalized id nodes -- the min() read in
-        main (368:35) AND the loop bound in mandelbrot_df64 (226:25), the
+        main (369:35) AND the loop bound in mandelbrot_df64 (227:25), the
         counted-for owner itself (unlike parallax, not every read is in
         main)."""
         module = _module()
         self.assertEqual(
-            (("main", 110, 368, 35, 368, 43),
-             ("mandelbrot_df64", 111, 226, 25, 226, 33)),
+            (("main", 110, 369, 35, 369, 43),
+             ("mandelbrot_df64", 111, 227, 25, 227, 33)),
             module._LOCKS[KEY]["reads"])
 
 
@@ -597,7 +602,7 @@ class AdmissionGreenTests(unittest.TestCase):
                 _foreign(), _hash(FOREIGN_SOURCE), PROFILE)
         self.assertEqual(
             f"{PROFILE}: program key is not an admitted log admission "
-            f"carrier; {KEY} 273:24, 274:20 and 295:30 are the sole "
+            f"carrier; {KEY} 274:24, 275:20 and 296:30 are the sole "
             "admitted log sites",
             str(raised.exception))
 
@@ -625,8 +630,8 @@ class AdmissionGreenTests(unittest.TestCase):
         module = _module()
         program = _analyzed()
         self.assertEqual(
-            ((105, "getEffectiveZoom", "357:16-357:47", 2),
-             (105, "getEffectiveZoom", "359:12-359:31", 2)),
+            ((105, "getEffectiveZoom", "358:16-358:47", 2),
+             (105, "getEffectiveZoom", "360:12-360:31", 2)),
             module._pow_census(program))
         self.assertEqual((0, 0, 0, 0), module._zero_family_census(program))
 
@@ -960,7 +965,7 @@ class LockMutationTests(unittest.TestCase):
     def test_normalized_source_lock(self):
         module = _module()
         candidate = _analyzed(raw=SOURCE.read_text(encoding="utf-8").replace(
-            "const int MAX_ITER = 500;", "const int MAX_ITER = 499;"))
+            "const int MAX_ITER = 2048;", "const int MAX_ITER = 2047;"))
         locks = _relocked_partial(module, candidate, "normalized")
         self._coarse_case(module, candidate, locks, "normalized source drift",
                           "_normalized_source_holds")
@@ -1083,11 +1088,11 @@ class LockMutationTests(unittest.TestCase):
     # --- mechanism A: the counted-for seed ----------------------------------
 
     def test_seed_value_lock(self):
-        """The bound-value mutant: MAX_ITER 500 -> 499 (a same-length
+        """The bound-value mutant: MAX_ITER 2048 -> 2047 (a same-length
         mutation; the oracle lane budgets the clamp-arm pixel
         discriminability, this lock is what makes it fail closed)."""
         raw = SOURCE.read_text(encoding="utf-8").replace(
-            "const int MAX_ITER = 500;", "const int MAX_ITER = 499;")
+            "const int MAX_ITER = 2048;", "const int MAX_ITER = 2047;")
         candidate = _analyzed(raw=raw)
         self._delete_and_compare(
             lambda program: None, "_seed_declaration_holds",
@@ -1119,9 +1124,9 @@ class LockMutationTests(unittest.TestCase):
 
     def test_seed_reads_lock(self):
         # Replacing the min() site's MAX_ITER with a bare literal removes
-        # exactly the 368:35 read (in main) and still analyzes.
+        # exactly the 369:35 read (in main) and still analyzes.
         raw = SOURCE.read_text(encoding="utf-8").replace(
-            "min(iterations, MAX_ITER)", "min(iterations, 500)")
+            "min(iterations, MAX_ITER)", "min(iterations, 2048)")
         candidate = _analyzed(raw=raw)
         self._delete_and_compare(
             lambda program: None, "_seed_reads_holds",
@@ -1201,12 +1206,12 @@ class LockMutationTests(unittest.TestCase):
             recount=True, relock=mutant_reads)
 
     def test_iteration_loop_lock_start(self):
-        # 0 -> 1 shrinks the trip count to 499 while every span stays put.
+        # 0 -> 1 shrinks the trip count to 2047 while every span stays put.
         raw = SOURCE.read_text(encoding="utf-8").replace(
             "int n = 0;", "int n = 1;")
         candidate = _analyzed(raw=raw)
         summary = candidate.counted_loop_proof
-        self.assertEqual((1, 0, 1, 499, 1497, True),
+        self.assertEqual((1, 0, 1, 2047, 6141, True),
                          (summary.loop_count, summary.unproved_loop_count,
                           summary.max_effective_depth,
                           summary.max_lexical_product,
@@ -1247,7 +1252,7 @@ class LockMutationTests(unittest.TestCase):
         closed = dataclasses.replace(
             program.counted_loop_proof, loop_count=1,
             unproved_loop_count=0, max_effective_depth=1,
-            max_lexical_product=500, entrypoint_charge=1500)
+            max_lexical_product=2048, entrypoint_charge=6144)
         candidate = dataclasses.replace(program, counted_loop_proof=closed)
         locks = _relocked(module, candidate)
         _expect(self, module, candidate, locks,

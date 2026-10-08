@@ -160,6 +160,13 @@ def without_expansion(spec: dict) -> dict:
     result["programs"].sort(key=lambda item: item["program_key"])
     result["revision"] = HISTORICAL_REVISION
     result["compatibility_transforms"]["filter/corrupt:corrupt"] = "corrupt-sample-uv-alias-v1"
+    # The historical authority's vector equality was an always-truthy typed
+    # array (fixed at 8ae8e2a) and coalesce aliased its UVs (fixed by 26d6f42).
+    result["compatibility_transforms"]["classicNoisedeck/coalesce:coalesce"] = "coalesce-uv-alias-v1"
+    result["compatibility_transforms"]["classicNoisedeck/refract:refract"] = (
+        "refract-truthy-vector-conditional-noop-v1")
+    result["custom_comparer_profiles"]["classicNoisedeck/lensDistortion:lensDistortion"] = (
+        "canonical-js-vector-equality-result-truthiness-v1")
     keys = [item["program_key"] for item in result["programs"]]
     digest = hashlib.sha256(("\n".join(keys) + "\n").encode()).hexdigest()
     if digest != PRE_EXPANSION_TYPED_KEY_SHA256:

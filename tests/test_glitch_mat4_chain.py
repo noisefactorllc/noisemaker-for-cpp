@@ -28,7 +28,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "classicNoisedeck/glitch:glitch"
 PROFILE = "glitch-mat4-chain-v1"
 RAW_SHA256 = "9ed4cce15c5d4358f191d8beeaae93624520530f1c4181dd7a5895e47821cc0e"
-SOURCE = (ROOT / "tools/glslcpp/corpus/e24c844f8dada85551ab084f41db8944fbc176c8"
+SOURCE = (ROOT / "tools/glslcpp/corpus/5976b7a6b77f69c47c41f4ee296a54d5318e1f9d"
           / "sources/classicNoisedeck/glitch/glitch.glsl")
 MODULE = "tools.glslcpp.frontend.glitch_mat4_chain_profile"
 

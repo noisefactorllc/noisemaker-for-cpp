@@ -144,7 +144,7 @@ def generate_outputs(repository: pathlib.Path = _ROOT) -> dict[str, bytes]:
         rendered_source = render_cpp(
             program, manifest["revision"], entry["raw_sha256"], entry["pass_bindings"]
         ).encode("utf-8")
-        output = str(_generated_path(repository, entry["output"]).relative_to(repository))
+        output = _generated_path(repository, entry["output"]).relative_to(repository).as_posix()
         rendered[output] = rendered_source
         manifest_programs.append({
             "program_key": entry["program_key"],

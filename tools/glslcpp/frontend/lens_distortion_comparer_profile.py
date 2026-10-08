@@ -1,4 +1,8 @@
-"""Source-locked canonical-JavaScript comparer profile for Lens tint."""
+"""Source-locked comparer profile for the Lens tint site.
+
+The one `color.rgb == vec3(1.0)` predicate is emitted as GLSL vector equality
+(every lane equal), as the authority compiles it (all(equal())).
+"""
 
 from __future__ import annotations
 
@@ -7,7 +11,7 @@ import hashlib
 from .typed_ir import TypedExpression, TypedProgram, TypedStatement
 
 
-PROFILE = "canonical-js-vector-equality-result-truthiness-v1"
+PROFILE = "lens-tint-vector-equality-v1"
 LENS_KEY = "classicNoisedeck/lensDistortion:lensDistortion"
 RAW_BYTES = 8269
 RAW_SHA256 = "f4e6453fe233692fa67c5fdbb3eb8f7a512d21bc722e63af6fc23166a62dd444"
@@ -20,7 +24,7 @@ PRE_WHOLE_SHA256 = "f63fb6dba6626791c248501bcfc5ca1c94f073a0593f34dbe846056fe35c
 FINAL_MAIN_SHA256 = "8de6658184c69cb679f0453e37e37f538eebabb0e14f720d1eeea61e715d30ec"
 FINAL_FUNCTIONS_SHA256 = "c166fa2b38ec68661fb4d73be1bfb3eef4f879da7d82dbfca44deba1b651a756"
 FINAL_WHOLE_SHA256 = "e5dbb049717ce77ba79a36c6ea39ddde88e561df1ba06c98fba0ddd179a63d2e"
-PROFILE_SHA256 = "8dece8742d7539614d36045515985712aa7c05addc705490aa0ec3b6d4d07916"
+PROFILE_SHA256 = "e5f6858693126258b059967740e10437e3e5c2eafb0710a8a4b112dd20f11fd3"
 
 # Raw corpus source line 273 becomes normalized typed-source line 265.
 RAW_SOURCE_LINE = 273

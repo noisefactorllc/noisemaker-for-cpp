@@ -1,0 +1,1904 @@
+[
+ {
+  "name": "coalesce-blend0",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    0
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend2",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    2
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend3",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    3
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend7",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    7
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend10",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    10
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend15",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    15
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend100",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    100
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "coalesce-blend1000",
+  "key": "classicNoisedeck/coalesce:coalesce",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "blendMode": [
+    "int",
+    1000
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "refractAAmt": [
+    "float",
+    43.0
+   ],
+   "refractBAmt": [
+    "float",
+    61.0
+   ],
+   "refractADir": [
+    "float",
+    -137.0
+   ],
+   "refractBDir": [
+    "float",
+    211.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "refract-mode1-blend2-wrap1",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    2
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    1
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 38
+   }
+  }
+ },
+ {
+  "name": "refract-mode1-blend3-wrap0",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    3
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "refract-mode1-blend7-wrap2",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    7
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    2
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "refract-mode1-blend15-wrap1",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    15
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    1
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "refract-mode0-blend2-wrap0",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    0
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    2
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 38
+   }
+  }
+ },
+ {
+  "name": "refract-mode1-blend13-wrap1",
+  "key": "classicNoisedeck/refract:refract",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "amount": [
+    "float",
+    29.899999618530273
+   ],
+   "direction": [
+    "float",
+    137.60000610351562
+   ],
+   "blendMode": [
+    "int",
+    13
+   ],
+   "mixAmt": [
+    "float",
+    50.0
+   ],
+   "wrap": [
+    "int",
+    1
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "lens-shape0-mode0",
+  "key": "classicNoisedeck/lensDistortion:lensDistortion",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "aspectLens": [
+    "bool",
+    false
+   ],
+   "shape": [
+    "int",
+    0
+   ],
+   "tint": [
+    "vec3",
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "alpha": [
+    "float",
+    61.0
+   ],
+   "vignetteAmt": [
+    "float",
+    23.0
+   ],
+   "distortion": [
+    "float",
+    37.0
+   ],
+   "speed": [
+    "float",
+    0.0
+   ],
+   "loopScale": [
+    "float",
+    100.0
+   ],
+   "aberration": [
+    "float",
+    50.0
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    40.0
+   ],
+   "mode": [
+    "int",
+    0
+   ],
+   "modulate": [
+    "bool",
+    false
+   ],
+   "blendMode": [
+    "int",
+    0
+   ],
+   "saturation": [
+    "float",
+    0.0
+   ],
+   "passthru": [
+    "float",
+    50.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "lens-shape2-mode1",
+  "key": "classicNoisedeck/lensDistortion:lensDistortion",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "aspectLens": [
+    "bool",
+    false
+   ],
+   "shape": [
+    "int",
+    2
+   ],
+   "tint": [
+    "vec3",
+    [
+     0.25,
+     0.5,
+     0.75
+    ]
+   ],
+   "alpha": [
+    "float",
+    61.0
+   ],
+   "vignetteAmt": [
+    "float",
+    23.0
+   ],
+   "distortion": [
+    "float",
+    37.0
+   ],
+   "speed": [
+    "float",
+    0.0
+   ],
+   "loopScale": [
+    "float",
+    100.0
+   ],
+   "aberration": [
+    "float",
+    50.0
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    40.0
+   ],
+   "mode": [
+    "int",
+    1
+   ],
+   "modulate": [
+    "bool",
+    false
+   ],
+   "blendMode": [
+    "int",
+    0
+   ],
+   "saturation": [
+    "float",
+    0.0
+   ],
+   "passthru": [
+    "float",
+    50.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "lens-shape10-mode0",
+  "key": "classicNoisedeck/lensDistortion:lensDistortion",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "aspectLens": [
+    "bool",
+    false
+   ],
+   "shape": [
+    "int",
+    10
+   ],
+   "tint": [
+    "vec3",
+    [
+     1.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "alpha": [
+    "float",
+    61.0
+   ],
+   "vignetteAmt": [
+    "float",
+    23.0
+   ],
+   "distortion": [
+    "float",
+    37.0
+   ],
+   "speed": [
+    "float",
+    0.0
+   ],
+   "loopScale": [
+    "float",
+    100.0
+   ],
+   "aberration": [
+    "float",
+    50.0
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    40.0
+   ],
+   "mode": [
+    "int",
+    0
+   ],
+   "modulate": [
+    "bool",
+    false
+   ],
+   "blendMode": [
+    "int",
+    0
+   ],
+   "saturation": [
+    "float",
+    0.0
+   ],
+   "passthru": [
+    "float",
+    50.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "colorLab-dither4-invert1-mode2",
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "levels": [
+    "float",
+    4.0
+   ],
+   "dither": [
+    "int",
+    4
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    100.0
+   ],
+   "invert": [
+    "bool",
+    true
+   ],
+   "brightness": [
+    "float",
+    0.0
+   ],
+   "contrast": [
+    "float",
+    63.0
+   ],
+   "saturation": [
+    "float",
+    17.0
+   ],
+   "colorMode": [
+    "int",
+    2
+   ],
+   "paletteMode": [
+    "int",
+    0
+   ],
+   "paletteOffset": [
+    "vec3",
+    [
+     0.8299999833106995,
+     0.6000000238418579,
+     0.6299999952316284
+    ]
+   ],
+   "paletteAmp": [
+    "vec3",
+    [
+     0.5,
+     0.5,
+     0.5
+    ]
+   ],
+   "paletteFreq": [
+    "vec3",
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "palettePhase": [
+    "vec3",
+    [
+     0.30000001192092896,
+     0.10000000149011612,
+     0.0
+    ]
+   ],
+   "cyclePalette": [
+    "int",
+    1
+   ],
+   "rotatePalette": [
+    "float",
+    0.0
+   ],
+   "repeatPalette": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "colorLab-dither1-invert0-mode1",
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "levels": [
+    "float",
+    4.0
+   ],
+   "dither": [
+    "int",
+    1
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    100.0
+   ],
+   "invert": [
+    "bool",
+    false
+   ],
+   "brightness": [
+    "float",
+    0.0
+   ],
+   "contrast": [
+    "float",
+    63.0
+   ],
+   "saturation": [
+    "float",
+    17.0
+   ],
+   "colorMode": [
+    "int",
+    1
+   ],
+   "paletteMode": [
+    "int",
+    0
+   ],
+   "paletteOffset": [
+    "vec3",
+    [
+     0.8299999833106995,
+     0.6000000238418579,
+     0.6299999952316284
+    ]
+   ],
+   "paletteAmp": [
+    "vec3",
+    [
+     0.5,
+     0.5,
+     0.5
+    ]
+   ],
+   "paletteFreq": [
+    "vec3",
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "palettePhase": [
+    "vec3",
+    [
+     0.30000001192092896,
+     0.10000000149011612,
+     0.0
+    ]
+   ],
+   "cyclePalette": [
+    "int",
+    1
+   ],
+   "rotatePalette": [
+    "float",
+    0.0
+   ],
+   "repeatPalette": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "colorLab-dither3-invert1-mode3",
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "levels": [
+    "float",
+    4.0
+   ],
+   "dither": [
+    "int",
+    3
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    100.0
+   ],
+   "invert": [
+    "bool",
+    true
+   ],
+   "brightness": [
+    "float",
+    0.0
+   ],
+   "contrast": [
+    "float",
+    63.0
+   ],
+   "saturation": [
+    "float",
+    17.0
+   ],
+   "colorMode": [
+    "int",
+    3
+   ],
+   "paletteMode": [
+    "int",
+    0
+   ],
+   "paletteOffset": [
+    "vec3",
+    [
+     0.8299999833106995,
+     0.6000000238418579,
+     0.6299999952316284
+    ]
+   ],
+   "paletteAmp": [
+    "vec3",
+    [
+     0.5,
+     0.5,
+     0.5
+    ]
+   ],
+   "paletteFreq": [
+    "vec3",
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "palettePhase": [
+    "vec3",
+    [
+     0.30000001192092896,
+     0.10000000149011612,
+     0.0
+    ]
+   ],
+   "cyclePalette": [
+    "int",
+    1
+   ],
+   "rotatePalette": [
+    "float",
+    0.0
+   ],
+   "repeatPalette": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "colorLab-dither2-invert0-mode4",
+  "key": "classicNoisedeck/colorLab:colorLab",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "levels": [
+    "float",
+    4.0
+   ],
+   "dither": [
+    "int",
+    2
+   ],
+   "hueRotation": [
+    "float",
+    0.0
+   ],
+   "hueRange": [
+    "float",
+    100.0
+   ],
+   "invert": [
+    "bool",
+    false
+   ],
+   "brightness": [
+    "float",
+    0.0
+   ],
+   "contrast": [
+    "float",
+    63.0
+   ],
+   "saturation": [
+    "float",
+    17.0
+   ],
+   "colorMode": [
+    "int",
+    4
+   ],
+   "paletteMode": [
+    "int",
+    0
+   ],
+   "paletteOffset": [
+    "vec3",
+    [
+     0.8299999833106995,
+     0.6000000238418579,
+     0.6299999952316284
+    ]
+   ],
+   "paletteAmp": [
+    "vec3",
+    [
+     0.5,
+     0.5,
+     0.5
+    ]
+   ],
+   "paletteFreq": [
+    "vec3",
+    [
+     1.0,
+     1.0,
+     1.0
+    ]
+   ],
+   "palettePhase": [
+    "vec3",
+    [
+     0.30000001192092896,
+     0.10000000149011612,
+     0.0
+    ]
+   ],
+   "cyclePalette": [
+    "int",
+    1
+   ],
+   "rotatePalette": [
+    "float",
+    0.0
+   ],
+   "repeatPalette": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "cellSplit-mode0-invert0",
+  "key": "mixer/cellSplit:cellSplit",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    0
+   ],
+   "scale": [
+    "float",
+    3.0
+   ],
+   "edgeWidth": [
+    "float",
+    0.20000000298023224
+   ],
+   "seed": [
+    "int",
+    1
+   ],
+   "invert": [
+    "int",
+    0
+   ],
+   "speed": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "cellSplit-mode1-invert1",
+  "key": "mixer/cellSplit:cellSplit",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "mode": [
+    "int",
+    1
+   ],
+   "scale": [
+    "float",
+    3.0
+   ],
+   "edgeWidth": [
+    "float",
+    0.20000000298023224
+   ],
+   "seed": [
+    "int",
+    1
+   ],
+   "invert": [
+    "int",
+    1
+   ],
+   "speed": [
+    "float",
+    1.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 5,
+    "height": 3,
+    "tag": 1
+   },
+   "tex": {
+    "width": 7,
+    "height": 2,
+    "tag": 23
+   }
+  }
+ },
+ {
+  "name": "degauss-tiled",
+  "key": "filter/degauss:degauss",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "displacement": [
+    "float",
+    0.20000000298023224
+   ],
+   "speed": [
+    "float",
+    1.5
+   ],
+   "seed": [
+    "int",
+    1
+   ],
+   "direction": [
+    "float",
+    33.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "degauss-untiled",
+  "key": "filter/degauss:degauss",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   0,
+   0
+  ],
+  "fullResolution": [
+   9,
+   7
+  ],
+  "uniforms": {
+   "displacement": [
+    "float",
+    0.20000000298023224
+   ],
+   "speed": [
+    "float",
+    1.5
+   ],
+   "seed": [
+    "int",
+    1
+   ],
+   "direction": [
+    "float",
+    33.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "effects-tiled",
+  "key": "classicNoisedeck/effects:effects",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "effectAmt": [
+    "float",
+    70.0
+   ],
+   "scaleAmt": [
+    "float",
+    120.0
+   ],
+   "rotation": [
+    "float",
+    25.0
+   ],
+   "offsetX": [
+    "float",
+    0.30000001192092896
+   ],
+   "offsetY": [
+    "float",
+    -0.20000000298023224
+   ],
+   "intensity": [
+    "float",
+    60.0
+   ],
+   "saturation": [
+    "float",
+    30.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "effects-untiled",
+  "key": "classicNoisedeck/effects:effects",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   0,
+   0
+  ],
+  "fullResolution": [
+   9,
+   7
+  ],
+  "uniforms": {
+   "effectAmt": [
+    "float",
+    70.0
+   ],
+   "scaleAmt": [
+    "float",
+    120.0
+   ],
+   "rotation": [
+    "float",
+    25.0
+   ],
+   "offsetX": [
+    "float",
+    0.30000001192092896
+   ],
+   "offsetY": [
+    "float",
+    -0.20000000298023224
+   ],
+   "intensity": [
+    "float",
+    60.0
+   ],
+   "saturation": [
+    "float",
+    30.0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "scale-wrap0",
+  "key": "filter/scale:scale",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "scaleX": [
+    "float",
+    -1.7000000476837158
+   ],
+   "scaleY": [
+    "float",
+    2.299999952316284
+   ],
+   "centerX": [
+    "float",
+    0.7300000190734863
+   ],
+   "centerY": [
+    "float",
+    -0.6100000143051147
+   ],
+   "wrap": [
+    "int",
+    0
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "scale-wrap1",
+  "key": "filter/scale:scale",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "scaleX": [
+    "float",
+    -1.7000000476837158
+   ],
+   "scaleY": [
+    "float",
+    2.299999952316284
+   ],
+   "centerX": [
+    "float",
+    0.7300000190734863
+   ],
+   "centerY": [
+    "float",
+    -0.6100000143051147
+   ],
+   "wrap": [
+    "int",
+    1
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ },
+ {
+  "name": "scale-wrap2",
+  "key": "filter/scale:scale",
+  "width": 9,
+  "height": 7,
+  "time": 0.375,
+  "seed": 7,
+  "frame": 7,
+  "tileOffset": [
+   -5,
+   3
+  ],
+  "fullResolution": [
+   17,
+   13
+  ],
+  "uniforms": {
+   "scaleX": [
+    "float",
+    -1.7000000476837158
+   ],
+   "scaleY": [
+    "float",
+    2.299999952316284
+   ],
+   "centerX": [
+    "float",
+    0.7300000190734863
+   ],
+   "centerY": [
+    "float",
+    -0.6100000143051147
+   ],
+   "wrap": [
+    "int",
+    2
+   ]
+  },
+  "textures": {
+   "inputTex": {
+    "width": 11,
+    "height": 9,
+    "tag": 37
+   }
+  }
+ }
+]

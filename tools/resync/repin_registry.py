@@ -55,7 +55,7 @@ for field, key in (("backend_fragment_rows", "fragment_rows"), ("backend_unique_
                    ("backend_raw_exact", "raw_exact"), ("backend_semantic_exact", "semantic_exact")):
     sub(rf"provenance_\.{field} != \d+", f"provenance_.{field} != {bc[key]}")
 sub(r"strict_manifest && expected_reference != \d+\)", f"strict_manifest && expected_reference != {len(compat['reference_passes'])})")
-path.write_text(text, encoding="utf-8")
+path.write_text(text, encoding="utf-8", newline="")
 print("registry.cpp re-pinned from generated provenance")
 
 # tests/test_effect_catalog.cpp pins the same live provenance values; re-pin them from the same source.
@@ -67,5 +67,5 @@ for field in ("generated_payload_sha256", "normalized_record_stream_sha256", "co
     if count > 1:
         raise SystemExit(f"test_effect_catalog.cpp: {field} pinned {count} times")
     test_text = re.sub(pattern, lambda _m, f=field: f'provenance.{f} == "{prov[f]}"', test_text)
-test_path.write_text(test_text, encoding="utf-8")
+test_path.write_text(test_text, encoding="utf-8", newline="")
 print("test_effect_catalog.cpp re-pinned from generated provenance")

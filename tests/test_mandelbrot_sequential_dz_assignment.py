@@ -22,7 +22,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 KEY = "synth/mandelbrot:mandelbrot"
 PROFILE = "mandelbrot-sequential-dz-assignment-v1"
 SOURCE = ROOT / f"tools/glslcpp/corpus/{CORPUS_REVISION}" / "sources/synth/mandelbrot/mandelbrot.glsl"
-RAW_SHA256 = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
+RAW_SHA256 = "6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd"
 
 
 def _analyzed(raw: str | None = None, key: str = KEY):
@@ -37,7 +37,7 @@ def _seeded():
                 if item.symbol.name == "MAX_ITER")
     functions = attach_counted_loop_proofs(
         program.functions, KEY,
-        source_global_bounds=((seed.symbol.id, 500,
+        source_global_bounds=((seed.symbol.id, 2048,
                                "source-global-const-literal", seed.symbol),))
     return replace(program, functions=functions,
                    counted_loop_proof=summarize_counted_loop_proofs(functions))
@@ -75,7 +75,7 @@ class MandelbrotSequentialDzAssignmentTests(unittest.TestCase):
                 yield from statements(item.children)
         statement = next(item for item in statements(function.body)
                          if any(expression.kind == "assign"
-                                and expression.span.start_line == 234
+                                and expression.span.start_line == 235
                                 for expression in item.expressions))
         assignment = statement.expressions[0]
         target, rhs = assignment.children

@@ -1,4 +1,5 @@
 #include "test_harness.hpp"
+#include "fixtures/historical/authority_26d6f42_kernels.hpp"
 #include "fixtures/historical/retired_kernels.hpp"
 #include "fixtures/historical/reverb_kernel.hpp"
 
@@ -1094,6 +1095,15 @@ void populate_task12_bindings(noisemaker::glsl::Bindings& bindings, const Task12
     std::string_view key, const noisemaker::glsl::Bindings& bindings) {
   if (key == "filter/hs:hs") {
     return noisemaker::historical_generated::bind_filter_hs_hs(bindings);
+  }
+  // The coalesce captures predate the copied UVs (26d6f42) and the GLSL
+  // vector equality (8ae8e2a); they stay exact against the kernel they recorded.
+  if (key == "classicNoisedeck/coalesce:coalesce") {
+    return noisemaker::historical_generated::bind_classicNoisedeck_coalesce_coalesce(bindings);
+  }
+  // Scale's captures predate its 5976b7a6 global-pixel tiling change.
+  if (key == "filter/scale:scale") {
+    return noisemaker::historical_generated::bind_filter_scale_scale(bindings);
   }
   return noisemaker::generated::bind(key, bindings);
 }
@@ -2998,8 +3008,9 @@ struct Task19Case {
   bindings.set_uniform("blendMode", fixture.blend_mode);
   bindings.set_uniform("mixAmt", noisemaker::uint_bits_to_float(fixture.mix_bits));
   bindings.set_uniform("wrap", fixture.wrap);
+  // Captured before 8ae8e2a's vector equality; exact against the kernel it recorded.
   return noisemaker::run_pass(
-      noisemaker::generated::bind_classicNoisedeck_refract_refract(bindings),
+      noisemaker::historical_generated::bind_classicNoisedeck_refract_refract(bindings),
       9U, 7U, 0.375f, 19.0f, 7U, 1.0f / 60.0f);
 }
 
@@ -3074,6 +3085,507 @@ TEST(typed_task19_refract_external_oracles_are_exact_and_repeatable) {
       for (std::size_t lane = 0; lane < 4U; ++lane)
         REQUIRE(noisemaker::float_bits_to_uint(first.data()[pixels[probe] * 4U + lane]) ==
                 fixture.probes[probe * 4U + lane]);
+  }
+}
+
+// Current-authority captures (noisemaker-for-cpu 8ae8e2a) for every program the
+// 8ae8e2a / 5976b7a6 sync changed, through the public factory route. Inputs are
+// asymmetric with white and all-zero pixels and a nonzero tile offset, so both
+// vector-equality arms, Coalesce's refracted UVs and the tiled displacement
+// paths are observable. tests/fixtures/authority_8ae8e2a holds the cases, the
+// authenticated reference and its capture; the table below is materialized
+// from them and checked by tests/test_authority_8ae8e2a_captures.py.
+struct Authority8ae8e2aCase {
+  std::string_view name;
+  std::string_view key;
+  std::uint32_t width;
+  std::uint32_t height;
+  std::uint32_t time_bits;
+  std::int32_t seed;
+  std::uint32_t frame;
+  std::array<float, 2> tile_offset;
+  std::array<float, 2> full_resolution;
+  std::string_view float_hash;
+  std::string_view rgba_hash;
+};
+
+struct Authority8ae8e2aUniform {
+  std::uint32_t case_index;
+  std::string_view name;
+  char kind;
+  std::array<std::uint32_t, 3> words;
+};
+
+struct Authority8ae8e2aTexture {
+  std::uint32_t case_index;
+  std::string_view name;
+  std::uint32_t width;
+  std::uint32_t height;
+  std::uint32_t tag;
+};
+
+// AUTHORITY_8AE8E2A_CASES_BEGIN
+constexpr std::array<Authority8ae8e2aCase, 30> kAuthority8ae8e2aCases{{
+    {"coalesce-blend0", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "d9b5b1d81aa71c1b56c9825d1db8b07d2643b1ae6f644b85a9390752437bb6fe",
+     "a3b8ac14238de0bf7e2a169b35465d651b2c5f70423dada86445e415e28842fe"},
+    {"coalesce-blend2", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "0c85d41c33124e5fe5346891c07abb9fea731dc76dc2919d37a96934ceddcbfd",
+     "8898594256e31e6c4027d9d63ce9f9b809b621af59c3d4e878df5483253f1a20"},
+    {"coalesce-blend3", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "3c649e079a0b817cc07bc6e24492916728bafa65195d0f9cb2f321e0c2063080",
+     "92fcd6a64f45741a176a9ced679e76101516a4632032028923f9b11be1b556d8"},
+    {"coalesce-blend7", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "237ba190f774af4d62f5b8a4b302b289ef8eca11eb4fa6ccc5fc9605600aaa81",
+     "87f2a9cc6a987cbff81c132fcfc8029cc71ba96a89848af17ab992eb56450304"},
+    {"coalesce-blend10", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "f9fc2c7670140b2dd00b081772294ac4c819db7ad1f6fc9ae43ef9252441264c",
+     "698ddc19057270dee9fa4b1fd6421b12220e9c8f383c7dd85e353933a705b24a"},
+    {"coalesce-blend15", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "20ac235bd05d31f2e62e95ff141922333a4768851e84fbe81923026f9914f83b",
+     "0baef5483e76c78c48c478d8f6f00405e6b4c6ec357f5d5aa7c220b97add7b43"},
+    {"coalesce-blend100", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "b166e84e2a02e7fd8a28a87af73849d84454d40276c17b5e05f139d12a83db8f",
+     "706393002296569ce58963ee1fa4a1244577b7e67a8c88da828f0e6c95742570"},
+    {"coalesce-blend1000", "classicNoisedeck/coalesce:coalesce", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "1e66624c95d7a591017d7d4e0202f418705acbbc66231e01fb81c04762db3a5a",
+     "57947ee9ce45411c2dd07819991bef25f3d656dbac21924a64cbedfbe7cc4007"},
+    {"refract-mode1-blend2-wrap1", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "5a50f1f7e976f0c87b16a12d5a774c5eaaef4077be440e757c2276f4173b9277",
+     "d8620c2d9651841b2d70e4a3f7bdc60f0d3bfc3e14b3967f6ecd995476086d8d"},
+    {"refract-mode1-blend3-wrap0", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "11cc74e118a1dcca9b572939cb6c422ccc36ee2cd945baa36f52fcd0df90da65",
+     "ade3d6e2e08dfa18cfdc8f1aa16bc51b9a695c253b7eb1cd127139b771a3a105"},
+    {"refract-mode1-blend7-wrap2", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "f4165825a71571a71bd9c8913e6492a51799943a24a39c772f58a603c5b79bb3",
+     "391770cdeac75964fd31b1f5bb6a99d15ffbcdf1fa01f33196fc1dc6b7e1d200"},
+    {"refract-mode1-blend15-wrap1", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "f2022577c26addd7c03412e9f051fadb4743f16ca328681dc67c4bb19fdd7fe0",
+     "0b62be9b3d853aaf8f6b6164fd7b07506290d583c5da2f27c5f77548d13af57d"},
+    {"refract-mode0-blend2-wrap0", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "1da6a6203ea39f93f949a3beb00be23b6f1105a696b030702b381d355b62cff1",
+     "7741630872c8743504f7eab26bd04ddd05ad0ed25a97d97fb5123e23637c2d83"},
+    {"refract-mode1-blend13-wrap1", "classicNoisedeck/refract:refract", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "a80c8a5eaac05b4557d3c0bd43d9ead32016a0ddc5958a490a039f33964917f3",
+     "38592158917942fba4deadb3b3150355381c10e333c7c505e756f628b20d2ae8"},
+    {"lens-shape0-mode0", "classicNoisedeck/lensDistortion:lensDistortion", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "a0b361e445f822501e81cb7ba5aa95a77daaf9aab7b962fdc57347784973095f",
+     "23b451a050e768616d0e28e2ba676e0513d620631ba7b76d3e44bb4083ed9b48"},
+    {"lens-shape2-mode1", "classicNoisedeck/lensDistortion:lensDistortion", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "7729d5c6922b39f1f2b114554d7997dc28ae5522cf0f7af58db0e4d4f98187f5",
+     "bcd11f67667e1a31e73229e777f705f75ad86c0811c5a786b9c0111fc682a3cf"},
+    {"lens-shape10-mode0", "classicNoisedeck/lensDistortion:lensDistortion", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "27fa03f481d1eefea5baf3787690e16bd802864a6e51f50c6e612c2b871d8ef7",
+     "5da27eeaf93b663c4684be150cc5b000e216ef0d11cea78a2d6ece8a1cdd5282"},
+    {"colorLab-dither4-invert1-mode2", "classicNoisedeck/colorLab:colorLab", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "1b364631c57e5af6733aa20654f6e21037152eba5543b4bcfcde5cca7c0b0488",
+     "e2a031b1a43a177bfbb65df5f73e5c837151de09777a5cd03b661aaac174a778"},
+    {"colorLab-dither1-invert0-mode1", "classicNoisedeck/colorLab:colorLab", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "88e0c0220d2c5292b580395ca62b8e5963ea1667548f10b8dacce605a7b50074",
+     "f10ea936b3261204af8ccbe98d1cd3e2fef0a33912a0041cd05e41a12dd2f0fe"},
+    {"colorLab-dither3-invert1-mode3", "classicNoisedeck/colorLab:colorLab", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "c7931e6e951b171ebda0e3f14ee308a711614c4b1b1461176b081a40577e7426",
+     "9c702004e0084318d48ca7e401e550114409ba39885f330dc4022f3eb115ddf2"},
+    {"colorLab-dither2-invert0-mode4", "classicNoisedeck/colorLab:colorLab", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "9615a989326ebb2302efbf83726f047235749255e9c89f863e62aac070ae2720",
+     "d7192bbfe66af0159e7cd2148093f095085b01b41780fbd1ffc79368b1a5b3ac"},
+    {"cellSplit-mode0-invert0", "mixer/cellSplit:cellSplit", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "1cf209f1f3c309b99a860c064eb2653b9f246e0331300a47be9ee8b7c4e8458c",
+     "eb0557f29460996956210a848c4322322ddc44c032b2a08760e73f2fd24c37ae"},
+    {"cellSplit-mode1-invert1", "mixer/cellSplit:cellSplit", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "3c2f19b1d65663b92cbc1060c379ae32a3617f746c4af2116a9ee3d978ba766d",
+     "189bd2706bfe6ab5b54b19589b9d8e6a7be813037772b759d0fa3fc3289e5f3a"},
+    {"degauss-tiled", "filter/degauss:degauss", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "2675b87527c4eb818cf6873cf2521117ef4529555fdcf8077fe36273b2307a98",
+     "011446692211d31ba8baf5c4a726825b837fa654b992a6cf6cc0d25b760f470f"},
+    {"degauss-untiled", "filter/degauss:degauss", 9U, 7U, 0x3ec00000U, 7, 7U, {0.0f, 0.0f}, {9.0f, 7.0f},
+     "8a2c72035bb86339e0e1dea321001c10c470fcfb9d10e1539510bd7066f8cdbe",
+     "5bc53cadc7c33d428bb697cb8bd656ad0e97ded10fa9ae8f26e52c31725c1a7c"},
+    {"effects-tiled", "classicNoisedeck/effects:effects", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "aa9489e9658ff4bf9906af1d91fb62a1c1060c91159c59c84aa5bf4e78836fda",
+     "4aaba60cb7df678d8dfe4037100332ab2f2f574eb8c6d2dfcf9b7b5e6698e933"},
+    {"effects-untiled", "classicNoisedeck/effects:effects", 9U, 7U, 0x3ec00000U, 7, 7U, {0.0f, 0.0f}, {9.0f, 7.0f},
+     "cfe27ffaf3e4e1f23b66dd5c28a46d77f7782a025d6f7e7458b1de9b5eae40f7",
+     "b50091de1f1cdc395bb8c7a0b9ca5bef80942f6463e05070dc1bc4b3bdeabe77"},
+    {"scale-wrap0", "filter/scale:scale", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "d69ca61cabf7f8b93e266f286b358e3d969b8401e2eabe55ea4fe546deb98118",
+     "3fef42f9da3a39a380f5c180a45677c03be66e760417675810d78d61444f2107"},
+    {"scale-wrap1", "filter/scale:scale", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "c3fb28bf7b6606b3bbe4f82348391102f0c25ec393c0f4febaedee4de9a21692",
+     "8ba3641c1620e66eba2bca6ba9642fcd932d88a0422440dfa538aefb4cef337a"},
+    {"scale-wrap2", "filter/scale:scale", 9U, 7U, 0x3ec00000U, 7, 7U, {-5.0f, 3.0f}, {17.0f, 13.0f},
+     "abefbab45323e8db85ebcd0bed1f1362318a0485009f55cca8b9e27677bdceb2",
+     "dc6a17c9570845b5667fe6faa1361f05e471f5ab033213aec9b26acc0aab8849"},
+}};
+constexpr std::array<Authority8ae8e2aUniform, 249> kAuthority8ae8e2aUniforms{{
+    {0U, "blendMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {0U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {0U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {0U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {0U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {0U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {1U, "blendMode", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {1U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {1U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {1U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {1U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {1U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {2U, "blendMode", 'i', {0x00000003U, 0x00000000U, 0x00000000U}},
+    {2U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {2U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {2U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {2U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {2U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {3U, "blendMode", 'i', {0x00000007U, 0x00000000U, 0x00000000U}},
+    {3U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {3U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {3U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {3U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {3U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {4U, "blendMode", 'i', {0x0000000aU, 0x00000000U, 0x00000000U}},
+    {4U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {4U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {4U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {4U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {4U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {5U, "blendMode", 'i', {0x0000000fU, 0x00000000U, 0x00000000U}},
+    {5U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {5U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {5U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {5U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {5U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {6U, "blendMode", 'i', {0x00000064U, 0x00000000U, 0x00000000U}},
+    {6U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {6U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {6U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {6U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {6U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {7U, "blendMode", 'i', {0x000003e8U, 0x00000000U, 0x00000000U}},
+    {7U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {7U, "refractAAmt", 'f', {0x422c0000U, 0x00000000U, 0x00000000U}},
+    {7U, "refractBAmt", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {7U, "refractADir", 'f', {0xc3090000U, 0x00000000U, 0x00000000U}},
+    {7U, "refractBDir", 'f', {0x43530000U, 0x00000000U, 0x00000000U}},
+    {8U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {8U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {8U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {8U, "blendMode", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {8U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {8U, "wrap", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {9U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {9U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {9U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {9U, "blendMode", 'i', {0x00000003U, 0x00000000U, 0x00000000U}},
+    {9U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {9U, "wrap", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {10U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {10U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {10U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {10U, "blendMode", 'i', {0x00000007U, 0x00000000U, 0x00000000U}},
+    {10U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {10U, "wrap", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {11U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {11U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {11U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {11U, "blendMode", 'i', {0x0000000fU, 0x00000000U, 0x00000000U}},
+    {11U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {11U, "wrap", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {12U, "mode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {12U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {12U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {12U, "blendMode", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {12U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {12U, "wrap", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {13U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {13U, "amount", 'f', {0x41ef3333U, 0x00000000U, 0x00000000U}},
+    {13U, "direction", 'f', {0x4309999aU, 0x00000000U, 0x00000000U}},
+    {13U, "blendMode", 'i', {0x0000000dU, 0x00000000U, 0x00000000U}},
+    {13U, "mixAmt", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {13U, "wrap", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {14U, "aspectLens", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "shape", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "tint", '3', {0x3f800000U, 0x3f800000U, 0x3f800000U}},
+    {14U, "alpha", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {14U, "vignetteAmt", 'f', {0x41b80000U, 0x00000000U, 0x00000000U}},
+    {14U, "distortion", 'f', {0x42140000U, 0x00000000U, 0x00000000U}},
+    {14U, "speed", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "loopScale", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {14U, "aberration", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {14U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "hueRange", 'f', {0x42200000U, 0x00000000U, 0x00000000U}},
+    {14U, "mode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "modulate", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "blendMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "saturation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {14U, "passthru", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {15U, "aspectLens", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "shape", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {15U, "tint", '3', {0x3e800000U, 0x3f000000U, 0x3f400000U}},
+    {15U, "alpha", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {15U, "vignetteAmt", 'f', {0x41b80000U, 0x00000000U, 0x00000000U}},
+    {15U, "distortion", 'f', {0x42140000U, 0x00000000U, 0x00000000U}},
+    {15U, "speed", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "loopScale", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {15U, "aberration", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {15U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "hueRange", 'f', {0x42200000U, 0x00000000U, 0x00000000U}},
+    {15U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {15U, "modulate", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "blendMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "saturation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {15U, "passthru", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {16U, "aspectLens", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "shape", 'i', {0x0000000aU, 0x00000000U, 0x00000000U}},
+    {16U, "tint", '3', {0x3f800000U, 0x00000000U, 0x3f800000U}},
+    {16U, "alpha", 'f', {0x42740000U, 0x00000000U, 0x00000000U}},
+    {16U, "vignetteAmt", 'f', {0x41b80000U, 0x00000000U, 0x00000000U}},
+    {16U, "distortion", 'f', {0x42140000U, 0x00000000U, 0x00000000U}},
+    {16U, "speed", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "loopScale", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {16U, "aberration", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {16U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "hueRange", 'f', {0x42200000U, 0x00000000U, 0x00000000U}},
+    {16U, "mode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "modulate", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "blendMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "saturation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {16U, "passthru", 'f', {0x42480000U, 0x00000000U, 0x00000000U}},
+    {17U, "levels", 'f', {0x40800000U, 0x00000000U, 0x00000000U}},
+    {17U, "dither", 'i', {0x00000004U, 0x00000000U, 0x00000000U}},
+    {17U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {17U, "hueRange", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {17U, "invert", 'b', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {17U, "brightness", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {17U, "contrast", 'f', {0x427c0000U, 0x00000000U, 0x00000000U}},
+    {17U, "saturation", 'f', {0x41880000U, 0x00000000U, 0x00000000U}},
+    {17U, "colorMode", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {17U, "paletteMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {17U, "paletteOffset", '3', {0x3f547ae1U, 0x3f19999aU, 0x3f2147aeU}},
+    {17U, "paletteAmp", '3', {0x3f000000U, 0x3f000000U, 0x3f000000U}},
+    {17U, "paletteFreq", '3', {0x3f800000U, 0x3f800000U, 0x3f800000U}},
+    {17U, "palettePhase", '3', {0x3e99999aU, 0x3dcccccdU, 0x00000000U}},
+    {17U, "cyclePalette", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {17U, "rotatePalette", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {17U, "repeatPalette", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {18U, "levels", 'f', {0x40800000U, 0x00000000U, 0x00000000U}},
+    {18U, "dither", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {18U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {18U, "hueRange", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {18U, "invert", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {18U, "brightness", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {18U, "contrast", 'f', {0x427c0000U, 0x00000000U, 0x00000000U}},
+    {18U, "saturation", 'f', {0x41880000U, 0x00000000U, 0x00000000U}},
+    {18U, "colorMode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {18U, "paletteMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {18U, "paletteOffset", '3', {0x3f547ae1U, 0x3f19999aU, 0x3f2147aeU}},
+    {18U, "paletteAmp", '3', {0x3f000000U, 0x3f000000U, 0x3f000000U}},
+    {18U, "paletteFreq", '3', {0x3f800000U, 0x3f800000U, 0x3f800000U}},
+    {18U, "palettePhase", '3', {0x3e99999aU, 0x3dcccccdU, 0x00000000U}},
+    {18U, "cyclePalette", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {18U, "rotatePalette", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {18U, "repeatPalette", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {19U, "levels", 'f', {0x40800000U, 0x00000000U, 0x00000000U}},
+    {19U, "dither", 'i', {0x00000003U, 0x00000000U, 0x00000000U}},
+    {19U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {19U, "hueRange", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {19U, "invert", 'b', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {19U, "brightness", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {19U, "contrast", 'f', {0x427c0000U, 0x00000000U, 0x00000000U}},
+    {19U, "saturation", 'f', {0x41880000U, 0x00000000U, 0x00000000U}},
+    {19U, "colorMode", 'i', {0x00000003U, 0x00000000U, 0x00000000U}},
+    {19U, "paletteMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {19U, "paletteOffset", '3', {0x3f547ae1U, 0x3f19999aU, 0x3f2147aeU}},
+    {19U, "paletteAmp", '3', {0x3f000000U, 0x3f000000U, 0x3f000000U}},
+    {19U, "paletteFreq", '3', {0x3f800000U, 0x3f800000U, 0x3f800000U}},
+    {19U, "palettePhase", '3', {0x3e99999aU, 0x3dcccccdU, 0x00000000U}},
+    {19U, "cyclePalette", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {19U, "rotatePalette", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {19U, "repeatPalette", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {20U, "levels", 'f', {0x40800000U, 0x00000000U, 0x00000000U}},
+    {20U, "dither", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+    {20U, "hueRotation", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {20U, "hueRange", 'f', {0x42c80000U, 0x00000000U, 0x00000000U}},
+    {20U, "invert", 'b', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {20U, "brightness", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {20U, "contrast", 'f', {0x427c0000U, 0x00000000U, 0x00000000U}},
+    {20U, "saturation", 'f', {0x41880000U, 0x00000000U, 0x00000000U}},
+    {20U, "colorMode", 'i', {0x00000004U, 0x00000000U, 0x00000000U}},
+    {20U, "paletteMode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {20U, "paletteOffset", '3', {0x3f547ae1U, 0x3f19999aU, 0x3f2147aeU}},
+    {20U, "paletteAmp", '3', {0x3f000000U, 0x3f000000U, 0x3f000000U}},
+    {20U, "paletteFreq", '3', {0x3f800000U, 0x3f800000U, 0x3f800000U}},
+    {20U, "palettePhase", '3', {0x3e99999aU, 0x3dcccccdU, 0x00000000U}},
+    {20U, "cyclePalette", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {20U, "rotatePalette", 'f', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {20U, "repeatPalette", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {21U, "mode", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {21U, "scale", 'f', {0x40400000U, 0x00000000U, 0x00000000U}},
+    {21U, "edgeWidth", 'f', {0x3e4ccccdU, 0x00000000U, 0x00000000U}},
+    {21U, "seed", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {21U, "invert", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {21U, "speed", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {22U, "mode", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {22U, "scale", 'f', {0x40400000U, 0x00000000U, 0x00000000U}},
+    {22U, "edgeWidth", 'f', {0x3e4ccccdU, 0x00000000U, 0x00000000U}},
+    {22U, "seed", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {22U, "invert", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {22U, "speed", 'f', {0x3f800000U, 0x00000000U, 0x00000000U}},
+    {23U, "displacement", 'f', {0x3e4ccccdU, 0x00000000U, 0x00000000U}},
+    {23U, "speed", 'f', {0x3fc00000U, 0x00000000U, 0x00000000U}},
+    {23U, "seed", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {23U, "direction", 'f', {0x42040000U, 0x00000000U, 0x00000000U}},
+    {24U, "displacement", 'f', {0x3e4ccccdU, 0x00000000U, 0x00000000U}},
+    {24U, "speed", 'f', {0x3fc00000U, 0x00000000U, 0x00000000U}},
+    {24U, "seed", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {24U, "direction", 'f', {0x42040000U, 0x00000000U, 0x00000000U}},
+    {25U, "effectAmt", 'f', {0x428c0000U, 0x00000000U, 0x00000000U}},
+    {25U, "scaleAmt", 'f', {0x42f00000U, 0x00000000U, 0x00000000U}},
+    {25U, "rotation", 'f', {0x41c80000U, 0x00000000U, 0x00000000U}},
+    {25U, "offsetX", 'f', {0x3e99999aU, 0x00000000U, 0x00000000U}},
+    {25U, "offsetY", 'f', {0xbe4ccccdU, 0x00000000U, 0x00000000U}},
+    {25U, "intensity", 'f', {0x42700000U, 0x00000000U, 0x00000000U}},
+    {25U, "saturation", 'f', {0x41f00000U, 0x00000000U, 0x00000000U}},
+    {26U, "effectAmt", 'f', {0x428c0000U, 0x00000000U, 0x00000000U}},
+    {26U, "scaleAmt", 'f', {0x42f00000U, 0x00000000U, 0x00000000U}},
+    {26U, "rotation", 'f', {0x41c80000U, 0x00000000U, 0x00000000U}},
+    {26U, "offsetX", 'f', {0x3e99999aU, 0x00000000U, 0x00000000U}},
+    {26U, "offsetY", 'f', {0xbe4ccccdU, 0x00000000U, 0x00000000U}},
+    {26U, "intensity", 'f', {0x42700000U, 0x00000000U, 0x00000000U}},
+    {26U, "saturation", 'f', {0x41f00000U, 0x00000000U, 0x00000000U}},
+    {27U, "scaleX", 'f', {0xbfd9999aU, 0x00000000U, 0x00000000U}},
+    {27U, "scaleY", 'f', {0x40133333U, 0x00000000U, 0x00000000U}},
+    {27U, "centerX", 'f', {0x3f3ae148U, 0x00000000U, 0x00000000U}},
+    {27U, "centerY", 'f', {0xbf1c28f6U, 0x00000000U, 0x00000000U}},
+    {27U, "wrap", 'i', {0x00000000U, 0x00000000U, 0x00000000U}},
+    {28U, "scaleX", 'f', {0xbfd9999aU, 0x00000000U, 0x00000000U}},
+    {28U, "scaleY", 'f', {0x40133333U, 0x00000000U, 0x00000000U}},
+    {28U, "centerX", 'f', {0x3f3ae148U, 0x00000000U, 0x00000000U}},
+    {28U, "centerY", 'f', {0xbf1c28f6U, 0x00000000U, 0x00000000U}},
+    {28U, "wrap", 'i', {0x00000001U, 0x00000000U, 0x00000000U}},
+    {29U, "scaleX", 'f', {0xbfd9999aU, 0x00000000U, 0x00000000U}},
+    {29U, "scaleY", 'f', {0x40133333U, 0x00000000U, 0x00000000U}},
+    {29U, "centerX", 'f', {0x3f3ae148U, 0x00000000U, 0x00000000U}},
+    {29U, "centerY", 'f', {0xbf1c28f6U, 0x00000000U, 0x00000000U}},
+    {29U, "wrap", 'i', {0x00000002U, 0x00000000U, 0x00000000U}},
+}};
+constexpr std::array<Authority8ae8e2aTexture, 40> kAuthority8ae8e2aTextures{{
+    {0U, "inputTex", 5U, 3U, 1U},
+    {0U, "tex", 7U, 2U, 23U},
+    {1U, "inputTex", 5U, 3U, 1U},
+    {1U, "tex", 7U, 2U, 23U},
+    {2U, "inputTex", 5U, 3U, 1U},
+    {2U, "tex", 7U, 2U, 23U},
+    {3U, "inputTex", 5U, 3U, 1U},
+    {3U, "tex", 7U, 2U, 23U},
+    {4U, "inputTex", 5U, 3U, 1U},
+    {4U, "tex", 7U, 2U, 23U},
+    {5U, "inputTex", 5U, 3U, 1U},
+    {5U, "tex", 7U, 2U, 23U},
+    {6U, "inputTex", 5U, 3U, 1U},
+    {6U, "tex", 7U, 2U, 23U},
+    {7U, "inputTex", 5U, 3U, 1U},
+    {7U, "tex", 7U, 2U, 23U},
+    {8U, "inputTex", 11U, 9U, 38U},
+    {9U, "inputTex", 11U, 9U, 37U},
+    {10U, "inputTex", 11U, 9U, 37U},
+    {11U, "inputTex", 11U, 9U, 37U},
+    {12U, "inputTex", 11U, 9U, 38U},
+    {13U, "inputTex", 11U, 9U, 37U},
+    {14U, "inputTex", 11U, 9U, 37U},
+    {15U, "inputTex", 11U, 9U, 37U},
+    {16U, "inputTex", 11U, 9U, 37U},
+    {17U, "inputTex", 11U, 9U, 37U},
+    {18U, "inputTex", 11U, 9U, 37U},
+    {19U, "inputTex", 11U, 9U, 37U},
+    {20U, "inputTex", 11U, 9U, 37U},
+    {21U, "inputTex", 5U, 3U, 1U},
+    {21U, "tex", 7U, 2U, 23U},
+    {22U, "inputTex", 5U, 3U, 1U},
+    {22U, "tex", 7U, 2U, 23U},
+    {23U, "inputTex", 11U, 9U, 37U},
+    {24U, "inputTex", 11U, 9U, 37U},
+    {25U, "inputTex", 11U, 9U, 37U},
+    {26U, "inputTex", 11U, 9U, 37U},
+    {27U, "inputTex", 11U, 9U, 37U},
+    {28U, "inputTex", 11U, 9U, 37U},
+    {29U, "inputTex", 11U, 9U, 37U},
+}};
+// AUTHORITY_8AE8E2A_CASES_END
+
+// Top-down RGBA8: every fifth pixel (counting from the tag) is opaque white and
+// every seventh is all-zero; the rest is the asymmetric formula.
+[[nodiscard]] noisemaker::Surface authority_8ae8e2a_texture(const Authority8ae8e2aTexture& spec) {
+  std::vector<std::uint8_t> bytes(static_cast<std::size_t>(spec.width) * spec.height * 4U);
+  for (std::uint32_t y = 0; y < spec.height; ++y) for (std::uint32_t x = 0; x < spec.width; ++x) {
+    const std::uint32_t index = y * spec.width + x;
+    const std::size_t lane = static_cast<std::size_t>(index) * 4U;
+    if ((index + spec.tag) % 5U == 0U) {
+      bytes[lane] = bytes[lane + 1U] = bytes[lane + 2U] = bytes[lane + 3U] = 255U;
+    } else if ((index + spec.tag) % 7U == 0U) {
+      bytes[lane] = bytes[lane + 1U] = bytes[lane + 2U] = bytes[lane + 3U] = 0U;
+    } else {
+      bytes[lane] = static_cast<std::uint8_t>((31U * x + 17U * y + 13U * spec.tag) % 256U);
+      bytes[lane + 1U] = static_cast<std::uint8_t>((11U * x + 47U * y + 29U * spec.tag) % 256U);
+      bytes[lane + 2U] = static_cast<std::uint8_t>((67U * x + 19U * y + 7U * spec.tag) % 256U);
+      bytes[lane + 3U] = static_cast<std::uint8_t>(
+          static_cast<std::int64_t>(255) - 23 * x - 37 * y - 5 * spec.tag);
+    }
+  }
+  return noisemaker::Surface::from_rgba8(spec.width, spec.height, bytes);
+}
+
+[[nodiscard]] noisemaker::Surface render_authority_8ae8e2a(std::uint32_t index) {
+  const Authority8ae8e2aCase& fixture = kAuthority8ae8e2aCases[index];
+  std::vector<noisemaker::Surface> surfaces;
+  surfaces.reserve(kAuthority8ae8e2aTextures.size());
+  noisemaker::glsl::Bindings bindings;
+  const float width = static_cast<float>(fixture.width);
+  const float height = static_cast<float>(fixture.height);
+  // createCanonicalBindings: resolution, the tile pair, aspect, renderScale 1.
+  bindings.set_uniform("resolution", noisemaker::glsl::Vec2(width, height));
+  bindings.set_uniform("tileOffset", noisemaker::glsl::Vec2(fixture.tile_offset[0], fixture.tile_offset[1]));
+  bindings.set_uniform("fullResolution",
+                       noisemaker::glsl::Vec2(fixture.full_resolution[0], fixture.full_resolution[1]));
+  bindings.set_uniform("time", noisemaker::uint_bits_to_float(fixture.time_bits));
+  bindings.set_uniform("aspect", width / height);
+  bindings.set_uniform("renderScale", 1.0f);
+  for (const Authority8ae8e2aUniform& uniform : kAuthority8ae8e2aUniforms) {
+    if (uniform.case_index != index) continue;
+    const std::string name(uniform.name);
+    switch (uniform.kind) {
+      case 'i': bindings.set_uniform(name, static_cast<std::int32_t>(uniform.words[0])); break;
+      case 'f': bindings.set_uniform(name, noisemaker::uint_bits_to_float(uniform.words[0])); break;
+      case 'b': bindings.set_uniform(name, uniform.words[0] != 0U); break;
+      case '3':
+        bindings.set_uniform(name, noisemaker::glsl::DVec3(
+            noisemaker::uint_bits_to_float(uniform.words[0]),
+            noisemaker::uint_bits_to_float(uniform.words[1]),
+            noisemaker::uint_bits_to_float(uniform.words[2])));
+        break;
+      default: throw std::logic_error("unknown capture uniform kind");
+    }
+  }
+  for (const Authority8ae8e2aTexture& texture : kAuthority8ae8e2aTextures) {
+    if (texture.case_index != index) continue;
+    surfaces.push_back(authority_8ae8e2a_texture(texture));
+    bindings.set_texture(std::string(texture.name), surfaces.back());
+  }
+  return noisemaker::run_pass(
+      noisemaker::generated::bind(fixture.key, bindings), fixture.width, fixture.height,
+      noisemaker::uint_bits_to_float(fixture.time_bits), static_cast<float>(fixture.seed),
+      fixture.frame, 1.0f / 60.0f);
+}
+
+TEST(typed_authority_8ae8e2a_captures_are_exact_and_repeatable) {
+  for (std::uint32_t index = 0; index < kAuthority8ae8e2aCases.size(); ++index) {
+    const Authority8ae8e2aCase& fixture = kAuthority8ae8e2aCases[index];
+    const noisemaker::Surface first = render_authority_8ae8e2a(index);
+    const noisemaker::Surface second = render_authority_8ae8e2a(index);
+    require_repeat(first, second);
+    if (hex(sha256(little_endian_float_bytes(first))) != fixture.float_hash ||
+        hex(sha256(first.to_rgba8())) != fixture.rgba_hash) {
+      throw std::runtime_error(std::string(fixture.name) + ": 8ae8e2a capture mismatch");
+    }
   }
 }
 
@@ -3362,8 +3874,9 @@ struct Task21Case {
   bindings.set_uniform("speed", noisemaker::uint_bits_to_float(fixture.speed_bits));
   bindings.set_uniform("seed", fixture.seed);
   bindings.set_uniform("direction", noisemaker::uint_bits_to_float(fixture.direction_bits));
+  // Captured from the e24c844f source, before 5976b7a6 changed Degauss.
   return noisemaker::run_pass(
-      noisemaker::generated::bind_filter_degauss_degauss(bindings),
+      noisemaker::historical_generated::bind_filter_degauss_degauss(bindings),
       fixture.width, fixture.height,
       noisemaker::uint_bits_to_float(fixture.time_bits), 29.0f, 17U,
       noisemaker::uint_bits_to_float(0x3c888889U));

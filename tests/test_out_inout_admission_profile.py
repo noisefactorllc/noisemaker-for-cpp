@@ -177,18 +177,22 @@ MANDELBROT_PROFILE = "out-inout-admission-mandelbrot-v1"
 MANDELBROT_SOURCE_PATH = "synth/mandelbrot/mandelbrot.glsl"
 MANDELBROT_SOURCE = CORPUS / MANDELBROT_SOURCE_PATH
 MANDELBROT_RAW_SHA256 = (
-    "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615")
+    "6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd")
 MANDELBROT_NORMALIZED_SHA256 = (
-    "c062ee7852d0bfab69ca1e2ead6ad68d95dfa5fda9cff8232254b38b34c311a9")
+    "4a28158eff2b0f94d9568c6a06aa61a924e51b4901cb59698a8a4498dd782986")
 
-MAX_ITER_VALUE = 500
+MAX_ITER_VALUE = 2048
+# The interface measured at the design's corpus (MAX_ITER 500), against which
+# the design's §2.3 figure carried its one-character typo.
+MANDELBROT_DESIGN_CORPUS_INTERFACE_SHA256 = (
+    "2f497a1fb59406d16decbd6bb2c0a5e4e7e5536774fa7ec56a34de12de657c43")
 MANDELBROT_OUT_PARAM_COUNT = 10
 MANDELBROT_STORE_COUNT = 33
 MANDELBROT_READ_COUNT = 2
 MANDELBROT_CALL_COUNT = 5
 MANDELBROT_LEDGER = 109
 MANDELBROT_LIVE_SUMMARY = (0, 1, 0, 0, 0, True)
-MANDELBROT_CLOSED_SUMMARY = (1, 0, 1, 500, 1500, True)
+MANDELBROT_CLOSED_SUMMARY = (1, 0, 1, 2048, 6144, True)
 MANDELBROT_MECHANISM_CENSUS = (10, 5, 0, 0)
 VORONOI_LOOP_SPAN = "65:5-80:6"
 
@@ -2159,7 +2163,7 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         self.assertEqual("synth/mandelbrot/mandelbrot.glsl",
                          lock["source_path"])
         raw = (CORPUS / lock["source_path"]).read_bytes()
-        self.assertEqual(14855, len(raw))
+        self.assertEqual(14931, len(raw))
         self.assertEqual(MANDELBROT_RAW_SHA256,
                          hashlib.sha256(raw).hexdigest())
         self.assertEqual(MANDELBROT_RAW_SHA256, lock["raw_sha256"])
@@ -2196,7 +2200,8 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         carrying SIX (not seven), and FIVE bare void calls (not three --
         main's own transformCoords_df64 and mandelbrot_df64 calls were
         missed); 999 house-census nodes and 31 deduplicated edges; and the
-        interface SHA typo (d->c at position 26) fixed."""
+        interface SHA typo (d->c at position 26) fixed against the value
+        measured at the design's corpus (MAX_ITER 500)."""
         module = _module()
         lock = module._LOCKS[MANDELBROT_KEY]
         program = _analyzed_mandelbrot()
@@ -2218,8 +2223,10 @@ class MandelbrotOutInoutTests(unittest.TestCase):
                          lock["mechanism_census"])
         self.assertEqual(31, lock["call_edge_count"])
         self.assertEqual(999, lock["total_nodes"])
-        self.assertNotEqual("d" * 1, lock["interface_sha256"][26])
-        self.assertEqual("c", lock["interface_sha256"][26])
+        self.assertNotEqual("d", MANDELBROT_DESIGN_CORPUS_INTERFACE_SHA256[26])
+        self.assertEqual("c", MANDELBROT_DESIGN_CORPUS_INTERFACE_SHA256[26])
+        self.assertNotEqual(MANDELBROT_DESIGN_CORPUS_INTERFACE_SHA256,
+                            lock["interface_sha256"])
 
     def test_authenticates_the_seed_attached_identity(self):
         module = _module()
@@ -2284,9 +2291,9 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         others = [entry for entry in references if not entry[-1]]
         self.assertEqual(
             [(111, "mandelbrot_df64", 63, "z_final",
-              "271:22-271:29", "builtin", "271:5-271:40"),
+              "272:22-272:29", "builtin", "272:5-272:40"),
              (111, "mandelbrot_df64", 63, "z_final",
-              "271:31-271:38", "builtin", "271:5-271:40")],
+              "272:31-272:38", "builtin", "272:5-272:40")],
             [(function.id, function.name, node.symbol_id,
               node.symbol.name, module._span(node), parent.kind,
               module._span(chain[-1]))
@@ -2301,13 +2308,13 @@ class MandelbrotOutInoutTests(unittest.TestCase):
         self.assertEqual(MANDELBROT_CALL_COUNT, len(calls))
         expected = [
             ("computeValueAt_df64", "transformCoords_df64",
-             (120, 121), "320:5-320:78"),
+             (120, 121), "321:5-321:78"),
             ("computeValueAt_df64", "mandelbrot_df64",
-             (122, 123, 124, 125, 126, 127), "324:5-324:69"),
-            ("main", "getPOI", (154, 155), "374:5-374:31"),
-            ("main", "transformCoords_df64", (163, 164), "388:9-388:85"),
+             (122, 123, 124, 125, 126, 127), "325:5-325:69"),
+            ("main", "getPOI", (154, 155), "375:5-375:31"),
+            ("main", "transformCoords_df64", (163, 164), "389:9-389:85"),
             ("main", "mandelbrot_df64",
-             (157, 158, 159, 160, 161, 162), "389:9-389:102"),
+             (157, 158, 159, 160, 161, 162), "390:9-390:102"),
         ]
         for (function, node, chain, index), (owner, callee, arg_ids,
                                              stmt_span) in zip(calls, expected):
@@ -2390,7 +2397,7 @@ class MandelbrotOutInoutTests(unittest.TestCase):
             module.authenticate_out_inout_admission(
                 _foreign(), _hash(FOREIGN_SOURCE), MANDELBROT_PROFILE)
         message = str(raised.exception)
-        self.assertIn("getPOI out vec2 cX_df/cY_df at 116:24/116:40", message)
+        self.assertIn("getPOI out vec2 cX_df/cY_df at 117:24/117:40", message)
         self.assertIn("mandelbrot_df64 out float smoothIter", message)
         self.assertIn("are the sole admitted parameters", message)
 
@@ -2533,7 +2540,7 @@ class MandelbrotOutInoutTests(unittest.TestCase):
                 while stack:
                     node = stack.pop()
                     if (node.kind == "id" and node.symbol_id == 63
-                            and node.span.start_line == 271
+                            and node.span.start_line == 272
                             and node.span.start_column == 22):
                         object.__setattr__(node, "symbol_id", 64)
                     stack.extend(node.children)

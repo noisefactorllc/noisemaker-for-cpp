@@ -22,7 +22,7 @@ const key = "classicNoisedeck/effects:effects",
     "tools/glslcpp/corpus/" +
     rev +
     "/sources/classicNoisedeck/effects/effects.glsl",
-  srcSha = "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c",
+  srcSha = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457",
   factoryName = "canonicalFactory7",
   nextFactory = "canonicalFactory8",
   factorySha =

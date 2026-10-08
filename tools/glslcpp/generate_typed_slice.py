@@ -75,8 +75,9 @@ if __package__ in (None, ""):
         prove_fixed_grid_counter_store,
         source_provenance_error as fixed_grid_source_provenance_error)
     from tools.glslcpp.frontend.refract_compatibility import (
+        HISTORICAL_TRANSFORM as REFRACT_HISTORICAL_COMPATIBILITY_TRANSFORM,
         TRANSFORM as REFRACT_COMPATIBILITY_TRANSFORM,
-        apply_refract_truthy_vector_noops)
+        apply_refract_truthy_vector_noops, apply_refract_vector_conditional_keeps)
     from tools.glslcpp.frontend.crt_compatibility import (
         CRT_KEY, TRANSFORM as CRT_COMPATIBILITY_TRANSFORM,
         apply_crt_metal_sine, authenticate_crt_metal_sine)
@@ -514,8 +515,9 @@ else:
         prove_fixed_grid_counter_store,
         source_provenance_error as fixed_grid_source_provenance_error)
     from .frontend.refract_compatibility import (
+        HISTORICAL_TRANSFORM as REFRACT_HISTORICAL_COMPATIBILITY_TRANSFORM,
         TRANSFORM as REFRACT_COMPATIBILITY_TRANSFORM,
-        apply_refract_truthy_vector_noops)
+        apply_refract_truthy_vector_noops, apply_refract_vector_conditional_keeps)
     from .frontend.crt_compatibility import (
         CRT_KEY, TRANSFORM as CRT_COMPATIBILITY_TRANSFORM,
         apply_crt_metal_sine, authenticate_crt_metal_sine)
@@ -1191,15 +1193,15 @@ DEGAUSS_CANONICAL_FACTORY = "canonicalFactory45"
 DEGAUSS_CANONICAL_FACTORY_TEXT_SHA256 = "f515a7ac409c98fc420d9fa9a7e460eb37018b34e3be40419191fc7655a29c38"
 DEGAUSS_CANONICAL_RUNTIME_SHA256 = "e605746c74e0e60e513724669f948b353caca4d3c427f339950d5dc98815ab56"
 DEGAUSS_TAU_F32_BITS = 0x40C90FDB
-DEGAUSS_FUNCTIONS_SHA256 = "f68d742e44e341c1332f8c37ac8544aaa8c5bef979e496a27d45ac28ba48f95a"
-DEGAUSS_WHOLE_SHA256 = "73e7e3e3b5e0b7ee9b4e1558d51fc14a01e9820c89674a0b5e42e568bec8d13d"
-DEGAUSS_INTERFACE_SHA256 = "6ceb3a3a3c7b0263b29d9950790bbe24b186759a4048b593b0a5447b733ae227"
+DEGAUSS_FUNCTIONS_SHA256 = "b806b6ce4f98eae3438bc0b01ed3fe0a3aa1f1d1c9a6186c8d18da0675c878d0"
+DEGAUSS_WHOLE_SHA256 = "3079146057f6cc68f832636748032e32777c84b0d2e36a6843ea9c2a0542d3f6"
+DEGAUSS_INTERFACE_SHA256 = "340f0a92cde57c79ef4837ca78db2397a163df5ea5d6c3521aa2e8cda1d52ffc"
 DEGAUSS_FUNCTION_PROFILES = (
     (52, "as_u32", 1, "5b794fbe001df4116421749d5d0378b6088169d370876fc27757e01ba234b387"),
     (53, "clamp01", 1, "4c77ec274b621bf6b9621b72dff5cf2653f468fd08610b13d16d2d4e301c5114"),
     (54, "compute_noise_value", 14, "76e9489c1e667d2906e040ed25e707f5cea3bd15c27eade92078c466fd6b8fdf"),
     (55, "freq_for_shape", 5, "7c20f25c092dbdd8b75891e74a498022a3a68a74dd8c9aa93a1f8f95ce71cdd9"),
-    (56, "main", 27, "e7a5c14a35384ba7174f8af83b428fa412b855678b9d626a7b79a9c5779b04d5"),
+    (56, "main", 27, "3c8730faa12ca40fd6bffb8af527bd4cdd37b6ba81de6fb5471bd3a559595976"),
     (57, "mod289_vec3", 1, "6a515431e7e453f7106fbb56e352302de98d21ff1578db537ea9b24e53aafbb6"),
     (58, "mod289_vec4", 1, "26e443d7caf37c61b0e1b51fd96ce8f7a0a777e5cbf533487c3c13bc996196c9"),
     (59, "normalized_sine", 1, "4056ee25e08f248238b5308b0a724c80885a04df8b3708e2af2c9b8411efe328"),
@@ -1209,17 +1211,17 @@ DEGAUSS_FUNCTION_PROFILES = (
     (63, "simplex_noise", 46, "79091353afa3432b82c5aece16c4e4e11cf08de40368e05e544c8509b315fc32"),
     (64, "singularity_mask", 9, "8a9cd929ba8eae78b11714183c7afc78c5e2c6c31abf72ba51cd50ed6bf03de8"),
     (65, "taylor_inv_sqrt", 1, "e4fa063d2b026b8ba09a7b0ef42a05ec3564913f1750b997848821faa9412536"),
-    (66, "warped_channel_value", 14, "e730903759accd745d885164f16cde91477a91a2c7589685b8017d573030dabb"),
+    (66, "warped_channel_value", 14, "c05c05eac4e91989fea6873ed21b27185b4f970d1deb78e3aa4b9430333a3601"),
     (67, "wrap_float", 4, "f0915a8e46372c29b4cd2dbbf74f1771242d1ba0496f1f4ef4434cf61c4abe74"),
     (68, "wrap_index", 4, "7c96a9fda62b2c97b48d061a9c90305f6b5799235ebc663045e774e836de29db"),
 )
 DEGAUSS_ENTRY = {
     "effect_id": "filter/degauss", "program": "degauss",
     "program_key": DEGAUSS_KEY, "status": "generated",
-    "source": "sources/filter/degauss/degauss.glsl", "raw_bytes": 10803,
-    "raw_sha256": "915f208e47a5bf012a3e0583e03a7ee888b7103d5834b386d32c916b8715050c",
-    "normalized_bytes": 10512,
-    "normalized_sha256": "7d413b240236506511f405319025281a92eb1108c6193ef26a6d0d7bcbae7560",
+    "source": "sources/filter/degauss/degauss.glsl", "raw_bytes": 11490,
+    "raw_sha256": "cfefff702ef78db421c088a3b679da2c576b7f4484c777f1d414c66aef0c1a1a",
+    "normalized_bytes": 10614,
+    "normalized_sha256": "a0a42b0db6bae308295657d5540989bba939ec7cc99f121d97e5d98fd3cca304",
     "outputs": ["fragColor"], "varyings": [], "pass_index": 0,
     "pass_name": "main", "runtime_key": DEGAUSS_KEY,
 }
@@ -1618,7 +1620,7 @@ def load_slice(repository: pathlib.Path = _ROOT) -> dict[str, Any]:
     if data["numeric_literal_contracts"] != {"filter/scatter:scatterJitter": "source-double"}:
         raise GeneratorError("typed slice numeric literal contract drift")
     if data["compatibility_transforms"] != {
-            "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
+            "classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
             "classicNoisedeck/refract:refract": REFRACT_COMPATIBILITY_TRANSFORM,
             "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             CRT_KEY: CRT_COMPATIBILITY_TRANSFORM,
@@ -2973,9 +2975,130 @@ def apply_compatibility_transform(typed, transform_name: str):
             raise GeneratorError(f"{typed.key}: {error}") from error
     if transform_name == REFRACT_COMPATIBILITY_TRANSFORM:
         try:
+            return apply_refract_vector_conditional_keeps(typed)
+        except ValueError as error:
+            raise GeneratorError(f"{typed.key}: {error}") from error
+    if transform_name == REFRACT_HISTORICAL_COMPATIBILITY_TRANSFORM:
+        try:
             return apply_refract_truthy_vector_noops(typed)
         except ValueError as error:
             raise GeneratorError(f"{typed.key}: {error}") from error
+    if transform_name == "coalesce-blend-conditional-keep-v1":
+
+        def declarations(statements, name: str):
+            result = []
+            for statement_value in statements:
+                for item in statement_value.expressions:
+                    if item.kind == "declaration" and item.symbol is not None and item.symbol.name == name:
+                        result.append(item)
+                result.extend(declarations(statement_value.children, name))
+            return result
+
+        if typed.key != "classicNoisedeck/coalesce:coalesce":
+            raise GeneratorError(
+                f"{typed.key}: coalesce-blend-conditional-keep-v1 is pinned to classicNoisedeck/coalesce:coalesce")
+        transformed = typed
+        conditional_matches = []
+        conditionals = {
+            2: ("color2", 0.0, "max"),
+            3: ("color2", 1.0, "min"),
+            7: ("color2", 1.0, "min"),
+            15: ("color1", 1.0, "min"),
+        }
+
+        def mode_guard(value, mode_id: int) -> int | None:
+            if value.kind != "if" or not value.expressions:
+                return None
+            guard = value.expressions[0]
+            if guard.kind != "binary" or guard.operator != "==" or len(guard.children) != 2:
+                return None
+            for identifier, literal in ((guard.children[0], guard.children[1]),
+                                        (guard.children[1], guard.children[0])):
+                if (identifier.kind == "id" and identifier.symbol_id == mode_id
+                        and literal.kind == "literal" and isinstance(literal.literal_value, int)):
+                    return literal.literal_value
+            return None
+
+        def rewrite_blend(function):
+            nonlocal conditional_matches
+            exact_blend = (function.name == "blend" and function.return_type.display() == "vec3"
+                           and tuple(parameter.type.display() for parameter in function.parameters)
+                           == ("vec4", "vec4", "int", "float") and function.body)
+            if not exact_blend:
+                return function
+            parameters = {parameter.name: parameter for parameter in function.parameters}
+            if set(parameters) != {"color1", "color2", "mode", "factor"}:
+                return function
+            middle_candidates = declarations(function.body, "middle")
+            if len(middle_candidates) != 1 or middle_candidates[0].children:
+                return function
+            middle = middle_candidates[0].symbol
+            if middle is None or middle.type.display() != "vec4":
+                return function
+
+            def expression(value: TypedExpression, active_mode: int | None) -> TypedExpression:
+                nonlocal conditional_matches
+                children = tuple(expression(child, active_mode) for child in value.children)
+                current = dataclasses.replace(value, children=children) if children != value.children else value
+                expected = conditionals.get(active_mode)
+                if (expected is None or current.kind != "assign" or current.operator != "="
+                        or len(current.children) != 2 or current.children[0].kind != "id"
+                        or current.children[0].symbol_id != middle.id
+                        or current.children[1].kind != "conditional"
+                        or len(current.children[1].children) != 3):
+                    return current
+                source_name, constant, false_callee = expected
+                source = parameters[source_name]
+                condition, true_value, false_value = current.children[1].children
+                if (condition.kind != "binary" or condition.operator != "=="
+                        or len(condition.children) != 2 or true_value.kind != "id"
+                        or true_value.symbol_id != source.id or false_value.kind != "builtin"
+                        or false_value.callee != false_callee):
+                    return current
+                equality_matches = False
+                for identifier, constructor in ((condition.children[0], condition.children[1]),
+                                                (condition.children[1], condition.children[0])):
+                    equality_matches = equality_matches or (
+                        identifier.kind == "id" and identifier.symbol_id == source.id
+                        and constructor.kind == "construct"
+                        and constructor.constructor_type is not None
+                        and constructor.constructor_type.display() == "vec4"
+                        and len(constructor.children) == 1
+                        and constructor.children[0].kind == "literal"
+                        and constructor.children[0].literal_value == constant)
+                if not equality_matches:
+                    return current
+                conditional_matches.append((active_mode, source_name, constant, false_callee))
+                # Only the false arm writes `middle` in the authority's JavaScript,
+                # so a true vector equality keeps the destination unchanged.
+                kept = dataclasses.replace(
+                    current.children[1], children=(condition, current.children[0], false_value))
+                return dataclasses.replace(current, children=(current.children[0], kept))
+
+            def statement(value, active_mode: int | None = None):
+                guarded_mode = mode_guard(value, parameters["mode"].id)
+                child_mode = guarded_mode if guarded_mode is not None else active_mode
+                expressions = tuple(expression(item, active_mode) for item in value.expressions)
+                children = tuple(statement(child, child_mode) for child in value.children)
+                return dataclasses.replace(value, expressions=expressions, children=children)
+
+            return dataclasses.replace(function, body=tuple(statement(item) for item in function.body))
+
+        transformed = dataclasses.replace(
+            transformed, functions=tuple(rewrite_blend(function) for function in transformed.functions))
+        expected_conditionals = sorted(
+            (mode, source_name, constant, false_callee)
+            for mode, (source_name, constant, false_callee) in conditionals.items())
+        if sorted(conditional_matches) != expected_conditionals:
+            matched_modes = sorted(item[0] for item in conditional_matches)
+            raise GeneratorError(
+                f"{typed.key}: coalesce-blend-conditional-keep-v1 expected exact vector-conditional modes "
+                f"[2, 3, 7, 15], got {matched_modes}")
+        return transformed
+
+    # Historical only: the pre-26d6f42 authority aliased `st` into `leftUV`
+    # and `rightUV`, and before 8ae8e2a its vector-equality arms were
+    # always-truthy no-ops. Frozen milestone reconstructions select this.
     if transform_name == "coalesce-uv-alias-v1":
         matches = 0
 
@@ -6547,7 +6670,10 @@ def validate_capabilities(typed, declared: tuple[str, ...] | list[str], *,
                 BUDDHABROT_MAX_TRIP_COUNT if typed.key in BUDDHABROT_KEYS
                 else (1000 if typed.key == JULIA_KEY
                       else (1537 if typed.key == RUNTIME_LOOP_BOUND_ROLL_KEY
-                            else COUNTED_FOR_V1_MAX_TRIP_COUNT)))
+                            # MAX_ITER is 2048 since the reference raised the
+                            # GLSL cap to match its WGSL (5976b7a6).
+                            else (2048 if typed.key == LOG_ADMISSION_MANDELBROT_KEY
+                                  else COUNTED_FOR_V1_MAX_TRIP_COUNT))))
             max_charge = (
                 BUDDHABROT_MAX_ENTRYPOINT_CHARGE if typed.key in BUDDHABROT_KEYS
                 else COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE)

@@ -167,6 +167,7 @@ add_executable(noisemaker-cpu-tests
   tests/test_mrt_kernel_and_pass_runner.cpp
   tests/test_generated_kernels.cpp
   tests/test_typed_slice.cpp
+  tests/fixtures/historical/authority_26d6f42_kernels.cpp
   tests/fixtures/historical/retired_kernels.cpp
   tests/fixtures/historical/reverb_kernel.cpp
   tests/fixtures/historical/osd_kernel.cpp

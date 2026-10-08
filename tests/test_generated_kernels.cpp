@@ -1,6 +1,7 @@
 #include "test_harness.hpp"
 #include "corpus_census.hpp"
 #include "fixtures/historical/retired_kernels.hpp"
+#include "fixtures/historical/authority_26d6f42_kernels.hpp"
 #include "fixtures/historical/osd_kernel.hpp"
 #include "fixtures/historical/parallax_kernel.hpp"
 
@@ -4741,8 +4742,9 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
 [[nodiscard]] noisemaker::BoundKernel task25_direct_bind(
     const Task25NativeCase& fixture,
     const noisemaker::glsl::Bindings& bindings) {
+  // Lens captures predate 8ae8e2a's vector equality.
   if (fixture.lens)
-    return noisemaker::generated::
+    return noisemaker::historical_generated::
         bind_classicNoisedeck_lensDistortion_lensDistortion(bindings);
   return noisemaker::generated::
       bind_filter_prismaticAberration_prismaticAberration(bindings);
@@ -4751,8 +4753,10 @@ constexpr std::array<std::string_view, 11> kTask25PrismRequiredBindings{
 [[nodiscard]] noisemaker::Surface task25_render(
     const Task25NativeCase& fixture, const noisemaker::Surface& input) {
   return noisemaker::run_pass(
-      noisemaker::generated::bind(
-          fixture.key, task25_bindings(fixture, input)),
+      fixture.lens
+          ? task25_direct_bind(fixture, task25_bindings(fixture, input))
+          : noisemaker::generated::bind(
+                fixture.key, task25_bindings(fixture, input)),
       fixture.width, fixture.height, task25_f32(fixture.time_bits), 43.0f, 37U,
       1.0f / 60.0f);
 }
@@ -23312,17 +23316,18 @@ void shared_native_integration_require_effects() {
     const noisemaker::BoundKernel public_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, public_input);
-      return noisemaker::generated::bind(effects188_oracle::kProgramKey, bindings);
+      // Captured from the e24c844f source, before 5976b7a6 changed Effects.
+      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
     }();
     const noisemaker::BoundKernel direct_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, direct_input);
-      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
+      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
     }();
     const noisemaker::BoundKernel repeat_kernel = [&]() {
       noisemaker::glsl::Bindings bindings =
           shared_native_effects_bindings(binding_fixture, repeat_input);
-      return noisemaker::generated::bind_classicNoisedeck_effects_effects(bindings);
+      return noisemaker::historical_generated::bind_classicNoisedeck_effects_effects(bindings);
     }();
     const noisemaker::Surface public_output =
         noisemaker::run_pass(public_kernel, fixture.width, fixture.height);
@@ -27999,17 +28004,18 @@ TEST(typed_color_lab_native_public_direct_repeat_exact_parity_and_input_lifetime
     const auto public_kernel = color_lab_native::bind_after_scope(
         [&] { return color_lab_native::bindings(fixture, c, public_input); },
         [](const noisemaker::glsl::Bindings& b) {
-          return noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, b);
+          // ColorLab captures predate 8ae8e2a's vector equality.
+          return noisemaker::historical_generated::bind_classicNoisedeck_colorLab_colorLab(b);
         });
     const auto direct_kernel = color_lab_native::bind_after_scope(
         [&] { return color_lab_native::bindings(fixture, c, direct_input); },
         [](const noisemaker::glsl::Bindings& b) {
-          return noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(b);
+          return noisemaker::historical_generated::bind_classicNoisedeck_colorLab_colorLab(b);
         });
     const auto repeat_kernel = color_lab_native::bind_after_scope(
         [&] { return color_lab_native::bindings(fixture, c, repeat_input); },
         [](const noisemaker::glsl::Bindings& b) {
-          return noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(b);
+          return noisemaker::historical_generated::bind_classicNoisedeck_colorLab_colorLab(b);
         });
     const auto public_output = noisemaker::run_pass(public_kernel, fixture.width, fixture.height, c.time, static_cast<float>(c.seed));
     const auto direct_output = noisemaker::run_pass(direct_kernel, fixture.width, fixture.height, c.time, static_cast<float>(c.seed));
@@ -28058,12 +28064,12 @@ TEST(typed_color_lab_native_binding_abi_catalog_and_mutation_metadata) {
   const auto public_kernel = color_lab_native::bind_after_scope(
       [&] { return color_lab_native::bindings(fixture, c, input, {}, {}, true); },
       [](const noisemaker::glsl::Bindings& b) {
-        return noisemaker::generated::bind(noisemaker_color_lab_oracle::kProgramKey, b);
+        return noisemaker::historical_generated::bind_classicNoisedeck_colorLab_colorLab(b);
       });
   const auto direct_kernel = color_lab_native::bind_after_scope(
       [&] { return color_lab_native::bindings(fixture, c, input, {}, {}, true); },
       [](const noisemaker::glsl::Bindings& b) {
-        return noisemaker::generated::bind_classicNoisedeck_colorLab_colorLab(b);
+        return noisemaker::historical_generated::bind_classicNoisedeck_colorLab_colorLab(b);
       });
   const color_lab_native::ExpectedSurface expected{fixture.width, fixture.height, fixture.expected_f32, fixture.expected_rgba8};
   color_lab_native::require_exact(noisemaker::run_pass(public_kernel, fixture.width, fixture.height, c.time, static_cast<float>(c.seed)), expected, "ColorLab extras public");

@@ -35,8 +35,8 @@ RAW_SOURCE_SHA256 = "d9675b5de9c329aa619f4ef68129611faac8cbe515b6e80aa8528c593a4
 NORMALIZED_SOURCE_SHA256 = "bff1818ad5db7e637a01d6f10476cebba8ac04d6ffdf467d02508fa23671757e"
 CANONICAL_FACTORY_SHA256 = "b404a801dea1ba438da7bad20d7cae059d0aa7f25c76610221ca07546fdfe2f6"
 INTERFACE_SHA256 = "36d7815ce5aa9efedf3144e199ae7b49dc5819c751475b815708424269033229"
-TYPED_IR_SHA256 = "4c9e125cd4dda55f2688c362a5ab7e81acf1b08c9e284bc5c25e04da39020188"
-WHOLE_PROGRAM_SHA256 = "93329ab73d54ff1eb3b8ec43da8570365d58de8caaa1a36252ef1ad30a709de2"
+TYPED_IR_SHA256 = "fd8038f0384e11f71499f6dd1aeb2c9620fdae3747d3742cd02ed5201a436865"
+WHOLE_PROGRAM_SHA256 = "24a38b183300b5e2516f6c2bca021e42729a5385bacc350639df1be4b37c43c8"
 
 CELLREFRACT_KEY = "classicNoisedeck/cellRefract:cellRefract"
 CELLREFRACT_SOURCE_PROFILE = "cellrefract-convolve-v1"
@@ -58,12 +58,12 @@ KALEIDO_WHOLE_PROGRAM_SHA256 = "3511527d77fdcef9859e5e751ea244069b0acd37816401b5
 
 EFFECTS_KEY = "classicNoisedeck/effects:effects"
 EFFECTS_SOURCE_PROFILE = "effects-convolve-v1"
-EFFECTS_RAW_SOURCE_SHA256 = "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c"
-EFFECTS_NORMALIZED_SOURCE_SHA256 = "cce2f30177586f4cdabab1e1741a99d1470f49db79c60dc20df9ddbcac9bdfda"
+EFFECTS_RAW_SOURCE_SHA256 = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457"
+EFFECTS_NORMALIZED_SOURCE_SHA256 = "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150"
 EFFECTS_CANONICAL_FACTORY_SHA256 = "ebf43ff45f4a3568854da02b41baf6b1a25efd2bc5bbf2d8cf78f0a11e3dd81a"
-EFFECTS_INTERFACE_SHA256 = "feeb85a578bad5296e9c345401f7f1a6055da9aa6f5f476c346137f53cdeef52"
-EFFECTS_TYPED_IR_SHA256 = "d06fd4218bd7513a5aecd343bc3bb9d83dfb6b8fba011626fd5bb80707d67579"
-EFFECTS_WHOLE_PROGRAM_SHA256 = "b5176c5224f3c44442f2bb28f5e3917b937123430888aa649a8d86301b92d581"
+EFFECTS_INTERFACE_SHA256 = "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b"
+EFFECTS_TYPED_IR_SHA256 = "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58"
+EFFECTS_WHOLE_PROGRAM_SHA256 = "9c6dcd15e6014a8dae8fc74579f1c8dd0ee483b84e5fb9a7a3332d8f2d5c03e3"
 
 _BINDINGS = (
     "inputTex:sampler2D", "resolution:vec2", "tileOffset:vec2",
@@ -76,6 +76,11 @@ _CALLER_PROFILES = (
     (40, "derivY", 60, "deriv_y",
      (0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, -1.0, 0.0)),
 )
+# The refract compatibility transform leaves each guarded arm as
+# `middle = (source == vec4(constant)) ? middle : builtin(...)`. Historical
+# reconstructions select "noop", the pre-8ae8e2a `middle = middle`.
+_COMPATIBILITY_RHS = "kept-conditional"
+
 _COMPATIBILITY = {
     # mode: source id, equality constant, false builtin, predicate offsets,
     # false-arm offsets
@@ -591,14 +596,36 @@ def _compatibility_sites(program: TypedProgram,
                     or len(block.children[0].expressions) != 1):
                 return None
             assignment = block.children[0].expressions[0]
+            source_id, constant, builtin, condition_offsets, false_offsets = _COMPATIBILITY[mode]
             if (assignment.kind != "assign" or assignment.operator != "="
                     or len(assignment.children) != 2
                     or assignment.children[0].kind != "id"
-                    or assignment.children[0].symbol_id != 47
-                    or assignment.children[1].kind != "id"
-                    or assignment.children[1].symbol_id != 47):
+                    or assignment.children[0].symbol_id != 47):
                 return None
-            source_id, constant, builtin, condition_offsets, false_offsets = _COMPATIBILITY[mode]
+            if _COMPATIBILITY_RHS == "noop":
+                if (assignment.children[1].kind != "id"
+                        or assignment.children[1].symbol_id != 47):
+                    return None
+            elif _COMPATIBILITY_RHS == "kept-conditional":
+                if (assignment.children[1].kind != "conditional"
+                        or len(assignment.children[1].children) != 3):
+                    return None
+                condition, kept, false_value = assignment.children[1].children
+                if (kept.kind != "id" or kept.symbol_id != 47
+                        or false_value.kind != "builtin" or false_value.callee != builtin
+                        or condition.kind != "binary" or condition.operator != "=="
+                        or len(condition.children) != 2
+                        or not any(
+                            left.kind == "id" and left.symbol_id == source_id
+                            and right.kind == "construct" and right.constructor_type is not None
+                            and right.constructor_type.display() == "vec4"
+                            and len(right.children) == 1 and right.children[0].kind == "literal"
+                            and right.children[0].literal_value == constant
+                            for left, right in ((condition.children[0], condition.children[1]),
+                                                (condition.children[1], condition.children[0])))):
+                    return None
+            else:
+                return None
             sites.append(RefractCompatibilitySiteProof(
                 blend_mode=mode, guard_span=guard.span,
                 assignment_statement_span=block.children[0].span,

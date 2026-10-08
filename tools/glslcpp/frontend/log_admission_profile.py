@@ -7,21 +7,22 @@ rungs from CLEAN at both authorities** behind only KNOWN mechanisms --
 
 * **rung 1 (mechanism A, the const-global-literal bound shape):** the
   iteration loop ``for (int n = 0; n < MAX_ITER; n++)`` (normalized
-  ``226:5-261:6``, owner ``mandelbrot_df64``) is bounded by the const global
-  ``const int MAX_ITER = 500;`` (symbol 24, normalized ``31:1-31:26``).
+  ``227:5-262:6``, owner ``mandelbrot_df64``) is bounded by the const global
+  ``const int MAX_ITER = 2048;`` (symbol 24, normalized ``32:1-32:27``; 500
+  until the reference raised the GLSL cap to match its WGSL at 5976b7a6).
   The bound proof rides the EXISTING dict-keyed module -- a new key in
   ``loop_proof.py``'s ``_SOURCE_GLOBAL_LITERAL_INT_PROFILES`` (the Task-23
   shape, carrier auto-supplied from the key, row stays minimal). This
   module does NOT add that key; it freezes the complete dict-entry data as
   ``counted_for_seed_contract`` (the parallax-lane pattern) and re-derives
   the seed-attached tree itself, so this record is the integration slice's
-  one-move landing source. **The loop budget FITS the current caps** --
-  measured trips 500, product 500, charge 1500 against
-  ``COUNTED_FOR_V1_MAX_TRIP_COUNT/LEXICAL_PRODUCT/ENTRYPOINT_CHARGE`` of
-  512/262144/262656: the loop-proof study's "needs budget increase"
-  verdict is obsolete and must not be planned against.
+  one-move landing source. Measured trips 2048, product 2048, charge 6144:
+  the trips exceed ``COUNTED_FOR_V1_MAX_TRIP_COUNT`` (512), so the generator
+  and emitter carry a per-key 2048 trip cap for this program (as for julia
+  and roll); product and charge fit ``COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT``
+  and ``COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE`` (262144/262656).
 * **rungs 2-3 (mechanisms C+D, out/inout + bare void calls):** the
-  validator's next rejection after the seed is ``116:24: unsupported
+  validator's next rejection after the seed is ``117:24: unsupported
   parameter direction out``; those mechanisms' frontend home is
   ``out_inout_admission_profile`` (newton's module, extended per-key with
   mandelbrot's TEN out parameters across THREE functions and FIVE bare
@@ -35,7 +36,7 @@ rungs from CLEAN at both authorities** behind only KNOWN mechanisms --
   (44 frozen entries) and the emitter's builtin arms -- so a ``log`` node
   dies at the validator's ``value.callee not in _BUILTINS`` fall-through
   and at the emitter's generic arm (the design's ladder measured the
-  emitter rejection at ``273:24``). **The tanh precedent is frontend-side
+  emitter rejection at ``274:24``). **The tanh precedent is frontend-side
   and is exactly this shape**: ``tanh`` too is absent from every table,
   ``curl_vector_math_profile`` authenticates the site, and BOTH
   authorities carry node-identity arms (the validator's
@@ -49,11 +50,11 @@ rungs from CLEAN at both authorities** behind only KNOWN mechanisms --
 **The three sites** (all scalar ``float -> float``, arity one, every parent
 a ``binary`` node):
 
-* ``mandelbrot_df64 273:24-273:33`` -- ``log(mag2)`` in the df64 escape
+* ``mandelbrot_df64 274:24-274:33`` -- ``log(mag2)`` in the df64 escape
   smoothing (``var log_zn = log(mag2) * 0.5`` in the JS factory);
-* ``mandelbrot_df64 274:20-274:38`` -- ``log(log_zn / LOG2)``, the nested
+* ``mandelbrot_df64 275:20-275:38`` -- ``log(log_zn / LOG2)``, the nested
   log-of-a-log of the smoothing denominator;
-* ``outputDistance 295:30-295:38`` -- ``log(mag)`` in the distance
+* ``outputDistance 296:30-296:38`` -- ``log(mag)`` in the distance
   estimator (NOT in the escape smoothing -- the design's prose placed only
   two of the three sites there).
 
@@ -110,7 +111,7 @@ from the design's §2.3 prose (recorded so nobody "fixes" them back):
   mandelbrot_df64 carries **SIX** out parameters and the owners are
   **THREE** functions (the total of ten is right);
 * the design's "3 bare void-call statements" missed ``main``'s own
-  ``transformCoords_df64`` (``388:9``) and ``mandelbrot_df64`` (``389:9``)
+  ``transformCoords_df64`` (``389:9``) and ``mandelbrot_df64`` (``390:9``)
   calls: the true census is **FIVE** (the JS factory has five
   ``__out__``-destructuring call sites);
 * the design's "994 nodes" counts function bodies only; the house census
@@ -302,7 +303,7 @@ class CountedForSeedContract(NamedTuple):
     Field-for-field a ``_SOURCE_GLOBAL_LITERAL_INT_PROFILES`` entry: patching
     ``_asdict()`` into that dict and passing the capability through
     ``analyze_program`` closes rung 1 (verified against the live tree; the
-    next rejection is then ``116:24: unsupported parameter direction out``,
+    next rejection is then ``117:24: unsupported parameter direction out``,
     mechanism C's).
     """
 
@@ -819,8 +820,8 @@ def _no_seed_write_holds(program: TypedProgram,
 
 def _seed_reads_holds(program: TypedProgram, lock: dict) -> bool:
     """Exactly the two frozen id-node reads: `min(iterations, MAX_ITER)` in
-    main at 368:35-368:43 and the loop bound in mandelbrot_df64 at
-    226:25-226:33."""
+    main at 369:35-369:43 and the loop bound in mandelbrot_df64 at
+    227:25-227:33."""
     identifier = lock["seed"]["symbol_id"]
     reads = []
     for function, node, _ in _program_nodes(program):
@@ -1004,36 +1005,36 @@ _BINDING_TABLE = (
 )
 
 _MAIN_BODY = (
-    ("decl", "367:5-367:53"),
-    ("decl", "368:5-368:45"),
-    ("decl", "369:5-369:43"),
-    ("decl", "370:5-370:44"),
-    ("decl", "373:5-373:23"),
-    ("expr", "374:5-374:31"),
-    ("decl", "376:5-376:17"),
-    ("if", "378:5-402:6"),
-    ("if", "405:5-407:6"),
-    ("expr", "409:5-409:40"),
+    ("decl", "368:5-368:53"),
+    ("decl", "369:5-369:45"),
+    ("decl", "370:5-370:43"),
+    ("decl", "371:5-371:44"),
+    ("decl", "374:5-374:23"),
+    ("expr", "375:5-375:31"),
+    ("decl", "377:5-377:17"),
+    ("if", "379:5-403:6"),
+    ("if", "406:5-408:6"),
+    ("expr", "410:5-410:40"),
 )
 
 _LOCKS = {
     MANDELBROT_KEY: {
         "profile": MANDELBROT_PROFILE,
         "source_path": "sources/synth/mandelbrot/mandelbrot.glsl",
-        "raw_bytes": 14855,
+        "raw_bytes": 14931,
         "raw_sha256":
-            "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615",
-        "normalized_bytes": 10414,
+            "6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd",
+        "normalized_bytes": 10416,
         "normalized_sha256":
-            "c062ee7852d0bfab69ca1e2ead6ad68d95dfa5fda9cff8232254b38b34c311a9",
+            "4a28158eff2b0f94d9568c6a06aa61a924e51b4901cb59698a8a4498dd782986",
         "functions_sha256":
-            "5b24f4c4818b8ffee46ca02f752e4e19223ac97e677cccce310510af9a274a3d",
+            "071753fc9985b4c09c1cb247522106ecc8a814b4e7a9a05f28acd302c3e6985e",
         "whole_sha256":
-            "d6a5840667d7293fa428a88eef00f8bcf4612a733958e738628c876ed210ebd3",
+            "48a5b1c3f5fc6238a469521c8da9337e2683c3d9b371b5150c1810427aceb78b",
         # The design's §2.3 figure carried a one-character typo (d for c at
         # position 26); the measured value is frozen here.
         "interface_sha256":
-            "2f497a1fb59406d16decbd6bb2c0a5e4e7e5536774fa7ec56a34de12de657c43",
+            "e8c746cd6e89dddbcc041f4498036036b171f9b3f9b24e2fd480f631ce92e124",
         "defines": (),
         "function_count": 24,
         "function_inventory": _FUNCTION_INVENTORY,
@@ -1050,86 +1051,86 @@ _LOCKS = {
                       107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117,
                       118),
         "unreachable": (),
-        "counted_loop_proof": (1, 0, 1, 500, 1500, True),
+        "counted_loop_proof": (1, 0, 1, 2048, 6144, True),
         # The seed contract's post-attachment figures (loop_proof's own
         # formulas over the seed-attached tree -- see
         # counted_for_seed_contract).
         "seed_post_functions":
-            "8240975403a5fe23b71b16799b7617dece132599ccfea69b24e717710f76f39b",
+            "9df77469d8caf1799a6092f2f581aa2ad1516d715ab8737a1fb2f8e33d3bea70",
         "seed_post_whole":
-            "1ca045076337edb3bfcb5e618e0eb83f9633858eafb91176a2e713b4be28314e",
+            "673a127ed44de1e7fa0ce7ea88db6a575035c58265f9f21323f9edf821a2b44d",
         "declaration_count": 24,
         "binding_table": _BINDING_TABLE,
         "seed": {
             "symbol_id": 24,
             "name": "MAX_ITER",
-            "value": 500,
-            "literal": "500",
-            "span": "31:1-31:26",
+            "value": 2048,
+            "literal": "2048",
+            "span": "32:1-32:27",
             "declaration_sha256":
-                "6621dc55855d3b645e0503d3128fed27ea927063835c31c5c1c68ab9c9f7e967",
+                "a465c277542f439b46b2ea1a2682fcc10e3cd62bf6581d0c72caf026cb3c30b1",
             "symbol_sha256":
-                "9a337dcb738d55051edb060319fe19c29d37cbb21f1ba7d831c579c51c1da13a",
+                "0a4f9b17cd7ce508dfc3137087dc7a9f401520437743a57bf379abe75f110222",
         },
         "globals": (("PI", 20, "float", "3.14159265359"),
                     ("TAU", 21, "float", "6.28318530718"),
                     ("BAILOUT", 22, "float", "256.0"),
                     ("LOG2", 23, "float", "0.6931471805599453"),
-                    ("MAX_ITER", 24, "int", "500")),
-        "reads": (("main", 110, 368, 35, 368, 43),
-                  ("mandelbrot_df64", 111, 226, 25, 226, 33)),
+                    ("MAX_ITER", 24, "int", "2048")),
+        "reads": (("main", 110, 369, 35, 369, 43),
+                  ("mandelbrot_df64", 111, 227, 25, 227, 33)),
         "iteration_loop": {
             "owner": (111, "mandelbrot_df64"),
-            "span": "226:5-261:6",
+            "span": "227:5-262:6",
             "induction_symbol_id": 173,
             "start": 0,
-            "bound": 500,
+            "bound": 2048,
             "comparison": "<",
             "update": "++",
             "bound_kind": "source-global-const-literal",
-            "trips": 500,
+            "trips": 2048,
             "depth": 1,
-            "product": 500,
-            "charge": 1500,
+            "product": 2048,
+            "charge": 6144,
         },
         "log_site_count": 3,
         # (owner_id, owner_name, argument kind, argument type, result type,
         #  parent kind, span)
         "log_shape": (
             (111, "mandelbrot_df64", "id", "float", "float", "binary",
-             "273:24-273:33"),
+             "274:24-274:33"),
             (111, "mandelbrot_df64", "binary", "float", "float", "binary",
-             "274:20-274:38"),
+             "275:20-275:38"),
             (112, "outputDistance", "id", "float", "float", "binary",
-             "295:30-295:38"),
+             "296:30-296:38"),
         ),
         # (owner_id, owner_name, span, argument span, statement span,
         #  parent kind, (call sha, argument sha, statement sha))
         "log_sites": (
-            (111, "mandelbrot_df64", "273:24-273:33", "273:28-273:32",
-             "273:9-273:40", "binary",
-             ("886cfc8a9e873cd8d3347936d39c3007692c5bea6cd867ed6454d01ec6732117",
-              "e338522f0c2c509fb325b02ac901348c4e7498dcb8bfb9ca1a5132cc15ed7b81",
-              "14c67e90ac0423e7a971e1c84df64b7ba1466f4311a0bf670bb0c2a166cdc8a4")),
-            (111, "mandelbrot_df64", "274:20-274:38", "274:24-274:37",
-             "274:9-274:46", "binary",
-             ("5a744b74fc3af8073fd87b0fb3959cf1a6f06d50ea7ae4a9dee4829060a208a9",
-              "df5c68b98bea20eed0c55f4821863f5dd8c07d12ccdb48e633770968c76f83df",
-              "c9c2f0c98692685cb5a10aa1e02811bd7dfb669fb8aac07aef62a5802123bb0a")),
-            (112, "outputDistance", "295:30-295:38", "295:34-295:37",
-             "295:5-295:46", "binary",
-             ("a908733a3439b43be7d3e400a8b2ce244c093125b99a2c6bdf3aa8d31d89ad38",
-              "e7fc3c17394bb7563bdbdc408b4aada8b7d587c3b1df9f7e70cce82f4438c1a5",
-              "e93fb634a6fdc87a1fa64e3126c5bf53e1c595ab9edd87cebdfad3501434fcb6")),
+            (111, "mandelbrot_df64", "274:24-274:33", "274:28-274:32",
+             "274:9-274:40", "binary",
+             ("6c53d5a8cd8e1e0d42f548e368d7d0fea481464eb39933150fec2db5ce01743e",
+              "054a94209a4565a80b95204a50b90a8cc35b0b5ed9304c30d25bced0f964cc93",
+              "27d86a36383ab6667f6bbe4c4fa32cdd3e130e4b67018ba25c60452780ba67ad")),
+            (111, "mandelbrot_df64", "275:20-275:38", "275:24-275:37",
+             "275:9-275:46", "binary",
+             ("8b006feca9f96d8dc66826a3733b3e3b2f42f371b8ae014a244fbec9e34056ff",
+              "1cdeccb9adb5ebc85314dec82258f5b50e5f0d90e59413734e1cc6de4e562b2f",
+              "b74cd0de38140069152f8e3346ddd5492fba615f77bb2d014d3f6d4bc4fc0fcc")),
+            (112, "outputDistance", "296:30-296:38", "296:34-296:37",
+             "296:5-296:46", "binary",
+             ("055db0d322cbcbbca9b0a4a8e78f5f9534851cce5ee57f3b077f86eb85549221",
+              "1b09ac0967a3aa51870d867eadbd77759f7326107e6edd0684e0bb9ede6b64c0",
+              "cdf7cd9217f45f4065f196d89b172a7198a9bd41c4c5bdaf2736e38311ec5b48")),
         ),
         "pow_sites": (
-            (105, "getEffectiveZoom", "357:16-357:47", 2),
-            (105, "getEffectiveZoom", "359:12-359:31", 2),
+            (105, "getEffectiveZoom", "358:16-358:47", 2),
+            (105, "getEffectiveZoom", "360:12-360:31", 2),
         ),
         "zero_family": (0, 0, 0, 0),
         # (out/inout params, bare void calls, bit-ops, index expressions)
         "mechanism_census": (10, 5, 0, 0),
-        "main": (110, "main", 10, "366:1-410:2"),
+        "main": (110, "main", 10, "367:1-411:2"),
         "main_body": _MAIN_BODY,
         "total_nodes": 999,
         "total_assigns": 51,
@@ -1222,7 +1223,7 @@ def authenticate_log_admission(
             raise _profile_fail(
                 MANDELBROT_PROFILE,
                 "program key is not an admitted log admission carrier; "
-                f"{MANDELBROT_KEY} 273:24, 274:20 and 295:30 are the sole "
+                f"{MANDELBROT_KEY} 274:24, 275:20 and 296:30 are the sole "
                 "admitted log sites")
         return None
     lock = _LOCKS[program.key]

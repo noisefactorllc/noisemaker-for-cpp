@@ -146,16 +146,16 @@ _PROFILE_SHA256 = "fb4e4cbc70a5341b3bf42f9272f4084ba51d32e5b36e21813f8b694325f31
 # reachable set (8 of 28 -- glitch's check demands every function
 # reachable), and NO freq splat (glitch's `vec2 *=` site does not exist in
 # effects at all; the splat fields are per-key optional below).
-_EFFECTS_RAW_BYTES = 21087
-_EFFECTS_RAW_SHA256 = "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c"
-_EFFECTS_NORMALIZED_BYTES = 15773
-_EFFECTS_NORMALIZED_BYTES_SHA256 = "cce2f30177586f4cdabab1e1741a99d1470f49db79c60dc20df9ddbcac9bdfda"
-_EFFECTS_NORMALIZED_IR_SHA256 = "40e03f1684a752143cd83486e34f6c1a92d03e183fd629fa62293ab0e87bd268"
-_EFFECTS_RAW_IR_SHA256 = "578fe5db0829dbfe2369dc7a230eb2badb518827093f02235b34ad9693a28afd"
-_EFFECTS_FUNCTIONS_SHA256 = "d06fd4218bd7513a5aecd343bc3bb9d83dfb6b8fba011626fd5bb80707d67579"
+_EFFECTS_RAW_BYTES = 21279
+_EFFECTS_RAW_SHA256 = "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457"
+_EFFECTS_NORMALIZED_BYTES = 15821
+_EFFECTS_NORMALIZED_BYTES_SHA256 = "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150"
+_EFFECTS_NORMALIZED_IR_SHA256 = "808bee0ca5378aa06ac95a970a76e2da87678fa3fd06d745572e38d11f71a352"
+_EFFECTS_RAW_IR_SHA256 = "27869bc85b25a5322262868fb44a34b1c9fa25017bc5804b0308bdec6b909171"
+_EFFECTS_FUNCTIONS_SHA256 = "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58"
 _EFFECTS_DECLARATIONS_SHA256 = "d70dc9c99d2aa5a1546b8eb5a6f15b7bb8d0db2cc86cc7a51ba37643e3930a2a"
-_EFFECTS_WHOLE_SHA256 = "db85c4d2cafed8c07bc03d3e203ec83d099575ade15b5b452a9eeb58bb4940d1"
-_EFFECTS_INTERFACE_SHA256 = "feeb85a578bad5296e9c345401f7f1a6055da9aa6f5f476c346137f53cdeef52"
+_EFFECTS_WHOLE_SHA256 = "53ce4d08011b9f09e2072723facf7ecece0e203326698d2a748cc445b9ce9197"
+_EFFECTS_INTERFACE_SHA256 = "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b"
 _EFFECTS_DEFINES = (("EFFECT", "int", "0"), ("FLIP", "int", "0"))
 _EFFECTS_FUNCTIONS = (
     (65, "bicubic"), (66, "bloom"), (67, "brightnessContrast"),
@@ -217,33 +217,33 @@ _EFFECTS_HOST = (65, "bicubic")
 # Semantic traversal order; same shape as glitch's `_MATRIX_NODES`.
 _EFFECTS_MATRIX_NODES = (
     ((22, "e0"), "395:10-395:114", "declaration", "mat4", None, 116, "Q",
-     "017b638096111ec6aad0c92416d63a87e190d9077f13e601c7d3db1e8e797092"),
+     "c3d2f8a595e09785cd461ac1d61690bcfec74d50111946c7b65518e78e2fdd7a"),
     ((22, "e0", 0), "395:14-395:114", "construct", "mat4", None, None, None,
-     "db17c064ba787a783540e8e2ec52a73c20e4d96e9f8abf90677261d97a8ca6da"),
+     "c1d89f1636788055a5598118696c117b385a5af159edc41888bda08159771202"),
     ((23, "e0"), "396:10-396:86", "declaration", "mat4", None, 117, "S",
-     "9e401d7d2b01d5131d098fb29b9022fb2f86d003b6ec6523e16070620439603f"),
+     "68e756de68f46f35d4ef2132ea068d7f4f68546dc2885b1abbfb1418079626f6"),
     ((23, "e0", 0), "396:14-396:86", "construct", "mat4", None, None, None,
-     "d59f66a2726a373ecb0bedc425a2a2eb40213fb100dc1de9796fb5f075782c83"),
+     "941620628f633fc4268d0dbf75ea233718163e02e9c9da8df5b2c28531378b22"),
     ((24, "e0"), "397:10-397:86", "declaration", "mat4", None, 118, "T",
-     "99164f2fc0cfa3b23715807efebca9cedf886afe5b6cc2e9b6f7fa47c1cb5651"),
+     "d8419991dce8fbab8d3521ec1a1ad7e0753b7ede0000b9c91df7de25148acc9d"),
     ((24, "e0", 0), "397:14-397:86", "construct", "mat4", None, None, None,
-     "c32500337be20373b25d1ebe9ef7d190200351d50d857665258cf72873c84089"),
+     "4b773367f45912ab55765cea54ece66c0bc2c176f5319c193df724e2476f899e"),
     ((25, "e0"), "398:10-398:23", "declaration", "mat4", None, 119, "A",
-     "c2402ca362053d1fdecbc83c5df395355ab3218b5a197375d3692b8c3d3846e8"),
+     "60fec21a980e82842084c1a492a4d2e553bf3ab9c7004b1cff4d3cceb28364d8"),
     ((25, "e0", 0), "398:14-398:23", "binary", "mat4", "*", None, None,
-     "adc4070594cae6d92564ee06e876be562b3a7c16c33196c345f02a321b74f5ca"),
+     "e14127d9f03c29de2913dffaa26da4fe0479f634d9f40aa4852f102223d3fc11"),
     ((25, "e0", 0, 0), "398:14-398:19", "binary", "mat4", "*", None, None,
-     "93e0f8d423c0b679c3e5de40aa1755b7c2691becbdde0f9b54ae9fba85b3a04a"),
+     "b6aeaa401804a0b3d9eda9b1309b22f391f9638ec33cf9f4c3360f8c9589989f"),
     ((25, "e0", 0, 0, 0), "398:14-398:15", "id", "mat4", None, 118, "T",
-     "51c2dd39496f475aaf831877b97b1c8a9d8d7ba9f9b3e2569dae910418463bfb"),
+     "0557fd5a067c67f6259f16f3e7e3128b6dd125284b0bc20928203aee70cdb54b"),
     ((25, "e0", 0, 0, 1), "398:18-398:19", "id", "mat4", None, 116, "Q",
-     "2b03c28e472c8816fc94b55fd705a290da1860570dc512140a4828e73a0aa15a"),
+     "8073137859ad397e63a49618b255580cc49887c239c7d4c108efb0c3e10c1924"),
     ((25, "e0", 0, 1), "398:22-398:23", "id", "mat4", None, 117, "S",
-     "2db3446567dce5e32efa99df90987b3789b2cf90937c62e717b2b6f267ad1937"),
+     "1e1bbb34e3d4deeca26c8644bab2f79260243d16d8600946d0d945c8ad523529"),
     ((30, "e0", 0), "403:16-403:22", "binary", "vec4", "*", None, None,
-     "185c1c5bbac198d9add45fed71ca4682b254bb5e96938520ebe5e35f8f93289f"),
+     "1cdd338743417ab1b6fe299714124398e473e5b4de497e186219224946afe7e5"),
     ((30, "e0", 0, 1), "403:21-403:22", "id", "mat4", None, 119, "A",
-     "398fd3b03988dcb584b11736f4eda5dcbe528e86f96686fc73486948416086a2"),
+     "b2940dbe59de5b11feb26cd8e47223aa0e7befe1737828580b387aabf2a8e328"),
 )
 # The dot/return route locks: `dot(tv * A, uv)` as the sole expression of
 # bicubic's `return` (statement 30).
@@ -266,7 +266,7 @@ def _effects_profile_tuple() -> tuple[object, ...]:
             _EFFECTS_DOT_SECOND_ARGUMENT, _EFFECTS_RETURN_SPAN)
 
 
-_EFFECTS_PROFILE_SHA256 = "fce5d99dec3cb934ee4c02b985813675a070ca72b194248263f70dcb5e291e53"
+_EFFECTS_PROFILE_SHA256 = "c5fba754a3b50ac589a3a42325bcd96ef53126ec6247ff329dc4b46aa73118d6"
 
 
 @dataclass(frozen=True, slots=True)

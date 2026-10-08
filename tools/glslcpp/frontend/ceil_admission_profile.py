@@ -113,20 +113,20 @@ _PROFILES: dict[str, dict] = {
     # this program's one new reachable grammar element (the module census is
     # otherwise unreachable-only for the first two carriers).
     "classicNoisedeck/effects:effects": {
-        "raw_bytes": 21087,
-        "raw_sha256": "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c",
-        "normalized_bytes": 15773,
-        "normalized_sha256": "cce2f30177586f4cdabab1e1741a99d1470f49db79c60dc20df9ddbcac9bdfda",
-        "functions_sha256": "d06fd4218bd7513a5aecd343bc3bb9d83dfb6b8fba011626fd5bb80707d67579",
-        "whole_program_sha256": "db85c4d2cafed8c07bc03d3e203ec83d099575ade15b5b452a9eeb58bb4940d1",
-        "interface_sha256": "feeb85a578bad5296e9c345401f7f1a6055da9aa6f5f476c346137f53cdeef52",
+        "raw_bytes": 21279,
+        "raw_sha256": "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457",
+        "normalized_bytes": 15821,
+        "normalized_sha256": "ed61aa21c55782d5325c514cb29c3d19992fe93669e9391aa28b19963046b150",
+        "functions_sha256": "4165298021dd882ccab94042267c209fa4fd34c3c414aa81e1946d93c8500f58",
+        "whole_program_sha256": "53ce4d08011b9f09e2072723facf7ecece0e203326698d2a748cc445b9ce9197",
+        "interface_sha256": "8cbdb73990c43f4739fadaeb20a06d5cc7adcb891fd50bfc7588abf3acdfee5b",
         "ceil_sites": (
             ("main", "574:13-574:99",
-             "5405bd10d70c8361e0f51e63972b4c3b091348ef95a80adb3c8bc18d3cc3d4df",
-             "2a885db687152218ee67b5753cbc8d3fa91534135dc2ece5d1909922b3577622"),
+             "9488348ce2980bab1c5be11dac127781b69d6488d47f84ca2a8f3b3017456515",
+             "3994a58d07695919f941c9789dc5d87aacb133accb38881dfc77f2c681e6d2af"),
             ("main", "575:13-575:109",
-             "0f65b650b6a68a26163014021dc3febbe512a8db24774ea6223570ebfd5a4137",
-             "5105faf67c1fdaabce2af946c6577d9c3ee7fe88462c5607dcb02f182779ca8a"),
+             "ce174d6c09e96aafd65bacc991d196542a3e80e24dc1535b309b62746540bbd2",
+             "20f5804ab223dc336e806573d7a1bb1b222b48c687a1b917ff21a785eb44cedc"),
         ),
     },
     # points/lenia:convolve -- one ceil site in main, the operand of the

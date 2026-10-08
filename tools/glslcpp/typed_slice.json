@@ -74,8 +74,8 @@
     "source-global-literal-int-v1"
   ],
   "compatibility_transforms": {
-    "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
-    "classicNoisedeck/refract:refract": "refract-truthy-vector-conditional-noop-v1",
+    "classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
+    "classicNoisedeck/refract:refract": "refract-vector-conditional-keep-v1",
     "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
     "filter/crt:crt": "crt-metal-sine-v1",
     "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
@@ -83,7 +83,7 @@
     "synth/sacredGeometry:sacredGeometry": "sacred-star-number-division-v1"
   },
   "custom_comparer_profiles": {
-    "classicNoisedeck/lensDistortion:lensDistortion": "canonical-js-vector-equality-result-truthiness-v1"
+    "classicNoisedeck/lensDistortion:lensDistortion": "lens-tint-vector-equality-v1"
   },
   "numeric_literal_contracts": {
     "filter/scatter:scatterJitter": "source-double"
@@ -1494,7 +1494,7 @@
       "program_key": "synth3d/shape3d:precompute"
     }
   ],
-  "revision": "e24c844f8dada85551ab084f41db8944fbc176c8",
+  "revision": "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d",
   "schema": 1,
   "types": [
     "bool",

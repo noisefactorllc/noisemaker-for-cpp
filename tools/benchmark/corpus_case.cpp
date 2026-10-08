@@ -267,7 +267,7 @@ TimingSummary summarize(const std::vector<std::uint64_t>& samples,
 }
 
 void require_external_output_path(const std::string& path, const std::string& repo_root) {
-  if (path.empty() || path.front() != '/') {
+  if (path.empty() || !std::filesystem::path(path).is_absolute()) {
     throw CaseContractError(kExitOutputPath, "output paths must be absolute: " + path);
   }
   std::error_code code;

@@ -64,7 +64,7 @@ class CorpusParityTest(unittest.TestCase):
                 for record in records[start:start + BATCH_SIZE]:
                     name = record["effectId"]
                     source = scratch / "case.dsl"
-                    source.write_text(record["source"], encoding="utf-8")
+                    source.write_text(record["source"], encoding="utf-8", newline="")
                     case = scratch / "case.json"
                     case.write_text(json.dumps(record), encoding="utf-8")
                     options = record["options"]

@@ -126,7 +126,7 @@ class ColorLabGeneratorEmitterTests(unittest.TestCase):
         self.assertEqual(
             6,
             rendered.count(
-                "glsl::canonical_js_vector_equality_result_is_truthy("),
+                "glsl::vector_all_equal("),
         )
         with self.assertRaisesRegex(
             emit_typed_cpp.TypedEmissionError,

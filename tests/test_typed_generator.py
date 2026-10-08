@@ -3638,7 +3638,7 @@ and item["program_key"] != "filter/wobble:wobble"
             attach_fixed_array_in_parameter_proof,
         )
         from tools.glslcpp.frontend.refract_compatibility import (
-            apply_refract_truthy_vector_noops,
+            apply_refract_vector_conditional_keeps,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
 
@@ -3650,7 +3650,7 @@ and item["program_key"] != "filter/wobble:wobble"
         analyzed = analyze_program(
             parse_program(raw, entry["program_key"], {}), entry["program_key"])
         typed = attach_fixed_array_in_parameter_proof(
-            apply_refract_truthy_vector_noops(analyzed))
+            apply_refract_vector_conditional_keeps(analyzed))
         generate_typed_slice.validate_capabilities(
             typed, generate_typed_slice.APPROVED_CAPABILITIES,
             source_hash=entry["raw_sha256"])
@@ -3688,9 +3688,10 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertNotIn("std::string", namespace_body)
         self.assertNotIn("virtual ", namespace_body)
         self.assertNotIn("throw ", namespace_body)
-        self.assertNotIn("middle = ((", emitted)
-        self.assertTrue(all("?" not in line for line in emitted.splitlines()
-                            if "middle =" in line))
+        # Each burn/dodge arm keeps `middle` when the GLSL vector equality holds.
+        self.assertEqual(4, emitted.count("? glsl::Vec4(middle) : "))
+        self.assertEqual(4, sum("glsl::vector_all_equal(" in line
+                                for line in emitted.splitlines() if "middle =" in line))
 
         for name, candidate in {
             "cleared": dataclasses.replace(typed, fixed_array_in_parameter_proof=None),
@@ -3717,7 +3718,7 @@ and item["program_key"] != "filter/wobble:wobble"
             attach_fixed_array_in_parameter_proof,
         )
         from tools.glslcpp.frontend.refract_compatibility import (
-            apply_refract_truthy_vector_noops,
+            apply_refract_vector_conditional_keeps,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
         from tools.glslcpp.frontend.semantic_types import FLOAT, array, vector
@@ -3734,7 +3735,7 @@ and item["program_key"] != "filter/wobble:wobble"
         analyzed = analyze_program(
             parse_program(raw, entry["program_key"], {}), entry["program_key"])
         typed = attach_fixed_array_in_parameter_proof(
-            apply_refract_truthy_vector_noops(analyzed))
+            apply_refract_vector_conditional_keeps(analyzed))
         proof = typed.fixed_array_in_parameter_proof
         self.assertIsNotNone(proof)
 
@@ -3762,19 +3763,25 @@ and item["program_key"] != "filter/wobble:wobble"
                     if function.signature.id == 42 and function.body)
 
         def mutate_first_self_assignment(statement, changed):
+            # Re-point the first kept arm (`? middle :`) back at the source, the
+            # authored `? color2 :` the transform must have replaced.
             expressions = []
             for value in statement.expressions:
                 if (not changed[0] and value.kind == "assign"
                         and len(value.children) == 2
                         and value.children[0].kind == "id"
                         and value.children[0].symbol_id == 47
-                        and value.children[1].kind == "id"
-                        and value.children[1].symbol_id == 47):
+                        and value.children[1].kind == "conditional"
+                        and len(value.children[1].children) == 3
+                        and value.children[1].children[1].kind == "id"
+                        and value.children[1].children[1].symbol_id == 47):
                     changed[0] = True
+                    condition, kept, false_value = value.children[1].children
                     source = dataclasses.replace(
-                        value.children[1], symbol_id=34, symbol=blend.parameters[1])
+                        kept, symbol_id=34, symbol=blend.parameters[1])
                     value = dataclasses.replace(
-                        value, children=(value.children[0], source))
+                        value, children=(value.children[0], dataclasses.replace(
+                            value.children[1], children=(condition, source, false_value))))
                 expressions.append(value)
             return dataclasses.replace(
                 statement, expressions=tuple(expressions),
@@ -3815,12 +3822,15 @@ and item["program_key"] != "filter/wobble:wobble"
             return replace_function(
                 typed, dataclasses.replace(source, body=body))
 
+        # The transformed arm: `middle = (source == vec4(c)) ? middle : builtin(...)`.
         self_assignment = lambda value: (
             value.kind == "assign" and len(value.children) == 2
             and value.children[0].kind == "id"
             and value.children[0].symbol_id == 47
-            and value.children[1].kind == "id"
-            and value.children[1].symbol_id == 47)
+            and value.children[1].kind == "conditional"
+            and len(value.children[1].children) == 3
+            and value.children[1].children[1].kind == "id"
+            and value.children[1].children[1].symbol_id == 47)
         raw_conditional = lambda value: value.kind == "conditional"
         compatibility_target = compatibility_program(
             "target", self_assignment,
@@ -4794,7 +4804,7 @@ and item["program_key"] != "filter/wobble:wobble"
             attach_fixed_array_in_parameter_proof,
         )
         from tools.glslcpp.frontend.refract_compatibility import (
-            apply_refract_truthy_vector_noops,
+            apply_refract_vector_conditional_keeps,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
         from tools.glslcpp.frontend.semantic_types import FLOAT, array, struct, vector
@@ -4810,7 +4820,7 @@ and item["program_key"] != "filter/wobble:wobble"
 
         entry, analyzed = corpus_program("classicNoisedeck/refract:refract")
         typed = attach_fixed_array_in_parameter_proof(
-            apply_refract_truthy_vector_noops(analyzed))
+            apply_refract_vector_conditional_keeps(analyzed))
         convolve = next(function for function in typed.functions
                         if function.signature.id == 38 and function.body)
 
@@ -5388,7 +5398,7 @@ and item["program_key"] != "filter/wobble:wobble"
             attach_fixed_array_in_parameter_proof,
         )
         from tools.glslcpp.frontend.refract_compatibility import (
-            apply_refract_truthy_vector_noops,
+            apply_refract_vector_conditional_keeps,
         )
         from tools.glslcpp.frontend.semantic import analyze_program
 
@@ -5405,7 +5415,7 @@ and item["program_key"] != "filter/wobble:wobble"
                               generate_typed_slice._defaults(REPOSITORY, key)),
                 key)
             if key == "classicNoisedeck/refract:refract":
-                analyzed = apply_refract_truthy_vector_noops(analyzed)
+                analyzed = apply_refract_vector_conditional_keeps(analyzed)
             typed = attach_fixed_array_in_parameter_proof(analyzed)
             if typed.fixed_array_in_parameter_proof is not None:
                 attached.append(key)
@@ -6905,7 +6915,7 @@ and item["program_key"] != "filter/wobble:wobble"
 
         original = json.loads((REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
         mutations = [
-            {"classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
+            {"classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
              "filter/corrupt:corrupt": "corrupt-sample-uv-alias-v1",
              "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
              "synth/polygon:shape": "polygon-zero-smoothing-v1",
@@ -7061,7 +7071,7 @@ and item["program_key"] != "filter/wobble:wobble"
             generate_typed_slice.apply_compatibility_transform(
                 shadowed, "polygon-zero-smoothing-v1")
 
-    def test_refract_truthy_vector_conditionals_transform_is_exact_and_source_locked(self) -> None:
+    def test_refract_vector_conditional_keep_transform_is_exact_and_source_locked(self) -> None:
         import dataclasses
         import hashlib
         from tools.glslcpp import check_corpus, generate_typed_slice
@@ -7080,20 +7090,30 @@ and item["program_key"] != "filter/wobble:wobble"
             hashlib.sha256(repr(typed.functions).encode()).hexdigest())
 
         transformed = generate_typed_slice.apply_compatibility_transform(
+            typed, "refract-vector-conditional-keep-v1")
+        self.assertEqual(
+            "fd8038f0384e11f71499f6dd1aeb2c9620fdae3747d3742cd02ed5201a436865",
+            hashlib.sha256(repr(transformed.functions).encode()).hexdigest())
+        # The historical no-op (pre-8ae8e2a always-truthy arms) still
+        # reproduces its frozen tree exactly.
+        historical = generate_typed_slice.apply_compatibility_transform(
             typed, "refract-truthy-vector-conditional-noop-v1")
         self.assertEqual(
             "4c9e125cd4dda55f2688c362a5ab7e81acf1b08c9e284bc5c25e04da39020188",
-            hashlib.sha256(repr(transformed.functions).encode()).hexdigest())
+            hashlib.sha256(repr(historical.functions).encode()).hexdigest())
 
         matches = []
         def expression(value):
+            # `middle = (source == vec4(c)) ? middle : builtin(...)`
             if (value.kind == "assign" and value.operator == "="
                     and len(value.children) == 2
                     and value.children[0].kind == "id"
                     and value.children[0].symbol is not None
                     and value.children[0].symbol.name == "middle"
-                    and value.children[1].kind == "id"
-                    and value.children[1].symbol_id == value.children[0].symbol_id):
+                    and value.children[1].kind == "conditional"
+                    and value.children[1].children[1].kind == "id"
+                    and value.children[1].children[1].symbol_id == value.children[0].symbol_id
+                    and value.children[1].children[2].kind == "builtin"):
                 matches.append(value.span.start_line)
             for child in value.children:
                 expression(child)
@@ -7115,9 +7135,9 @@ and item["program_key"] != "filter/wobble:wobble"
         }.items():
             with self.subTest(name=name), self.assertRaisesRegex(
                     generate_typed_slice.GeneratorError,
-                    "refract-truthy-vector-conditional-noop-v1"):
+                    "refract-vector-conditional-keep-v1"):
                 generate_typed_slice.apply_compatibility_transform(
-                    candidate, "refract-truthy-vector-conditional-noop-v1")
+                    candidate, "refract-vector-conditional-keep-v1")
 
     def test_corrupt_alias_transform_is_symbol_exact_and_main_scoped(self) -> None:
         from tools.glslcpp import generate_typed_slice
@@ -7171,7 +7191,7 @@ and item["program_key"] != "filter/wobble:wobble"
                 generate_typed_slice.apply_compatibility_transform(
                     candidate, "corrupt-sample-uv-alias-v1")
 
-    def test_coalesce_uv_alias_transform_is_symbol_exact_and_cloak_main_scoped(self) -> None:
+    def test_coalesce_blend_conditional_keep_transform_is_mode_exact_and_leaves_uvs_alone(self) -> None:
         from tools.glslcpp import generate_typed_slice
         from tools.glslcpp.emit_typed_cpp import render_typed_cpp
         from tools.glslcpp.frontend import parse_program
@@ -7191,33 +7211,24 @@ and item["program_key"] != "filter/wobble:wobble"
         typed = analyze_program(parse_program(body, "classicNoisedeck/coalesce:coalesce"),
                                 "classicNoisedeck/coalesce:coalesce")
         transformed = generate_typed_slice.apply_compatibility_transform(
-            typed, "coalesce-uv-alias-v1")
+            typed, "coalesce-blend-conditional-keep-v1")
         emitted = render_typed_cpp(transformed, "classicNoisedeck/coalesce:coalesce", "b" * 64)
-        self.assertEqual(2, emitted.count("rightUV = glsl::Vec2(leftUV)"))
-        self.assertNotIn("rightUV = glsl::Vec2(st)", emitted)
-        self.assertEqual(4, emitted.count("middle = glsl::Vec4(middle)"))
+        # The authority copies `st` into both UVs, so `rightUV` starts from the
+        # unmodified `st` exactly as the GLSL reads.
+        self.assertEqual(2, emitted.count("rightUV = glsl::Vec2(st)"))
+        self.assertNotIn("rightUV = glsl::Vec2(leftUV)", emitted)
+        # Only the false arm writes `middle`: a true vector equality keeps it.
+        self.assertEqual(4, emitted.count("? glsl::Vec4(middle) : "))
+        self.assertEqual(4, emitted.count("glsl::vector_all_equal("))
+        self.assertNotIn("middle = glsl::Vec4(middle);", emitted)
 
-        near_misses = {
-            "wrong-key": ("not/coalesce:coalesce", body),
-            "wrong-helper": ("classicNoisedeck/coalesce:coalesce",
-                             body.replace("vec4 cloak", "vec4 helper").replace("cloak(rightUV)", "helper(rightUV)")),
-            "non-alias": ("classicNoisedeck/coalesce:coalesce",
-                          body.replace("vec2 rightUV=vec2(st);return", "vec2 rightUV=vec2(st+vec2(0.0));return")),
-            "wrong-left-source": ("classicNoisedeck/coalesce:coalesce",
-                                  body.replace("vec2 leftUV=vec2(st);leftUV.x", "vec2 leftUV=vec2(st+vec2(0.0));leftUV.x")),
-            "missing-y-write": ("classicNoisedeck/coalesce:coalesce",
-                                body.replace("leftUV.y+=1.0;", "leftUV.y-=1.0;")),
-            "intervening-st-write": ("classicNoisedeck/coalesce:coalesce",
-                                     body.replace("leftUV.x+=1.0;", "leftUV.x+=1.0;st.x+=0.0;")),
-            "missing-main-site": ("classicNoisedeck/coalesce:coalesce",
-                                  body.replace("vec2 rightUV=vec2(st);fragColor", "vec2 rightUV=vec2(st+vec2(0.0));fragColor")),
-        }
-        for name, (key, source) in near_misses.items():
-            candidate = analyze_program(parse_program(source, key), key)
-            with self.subTest(name=name), self.assertRaisesRegex(
-                    generate_typed_slice.GeneratorError,
-                    rf"{re.escape(key)}: coalesce-uv-alias-v1 expected exactly two structural matches"):
-                generate_typed_slice.apply_compatibility_transform(candidate, "coalesce-uv-alias-v1")
+        with self.assertRaisesRegex(
+                generate_typed_slice.GeneratorError,
+                r"not/coalesce:coalesce: coalesce-blend-conditional-keep-v1 is pinned to "
+                r"classicNoisedeck/coalesce:coalesce"):
+            generate_typed_slice.apply_compatibility_transform(
+                analyze_program(parse_program(body, "not/coalesce:coalesce"), "not/coalesce:coalesce"),
+                "coalesce-blend-conditional-keep-v1")
 
         conditional_near_misses = {
             "wrong-mode-arm": body.replace("if(mode==15)", "if(mode==14)"),
@@ -7230,8 +7241,8 @@ and item["program_key"] != "filter/wobble:wobble"
                                         "classicNoisedeck/coalesce:coalesce")
             with self.subTest(name=name), self.assertRaisesRegex(
                     generate_typed_slice.GeneratorError,
-                    r"coalesce-uv-alias-v1 expected exact vector-conditional modes"):
-                generate_typed_slice.apply_compatibility_transform(candidate, "coalesce-uv-alias-v1")
+                    r"coalesce-blend-conditional-keep-v1 expected exact vector-conditional modes"):
+                generate_typed_slice.apply_compatibility_transform(candidate, "coalesce-blend-conditional-keep-v1")
 
         mode2_arm = ("if(mode==2){middle=(color2==vec4(0.0))?color2:"
                      "max(1.0-((1.0-color1)/color2),vec4(0.0));}")
@@ -7247,8 +7258,8 @@ and item["program_key"] != "filter/wobble:wobble"
                                         "classicNoisedeck/coalesce:coalesce")
             with self.subTest(name=name), self.assertRaisesRegex(
                     generate_typed_slice.GeneratorError,
-                    r"coalesce-uv-alias-v1 expected exact vector-conditional modes"):
-                generate_typed_slice.apply_compatibility_transform(candidate, "coalesce-uv-alias-v1")
+                    r"coalesce-blend-conditional-keep-v1 expected exact vector-conditional modes"):
+                generate_typed_slice.apply_compatibility_transform(candidate, "coalesce-blend-conditional-keep-v1")
 
     def test_shape_mask_sequential_lane_transform_is_function_and_symbol_exact(self) -> None:
         from tools.glslcpp import generate_typed_slice
@@ -8070,9 +8081,9 @@ and item["program_key"] != "filter/wobble:wobble"
         transformed = {program["program_key"]: program["compatibility_transform"]
                        for program in manifest["programs"]
                        if program["compatibility_transform"] != "none"}
-        self.assertEqual({"classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
+        self.assertEqual({"classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
                           "classicNoisedeck/refract:refract":
-                              "refract-truthy-vector-conditional-noop-v1",
+                              "refract-vector-conditional-keep-v1",
                           "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
                           "filter/crt:crt": "crt-metal-sine-v1",
                           "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
@@ -9557,16 +9568,16 @@ and item["program_key"] != "filter/wobble:wobble"
             return dataclasses.replace(program, functions=functions)
 
         mutations = (
-            (56, (365, 9, "literal", None, None, "0u"), {"literal": "2u", "literal_value": 2}),
-            (66, (311, 38, "literal", None, None, "360.0"), {"literal": "1.0", "literal_value": 1.0}),
+            (56, (376, 9, "literal", None, None, "0u"), {"literal": "2u", "literal_value": 2}),
+            (66, (316, 38, "literal", None, None, "360.0"), {"literal": "1.0", "literal_value": 1.0}),
             (68, (36, 19, "binary", "%", None, None), {"operator": "/"}),
             (67, (47, 28, "builtin", None, "floor", None), {"callee": "abs"}),
             (62, (280, 16, "builtin", None, "clamp", None), {"callee": "max"}),
             (62, (281, 16, "builtin", None, "clamp", None), {"callee": "max"}),
             (54, (215, 9, "binary", "&&", None, None), {"operator": "||"}),
             (64, (249, 24, "literal", None, None, "5.0"), {"literal": "1.0", "literal_value": 1.0}),
-            (56, (400, 19, "call", None, "clamp01", None), {"callee": "normalized_sine"}),
-            (56, (357, 33, "builtin", None, "min", None), {"callee": "max"}),
+            (56, (411, 19, "call", None, "clamp01", None), {"callee": "normalized_sine"}),
+            (56, (368, 33, "builtin", None, "min", None), {"callee": "max"}),
             (63, (170, 12, "literal", None, None, "42.0"), {"literal": "41.0", "literal_value": 41.0}),
             (54, (189, 24, "swizzle", None, None, None), {"member": "x"}),
             (54, (200, 39, "literal", None, None, "73.0"), {"literal": "0.0", "literal_value": 0.0}),
@@ -9587,7 +9598,7 @@ and item["program_key"] != "filter/wobble:wobble"
 
         generic_candidate = mutate_one(
             typed, 56,
-            lambda value: (value.span.start_line == 365
+            lambda value: (value.span.start_line == 376
                            and value.span.start_column == 9
                            and value.kind == "literal" and value.literal == "0u"),
             lambda value: dataclasses.replace(
@@ -9612,8 +9623,8 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual({"filter/scatter:scatterJitter": "source-double"},
                          spec["numeric_literal_contracts"])
         self.assertEqual({
-            "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
-            "classicNoisedeck/refract:refract": "refract-truthy-vector-conditional-noop-v1",
+            "classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
+            "classicNoisedeck/refract:refract": "refract-vector-conditional-keep-v1",
             "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             "filter/crt:crt": "crt-metal-sine-v1",
             "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
@@ -10672,9 +10683,9 @@ and item["program_key"] != "filter/wobble:wobble"
         self.assertEqual({"filter/scatter:scatterJitter": "source-double"},
                          spec["numeric_literal_contracts"])
         self.assertEqual({
-            "classicNoisedeck/coalesce:coalesce": "coalesce-uv-alias-v1",
+            "classicNoisedeck/coalesce:coalesce": "coalesce-blend-conditional-keep-v1",
             "classicNoisedeck/refract:refract":
-                "refract-truthy-vector-conditional-noop-v1",
+                "refract-vector-conditional-keep-v1",
             "filter/corrupt:corrupt": "corrupt-sample-uv-copy-v2",
             "filter/crt:crt": "crt-metal-sine-v1",
             "mixer/shapeMask:shapeMask": "shape-mask-sequential-lanes-v1",
@@ -11541,8 +11552,10 @@ synth/subdivide:subdivide""".splitlines())
         # existing fixture assertions and all Task 25 resource pins are intact.
         # The current authority migration routes frozen BC/HS/Corrupt/Reverb
         # captures through historical factories without changing capture bytes.
+        # The 8ae8e2a migration does the same for Coalesce, Refract, Degauss and
+        # Scale, and adds the 8ae8e2a current-authority capture table.
         self.assertEqual(
-            "b9e4cd5ddcada75be889b0a6b731ecad831b5d644cf3322ad3fee3b936d9abb3",
+            "2ffbe6a9cb2556120547dc1e564fa708285523f0776ee79d2f14a3f90776176a",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -11557,9 +11570,12 @@ synth/subdivide:subdivide""".splitlines())
             (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text())
         task24 = corpus_census.without_expansion(current)
         # Exercise the current loader's missing lane-carrier boundary, after
-        # satisfying its unrelated current Corrupt compatibility contract.
-        task24["compatibility_transforms"]["filter/corrupt:corrupt"] = (
-            current["compatibility_transforms"]["filter/corrupt:corrupt"])
+        # satisfying its unrelated current Corrupt, Coalesce, Refract and Lens
+        # compatibility contracts.
+        for key in ("filter/corrupt:corrupt", "classicNoisedeck/coalesce:coalesce",
+                    "classicNoisedeck/refract:refract"):
+            task24["compatibility_transforms"][key] = current["compatibility_transforms"][key]
+        task24["custom_comparer_profiles"] = copy.deepcopy(current["custom_comparer_profiles"])
         task24["programs"] = [item for item in task24["programs"]
                               if item["program_key"] not in KEYS
                               and item["program_key"] not in DERIVATIVE_ADMISSION_KEYS
@@ -11653,7 +11669,7 @@ synth/subdivide:subdivide""".splitlines())
         from tools.glslcpp.frontend.literal_vec3_lane_index_profile import (
             LENS_KEY, PROFILE as LANE_PROFILE)
 
-        comparer_profile = "canonical-js-vector-equality-result-truthiness-v1"
+        comparer_profile = "lens-tint-vector-equality-v1"
         planned = copy.deepcopy(json.loads(
             (REPOSITORY / "tools/glslcpp/typed_slice.json").read_text()))
         planned["custom_comparer_profiles"] = {LENS_KEY: comparer_profile}
@@ -11683,13 +11699,13 @@ synth/subdivide:subdivide""".splitlines())
         start = cpp.index(marker)
         end = cpp.index("// Typed IR program:", start + len(marker))
         lens = cpp[start:end]
-        comparer = "glsl::canonical_js_vector_equality_result_is_truthy("
+        comparer = "glsl::vector_all_equal("
 
         self.assertEqual(1, lens.count(comparer))
         expected = (
             "  glsl::set_swizzle<0, 1, 2>(color, glsl::mix("
             "glsl::swizzle<0, 1, 2>(color), "
-            "(glsl::canonical_js_vector_equality_result_is_truthy("
+            "(glsl::vector_all_equal("
             "glsl::Vec3(glsl::swizzle<0, 1, 2>(color)), "
             "glsl::Vec3(glsl::FloatExpr<3>(static_cast<float>(1.0)))) ? "
             "glsl::Vec3(glsl::swizzle<0, 1, 2>(color)) : "
@@ -12146,7 +12162,7 @@ synth/subdivide:subdivide""".splitlines())
         for name, transform in {
                 "compatibility-missing": {},
                 "compatibility-selected-other": {
-                    **planned["compatibility_transforms"], KEYS[1]: "coalesce-uv-alias-v1"},
+                    **planned["compatibility_transforms"], KEYS[1]: "coalesce-blend-conditional-keep-v1"},
                 "compatibility-unknown": {
                     **planned["compatibility_transforms"], "filter/bc:bc": "wrong"},
         }.items():
@@ -14477,7 +14493,7 @@ synth/subdivide:subdivide""".splitlines())
 
         foreign_carriers = (
             {"numeric_literal_contract": "source-double"},
-            {"compatibility_transform": "coalesce-uv-alias-v1"},
+            {"compatibility_transform": "coalesce-blend-conditional-keep-v1"},
             {"custom_comparer_profile": "lens-comparer-v1"},
             {"source_global_literal_int_profile":
              "source-global-literal-int-v1"},
@@ -15458,7 +15474,7 @@ class Task27PerlinTests(unittest.TestCase):
                         invoke()
 
         combined_carriers = (
-            {"compatibility_transform": "coalesce-uv-alias-v1"},
+            {"compatibility_transform": "coalesce-blend-conditional-keep-v1"},
             {"custom_comparer_profile": "lens-comparer-v1"},
             {"numeric_literal_contract": "source-double"},
             {"source_global_literal_int_profile": "source-global-literal-int-v1"},
@@ -22658,14 +22674,14 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
         # THE GENERATED FILES at regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38688,
-                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
+                38674,
+                "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3266548,
-                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
+                3268256,
+                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
             "src/typed_generated/typed_manifest.json": (
-                858979,
-                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
+                858965,
+                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -23439,14 +23455,14 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38688,
-                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
+                38674,
+                "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3266548,
-                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
+                3268256,
+                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
             "src/typed_generated/typed_manifest.json": (
-                858979,
-                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
+                858965,
+                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -23620,7 +23636,7 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         "program_key": "classicNoisedeck/effects:effects",
     }
     SOURCE_SHA256 = (
-        "e3b742be53b6b1b0dd5e089a805ff02a931cd14643d0a0abe376bd8044e8ec6c")
+        "c837f01ab747d2363bd1bd9ffb9950e0ececcfae40a9768a3dce90fb01d83457")
     FIELDS = ("emboss", "sharpen", "blur", "edge", "edge2", "edge3",
               "sharpenBlur")
     WRITER = "loadKernels"
@@ -24200,14 +24216,14 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38688,
-                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
+                38674,
+                "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3266548,
-                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
+                3268256,
+                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
             "src/typed_generated/typed_manifest.json": (
-                858979,
-                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
+                858965,
+                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -24737,14 +24753,14 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38688,
-                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
+                38674,
+                "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3266548,
-                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
+                3268256,
+                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
             "src/typed_generated/typed_manifest.json": (
-                858979,
-                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
+                858965,
+                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -25338,14 +25354,14 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         # regeneration time (never hand-computed).
         expected = {
             "tools/glslcpp/typed_slice.json": (
-                38688,
-                "ecb3696310cf9152e2c791ea4bb19a8ec4a271cbae2a8a78f7f9213e810a33d9"),
+                38674,
+                "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3266548,
-                "39fb5c1c09d8e62eb0a61b9fa181150cb905decd950c02199b1f5b5c736be631"),
+                3268256,
+                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
             "src/typed_generated/typed_manifest.json": (
-                858979,
-                "7388b4f325837a36fa5b6a0a8053a354900cb1f52fd78306ccf09f010074832f"),
+                858965,
+                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),

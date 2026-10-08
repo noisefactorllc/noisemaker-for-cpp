@@ -22,7 +22,7 @@ SOURCE = ROOT / (
     f"tools/glslcpp/corpus/{CORPUS_REVISION}/"
     "sources/synth/mandelbrot/mandelbrot.glsl"
 )
-SOURCE_HASH = "0587dbc29f2dc8c186d7c47ebe6182e89dfe0387fc29a23826cac15499fba615"
+SOURCE_HASH = "6e6f740356f7ced1cbd40b3a991dd0ef654e39ecaeec8c52e091a08f68e3b3bd"
 
 
 def _program():
@@ -33,7 +33,7 @@ def _program():
                     if item.symbol.name == "MAX_ITER")
     functions = attach_counted_loop_proofs(
         program.functions, KEY,
-        source_global_bounds=((max_iter.symbol.id, 500,
+        source_global_bounds=((max_iter.symbol.id, 2048,
                                "source-global-const-literal", max_iter.symbol),))
     return dataclasses.replace(
         program, functions=functions,

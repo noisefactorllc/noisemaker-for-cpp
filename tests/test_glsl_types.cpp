@@ -289,14 +289,17 @@ TEST(glsl_vec_exact_and_flattening_construction) {
   REQUIRE_THROWS_AS(exact.at(3), std::out_of_range);
 }
 
-TEST(glsl_canonical_js_vector_equality_result_truthiness_is_not_mathematical_equality) {
+TEST(glsl_vector_equality_compares_every_lane) {
   using namespace noisemaker::glsl;
   const Vec3 equal_left(1.0f, 1.0f, 1.0f);
   const Vec3 equal_right(1.0f, 1.0f, 1.0f);
   const Vec3 unequal(1.0f, 0.0f, 1.0f);
 
-  REQUIRE(canonical_js_vector_equality_result_is_truthy(equal_left, equal_right));
-  REQUIRE(canonical_js_vector_equality_result_is_truthy(equal_left, unequal));
+  REQUIRE(vector_all_equal(equal_left, equal_right));
+  REQUIRE(!vector_all_equal(equal_left, unequal));
+  REQUIRE(vector_all_equal(Vec3(-0.0f, 0.0f, 1.0f), Vec3(0.0f, -0.0f, 1.0f)));
+  const float nan = std::numeric_limits<float>::quiet_NaN();
+  REQUIRE(!vector_all_equal(Vec3(nan, 1.0f, 1.0f), Vec3(nan, 1.0f, 1.0f)));
   REQUIRE(equal_left == equal_right);
   REQUIRE(!(equal_left == unequal));
 }
