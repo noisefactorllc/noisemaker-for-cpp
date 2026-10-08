@@ -30,6 +30,11 @@ HISTORICAL_VECTOR_EQUALITY_COMPARER = "glsl::canonical_js_vector_equality_result
 # other body left as written. Historical reconstructions turn this off to
 # regenerate the murmur substitution every body used to receive.
 CURRENT_AUTHORITY_HASH_UINT_BY_BODY = True
+# The canonical compiler fences `return fract((p3.x + p3.y) * p3.z);` and its
+# vec2 form by source text, in whatever function carries it. Historical
+# reconstructions turn this off to regenerate the function-name gate
+# (hash12/hash22) the frozen milestones were emitted with.
+HASH_PRECISION_FENCE_BY_SHAPE = True
 
 from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE, COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT,
@@ -1166,6 +1171,8 @@ class _Emitter:
     emitted_vector_value_copies: list[TypedExpression] = field(init=False, default_factory=list)
     locals: dict[int, str] = field(init=False)
     current_function_name: str | None = field(init=False, default=None)
+    # The expression of the `return` statement being emitted, if any.
+    current_return_value: TypedExpression | None = field(init=False, default=None)
     current_function_signature_id: int | None = field(init=False, default=None)
     authorized_round_parent: TypedExpression | None = field(init=False, default=None)
     authorized_round: TypedExpression | None = field(init=False, default=None)
@@ -9150,7 +9157,9 @@ class _Emitter:
                 if value.callee not in _BUILTIN_NAMES:
                     raise _error(self.program, value, f"unsupported builtin {value.callee}")
                 if value.callee == "fract" and len(value.children) == 1:
-                    fenced = self.hash_precision_fence(value.children[0])
+                    fenced = self.hash_precision_fence(
+                        value.children[0],
+                        returned=value is self.current_return_value)
                     if fenced is not None:
                         arguments = [fenced]
                 return f"glsl::{_BUILTIN_NAMES[value.callee]}(" + ", ".join(arguments) + ")"
@@ -9232,36 +9241,48 @@ class _Emitter:
     def _fenced_scalar_binary(self, left: str, operator: str, right: str) -> str:
         return f"static_cast<float>(static_cast<double>({left}) {operator} static_cast<double>({right}))"
 
-    def hash_precision_fence(self, value: TypedExpression) -> str | None:
+    def hash_precision_fence(self, value: TypedExpression, returned: bool = False) -> str | None:
         """Emit only the two precision fences added by the canonical JS compiler.
 
-        They are source-specific hash12/hash22 idioms, not general GLSL fract
-        semantics.  Scatter is deliberately excluded by the canonical compiler.
+        compile-glsl.js adaptCanonicalSource rewrites the source text
+        `return fract((p3.x + p3.y) * p3.z);` and `return fract((p3.xx + p3.yz)
+        * p3.zy);` in every function of every effect but filter/scatter, so the
+        fence applies to exactly that returned shape over a variable named
+        `p3`. These are hash idioms, not general GLSL fract semantics.
         """
         if self.program.key.startswith("filter/scatter:") or value.kind != "binary" or value.operator != "*":
             return None
+        if HASH_PRECISION_FENCE_BY_SHAPE:
+            if not returned:
+                return None
+            scalar_site = vec2_site = True
+            named_p3 = lambda base: base.symbol is not None and base.symbol.name == "p3"
+        else:
+            scalar_site = self.current_function_name == "hash12"
+            vec2_site = self.current_function_name == "hash22"
+            named_p3 = lambda base: True
 
-        if self.current_function_name == "hash12" and value.type.display() == "float":
+        if scalar_site and value.type.display() == "float":
             left, right = value.children
             if left.kind != "binary" or left.operator != "+":
                 return None
             x = self._swizzle_base(left.children[0], "x")
             y = self._swizzle_base(left.children[1], "y")
             z = self._swizzle_base(right, "z")
-            if x is None or y is None or z is None or not self._same_symbol(x, y, z):
+            if x is None or y is None or z is None or not self._same_symbol(x, y, z) or not named_p3(x):
                 return None
             summed = self._fenced_scalar_binary(self.expression(left.children[0]), "+",
                                                  self.expression(left.children[1]))
             return self._fenced_scalar_binary(summed, "*", self.expression(right))
 
-        if self.current_function_name == "hash22" and value.type.display() == "vec2":
+        if vec2_site and value.type.display() == "vec2":
             left, right = value.children
             if left.kind != "binary" or left.operator != "+":
                 return None
             xx = self._swizzle_base(left.children[0], "xx")
             yz = self._swizzle_base(left.children[1], "yz")
             zy = self._swizzle_base(right, "zy")
-            if xx is None or yz is None or zy is None or not self._same_symbol(xx, yz, zy):
+            if xx is None or yz is None or zy is None or not self._same_symbol(xx, yz, zy) or not named_p3(xx):
                 return None
             base = self.expression(xx)
             lane = lambda index: f"glsl::swizzle<{index}>({base})"
@@ -10223,7 +10244,11 @@ class _Emitter:
             # enclosing loop is proved; an unproved loop never reaches here.
             if len(value.expressions) == 0: return [f"{indent}return;"]
             if len(value.expressions) != 1: raise _error(self.program, value, "unsupported return")
-            expression = self.expression(value.expressions[0])
+            self.current_return_value = value.expressions[0]
+            try:
+                expression = self.expression(value.expressions[0])
+            finally:
+                self.current_return_value = None
             if self.current_function_signature_id in self.ordinary_array_return_signatures:
                 lanes = value.expressions[0].type.display()[-1]
                 expression = f"glsl::FloatExpr<{lanes}>({self.type(value.expressions[0].type)}({expression}))"

@@ -133,6 +133,8 @@ def historical_authority(spec: dict):
         # Before 5b686a4 every authenticated hash_uint body was substituted
         # with the murmur finalizer.
         stack.enter_context(mock.patch.object(emit_typed_cpp, "CURRENT_AUTHORITY_HASH_UINT_BY_BODY", False))
+        # The frozen milestones fenced hash returns only in hash12/hash22.
+        stack.enter_context(mock.patch.object(emit_typed_cpp, "HASH_PRECISION_FENCE_BY_SHAPE", False))
         stack.enter_context(mock.patch.object(fixed_array_in_parameter_proof, "_COMPATIBILITY_RHS", "noop"))
         for module_name, attribute, keys, value in _pre_5976b7a6_constants():
             module = sys.modules[module_name]

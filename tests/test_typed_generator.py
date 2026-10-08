@@ -22720,11 +22720,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268332,
-                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
+                3268368,
+                "5c555794d5ff10a6c04eb127c20520f6aaca2c67b050c2a60554e9fdbeefdb93"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
+                "79a1db05d682f66c71d48e0c18f67f9cccf308378303b8c1d081facfbad00601"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -23502,11 +23502,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268332,
-                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
+                3268368,
+                "5c555794d5ff10a6c04eb127c20520f6aaca2c67b050c2a60554e9fdbeefdb93"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
+                "79a1db05d682f66c71d48e0c18f67f9cccf308378303b8c1d081facfbad00601"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -24264,11 +24264,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268332,
-                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
+                3268368,
+                "5c555794d5ff10a6c04eb127c20520f6aaca2c67b050c2a60554e9fdbeefdb93"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
+                "79a1db05d682f66c71d48e0c18f67f9cccf308378303b8c1d081facfbad00601"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -24802,11 +24802,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268332,
-                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
+                3268368,
+                "5c555794d5ff10a6c04eb127c20520f6aaca2c67b050c2a60554e9fdbeefdb93"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
+                "79a1db05d682f66c71d48e0c18f67f9cccf308378303b8c1d081facfbad00601"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -25404,11 +25404,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268332,
-                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
+                3268368,
+                "5c555794d5ff10a6c04eb127c20520f6aaca2c67b050c2a60554e9fdbeefdb93"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
+                "79a1db05d682f66c71d48e0c18f67f9cccf308378303b8c1d081facfbad00601"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -27834,6 +27834,41 @@ void main() {
             )
             self.assertIn("++);", cpp)
             self.assertIn(f"bind_{program_name}", cpp)
+
+
+class HashPrecisionFenceTests(unittest.TestCase):
+    """compile-glsl.js adaptCanonicalSource fences two hash returns by source
+    text, in any function of any effect but filter/scatter. The live slice must
+    carry the fence in exactly the programs whose GLSL contains them."""
+
+    SCALAR_SOURCE = "return fract((p3.x + p3.y) * p3.z);"
+    VEC2_SOURCE = "return fract((p3.xx + p3.yz) * p3.zy);"
+    SCALAR_FENCE = ("return glsl::fract(static_cast<float>(static_cast<double>(static_cast<float>("
+                    "static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<1>(p3))))")
+    VEC2_FENCE = ("return glsl::fract(glsl::Vec2(static_cast<float>(static_cast<double>(static_cast<float>("
+                  "static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<1>(p3))))")
+
+    def test_every_authority_hash_return_is_fenced(self) -> None:
+        sources = REPOSITORY / "tools/glslcpp/corpus" / CORPUS_REVISION / "sources"
+        slice_text = (REPOSITORY / "src/typed_generated/typed_slice.cpp").read_text(encoding="utf-8")
+        sections = re.split(r"^// Typed IR program: (\S+)\n", slice_text, flags=re.M)
+        fenced = []
+        for key, body in zip(sections[1::2], sections[2::2]):
+            effect, program = key.split(":")
+            glsl = (sources / effect / f"{program}.glsl").read_text(encoding="utf-8")
+            for source, fence in ((self.SCALAR_SOURCE, self.SCALAR_FENCE), (self.VEC2_SOURCE, self.VEC2_FENCE)):
+                with self.subTest(program=key, shape=source):
+                    if effect == "filter/scatter":
+                        self.assertNotIn(fence, body)
+                    elif source in glsl:
+                        self.assertIn(fence, body)
+                        fenced.append(key)
+                    else:
+                        self.assertNotIn(fence, body)
+        # points/dla:initGrid carries the idiom in `hash21`, which the old
+        # hash12/hash22 name gate missed.
+        self.assertIn("points/dla:initGrid", fenced)
+        self.assertGreaterEqual(len(fenced), 13)
 
 
 if __name__ == "__main__":

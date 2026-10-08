@@ -26349,7 +26349,7 @@ struct State final : KernelState {
 [[nodiscard]] double hash21([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 p) noexcept {
   [[maybe_unused]] glsl::Vec3 p3 = glsl::fract((glsl::Vec3(glsl::swizzle<0, 1, 0>(p)) * static_cast<float>(0.1031)));
   p3 = glsl::Vec3((p3 + glsl::dot(p3, (glsl::swizzle<2, 1, 0>(p3) + static_cast<float>(31.32)))));
-  return glsl::fract((static_cast<double>((static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<1>(p3)))) * static_cast<double>(glsl::swizzle<2>(p3))));
+  return glsl::fract(static_cast<float>(static_cast<double>(static_cast<float>(static_cast<double>(glsl::swizzle<0>(p3)) + static_cast<double>(glsl::swizzle<1>(p3)))) * static_cast<double>(glsl::swizzle<2>(p3))));
 }
 
 void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, glsl::Vec4& output) noexcept {
