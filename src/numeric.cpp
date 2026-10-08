@@ -36,6 +36,12 @@ std::uint32_t hash_uint32(std::uint32_t value) noexcept {
   return value;
 }
 
+std::uint32_t hash_uint32_lcg(std::uint32_t value) noexcept {
+  const std::uint32_t state = umul(value, 747796405U) + 2891336453U;
+  const std::uint32_t word = umul((state >> ((state >> 28U) + 4U)) ^ state, 277803737U);
+  return (word >> 22U) ^ word;
+}
+
 std::array<std::uint32_t, 3> pcg3d(std::array<std::uint32_t, 3> value) noexcept {
   for (std::uint32_t& component : value) {
     component = umul(component, 1664525U) + 1013904223U;

@@ -762,12 +762,12 @@ EffectRegistry::EffectRegistry(const EffectCatalog& catalog)
   if (provenance_.schema != "noisemaker-cpp.effect-catalog-generator.v1" ||
       provenance_.backend_schema != "noisemaker-cpp.backend-compatibility.v1" ||
       provenance_.corpus_revision != "5976b7a6b77f69c47c41f4ee296a54d5318e1f9d" ||
-      provenance_.generated_payload_sha256 != "3fb06507e56313ba29a6a2ec87f2237c5501c16287ef135a8d26c381b9127695" ||
+      provenance_.generated_payload_sha256 != "50a301db900d33dc8ea96e2865d07c7c96570678a8e7d38e456d26719180b93d" ||
       provenance_.normalized_record_stream_sha256 != "f8f99a758dad34cde8dbcd70e7f367f7a957a230385ef4a94037bebc3e3b5161" ||
-      provenance_.compatibility_sha256 != "4201f8789bc128944ff7b0b3bd5158e3e351bfce253aac9547f6c55a2e0022c1" ||
-      provenance_.cpu_behavioral_lock != "bf8e1e74e7c2b4e591decbd1e4e08fd0be6827241648e4f2d82ef24b1981cce5" ||
+      provenance_.compatibility_sha256 != "92b27582883716644145c5b0513581b876200772d5579bacc95424844335d27a" ||
+      provenance_.cpu_behavioral_lock != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
       provenance_.cpu_behavioral_file_count != 95 ||
-      provenance_.cpu_revision != "bf8e1e74e7c2b4e591decbd1e4e08fd0be6827241648e4f2d82ef24b1981cce5" ||
+      provenance_.cpu_revision != "42ea669d94c89e32b2eff03bdbdaf79855fb4550bc305586dbead9832ead43bb" ||
       provenance_.source_lock_sha256 != "dfb565a24c33bd0e3dfaddc3f719d0f252b4c6f8df7059198a5f9e07b6a895d0" ||
       provenance_.cpu_package_sha256 != "cb5c3d4f898b2eec37a84e60adc1405baa14712715f95262cc5778b472fcba21" ||
       provenance_.cpu_package_lock_sha256 != "724bfaf208346605cae0ce9a74d0e84c76dd3aeb8fedb44fb894ad03c4dad03d" ||

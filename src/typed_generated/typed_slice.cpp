@@ -23730,7 +23730,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] glsl::Vec3 hash3([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -25893,7 +25893,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t s) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(s))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(s))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t s) noexcept {
@@ -25931,7 +25931,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
     outRGBA = glsl::Vec4(col);
     return;
   }
-  [[maybe_unused]] std::uint32_t agentSeed = ((noisemaker::hash_uint32(glsl::detail::glsl_uint_cast((glsl::swizzle<0>(coord) + (glsl::swizzle<1>(coord) * stateSize)))) ^ glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(65536.0))))) ^ glsl::detail::float_to_uint32((static_cast<double>(glsl::swizzle<2>(vel)) * static_cast<double>(static_cast<float>(137.0)))));
+  [[maybe_unused]] std::uint32_t agentSeed = ((noisemaker::hash_uint32_lcg(glsl::detail::glsl_uint_cast((glsl::swizzle<0>(coord) + (glsl::swizzle<1>(coord) * stateSize)))) ^ glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(65536.0))))) ^ glsl::detail::float_to_uint32((static_cast<double>(glsl::swizzle<2>(vel)) * static_cast<double>(static_cast<float>(137.0)))));
   [[maybe_unused]] bool needsInit = (glsl::swizzle<2>(pos) < static_cast<float>(0.25));
   if (needsInit) {
     [[maybe_unused]] double cRe = (static_cast<double>((static_cast<double>(hash(state, context, agentSeed)) * static_cast<double>(static_cast<float>(3.5)))) - static_cast<double>(static_cast<float>(2.5)));
@@ -26155,7 +26155,7 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 wrap01([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 v) noexcept;
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -26178,9 +26178,9 @@ struct State final : KernelState {
 
 [[nodiscard]] double rand([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double& seed) noexcept {
   [[maybe_unused]] std::uint32_t bits = noisemaker::float_bits_to_uint(seed);
-  bits = noisemaker::hash_uint32(bits);
+  bits = noisemaker::hash_uint32_lcg(bits);
   seed = (static_cast<double>(noisemaker::uint_bits_to_float((bits | std::uint32_t(1065353216)))) - static_cast<double>(static_cast<float>(1.0)));
-  bits = noisemaker::hash_uint32((bits + std::uint32_t(1)));
+  bits = noisemaker::hash_uint32_lcg((bits + std::uint32_t(1)));
   seed = (static_cast<double>(noisemaker::uint_bits_to_float(((bits & std::uint32_t(8388607)) | std::uint32_t(1065353216)))) - static_cast<double>(static_cast<float>(1.0)));
   return seed;
 }
@@ -26220,7 +26220,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if (seed <= static_cast<float>(0.0)) {
     seed = (static_cast<double>(hash(state, context, agentId)) + static_cast<double>(static_cast<float>(0.001)));
   }
-  [[maybe_unused]] std::uint32_t frameSeed = noisemaker::hash_uint32(((agentId * std::uint32_t(31)) + noisemaker::float_bits_to_uint(seed)));
+  [[maybe_unused]] std::uint32_t frameSeed = noisemaker::hash_uint32_lcg(((agentId * std::uint32_t(31)) + noisemaker::float_bits_to_uint(seed)));
   seed = (static_cast<double>(noisemaker::uint_bits_to_float(((frameSeed & std::uint32_t(8388607)) | std::uint32_t(1065353216)))) - static_cast<double>(static_cast<float>(1.0)));
   if (alive < static_cast<float>(0.5)) {
     outXYZ = glsl::Vec4(xyz);
@@ -26483,7 +26483,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] glsl::Vec2 hash2([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -26491,7 +26491,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hashFloat([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double n) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(noisemaker::float_bits_to_uint(n)))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(noisemaker::float_bits_to_uint(n)))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -26584,7 +26584,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] std::uint32_t cellSeed = glsl::detail::glsl_uint_cast(((glsl::swizzle<1>(checkCell) * GRID_SIZE) + glsl::swizzle<0>(checkCell)));
       for ([[maybe_unused]] std::int32_t s = std::int32_t(0); (s < std::int32_t(8)); ++s) {
         [[maybe_unused]] std::uint32_t sampleSeed = (((cellSeed * std::uint32_t(31)) + glsl::detail::glsl_uint_cast(s)) + glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(10.0)))));
-        [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32(sampleSeed), glsl::detail::glsl_uint_cast(totalBoids)));
+        [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32_lcg(sampleSeed), glsl::detail::glsl_uint_cast(totalBoids)));
         [[maybe_unused]] std::int32_t sx = glsl::integer_mod(sampleIdx, glsl::swizzle<0>(stateSize));
         [[maybe_unused]] std::int32_t sy = (sampleIdx / glsl::swizzle<0>(stateSize));
         if ((sx == glsl::swizzle<0>(coord)) && (sy == glsl::swizzle<1>(coord))) {
@@ -26838,7 +26838,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -27570,7 +27570,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] glsl::Vec2 hash2([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -27705,7 +27705,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
       [[maybe_unused]] std::uint32_t cellSeed = glsl::detail::glsl_uint_cast(((glsl::swizzle<1>(checkCell) * GRID_SIZE) + glsl::swizzle<0>(checkCell)));
       for ([[maybe_unused]] std::int32_t s = std::int32_t(0); (s < std::int32_t(12)); ++s) {
         [[maybe_unused]] std::uint32_t sampleSeed = (((cellSeed * std::uint32_t(31)) + glsl::detail::glsl_uint_cast(s)) + glsl::detail::float_to_uint32((static_cast<double>(state.time) * static_cast<double>(static_cast<float>(7.0)))));
-        [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32(sampleSeed), glsl::detail::glsl_uint_cast(totalParticles)));
+        [[maybe_unused]] std::int32_t sampleIdx = glsl::detail::glsl_int_cast(glsl::integer_mod(noisemaker::hash_uint32_lcg(sampleSeed), glsl::detail::glsl_uint_cast(totalParticles)));
         [[maybe_unused]] std::int32_t sx = glsl::integer_mod(sampleIdx, glsl::swizzle<0>(stateSize));
         [[maybe_unused]] std::int32_t sy = (sampleIdx / glsl::swizzle<0>(stateSize));
         if ((sx == glsl::swizzle<0>(coord)) && (sy == glsl::swizzle<1>(coord))) {
@@ -27818,7 +27818,7 @@ struct State final : KernelState {
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept;
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -27935,11 +27935,11 @@ struct State final : KernelState {
 [[nodiscard]] glsl::Vec2 wrapPosition([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] glsl::Vec2 pos) noexcept;
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] double hash_f([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] double n) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(noisemaker::float_bits_to_uint(n)))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(noisemaker::float_bits_to_uint(n)))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -28130,7 +28130,7 @@ struct State final : KernelState {
 }
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -28742,7 +28742,7 @@ struct State final : KernelState {
 [[nodiscard]] std::uint32_t hash_uint([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept;
 
 [[nodiscard]] double hash([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
-  return (static_cast<double>(float(noisemaker::hash_uint32(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
+  return (static_cast<double>(float(noisemaker::hash_uint32_lcg(seed))) / static_cast<double>(static_cast<float>(4294967295.0)));
 }
 
 [[nodiscard]] glsl::Vec2 hash2([[maybe_unused]] const State& state, [[maybe_unused]] const glsl::PixelContext& context, [[maybe_unused]] std::uint32_t seed) noexcept {
@@ -28772,7 +28772,7 @@ void pixel(const KernelState& kernel_base, const glsl::PixelContext& context, gl
   if ((!needsRespawn) && (state.attrition > static_cast<float>(0.0))) {
     [[maybe_unused]] std::uint32_t timeBits = noisemaker::float_bits_to_uint(state.time);
     [[maybe_unused]] std::uint32_t check_seed = ((agentSeed * std::uint32_t(1664525)) + timeBits);
-    check_seed = noisemaker::hash_uint32(check_seed);
+    check_seed = noisemaker::hash_uint32_lcg(check_seed);
     [[maybe_unused]] double respawnRand = (static_cast<double>(float(check_seed)) / static_cast<double>(static_cast<float>(4294967295.0)));
     [[maybe_unused]] double attritionRate = (static_cast<double>(state.attrition) * static_cast<double>(static_cast<float>(0.01)));
     if (respawnRand < attritionRate) {

@@ -52,7 +52,7 @@ from tools.benchmark.corpus_lane import (  # noqa: E402
 )
 from tools.benchmark.exact_compare import compare_rgba8, format_diagnostics  # noqa: E402
 
-CPU_REV = "8ae8e2ae97812952db49246a87b04d7e5a480494"
+CPU_REV = "5b686a45b5c56329adf0c63cbcf572eb6f23fad1"
 CPU_CHECKOUT = pathlib.Path(
     os.environ.get("NOISEMAKER_FOR_CPU") or "/workspace/repos/noisemaker-for-cpu")
 DRIVER_ENV = "NOISEMAKER_DSL_CPU_CASE"

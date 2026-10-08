@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 import dataclasses
 import hashlib
 import math
+import re
 import struct
 
 from .frontend.audio_uniform_profile import authenticate_audio_uniform
@@ -24,6 +25,11 @@ CURRENT_AUTHORITY_VALUE_COPIES = True
 # turn this off to regenerate the always-true typed-array comparer they froze.
 CURRENT_AUTHORITY_VECTOR_EQUALITY = True
 HISTORICAL_VECTOR_EQUALITY_COMPARER = "glsl::canonical_js_vector_equality_result_is_truthy("
+# The authority routes `hash_uint` by its GLSL body since 5b686a4: the murmur
+# finalizer to stdlib.hashUint, the LCG-seeded mix to stdlib.hashUintLcg, any
+# other body left as written. Historical reconstructions turn this off to
+# regenerate the murmur substitution every body used to receive.
+CURRENT_AUTHORITY_HASH_UINT_BY_BODY = True
 
 from .frontend.loop_proof import (
     COUNTED_FOR_V1_MAX_ENTRYPOINT_CHARGE, COUNTED_FOR_V1_MAX_LEXICAL_PRODUCT,
@@ -8471,18 +8477,24 @@ class _Emitter:
             if (value.kind == "call" and value.callee == "hash_uint"
                     and self.authorized_hash_scalar_uint_xors
                     and self.authorized_hash_scalar_uint_rshifts):
-                # The pinned JS compile-glsl.js substitutes every hash_uint
-                # function with stdlib.hashUint. These two profiles authenticate
-                # the entire source and typed AST independently in this emitter;
-                # keep the original body for structural consumption, but route
-                # its calls through the authority's existing numeric helper.
-                # Hydraulic's hash2 is deliberately outside this substitution.
+                # The pinned JS compile-glsl.js substitutes hash_uint by its
+                # body: the murmur finalizer (constants 7feb352d/846ca68b) with
+                # stdlib.hashUint, the LCG-seeded mix (747796405) with
+                # stdlib.hashUintLcg. These two profiles authenticate the entire
+                # source and typed AST independently in this emitter; keep the
+                # original body for structural consumption, but route its calls
+                # through the matching numeric helper. Hydraulic's hash2 is
+                # deliberately outside this substitution.
                 if (len(value.children) != 1
                         or value.children[0].type.display() != "uint"
                         or value.type.display() != "uint"):
                     raise _error(self.program, value,
                                  "malformed authenticated hash_uint call")
-                return f"noisemaker::hash_uint32({arguments[0]})"
+                if (not CURRENT_AUTHORITY_HASH_UINT_BY_BODY
+                        or re.search(r"7feb352d|846ca68b", self.program.raw_source)):
+                    return f"noisemaker::hash_uint32({arguments[0]})"
+                if re.search(r"747796405", self.program.raw_source):
+                    return f"noisemaker::hash_uint32_lcg({arguments[0]})"
             if value.kind == "call":
                 # Every DSL user-function vec2/vec3/vec4 PARAMETER is always
                 # `glsl::Vec2`/`Vec3`/`Vec4` (see `function_parameter_type` /

@@ -11553,9 +11553,10 @@ synth/subdivide:subdivide""".splitlines())
         # The current authority migration routes frozen BC/HS/Corrupt/Reverb
         # captures through historical factories without changing capture bytes.
         # The 8ae8e2a migration does the same for Coalesce, Refract, Degauss and
-        # Scale, and adds the 8ae8e2a current-authority capture table.
+        # Scale, and adds the 8ae8e2a current-authority capture table. 5b686a4
+        # re-captures the Life matrix under the authority's LCG hash routing.
         self.assertEqual(
-            "2ffbe6a9cb2556120547dc1e564fa708285523f0776ee79d2f14a3f90776176a",
+            "8de83fbbe9bcb91400b6b8079dfa36780d329d8323198aadbb401968d6bbfb7d",
             hashlib.sha256((REPOSITORY / "tests/test_typed_slice.cpp").read_bytes()
                            ).hexdigest())
 
@@ -22677,11 +22678,11 @@ class MutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268256,
-                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
+                3268332,
+                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
+                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -23458,11 +23459,11 @@ class KaleidoMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268256,
-                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
+                3268332,
+                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
+                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -24219,11 +24220,11 @@ class EffectsMutableGlobalArrayIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268256,
-                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
+                3268332,
+                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
+                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -24756,11 +24757,11 @@ class WobbleVaryingUvIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268256,
-                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
+                3268332,
+                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
+                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -25357,11 +25358,11 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
                 38674,
                 "cecf0e4144eb724d87d60bf53b167e33bf7192e37b3117b90e0a10fe334cc192"),
             "src/typed_generated/typed_slice.cpp": (
-                3268256,
-                "01cfd4af7d41267f0725d814dbd4beb72e8c8328c032403c990935d479a0625c"),
+                3268332,
+                "069ab333a9c03d6e84bff897dc549af1f4629b2869476412679cbe794bcd6335"),
             "src/typed_generated/typed_manifest.json": (
                 858965,
-                "058b4b6d873ce00bb167a684ea886d846644460667f980273c521d1ebc16c57a"),
+                "f1858f60cfc1b2c5e7bc550378c9d0a2fb5f1a88d463fa36163fe8418b385cbb"),
             "include/noisemaker/generated/catalog.hpp": (
                 27624,
                 "eb30b23ba282f2d60365097f2c70fa148baa2fe6cee7974a476b689072cbe5d6"),
@@ -26781,9 +26782,10 @@ class ParallaxTextureLodIntegrationTests(unittest.TestCase):
         )
         self.assertIn(">> std::uint32_t(28)", cpp)
         self.assertIn("((word >> std::uint32_t(22)) ^ word)", cpp)
-        # The source body remains authenticated and consumed, but JS replaces
-        # calls to hash_uint with its stdlib hash rather than that PCG body.
-        self.assertIn("noisemaker::hash_uint32(seed)", cpp)
+        # The source body remains authenticated and consumed; JS routes calls
+        # to this LCG-seeded body through stdlib.hashUintLcg (since 5b686a4).
+        self.assertIn("noisemaker::hash_uint32_lcg(seed)", cpp)
+        self.assertNotIn("noisemaker::hash_uint32(seed)", cpp)
         import dataclasses
         forged = dataclasses.replace(typed, functions=())
         with self.assertRaises(emit_typed_cpp.TypedEmissionError):

@@ -10,6 +10,9 @@ namespace noisemaker {
 [[nodiscard]] double glsl_round(double value) noexcept;
 [[nodiscard]] std::uint32_t umul(std::uint32_t a, std::uint32_t b) noexcept;
 [[nodiscard]] std::uint32_t hash_uint32(std::uint32_t value) noexcept;
+// The LCG-seeded `uint hash_uint(uint)` body of the points agents, pointsEmit
+// init and flow3d (the authority's stdlib.hashUintLcg).
+[[nodiscard]] std::uint32_t hash_uint32_lcg(std::uint32_t value) noexcept;
 [[nodiscard]] std::array<std::uint32_t, 3>
 pcg3d(std::array<std::uint32_t, 3> value) noexcept;
 [[nodiscard]] std::uint32_t float_bits_to_uint(float value) noexcept;

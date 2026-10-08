@@ -4164,11 +4164,11 @@ TEST(typed_task22_crt_public_adapter_oracles_are_exact_repeatable_and_nonmutatin
 
 }  // namespace
 
-// Captured directly from the unmodified JS authority 61aa8694d60e6e25d8d3e8c872c971be329458bc,
+// Captured directly from the unmodified JS authority 5b686a45b5c56329adf0c63cbcf572eb6f23fad1,
 // canonicalKernelFactories["points/life:matrix"], with the bindings below.
-// compile-glsl.js replaces hash_uint with stdlib.hashUint; preserving the
-// original GLSL PCG body therefore does not preserve this authority's pixels.
-TEST(typed_life_matrix_uses_authority_hash_substitution) {
+// compile-glsl.js routes hash_uint by its GLSL body: this LCG-seeded body maps
+// to stdlib.hashUintLcg (before 5b686a4 every body took the murmur finalizer).
+TEST(typed_life_matrix_uses_the_authority_lcg_hash) {
   noisemaker::glsl::Bindings bindings;
   bindings.set_uniform("resolution", noisemaker::glsl::Vec2(17.0f, 11.0f));
   bindings.set_uniform("typeCount", std::int32_t(16));
@@ -4177,9 +4177,9 @@ TEST(typed_life_matrix_uses_authority_hash_substitution) {
   const auto surface = noisemaker::run_pass(
       noisemaker::generated::bind_points_life_matrix(bindings), 17U, 11U);
   REQUIRE(hex(sha256(little_endian_float_bytes(surface))) ==
-          "425896564e0939c005bb4570e2d2581bc1e7c44226a1eb4e9a79af04c3b5721c");
+          "247562648768305a8ced53e4937c8309881dfda144e43f453665b015ee34bde5");
   REQUIRE(hex(sha256(surface.to_rgba8())) ==
-          "f8dfa22791a3e6bf453ceca524efaae1e5627554d5fab269ee822c83e66207fa");
+          "4f1e94b2f3839e30ea668a3b3240890c15788ba7123de3cbb6e62b7c1ba44b58");
 }
 
 // Same unmodified authority and direct pass runner as the Life capture above.
